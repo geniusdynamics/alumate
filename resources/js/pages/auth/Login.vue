@@ -85,6 +85,8 @@ const submit = () => {
                 <div class="text-center text-sm text-muted-foreground">
                     Don't have an account?
                     <TextLink :href="route('register')" :tabindex="5">Sign up</TextLink>
+                    <br>
+                    <TextLink :href="route('employer.register')" :tabindex="6">Register as an Employer</TextLink>
                 </div>
             </template>
         </AuthForm>

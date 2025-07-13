@@ -30,7 +30,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('graduates', \App\Http\Controllers\GraduateController::class);
     Route::get('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'create'])->name('graduates.import.create');
     Route::post('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'store'])->name('graduates.import.store');
+
+    // Job Management
+    Route::resource('jobs', \App\Http\Controllers\JobController::class);
 });
+
+Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');
+Route::post('employer/register', [\App\Http\Controllers\EmployerController::class, 'store']);
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
