@@ -21,6 +21,10 @@ class JobController extends Controller
 
     public function store(Request $request)
     {
+        if (! Auth::user()->employer->approved) {
+            return back()->with('error', 'Your company has not been approved yet.');
+        }
+
         $data = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',

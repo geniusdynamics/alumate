@@ -74,6 +74,14 @@ Route::middleware('auth')->group(function () {
 
     // Assistance Requests
     Route::resource('assistance', \App\Http\Controllers\AssistanceRequestController::class)->except(['show', 'edit', 'update', 'destroy']);
+
+    // Company Approval
+    Route::get('companies', [\App\Http\Controllers\CompanyApprovalController::class, 'index'])->name('companies.index');
+    Route::post('companies/{employer}/approve', [\App\Http\Controllers\CompanyApprovalController::class, 'approve'])->name('companies.approve');
+    Route::delete('companies/{employer}/reject', [\App\Http\Controllers\CompanyApprovalController::class, 'reject'])->name('companies.reject');
+
+    // Graduate Search
+    Route::get('graduates/search', [\App\Http\Controllers\GraduateSearchController::class, 'index'])->name('graduates.search');
 });
 
 Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');

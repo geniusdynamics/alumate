@@ -117,6 +117,20 @@ const menuItems = [
         permission: 'request assistance'
     },
     {
+        title: 'Approve Companies',
+        icon: Users,
+        href: route('companies.index'),
+        active: route().current('companies.*'),
+        permission: 'approve companies'
+    },
+    {
+        title: 'Search Graduates',
+        icon: Users,
+        href: route('graduates.search'),
+        active: route().current('graduates.search'),
+        permission: 'view graduates'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),
