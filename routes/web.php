@@ -25,6 +25,11 @@ Route::middleware('auth')->group(function () {
 
     // Course Management
     Route::resource('courses', \App\Http\Controllers\CourseController::class);
+
+    // Graduate Management
+    Route::resource('graduates', \App\Http\Controllers\GraduateController::class);
+    Route::get('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'create'])->name('graduates.import.create');
+    Route::post('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'store'])->name('graduates.import.store');
 });
 
 require __DIR__ . '/settings.php';

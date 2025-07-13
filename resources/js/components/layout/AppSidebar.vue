@@ -46,6 +46,13 @@ const menuItems = [
         permission: 'manage courses'
     },
     {
+        title: 'Graduates',
+        icon: Users,
+        href: route('graduates.index'),
+        active: route().current('graduates.*'),
+        permission: 'manage graduates'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),
