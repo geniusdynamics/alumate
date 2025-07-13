@@ -62,8 +62,47 @@ class DashboardController extends Controller
             ]);
         }
 
+use App\Models\Announcement;
+
+class DashboardController extends Controller
+{
+    public function __invoke()
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('Super Admin')) {
+            return Inertia::render('Dashboard/SuperAdmin', [
+                'stats' => [
+                    'institutions' => Tenant::count(),
+                    'graduates' => Graduate::count(),
+                    'employers' => User::whereHas('roles', fn ($q) => $q->where('name', 'Employer'))->count(),
+                    'jobs' => Job::count(),
+                ],
+            ]);
+        }
+
+        if ($user->hasRole('Institution Admin')) {
+            return Inertia::render('Dashboard/InstitutionAdmin', [
+                'stats' => [
+                    'graduates' => Graduate::count(),
+                    'courses' => Course::count(),
+                ],
+            ]);
+        }
+
         if ($user->hasRole('Graduate')) {
-            return Inertia::render('Dashboard/Graduate');
+            $graduate = Graduate::where('email', $user->email)->firstOrFail();
+            $classmates = Graduate::where('course_id', $graduate->course_id)
+                ->where('id', '!=', $graduate->id)
+                ->get();
+            $jobs = Job::whereHas('course', fn ($q) => $q->where('id', $graduate->course_id))->get();
+            $announcements = Announcement::latest()->get();
+
+            return Inertia::render('Dashboard/Graduate', [
+                'classmates' => $classmates,
+                'jobs' => $jobs,
+                'announcements' => $announcements,
+            ]);
         }
 
         if ($user->hasRole('Employer')) {

@@ -5,18 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class GraduateProfile extends Model
+class EducationHistory extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'graduate_id',
-        'bio',
-        'work_experience',
-        'skills',
-        'profile_picture',
-        'project_gallery',
-        'self_employed',
+        'institution_name',
+        'degree',
+        'field_of_study',
+        'start_year',
+        'end_year',
     ];
 
     public function graduate()

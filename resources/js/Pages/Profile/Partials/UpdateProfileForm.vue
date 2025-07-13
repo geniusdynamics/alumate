@@ -11,6 +11,7 @@ const form = useForm({
     work_experience: props.profile.work_experience,
     skills: props.profile.skills,
     profile_picture: null,
+    self_employed: props.profile.self_employed,
 });
 
 const submit = () => {
@@ -44,6 +45,13 @@ const submit = () => {
             <div>
                 <label for="profile_picture">Profile Picture</label>
                 <input type="file" @input="form.profile_picture = $event.target.files[0]" />
+            </div>
+
+            <div class="mt-4">
+                <label for="self_employed">
+                    <input id="self_employed" type="checkbox" v-model="form.self_employed" />
+                    <span class="ml-2">I am self-employed</span>
+                </label>
             </div>
 
             <div class="flex items-center gap-4">

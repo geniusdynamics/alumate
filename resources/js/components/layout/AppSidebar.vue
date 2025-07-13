@@ -103,6 +103,20 @@ const menuItems = [
         permission: 'manage institution'
     },
     {
+        title: 'Education History',
+        icon: Users,
+        href: route('education.index'),
+        active: route().current('education.*'),
+        permission: 'manage education'
+    },
+    {
+        title: 'Request Assistance',
+        icon: Users,
+        href: route('assistance.index'),
+        active: route().current('assistance.*'),
+        permission: 'request assistance'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),

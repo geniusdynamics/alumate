@@ -68,6 +68,12 @@ Route::middleware('auth')->group(function () {
     // Institution Details
     Route::get('institution', [\App\Http\Controllers\InstitutionDetailsController::class, 'edit'])->name('institution.edit');
     Route::patch('institution', [\App\Http\Controllers\InstitutionDetailsController::class, 'update'])->name('institution.update');
+
+    // Education History
+    Route::resource('education', \App\Http\Controllers\EducationHistoryController::class)->except(['show', 'edit', 'update']);
+
+    // Assistance Requests
+    Route::resource('assistance', \App\Http\Controllers\AssistanceRequestController::class)->except(['show', 'edit', 'update', 'destroy']);
 });
 
 Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');
