@@ -11,6 +11,12 @@ use Illuminate\Support\Facades\Auth;
 
 class JobApplicationController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @param  \App\Models\Job  $job
+     * @return \Illuminate\Http\Response
+     */
     public function index(Job $job)
     {
         $this->authorize('view', $job);
@@ -18,6 +24,11 @@ class JobApplicationController extends Controller
         return inertia('Jobs/Applications', ['job' => $job, 'applications' => $applications]);
     }
 
+    /**
+     * Display a listing of the authenticated user's applications.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function myApplications()
     {
         $graduate = Graduate::where('email', Auth::user()->email)->firstOrFail();
@@ -25,6 +36,13 @@ class JobApplicationController extends Controller
         return inertia('MyApplications/Index', ['applications' => $applications]);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Job  $job
+     * @return \Illuminate\Http\Response
+     */
     public function store(Request $request, Job $job)
     {
         $graduate = Graduate::where('email', Auth::user()->email)->firstOrFail();
@@ -40,6 +58,12 @@ class JobApplicationController extends Controller
         return redirect()->route('jobs.public.index')->with('success', 'Application submitted successfully!');
     }
 
+    /**
+     * Mark the specified resource as hired.
+     *
+     * @param  \App\Models\JobApplication  $application
+     * @return \Illuminate\Http\Response
+     */
     public function hire(JobApplication $application)
     {
         $this->authorize('update', $application->job);

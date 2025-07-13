@@ -42,4 +42,28 @@ class TenancySetupTest extends TestCase
 
         $this->assertTrue(tenancy()->initialized);
     }
+
+    /** @test */
+    public function a_user_cannot_access_data_from_another_tenant()
+    {
+        $tenant1 = Tenant::create(['id' => 'test1', 'name' => 'Test Tenant 1']);
+        $tenant1->domains()->create(['domain' => 'test1.localhost']);
+
+        $tenant2 = Tenant::create(['id' => 'test2', 'name' => 'Test Tenant 2']);
+        $tenant2->domains()->create(['domain' => 'test2.localhost']);
+
+        tenancy()->initialize($tenant1);
+        $user1 = \App\Models\User::factory()->create();
+
+        tenancy()->initialize($tenant2);
+        $user2 = \App\Models\User::factory()->create();
+
+        tenancy()->initialize($tenant1);
+        $this->actingAs($user1);
+
+        $this->get(route('dashboard'))->assertSuccessful();
+
+        tenancy()->initialize($tenant2);
+        $this->get(route('dashboard'))->assertForbidden();
+    }
 }
