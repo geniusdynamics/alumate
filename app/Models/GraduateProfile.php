@@ -15,6 +15,7 @@ class GraduateProfile extends Model
         'work_experience',
         'skills',
         'profile_picture',
+        'project_gallery',
     ];
 
     public function graduate()

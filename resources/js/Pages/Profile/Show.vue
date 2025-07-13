@@ -31,6 +31,15 @@ defineProps({
                         <span v-if="hired" class="bg-green-500 text-white font-bold py-1 px-2 rounded-full text-xs">
                             Hired
                         </span>
+                        <div v-if="profile.project_gallery">
+                            <h3 class="text-lg font-semibold mt-4">Project Gallery</h3>
+                            <div class="grid grid-cols-3 gap-4 mt-2">
+                                <div v-for="project in profile.project_gallery" :key="project.title">
+                                    <img :src="project.image_url" :alt="project.title" class="w-full h-auto rounded">
+                                    <p class="text-sm font-semibold mt-1">{{ project.title }}</p>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Display other profile information here -->
                     </div>
                 </div>
