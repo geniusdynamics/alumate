@@ -53,6 +53,20 @@ const menuItems = [
         permission: 'manage graduates'
     },
     {
+        title: 'My Profile',
+        icon: Users,
+        href: route('profile.show'),
+        active: route().current('profile.*'),
+        permission: 'update profile'
+    },
+    {
+        title: 'Jobs',
+        icon: Home, // You can change this icon
+        href: route('jobs.public.index'),
+        active: route().current('jobs.public.index'),
+        permission: 'view jobs'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),

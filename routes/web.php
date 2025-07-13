@@ -33,6 +33,14 @@ Route::middleware('auth')->group(function () {
 
     // Job Management
     Route::resource('jobs', \App\Http\Controllers\JobController::class);
+
+    // Graduate Profile
+    Route::get('profile', [\App\Http\Controllers\GraduateProfileController::class, 'show'])->name('profile.show');
+    Route::get('profile/edit', [\App\Http\Controllers\GraduateProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('profile', [\App\Http\Controllers\GraduateProfileController::class, 'update'])->name('profile.update');
+
+    // Public Job Listing
+    Route::get('jobs', [\App\Http\Controllers\JobListController::class, 'index'])->name('jobs.public.index');
 });
 
 Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');
