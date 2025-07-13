@@ -1,10 +1,18 @@
 <script setup>
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 
 defineProps({
     jobs: Array,
 });
+
+const form = useForm({
+    recommended_id: '',
+});
+
+const recommend = (jobId) => {
+    form.post(route('jobs.recommend', jobId));
+};
 </script>
 
 <template>
@@ -27,6 +35,12 @@ defineProps({
                             <button @click="apply(job.id)" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Apply
                             </button>
+                            <div class="mt-2">
+                                <input type="text" v-model="form.recommended_id" placeholder="Enter user ID to recommend" />
+                                <button @click="recommend(job.id)" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                                    Recommend
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

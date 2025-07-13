@@ -6,6 +6,7 @@ defineProps({
     graduate: Object,
     profile: Object,
     institution: Object,
+    hired: Boolean,
 });
 </script>
 
@@ -27,6 +28,9 @@ defineProps({
                         <p v-if="graduate.previous_institution">
                             Previous Institution: {{ graduate.previous_institution.name }}
                         </p>
+                        <span v-if="hired" class="bg-green-500 text-white font-bold py-1 px-2 rounded-full text-xs">
+                            Hired
+                        </span>
                         <!-- Display other profile information here -->
                     </div>
                 </div>

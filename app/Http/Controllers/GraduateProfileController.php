@@ -15,10 +15,13 @@ class GraduateProfileController extends Controller
         $graduate = Graduate::where('email', Auth::user()->email)->firstOrFail();
         $profile = GraduateProfile::firstOrCreate(['graduate_id' => $graduate->id]);
 
+        $hired = $graduate->applications()->where('status', 'hired')->exists();
+
         return Inertia::render('Profile/Show', [
             'graduate' => $graduate->load('previousInstitution'),
             'profile' => $profile,
             'institution' => tenancy()->tenant,
+            'hired' => $hired,
         ]);
     }
 

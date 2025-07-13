@@ -39,4 +39,12 @@ class JobApplicationController extends Controller
 
         return redirect()->route('jobs.public.index')->with('success', 'Application submitted successfully!');
     }
+
+    public function hire(JobApplication $application)
+    {
+        $this->authorize('update', $application->job);
+        $application->update(['status' => 'hired']);
+
+        return back()->with('success', 'Applicant marked as hired!');
+    }
 }
