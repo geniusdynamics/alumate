@@ -19,6 +19,9 @@ Route::middleware('auth')->group(function () {
 
     // Role Management
     Route::resource('roles', RoleController::class);
+
+    // Institution Management
+    Route::resource('institutions', \App\Http\Controllers\InstitutionController::class);
 });
 
 require __DIR__ . '/settings.php';
