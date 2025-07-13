@@ -75,6 +75,20 @@ const menuItems = [
         permission: 'view applications'
     },
     {
+        title: 'Super Admins',
+        icon: Users,
+        href: route('super-admins.index'),
+        active: route().current('super-admins.*'),
+        permission: 'manage super admins'
+    },
+    {
+        title: 'Merge Records',
+        icon: Users,
+        href: route('merge.index'),
+        active: route().current('merge.*'),
+        permission: 'merge records'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),

@@ -50,6 +50,13 @@ Route::middleware('auth')->group(function () {
 
     // Recommendations
     Route::post('jobs/{job}/recommend', [\App\Http\Controllers\RecommendationController::class, 'store'])->name('jobs.recommend');
+
+    // Super Admin Management
+    Route::resource('super-admins', \App\Http\Controllers\SuperAdminController::class)->except(['show', 'edit', 'update']);
+
+    // Merge Records
+    Route::get('merge', [\App\Http\Controllers\MergeController::class, 'index'])->name('merge.index');
+    Route::post('merge', [\App\Http\Controllers\MergeController::class, 'merge'])->name('merge.store');
 });
 
 Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');
