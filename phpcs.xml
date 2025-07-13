@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<ruleset name="Laravel Starter Kit">
+    <description>Coding standard for Laravel Starter Kit.</description>
+
+    <!-- Include the PSR1 and PSR2 standards -->
+    <rule ref="PSR1"/>
+    <rule ref="PSR2"/>
+
+    <!-- Include the Laravel coding standards -->
+    <rule ref="Laravel">
+        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>
+    </rule>
+
+    <!-- Set the minimum PHP version -->
+    <config name="minimum_supported_wp_version" value="7.4"/>
+
+    <!-- Paths to check -->
+    <file>./app</file>
+    <file>./config</file>
+    <file>./database</file>
+    <file>./routes</file>
+    <file>./tests</file>
+
+    <!-- Exclude directories -->
+    <exclude-pattern>./bootstrap</exclude-pattern>
+    <exclude-pattern>./storage</exclude-pattern>
+    <exclude-pattern>./vendor</exclude-pattern>
+</ruleset>
+
