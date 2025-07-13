@@ -24,6 +24,9 @@ defineProps({
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
                         <p>Institution: {{ institution.name }}</p>
+                        <p v-if="graduate.previous_institution">
+                            Previous Institution: {{ graduate.previous_institution.name }}
+                        </p>
                         <!-- Display other profile information here -->
                     </div>
                 </div>

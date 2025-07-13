@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\HasPreviousInstitution;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Graduate extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPreviousInstitution;
 
     protected $fillable = [
         'name',
@@ -16,10 +17,16 @@ class Graduate extends Model
         'address',
         'graduation_year',
         'course_id',
+        'tenant_id',
     ];
 
     public function course()
     {
         return $this->belongsTo(Course::class);
+    }
+
+    public function tenant()
+    {
+        return $this->belongsTo(Tenant::class);
     }
 }

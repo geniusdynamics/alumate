@@ -16,7 +16,7 @@ class GraduateProfileController extends Controller
         $profile = GraduateProfile::firstOrCreate(['graduate_id' => $graduate->id]);
 
         return Inertia::render('Profile/Show', [
-            'graduate' => $graduate,
+            'graduate' => $graduate->load('previousInstitution'),
             'profile' => $profile,
             'institution' => tenancy()->tenant,
         ]);
