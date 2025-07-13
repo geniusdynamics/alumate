@@ -67,6 +67,13 @@ const menuItems = [
         permission: 'view jobs'
     },
     {
+        title: 'My Applications',
+        icon: Home, // You can change this icon
+        href: route('my.applications'),
+        active: route().current('my.applications'),
+        permission: 'view applications'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),
