@@ -29,11 +29,13 @@ class JobApplicationController extends Controller
     {
         $graduate = Graduate::where('email', Auth::user()->email)->firstOrFail();
 
-        JobApplication::create([
+        $jobApplication = JobApplication::create([
             'job_id' => $job->id,
             'graduate_id' => $graduate->id,
             'cover_letter' => $request->cover_letter,
         ]);
+
+        $job->employer->user->notify(new \App\Notifications\JobApplicationNotification($jobApplication));
 
         return redirect()->route('jobs.public.index')->with('success', 'Application submitted successfully!');
     }

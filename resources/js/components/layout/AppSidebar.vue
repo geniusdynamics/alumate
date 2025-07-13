@@ -4,11 +4,12 @@ import { usePage, Link } from '@inertiajs/vue3';
 import AppLogo from '@/components/common/AppLogo.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronUp, Home, Users, Settings, Shield } from 'lucide-vue-next';
+import { ChevronUp, Home, Users, Settings, Shield, Bell } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
+const notifications = computed(() => page.props.auth?.notifications);
 
 const menuItems = [
     {
@@ -100,6 +101,18 @@ const filteredMenuItems = computed(() => {
                             <span class="truncate font-semibold">Starter Kit</span>
                             <span class="truncate text-xs">Laravel + Vue</span>
                         </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <SidebarMenuButton>
+                                    <Bell />
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent class="w-56" align="end" side="top">
+                                <DropdownMenuItem v-for="notification in notifications" :key="notification.id">
+                                    {{ notification.data.job_title }}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
