@@ -31,6 +31,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'view announcements']);
         Permission::create(['name' => 'update profile']);
         Permission::create(['name' => 'verify graduates']);
+        Permission::create(['name' => 'view institutions']);
 
         // create roles and assign created permissions
 

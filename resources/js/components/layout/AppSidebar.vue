@@ -32,6 +32,13 @@ const menuItems = [
         permission: 'view roles'
     },
     {
+        title: 'Institutions',
+        icon: Home,
+        href: route('institutions.index'),
+        active: route().current('institutions.*'),
+        permission: 'view institutions'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),
