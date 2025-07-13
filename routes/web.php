@@ -57,6 +57,17 @@ Route::middleware('auth')->group(function () {
     // Merge Records
     Route::get('merge', [\App\Http\Controllers\MergeController::class, 'index'])->name('merge.index');
     Route::post('merge', [\App\Http\Controllers\MergeController::class, 'merge'])->name('merge.store');
+
+    // Tutor Management
+    Route::resource('tutors', \App\Http\Controllers\TutorController::class);
+
+    // Course Import
+    Route::get('courses/import', [\App\Http\Controllers\CourseImportController::class, 'create'])->name('courses.import.create');
+    Route::post('courses/import', [\App\Http\Controllers\CourseImportController::class, 'store'])->name('courses.import.store');
+
+    // Institution Details
+    Route::get('institution', [\App\Http\Controllers\InstitutionDetailsController::class, 'edit'])->name('institution.edit');
+    Route::patch('institution', [\App\Http\Controllers\InstitutionDetailsController::class, 'update'])->name('institution.update');
 });
 
 Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');

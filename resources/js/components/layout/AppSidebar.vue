@@ -89,6 +89,20 @@ const menuItems = [
         permission: 'merge records'
     },
     {
+        title: 'Tutors',
+        icon: Users,
+        href: route('tutors.index'),
+        active: route().current('tutors.*'),
+        permission: 'manage tutors'
+    },
+    {
+        title: 'Edit Institution',
+        icon: Settings,
+        href: route('institution.edit'),
+        active: route().current('institution.edit'),
+        permission: 'manage institution'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),
