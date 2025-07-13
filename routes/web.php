@@ -22,6 +22,9 @@ Route::middleware('auth')->group(function () {
 
     // Institution Management
     Route::resource('institutions', \App\Http\Controllers\InstitutionController::class);
+
+    // Course Management
+    Route::resource('courses', \App\Http\Controllers\CourseController::class);
 });
 
 require __DIR__ . '/settings.php';

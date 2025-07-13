@@ -39,6 +39,13 @@ const menuItems = [
         permission: 'view institutions'
     },
     {
+        title: 'Courses',
+        icon: Home, // You can change this icon
+        href: route('courses.index'),
+        active: route().current('courses.*'),
+        permission: 'manage courses'
+    },
+    {
         title: 'Settings',
         icon: Settings,
         href: route('settings.profile'),
