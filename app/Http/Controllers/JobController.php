@@ -30,6 +30,8 @@ class JobController extends Controller
             'description' => 'required|string',
             'location' => 'nullable|string|max:255',
             'salary' => 'nullable|string|max:255',
+            'curated_courses' => 'nullable|json',
+            'external_application_link' => 'nullable|url',
         ]);
 
         Auth::user()->employer->jobs()->create($data);
@@ -52,6 +54,8 @@ class JobController extends Controller
             'description' => 'required|string',
             'location' => 'nullable|string|max:255',
             'salary' => 'nullable|string|max:255',
+            'curated_courses' => 'nullable|json',
+            'external_application_link' => 'nullable|url',
         ]);
 
         $job->update($data);
