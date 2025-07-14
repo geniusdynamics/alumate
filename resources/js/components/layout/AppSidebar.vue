@@ -4,11 +4,12 @@ import { usePage, Link } from '@inertiajs/vue3';
 import AppLogo from '@/components/common/AppLogo.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronUp, Home, Users, Settings, Shield } from 'lucide-vue-next';
+import { ChevronUp, Home, Users, Settings, Shield, Bell } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
+const notifications = computed(() => page.props.auth?.notifications);
 
 const menuItems = [
     {
@@ -30,6 +31,104 @@ const menuItems = [
         href: route('roles.index'),
         active: route().current('roles.*'),
         permission: 'view roles'
+    },
+    {
+        title: 'Institutions',
+        icon: Home,
+        href: route('institutions.index'),
+        active: route().current('institutions.*'),
+        permission: 'view institutions'
+    },
+    {
+        title: 'Courses',
+        icon: Home, // You can change this icon
+        href: route('courses.index'),
+        active: route().current('courses.*'),
+        permission: 'manage courses'
+    },
+    {
+        title: 'Graduates',
+        icon: Users,
+        href: route('graduates.index'),
+        active: route().current('graduates.*'),
+        permission: 'manage graduates'
+    },
+    {
+        title: 'My Profile',
+        icon: Users,
+        href: route('profile.show'),
+        active: route().current('profile.*'),
+        permission: 'update profile'
+    },
+    {
+        title: 'Jobs',
+        icon: Home, // You can change this icon
+        href: route('jobs.public.index'),
+        active: route().current('jobs.public.index'),
+        permission: 'view jobs'
+    },
+    {
+        title: 'My Applications',
+        icon: Home, // You can change this icon
+        href: route('my.applications'),
+        active: route().current('my.applications'),
+        permission: 'view applications'
+    },
+    {
+        title: 'Super Admins',
+        icon: Users,
+        href: route('super-admins.index'),
+        active: route().current('super-admins.*'),
+        permission: 'manage super admins'
+    },
+    {
+        title: 'Merge Records',
+        icon: Users,
+        href: route('merge.index'),
+        active: route().current('merge.*'),
+        permission: 'merge records'
+    },
+    {
+        title: 'Tutors',
+        icon: Users,
+        href: route('tutors.index'),
+        active: route().current('tutors.*'),
+        permission: 'manage tutors'
+    },
+    {
+        title: 'Edit Institution',
+        icon: Settings,
+        href: route('institution.edit'),
+        active: route().current('institution.edit'),
+        permission: 'manage institution'
+    },
+    {
+        title: 'Education History',
+        icon: Users,
+        href: route('education.index'),
+        active: route().current('education.*'),
+        permission: 'manage education'
+    },
+    {
+        title: 'Request Assistance',
+        icon: Users,
+        href: route('assistance.index'),
+        active: route().current('assistance.*'),
+        permission: 'request assistance'
+    },
+    {
+        title: 'Approve Companies',
+        icon: Users,
+        href: route('companies.index'),
+        active: route().current('companies.*'),
+        permission: 'approve companies'
+    },
+    {
+        title: 'Search Graduates',
+        icon: Users,
+        href: route('graduates.search'),
+        active: route().current('graduates.search'),
+        permission: 'view graduates'
     },
     {
         title: 'Settings',
@@ -58,6 +157,18 @@ const filteredMenuItems = computed(() => {
                             <span class="truncate font-semibold">Starter Kit</span>
                             <span class="truncate text-xs">Laravel + Vue</span>
                         </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <SidebarMenuButton>
+                                    <Bell />
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent class="w-56" align="end" side="top">
+                                <DropdownMenuItem v-for="notification in notifications" :key="notification.id">
+                                    {{ notification.data.job_title }}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>

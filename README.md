@@ -366,6 +366,24 @@ PERMISSION_CACHE_EXPIRATION_TIME=3600
 - [Shadcn/Vue Documentation](https://www.shadcn-vue.com/)
 - [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission)
 
+## 🚀 Deployment
+
+To deploy the application, you can use the `deploy.sh` script.
+
+```bash
+./deploy.sh
+```
+
+This script will:
+
+1.  Enter maintenance mode.
+2.  Pull the latest changes from the `main` branch.
+3.  Install Composer dependencies.
+4.  Run database migrations.
+5.  Clear and create caches.
+6.  Build frontend assets.
+7.  Exit maintenance mode.
+
 ## 🤝 Contributing
 
 1. Fork the repository
