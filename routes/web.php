@@ -82,6 +82,10 @@ Route::middleware('auth')->group(function () {
 
     // Graduate Search
     Route::get('graduates/search', [\App\Http\Controllers\GraduateSearchController::class, 'index'])->name('graduates.search');
+
+    // Announcements
+    Route::get('announcements/create', [\App\Http\Controllers\AnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('announcements', [\App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
 });
 
 Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');

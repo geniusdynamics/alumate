@@ -39,7 +39,11 @@ watch([search, institution, course, year], ([value, value2, value3, value4]) => 
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
-                        <!-- Graduate search results will go here -->
+                        <div v-for="graduate in graduates.data" :key="graduate.id" class="mb-4 p-4 border rounded">
+                            <h3 class="text-lg font-semibold">{{ graduate.name }}</h3>
+                            <p>{{ graduate.email }}</p>
+                            <p>{{ graduate.tenant.name }} - {{ graduate.course.name }} ({{ graduate.graduation_year }})</p>
+                        </div>
                     </div>
                 </div>
             </div>

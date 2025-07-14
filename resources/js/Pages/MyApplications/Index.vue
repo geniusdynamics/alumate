@@ -21,7 +21,10 @@ defineProps({
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
-                        <!-- Application listings will go here -->
+                        <div v-for="application in applications" :key="application.id" class="mb-4 p-4 border rounded">
+                            <h3 class="text-lg font-semibold">{{ application.job.title }}</h3>
+                            <p>Status: {{ application.status }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -6,6 +6,8 @@ const form = useForm({
     description: '',
     location: '',
     salary: '',
+    curated_courses: '',
+    external_application_link: '',
 });
 
 const submit = () => {
@@ -39,6 +41,14 @@ const submit = () => {
             <div>
                 <label for="salary">Salary</label>
                 <input id="salary" type="text" v-model="form.salary" />
+            </div>
+            <div>
+                <label for="curated_courses">Curated Courses (JSON)</label>
+                <textarea id="curated_courses" v-model="form.curated_courses"></textarea>
+            </div>
+            <div>
+                <label for="external_application_link">External Application Link</label>
+                <input id="external_application_link" type="url" v-model="form.external_application_link" />
             </div>
 
             <div class="flex items-center gap-4">
