@@ -14,8 +14,8 @@ const institution = ref(props.filters.institution);
 const course = ref(props.filters.course);
 const year = ref(props.filters.year);
 
-watch([search, institution, course, year], ([value, value2, value3, value4]) => {
-    Inertia.get(route('graduates.search'), { search: value, institution: value2, course: value3, year: value4 }, { preserveState: true, replace: true });
+watch([search, institution, course, year, employment_status], ([value, value2, value3, value4, value5]) => {
+    Inertia.get(route('graduates.search'), { search: value, institution: value2, course: value3, year: value4, employment_status: value5 }, { preserveState: true, replace: true });
 });
 </script>
 
@@ -36,6 +36,12 @@ watch([search, institution, course, year], ([value, value2, value3, value4]) => 
                     <input type="text" v-model="institution" placeholder="Institution..." class="border px-2 py-1 rounded">
                     <input type="text" v-model="course" placeholder="Course..." class="border px-2 py-1 rounded">
                     <input type="number" v-model="year" placeholder="Year..." class="border px-2 py-1 rounded">
+                    <select v-model="employment_status" class="border px-2 py-1 rounded">
+                        <option value="">All</option>
+                        <option value="employed">Employed</option>
+                        <option value="unemployed">Unemployed</option>
+                        <option value="self-employed">Self-employed</option>
+                    </select>
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">

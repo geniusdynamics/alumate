@@ -17,7 +17,7 @@ class NotificationTest extends TestCase
 
     protected $tenant;
     protected $graduateUser;
-    protected_data $graduate;
+    protected $graduate;
     protected $employerUser;
     protected $employer;
     protected $job;

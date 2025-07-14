@@ -26,6 +26,9 @@ class GraduateSearchController extends Controller
             ->when($request->year, function ($query, $year) {
                 $query->where('graduation_year', $year);
             })
+            ->when($request->employment_status, function ($query, $employment_status) {
+                $query->where('employment_status', $employment_status);
+            })
             ->paginate(10);
 
         return Inertia::render('Graduates/Search', [
