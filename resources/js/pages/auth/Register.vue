@@ -1,9 +1,99 @@
-<script setup lang="ts">
-import AuthForm from '@/components/auth/AuthForm.vue';
-import FormField from '@/components/forms/FormField.vue';
-import TextLink from '@/components/common/TextLink.vue';
-import AuthBase from '@/layouts/AuthLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+<template>
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+        <div>
+            <Link href="/" class="text-2xl font-bold text-gray-900">
+                {{ $page.props.app?.name || 'Laravel' }}
+            </Link>
+        </div>
+
+        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <Head title="Register" />
+
+            <form @submit.prevent="submit">
+                <div>
+                    <label for="name" class="block font-medium text-sm text-gray-700">Name</label>
+                    <input
+                        id="name"
+                        v-model="form.name"
+                        type="text"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        required
+                        autofocus
+                        autocomplete="name"
+                    />
+                    <div v-if="form.errors.name" class="text-sm text-red-600 mt-1">
+                        {{ form.errors.name }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label for="email" class="block font-medium text-sm text-gray-700">Email</label>
+                    <input
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        required
+                        autocomplete="username"
+                    />
+                    <div v-if="form.errors.email" class="text-sm text-red-600 mt-1">
+                        {{ form.errors.email }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label for="password" class="block font-medium text-sm text-gray-700">Password</label>
+                    <input
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        required
+                        autocomplete="new-password"
+                    />
+                    <div v-if="form.errors.password" class="text-sm text-red-600 mt-1">
+                        {{ form.errors.password }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <label for="password_confirmation" class="block font-medium text-sm text-gray-700">Confirm Password</label>
+                    <input
+                        id="password_confirmation"
+                        v-model="form.password_confirmation"
+                        type="password"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        required
+                        autocomplete="new-password"
+                    />
+                    <div v-if="form.errors.password_confirmation" class="text-sm text-red-600 mt-1">
+                        {{ form.errors.password_confirmation }}
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end mt-4">
+                    <Link
+                        :href="route('login')"
+                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Already registered?
+                    </Link>
+
+                    <button
+                        :class="{ 'opacity-25': form.processing }"
+                        :disabled="form.processing"
+                        class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 ms-4"
+                    >
+                        Register
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
     name: '',
@@ -18,74 +108,3 @@ const submit = () => {
     });
 };
 </script>
-
-<template>
-    <AuthBase title="Create an account" description="Enter your details below to create your account">
-        <Head title="Register" />
-
-        <AuthForm
-            submit-text="Create account"
-            :is-loading="form.processing"
-            :disabled="form.processing"
-            @submit="submit"
-        >
-            <template #fields>
-                <FormField
-                    id="name"
-                    label="Name"
-                    type="text"
-                    required
-                    autofocus
-                    :tabindex="1"
-                    autocomplete="name"
-                    placeholder="Full name"
-                    v-model="form.name"
-                    :error="form.errors.name"
-                />
-
-                <FormField
-                    id="email"
-                    label="Email address"
-                    type="email"
-                    required
-                    :tabindex="2"
-                    autocomplete="email"
-                    placeholder="email@example.com"
-                    v-model="form.email"
-                    :error="form.errors.email"
-                />
-
-                <FormField
-                    id="password"
-                    label="Password"
-                    type="password"
-                    required
-                    :tabindex="3"
-                    autocomplete="new-password"
-                    placeholder="Password"
-                    v-model="form.password"
-                    :error="form.errors.password"
-                />
-
-                <FormField
-                    id="password_confirmation"
-                    label="Confirm password"
-                    type="password"
-                    required
-                    :tabindex="4"
-                    autocomplete="new-password"
-                    placeholder="Confirm password"
-                    v-model="form.password_confirmation"
-                    :error="form.errors.password_confirmation"
-                />
-            </template>
-            
-            <template #footer>
-                <div class="text-center text-sm text-muted-foreground">
-                    Already have an account?
-                    <TextLink :href="route('login')" class="underline underline-offset-4" :tabindex="6">Log in</TextLink>
-                </div>
-            </template>
-        </AuthForm>
-    </AuthBase>
-</template>

@@ -1,154 +1,138 @@
-<script setup lang="ts">
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
-import type { BreadcrumbItemType } from '@/types';
-import { Link, usePage } from '@inertiajs/vue3';
-import { Settings, Shield, Users } from 'lucide-vue-next';
+<template>
+    <div class="min-h-screen bg-gray-100">
+        <Head title="Dashboard" />
+        
+        <!-- Navigation -->
+        <nav class="bg-white shadow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-xl font-semibold text-gray-900">
+                            {{ $page.props.app?.name || 'Laravel' }}
+                        </h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-700">{{ $page.props.auth.user.name }}</span>
+                        <Link
+                            :href="route('logout')"
+                            method="post"
+                            as="button"
+                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                        >
+                            Log Out
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6 text-gray-900">
+                        <h2 class="text-2xl font-bold mb-4">
+                            Welcome to your Dashboard!
+                        </h2>
+                        
+                        <div class="mb-6">
+                            <p class="text-lg text-gray-600 mb-2">
+                                Hello, {{ $page.props.auth.user.name }}!
+                            </p>
+                            <p class="text-gray-500">
+                                Email: {{ $page.props.auth.user.email }}
+                            </p>
+                        </div>
+
+                        <!-- Role-based content -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Super Admin Features -->
+                            <div v-if="hasRole('super-admin')" class="bg-blue-50 p-6 rounded-lg">
+                                <h3 class="text-lg font-semibold text-blue-900 mb-3">Super Admin Actions</h3>
+                                <div class="space-y-3">
+                                    <Link
+                                        :href="route('institutions.index')"
+                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                    >
+                                        Manage Institutions
+                                    </Link>
+                                    <Link
+                                        :href="route('users.index')"
+                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                    >
+                                        Manage Users
+                                    </Link>
+                                    <Link
+                                        href="/analytics"
+                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                    >
+                                        View Analytics
+                                    </Link>
+                                    <Link
+                                        href="/companies"
+                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                    >
+                                        Approve Employers
+                                    </Link>
+                                </div>
+                            </div>
+
+                            <!-- Institution Admin Features -->
+                            <div v-if="hasRole('institution-admin')" class="bg-green-50 p-6 rounded-lg">
+                                <h3 class="text-lg font-semibold text-green-900 mb-3">Institution Admin</h3>
+                                <ul class="space-y-2 text-green-700">
+                                    <li>• Manage Courses</li>
+                                    <li>• Manage Graduates</li>
+                                    <li>• Import Data</li>
+                                    <li>• View Reports</li>
+                                </ul>
+                            </div>
+
+                            <!-- Employer Features -->
+                            <div v-if="hasRole('employer')" class="bg-purple-50 p-6 rounded-lg">
+                                <h3 class="text-lg font-semibold text-purple-900 mb-3">Employer</h3>
+                                <ul class="space-y-2 text-purple-700">
+                                    <li>• Post Job Openings</li>
+                                    <li>• View Applications</li>
+                                    <li>• Search Graduates</li>
+                                    <li>• Manage Company Profile</li>
+                                </ul>
+                            </div>
+
+                            <!-- Graduate Features -->
+                            <div v-if="hasRole('graduate')" class="bg-orange-50 p-6 rounded-lg">
+                                <h3 class="text-lg font-semibold text-orange-900 mb-3">Graduate</h3>
+                                <ul class="space-y-2 text-orange-700">
+                                    <li>• Browse Job Openings</li>
+                                    <li>• Apply for Jobs</li>
+                                    <li>• Update Profile</li>
+                                    <li>• View Classmates</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                            <p class="text-gray-600">
+                                🎉 <strong>Congratulations!</strong> Your Laravel + Vue.js application is now running successfully with multi-tenancy, role-based authentication, and a complete user management system.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const page = usePage();
-const user = computed(() => page.props.auth?.user);
-
-const breadcrumbs: BreadcrumbItemType[] = [{ title: 'Dashboard' }];
-
-const quickActions = [
-    {
-        title: 'Manage Users',
-        description: 'View and manage system users',
-        icon: Users,
-        href: route('users.index'),
-        permission: 'view users',
-    },
-    {
-        title: 'Manage Roles',
-        description: 'Configure roles and permissions',
-        icon: Shield,
-        href: route('roles.index'),
-        permission: 'view roles',
-    },
-    {
-        title: 'Settings',
-        description: 'Update your profile and preferences',
-        icon: Settings,
-        href: route('settings.profile'),
-        permission: null,
-    },
-];
-
-const canAccess = (permission: string | null) => {
-    if (!permission) return true;
-    return user.value?.permissions?.includes(permission) || user.value?.roles?.some((role: any) => role.permissions?.includes(permission));
-};
-
-const availableActions = computed(() => {
-    return quickActions.filter((action) => canAccess(action.permission));
+const props = defineProps({
+    auth: Object,
 });
+
+// Helper function to check user roles
+const hasRole = (role) => {
+    return props.auth?.user?.roles?.some(userRole => userRole.name === role) || false;
+};
 </script>
-
-<template>
-    <DefaultLayout title="Dashboard" :breadcrumbs="breadcrumbs">
-        <div class="space-y-6">
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
-                <p class="text-muted-foreground mt-2">Welcome back, {{ user?.name }}! Here's what's happening.</p>
-            </div>
-
-            <!-- Quick Stats -->
-            <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <Card>
-                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Welcome Back</CardTitle>
-                        <Users class="text-muted-foreground h-4 w-4" />
-                    </CardHeader>
-                    <CardContent>
-                        <div class="text-2xl font-bold">{{ user?.name }}</div>
-                        <p class="text-muted-foreground text-xs">
-                            {{ user?.email }}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle class="text-sm font-medium">Your Roles</CardTitle>
-                        <Shield class="text-muted-foreground h-4 w-4" />
-                    </CardHeader>
-                    <CardContent>
-                        <div class="text-2xl font-bold">{{ user?.roles?.length || 0 }}</div>
-                        <p class="text-muted-foreground text-xs">Active roles assigned</p>
-                    </CardContent>
-                </Card>
-            </div>
-
-            <!-- Quick Actions -->
-            <Card>
-                <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription> Common tasks and shortcuts to get you started. </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        <div
-                            v-for="action in availableActions"
-                            :key="action.title"
-                            class="hover:bg-accent hover:text-accent-foreground flex items-center space-x-4 rounded-lg border p-4 transition-colors"
-                        >
-                            <component :is="action.icon" class="text-primary h-8 w-8" />
-                            <div class="flex-1 space-y-1">
-                                <h4 class="text-sm leading-none font-medium">{{ action.title }}</h4>
-                                <p class="text-muted-foreground text-sm">{{ action.description }}</p>
-                            </div>
-                            <Button :as="Link" :href="action.href" size="sm" variant="outline"> Go </Button>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <!-- Getting Started -->
-            <Card>
-                <CardHeader>
-                    <CardTitle>Laravel + Vue.js Starter Kit</CardTitle>
-                    <CardDescription> This application is built with modern technologies and best practices. </CardDescription>
-                </CardHeader>
-                <CardContent class="space-y-4">
-                    <p class="text-muted-foreground text-sm">Features included in this starter kit:</p>
-                    <div class="grid gap-2 md:grid-cols-2">
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">Laravel 11 with modern PHP features</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">Vue 3 with Composition API and TypeScript</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">Inertia.js for seamless SPA experience</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">Tailwind CSS for beautiful design</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">Shadcn/ui components</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">Spatie Laravel Permission for roles</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">DataTable component with pagination</span>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
-                            <span class="text-sm">Organized component structure</span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
-        </div>
-    </DefaultLayout>
-</template>

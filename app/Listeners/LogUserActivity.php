@@ -17,6 +17,9 @@ class LogUserActivity
         ActivityLog::create([
             'user_id' => $event->user->id,
             'activity' => 'Logged in',
+            'description' => 'User logged into the system',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
         ]);
     }
 
@@ -28,6 +31,9 @@ class LogUserActivity
         ActivityLog::create([
             'user_id' => $event->user->id,
             'activity' => 'Logged out',
+            'description' => 'User logged out of the system',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
         ]);
     }
 
@@ -39,6 +45,9 @@ class LogUserActivity
         ActivityLog::create([
             'user_id' => $event->user->id,
             'activity' => 'Registered',
+            'description' => 'New user registered',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
         ]);
     }
 

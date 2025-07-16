@@ -1,105 +1,105 @@
-<script setup lang="ts">
-import { Head, Link, router } from '@inertiajs/vue3';
-
-import DataTable, { type Column, type PaginationData } from '@/components/data/DataTable.vue';
-import { useDataTable } from '@/composables/useDataTable';
-import type { BreadcrumbItemType, Role, User } from '@/types/index.d';
-
-import { Edit, Eye, MoreHorizontal, Plus, Trash } from 'lucide-vue-next';
-
-interface Props {
-    users: User[];
-    pagination: PaginationData;
-    filters: {
-        search?: string;
-        sort_column?: string;
-        sort_direction?: string;
-    };
-}
-
-const props = defineProps<Props>();
-
-const columns: Column[] = [
-    {
-        key: 'name',
-        label: 'Name',
-        sortable: true,
-        searchable: true,
-    },
-    {
-        key: 'email',
-        label: 'Email',
-        sortable: true,
-        searchable: true,
-    },
-    {
-        key: 'roles',
-        label: 'Roles',
-        sortable: false,
-        render: (value: Role[]) => value.map((role) => role.name).join(', '),
-    },
-    {
-        key: 'created_at',
-        label: 'Created',
-        sortable: true,
-        render: (value: string) => new Date(value).toLocaleDateString(),
-    },
-    {
-        key: 'actions',
-        label: 'Actions',
-        sortable: false,
-    },
-];
-
-const { loading, handleSearch, handleSort, handlePaginate, handlePerPageChange } = useDataTable();
-
-const deleteUser = (user: User) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-        router.delete(route('users.destroy', user.id), {
-            preserveScroll: true,
-        });
-    }
-};
-
-const breadcrumbs: BreadcrumbItemType[] = [{ title: 'Dashboard', href: route('dashboard') }, { title: 'Users' }];
-</script>
-
 <template>
-    <Head title="Users" />
-    <DefaultLayout title="Users" :breadcrumbs="breadcrumbs">
-        <div class="space-y-4">
-            <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold">Users</h1>
-                <Button as="a" :href="route('users.create')">
-                    <Plus class="mr-2 h-4 w-4" />
-                    Add User
-                </Button>
-            </div>
-
-            <DataTable
-                :data="users"
-                :columns="columns"
-                :pagination="pagination"
-                :loading="loading"
-                :filters="filters"
-                title="All Users"
-                @search="(query) => handleSearch(query, { ...props.filters }, route('users.index'))"
-                @sort="(column, direction) => handleSort(column, direction, { ...props.filters }, route('users.index'))"
-                @paginate="(page) => handlePaginate(page, { ...props.filters }, route('users.index'))"
-                @per-page-change="(perPage) => handlePerPageChange(perPage, { ...props.filters }, route('users.index'))"
-            >
-                <template #cell.roles="{ row }">
-                    <div class="flex flex-wrap gap-1">
-                        <Badge v-for="role in row.roles" :key="role.id" variant="secondary" class="capitalize">
-                            {{ role.name }}
-                        </Badge>
+    <div class="min-h-screen bg-gray-100">
+        <Head title="Users" />
+        
+        <!-- Navigation -->
+        <nav class="bg-white shadow">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center space-x-8">
+                        <Link href="/dashboard" class="text-xl font-semibold text-gray-900">
+                            {{ $page.props.app?.name || 'Laravel' }}
+                        </Link>
+                        <div class="hidden md:flex space-x-4">
+                            <Link href="/dashboard" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                                Dashboard
+                            </Link>
+                            <Link href="/institutions" class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                                Institutions
+                            </Link>
+                            <Link href="/users" class="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">
+                                Users
+                            </Link>
+                        </div>
                     </div>
-                </template>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-gray-700">{{ $page.props.auth.user.name }}</span>
+                        <Link
+                            :href="route('logout')"
+                            method="post"
+                            as="button"
+                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                        >
+                            Log Out
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </nav>
 
-                <template #cell.actions="{ row }">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger as-child>
-                            <Button variant="ghost" size="icon" class="h-8 w-8">
+        <!-- Main Content -->
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-bold text-gray-900">
+                                User Management
+                            </h2>
+                            <Link
+                                :href="route('users.create')"
+                                class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                            >
+                                Add User
+                            </Link>
+                        </div>
+
+                        <!-- Search and Filters -->
+                        <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                            <div class="flex-1">
+                                <input
+                                    v-model="searchQuery"
+                                    type="text"
+                                    placeholder="Search users..."
+                                    class="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    @input="search"
+                                />
+                            </div>
+                            <div class="flex space-x-2">
+                                <select
+                                    v-model="sortColumn"
+                                    class="border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    @change="sort"
+                                >
+                                    <option value="name">Sort by Name</option>
+                                    <option value="email">Sort by Email</option>
+                                    <option value="created_at">Sort by Date</option>
+                                </select>
+                                <button
+                                    @click="toggleSortDirection"
+                                    class="px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
+                                >
+                                    {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Cards -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                            <div class="bg-blue-50 p-6 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <span class="text-white font-bold">{{ users.length }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <p class="text-sm font-medium text-blue-600">Total Users</p>
+                                        <p class="text-2xl font-bold text-blue-900">{{ users.length }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
                                 <MoreHorizontal class="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>

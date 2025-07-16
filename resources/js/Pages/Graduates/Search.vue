@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     graduates: Object,
@@ -13,9 +13,10 @@ const search = ref(props.filters.search);
 const institution = ref(props.filters.institution);
 const course = ref(props.filters.course);
 const year = ref(props.filters.year);
+const employment_status = ref(props.filters.employment_status);
 
 watch([search, institution, course, year, employment_status], ([value, value2, value3, value4, value5]) => {
-    Inertia.get(route('graduates.search'), { search: value, institution: value2, course: value3, year: value4, employment_status: value5 }, { preserveState: true, replace: true });
+    router.get(route('graduates.search'), { search: value, institution: value2, course: value3, year: value4, employment_status: value5 }, { preserveState: true, replace: true });
 });
 </script>
 

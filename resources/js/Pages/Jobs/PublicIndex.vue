@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
-import { Inertia } from '@inertiajs/inertia';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
     jobs: Object,
@@ -13,7 +13,7 @@ const search = ref(props.filters.search);
 const location = ref(props.filters.location);
 
 watch([search, location], ([value, value2]) => {
-    Inertia.get(route('jobs.public.index'), { search: value, location: value2 }, { preserveState: true, replace: true });
+    router.get(route('jobs.public.index'), { search: value, location: value2 }, { preserveState: true, replace: true });
 });
 
 const form = useForm({
