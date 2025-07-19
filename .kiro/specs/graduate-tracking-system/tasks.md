@@ -46,7 +46,6 @@
 
 - [x] 5. Graduate Import/Export System Enhancement
 
-
   - Update Excel template to include all new graduate fields (employment, skills, certifications)
   - Enhance bulk import functionality with comprehensive validation and detailed error reporting
   - Build import preview interface showing data validation results and conflicts
@@ -55,7 +54,9 @@
   - Add import history tracking and rollback functionality for data integrity
   - _Requirements: 3.2, 3.4, 3.5, 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 6. Course Management System Enhancement
+- [x] 6. Course Management System Enhancement
+
+
   - Enhance course CRUD interface to include all new fields (skills, career paths, statistics)
   - Implement course analytics dashboard with employment rates and salary data
   - Build course-graduate outcome tracking with trend analysis

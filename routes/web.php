@@ -25,6 +25,9 @@ Route::middleware('auth')->group(function () {
 
     // Course Management
     Route::resource('courses', \App\Http\Controllers\CourseController::class);
+    Route::get('courses/{course}/analytics', [\App\Http\Controllers\CourseController::class, 'analytics'])->name('courses.analytics');
+    Route::post('courses/{course}/statistics', [\App\Http\Controllers\CourseController::class, 'updateStatistics'])->name('courses.statistics.update');
+    Route::get('courses/export', [\App\Http\Controllers\CourseController::class, 'export'])->name('courses.export');
 
     // Graduate Management
     Route::resource('graduates', \App\Http\Controllers\GraduateController::class);
