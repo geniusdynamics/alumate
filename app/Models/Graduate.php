@@ -3,13 +3,14 @@
 namespace App\Models;
 
 use App\Traits\HasPreviousInstitution;
+use App\Traits\HasGraduateAuditLog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Graduate extends Model
 {
-    use HasFactory, HasPreviousInstitution;
+    use HasFactory, HasPreviousInstitution, HasGraduateAuditLog;
 
     protected $fillable = [
         'tenant_id',
@@ -75,6 +76,11 @@ class Graduate extends Model
         return $this->hasOne(GraduateProfile::class);
     }
 
+    public function auditLogs()
+    {
+        return $this->hasMany(GraduateAuditLog::class)->orderBy('created_at', 'desc');
+    }
+
     // Accessors & Mutators
     protected function isProfileComplete(): Attribute
     {
@@ -121,15 +127,21 @@ class Graduate extends Model
     {
         $requiredFields = [
             'name', 'email', 'phone', 'address', 'graduation_year', 
-            'course_id', 'employment_status'
+            'course_id', 'employment_status', 'gpa', 'skills'
         ];
         
         $completedFields = [];
         $totalFields = count($requiredFields);
         
         foreach ($requiredFields as $field) {
-            if (!empty($this->$field)) {
-                $completedFields[] = $field;
+            if ($field === 'skills') {
+                if (!empty($this->skills) && is_array($this->skills) && count($this->skills) > 0) {
+                    $completedFields[] = $field;
+                }
+            } else {
+                if (!empty($this->$field)) {
+                    $completedFields[] = $field;
+                }
             }
         }
         
@@ -138,6 +150,20 @@ class Graduate extends Model
             $completedFields[] = 'bio';
             $totalFields++;
         }
+        
+        // Check employment details if employed
+        if ($this->employment_status === 'employed' || $this->employment_status === 'self_employed') {
+            if (!empty($this->current_job_title)) {
+                $completedFields[] = 'job_title';
+            }
+            $totalFields++;
+        }
+        
+        // Check certifications
+        if (!empty($this->certifications) && is_array($this->certifications) && count($this->certifications) > 0) {
+            $completedFields[] = 'certifications';
+        }
+        $totalFields++;
         
         $completionPercentage = (count($completedFields) / $totalFields) * 100;
         
@@ -152,6 +178,8 @@ class Graduate extends Model
 
     public function updateEmploymentStatus($status, $jobDetails = [])
     {
+        $oldStatus = $this->employment_status;
+        
         $updateData = [
             'employment_status' => $status,
             'last_employment_update' => now(),
@@ -175,5 +203,8 @@ class Graduate extends Model
         
         $this->update($updateData);
         $this->updateProfileCompletion();
+        
+        // Log the employment status change
+        $this->logEmploymentUpdate($oldStatus, $status, $jobDetails);
     }
 }

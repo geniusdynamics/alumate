@@ -3,17 +3,6 @@
 ## Phase 1: Core Infrastructure and Models
 
 - [x] 1. Enhanced Database Schema and Models
-
-
-
-
-
-
-
-
-
-
-
   - Create comprehensive migration files for all entities (graduates, courses, jobs, applications, employers)
   - Implement Graduate model with profile completion tracking and employment status
   - Create Course model with institution relationships and skill mappings
@@ -23,7 +12,8 @@
   - Add proper foreign key relationships and database constraints
   - _Requirements: 1.1, 1.2, 3.1, 4.1, 9.1_
 
-- [ ] 2. Advanced User Management System
+- [x] 2. Advanced User Management System
+
   - Extend User model with institution relationships and profile data
   - Implement role-based dashboard routing with proper middleware
   - Create user factory and seeder for comprehensive test data
@@ -32,7 +22,8 @@
   - Add user activity logging and audit trail functionality
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [ ] 3. Multi-Tenant Enhancement
+- [x] 3. Multi-Tenant Enhancement
+
   - Verify tenant isolation and cross-tenant access prevention
   - Implement tenant-specific database seeding and migration
   - Create tenant management interface for Super Admins
@@ -42,58 +33,64 @@
 
 ## Phase 2: Graduate Management System
 
-- [ ] 4. Graduate Profile Management
-  - Create comprehensive graduate profile form with validation
-  - Implement profile completion tracking with progress indicators
-  - Build graduate search and filtering functionality
-  - Create graduate profile view with academic and employment history
-  - Add privacy controls for profile visibility settings
-  - Implement graduate profile editing with audit trail
+- [x] 4. Graduate Profile Management Enhancement
+
+
+  - Enhance graduate profile form to include all new fields (employment status, skills, certifications, privacy settings)
+  - Implement profile completion tracking with progress indicators and visual feedback
+  - Add employment status update functionality with job details capture
+  - Enhance graduate search and filtering with advanced criteria (skills, employment status, graduation year)
+  - Create comprehensive graduate profile view showing academic and employment history
+  - Add privacy controls for profile visibility settings and employer contact preferences
+  - Implement graduate profile editing with audit trail and change history
   - _Requirements: 3.1, 3.3, 3.6, 8.1, 8.2, 8.5_
 
-- [ ] 5. Graduate Import/Export System
-  - Create Excel template for graduate data import
-  - Implement bulk import functionality with validation and error reporting
-  - Build import preview and confirmation interface
-  - Create export functionality for graduate data
-  - Add duplicate detection and merging capabilities
-  - Implement import history and rollback functionality
+- [-] 5. Graduate Import/Export System Enhancement
+
+  - Update Excel template to include all new graduate fields (employment, skills, certifications)
+  - Enhance bulk import functionality with comprehensive validation and detailed error reporting
+  - Build import preview interface showing data validation results and conflicts
+  - Implement duplicate detection and merging capabilities with manual review
+  - Create comprehensive export functionality with filtering and custom field selection
+  - Add import history tracking and rollback functionality for data integrity
   - _Requirements: 3.2, 3.4, 3.5, 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 6. Course Management System
-  - Create course CRUD interface for Institution Admins
-  - Implement course-graduate relationship management
-  - Build course analytics and graduate outcome tracking
-  - Create course import/export functionality
-  - Add skill mapping and job matching capabilities
+- [ ] 6. Course Management System Enhancement
+  - Enhance course CRUD interface to include all new fields (skills, career paths, statistics)
+  - Implement course analytics dashboard with employment rates and salary data
+  - Build course-graduate outcome tracking with trend analysis
+  - Create course import/export functionality with skill mapping
+  - Add intelligent job-course matching based on skills and career paths
+  - Implement course statistics auto-update when graduate employment status changes
   - _Requirements: 3.1, 3.6, 5.1, 5.2, 7.1, 7.5_
 
 ## Phase 3: Job Management and Application System
 
-- [ ] 7. Employer Registration and Verification
-  - Create employer registration form with company details
-  - Implement employer verification workflow for Super Admins
-  - Build employer profile management interface
-  - Create employer approval/rejection system with notifications
-  - Add employer verification status tracking and appeals process
+- [ ] 7. Employer Registration and Verification Enhancement
+  - Enhance employer registration form with comprehensive company details and verification documents
+  - Implement advanced employer verification workflow for Super Admins with document review
+  - Build comprehensive employer profile management interface with all new fields
+  - Create employer approval/rejection system with detailed notifications and feedback
+  - Add employer verification status tracking, appeals process, and resubmission workflow
+  - Implement employer subscription management and job posting limits
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 8. Job Posting System
-  - Create job posting form with course/skill matching
-  - Implement job approval workflow for unverified employers
-  - Build job management interface for employers
-  - Create job search and filtering for graduates
-  - Add job recommendation system based on graduate profiles
-  - Implement job status management (active, filled, expired)
+- [ ] 8. Job Posting System Enhancement
+  - Enhance job posting form with all new fields (skills, experience levels, salary ranges, benefits)
+  - Implement comprehensive job approval workflow for unverified employers with admin review
+  - Build advanced job management interface for employers with analytics and application tracking
+  - Create sophisticated job search and filtering for graduates with skill matching
+  - Add intelligent job recommendation system based on graduate profiles and course alignment
+  - Implement comprehensive job status management with automated expiry and renewal
   - _Requirements: 4.1, 4.2, 4.5, 4.6_
 
-- [ ] 9. Job Application Management
-  - Create job application form for graduates
-  - Implement application status tracking workflow
-  - Build application management interface for employers
-  - Create application notification system
-  - Add application analytics and reporting
-  - Implement hiring status updates and graduate employment tracking
+- [ ] 9. Job Application Management Enhancement
+  - Enhance job application system with resume upload, cover letters, and additional documents
+  - Implement comprehensive application status tracking workflow with interview scheduling
+  - Build advanced application management interface for employers with filtering and bulk actions
+  - Create comprehensive application notification system with real-time updates
+  - Add detailed application analytics and reporting with match scoring
+  - Implement hiring status updates with automatic graduate employment tracking and course statistics updates
   - _Requirements: 4.3, 4.4, 4.6, 8.4_
 
 ## Phase 4: Dashboard and Analytics

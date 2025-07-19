@@ -99,25 +99,15 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                                <MoreHorizontal class="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem :as="Link" :href="route('users.show', row.id)">
-                                <Eye class="mr-2 h-4 w-4" />
-                                View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem :as="Link" :href="route('users.edit', row.id)">
-                                <Edit class="mr-2 h-4 w-4" />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem @click="deleteUser(row)" class="text-destructive focus:bg-destructive/10 focus:text-destructive">
-                                <Trash class="mr-2 h-4 w-4" />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                        </div>
+                        
+                        <!-- Users Table would go here -->
+                        <div class="bg-white rounded-lg shadow">
+                            <div class="p-6">
+                                <p class="text-gray-500">User management interface will be implemented here.</p>
+                            </div>
+                        </div>
+
                 </template>
             </DataTable>
         </div>

@@ -12,21 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('job_applications', function (Blueprint $table) {
-            // Enhance status workflow management
-            $table->enum('status', [
-                'pending',
-                'reviewed',
-                'shortlisted',
-                'interview_scheduled',
-                'interviewed',
-                'reference_check',
-                'offer_made',
-                'offer_accepted',
-                'offer_declined',
-                'hired',
-                'rejected',
-                'withdrawn'
-            ])->default('pending')->change();
+            // Enhance status workflow management - PostgreSQL compatible
+            $table->string('status')->default('pending')->change();
             
             // Add status history tracking
             $table->json('status_history')->nullable()->after('status');
@@ -66,12 +53,11 @@ return new class extends Migration
             $table->integer('messages_count')->default(0)->after('matching_factors');
             $table->timestamp('last_message_at')->nullable()->after('messages_count');
             
-            // Add application source tracking
-            $table->enum('application_source', ['direct', 'recommendation', 'search', 'notification', 'referral'])
-                  ->default('direct')->after('last_message_at');
+            // Add application source tracking - PostgreSQL compatible
+            $table->string('application_source')->default('direct')->after('last_message_at');
             
-            // Add priority and flagging
-            $table->enum('priority', ['low', 'normal', 'high', 'urgent'])->default('normal')->after('application_source');
+            // Add priority and flagging - PostgreSQL compatible
+            $table->string('priority')->default('normal')->after('application_source');
             $table->boolean('is_flagged')->default(false)->after('priority');
             $table->text('flag_reason')->nullable()->after('is_flagged');
             

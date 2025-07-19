@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('graduates', \App\Http\Controllers\GraduateController::class);
     Route::get('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'create'])->name('graduates.import.create');
     Route::post('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'store'])->name('graduates.import.store');
+    Route::patch('graduates/{graduate}/employment', [\App\Http\Controllers\GraduateController::class, 'updateEmployment'])->name('graduates.employment.update');
+    Route::patch('graduates/{graduate}/privacy', [\App\Http\Controllers\GraduateController::class, 'updatePrivacySettings'])->name('graduates.privacy.update');
 
     // Job Management
     Route::resource('jobs', \App\Http\Controllers\JobController::class);
