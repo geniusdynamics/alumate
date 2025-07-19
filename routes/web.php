@@ -101,8 +101,21 @@ Route::middleware('auth')->group(function () {
     Route::post('announcements', [\App\Http\Controllers\AnnouncementController::class, 'store'])->name('announcements.store');
 });
 
+// Employer Registration (Public)
 Route::get('employer/register', [\App\Http\Controllers\EmployerController::class, 'create'])->name('employer.register');
 Route::post('employer/register', [\App\Http\Controllers\EmployerController::class, 'store']);
+
+// Employer Management (Protected)
+Route::middleware(['auth'])->group(function () {
+    Route::resource('employers', \App\Http\Controllers\EmployerController::class);
+    Route::post('employers/{employer}/verify', [\App\Http\Controllers\EmployerController::class, 'verify'])->name('employers.verify');
+    Route::post('employers/{employer}/reject', [\App\Http\Controllers\EmployerController::class, 'reject'])->name('employers.reject');
+    Route::post('employers/{employer}/suspend', [\App\Http\Controllers\EmployerController::class, 'suspend'])->name('employers.suspend');
+    Route::post('employers/{employer}/reactivate', [\App\Http\Controllers\EmployerController::class, 'reactivate'])->name('employers.reactivate');
+    Route::post('employers/{employer}/verification', [\App\Http\Controllers\EmployerController::class, 'submitVerification'])->name('employers.verification.submit');
+    Route::patch('employers/{employer}/subscription', [\App\Http\Controllers\EmployerController::class, 'updateSubscription'])->name('employers.subscription.update');
+    Route::get('employers/export', [\App\Http\Controllers\EmployerController::class, 'export'])->name('employers.export');
+});
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/auth.php';
