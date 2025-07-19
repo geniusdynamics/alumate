@@ -28,10 +28,18 @@ Route::middleware('auth')->group(function () {
 
     // Graduate Management
     Route::resource('graduates', \App\Http\Controllers\GraduateController::class);
-    Route::get('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'create'])->name('graduates.import.create');
-    Route::post('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'store'])->name('graduates.import.store');
     Route::patch('graduates/{graduate}/employment', [\App\Http\Controllers\GraduateController::class, 'updateEmployment'])->name('graduates.employment.update');
     Route::patch('graduates/{graduate}/privacy', [\App\Http\Controllers\GraduateController::class, 'updatePrivacySettings'])->name('graduates.privacy.update');
+    Route::get('graduates/export', [\App\Http\Controllers\GraduateController::class, 'export'])->name('graduates.export');
+    
+    // Graduate Import/Export System
+    Route::get('graduates/import/history', [\App\Http\Controllers\GraduateImportController::class, 'index'])->name('graduates.import.history');
+    Route::get('graduates/import/template', [\App\Http\Controllers\GraduateImportController::class, 'template'])->name('graduates.import.template');
+    Route::get('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'create'])->name('graduates.import.create');
+    Route::post('graduates/import/preview', [\App\Http\Controllers\GraduateImportController::class, 'preview'])->name('graduates.import.preview');
+    Route::post('graduates/import', [\App\Http\Controllers\GraduateImportController::class, 'store'])->name('graduates.import.store');
+    Route::get('graduates/import/{importHistory}', [\App\Http\Controllers\GraduateImportController::class, 'show'])->name('graduates.import.show');
+    Route::post('graduates/import/{importHistory}/rollback', [\App\Http\Controllers\GraduateImportController::class, 'rollback'])->name('graduates.import.rollback');
 
     // Job Management
     Route::resource('jobs', \App\Http\Controllers\JobController::class);

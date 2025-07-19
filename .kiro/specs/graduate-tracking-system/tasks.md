@@ -35,7 +35,6 @@
 
 - [x] 4. Graduate Profile Management Enhancement
 
-
   - Enhance graduate profile form to include all new fields (employment status, skills, certifications, privacy settings)
   - Implement profile completion tracking with progress indicators and visual feedback
   - Add employment status update functionality with job details capture
@@ -45,7 +44,8 @@
   - Implement graduate profile editing with audit trail and change history
   - _Requirements: 3.1, 3.3, 3.6, 8.1, 8.2, 8.5_
 
-- [-] 5. Graduate Import/Export System Enhancement
+- [x] 5. Graduate Import/Export System Enhancement
+
 
   - Update Excel template to include all new graduate fields (employment, skills, certifications)
   - Enhance bulk import functionality with comprehensive validation and detailed error reporting

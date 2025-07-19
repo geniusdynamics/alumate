@@ -96,6 +96,32 @@ const getProfileCompletionColor = (percentage) => {
     if (percentage >= 60) return 'text-yellow-600';
     return 'text-red-600';
 };
+
+const exportGraduates = () => {
+    // Build export URL with current filters
+    const params = new URLSearchParams();
+    
+    // Add current filters to export
+    if (search.value) params.append('search', search.value);
+    if (employmentStatus.value) params.append('employment_status', employmentStatus.value);
+    if (graduationYear.value) params.append('graduation_year', graduationYear.value);
+    if (graduationYearRange.value) params.append('graduation_year_range', graduationYearRange.value);
+    if (courseId.value) params.append('course_id', courseId.value);
+    if (skills.value) params.append('skills', skills.value);
+    if (gpaMin.value) params.append('gpa_min', gpaMin.value);
+    if (gpaMax.value) params.append('gpa_max', gpaMax.value);
+    if (academicStanding.value) params.append('academic_standing', academicStanding.value);
+    if (jobSearchActive.value) params.append('job_search_active', jobSearchActive.value);
+    if (profileCompletionMin.value) params.append('profile_completion_min', profileCompletionMin.value);
+    if (hasCertifications.value) params.append('has_certifications', hasCertifications.value);
+    
+    params.append('sort_by', sortBy.value);
+    params.append('sort_order', sortOrder.value);
+    params.append('format', 'csv');
+    
+    // Open export URL in new window
+    window.open(route('graduates.export') + '?' + params.toString());
+};
 </script>
 
 <template>
@@ -121,6 +147,10 @@ const getProfileCompletionColor = (percentage) => {
                               class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md">
                             Import Graduates
                         </Link>
+                        <button @click="exportGraduates" 
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md">
+                            Export Graduates
+                        </button>
                     </div>
                 </div>
 

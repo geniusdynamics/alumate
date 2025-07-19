@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Graduate;
+use App\Traits\Exportable;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class GraduateController extends Controller
 {
+    use Exportable;
     public function index(Request $request)
     {
         $query = Graduate::with('course');
@@ -303,5 +305,125 @@ class GraduateController extends Controller
             ]];
         }
         return [];
+    }
+
+    public function export(Request $request)
+    {
+        $query = Graduate::with(['course']);
+
+        // Apply same filters as index method
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('student_id', 'like', '%' . $request->search . '%')
+                  ->orWhere('current_job_title', 'like', '%' . $request->search . '%')
+                  ->orWhere('current_company', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('employment_status')) {
+            if (is_array($request->employment_status)) {
+                $query->whereIn('employment_status', $request->employment_status);
+            } else {
+                $query->where('employment_status', $request->employment_status);
+            }
+        }
+
+        if ($request->filled('graduation_year')) {
+            if (is_array($request->graduation_year)) {
+                $query->whereIn('graduation_year', $request->graduation_year);
+            } else {
+                $query->where('graduation_year', $request->graduation_year);
+            }
+        }
+
+        if ($request->filled('course_id')) {
+            if (is_array($request->course_id)) {
+                $query->whereIn('course_id', $request->course_id);
+            } else {
+                $query->where('course_id', $request->course_id);
+            }
+        }
+
+        if ($request->filled('skills')) {
+            $skills = is_array($request->skills) ? $request->skills : explode(',', $request->skills);
+            foreach ($skills as $skill) {
+                $query->whereJsonContains('skills', trim($skill));
+            }
+        }
+
+        // Apply additional filters...
+        if ($request->filled('gpa_min')) {
+            $query->where('gpa', '>=', $request->gpa_min);
+        }
+
+        if ($request->filled('gpa_max')) {
+            $query->where('gpa', '<=', $request->gpa_max);
+        }
+
+        if ($request->filled('academic_standing')) {
+            if (is_array($request->academic_standing)) {
+                $query->whereIn('academic_standing', $request->academic_standing);
+            } else {
+                $query->where('academic_standing', $request->academic_standing);
+            }
+        }
+
+        if ($request->filled('job_search_active')) {
+            $query->where('job_search_active', $request->job_search_active === 'true');
+        }
+
+        if ($request->filled('profile_completion_min')) {
+            $query->where('profile_completion_percentage', '>=', $request->profile_completion_min);
+        }
+
+        // Sorting
+        $sortBy = $request->get('sort_by', 'name');
+        $sortOrder = $request->get('sort_order', 'asc');
+        
+        $allowedSorts = ['name', 'graduation_year', 'employment_status', 'profile_completion_percentage', 'created_at'];
+        if (in_array($sortBy, $allowedSorts)) {
+            $query->orderBy($sortBy, $sortOrder);
+        }
+
+        // Define export columns
+        $columns = [
+            'id',
+            'name',
+            'email',
+            'phone',
+            'address',
+            'graduation_year',
+            'course.name as course_name',
+            'student_id',
+            'gpa',
+            'academic_standing',
+            'employment_status',
+            'current_job_title',
+            'current_company',
+            'current_salary',
+            'employment_start_date',
+            'profile_completion_percentage',
+            'allow_employer_contact',
+            'job_search_active',
+            'created_at',
+            'updated_at'
+        ];
+
+        // Custom field selection
+        if ($request->filled('export_fields')) {
+            $requestedFields = $request->export_fields;
+            $columns = array_intersect($columns, $requestedFields);
+        }
+
+        $format = $request->get('format', 'csv');
+        $filename = 'graduates_export_' . date('Y-m-d_H-i-s');
+
+        if ($format === 'json') {
+            return $this->exportToJson($query, $filename . '.json');
+        }
+
+        return $this->exportToCsv($query, $columns, $filename . '.csv');
     }
 }
