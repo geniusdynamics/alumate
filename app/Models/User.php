@@ -27,6 +27,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_suspended',
+        'suspended_at',
     ];
 
     /**
@@ -61,5 +63,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    // Relationships
+    public function graduate()
+    {
+        return $this->hasOne(Graduate::class);
+    }
+
+    public function employer()
+    {
+        return $this->hasOne(Employer::class);
+    }
+
+    public function notificationPreferences()
+    {
+        return $this->hasMany(NotificationPreference::class);
     }
 }

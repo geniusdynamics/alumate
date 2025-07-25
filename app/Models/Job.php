@@ -44,6 +44,8 @@ class Job extends Model
         'contact_person',
         'benefits',
         'company_culture',
+        'approval_notes',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -315,12 +317,20 @@ class Job extends Model
         $matchingGraduates = $this->getMatchingGraduates();
         
         foreach ($matchingGraduates as $graduate) {
-            // Here you would typically dispatch a job or send notification
-            // For now, we'll just calculate and store the match score
             $matchData = $this->calculateMatchScore($graduate);
             
-            // You could store this in a job_graduate_matches table
-            // or send notifications here
+            // Create job notification for graduate
+            $graduate->user->notifications()->create([
+                'type' => 'job_match',
+                'data' => [
+                    'job_id' => $this->id,
+                    'job_title' => $this->title,
+                    'company_name' => $this->employer->company_name,
+                    'match_score' => $matchData['score'],
+                    'match_factors' => $matchData['factors'],
+                ],
+                'read_at' => null,
+            ]);
         }
         
         return $matchingGraduates->count();
@@ -340,5 +350,203 @@ class Job extends Model
         }
         
         return now()->diffInDays($this->application_deadline, false);
+    }
+
+    public function checkAndUpdateExpiry()
+    {
+        if ($this->application_deadline && now()->isAfter($this->application_deadline) && $this->status === 'active') {
+            $this->update(['status' => 'expired']);
+            return true;
+        }
+        return false;
+    }
+
+    public function renewJob($newDeadline = null)
+    {
+        $deadline = $newDeadline ?: now()->addDays(30);
+        
+        $this->update([
+            'application_deadline' => $deadline,
+            'status' => 'active',
+        ]);
+
+        // Send to matching graduates again
+        $this->sendToGraduates();
+        
+        return $this;
+    }
+
+    public function getJobPerformanceMetrics()
+    {
+        $daysActive = max(1, $this->created_at->diffInDays(now()));
+        
+        return [
+            'views' => $this->view_count,
+            'applications' => $this->total_applications,
+            'application_rate' => $this->application_rate,
+            'viewed_applications' => $this->viewed_applications,
+            'shortlisted_applications' => $this->shortlisted_applications,
+            'days_active' => $daysActive,
+            'days_until_deadline' => $this->getDaysUntilDeadline(),
+            'avg_applications_per_day' => round($this->total_applications / $daysActive, 2),
+            'conversion_rate' => $this->total_applications > 0 
+                ? round(($this->shortlisted_applications / $this->total_applications) * 100, 2) 
+                : 0,
+            'engagement_score' => $this->calculateEngagementScore(),
+            'quality_score' => $this->calculateQualityScore(),
+        ];
+    }
+
+    public function calculateEngagementScore()
+    {
+        $viewsWeight = 0.3;
+        $applicationsWeight = 0.5;
+        $conversionWeight = 0.2;
+        
+        $normalizedViews = min(100, ($this->view_count / 100) * 100);
+        $normalizedApplications = min(100, ($this->total_applications / 20) * 100);
+        $conversionRate = $this->total_applications > 0 
+            ? ($this->shortlisted_applications / $this->total_applications) * 100 
+            : 0;
+        
+        return round(
+            ($normalizedViews * $viewsWeight) + 
+            ($normalizedApplications * $applicationsWeight) + 
+            ($conversionRate * $conversionWeight)
+        );
+    }
+
+    public function calculateQualityScore()
+    {
+        $score = 0;
+        
+        // Description quality (length and detail)
+        if (strlen($this->description) > 500) $score += 20;
+        elseif (strlen($this->description) > 200) $score += 10;
+        
+        // Salary transparency
+        if ($this->salary_min && $this->salary_max) $score += 20;
+        elseif ($this->salary_min || $this->salary_max) $score += 10;
+        
+        // Skills specification
+        if (!empty($this->required_skills) && count($this->required_skills) >= 3) $score += 15;
+        elseif (!empty($this->required_skills)) $score += 10;
+        
+        // Benefits listed
+        if (!empty($this->benefits) && count($this->benefits) >= 3) $score += 15;
+        elseif (!empty($this->benefits)) $score += 10;
+        
+        // Company culture description
+        if ($this->company_culture && strlen($this->company_culture) > 100) $score += 10;
+        
+        // Contact information
+        if ($this->contact_email || $this->contact_phone) $score += 10;
+        
+        // Application deadline set
+        if ($this->application_deadline) $score += 10;
+        
+        return min(100, $score);
+    }
+
+    public function getStatusHistory()
+    {
+        // This would require a job_status_history table to track status changes
+        // For now, return basic status info
+        return [
+            'current_status' => $this->status,
+            'created_at' => $this->created_at,
+            'approved_at' => $this->approved_at,
+            'last_updated' => $this->updated_at,
+        ];
+    }
+
+    public function scheduleAutoRenewal($days = 30)
+    {
+        if ($this->application_deadline) {
+            $newDeadline = $this->application_deadline->addDays($days);
+        } else {
+            $newDeadline = now()->addDays($days);
+        }
+        
+        $this->update([
+            'application_deadline' => $newDeadline,
+            'status' => 'active',
+        ]);
+        
+        return $this->sendToGraduates();
+    }
+
+    public function getApplicationInsights()
+    {
+        $applications = $this->applications()->with('graduate')->get();
+        
+        return [
+            'total_applications' => $applications->count(),
+            'applications_by_status' => $applications->groupBy('status')->map->count(),
+            'applications_by_course' => $applications->groupBy('graduate.course.name')->map->count(),
+            'average_gpa' => $applications->avg('graduate.gpa'),
+            'skills_coverage' => $this->getSkillsCoverage($applications),
+            'application_timeline' => $applications->groupBy(function($app) {
+                return $app->created_at->format('Y-m-d');
+            })->map->count(),
+        ];
+    }
+
+    private function getSkillsCoverage($applications)
+    {
+        if (empty($this->required_skills)) {
+            return [];
+        }
+        
+        $coverage = [];
+        foreach ($this->required_skills as $skill) {
+            $matchingApplicants = $applications->filter(function($app) use ($skill) {
+                return in_array($skill, $app->graduate->skills ?? []);
+            })->count();
+            
+            $coverage[$skill] = [
+                'applicants_with_skill' => $matchingApplicants,
+                'coverage_percentage' => $applications->count() > 0 
+                    ? round(($matchingApplicants / $applications->count()) * 100, 1) 
+                    : 0,
+            ];
+        }
+        
+        return $coverage;
+    }
+
+    public function generateJobReport()
+    {
+        return [
+            'job_details' => [
+                'title' => $this->title,
+                'status' => $this->status,
+                'created_at' => $this->created_at,
+                'deadline' => $this->application_deadline,
+            ],
+            'performance_metrics' => $this->getJobPerformanceMetrics(),
+            'application_insights' => $this->getApplicationInsights(),
+            'recommendations' => $this->getOptimizationRecommendations(),
+        ];
+    }
+
+    private function getOptimizationRecommendations()
+    {
+        $recommendations = [];
+        $metrics = $this->getJobPerformanceMetrics();
+        
+        if ($metrics['application_rate'] < 5) {
+            $recommendations[] = 'Consider improving job visibility or adjusting requirements';
+        }
+        
+        if ($metrics['conversion_rate'] < 20) {
+            $recommendations[] = 'Review application screening process or job requirements';
+        }
+        
+        if ($metrics['quality_score'] < 70) {
+            $recommendations[] = 'Enhance job description with more details and benefits';
+        }
+        
+        return $recommendations;
     }
 }

@@ -61,6 +61,10 @@ return new class extends Migration
             $table->json('benefits')->nullable()->after('contact_person');
             $table->text('company_culture')->nullable()->after('benefits');
             
+            // Add approval/rejection fields
+            $table->text('approval_notes')->nullable()->after('company_culture');
+            $table->text('rejection_reason')->nullable()->after('approval_notes');
+            
             // Add foreign key for approver
             $table->foreign('approved_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
@@ -108,7 +112,9 @@ return new class extends Migration
                 'contact_phone',
                 'contact_person',
                 'benefits',
-                'company_culture'
+                'company_culture',
+                'approval_notes',
+                'rejection_reason'
             ]);
             
             // Add back the old salary column

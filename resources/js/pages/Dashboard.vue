@@ -80,12 +80,32 @@
                             <!-- Institution Admin Features -->
                             <div v-if="hasRole('institution-admin')" class="bg-green-50 p-6 rounded-lg">
                                 <h3 class="text-lg font-semibold text-green-900 mb-3">Institution Admin</h3>
-                                <ul class="space-y-2 text-green-700">
-                                    <li>• Manage Courses</li>
-                                    <li>• Manage Graduates</li>
-                                    <li>• Import Data</li>
-                                    <li>• View Reports</li>
-                                </ul>
+                                <div class="space-y-3">
+                                    <Link
+                                        :href="route('graduates.index')"
+                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                                    >
+                                        Manage Graduates
+                                    </Link>
+                                    <Link
+                                        :href="route('courses.index')"
+                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                                    >
+                                        Manage Courses
+                                    </Link>
+                                    <Link
+                                        :href="route('institution-admin.import-export')"
+                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                                    >
+                                        Import/Export Data
+                                    </Link>
+                                    <Link
+                                        :href="route('institution-admin.analytics')"
+                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                                    >
+                                        View Analytics
+                                    </Link>
+                                </div>
                             </div>
 
                             <!-- Employer Features -->

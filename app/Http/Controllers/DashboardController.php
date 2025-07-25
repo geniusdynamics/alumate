@@ -21,6 +21,23 @@ class DashboardController extends Controller
         // Load user with roles for the frontend
         $user->load('roles');
 
+        // Redirect to role-specific dashboards
+        if ($user->hasRole('super-admin')) {
+            return redirect()->route('super-admin.dashboard');
+        }
+        
+        if ($user->hasRole('institution-admin')) {
+            return redirect()->route('institution-admin.dashboard');
+        }
+        
+        if ($user->hasRole('employer')) {
+            return redirect()->route('employer.dashboard');
+        }
+        
+        if ($user->hasRole('graduate')) {
+            return redirect()->route('graduate.dashboard');
+        }
+
         return Inertia::render('Dashboard', [
             'auth' => [
                 'user' => $user

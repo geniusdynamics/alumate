@@ -122,4 +122,20 @@ class UserController extends Controller
         return redirect()->route('users.index')
             ->with('success', 'User deleted successfully.');
     }
+
+    /**
+     * Suspend the specified user.
+     */
+    public function suspend(User $user)
+    {
+        Gate::authorize('update', $user);
+
+        $user->update([
+            'is_suspended' => true,
+            'suspended_at' => now(),
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'User suspended successfully.');
+    }
 }
