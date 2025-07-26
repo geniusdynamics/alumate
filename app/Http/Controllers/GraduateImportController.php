@@ -30,7 +30,16 @@ class GraduateImportController extends Controller
     {
         return Inertia::render('Graduates/Import', [
             'courses' => Course::all(['id', 'name']),
-            'templateUrl' => route('graduates.import.template')
+            'templateUrl' => route('graduates.import.template'),
+            'maxFileSize' => '10MB',
+            'supportedFormats' => ['xlsx', 'xls'],
+            'requiredFields' => ['name', 'email', 'graduation_year', 'course_name', 'employment_status'],
+            'optionalFields' => [
+                'phone', 'address', 'student_id', 'gpa', 'academic_standing',
+                'current_job_title', 'current_company', 'current_salary',
+                'employment_start_date', 'skills', 'certifications',
+                'allow_employer_contact', 'job_search_active'
+            ]
         ]);
     }
 
@@ -181,6 +190,8 @@ class GraduateImportController extends Controller
         $request->validate([
             'import_history_id' => 'required|exists:import_histories,id',
             'resolve_conflicts' => 'nullable|array',
+            'skip_duplicates' => 'nullable|boolean',
+            'update_existing' => 'nullable|boolean',
         ]);
 
         $importHistory = ImportHistory::findOrFail($request->import_history_id);
@@ -196,21 +207,42 @@ class GraduateImportController extends Controller
                 'started_at' => now(),
             ]);
 
-            // Process the import
-            $import = new GraduatesImport($importHistory->id);
+            // Process the import with conflict resolution options
+            $import = new GraduatesImport($importHistory->id, [
+                'skip_duplicates' => $request->boolean('skip_duplicates', true),
+                'update_existing' => $request->boolean('update_existing', false),
+                'resolve_conflicts' => $request->input('resolve_conflicts', []),
+            ]);
+            
             Excel::import($import, Storage::path($importHistory->file_path));
 
+            // Get final statistics from the import
+            $stats = $import->getImportStatistics();
+            
             $importHistory->update([
                 'status' => 'completed',
                 'completed_at' => now(),
+                'processed_rows' => $stats['processed_rows'],
+                'created_count' => $stats['created_count'],
+                'updated_count' => $stats['updated_count'],
+                'skipped_count' => $stats['skipped_count'],
+                'valid_rows' => $stats['valid_rows'],
+                'invalid_rows' => $stats['invalid_rows'],
+                'conflicts' => $stats['conflicts'],
             ]);
 
             // Clean up temporary file
             Storage::delete($importHistory->file_path);
             $importHistory->update(['file_path' => null]);
 
+            $message = "Import completed! Created: {$stats['created_count']}, Updated: {$stats['updated_count']}, Skipped: {$stats['skipped_count']}";
+            
+            if (!empty($stats['conflicts'])) {
+                $message .= " | Conflicts: " . count($stats['conflicts']);
+            }
+
             return redirect()->route('graduates.import.history')
-                ->with('success', "Import completed! Created: {$importHistory->created_count}, Skipped: {$importHistory->skipped_count}");
+                ->with('success', $message);
 
         } catch (\Exception $e) {
             $importHistory->update([

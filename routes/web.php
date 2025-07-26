@@ -25,6 +25,9 @@ Route::middleware('auth')->group(function () {
     // User Management
     Route::resource('users', UserController::class);
     Route::post('users/{user}/suspend', [UserController::class, 'suspend'])->name('users.suspend');
+    Route::post('users/{user}/unsuspend', [UserController::class, 'unsuspend'])->name('users.unsuspend');
+    Route::post('users/bulk-action', [UserController::class, 'bulkAction'])->name('users.bulk-action');
+    Route::get('users/export', [UserController::class, 'export'])->name('users.export');
 
     // Role Management
     Route::resource('roles', RoleController::class);
@@ -43,6 +46,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('graduates/{graduate}/employment', [\App\Http\Controllers\GraduateController::class, 'updateEmployment'])->name('graduates.employment.update');
     Route::patch('graduates/{graduate}/privacy', [\App\Http\Controllers\GraduateController::class, 'updatePrivacySettings'])->name('graduates.privacy.update');
     Route::get('graduates/export', [\App\Http\Controllers\GraduateController::class, 'export'])->name('graduates.export');
+    Route::get('graduates/export-fields', [\App\Http\Controllers\GraduateController::class, 'exportFields'])->name('graduates.export.fields');
     
     // Graduate Import/Export System
     Route::get('graduates/import/history', [\App\Http\Controllers\GraduateImportController::class, 'index'])->name('graduates.import.history');

@@ -20,33 +20,41 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
     use SkipsFailures;
 
     protected $importHistory;
+    protected $options;
     protected $validRows = [];
     protected $invalidRows = [];
     protected $duplicates = [];
     protected $conflicts = [];
+    protected $statistics = [
+        'processed_rows' => 0,
+        'created_count' => 0,
+        'updated_count' => 0,
+        'skipped_count' => 0,
+    ];
 
-    public function __construct($importHistoryId = null)
+    public function __construct($importHistoryId = null, array $options = [])
     {
         if ($importHistoryId) {
             $this->importHistory = ImportHistory::find($importHistoryId);
         }
+        
+        $this->options = array_merge([
+            'skip_duplicates' => true,
+            'update_existing' => false,
+            'resolve_conflicts' => [],
+        ], $options);
     }
 
     public function collection(Collection $rows)
     {
-        $processedRows = 0;
-        $createdCount = 0;
-        $updatedCount = 0;
-        $skippedCount = 0;
-
         foreach ($rows as $index => $row) {
-            $processedRows++;
+            $this->statistics['processed_rows']++;
             
             // Validate row data
             $validatedData = $this->validateRow($row->toArray(), $index);
             
             if (!$validatedData) {
-                $skippedCount++;
+                $this->statistics['skipped_count']++;
                 continue;
             }
 
@@ -54,24 +62,26 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
             $duplicate = $this->checkForDuplicates($validatedData);
             
             if ($duplicate) {
-                $this->conflicts[] = [
-                    'row' => $index + 2, // +2 because of header row and 0-based index
-                    'data' => $validatedData,
-                    'existing' => $duplicate,
-                    'conflict_type' => 'duplicate_email'
-                ];
-                $skippedCount++;
-                continue;
+                $conflictResolution = $this->resolveConflict($validatedData, $duplicate, $index);
+                
+                if ($conflictResolution['action'] === 'skip') {
+                    $this->statistics['skipped_count']++;
+                    continue;
+                } elseif ($conflictResolution['action'] === 'update') {
+                    $this->updateExistingGraduate($duplicate, $validatedData, $index);
+                    $this->statistics['updated_count']++;
+                    continue;
+                }
             }
 
             // Process skills and certifications
             $validatedData = $this->processComplexFields($validatedData);
 
-            // Create or update graduate
+            // Create new graduate
             try {
                 $graduate = Graduate::create($validatedData);
                 $graduate->updateProfileCompletion();
-                $createdCount++;
+                $this->statistics['created_count']++;
                 
                 $this->validRows[] = [
                     'row' => $index + 2,
@@ -85,23 +95,88 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
                     'data' => $validatedData,
                     'error' => $e->getMessage()
                 ];
-                $skippedCount++;
+                $this->statistics['skipped_count']++;
+            }
+        }
+    }
+
+    protected function resolveConflict(array $newData, Graduate $existing, int $index): array
+    {
+        $rowNumber = $index + 2;
+        
+        // Check if there's a specific resolution for this row
+        if (isset($this->options['resolve_conflicts'][$rowNumber])) {
+            $resolution = $this->options['resolve_conflicts'][$rowNumber];
+            return ['action' => $resolution];
+        }
+
+        // Apply global options
+        if ($this->options['update_existing']) {
+            return ['action' => 'update'];
+        }
+
+        if ($this->options['skip_duplicates']) {
+            $this->conflicts[] = [
+                'row' => $rowNumber,
+                'data' => $newData,
+                'existing' => $existing->toArray(),
+                'conflict_type' => $this->determineConflictType($newData, $existing),
+                'similarity_score' => $this->calculateSimilarity($newData, $existing->toArray()),
+            ];
+            return ['action' => 'skip'];
+        }
+
+        return ['action' => 'create'];
+    }
+
+    protected function updateExistingGraduate(Graduate $existing, array $newData, int $index): void
+    {
+        // Only update fields that have new data
+        $updateData = [];
+        
+        foreach ($newData as $key => $value) {
+            if (!empty($value) && $existing->$key !== $value) {
+                $updateData[$key] = $value;
             }
         }
 
-        // Update import history
-        if ($this->importHistory) {
-            $this->importHistory->update([
-                'processed_rows' => $processedRows,
-                'created_count' => $createdCount,
-                'updated_count' => $updatedCount,
-                'skipped_count' => $skippedCount,
-                'valid_rows' => $this->validRows,
-                'invalid_rows' => $this->invalidRows,
-                'conflicts' => $this->conflicts,
-                'status' => 'completed'
-            ]);
+        if (!empty($updateData)) {
+            $existing->update($updateData);
+            $existing->updateProfileCompletion();
         }
+
+        $this->validRows[] = [
+            'row' => $index + 2,
+            'data' => $newData,
+            'graduate_id' => $existing->id,
+            'action' => 'updated'
+        ];
+    }
+
+    protected function determineConflictType(array $newData, Graduate $existing): string
+    {
+        if ($newData['email'] === $existing->email) {
+            return 'duplicate_email';
+        }
+        
+        if (!empty($newData['student_id']) && $newData['student_id'] === $existing->student_id) {
+            return 'duplicate_student_id';
+        }
+        
+        return 'similar_record';
+    }
+
+    public function getImportStatistics(): array
+    {
+        return [
+            'processed_rows' => $this->statistics['processed_rows'],
+            'created_count' => $this->statistics['created_count'],
+            'updated_count' => $this->statistics['updated_count'],
+            'skipped_count' => $this->statistics['skipped_count'],
+            'valid_rows' => $this->validRows,
+            'invalid_rows' => $this->invalidRows,
+            'conflicts' => $this->conflicts,
+        ];
     }
 
     protected function validateRow(array $row, int $index): ?array
@@ -163,7 +238,71 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
             }
         }
 
+        // Check for potential duplicates by name and graduation year
+        $potentialDuplicates = Graduate::where('name', 'LIKE', '%' . $data['name'] . '%')
+            ->where('graduation_year', $data['graduation_year'])
+            ->get();
+
+        if ($potentialDuplicates->count() > 0) {
+            // Calculate similarity scores
+            foreach ($potentialDuplicates as $potential) {
+                $similarity = $this->calculateSimilarity($data, $potential->toArray());
+                if ($similarity > 0.8) { // 80% similarity threshold
+                    return $potential;
+                }
+            }
+        }
+
         return null;
+    }
+
+    protected function calculateSimilarity(array $newData, array $existingData): float
+    {
+        $score = 0;
+        $totalFields = 0;
+
+        // Compare name (weighted heavily)
+        if (isset($newData['name']) && isset($existingData['name'])) {
+            $nameScore = $this->stringSimilarity($newData['name'], $existingData['name']);
+            $score += $nameScore * 3; // Weight name heavily
+            $totalFields += 3;
+        }
+
+        // Compare graduation year
+        if (isset($newData['graduation_year']) && isset($existingData['graduation_year'])) {
+            $score += ($newData['graduation_year'] == $existingData['graduation_year']) ? 2 : 0;
+            $totalFields += 2;
+        }
+
+        // Compare course
+        if (isset($newData['course_id']) && isset($existingData['course_id'])) {
+            $score += ($newData['course_id'] == $existingData['course_id']) ? 1 : 0;
+            $totalFields += 1;
+        }
+
+        // Compare phone if available
+        if (!empty($newData['phone']) && !empty($existingData['phone'])) {
+            $phoneScore = $this->stringSimilarity($newData['phone'], $existingData['phone']);
+            $score += $phoneScore;
+            $totalFields += 1;
+        }
+
+        return $totalFields > 0 ? $score / $totalFields : 0;
+    }
+
+    protected function stringSimilarity(string $str1, string $str2): float
+    {
+        $str1 = strtolower(trim($str1));
+        $str2 = strtolower(trim($str2));
+        
+        if ($str1 === $str2) return 1.0;
+        
+        // Use Levenshtein distance for similarity
+        $maxLen = max(strlen($str1), strlen($str2));
+        if ($maxLen === 0) return 1.0;
+        
+        $distance = levenshtein($str1, $str2);
+        return 1 - ($distance / $maxLen);
     }
 
     protected function processComplexFields(array $data): array

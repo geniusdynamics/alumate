@@ -14,6 +14,8 @@
 
 - [x] 2. Advanced User Management System
 
+
+
   - Extend User model with institution relationships and profile data
   - Implement role-based dashboard routing with proper middleware
   - Create user factory and seeder for comprehensive test data
@@ -43,6 +45,9 @@
   - Add privacy controls for profile visibility settings and employer contact preferences
   - Implement graduate profile editing with audit trail and change history
   - _Requirements: 3.1, 3.3, 3.6, 8.1, 8.2, 8.5_
+
+
+
 
 - [x] 5. Graduate Import/Export System Enhancement
 
