@@ -261,6 +261,8 @@ const props = defineProps({
     selectedType: String,
 })
 
+const selectedType = ref(props.selectedType)
+
 const generating = ref(false)
 const showModelModal = ref(false)
 const showPredictionModal = ref(false)
@@ -350,4 +352,3 @@ const getConfidenceClass = (confidence) => {
     return classes[confidence] || classes.low
 }
 </script>
-</template>

@@ -197,6 +197,8 @@ const props = defineProps({
     selectedCategory: String,
 })
 
+const selectedCategory = ref(props.selectedCategory)
+
 const loading = ref(false)
 const calculatingKpis = ref([])
 const showDetailsModal = ref(false)
@@ -385,4 +387,3 @@ const getDetailedTrendChartOptions = () => {
     }
 }
 </script>
-</template>

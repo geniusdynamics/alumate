@@ -19,7 +19,7 @@ class SecurityMonitoring
     public function handle(Request $request, Closure $next)
     {
         // Check for malicious requests
-        if ($this->securityService->detectMaliciousRequest()) {
+        if ($this->securityService->detectMaliciousRequest($request)) {
             return response()->json(['error' => 'Request blocked for security reasons'], 403);
         }
 

@@ -168,4 +168,3 @@ watch(() => props.type, () => {
     width: 100%;
 }
 </style>
-</template>

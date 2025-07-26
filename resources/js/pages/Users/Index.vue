@@ -107,9 +107,34 @@
                                 <p class="text-gray-500">User management interface will be implemented here.</p>
                             </div>
                         </div>
-
-                </template>
-            </DataTable>
+                    </div>
+                </div>
+            </div>
         </div>
-    </DefaultLayout>
+    </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { Head, Link } from '@inertiajs/vue3'
+
+const props = defineProps({
+    users: Array
+})
+
+const searchQuery = ref('')
+const sortColumn = ref('name')
+const sortDirection = ref('asc')
+
+const search = () => {
+    // Implement search functionality
+}
+
+const sort = () => {
+    // Implement sort functionality
+}
+
+const toggleSortDirection = () => {
+    sortDirection.value = sortDirection.value === 'asc' ? 'desc' : 'asc'
+}
+</script>

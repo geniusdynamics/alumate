@@ -334,4 +334,3 @@ const getAlertTextColor = (severity) => {
     return colors[severity] || colors.info
 }
 </script>
-</template>

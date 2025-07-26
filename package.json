@@ -25,6 +25,7 @@
         "vue-tsc": "^3.0.1"
     },
     "dependencies": {
+        "@heroicons/vue": "^2.2.0",
         "@inertiajs/core": "^2.0.14",
         "@inertiajs/vue3": "^2.0.14",
         "@tailwindcss/vite": "^4.1.11",
@@ -33,9 +34,11 @@
         "@vitejs/plugin-vue": "^6.0.0",
         "@vue/server-renderer": "^3.5.17",
         "@vueuse/core": "^13.5.0",
+        "chart.js": "^4.5.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "concurrently": "^9.2.0",
+        "date-fns": "^4.1.0",
         "laravel-vite-plugin": "^2.0.0",
         "lodash-es": "^4.17.21",
         "lucide-vue-next": "^0.525.0",

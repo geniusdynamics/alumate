@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -12,14 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Add indexes for better query performance
-        Schema::table('graduates', function (Blueprint $table) {
-            $table->index(['employment_status']);
-            $table->index(['job_search_active']);
-            $table->index(['graduation_year']);
-            $table->index(['course_id', 'graduation_year']);
-            $table->index(['tenant_id', 'employment_status']);
-            $table->index(['profile_completion_percentage']);
-        });
+        // Note: graduates table indexes are handled in tenant migrations
 
         Schema::table('courses', function (Blueprint $table) {
             $table->index(['is_active']);
@@ -44,7 +38,7 @@ return new class extends Migration
             $table->index(['status']);
             $table->index(['priority']);
             $table->index(['job_id', 'status']);
-            $table->index(['graduate_id', 'status']);
+            $table->index(['user_id', 'status']);
             $table->index(['created_at']);
             $table->index(['interview_scheduled_at']);
             $table->index(['is_flagged']);
@@ -65,10 +59,7 @@ return new class extends Migration
         });
 
         // Add check constraints for data integrity
-        Schema::table('graduates', function (Blueprint $table) {
-            DB::statement('ALTER TABLE graduates ADD CONSTRAINT chk_profile_completion CHECK (profile_completion_percentage >= 0 AND profile_completion_percentage <= 100)');
-            DB::statement('ALTER TABLE graduates ADD CONSTRAINT chk_gpa CHECK (gpa >= 0 AND gpa <= 4.0)');
-        });
+        // Note: graduates table constraints are handled in tenant migrations
 
         Schema::table('jobs', function (Blueprint $table) {
             DB::statement('ALTER TABLE jobs ADD CONSTRAINT chk_salary_range CHECK (salary_min <= salary_max OR salary_min IS NULL OR salary_max IS NULL)');
@@ -93,8 +84,7 @@ return new class extends Migration
     public function down(): void
     {
         // Drop check constraints
-        DB::statement('ALTER TABLE graduates DROP CONSTRAINT IF EXISTS chk_profile_completion');
-        DB::statement('ALTER TABLE graduates DROP CONSTRAINT IF EXISTS chk_gpa');
+        // Note: graduates table constraints are handled in tenant migrations
         DB::statement('ALTER TABLE jobs DROP CONSTRAINT IF EXISTS chk_salary_range');
         DB::statement('ALTER TABLE jobs DROP CONSTRAINT IF EXISTS chk_experience_years');
         DB::statement('ALTER TABLE job_applications DROP CONSTRAINT IF EXISTS chk_employer_rating');
@@ -109,14 +99,7 @@ return new class extends Migration
         });
 
         // Drop indexes
-        Schema::table('graduates', function (Blueprint $table) {
-            $table->dropIndex(['employment_status']);
-            $table->dropIndex(['job_search_active']);
-            $table->dropIndex(['graduation_year']);
-            $table->dropIndex(['course_id', 'graduation_year']);
-            $table->dropIndex(['tenant_id', 'employment_status']);
-            $table->dropIndex(['profile_completion_percentage']);
-        });
+        // Note: graduates table indexes are handled in tenant migrations
 
         Schema::table('courses', function (Blueprint $table) {
             $table->dropIndex(['is_active']);

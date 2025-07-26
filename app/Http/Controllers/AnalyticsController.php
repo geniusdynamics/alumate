@@ -9,6 +9,8 @@ use App\Models\KpiDefinition;
 use App\Models\KpiValue;
 use App\Models\PredictionModel;
 use App\Models\Prediction;
+use App\Models\Course;
+use App\Models\Graduate;
 use App\Services\AnalyticsService;
 use App\Services\ReportBuilderService;
 use Illuminate\Http\Request;
@@ -358,3 +360,4 @@ class AnalyticsController extends Controller
             default => 'application/octet-stream',
         };
     }
+}

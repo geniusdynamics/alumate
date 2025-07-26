@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Carbon\Carbon;
 
 class Prediction extends Model
 {
@@ -142,7 +143,7 @@ class Prediction extends Model
 
     public function isExpired()
     {
-        return $this->target_date && $this->target_date->isPast();
+        return $this->target_date && Carbon::parse($this->target_date)->isPast();
     }
 
     public function getDaysUntilTarget()
@@ -151,7 +152,7 @@ class Prediction extends Model
             return null;
         }
         
-        return now()->diffInDays($this->target_date, false);
+        return now()->diffInDays(Carbon::parse($this->target_date), false);
     }
 
     public function getFeatureValue($feature, $default = null)

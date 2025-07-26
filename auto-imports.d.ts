@@ -161,6 +161,7 @@ declare global {
   const SidebarSeparator: typeof import('./resources/js/components/ui/sidebar/index')['SidebarSeparator']
   const SidebarTrigger: typeof import('./resources/js/components/ui/sidebar/index')['SidebarTrigger']
   const Skeleton: typeof import('./resources/js/components/ui/skeleton/index')['Skeleton']
+  const SkillsInput: typeof import('./resources/js/components/SkillsInput.vue')['default']
   const Stepper: typeof import('./resources/js/components/ui/stepper/index')['Stepper']
   const StepperDescription: typeof import('./resources/js/components/ui/stepper/index')['StepperDescription']
   const StepperIndicator: typeof import('./resources/js/components/ui/stepper/index')['StepperIndicator']
@@ -691,6 +692,7 @@ declare module 'vue' {
     readonly SidebarSeparator: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarSeparator']>
     readonly SidebarTrigger: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarTrigger']>
     readonly Skeleton: UnwrapRef<typeof import('./resources/js/components/ui/skeleton/index')['Skeleton']>
+    readonly SkillsInput: UnwrapRef<typeof import('./resources/js/components/SkillsInput.vue')['default']>
     readonly Stepper: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['Stepper']>
     readonly StepperDescription: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperDescription']>
     readonly StepperIndicator: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperIndicator']>

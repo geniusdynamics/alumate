@@ -48,11 +48,11 @@ class KpiValue extends Model
         $kpi = $this->kpiDefinition;
         
         return match($kpi->calculation_method) {
-            'percentage' => number_format($this->value, 1) . '%',
-            'count' => number_format($this->value, 0),
-            'average' => number_format($this->value, 2),
-            'ratio' => number_format($this->value, 3) . ':1',
-            default => number_format($this->value, 2),
+            'percentage' => number_format((float)$this->value, 1) . '%',
+            'count' => number_format((float)$this->value, 0),
+            'average' => number_format((float)$this->value, 2),
+            'ratio' => number_format((float)$this->value, 3) . ':1',
+            default => number_format((float)$this->value, 2),
         };
     }
 

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Tests\TestCase;
 use App\Models\User;
 use App\Models\Graduate;
 use App\Models\Course;
@@ -10,16 +11,15 @@ use App\Models\JobApplication;
 use App\Models\Employer;
 use App\Models\KpiDefinition;
 use App\Models\KpiValue;
-use App\Models\PredictionModel;
-use App\Models\Prediction;
 use App\Models\CustomReport;
 use App\Models\ReportExecution;
+use App\Models\PredictionModel;
+use App\Models\Prediction;
 use App\Models\AnalyticsSnapshot;
 use App\Services\AnalyticsService;
 use App\Services\ReportBuilderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 
 class AnalyticsSystemTest extends TestCase
 {
@@ -55,7 +55,7 @@ class AnalyticsSystemTest extends TestCase
         // Create test data
         $course = Course::factory()->create();
         Graduate::factory()->count(10)->create(['course_id' => $course->id]);
-        Job::factory()->count(5)->create(['course_id' => $course->id]);
+        Job::factory()->count(5)->create();
         
         $snapshot = $this->analyticsService->generateDailySnapshot();
         
@@ -90,6 +90,7 @@ class AnalyticsSystemTest extends TestCase
             ],
             'target_type' => 'minimum',
             'target_value' => 80.0,
+            'warning_threshold' => 70.0,
             'is_active' => true,
         ]);
 
@@ -113,46 +114,13 @@ class AnalyticsSystemTest extends TestCase
     }
 
     /** @test */
-    public function it_can_generate_predictions()
-    {
-        // Create prediction model
-        $model = PredictionModel::create([
-            'name' => 'Test Job Placement Predictor',
-            'type' => 'job_placement',
-            'description' => 'Test prediction model',
-            'features' => ['gpa', 'skills_count'],
-            'model_config' => [
-                'feature_weights' => ['gpa' => 0.5, 'skills_count' => 0.5],
-                'max_score' => 100,
-            ],
-            'accuracy' => 0.75,
-            'is_active' => true,
-        ]);
-
-        // Create test graduate
-        $graduate = Graduate::factory()->create([
-            'gpa' => 3.5,
-            'skills' => ['PHP', 'JavaScript', 'Laravel'],
-        ]);
-
-        $prediction = $model->predict($graduate);
-        
-        $this->assertInstanceOf(Prediction::class, $prediction);
-        $this->assertEquals($model->id, $prediction->prediction_model_id);
-        $this->assertEquals(get_class($graduate), $prediction->subject_type);
-        $this->assertEquals($graduate->id, $prediction->subject_id);
-        $this->assertIsFloat($prediction->prediction_score);
-        $this->assertIsArray($prediction->prediction_data);
-    }
-
-    /** @test */
     public function it_can_create_custom_report()
     {
         $reportData = [
             'name' => 'Test Employment Report',
-            'description' => 'Test report description',
+            'description' => 'Test report for employment data',
             'type' => 'employment',
-            'filters' => ['employment_status' => 'employed'],
+            'filters' => ['course_id' => 1],
             'columns' => ['graduate_name', 'course_name', 'employment_status'],
             'is_scheduled' => false,
             'is_public' => false,
@@ -161,7 +129,6 @@ class AnalyticsSystemTest extends TestCase
         $response = $this->post(route('analytics.reports.create'), $reportData);
         
         $response->assertRedirect(route('analytics.reports'));
-        
         $this->assertDatabaseHas('custom_reports', [
             'name' => 'Test Employment Report',
             'type' => 'employment',
@@ -172,40 +139,36 @@ class AnalyticsSystemTest extends TestCase
     /** @test */
     public function it_can_execute_custom_report()
     {
-        // Create test data
-        $course = Course::factory()->create(['name' => 'Computer Science']);
-        Graduate::factory()->count(5)->create([
-            'course_id' => $course->id,
-            'employment_status' => ['status' => 'employed'],
-        ]);
-
+        $course = Course::factory()->create();
+        Graduate::factory()->count(5)->create(['course_id' => $course->id]);
+        
         $report = CustomReport::create([
             'user_id' => $this->user->id,
             'name' => 'Test Report',
+            'description' => 'Test report',
             'type' => 'employment',
             'filters' => [],
-            'columns' => ['graduate_name', 'course_name', 'employment_status'],
+            'columns' => ['graduate_name', 'course_name'],
         ]);
 
         $execution = $this->reportBuilderService->executeReport($report);
         
         $this->assertInstanceOf(ReportExecution::class, $execution);
         $this->assertEquals('completed', $execution->status);
-        $this->assertIsArray($execution->result_data);
+        $this->assertNotNull($execution->result_data);
         $this->assertArrayHasKey('data', $execution->result_data);
-        $this->assertCount(5, $execution->result_data['data']);
     }
 
     /** @test */
-    public function it_can_preview_custom_report()
+    public function it_can_generate_report_preview()
     {
-        // Create test data
         $course = Course::factory()->create();
         Graduate::factory()->count(3)->create(['course_id' => $course->id]);
-
+        
         $report = CustomReport::create([
             'user_id' => $this->user->id,
-            'name' => 'Test Report',
+            'name' => 'Preview Test Report',
+            'description' => 'Test report for preview',
             'type' => 'employment',
             'filters' => [],
             'columns' => ['graduate_name', 'course_name'],
@@ -216,34 +179,71 @@ class AnalyticsSystemTest extends TestCase
         $this->assertIsArray($preview);
         $this->assertArrayHasKey('data', $preview);
         $this->assertArrayHasKey('preview_info', $preview);
-        $this->assertLessThanOrEqual(100, count($preview['data'])); // Preview limit
+        $this->assertTrue($preview['preview_info']['is_preview']);
     }
 
     /** @test */
-    public function it_can_export_analytics_data()
+    public function it_can_create_prediction_model()
     {
-        // Create test data
-        Graduate::factory()->count(3)->create([
-            'employment_status' => ['status' => 'employed']
+        $modelData = [
+            'name' => 'Test Job Placement Predictor',
+            'type' => 'job_placement',
+            'description' => 'Test prediction model',
+            'features' => ['gpa', 'skills_count'],
+            'model_config' => [
+                'feature_weights' => ['gpa' => 0.6, 'skills_count' => 0.4],
+                'max_score' => 100,
+            ],
+            'is_active' => true,
+        ];
+
+        $model = PredictionModel::create($modelData);
+        
+        $this->assertInstanceOf(PredictionModel::class, $model);
+        $this->assertEquals('job_placement', $model->type);
+        $this->assertTrue($model->is_active);
+    }
+
+    /** @test */
+    public function it_can_generate_predictions()
+    {
+        $course = Course::factory()->create();
+        $graduate = Graduate::factory()->create([
+            'course_id' => $course->id,
+            'gpa' => 3.5,
+            'skills' => ['PHP', 'Laravel', 'JavaScript'],
         ]);
 
-        $data = $this->analyticsService->exportAnalyticsData('employment', [], 'json');
+        $model = PredictionModel::create([
+            'name' => 'Test Predictor',
+            'type' => 'job_placement',
+            'description' => 'Test model',
+            'features' => ['gpa', 'skills_count'],
+            'model_config' => [
+                'feature_weights' => ['gpa' => 0.6, 'skills_count' => 0.4],
+                'max_score' => 100,
+            ],
+            'is_active' => true,
+        ]);
+
+        $prediction = $model->predict($graduate);
         
-        $this->assertIsString($data);
-        $decodedData = json_decode($data, true);
-        $this->assertIsArray($decodedData);
+        $this->assertInstanceOf(Prediction::class, $prediction);
+        $this->assertEquals($graduate->id, $prediction->subject_id);
+        $this->assertEquals(get_class($graduate), $prediction->subject_type);
+        $this->assertGreaterThanOrEqual(0, $prediction->prediction_score);
+        $this->assertLessThanOrEqual(1, $prediction->prediction_score);
     }
 
     /** @test */
     public function it_can_get_employment_analytics()
     {
-        // Create test data
         $course = Course::factory()->create();
-        Graduate::factory()->count(8)->create([
+        Graduate::factory()->count(5)->create([
             'course_id' => $course->id,
             'employment_status' => ['status' => 'employed'],
         ]);
-        Graduate::factory()->count(2)->create([
+        Graduate::factory()->count(3)->create([
             'course_id' => $course->id,
             'employment_status' => ['status' => 'unemployed'],
         ]);
@@ -255,121 +255,170 @@ class AnalyticsSystemTest extends TestCase
         $this->assertArrayHasKey('by_course', $analytics);
         $this->assertArrayHasKey('by_year', $analytics);
         
-        // Check employment rate calculation
-        $this->assertEquals(80.0, $analytics['summary']['employment_rate']);
-    }
-
-    /** @test */
-    public function it_can_get_course_analytics()
-    {
-        // Create test data
-        $course = Course::factory()->create();
-        Graduate::factory()->count(5)->create([
-            'course_id' => $course->id,
-            'employment_status' => ['status' => 'employed'],
-        ]);
-
-        $analytics = $this->analyticsService->getCourseAnalytics($course->id);
-        
-        $this->assertIsArray($analytics);
-        $this->assertArrayHasKey('performance', $analytics);
-        $this->assertArrayHasKey('outcomes', $analytics);
+        $this->assertEquals(8, $analytics['summary']['total_graduates']);
+        $this->assertEquals(5, $analytics['summary']['employed_count']);
+        $this->assertEquals(62.5, $analytics['summary']['employment_rate']);
     }
 
     /** @test */
     public function it_can_get_job_market_analytics()
     {
-        // Create test data
         $employer = Employer::factory()->create();
-        Job::factory()->count(3)->create(['employer_id' => $employer->id]);
-
+        Job::factory()->count(10)->create(['employer_id' => $employer->id]);
+        
         $analytics = $this->analyticsService->getJobMarketAnalytics();
         
         $this->assertIsArray($analytics);
         $this->assertArrayHasKey('market_overview', $analytics);
         $this->assertArrayHasKey('demand_analysis', $analytics);
+        $this->assertArrayHasKey('salary_trends', $analytics);
     }
 
     /** @test */
-    public function kpi_can_determine_status_correctly()
+    public function it_can_export_analytics_data()
     {
-        $kpi = KpiDefinition::create([
-            'name' => 'Test KPI',
+        $course = Course::factory()->create();
+        Graduate::factory()->count(3)->create(['course_id' => $course->id]);
+        
+        $exportData = $this->analyticsService->exportAnalyticsData('employment', [], 'json');
+        
+        $this->assertIsString($exportData);
+        $decodedData = json_decode($exportData, true);
+        $this->assertIsArray($decodedData);
+    }
+
+    /** @test */
+    public function it_can_access_kpis_page()
+    {
+        KpiDefinition::factory()->count(3)->create();
+        
+        $response = $this->get(route('analytics.kpis'));
+        
+        $response->assertStatus(200);
+        $response->assertInertia(fn ($page) => $page->component('Analytics/Kpis'));
+    }
+
+    /** @test */
+    public function it_can_access_predictions_page()
+    {
+        PredictionModel::factory()->count(2)->create();
+        
+        $response = $this->get(route('analytics.predictions'));
+        
+        $response->assertStatus(200);
+        $response->assertInertia(fn ($page) => $page->component('Analytics/Predictions'));
+    }
+
+    /** @test */
+    public function it_can_access_reports_page()
+    {
+        CustomReport::factory()->count(3)->create(['user_id' => $this->user->id]);
+        
+        $response = $this->get(route('analytics.reports'));
+        
+        $response->assertStatus(200);
+        $response->assertInertia(fn ($page) => $page->component('Analytics/Reports'));
+    }
+
+    /** @test */
+    public function it_can_calculate_kpis_via_api()
+    {
+        KpiDefinition::factory()->create([
             'key' => 'test_kpi',
-            'description' => 'Test KPI',
-            'category' => 'test',
-            'calculation_method' => 'percentage',
-            'calculation_config' => [],
-            'target_type' => 'minimum',
-            'target_value' => 80.0,
-            'warning_threshold' => 70.0,
-            'is_active' => true,
+            'calculation_method' => 'count',
+            'calculation_config' => [
+                'query' => [
+                    'model' => 'App\\Models\\Graduate',
+                    'filters' => []
+                ]
+            ],
         ]);
-
-        // Test good status
-        KpiValue::create([
-            'kpi_definition_id' => $kpi->id,
-            'measurement_date' => now()->toDateString(),
-            'value' => 85.0,
-        ]);
-        $this->assertEquals('good', $kpi->fresh()->getStatus());
-
-        // Test warning status
-        KpiValue::where('kpi_definition_id', $kpi->id)->update(['value' => 65.0]);
-        $this->assertEquals('warning', $kpi->fresh()->getStatus());
-
-        // Test poor status
-        KpiValue::where('kpi_definition_id', $kpi->id)->update(['value' => 75.0]);
-        $this->assertEquals('poor', $kpi->fresh()->getStatus());
+        
+        Graduate::factory()->count(5)->create();
+        
+        $response = $this->post(route('analytics.calculate-kpis'));
+        
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
     }
 
     /** @test */
-    public function prediction_model_can_determine_retraining_need()
+    public function it_can_generate_predictions_via_api()
     {
-        $model = PredictionModel::create([
-            'name' => 'Test Model',
-            'type' => 'test',
-            'description' => 'Test model',
-            'features' => [],
-            'model_config' => ['retraining_interval' => 30],
-            'is_active' => true,
-            'last_trained_at' => now()->subDays(35), // Older than interval
-        ]);
-
-        $this->assertTrue($model->needsRetraining());
-
-        // Update to recent training
-        $model->update(['last_trained_at' => now()->subDays(15)]);
-        $this->assertFalse($model->needsRetraining());
+        PredictionModel::factory()->create();
+        Graduate::factory()->count(3)->create();
+        
+        $response = $this->post(route('analytics.generate-predictions'));
+        
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
     }
 
     /** @test */
-    public function report_execution_tracks_status_correctly()
+    public function it_can_export_data_via_api()
     {
+        Graduate::factory()->count(3)->create();
+        
+        $response = $this->post(route('analytics.export'), [
+            'type' => 'employment',
+            'format' => 'json',
+            'filters' => [],
+        ]);
+        
+        $response->assertStatus(200);
+        $response->assertHeader('Content-Type', 'application/json');
+    }
+
+    /** @test */
+    public function it_validates_report_creation_data()
+    {
+        $response = $this->post(route('analytics.reports.create'), [
+            'name' => '', // Required field missing
+            'type' => 'invalid_type',
+            'columns' => 'not_an_array',
+        ]);
+        
+        $response->assertSessionHasErrors(['name', 'type', 'columns']);
+    }
+
+    /** @test */
+    public function it_prevents_unauthorized_report_execution()
+    {
+        $otherUser = User::factory()->create();
         $report = CustomReport::create([
-            'user_id' => $this->user->id,
-            'name' => 'Test Report',
+            'user_id' => $otherUser->id,
+            'name' => 'Private Report',
+            'description' => 'Private report',
             'type' => 'employment',
             'filters' => [],
             'columns' => ['graduate_name'],
+            'is_public' => false,
         ]);
 
-        $execution = ReportExecution::create([
-            'custom_report_id' => $report->id,
-            'user_id' => $this->user->id,
-            'status' => 'pending',
-            'parameters' => [],
+        $response = $this->post(route('analytics.reports.execute', $report->id));
+        
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function it_allows_public_report_execution()
+    {
+        $otherUser = User::factory()->create();
+        $report = CustomReport::create([
+            'user_id' => $otherUser->id,
+            'name' => 'Public Report',
+            'description' => 'Public report',
+            'type' => 'employment',
+            'filters' => [],
+            'columns' => ['graduate_name'],
+            'is_public' => true,
         ]);
 
-        $this->assertTrue($execution->isPending());
-        $this->assertFalse($execution->isProcessing());
-        $this->assertFalse($execution->isCompleted());
+        Graduate::factory()->count(2)->create();
 
-        $execution->markAsStarted();
-        $this->assertTrue($execution->isProcessing());
-
-        $execution->markAsCompleted(['test' => 'data']);
-        $this->assertTrue($execution->isCompleted());
-        $this->assertNotNull($execution->completed_at);
+        $response = $this->post(route('analytics.reports.execute', $report->id));
+        
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
     }
 }

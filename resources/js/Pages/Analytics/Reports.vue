@@ -458,4 +458,3 @@ const formatCellValue = (value) => {
     return String(value)
 }
 </script>
-</template>
