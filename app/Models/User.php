@@ -249,7 +249,7 @@ class User extends Authenticatable
         $this->update(['last_login_at' => now()]);
     }
 
-    public function hasRole(string $role): bool
+    public function hasSpecificRole(string $role): bool
     {
         return $this->roles()->where('name', $role)->exists();
     }
@@ -263,7 +263,7 @@ class User extends Authenticatable
     public function canAccessInstitution($institutionId): bool
     {
         // Super admins can access all institutions
-        if ($this->hasRole('super-admin')) {
+        if ($this->hasSpecificRole('super-admin')) {
             return true;
         }
 

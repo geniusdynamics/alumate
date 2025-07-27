@@ -22,7 +22,7 @@
                             :href="route('super-admin.reports')"
                             class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                         >
-                            <DocumentReportIcon class="-ml-1 mr-2 h-5 w-5" />
+                            <DocumentTextIcon class="-ml-1 mr-2 h-5 w-5" />
                             Reports
                         </Link>
                     </div>
@@ -104,7 +104,7 @@
                             :href="route('super-admin.reports')"
                             class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
                         >
-                            <DocumentReportIcon class="h-8 w-8 text-purple-500 mr-3" />
+                            <DocumentTextIcon class="h-8 w-8 text-purple-500 mr-3" />
                             <div>
                                 <div class="font-medium text-gray-900">System Reports</div>
                                 <div class="text-sm text-gray-500">Generate reports</div>
@@ -274,7 +274,7 @@ import {
     AcademicCapIcon, 
     BriefcaseIcon,
     ChartBarIcon,
-    DocumentReportIcon,
+    DocumentTextIcon,
     ShieldCheckIcon,
     UserIcon,
     PlusIcon,

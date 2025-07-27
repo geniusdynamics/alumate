@@ -8,26 +8,38 @@ return new class extends Migration
 {
     public function up()
     {
-        // Enhanced activity logs table
-        Schema::create('activity_logs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('action');
-            $table->string('description');
-            $table->string('ip_address', 45);
-            $table->text('user_agent')->nullable();
-            $table->json('properties')->nullable();
-            $table->string('model_type')->nullable();
-            $table->unsignedBigInteger('model_id')->nullable();
-            $table->string('session_id')->nullable();
-            $table->string('tenant_id')->nullable();
-            $table->timestamps();
-            
-            $table->index(['user_id', 'created_at']);
-            $table->index(['action', 'created_at']);
-            $table->index(['model_type', 'model_id']);
-            $table->index(['ip_address', 'created_at']);
-        });
+        // Enhanced activity logs table (create only if it doesn't exist)
+        if (!Schema::hasTable('activity_logs')) {
+            Schema::create('activity_logs', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+                $table->string('action');
+                $table->string('description');
+                $table->string('ip_address', 45);
+                $table->text('user_agent')->nullable();
+                $table->json('properties')->nullable();
+                $table->string('model_type')->nullable();
+                $table->unsignedBigInteger('model_id')->nullable();
+                $table->string('session_id')->nullable();
+                $table->string('tenant_id')->nullable();
+                $table->timestamps();
+                
+                $table->index(['user_id', 'created_at']);
+                $table->index(['action', 'created_at']);
+                $table->index(['model_type', 'model_id']);
+                $table->index(['ip_address', 'created_at']);
+            });
+        } else {
+            // If table exists, add any missing columns
+            Schema::table('activity_logs', function (Blueprint $table) {
+                if (!Schema::hasColumn('activity_logs', 'session_id')) {
+                    $table->string('session_id')->nullable()->after('model_id');
+                }
+                if (!Schema::hasColumn('activity_logs', 'tenant_id')) {
+                    $table->string('tenant_id')->nullable()->after('session_id');
+                }
+            });
+        }
 
         // Security events table for threat detection
         Schema::create('security_events', function (Blueprint $table) {

@@ -13,40 +13,74 @@ return new class extends Migration
     {
         Schema::table('graduates', function (Blueprint $table) {
             // Add employment status tracking
-            $table->enum('employment_status', ['unemployed', 'employed', 'self_employed', 'further_studies', 'other'])
-                  ->default('unemployed')->after('course_id');
+            if (!Schema::hasColumn('graduates', 'employment_status')) {
+                $table->enum('employment_status', ['unemployed', 'employed', 'self_employed', 'further_studies', 'other'])
+                      ->default('unemployed')->after('course_id');
+            }
             
             // Add current job information
-            $table->string('current_job_title')->nullable()->after('employment_status');
-            $table->string('current_company')->nullable()->after('current_job_title');
-            $table->decimal('current_salary', 10, 2)->nullable()->after('current_company');
-            $table->date('employment_start_date')->nullable()->after('current_salary');
+            if (!Schema::hasColumn('graduates', 'current_job_title')) {
+                $table->string('current_job_title')->nullable()->after('employment_status');
+            }
+            if (!Schema::hasColumn('graduates', 'current_company')) {
+                $table->string('current_company')->nullable()->after('current_job_title');
+            }
+            if (!Schema::hasColumn('graduates', 'current_salary')) {
+                $table->decimal('current_salary', 10, 2)->nullable()->after('current_company');
+            }
+            if (!Schema::hasColumn('graduates', 'employment_start_date')) {
+                $table->date('employment_start_date')->nullable()->after('current_salary');
+            }
             
             // Add profile completion tracking
-            $table->decimal('profile_completion_percentage', 5, 2)->default(0)->after('employment_start_date');
-            $table->json('profile_completion_fields')->nullable()->after('profile_completion_percentage');
+            if (!Schema::hasColumn('graduates', 'profile_completion_percentage')) {
+                $table->decimal('profile_completion_percentage', 5, 2)->default(0)->after('employment_start_date');
+            }
+            if (!Schema::hasColumn('graduates', 'profile_completion_fields')) {
+                $table->json('profile_completion_fields')->nullable()->after('profile_completion_percentage');
+            }
             
             // Add privacy settings
-            $table->json('privacy_settings')->nullable()->after('profile_completion_fields');
+            if (!Schema::hasColumn('graduates', 'privacy_settings')) {
+                $table->json('privacy_settings')->nullable()->after('profile_completion_fields');
+            }
             
             // Add student ID for better tracking
-            $table->string('student_id')->nullable()->unique()->after('tenant_id');
+            if (!Schema::hasColumn('graduates', 'student_id')) {
+                $table->string('student_id')->nullable()->unique()->after('tenant_id');
+            }
             
             // Add GPA and academic performance
-            $table->decimal('gpa', 3, 2)->nullable()->after('graduation_year');
-            $table->enum('academic_standing', ['excellent', 'very_good', 'good', 'satisfactory', 'pass'])->nullable()->after('gpa');
+            if (!Schema::hasColumn('graduates', 'gpa')) {
+                $table->decimal('gpa', 3, 2)->nullable()->after('graduation_year');
+            }
+            if (!Schema::hasColumn('graduates', 'academic_standing')) {
+                $table->enum('academic_standing', ['excellent', 'very_good', 'good', 'satisfactory', 'pass'])->nullable()->after('gpa');
+            }
             
             // Add skills and certifications
-            $table->json('skills')->nullable()->after('academic_standing');
-            $table->json('certifications')->nullable()->after('skills');
+            if (!Schema::hasColumn('graduates', 'skills')) {
+                $table->json('skills')->nullable()->after('academic_standing');
+            }
+            if (!Schema::hasColumn('graduates', 'certifications')) {
+                $table->json('certifications')->nullable()->after('skills');
+            }
             
             // Add contact preferences
-            $table->boolean('allow_employer_contact')->default(true)->after('privacy_settings');
-            $table->boolean('job_search_active')->default(true)->after('allow_employer_contact');
+            if (!Schema::hasColumn('graduates', 'allow_employer_contact')) {
+                $table->boolean('allow_employer_contact')->default(true)->after('privacy_settings');
+            }
+            if (!Schema::hasColumn('graduates', 'job_search_active')) {
+                $table->boolean('job_search_active')->default(true)->after('allow_employer_contact');
+            }
             
             // Add timestamps for better tracking
-            $table->timestamp('last_profile_update')->nullable()->after('job_search_active');
-            $table->timestamp('last_employment_update')->nullable()->after('last_profile_update');
+            if (!Schema::hasColumn('graduates', 'last_profile_update')) {
+                $table->timestamp('last_profile_update')->nullable()->after('job_search_active');
+            }
+            if (!Schema::hasColumn('graduates', 'last_employment_update')) {
+                $table->timestamp('last_employment_update')->nullable()->after('last_profile_update');
+            }
         });
     }
 

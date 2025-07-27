@@ -22,7 +22,7 @@
                         id="email"
                         v-model="form.email"
                         type="email"
-                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 16px; background: white;"
+                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 16px; background: white; color: #1f2937 !important;"
                         required
                         autofocus
                         autocomplete="username"
@@ -41,7 +41,7 @@
                         id="password"
                         v-model="form.password"
                         type="password"
-                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 16px; background: white;"
+                        style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 16px; background: white; color: #1f2937 !important;"
                         required
                         autocomplete="current-password"
                         placeholder="Enter your password"

@@ -16,7 +16,7 @@
                         id="name"
                         v-model="form.name"
                         type="text"
-                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full text-gray-900 bg-white"
                         required
                         autofocus
                         autocomplete="name"
@@ -32,7 +32,7 @@
                         id="email"
                         v-model="form.email"
                         type="email"
-                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full text-gray-900 bg-white"
                         required
                         autocomplete="username"
                     />
@@ -47,7 +47,7 @@
                         id="password"
                         v-model="form.password"
                         type="password"
-                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full text-gray-900 bg-white"
                         required
                         autocomplete="new-password"
                     />
@@ -62,7 +62,7 @@
                         id="password_confirmation"
                         v-model="form.password_confirmation"
                         type="password"
-                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block mt-1 w-full text-gray-900 bg-white"
                         required
                         autocomplete="new-password"
                     />

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('graduate_audit_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('graduate_id')->constrained()->onDelete('cascade');
+            $table->unsignedBigInteger('graduate_id'); // No foreign key constraint since graduates are tenant-specific
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
             $table->string('action'); // 'created', 'updated', 'employment_updated', 'privacy_updated'
             $table->string('field_name')->nullable(); // specific field that was changed

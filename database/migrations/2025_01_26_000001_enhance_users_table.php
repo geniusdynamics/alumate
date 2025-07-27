@@ -18,6 +18,8 @@ return new class extends Migration
             
             // Account status and security
             $table->string('status')->default('active')->after('preferences');
+            $table->boolean('is_suspended')->default(false)->after('status');
+            $table->timestamp('suspended_at')->nullable()->after('is_suspended');
             $table->string('suspension_reason')->nullable()->after('suspended_at');
             $table->timestamp('last_login_at')->nullable()->after('suspension_reason');
             $table->timestamp('last_activity_at')->nullable()->after('last_login_at');
@@ -66,6 +68,8 @@ return new class extends Migration
                 'profile_data',
                 'preferences',
                 'status',
+                'is_suspended',
+                'suspended_at',
                 'suspension_reason',
                 'last_login_at',
                 'last_activity_at',

@@ -1,411 +1,386 @@
-# 🚀 Laravel Vue TypeScript Starter Kit
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
-  <br>
-  <strong>Modern Laravel + Vue.js + TypeScript Starter Kit</strong>
-</p>
+# 🎓 Graduate Tracking System
 
 <p align="center">
   <img src="https://img.shields.io/badge/Laravel-11.x-red?logo=laravel" alt="Laravel">
   <img src="https://img.shields.io/badge/Vue.js-3.x-green?logo=vue.js" alt="Vue.js">
   <img src="https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript" alt="TypeScript">
-  <img src="https://img.shields.io/badge/Inertia.js-2.x-purple" alt="Inertia.js">
+  <img src="https://img.shields.io/badge/Multi--Tenant-Enabled-purple" alt="Multi-Tenant">
   <img src="https://img.shields.io/badge/TailwindCSS-3.x-cyan?logo=tailwindcss" alt="TailwindCSS">
 </p>
 
-## ✨ Features
+<p align="center">
+  <strong>A comprehensive multi-tenant platform connecting TVET institutions, graduates, and employers</strong>
+</p>
 
-- **🎯 Modern Stack**: Laravel 11 + Vue 3 + TypeScript + Inertia.js
-- **🎨 Beautiful UI**: Shadcn/Vue components with TailwindCSS
-- **🔐 Role-Based Access Control**: Spatie Laravel Permission integration
-- **📊 Advanced DataTable**: Reusable component with search, sort, and pagination
-- **🏗️ Clean Architecture**: Organized component structure and reusable traits
-- **📱 Responsive Design**: Mobile-first approach with modern UI patterns
-- **⚡ TypeScript**: Full type safety throughout the application
-- **🛠️ Developer Experience**: Hot module replacement, ESLint, and modern tooling
+## 🌟 Overview
 
-## 🏗️ Architecture
+The Graduate Tracking System is a sophisticated multi-tenant web application designed to bridge the gap between Technical and Vocational Education and Training (TVET) institutions, their graduates, and potential employers. The platform facilitates graduate career tracking, job placement, institutional analytics, and comprehensive reporting while maintaining complete data isolation between institutions.
 
-### Frontend Structure
+### 🎯 Mission
 
-```
-resources/js/
-├── components/
-│   ├── common/           # Reusable common components
-│   ├── data/            # Data display components (DataTable)
-│   ├── forms/           # Form components
-│   ├── layout/          # Layout-specific components
-│   └── ui/              # Shadcn/Vue UI components
-├── layouts/
-│   ├── AuthLayout.vue   # Authentication layout
-│   └── DefaultLayout.vue # Main application layout
-├── pages/               # Page components
-├── types/               # TypeScript type definitions
-└── lib/                 # Utility functions
-```
+To create a seamless ecosystem where TVET institutions can effectively track their graduates' career progress, employers can find qualified talent, and graduates can access meaningful employment opportunities.
 
-### Backend Structure
+## ✨ Key Features
 
-```
-app/
-├── Http/
-│   ├── Controllers/     # API and web controllers
-│   ├── Middleware/      # Custom middleware
-│   ├── Requests/        # Form request validation
-│   └── Traits/          # Reusable controller traits
-├── Models/              # Eloquent models
-├── Policies/            # Authorization policies
-└── Providers/           # Service providers
-```
+### 🏢 **Multi-Tenant Architecture**
+- **Complete Data Isolation**: Each institution operates in its own secure environment
+- **Domain-Based Tenant Resolution**: Automatic tenant identification via domains
+- **Scalable Infrastructure**: Support for unlimited institutions
+- **Centralized Super Admin Management**: System-wide oversight and control
+
+### 👥 **Role-Based Access Control**
+- **Super Admin**: System-wide management and analytics
+- **Institution Admin**: Graduate and course management within their institution
+- **Employer**: Job posting, candidate search, and application management
+- **Graduate**: Profile management, job applications, and career tracking
+
+### 🎓 **Graduate Management**
+- **Comprehensive Profiles**: Academic records, skills, certifications, employment status
+- **Bulk Import/Export**: Excel-based data management with validation
+- **Employment Tracking**: Real-time career progress monitoring
+- **Privacy Controls**: Granular profile visibility settings
+- **Profile Completion Tracking**: Guided profile enhancement
+
+### 💼 **Job Management & Placement**
+- **Smart Job Matching**: AI-powered candidate-job matching algorithms
+- **Application Tracking**: Complete hiring workflow management
+- **Employer Verification**: Comprehensive company validation process
+- **Job Analytics**: Performance metrics and placement insights
+- **Automated Notifications**: Real-time updates for all stakeholders
+
+### 📊 **Advanced Analytics & Reporting**
+- **Employment Analytics**: Graduation-to-employment tracking
+- **Course Performance**: Program effectiveness analysis
+- **Predictive Analytics**: Job placement probability modeling
+- **Custom Reports**: Flexible report builder with export capabilities
+- **KPI Dashboards**: Real-time performance indicators
+- **Trend Analysis**: Historical data insights and forecasting
+
+### 🔍 **Search & Discovery**
+- **Advanced Graduate Search**: Multi-criteria candidate filtering
+- **Job Recommendation Engine**: Personalized job suggestions
+- **Skill-Based Matching**: Competency-driven connections
+- **Saved Searches**: Persistent search preferences
+- **Smart Notifications**: Relevant opportunity alerts
+
+### 💬 **Communication & Collaboration**
+- **Messaging System**: Direct communication between stakeholders
+- **Discussion Forums**: Graduate networking and peer support
+- **Announcement System**: Institution-wide communications
+- **Help Desk**: Integrated support ticket system
+- **Feedback Collection**: Continuous improvement mechanisms
+
+## 🏗️ Technical Architecture
+
+### **Backend Stack**
+- **Framework**: Laravel 11 with PHP 8.3+
+- **Multi-Tenancy**: Stancl Tenancy package for complete isolation
+- **Database**: PostgreSQL with tenant-specific schemas
+- **Authentication**: Laravel Breeze with Spatie Permissions
+- **API**: RESTful APIs with comprehensive validation
+- **Queue System**: Redis-backed job processing
+- **Caching**: Multi-layer caching strategy
+
+### **Frontend Stack**
+- **Framework**: Vue.js 3 with Composition API
+- **Type Safety**: Full TypeScript implementation
+- **UI Framework**: Tailwind CSS with Shadcn/Vue components
+- **State Management**: Pinia for complex state handling
+- **Build Tool**: Vite for optimized development and production builds
+- **Testing**: Vitest for unit and integration testing
+
+### **Infrastructure**
+- **Containerization**: Docker support for consistent environments
+- **CI/CD**: Automated testing and deployment pipelines
+- **Monitoring**: Application performance and error tracking
+- **Security**: Multi-layer security with audit logging
+- **Backup**: Automated database and file backups
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-
-- PHP 8.2+
+- PHP 8.3+
 - Node.js 18+
-- Composer
-- MySQL/PostgreSQL
+- Composer 2.x
+- PostgreSQL 13+
+- Redis (optional, for caching and queues)
 
 ### Installation
 
-1. **Clone the repository**
+1. **Clone and Setup**
+   ```bash
+   git clone <repository-url>
+   cd graduate-tracking-system
+   composer install
+   npm install
+   ```
 
-    ```bash
-    git clone <repository-url>
-    cd laravel-starter-kit
-    ```
+2. **Environment Configuration**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-2. **Install PHP dependencies**
+3. **Database Setup**
+   ```bash
+   # Configure your .env file with database credentials
+   php artisan migrate
+   php artisan tenants:migrate
+   php artisan db:seed
+   ```
 
-    ```bash
-    composer install
-    ```
+4. **Create Sample Data**
+   ```bash
+   php scripts/data/create_sample_data.php
+   php scripts/data/create_tenant_sample_data.php
+   ```
 
-3. **Install Node.js dependencies**
+5. **Start Development Servers**
+   ```bash
+   # Use the convenient development helper
+   start-dev.bat
+   
+   # Or start manually
+   php artisan serve --port=8080
+   npm run dev
+   ```
 
-    ```bash
-    npm install
-    ```
+6. **Access the Application**
+   - **Main Application**: http://127.0.0.1:8080
+   - **Super Admin**: admin@system.com / password
+   - **Institution Admin**: admin@tech-institute.edu / password
 
-4. **Environment setup**
+## 👤 User Roles & Capabilities
 
-    ```bash
-    cp .env.example .env
-    php artisan key:generate
-    ```
+### 🔧 **Super Admin**
+- System-wide institution management
+- User management across all tenants
+- Employer verification and approval
+- System analytics and reporting
+- Security monitoring and audit logs
+- System health monitoring
 
-5. **Configure database**
+### 🏫 **Institution Admin**
+- Graduate profile management
+- Course and program administration
+- Bulk data import/export
+- Institution-specific analytics
+- Staff and tutor management
+- Graduate outcome tracking
 
-    ```bash
-    # Edit .env file with your database credentials
-    DB_CONNECTION=mysql
-    DB_HOST=127.0.0.1
-    DB_PORT=3306
-    DB_DATABASE=your_database
-    DB_USERNAME=your_username
-    DB_PASSWORD=your_password
-    ```
+### 💼 **Employer**
+- Company profile management
+- Job posting and management
+- Graduate search and filtering
+- Application review and tracking
+- Hiring analytics and metrics
+- Communication with candidates
 
-6. **Run migrations and seeders**
+### 🎓 **Graduate**
+- Profile completion and maintenance
+- Job browsing and applications
+- Career progress tracking
+- Classmate networking
+- Assistance request system
+- Employment status updates
 
-    ```bash
-    php artisan migrate
-    php artisan db:seed --class=RolePermissionSeeder
-    ```
+## 📊 Analytics & Insights
 
-7. **Build assets**
+### **Employment Analytics**
+- Graduate employment rates by course and year
+- Salary progression tracking
+- Industry placement analysis
+- Geographic employment distribution
+- Time-to-employment metrics
 
-    ```bash
-    npm run build
-    # or for development
-    npm run dev
-    ```
+### **Institutional Performance**
+- Course effectiveness measurements
+- Graduate satisfaction scores
+- Employer feedback analysis
+- Placement success rates
+- Alumni engagement metrics
 
-8. **Start the application**
-    ```bash
-    php artisan serve
-    ```
-
-## 🔐 Role-Based Access Control
-
-### Default Roles
-
-- **Admin**: Full system access
-- **Moderator**: Limited user and content management
-- **User**: Basic access
-
-### Permissions
-
-- `view users`, `create users`, `edit users`, `delete users`
-- `view roles`, `create roles`, `edit roles`, `delete roles`
-- `view permissions`, `create permissions`, `edit permissions`, `delete permissions`
-
-### Usage Examples
-
-**In Controllers:**
-
-```php
-$this->authorize('view', User::class);
-```
-
-**In Vue Components:**
-
-```typescript
-const canManageUsers = computed(() => {
-    return user.value?.permissions?.includes('view users');
-});
-```
-
-## 📊 DataTable Component
-
-### Features
-
-- 🔍 Real-time search with debouncing
-- 📈 Column sorting (ascending/descending)
-- 📄 Pagination with customizable page sizes
-- 🎨 Customizable cell rendering via slots
-- ⚡ Loading states and error handling
-- 📱 Responsive design
-
-### Usage
-
-```vue
-<template>
-    <DataTable
-        :data="users"
-        :columns="columns"
-        :pagination="pagination"
-        :loading="loading"
-        @search="handleSearch"
-        @sort="handleSort"
-        @paginate="handlePaginate"
-    >
-        <template #cell.actions="{ row }">
-            <!-- Custom action buttons -->
-        </template>
-    </DataTable>
-</template>
-
-<script setup lang="ts">
-const columns: Column[] = [
-    {
-        key: 'name',
-        label: 'Name',
-        sortable: true,
-        searchable: true,
-    },
-    {
-        key: 'email',
-        label: 'Email',
-        sortable: true,
-        render: (value) => value.toLowerCase(),
-    },
-];
-</script>
-```
-
-### Backend Trait
-
-```php
-use App\Http\Traits\HasDataTable;
-
-class UserController extends Controller
-{
-    use HasDataTable;
-
-    public function index(Request $request)
-    {
-        $query = User::with('roles');
-
-        $users = $this->processDataTableRequest(
-            $query,
-            $request,
-            ['name', 'email'], // searchable columns
-            ['name', 'email', 'created_at'] // sortable columns
-        );
-
-        return Inertia::render('Users/Index', [
-            'users' => $users->items(),
-            'pagination' => $this->formatPaginationData($users),
-        ]);
-    }
-}
-```
-
-## 🎨 UI Components
-
-### Shadcn/Vue Integration
-
-This starter kit includes a full set of shadcn/vue components:
-
-- **Layout**: Card, Sheet, Sidebar
-- **Navigation**: Breadcrumb, Navigation Menu
-- **Forms**: Input, Select, Button, Checkbox
-- **Data Display**: Table, Badge, Avatar
-- **Feedback**: Dialog, Tooltip, Skeleton
-
-### Custom Components
-
-- **DataTable**: Advanced table with search, sort, and pagination
-- **AppSidebar**: Role-aware navigation sidebar
-- **AppHeader**: Breadcrumb navigation header
-- **AppLogo**: Branded logo component
+### **Predictive Analytics**
+- Job placement probability modeling
+- Career path recommendations
+- Market demand forecasting
+- Skills gap analysis
+- Employment trend predictions
 
 ## 🛠️ Development
 
-### Commands
-
+### **Development Scripts**
 ```bash
-# Development server with hot reload
-npm run dev
+# Interactive development helper
+scripts/development/dev-helper.bat
 
-# Build for production
-npm run build
+# Data management
+php scripts/data/check_users.php
+php scripts/data/create_sample_data.php
 
-# Type checking
-npm run type-check
+# Testing utilities
+php scripts/testing/test_analytics.php
+scripts/testing/run-tests.bat
 
-# Linting
-npm run lint
-
-# Run tests
-php artisan test
+# Debugging tools
+scripts/debugging/fix_blank_screen.bat
+php scripts/debugging/diagnose_blank_screen.php
 ```
 
-### Adding New Features
+### **Testing**
+```bash
+# Run comprehensive test suite
+scripts/testing/run-tests.bat
 
-1. **Create a new page**
+# Quick system test
+php scripts/testing/quick_test.php
 
-    ```bash
-    # Create controller
-    php artisan make:controller FeatureController --resource
-
-    # Create Vue page
-    touch resources/js/pages/Feature/Index.vue
-    ```
-
-2. **Add routes**
-
-    ```php
-    Route::resource('features', FeatureController::class);
-    ```
-
-3. **Add permissions**
-    ```php
-    Permission::create(['name' => 'view features']);
-    ```
-
-## 📁 Project Structure
-
-### Key Files
-
-- `app/Http/Traits/HasDataTable.php` - Reusable DataTable backend logic
-- `resources/js/components/data/DataTable.vue` - Frontend DataTable component
-- `resources/js/layouts/DefaultLayout.vue` - Main application layout
-- `resources/js/types/index.ts` - TypeScript type definitions
-- `database/seeders/RolePermissionSeeder.php` - Default roles and permissions
-
-## 🔧 Configuration
-
-### Environment Variables
-
-```env
-# App
-APP_NAME="Laravel Starter Kit"
-APP_ENV=local
-APP_DEBUG=true
-
-# Database
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=starter_kit
-
-# Permissions
-PERMISSION_CACHE_EXPIRATION_TIME=3600
+# User acceptance testing
+http://127.0.0.1:8080/testing
 ```
 
-### Customization
+### **Code Quality**
+- **ESLint**: JavaScript/TypeScript linting
+- **PHP CS Fixer**: PHP code style enforcement
+- **PHPStan**: Static analysis for PHP
+- **Automated Testing**: Unit, integration, and feature tests
+- **Code Coverage**: Comprehensive test coverage reporting
 
-1. **Brand Colors**: Edit `tailwind.config.js`
-2. **Logo**: Replace components in `resources/js/components/common/`
-3. **Permissions**: Modify `database/seeders/RolePermissionSeeder.php`
-4. **Layout**: Customize `resources/js/layouts/DefaultLayout.vue`
+## 🔒 Security Features
 
-## 🐛 Troubleshooting
+### **Multi-Tenant Security**
+- Complete data isolation between tenants
+- Cross-tenant access prevention
+- Tenant-specific authentication
+- Audit logging for all data access
 
-### Common Issues
+### **Authentication & Authorization**
+- Role-based access control (RBAC)
+- Multi-factor authentication support
+- Session management and security
+- Password policies and complexity requirements
 
-1. **Ziggy route errors**
+### **Data Protection**
+- Encryption of sensitive data at rest
+- HTTPS enforcement for all communications
+- Input sanitization and XSS protection
+- SQL injection prevention
+- GDPR compliance features
 
-    ```bash
-    php artisan route:cache
-    npm run build
-    ```
+## 📈 Performance & Scalability
 
-2. **Permission issues**
+### **Optimization Features**
+- Database query optimization with eager loading
+- Redis caching for frequently accessed data
+- CDN support for static assets
+- Image optimization and compression
+- Lazy loading for improved page speeds
 
-    ```bash
-    php artisan permission:cache-reset
-    ```
+### **Scalability**
+- Horizontal scaling support
+- Load balancer compatibility
+- Database connection pooling
+- Queue-based background processing
+- Microservice-ready architecture
 
-3. **Asset compilation**
-    ```bash
-    npm run build
-    php artisan view:cache
-    ```
+## 🌐 Multi-Tenant Architecture
 
-## 📚 Resources
+### **Tenant Management**
+- Automatic tenant creation and setup
+- Domain-based tenant resolution
+- Tenant-specific database schemas
+- Isolated file storage per tenant
+- Tenant analytics and usage tracking
 
-- [Laravel Documentation](https://laravel.com/docs)
-- [Vue.js Documentation](https://vuejs.org/)
-- [Inertia.js Documentation](https://inertiajs.com/)
-- [TypeScript Documentation](https://www.typescriptlang.org/)
-- [Shadcn/Vue Documentation](https://www.shadcn-vue.com/)
-- [Spatie Laravel Permission](https://spatie.be/docs/laravel-permission)
+### **Data Isolation**
+- Complete database separation
+- Tenant-specific migrations
+- Isolated user authentication
+- Separate file storage spaces
+- Independent caching layers
+
+## 📚 Documentation
+
+### **User Guides**
+- [Development Guide](DEVELOPMENT.md) - Complete development setup
+- [Script Organization](scripts/README.md) - Development script documentation
+- [Port Configuration](PORTS.md) - Network configuration details
+- [Cleanup Summary](CLEANUP_SUMMARY.md) - Project organization details
+
+### **API Documentation**
+- RESTful API endpoints
+- Authentication mechanisms
+- Request/response formats
+- Error handling guidelines
+- Rate limiting policies
 
 ## 🚀 Deployment
 
-To deploy the application, you can use the `deploy.sh` script.
-
+### **Production Deployment**
 ```bash
+# Use the deployment script
 ./deploy.sh
+
+# Or deploy manually
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+npm run build
 ```
 
-This script will:
-
-1.  Enter maintenance mode.
-2.  Pull the latest changes from the `main` branch.
-3.  Install Composer dependencies.
-4.  Run database migrations.
-5.  Clear and create caches.
-6.  Build frontend assets.
-7.  Exit maintenance mode.
+### **Environment Configuration**
+- Production environment variables
+- Database optimization settings
+- Caching configuration
+- Security hardening
+- Performance monitoring
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions to the Graduate Tracking System! Please follow these guidelines:
+
+1. **Fork the repository**
+2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
+3. **Follow coding standards** (ESLint, PHP CS Fixer)
+4. **Write comprehensive tests**
+5. **Update documentation** as needed
+6. **Submit a pull request**
+
+### **Development Standards**
+- Follow PSR-12 coding standards for PHP
+- Use TypeScript for all frontend code
+- Write unit tests for new features
+- Update documentation for API changes
+- Follow semantic versioning
 
 ## 📄 License
 
-This project is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- [Laravel](https://laravel.com) - The PHP framework
-- [Vue.js](https://vuejs.org) - The progressive JavaScript framework
-- [Inertia.js](https://inertiajs.com) - The modern monolith
-- [Shadcn/Vue](https://www.shadcn-vue.com) - Beautiful UI components
-- [Spatie](https://spatie.be) - Amazing Laravel packages
+- **Laravel Community** - For the robust PHP framework
+- **Vue.js Team** - For the progressive JavaScript framework
+- **Stancl Tenancy** - For multi-tenant architecture support
+- **Spatie** - For excellent Laravel packages
+- **Tailwind CSS** - For the utility-first CSS framework
+- **TVET Institutions** - For inspiring this solution
+
+## 📞 Support
+
+For support and questions:
+- **Documentation**: Check the comprehensive guides in the `/docs` directory
+- **Issues**: Report bugs and feature requests via GitHub Issues
+- **Development**: Use `scripts/development/dev-helper.bat` for development assistance
+- **Testing**: Access the testing suite at `/testing` endpoint
 
 ---
 
 <p align="center">
-  Built with ❤️ using Laravel, Vue.js, and TypeScript
+  <strong>Empowering TVET institutions to track graduate success and connect talent with opportunity</strong>
+</p>
+
+<p align="center">
+  Built with ❤️ using Laravel, Vue.js, TypeScript, and modern web technologies
 </p>

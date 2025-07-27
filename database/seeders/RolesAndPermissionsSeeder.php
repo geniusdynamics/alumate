@@ -18,27 +18,32 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // create permissions
-        Permission::create(['name' => 'manage institutions']);
-        Permission::create(['name' => 'manage courses']);
-        Permission::create(['name' => 'manage tutors']);
-        Permission::create(['name' => 'manage graduates']);
-        Permission::create(['name' => 'upload graduates']);
-        Permission::create(['name' => 'approve graduates']);
-        Permission::create(['name' => 'view jobs']);
-        Permission::create(['name' => 'post jobs']);
-        Permission::create(['name' => 'manage applications']);
-        Permission::create(['name' => 'view announcements']);
-        Permission::create(['name' => 'update profile']);
-        Permission::create(['name' => 'verify graduates']);
-        Permission::create(['name' => 'view institutions']);
+        // create permissions - use firstOrCreate to avoid duplicates
+        $permissions = [
+            'manage institutions',
+            'manage courses',
+            'manage tutors',
+            'manage graduates',
+            'upload graduates',
+            'approve graduates',
+            'view jobs',
+            'post jobs',
+            'manage applications',
+            'view announcements',
+            'update profile',
+            'verify graduates',
+            'view institutions',
+        ];
+
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
+        }
 
         // create roles and assign created permissions
-
-        $role = Role::create(['name' => 'Super Admin']);
+        $role = Role::firstOrCreate(['name' => 'Super Admin']);
         $role->givePermissionTo(Permission::all());
 
-        $role = Role::create(['name' => 'Institution Admin']);
+        $role = Role::firstOrCreate(['name' => 'Institution Admin']);
         $role->givePermissionTo([
             'manage courses',
             'manage tutors',
@@ -47,18 +52,26 @@ class RolesAndPermissionsSeeder extends Seeder
             'view announcements',
         ]);
 
-        $role = Role::create(['name' => 'Graduate']);
+        $role = Role::firstOrCreate(['name' => 'Graduate']);
         $role->givePermissionTo([
             'view jobs',
+            'manage applications',
             'view announcements',
             'update profile',
         ]);
 
-        $role = Role::create(['name' => 'Employer']);
+        $role = Role::firstOrCreate(['name' => 'Employer']);
         $role->givePermissionTo([
             'post jobs',
             'manage applications',
+            'view institutions',
+        ]);
+
+        $role = Role::firstOrCreate(['name' => 'Tutor']);
+        $role->givePermissionTo([
+            'manage graduates',
             'verify graduates',
+            'view announcements',
         ]);
     }
 }

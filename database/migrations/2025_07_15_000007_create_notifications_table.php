@@ -8,6 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
+        // Create the notifications table first (Laravel's default structure)
         Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('type');
@@ -15,8 +16,6 @@ return new class extends Migration
             $table->text('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            
-            $table->index(['notifiable_type', 'notifiable_id']);
         });
 
         Schema::create('notification_preferences', function (Blueprint $table) {

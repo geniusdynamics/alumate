@@ -14,6 +14,9 @@ return [
     'domain_model' => Domain::class,
     'central_domains' => [
         'localhost',
+        '127.0.0.1',
+        '127.0.0.1:8080',
+        'localhost:8080',
     ],
     'bootstrappers' => [
         Stancl\Tenancy\TenancyBootstrappers\DatabaseTenancyBootstrapper::class,

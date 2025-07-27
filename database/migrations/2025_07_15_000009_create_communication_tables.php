@@ -76,7 +76,7 @@ return new class extends Migration
         // Employer ratings table
         Schema::create('employer_ratings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('graduate_id')->constrained('graduates')->onDelete('cascade');
+            $table->unsignedBigInteger('graduate_id'); // No foreign key constraint since graduates are tenant-specific
             $table->foreignId('employer_id')->constrained('employers')->onDelete('cascade');
             $table->foreignId('job_id')->nullable()->constrained('jobs')->onDelete('set null');
             $table->integer('overall_rating')->unsigned()->min(1)->max(5);
@@ -130,22 +130,12 @@ return new class extends Migration
             $table->index(['user_id', 'created_at']);
         });
 
-        // Announcement reads table (tracking who read what)
-        Schema::create('announcement_reads', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('announcement_id')->constrained('announcements')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->timestamp('read_at');
-            $table->timestamps();
-
-            $table->unique(['announcement_id', 'user_id']);
-            $table->index(['user_id', 'read_at']);
-        });
+        // Announcement reads table is created in the announcements migration
     }
 
     public function down()
     {
-        Schema::dropIfExists('announcement_reads');
+        // Announcement reads table is dropped in the announcements migration
         Schema::dropIfExists('help_ticket_responses');
         Schema::dropIfExists('help_tickets');
         Schema::dropIfExists('employer_ratings');
