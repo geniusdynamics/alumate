@@ -8,11 +8,15 @@ class ActivityLog extends Model
 {
     protected $fillable = [
         'user_id',
-        'action',
+        'activity',
         'description',
         'ip_address',
         'user_agent',
         'properties',
+        'model_type',
+        'model_id',
+        'session_id',
+        'tenant_id',
     ];
 
     protected $casts = [

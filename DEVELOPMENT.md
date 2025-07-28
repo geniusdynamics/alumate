@@ -4,16 +4,26 @@
 
 ### 1. Start Development Servers
 
-Run the development helper:
+**🚀 Choose your preferred startup method**:
 
 ```bash
+# Enhanced PowerShell script (recommended)
+.\start-dev-final.ps1
+
+# Windows Batch script (simple and reliable)
+.\start-dev.bat
+
+# Interactive development helper
 scripts/development/dev-helper.bat
 ```
 
-Or start servers directly:
-
+**Manual startup**:
 ```bash
-start-dev.bat
+# Start Vite first
+npm run dev
+
+# Then start Laravel (in another terminal)
+php artisan serve --host=127.0.0.1 --port=8080
 ```
 
 ### 2. Access the Application
@@ -23,37 +33,22 @@ start-dev.bat
 
 ⚠️ **Important**: Always use <http://127.0.0.1:8080> for the Laravel application, not the Vite server URL.
 
-## Demo Accounts
+## 🔑 Demo Accounts
 
-### Super Admin
+> **Note**: All demo accounts use the password: `password`
 
-- **Email**: <admin@system.com>
-- **Password**: password
-- **Dashboard**: <http://127.0.0.1:8080/super-admin/dashboard>
+| Role | Email | Password | Dashboard URL |
+|------|-------|----------|---------------|
+| **🔧 Super Admin** | admin@system.com | password | http://127.0.0.1:8080/super-admin/dashboard |
+| **🏫 Institution Admin** | admin@tech-institute.edu | password | http://127.0.0.1:8080/institution-admin/dashboard |
+| **🏢 Institution Admin** | admin@business-college.edu | password | http://127.0.0.1:8080/institution-admin/dashboard |
+| **🎓 Graduate** | john.smith@student.edu | password | http://127.0.0.1:8080/graduate/dashboard |
+| **💼 Employer** | techcorp@company.com | password | http://127.0.0.1:8080/employer/dashboard |
 
-### Institution Admin (Tech Institute)
-
-- **Email**: <admin@tech-institute.edu>
-- **Password**: password
-- **Dashboard**: <http://127.0.0.1:8080/institution-admin/dashboard>
-
-### Institution Admin (Business College)
-
-- **Email**: <admin@business-college.edu>
-- **Password**: password
-- **Dashboard**: <http://127.0.0.1:8080/institution-admin/dashboard>
-
-### Graduate
-
-- **Email**: <john.smith@student.edu>
-- **Password**: password
-- **Dashboard**: <http://127.0.0.1:8080/graduate/dashboard>
-
-### Employer
-
-- **Email**: <techcorp@company.com>
-- **Password**: password
-- **Dashboard**: <http://127.0.0.1:8080/employer/dashboard>
+### 🚀 Quick Test Login
+1. Go to: http://127.0.0.1:8080/login
+2. Use any account above
+3. Password is always: `password`
 
 ## Quick Access Links
 

@@ -124,6 +124,7 @@ declare module 'vue' {
     Layout: typeof import('./resources/js/layouts/settings/Layout.vue')['default']
     LazyLoad: typeof import('./resources/js/components/common/LazyLoad.vue')['default']
     LoadingButton: typeof import('./resources/js/components/loaders/LoadingButton.vue')['default']
+    Modal: typeof import('./resources/js/components/Modal.vue')['default']
     NavFooter: typeof import('./resources/js/components/NavFooter.vue')['default']
     NavigationMenu: typeof import('./resources/js/components/ui/navigation-menu/NavigationMenu.vue')['default']
     NavigationMenuContent: typeof import('./resources/js/components/ui/navigation-menu/NavigationMenuContent.vue')['default']

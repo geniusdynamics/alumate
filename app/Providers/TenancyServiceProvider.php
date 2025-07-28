@@ -35,15 +35,8 @@ class TenancyServiceProvider extends ServiceProvider
 
     protected function makeTenancyMiddlewareHighestPriority()
     {
-        $tenancyMiddleware = [
-            // Even higher priority than the initialization middleware
-            PreventAccessFromCentralDomains::class,
-
-            InitializeTenancyByDomain::class,
-        ];
-
-        foreach (array_reverse($tenancyMiddleware) as $middleware) {
-            $this->app[\Illuminate\Contracts\Http\Kernel::class]->prependMiddleware($middleware);
-        }
+        // Don't apply tenancy middleware globally
+        // It should only be applied to tenant routes, not central routes
+        // The routes/web.php file handles this with the 'tenant' middleware group
     }
 }

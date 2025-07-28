@@ -177,6 +177,16 @@
                                         <Link :href="route('login')" class="text-xs text-purple-600 hover:text-purple-800">Login →</Link>
                                     </div>
                                 </div>
+                                <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                                    <div>
+                                        <p class="font-medium text-orange-900">Employer</p>
+                                        <p class="text-sm text-orange-700">techcorp@company.com</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="text-xs text-orange-600 font-mono">password</p>
+                                        <Link :href="route('login')" class="text-xs text-orange-600 hover:text-orange-800">Login →</Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

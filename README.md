@@ -137,8 +137,14 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 
 5. **Start Development Servers**
    ```bash
-   # Use the convenient development helper
-   start-dev.bat
+   # Windows Batch script (simple)
+   .\start-dev.bat
+   
+   # PowerShell script (enhanced)
+   .\start-dev-final.ps1
+   
+   # Interactive helper
+   scripts/development/dev-helper.bat
    
    # Or start manually
    php artisan serve --port=8080
@@ -147,8 +153,24 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 
 6. **Access the Application**
    - **Main Application**: http://127.0.0.1:8080
-   - **Super Admin**: admin@system.com / password
-   - **Institution Admin**: admin@tech-institute.edu / password
+   - **Login Page**: http://127.0.0.1:8080/login
+
+### 🔑 **Test Accounts** ✅ **ROLES FIXED**
+
+| Role | Email | Password | Dashboard URL |
+|------|-------|----------|---------------|
+| **Super Admin** | admin@system.com | password | http://127.0.0.1:8080/super-admin/dashboard |
+| **Institution Admin** | admin@tech-institute.edu | password | http://127.0.0.1:8080/institution-admin/dashboard |
+| **Graduate** | john.smith@student.edu | password | http://127.0.0.1:8080/graduate/dashboard |
+| **Employer** | techcorp@company.com | password | http://127.0.0.1:8080/employer/dashboard |
+
+> **✅ All accounts now have proper roles and permissions - 403 errors fixed!**
+
+### 🌐 **Quick Access URLs**
+- **Main Application**: http://127.0.0.1:8080
+- **Login**: http://127.0.0.1:8080/login
+- **Register**: http://127.0.0.1:8080/register
+- **Testing Suite**: http://127.0.0.1:8080/testing
 
 ## 👤 User Roles & Capabilities
 

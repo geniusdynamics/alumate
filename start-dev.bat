@@ -25,9 +25,10 @@ echo   DEVELOPMENT SERVERS RUNNING
 echo ========================================
 echo.
 echo ^> Laravel Application: http://127.0.0.1:8080
-echo   - Super Admin Login: admin@system.com / password
+echo   - Super Admin: admin@system.com / password
 echo   - Institution Admin: admin@tech-institute.edu / password
-echo   - Institution Admin: admin@business-college.edu / password
+echo   - Graduate: john.smith@student.edu / password
+echo   - Employer: techcorp@company.com / password
 echo.
 echo ^> Vite Dev Server: http://localhost:5173 (for assets only)
 echo.
