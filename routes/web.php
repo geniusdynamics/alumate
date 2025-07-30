@@ -42,6 +42,18 @@ Route::middleware(['auth', 'role:super-admin'])->prefix('security')->name('secur
     Route::get('system-health', [\App\Http\Controllers\SecurityController::class, 'systemHealth'])->name('system-health');
 });
 
+// Social Authentication Routes
+Route::prefix('auth')->name('social.')->group(function () {
+    Route::get('{provider}', [\App\Http\Controllers\SocialAuthController::class, 'redirectToProvider'])->name('redirect');
+    Route::get('{provider}/callback', [\App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback'])->name('callback');
+    
+    Route::middleware('auth')->group(function () {
+        Route::get('link/{provider}', [\App\Http\Controllers\SocialAuthController::class, 'linkProfile'])->name('link');
+        Route::delete('unlink/{profileId}', [\App\Http\Controllers\SocialAuthController::class, 'unlinkProfile'])->name('unlink');
+        Route::get('profiles', [\App\Http\Controllers\SocialAuthController::class, 'showLinkingPage'])->name('profiles');
+    });
+});
+
 Route::middleware('auth')->group(function () {
     // User Management
     Route::resource('users', UserController::class);

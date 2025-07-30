@@ -27,6 +27,7 @@ class User extends Authenticatable
         'institution_id',
         'profile_data',
         'preferences',
+        'notification_preferences',
         'is_suspended',
         'suspended_at',
         'suspension_reason',
@@ -76,6 +77,7 @@ class User extends Authenticatable
             'last_activity_at' => 'datetime',
             'profile_data' => 'array',
             'preferences' => 'array',
+            'notification_preferences' => 'array',
             'two_factor_enabled' => 'boolean',
             'is_suspended' => 'boolean',
         ];
@@ -120,6 +122,78 @@ class User extends Authenticatable
     public function sessionSecurity()
     {
         return $this->hasMany(SessionSecurity::class);
+    }
+
+    // Social relationships
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function socialProfiles()
+    {
+        return $this->hasMany(SocialProfile::class);
+    }
+
+    public function circles()
+    {
+        return $this->belongsToMany(Circle::class, 'circle_memberships')
+                    ->withPivot('joined_at', 'status')
+                    ->withTimestamps();
+    }
+
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'group_memberships')
+                    ->withPivot('role', 'joined_at', 'status')
+                    ->withTimestamps();
+    }
+
+    public function connections()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connected_user_id')
+                    ->withPivot('status', 'message', 'connected_at')
+                    ->withTimestamps();
+    }
+
+    public function sentConnectionRequests()
+    {
+        return $this->hasMany(Connection::class, 'user_id');
+    }
+
+    public function receivedConnectionRequests()
+    {
+        return $this->hasMany(Connection::class, 'connected_user_id');
+    }
+
+    public function postEngagements()
+    {
+        return $this->hasMany(PostEngagement::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function educations()
+    {
+        return $this->hasMany(EducationHistory::class, 'graduate_id');
+    }
+
+    public function careerTimeline()
+    {
+        return $this->hasMany(CareerTimeline::class)->ordered();
+    }
+
+    public function careerMilestones()
+    {
+        return $this->hasMany(CareerMilestone::class)->ordered();
+    }
+
+    public function currentPosition()
+    {
+        return $this->hasOne(CareerTimeline::class)->where('is_current', true);
     }
 
     // Scopes
@@ -348,5 +422,131 @@ class User extends Authenticatable
                 ->orderBy('count', 'desc')
                 ->first()?->date,
         ];
+    }
+
+    // Social methods
+    public function getConnectionStatus(User $otherUser): string
+    {
+        if ($this->id === $otherUser->id) {
+            return 'self';
+        }
+
+        $connection = $this->sentConnectionRequests()
+                          ->where('connected_user_id', $otherUser->id)
+                          ->first();
+
+        if ($connection) {
+            return $connection->status;
+        }
+
+        $receivedConnection = $this->receivedConnectionRequests()
+                                  ->where('user_id', $otherUser->id)
+                                  ->first();
+
+        if ($receivedConnection) {
+            return $receivedConnection->status === 'pending' ? 'received_request' : $receivedConnection->status;
+        }
+
+        return 'none';
+    }
+
+    public function sendConnectionRequest(User $otherUser, string $message = null): Connection
+    {
+        return Connection::create([
+            'user_id' => $this->id,
+            'connected_user_id' => $otherUser->id,
+            'message' => $message,
+            'status' => 'pending',
+        ]);
+    }
+
+    public function acceptConnectionRequest(int $connectionId): bool
+    {
+        $connection = $this->receivedConnectionRequests()
+                          ->where('id', $connectionId)
+                          ->where('status', 'pending')
+                          ->first();
+
+        return $connection ? $connection->accept() : false;
+    }
+
+    public function getAcceptedConnections()
+    {
+        return $this->connections()->wherePivot('status', 'accepted');
+    }
+
+    public function getPendingConnectionRequests()
+    {
+        return $this->receivedConnectionRequests()->where('status', 'pending');
+    }
+
+    public function getMutualConnections(User $otherUser)
+    {
+        return Connection::mutualConnections($this, $otherUser);
+    }
+
+    public function isConnectedTo(User $otherUser): bool
+    {
+        return $this->getConnectionStatus($otherUser) === 'accepted';
+    }
+
+    public function getSharedCircles(User $otherUser)
+    {
+        $myCircleIds = $this->circles()->pluck('circles.id');
+        $theirCircleIds = $otherUser->circles()->pluck('circles.id');
+        
+        $sharedCircleIds = $myCircleIds->intersect($theirCircleIds);
+        
+        return Circle::whereIn('id', $sharedCircleIds)->get();
+    }
+
+    public function getSharedGroups(User $otherUser)
+    {
+        $myGroupIds = $this->groups()->pluck('groups.id');
+        $theirGroupIds = $otherUser->groups()->pluck('groups.id');
+        
+        $sharedGroupIds = $myGroupIds->intersect($theirGroupIds);
+        
+        return Group::whereIn('id', $sharedGroupIds)->get();
+    }
+
+    // Mentorship relationships
+    public function mentorProfile()
+    {
+        return $this->hasOne(MentorProfile::class);
+    }
+
+    public function mentorRequests()
+    {
+        return $this->hasMany(MentorshipRequest::class, 'mentor_id');
+    }
+
+    public function menteeRequests()
+    {
+        return $this->hasMany(MentorshipRequest::class, 'mentee_id');
+    }
+
+    public function activeMentorships()
+    {
+        return $this->menteeRequests()->where('status', 'accepted');
+    }
+
+    public function activeMentees()
+    {
+        return $this->mentorRequests()->where('status', 'accepted');
+    }
+
+    public function isMentor(): bool
+    {
+        return $this->mentorProfile()->exists() && $this->mentorProfile->is_active;
+    }
+
+    public function canBeMentor(): bool
+    {
+        // Basic criteria for becoming a mentor
+        $hasExperience = $this->careerTimeline()->count() > 0;
+        $hasEducation = $this->educations()->count() > 0;
+        
+        return $hasExperience && $hasEducation;
     }
 }

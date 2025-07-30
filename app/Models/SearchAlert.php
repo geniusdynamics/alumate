@@ -4,77 +4,108 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SearchAlert extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'saved_search_id',
-        'results_count',
-        'sent_at',
-        'results_data',
-        'opened_at',
-        'clicked_results',
+        'frequency',
+        'is_active',
+        'last_sent_at',
+        'next_send_at'
     ];
 
     protected $casts = [
-        'results_count' => 'integer',
-        'sent_at' => 'datetime',
-        'results_data' => 'array',
-        'opened_at' => 'datetime',
-        'clicked_results' => 'array',
+        'is_active' => 'boolean',
+        'last_sent_at' => 'datetime',
+        'next_send_at' => 'datetime'
     ];
 
-    // Relationships
-    public function savedSearch()
+    const FREQUENCIES = [
+        'daily' => 'Daily',
+        'weekly' => 'Weekly',
+        'monthly' => 'Monthly'
+    ];
+
+    /**
+     * Get the user that owns the search alert
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the saved search for this alert
+     */
+    public function savedSearch(): BelongsTo
     {
         return $this->belongsTo(SavedSearch::class);
     }
 
-    // Scopes
-    public function scopeRecent($query, $days = 30)
+    /**
+     * Calculate the next send time based on frequency
+     */
+    public function calculateNextSendTime(): void
     {
-        return $query->where('sent_at', '>=', now()->subDays($days));
-    }
-
-    public function scopeOpened($query)
-    {
-        return $query->whereNotNull('opened_at');
-    }
-
-    public function scopeUnopened($query)
-    {
-        return $query->whereNull('opened_at');
-    }
-
-    // Helper Methods
-    public function markAsOpened()
-    {
-        if (!$this->opened_at) {
-            $this->update(['opened_at' => now()]);
-        }
-    }
-
-    public function trackResultClick($resultId, $resultType)
-    {
-        $clicks = $this->clicked_results ?? [];
-        $clicks[] = [
-            'result_id' => $resultId,
-            'result_type' => $resultType,
-            'clicked_at' => now()->toISOString(),
-        ];
+        $lastSent = $this->last_sent_at ?? now();
         
-        $this->update(['clicked_results' => $clicks]);
+        $nextSend = match ($this->frequency) {
+            'daily' => $lastSent->addDay(),
+            'weekly' => $lastSent->addWeek(),
+            'monthly' => $lastSent->addMonth(),
+            default => $lastSent->addDay()
+        };
+        
+        $this->update(['next_send_at' => $nextSend]);
     }
 
-    public function getClickThroughRate()
+    /**
+     * Mark alert as sent
+     */
+    public function markAsSent(): void
     {
-        if ($this->results_count === 0) {
-            return 0;
-        }
+        $this->update(['last_sent_at' => now()]);
+        $this->calculateNextSendTime();
+    }
 
-        $uniqueClicks = collect($this->clicked_results ?? [])->unique('result_id')->count();
-        return round(($uniqueClicks / $this->results_count) * 100, 2);
+    /**
+     * Check if alert is due to be sent
+     */
+    public function isDue(): bool
+    {
+        if (!$this->is_active) {
+            return false;
+        }
+        
+        if (!$this->next_send_at) {
+            return true; // First time sending
+        }
+        
+        return $this->next_send_at <= now();
+    }
+
+    /**
+     * Scope for active alerts
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope for due alerts
+     */
+    public function scopeDue($query)
+    {
+        return $query->active()
+            ->where(function ($q) {
+                $q->whereNull('next_send_at')
+                  ->orWhere('next_send_at', '<=', now());
+            });
     }
 }

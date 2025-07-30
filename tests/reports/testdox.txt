@@ -1,64 +1,11 @@
-Analytics Service (Tests\Unit\Services\AnalyticsService)
- [ ] Can generate daily snapshot
- [ ] Can calculate employment rate
- [ ] Can get employment analytics
- [ ] Can get job market analytics
- [ ] Can calculate kpi values
- [ ] Can export analytics data
- [ ] Can get course performance metrics
- [ ] Can get employer analytics
- [ ] Can generate trend analysis
- [ ] Can calculate placement success rate
- [ ] Can get salary distribution
-
-D:\DevCenter\abuilds\alumate\tests\Unit\ExampleTest.php
- [x] that true is true
-
-Graduate Tracking Models (Tests\Unit\Models\GraduateTrackingModels)
- [ ] Graduate model has correct fillable attributes
- [ ] Graduate relationships
- [ ] Graduate profile completion calculation
- [ ] Graduate employment status update
- [ ] Course model has correct relationships
- [ ] Course statistics update
- [ ] Employer model verification methods
- [ ] Employer job statistics update
- [ ] Job model application tracking
- [ ] Job matching graduates
- [ ] Job application status workflow
- [ ] Job application match score calculation
- [ ] Model scopes work correctly
- [ ] Model accessors work correctly
-
-Search Service (Tests\Unit\Services\SearchService)
- [ ] Can search graduates
- [ ] Can search jobs
- [ ] Can perform advanced graduate search
- [ ] Can perform advanced job search
- [ ] Can save search
- [ ] Can create search alert
- [ ] Can execute saved search
- [ ] Can get search suggestions
- [ ] Can get popular searches
- [ ] Can track search analytics
- [ ] Can get search history
- [ ] Can optimize search query
-
-Security Service (Tests\Unit\Services\SecurityService)
- [ ] Can log security event
- [ ] Can handle failed login attempt
- [ ] Blocks after max attempts
- [ ] Can handle successful login
- [ ] Can enable two factor auth
- [ ] Can disable two factor auth
- [ ] Can detect rate limit violation
- [ ] Can detect malicious request
- [ ] Can validate session security
- [ ] Can generate security report
- [ ] Can calculate security score
- [ ] Can detect suspicious activity
- [ ] Can cleanup expired sessions
-
-Tenant (Tests\Unit\Tenant)
- [ ] It can create a tenant with the new attributes
+Job Matching (Tests\Feature\JobMatching)
+ [ ] User can get job recommendations
+ [ ] User can get job details
+ [ ] User can apply for job
+ [ ] User cannot apply twice for same job
+ [ ] User can request introduction
+ [ ] User can get mutual connections for job
+ [ ] User can get their applications
+ [ ] Job recommendations are filtered by minimum score
+ [ ] Inactive jobs are not included in recommendations
 
