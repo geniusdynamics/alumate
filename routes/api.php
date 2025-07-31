@@ -11,6 +11,9 @@ use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\CareerTimelineController;
 use App\Http\Controllers\Api\MentorshipController;
 use App\Http\Controllers\Api\JobMatchingController;
+use App\Http\Controllers\Api\SkillsController;
+use App\Http\Controllers\Api\EventsController;
+use App\Http\Controllers\Api\ReunionController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -147,4 +150,82 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Introduction requests
     Route::post('jobs/{jobId}/request-introduction', [JobMatchingController::class, 'requestIntroduction']);
+});
+
+// Skills Development routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Skills management
+    Route::get('users/{userId}/skills', [SkillsController::class, 'getUserSkills']);
+    Route::post('users/skills', [SkillsController::class, 'addSkill']);
+    Route::post('skills/endorse', [SkillsController::class, 'endorseSkill']);
+    Route::get('skills/search', [SkillsController::class, 'searchSkills']);
+    
+    // Skill suggestions and analysis
+    Route::get('skills/suggestions', [SkillsController::class, 'getSkillSuggestions']);
+    Route::get('skills/{skillId}/progression', [SkillsController::class, 'getSkillProgression']);
+    Route::get('skills/{skillId}/recommendations', [SkillsController::class, 'getLearningRecommendations']);
+    Route::get('skills/gap-analysis', [SkillsController::class, 'getSkillsGapAnalysis']);
+    
+    // Learning resources
+    Route::get('learning-resources', [SkillsController::class, 'getResources']);
+    Route::post('learning-resources', [SkillsController::class, 'createLearningResource']);
+    Route::post('learning-resources/{resource}/rate', [SkillsController::class, 'rateResource']);
+});
+
+// Events routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('events', EventsController::class);
+    Route::post('events/{event}/register', [EventsController::class, 'register']);
+    Route::delete('events/{event}/register', [EventsController::class, 'cancelRegistration']);
+    Route::post('events/{event}/checkin', [EventsController::class, 'checkIn']);
+    Route::get('events/{event}/attendees', [EventsController::class, 'attendees']);
+    Route::get('events/{event}/analytics', [EventsController::class, 'analytics']);
+    Route::get('events-upcoming', [EventsController::class, 'upcoming']);
+    Route::get('events-recommended', [EventsController::class, 'recommended']);
+
+    // Event follow-up and networking routes
+    Route::post('events/{event}/feedback', [\App\Http\Controllers\Api\EventFollowUpController::class, 'submitFeedback']);
+    Route::get('events/{event}/feedback-analytics', [\App\Http\Controllers\Api\EventFollowUpController::class, 'getFeedbackAnalytics']);
+    Route::post('events/{event}/highlights', [\App\Http\Controllers\Api\EventFollowUpController::class, 'createHighlight']);
+    Route::get('events/{event}/highlights', [\App\Http\Controllers\Api\EventFollowUpController::class, 'getHighlights']);
+    Route::post('highlights/{highlight}/interact', [\App\Http\Controllers\Api\EventFollowUpController::class, 'interactWithHighlight']);
+    Route::post('highlights/{highlight}/toggle-feature', [\App\Http\Controllers\Api\EventFollowUpController::class, 'toggleHighlightFeature']);
+    Route::post('events/{event}/connections', [\App\Http\Controllers\Api\EventFollowUpController::class, 'createConnection']);
+    Route::get('events/{event}/connections', [\App\Http\Controllers\Api\EventFollowUpController::class, 'getConnections']);
+    Route::post('events/{event}/generate-recommendations', [\App\Http\Controllers\Api\EventFollowUpController::class, 'generateRecommendations']);
+    Route::get('events/{event}/recommendations', [\App\Http\Controllers\Api\EventFollowUpController::class, 'getRecommendations']);
+    Route::post('recommendations/{recommendation}/act', [\App\Http\Controllers\Api\EventFollowUpController::class, 'actOnRecommendation']);
+    Route::post('recommendations/{recommendation}/viewed', [\App\Http\Controllers\Api\EventFollowUpController::class, 'markRecommendationViewed']);
+    Route::get('events/{event}/follow-up-activities', [\App\Http\Controllers\Api\EventFollowUpController::class, 'getFollowUpActivities']);
+    Route::get('events/{event}/follow-up-analytics', [\App\Http\Controllers\Api\EventFollowUpController::class, 'getFollowUpAnalytics']);
+});
+
+// Reunion routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('reunions', [ReunionController::class, 'index']);
+    Route::post('reunions', [ReunionController::class, 'store']);
+    Route::get('reunions/milestones', [ReunionController::class, 'milestones']);
+    Route::get('reunions/graduation-year/{year}', [ReunionController::class, 'byGraduationYear']);
+    Route::get('reunions/{event}', [ReunionController::class, 'show']);
+    Route::put('reunions/{event}', [ReunionController::class, 'update']);
+    Route::get('reunions/{event}/statistics', [ReunionController::class, 'statistics']);
+    
+    // Photo sharing
+    Route::get('reunions/{event}/photos', [ReunionController::class, 'photos']);
+    Route::post('reunions/{event}/photos', [ReunionController::class, 'uploadPhoto']);
+    Route::post('reunion-photos/{photo}/like', [ReunionController::class, 'likePhoto']);
+    Route::delete('reunion-photos/{photo}/like', [ReunionController::class, 'unlikePhoto']);
+    Route::post('reunion-photos/{photo}/comments', [ReunionController::class, 'commentOnPhoto']);
+    
+    // Memory wall
+    Route::get('reunions/{event}/memories', [ReunionController::class, 'memories']);
+    Route::post('reunions/{event}/memories', [ReunionController::class, 'createMemory']);
+    Route::post('reunion-memories/{memory}/like', [ReunionController::class, 'likeMemory']);
+    Route::delete('reunion-memories/{memory}/like', [ReunionController::class, 'unlikeMemory']);
+    Route::post('reunion-memories/{memory}/comments', [ReunionController::class, 'commentOnMemory']);
+    
+    // Committee management
+    Route::get('reunions/{event}/committee', [ReunionController::class, 'committeeMembers']);
+    Route::post('reunions/{event}/committee', [ReunionController::class, 'addCommitteeMember']);
+    Route::delete('reunions/{event}/committee', [ReunionController::class, 'removeCommitteeMember']);
 });

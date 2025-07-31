@@ -11,39 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Create saved_searches table
-        Schema::create('saved_searches', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->enum('search_type', ['jobs', 'graduates', 'courses']);
-            $table->json('search_criteria');
-            $table->boolean('alert_enabled')->default(false);
-            $table->enum('alert_frequency', ['immediate', 'daily', 'weekly'])->default('weekly');
-            $table->timestamp('last_alert_sent')->nullable();
-            $table->integer('results_count')->default(0);
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-
-            $table->index(['user_id', 'search_type']);
-            $table->index(['alert_enabled', 'is_active']);
-            $table->index('last_alert_sent');
-        });
-
-        // Create search_alerts table
-        Schema::create('search_alerts', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('saved_search_id')->constrained()->onDelete('cascade');
-            $table->integer('results_count');
-            $table->timestamp('sent_at');
-            $table->json('results_data');
-            $table->timestamp('opened_at')->nullable();
-            $table->json('clicked_results')->nullable();
-            $table->timestamps();
-
-            $table->index(['saved_search_id', 'sent_at']);
-            $table->index('opened_at');
-        });
+        // Skip saved_searches and search_alerts tables - they're created in separate migrations
 
         // Create search_analytics table for tracking search patterns
         Schema::create('search_analytics', function (Blueprint $table) {
@@ -111,7 +79,5 @@ return new class extends Migration
         });
 
         Schema::dropIfExists('search_analytics');
-        Schema::dropIfExists('search_alerts');
-        Schema::dropIfExists('saved_searches');
     }
 };

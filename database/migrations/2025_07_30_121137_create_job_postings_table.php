@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_postings', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+        // Only create if companies table exists
+        if (Schema::hasTable('companies')) {
+            Schema::create('job_postings', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->json('requirements')->nullable();
@@ -37,6 +39,7 @@ return new class extends Migration
             $table->index('employment_type');
             $table->index('experience_level');
         });
+        }
     }
 
     /**

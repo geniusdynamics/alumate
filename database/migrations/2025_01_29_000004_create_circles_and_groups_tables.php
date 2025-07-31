@@ -40,11 +40,13 @@ return new class extends Migration
             $table->integer('member_count')->default(0);
             $table->timestamps();
 
-            // Foreign key constraints
-            $table->foreign('institution_id')
-                  ->references('id')
-                  ->on('institutions')
-                  ->onDelete('cascade');
+            // Foreign key constraints - only if institutions table exists
+            if (Schema::hasTable('institutions')) {
+                $table->foreign('institution_id')
+                      ->references('id')
+                      ->on('institutions')
+                      ->onDelete('cascade');
+            }
             
             $table->foreign('creator_id')
                   ->references('id')

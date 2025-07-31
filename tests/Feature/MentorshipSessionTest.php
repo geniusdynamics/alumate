@@ -258,7 +258,4 @@ class MentorshipSessionTest extends TestCase
         $response->assertStatus(422)
                 ->assertJsonValidationErrors(['mentorship_id']);
     }
-}       $response->assertStatus(422)
-                ->assertJsonValidationErrors(['mentorship_id']);
-    }
 }

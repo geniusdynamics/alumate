@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_applications', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('job_id')->constrained('job_postings')->onDelete('cascade');
+        // Only create if job_postings table exists and job_applications doesn't exist
+        if (Schema::hasTable('job_postings') && !Schema::hasTable('job_applications')) {
+            Schema::create('job_applications', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('job_id')->constrained('job_postings')->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('status', [
                 'pending', 
@@ -39,6 +41,7 @@ return new class extends Migration
             $table->index('applied_at');
             $table->index('introduction_contact_id');
         });
+        }
     }
 
     /**

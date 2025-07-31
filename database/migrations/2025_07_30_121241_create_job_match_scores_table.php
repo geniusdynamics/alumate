@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_match_scores', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('job_id')->constrained('job_postings')->onDelete('cascade');
+        // Only create if job_postings table exists
+        if (Schema::hasTable('job_postings')) {
+            Schema::create('job_match_scores', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('job_id')->constrained('job_postings')->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal('score', 5, 2); // Overall match score (0-100)
             $table->json('reasons')->nullable(); // Detailed reasons for the match
@@ -32,6 +34,7 @@ return new class extends Migration
             $table->index('calculated_at'); // For finding stale scores
             $table->index('score'); // For filtering by score ranges
         });
+        }
     }
 
     /**

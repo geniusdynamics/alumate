@@ -1,11 +1,14 @@
-Job Matching (Tests\Feature\JobMatching)
- [ ] User can get job recommendations
- [ ] User can get job details
- [ ] User can apply for job
- [ ] User cannot apply twice for same job
- [ ] User can request introduction
- [ ] User can get mutual connections for job
- [ ] User can get their applications
- [ ] Job recommendations are filtered by minimum score
- [ ] Inactive jobs are not included in recommendations
+Event Follow Up (Tests\Feature\EventFollowUp)
+ [ ] User can submit feedback
+ [ ] User cannot submit feedback twice
+ [ ] User can create highlight
+ [ ] User can get event highlights
+ [ ] User can like highlight
+ [ ] User can create networking connection
+ [ ] User can generate connection recommendations
+ [ ] User can get connection recommendations
+ [ ] Feedback analytics calculation
+ [ ] Follow up analytics calculation
+ [ ] Non attendee cannot submit feedback
+ [ ] Non attendee cannot create highlight
 

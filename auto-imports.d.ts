@@ -10,6 +10,8 @@ declare global {
   const AccordionContent: typeof import('./resources/js/components/ui/accordion/index')['AccordionContent']
   const AccordionItem: typeof import('./resources/js/components/ui/accordion/index')['AccordionItem']
   const AccordionTrigger: typeof import('./resources/js/components/ui/accordion/index')['AccordionTrigger']
+  const AlumniCard: typeof import('./resources/js/components/AlumniCard.vue')['default']
+  const AlumniProfile: typeof import('./resources/js/components/AlumniProfile.vue')['default']
   const AutoForm: typeof import('./resources/js/components/ui/auto-form/index')['AutoForm']
   const AutoFormField: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormField']
   const AutoFormFieldArray: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldArray']
@@ -56,6 +58,8 @@ declare global {
   const Collapsible: typeof import('./resources/js/components/ui/collapsible/index')['Collapsible']
   const CollapsibleContent: typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleContent']
   const CollapsibleTrigger: typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleTrigger']
+  const CommentThread: typeof import('./resources/js/components/PostComments.vue')['CommentThread']
+  const ConnectionRequestModal: typeof import('./resources/js/components/ConnectionRequestModal.vue')['default']
   const DEFAULT_ZOD_HANDLERS: typeof import('./resources/js/components/ui/auto-form/constant')['DEFAULT_ZOD_HANDLERS']
   const DependencyType: typeof import('./resources/js/components/ui/auto-form/interface')['DependencyType']
   const Dialog: typeof import('./resources/js/components/ui/dialog/index')['Dialog']
@@ -68,6 +72,7 @@ declare global {
   const DialogScrollContent: typeof import('./resources/js/components/ui/dialog/index')['DialogScrollContent']
   const DialogTitle: typeof import('./resources/js/components/ui/dialog/index')['DialogTitle']
   const DialogTrigger: typeof import('./resources/js/components/ui/dialog/index')['DialogTrigger']
+  const DirectoryFilters: typeof import('./resources/js/components/DirectoryFilters.vue')['default']
   const DropdownMenu: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenu']
   const DropdownMenuCheckboxItem: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuCheckboxItem']
   const DropdownMenuContent: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuContent']
@@ -96,6 +101,7 @@ declare global {
   const INPUT_COMPONENTS: typeof import('./resources/js/components/ui/auto-form/constant')['INPUT_COMPONENTS']
   const Input: typeof import('./resources/js/components/ui/input/index')['Input']
   const Label: typeof import('./resources/js/components/ui/label/index')['Label']
+  const LearningResources: typeof import('./resources/js/components/LearningResources.vue')['default']
   const NavigationMenu: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenu']
   const NavigationMenuContent: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuContent']
   const NavigationMenuIndicator: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuIndicator']
@@ -108,6 +114,7 @@ declare global {
   const PopoverAnchor: typeof import('./resources/js/components/ui/popover/index')['PopoverAnchor']
   const PopoverContent: typeof import('./resources/js/components/ui/popover/index')['PopoverContent']
   const PopoverTrigger: typeof import('./resources/js/components/ui/popover/index')['PopoverTrigger']
+  const PostCreator: typeof import('./resources/js/components/PostCreator.vue')['default']
   const Progress: typeof import('./resources/js/components/ui/progress/index')['Progress']
   const RadioGroup: typeof import('./resources/js/components/ui/radio-group/index')['RadioGroup']
   const RadioGroupItem: typeof import('./resources/js/components/ui/radio-group/index')['RadioGroupItem']
@@ -161,7 +168,11 @@ declare global {
   const SidebarSeparator: typeof import('./resources/js/components/ui/sidebar/index')['SidebarSeparator']
   const SidebarTrigger: typeof import('./resources/js/components/ui/sidebar/index')['SidebarTrigger']
   const Skeleton: typeof import('./resources/js/components/ui/skeleton/index')['Skeleton']
+  const SkillEndorsement: typeof import('./resources/js/components/SkillEndorsement.vue')['default']
+  const SkillProgression: typeof import('./resources/js/components/SkillProgression.vue')['default']
+  const SkillSuggestions: typeof import('./resources/js/components/SkillSuggestions.vue')['default']
   const SkillsInput: typeof import('./resources/js/components/SkillsInput.vue')['default']
+  const SkillsProfile: typeof import('./resources/js/components/SkillsProfile.vue')['default']
   const Stepper: typeof import('./resources/js/components/ui/stepper/index')['Stepper']
   const StepperDescription: typeof import('./resources/js/components/ui/stepper/index')['StepperDescription']
   const StepperIndicator: typeof import('./resources/js/components/ui/stepper/index')['StepperIndicator']
@@ -185,6 +196,7 @@ declare global {
   const TooltipContent: typeof import('./resources/js/components/ui/tooltip/index')['TooltipContent']
   const TooltipProvider: typeof import('./resources/js/components/ui/tooltip/index')['TooltipProvider']
   const TooltipTrigger: typeof import('./resources/js/components/ui/tooltip/index')['TooltipTrigger']
+  const WorkshopCalendar: typeof import('./resources/js/components/WorkshopCalendar.vue')['default']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const beautifyObjectName: typeof import('./resources/js/components/ui/auto-form/utils')['beautifyObjectName']
@@ -541,6 +553,8 @@ declare module 'vue' {
     readonly AccordionContent: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionContent']>
     readonly AccordionItem: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionItem']>
     readonly AccordionTrigger: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionTrigger']>
+    readonly AlumniCard: UnwrapRef<typeof import('./resources/js/components/AlumniCard.vue')['default']>
+    readonly AlumniProfile: UnwrapRef<typeof import('./resources/js/components/AlumniProfile.vue')['default']>
     readonly AutoForm: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoForm']>
     readonly AutoFormField: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormField']>
     readonly AutoFormFieldArray: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldArray']>
@@ -587,6 +601,8 @@ declare module 'vue' {
     readonly Collapsible: UnwrapRef<typeof import('./resources/js/components/ui/collapsible/index')['Collapsible']>
     readonly CollapsibleContent: UnwrapRef<typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleContent']>
     readonly CollapsibleTrigger: UnwrapRef<typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleTrigger']>
+    readonly CommentThread: UnwrapRef<typeof import('./resources/js/components/PostComments.vue')['CommentThread']>
+    readonly ConnectionRequestModal: UnwrapRef<typeof import('./resources/js/components/ConnectionRequestModal.vue')['default']>
     readonly DEFAULT_ZOD_HANDLERS: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/constant')['DEFAULT_ZOD_HANDLERS']>
     readonly DependencyType: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/interface')['DependencyType']>
     readonly Dialog: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['Dialog']>
@@ -599,6 +615,7 @@ declare module 'vue' {
     readonly DialogScrollContent: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogScrollContent']>
     readonly DialogTitle: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogTitle']>
     readonly DialogTrigger: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogTrigger']>
+    readonly DirectoryFilters: UnwrapRef<typeof import('./resources/js/components/DirectoryFilters.vue')['default']>
     readonly DropdownMenu: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenu']>
     readonly DropdownMenuCheckboxItem: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuCheckboxItem']>
     readonly DropdownMenuContent: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuContent']>
@@ -627,6 +644,7 @@ declare module 'vue' {
     readonly INPUT_COMPONENTS: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/constant')['INPUT_COMPONENTS']>
     readonly Input: UnwrapRef<typeof import('./resources/js/components/ui/input/index')['Input']>
     readonly Label: UnwrapRef<typeof import('./resources/js/components/ui/label/index')['Label']>
+    readonly LearningResources: UnwrapRef<typeof import('./resources/js/components/LearningResources.vue')['default']>
     readonly NavigationMenu: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenu']>
     readonly NavigationMenuContent: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuContent']>
     readonly NavigationMenuIndicator: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuIndicator']>
@@ -639,6 +657,7 @@ declare module 'vue' {
     readonly PopoverAnchor: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverAnchor']>
     readonly PopoverContent: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverContent']>
     readonly PopoverTrigger: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverTrigger']>
+    readonly PostCreator: UnwrapRef<typeof import('./resources/js/components/PostCreator.vue')['default']>
     readonly Progress: UnwrapRef<typeof import('./resources/js/components/ui/progress/index')['Progress']>
     readonly RadioGroup: UnwrapRef<typeof import('./resources/js/components/ui/radio-group/index')['RadioGroup']>
     readonly RadioGroupItem: UnwrapRef<typeof import('./resources/js/components/ui/radio-group/index')['RadioGroupItem']>
@@ -692,7 +711,11 @@ declare module 'vue' {
     readonly SidebarSeparator: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarSeparator']>
     readonly SidebarTrigger: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarTrigger']>
     readonly Skeleton: UnwrapRef<typeof import('./resources/js/components/ui/skeleton/index')['Skeleton']>
+    readonly SkillEndorsement: UnwrapRef<typeof import('./resources/js/components/SkillEndorsement.vue')['default']>
+    readonly SkillProgression: UnwrapRef<typeof import('./resources/js/components/SkillProgression.vue')['default']>
+    readonly SkillSuggestions: UnwrapRef<typeof import('./resources/js/components/SkillSuggestions.vue')['default']>
     readonly SkillsInput: UnwrapRef<typeof import('./resources/js/components/SkillsInput.vue')['default']>
+    readonly SkillsProfile: UnwrapRef<typeof import('./resources/js/components/SkillsProfile.vue')['default']>
     readonly Stepper: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['Stepper']>
     readonly StepperDescription: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperDescription']>
     readonly StepperIndicator: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperIndicator']>
@@ -716,6 +739,7 @@ declare module 'vue' {
     readonly TooltipContent: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipContent']>
     readonly TooltipProvider: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipProvider']>
     readonly TooltipTrigger: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipTrigger']>
+    readonly WorkshopCalendar: UnwrapRef<typeof import('./resources/js/components/WorkshopCalendar.vue')['default']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly beautifyObjectName: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['beautifyObjectName']>

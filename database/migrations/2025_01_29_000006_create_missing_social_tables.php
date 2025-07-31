@@ -14,11 +14,11 @@ return new class extends Migration
         // Only create tables that don't exist yet
         
         // Post engagements for likes, comments, shares, etc.
-        if (!Schema::hasTable('post_engagements')) {
+        if (!Schema::hasTable('post_engagements') && Schema::hasTable('posts')) {
             Schema::create('post_engagements', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('post_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->enum('type', ['like', 'love', 'celebrate', 'support', 'insightful', 'comment', 'share', 'bookmark']);
                 $table->json('metadata')->nullable();
                 $table->timestamp('created_at');
@@ -30,12 +30,12 @@ return new class extends Migration
             });
         }
 
-        // Circle memberships
-        if (!Schema::hasTable('circle_memberships')) {
+        // Circle memberships - skip if already created in circles_and_groups migration
+        if (!Schema::hasTable('circle_memberships') && Schema::hasTable('circles')) {
             Schema::create('circle_memberships', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('circle_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('circle_id')->constrained('circles')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->timestamp('joined_at');
                 $table->enum('status', ['active', 'inactive'])->default('active');
                 
@@ -45,12 +45,12 @@ return new class extends Migration
             });
         }
 
-        // Group memberships with roles
-        if (!Schema::hasTable('group_memberships')) {
+        // Group memberships with roles - skip if already created in circles_and_groups migration
+        if (!Schema::hasTable('group_memberships') && Schema::hasTable('groups')) {
             Schema::create('group_memberships', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('group_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('group_id')->constrained('groups')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->enum('role', ['member', 'moderator', 'admin'])->default('member');
                 $table->timestamp('joined_at');
                 $table->enum('status', ['active', 'pending', 'blocked'])->default('active');
@@ -82,11 +82,11 @@ return new class extends Migration
         }
 
         // Comments for threaded discussions
-        if (!Schema::hasTable('comments')) {
+        if (!Schema::hasTable('comments') && Schema::hasTable('posts')) {
             Schema::create('comments', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('post_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
                 $table->text('content');
                 $table->json('mentions')->nullable(); // Array of mentioned user IDs
@@ -121,11 +121,11 @@ return new class extends Migration
         }
 
         // Group invitations
-        if (!Schema::hasTable('group_invitations')) {
+        if (!Schema::hasTable('group_invitations') && Schema::hasTable('groups')) {
             Schema::create('group_invitations', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('group_id')->constrained()->onDelete('cascade');
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->foreignId('group_id')->constrained('groups')->onDelete('cascade');
+                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
                 $table->foreignId('inviter_id')->constrained('users')->onDelete('cascade');
                 $table->text('message')->nullable();
                 $table->enum('status', ['pending', 'accepted', 'declined'])->default('pending');
