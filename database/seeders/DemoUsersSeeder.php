@@ -53,10 +53,10 @@ class DemoUsersSeeder extends Seeder
 
         // Create Super Admin
         $superAdmin = User::firstOrCreate(
-            ['email' => 'skimani@polytrack.ga'],
+            ['email' => 'admin@system.com'],
             [
-                'name' => 'Super Admin Kimani',
-                'password' => Hash::make('5esurE_skimani'),
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
@@ -64,21 +64,22 @@ class DemoUsersSeeder extends Seeder
 
         // Create Institution Admin
         $institutionAdmin = User::firstOrCreate(
-            ['email' => 'ikimani@polytrack.ga'],
+            ['email' => 'admin@tech-institute.edu'],
             [
-                'name' => 'Institution Admin Kimani',
-                'password' => Hash::make('5esurE_ikimani'),
+                'name' => 'Institution Admin',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'institution_id' => 'tech-institute',
             ]
         );
         $institutionAdmin->assignRole($institutionAdminRole);
 
         // Create Employer
         $employer = User::firstOrCreate(
-            ['email' => 'ekimani@polytrack.ga'],
+            ['email' => 'techcorp@company.com'],
             [
-                'name' => 'Employer Kimani',
-                'password' => Hash::make('5esurE_ekimani'),
+                'name' => 'TechCorp Recruiter',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
         );
@@ -86,19 +87,20 @@ class DemoUsersSeeder extends Seeder
 
         // Create Graduate
         $graduate = User::firstOrCreate(
-            ['email' => 'gkimani@polytrack.ga'],
+            ['email' => 'john.smith@student.edu'],
             [
-                'name' => 'Graduate Kimani',
-                'password' => Hash::make('5esurE_gkimani'),
+                'name' => 'John Smith',
+                'password' => Hash::make('password'),
                 'email_verified_at' => now(),
+                'institution_id' => 'tech-institute',
             ]
         );
         $graduate->assignRole($graduateRole);
 
         $this->command->info('Demo users created successfully!');
-        $this->command->info('Super Admin: skimani@polytrack.ga / 5esurE_skimani');
-        $this->command->info('Institution Admin: ikimani@polytrack.ga / 5esurE_ikimani');
-        $this->command->info('Employer: ekimani@polytrack.ga / 5esurE_ekimani');
-        $this->command->info('Graduate: gkimani@polytrack.ga / 5esurE_gkimani');
+        $this->command->info('Super Admin: admin@system.com / password');
+        $this->command->info('Institution Admin: admin@tech-institute.edu / password');
+        $this->command->info('Employer: techcorp@company.com / password');
+        $this->command->info('Graduate: john.smith@student.edu / password');
     }
 }
