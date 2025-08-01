@@ -1,9 +1,7 @@
-Donation Processing (Tests\Feature\DonationProcessing)
- [ ] Can process one time donation
- [ ] Can setup recurring donation
- [ ] Can process recurring payment
- [ ] Can cancel recurring donation
- [ ] Can generate tax receipt
- [ ] Cannot generate duplicate tax receipt
- [ ] Can refund donation
+D:\DevCenter\abuilds\alumate\tests\Feature\ScholarshipManagementTest.php
+ [ ] can create scholarship
+ [ ] can submit scholarship application
+ [ ] can review scholarship application
+ [ ] can award scholarship to recipient
+ [ ] can get scholarship impact report
 
