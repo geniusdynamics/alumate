@@ -3,8 +3,13 @@
 namespace App\Providers;
 
 use App\Events\InstitutionAdminCreated;
+use App\Events\CareerMilestoneCreated;
+use App\Events\UserProfileUpdated;
+use App\Events\ConnectionAccepted;
+use App\Events\PostCreated;
 use App\Listeners\LogUserActivity;
 use App\Listeners\SendInstitutionAdminCreationNotification;
+use App\Listeners\CheckAchievementsListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -20,9 +25,22 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         Registered::class => [
             SendEmailVerificationNotification::class,
+            CheckAchievementsListener::class,
         ],
         InstitutionAdminCreated::class => [
             SendInstitutionAdminCreationNotification::class,
+        ],
+        CareerMilestoneCreated::class => [
+            CheckAchievementsListener::class,
+        ],
+        UserProfileUpdated::class => [
+            CheckAchievementsListener::class,
+        ],
+        ConnectionAccepted::class => [
+            CheckAchievementsListener::class,
+        ],
+        PostCreated::class => [
+            CheckAchievementsListener::class,
         ],
     ];
 

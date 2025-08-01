@@ -14,6 +14,8 @@ use App\Http\Controllers\Api\JobMatchingController;
 use App\Http\Controllers\Api\SkillsController;
 use App\Http\Controllers\Api\EventsController;
 use App\Http\Controllers\Api\ReunionController;
+use App\Http\Controllers\Api\AchievementController;
+use App\Http\Controllers\Api\AchievementCelebrationController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -336,4 +338,25 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin routes
     Route::get('admin/success-stories/analytics', [App\Http\Controllers\Api\SuccessStoryController::class, 'analytics']);
     Route::post('admin/success-stories/{successStory}/toggle-feature', [App\Http\Controllers\Api\SuccessStoryController::class, 'toggleFeature']);
+});
+
+// Achievement routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Achievement browsing and details
+    Route::get('achievements', [AchievementController::class, 'index']);
+    Route::get('achievements/{achievement}', [AchievementController::class, 'show']);
+    Route::get('achievements/leaderboard', [AchievementController::class, 'leaderboard']);
+    
+    // User achievements
+    Route::get('user/achievements', [AchievementController::class, 'userAchievements']);
+    Route::get('users/{user}/achievements', [AchievementController::class, 'userAchievements']);
+    Route::post('achievements/check', [AchievementController::class, 'checkAchievements']);
+    Route::post('user-achievements/{userAchievement}/toggle-featured', [AchievementController::class, 'toggleFeatured']);
+    
+    // Achievement celebrations
+    Route::get('achievement-celebrations', [AchievementCelebrationController::class, 'index']);
+    Route::post('achievement-celebrations', [AchievementCelebrationController::class, 'create']);
+    Route::post('achievement-celebrations/{celebration}/congratulations', [AchievementCelebrationController::class, 'congratulate']);
+    Route::delete('achievement-celebrations/{celebration}/congratulations', [AchievementCelebrationController::class, 'removeCongratulation']);
+    Route::get('achievement-celebrations/{celebration}/congratulations', [AchievementCelebrationController::class, 'congratulations']);
 });

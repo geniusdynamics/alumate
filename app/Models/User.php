@@ -191,6 +191,23 @@ class User extends Authenticatable
         return $this->hasMany(CareerMilestone::class)->ordered();
     }
 
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class, 'user_achievements')
+                    ->withPivot(['earned_at', 'metadata', 'is_featured', 'is_notified'])
+                    ->withTimestamps();
+    }
+
+    public function userAchievements()
+    {
+        return $this->hasMany(UserAchievement::class);
+    }
+
+    public function featuredAchievements()
+    {
+        return $this->userAchievements()->where('is_featured', true);
+    }
+
     public function currentPosition()
     {
         return $this->hasOne(CareerTimeline::class)->where('is_current', true);
