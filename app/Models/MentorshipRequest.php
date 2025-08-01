@@ -20,12 +20,14 @@ class MentorshipRequest extends Model
         'duration_months',
         'accepted_at',
         'completed_at',
+        'student_profile_data',
     ];
 
     protected $casts = [
         'duration_months' => 'integer',
         'accepted_at' => 'datetime',
         'completed_at' => 'datetime',
+        'student_profile_data' => 'array',
     ];
 
     public function mentor(): BelongsTo

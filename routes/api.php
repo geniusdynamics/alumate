@@ -16,6 +16,11 @@ use App\Http\Controllers\Api\EventsController;
 use App\Http\Controllers\Api\ReunionController;
 use App\Http\Controllers\Api\AchievementController;
 use App\Http\Controllers\Api\AchievementCelebrationController;
+use App\Http\Controllers\Api\StudentProfileController;
+use App\Http\Controllers\Api\StudentAlumniStoryController;
+use App\Http\Controllers\Api\StudentMentorshipController;
+use App\Http\Controllers\Api\SpeakerBureauController;
+use App\Http\Controllers\Api\StudentCareerGuidanceController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -359,4 +364,67 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('achievement-celebrations/{celebration}/congratulations', [AchievementCelebrationController::class, 'congratulate']);
     Route::delete('achievement-celebrations/{celebration}/congratulations', [AchievementCelebrationController::class, 'removeCongratulation']);
     Route::get('achievement-celebrations/{celebration}/congratulations', [AchievementCelebrationController::class, 'congratulations']);
+});
+
+// Student Profile routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('student/profile', [StudentProfileController::class, 'show']);
+    Route::post('student/profile', [StudentProfileController::class, 'store']);
+    Route::put('student/profile', [StudentProfileController::class, 'update']);
+    Route::get('student/profile/completion', [StudentProfileController::class, 'completion']);
+    Route::get('student/profile/statistics', [StudentProfileController::class, 'statistics']);
+    Route::get('student/courses', [StudentProfileController::class, 'courses']);
+});
+
+// Student-Alumni Story Discovery routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('student/alumni-stories', [StudentAlumniStoryController::class, 'index']);
+    Route::get('student/alumni-stories/recommended', [StudentAlumniStoryController::class, 'recommended']);
+    Route::get('student/alumni-stories/career-path', [StudentAlumniStoryController::class, 'byCareerPath']);
+    Route::get('student/alumni-stories/same-course', [StudentAlumniStoryController::class, 'fromSameCourse']);
+    Route::get('student/alumni-stories/recent-graduates', [StudentAlumniStoryController::class, 'recentGraduates']);
+    Route::get('student/alumni-stories/career-insights', [StudentAlumniStoryController::class, 'careerInsights']);
+    Route::post('student/alumni-stories/{story}/connect', [StudentAlumniStoryController::class, 'connect']);
+    Route::get('student/connections', [StudentAlumniStoryController::class, 'connections']);
+});
+
+// Student Mentorship routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('student/mentors', [StudentMentorshipController::class, 'getAlumniMentors']);
+    Route::get('student/mentors/recommended', [StudentMentorshipController::class, 'getRecommendedMentors']);
+    Route::get('student/mentors/same-course', [StudentMentorshipController::class, 'getMentorsFromSameCourse']);
+    Route::get('student/mentors/career-specific', [StudentMentorshipController::class, 'getCareerSpecificMentors']);
+    Route::post('student/mentorship/request', [StudentMentorshipController::class, 'requestMentorship']);
+    Route::get('student/mentorships', [StudentMentorshipController::class, 'getStudentMentorships']);
+});
+
+// Speaker Bureau routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Public speaker browsing
+    Route::get('speakers', [SpeakerBureauController::class, 'index']);
+    Route::get('speakers/featured', [SpeakerBureauController::class, 'featured']);
+    Route::get('speakers/by-topic', [SpeakerBureauController::class, 'getByTopic']);
+    Route::get('speakers/{speaker}', [SpeakerBureauController::class, 'show']);
+
+    // Speaker profile management
+    Route::post('speakers/profile', [SpeakerBureauController::class, 'createProfile']);
+
+    // Booking management
+    Route::post('speakers/{speaker}/book', [SpeakerBureauController::class, 'requestBooking']);
+    Route::get('speaker/bookings', [SpeakerBureauController::class, 'getSpeakerBookings']);
+    Route::get('my-bookings', [SpeakerBureauController::class, 'getUserBookings']);
+    Route::post('bookings/{booking}/respond', [SpeakerBureauController::class, 'respondToBooking']);
+    Route::post('bookings/{booking}/complete', [SpeakerBureauController::class, 'completeBooking']);
+});
+
+// Student Career Guidance routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('student/career/recommendations', [StudentCareerGuidanceController::class, 'getCareerRecommendations']);
+    Route::get('student/career/paths', [StudentCareerGuidanceController::class, 'getCareerPaths']);
+    Route::get('student/career/industry-insights', [StudentCareerGuidanceController::class, 'getIndustryInsights']);
+    Route::get('student/career/salary-insights', [StudentCareerGuidanceController::class, 'getSalaryInsights']);
+    Route::get('student/career/skill-gap-analysis', [StudentCareerGuidanceController::class, 'getSkillGapAnalysis']);
+    Route::get('student/career/job-market-trends', [StudentCareerGuidanceController::class, 'getJobMarketTrends']);
+    Route::get('student/career/networking-recommendations', [StudentCareerGuidanceController::class, 'getNetworkingRecommendations']);
+    Route::get('student/career/timeline-examples', [StudentCareerGuidanceController::class, 'getCareerTimelineExamples']);
 });

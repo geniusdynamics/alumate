@@ -33,6 +33,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'update profile',
             'verify graduates',
             'view institutions',
+            'view alumni stories',
+            'request mentorship',
+            'view events',
+            'connect with alumni',
         ];
 
         foreach ($permissions as $permission) {
@@ -65,6 +69,16 @@ class RolesAndPermissionsSeeder extends Seeder
             'post jobs',
             'manage applications',
             'view institutions',
+        ]);
+
+        $role = Role::firstOrCreate(['name' => 'Student']);
+        $role->givePermissionTo([
+            'view alumni stories',
+            'request mentorship',
+            'view events',
+            'connect with alumni',
+            'update profile',
+            'view announcements',
         ]);
 
         $role = Role::firstOrCreate(['name' => 'Tutor']);

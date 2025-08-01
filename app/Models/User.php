@@ -99,6 +99,16 @@ class User extends Authenticatable
         return $this->hasOne(Employer::class);
     }
 
+    public function studentProfile()
+    {
+        return $this->hasOne(StudentProfile::class);
+    }
+
+    public function speakerProfile()
+    {
+        return $this->hasOne(SpeakerProfile::class);
+    }
+
     public function notificationPreferences()
     {
         return $this->hasMany(NotificationPreference::class);
@@ -235,6 +245,32 @@ class User extends Authenticatable
     public function scopeByInstitution(Builder $query, $institutionId): Builder
     {
         return $query->where('institution_id', $institutionId);
+    }
+
+    // Helper methods for user types
+    public function isStudent(): bool
+    {
+        return $this->hasRole('Student') && $this->studentProfile !== null;
+    }
+
+    public function isAlumni(): bool
+    {
+        return $this->hasRole('Graduate') && $this->graduate !== null;
+    }
+
+    public function isEmployer(): bool
+    {
+        return $this->hasRole('Employer') && $this->employer !== null;
+    }
+
+    public function getUserType(): string
+    {
+        if ($this->isStudent()) return 'student';
+        if ($this->isAlumni()) return 'alumni';
+        if ($this->isEmployer()) return 'employer';
+        if ($this->hasRole('Institution Admin')) return 'admin';
+        if ($this->hasRole('Super Admin')) return 'super_admin';
+        return 'user';
     }
 
     public function scopeRecentlyActive(Builder $query, int $days = 30): Builder

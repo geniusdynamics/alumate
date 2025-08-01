@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('achievement_celebrations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_achievement_id')->constrained()->onDelete('cascade');
-            $table->foreignId('post_id')->nullable()->constrained()->onDelete('set null'); // Associated social post
+            $table->unsignedBigInteger('post_id')->nullable(); // Associated social post - will add foreign key later
             $table->enum('celebration_type', ['automatic', 'manual', 'milestone']);
             $table->text('message')->nullable(); // Custom celebration message
             $table->json('celebration_data')->nullable(); // Additional celebration data
@@ -27,6 +27,13 @@ return new class extends Migration
             $table->index(['is_public', 'created_at']);
             $table->index('post_id');
         });
+
+        // Add foreign key constraint to posts table if it exists
+        if (Schema::hasTable('posts')) {
+            Schema::table('achievement_celebrations', function (Blueprint $table) {
+                $table->foreign('post_id')->references('id')->on('posts')->onDelete('set null');
+            });
+        }
     }
 
     /**
