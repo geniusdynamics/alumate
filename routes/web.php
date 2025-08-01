@@ -188,3 +188,23 @@ Route::get('/discussions/{discussion}', [\App\Http\Controllers\DiscussionControl
 require __DIR__ . '/settings.php';
 require __DIR__ . '/testing.php';
 require __DIR__ . '/auth.php';
+// Fundraising Campaign Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/campaigns', function () {
+        return Inertia::render('Fundraising/CampaignIndex');
+    })->name('campaigns.index');
+    
+    Route::get('/campaigns/{campaign}', function (\App\Models\FundraisingCampaign $campaign) {
+        $campaign->load(['creator', 'institution', 'donations', 'updates', 'peerFundraisers']);
+        return Inertia::render('Fundraising/CampaignShow', [
+            'campaign' => $campaign
+        ]);
+    })->name('campaigns.show');
+    
+    Route::get('/peer-fundraisers/{peerFundraiser}', function (\App\Models\PeerFundraiser $peerFundraiser) {
+        $peerFundraiser->load(['campaign', 'user', 'donations']);
+        return Inertia::render('Fundraising/PeerFundraiserShow', [
+            'peerFundraiser' => $peerFundraiser
+        ]);
+    })->name('peer-fundraiser.show');
+});

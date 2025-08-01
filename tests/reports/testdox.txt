@@ -1,14 +1,9 @@
-Event Follow Up (Tests\Feature\EventFollowUp)
- [ ] User can submit feedback
- [ ] User cannot submit feedback twice
- [ ] User can create highlight
- [ ] User can get event highlights
- [ ] User can like highlight
- [ ] User can create networking connection
- [ ] User can generate connection recommendations
- [ ] User can get connection recommendations
- [ ] Feedback analytics calculation
- [ ] Follow up analytics calculation
- [ ] Non attendee cannot submit feedback
- [ ] Non attendee cannot create highlight
+Donation Processing (Tests\Feature\DonationProcessing)
+ [ ] Can process one time donation
+ [ ] Can setup recurring donation
+ [ ] Can process recurring payment
+ [ ] Can cancel recurring donation
+ [ ] Can generate tax receipt
+ [ ] Cannot generate duplicate tax receipt
+ [ ] Can refund donation
 

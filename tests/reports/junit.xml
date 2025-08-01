@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Feature\EventFollowUpTest" file="Event Follow Up (Tests\Feature\EventFollowUp)" tests="12" assertions="0" errors="12" failures="0" skipped="0" time="0.000000">
-    <testcase name="User can submit feedback" file="Event Follow Up (Tests\Feature\EventFollowUp)::User can submit feedback" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User can submit feedbackIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
+  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="7" assertions="0" errors="7" failures="0" skipped="0" time="0.000000">
+    <testsuite name="Feature" tests="7" assertions="0" errors="7" failures="0" skipped="0" time="0.000000">
+      <testsuite name="Tests\Feature\DonationProcessingTest" file="Donation Processing (Tests\Feature\DonationProcessing)" tests="7" assertions="0" errors="7" failures="0" skipped="0" time="0.000000">
+        <testcase name="Can process one time donation" file="Donation Processing (Tests\Feature\DonationProcessing)::Can process one time donation" class="Tests\Feature\DonationProcessingTest" classname="Tests.Feature.DonationProcessingTest" assertions="0" time="0.000000">
+          <error type="Illuminate\Database\QueryException">Can process one time donationIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
@@ -45,7 +47,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
+at tests\Feature\DonationProcessingTest.php:24
 Caused by
 PDOException: could not find driver
 
@@ -91,10 +93,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="User cannot submit feedback twice" file="Event Follow Up (Tests\Feature\EventFollowUp)::User cannot submit feedback twice" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User cannot submit feedback twiceIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
+at tests\Feature\DonationProcessingTest.php:24</error>
+        </testcase>
+        <testcase name="Can setup recurring donation" file="Donation Processing (Tests\Feature\DonationProcessing)::Can setup recurring donation" class="Tests\Feature\DonationProcessingTest" classname="Tests.Feature.DonationProcessingTest" assertions="0" time="0.000000">
+          <error type="Illuminate\Database\QueryException">Can setup recurring donationIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
@@ -137,7 +139,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
+at tests\Feature\DonationProcessingTest.php:24
 Caused by
 PDOException: could not find driver
 
@@ -183,10 +185,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="User can create highlight" file="Event Follow Up (Tests\Feature\EventFollowUp)::User can create highlight" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User can create highlightIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
+at tests\Feature\DonationProcessingTest.php:24</error>
+        </testcase>
+        <testcase name="Can process recurring payment" file="Donation Processing (Tests\Feature\DonationProcessing)::Can process recurring payment" class="Tests\Feature\DonationProcessingTest" classname="Tests.Feature.DonationProcessingTest" assertions="0" time="0.000000">
+          <error type="Illuminate\Database\QueryException">Can process recurring paymentIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
@@ -229,7 +231,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
+at tests\Feature\DonationProcessingTest.php:24
 Caused by
 PDOException: could not find driver
 
@@ -275,10 +277,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="User can get event highlights" file="Event Follow Up (Tests\Feature\EventFollowUp)::User can get event highlights" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User can get event highlightsIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
+at tests\Feature\DonationProcessingTest.php:24</error>
+        </testcase>
+        <testcase name="Can cancel recurring donation" file="Donation Processing (Tests\Feature\DonationProcessing)::Can cancel recurring donation" class="Tests\Feature\DonationProcessingTest" classname="Tests.Feature.DonationProcessingTest" assertions="0" time="0.000000">
+          <error type="Illuminate\Database\QueryException">Can cancel recurring donationIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
@@ -321,7 +323,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
+at tests\Feature\DonationProcessingTest.php:24
 Caused by
 PDOException: could not find driver
 
@@ -367,10 +369,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="User can like highlight" file="Event Follow Up (Tests\Feature\EventFollowUp)::User can like highlight" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User can like highlightIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
+at tests\Feature\DonationProcessingTest.php:24</error>
+        </testcase>
+        <testcase name="Can generate tax receipt" file="Donation Processing (Tests\Feature\DonationProcessing)::Can generate tax receipt" class="Tests\Feature\DonationProcessingTest" classname="Tests.Feature.DonationProcessingTest" assertions="0" time="0.000000">
+          <error type="Illuminate\Database\QueryException">Can generate tax receiptIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
@@ -413,7 +415,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
+at tests\Feature\DonationProcessingTest.php:24
 Caused by
 PDOException: could not find driver
 
@@ -459,10 +461,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="User can create networking connection" file="Event Follow Up (Tests\Feature\EventFollowUp)::User can create networking connection" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User can create networking connectionIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
+at tests\Feature\DonationProcessingTest.php:24</error>
+        </testcase>
+        <testcase name="Cannot generate duplicate tax receipt" file="Donation Processing (Tests\Feature\DonationProcessing)::Cannot generate duplicate tax receipt" class="Tests\Feature\DonationProcessingTest" classname="Tests.Feature.DonationProcessingTest" assertions="0" time="0.000000">
+          <error type="Illuminate\Database\QueryException">Cannot generate duplicate tax receiptIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
@@ -505,7 +507,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
+at tests\Feature\DonationProcessingTest.php:24
 Caused by
 PDOException: could not find driver
 
@@ -551,10 +553,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="User can generate connection recommendations" file="Event Follow Up (Tests\Feature\EventFollowUp)::User can generate connection recommendations" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User can generate connection recommendationsIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
+at tests\Feature\DonationProcessingTest.php:24</error>
+        </testcase>
+        <testcase name="Can refund donation" file="Donation Processing (Tests\Feature\DonationProcessing)::Can refund donation" class="Tests\Feature\DonationProcessingTest" classname="Tests.Feature.DonationProcessingTest" assertions="0" time="0.000000">
+          <error type="Illuminate\Database\QueryException">Can refund donationIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
 at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
@@ -597,7 +599,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
+at tests\Feature\DonationProcessingTest.php:24
 Caused by
 PDOException: could not find driver
 
@@ -643,467 +645,9 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="User can get connection recommendations" file="Event Follow Up (Tests\Feature\EventFollowUp)::User can get connection recommendations" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">User can get connection recommendationsIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
-Caused by
-PDOException: could not find driver
-
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="Feedback analytics calculation" file="Event Follow Up (Tests\Feature\EventFollowUp)::Feedback analytics calculation" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">Feedback analytics calculationIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
-Caused by
-PDOException: could not find driver
-
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="Follow up analytics calculation" file="Event Follow Up (Tests\Feature\EventFollowUp)::Follow up analytics calculation" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">Follow up analytics calculationIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
-Caused by
-PDOException: could not find driver
-
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="Non attendee cannot submit feedback" file="Event Follow Up (Tests\Feature\EventFollowUp)::Non attendee cannot submit feedback" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">Non attendee cannot submit feedbackIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
-Caused by
-PDOException: could not find driver
-
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
-    <testcase name="Non attendee cannot create highlight" file="Event Follow Up (Tests\Feature\EventFollowUp)::Non attendee cannot create highlight" class="Tests\Feature\EventFollowUpTest" classname="Tests.Feature.EventFollowUpTest" assertions="0" time="0.000000">
-      <error type="Illuminate\Database\QueryException">Non attendee cannot create highlightIlluminate\Database\QueryException: could not find driver (Connection: sqlite, SQL: select exists (select 1 from "main".sqlite_master where name = 'migrations' and type = 'table') as "exists")&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27
-Caused by
-PDOException: could not find driver
-
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:66
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\Connector.php:44
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\SQLiteConnector.php:21
-at vendor\laravel\framework\src\Illuminate\Database\Connectors\ConnectionFactory.php:223
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1228
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:1264
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:509
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:404
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:341
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:358
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:174
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\DatabaseMigrationRepository.php:185
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:749
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:67
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:66
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\EventFollowUpTest.php:27</error>
-    </testcase>
+at tests\Feature\DonationProcessingTest.php:24</error>
+        </testcase>
+      </testsuite>
+    </testsuite>
   </testsuite>
 </testsuites>
