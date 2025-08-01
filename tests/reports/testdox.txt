@@ -1,7 +1,17 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\ScholarshipManagementTest.php
- [ ] can create scholarship
- [ ] can submit scholarship application
- [ ] can review scholarship application
- [ ] can award scholarship to recipient
- [ ] can get scholarship impact report
+D:\DevCenter\abuilds\alumate\tests\Feature\SuccessStoryTest.php
+ [ ] can create a success story
+ [ ] can upload featured image with success story
+ [ ] can retrieve published success stories
+ [ ] can retrieve featured success stories
+ [ ] can filter stories by industry
+ [ ] can filter stories by achievement type
+ [ ] can search stories by title and content
+ [ ] can view individual success story and increment view count
+ [ ] can like a success story
+ [ ] can share a success story
+ [ ] cannot share story that disallows social sharing
+ [ ] can update own success story
+ [ ] cannot update other users success story
+ [ ] can delete own success story
+ [ ] can get stories by demographics for diversity showcase
 

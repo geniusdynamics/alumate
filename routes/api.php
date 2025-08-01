@@ -314,3 +314,26 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('major-gift-prospects/pipeline', [App\Http\Controllers\Api\MajorGiftProspectController::class, 'pipeline']);
     Route::get('major-gift-prospects/closing-soon', [App\Http\Controllers\Api\MajorGiftProspectController::class, 'closingSoon']);
 });
+
+// Success Stories routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Public routes (can be viewed by authenticated users)
+    Route::get('success-stories', [App\Http\Controllers\Api\SuccessStoryController::class, 'index']);
+    Route::get('success-stories/featured', [App\Http\Controllers\Api\SuccessStoryController::class, 'featured']);
+    Route::get('success-stories/recommended', [App\Http\Controllers\Api\SuccessStoryController::class, 'recommended']);
+    Route::get('success-stories/demographics', [App\Http\Controllers\Api\SuccessStoryController::class, 'byDemographics']);
+    Route::get('success-stories/{successStory}', [App\Http\Controllers\Api\SuccessStoryController::class, 'show']);
+    
+    // Interaction routes
+    Route::post('success-stories/{successStory}/share', [App\Http\Controllers\Api\SuccessStoryController::class, 'share']);
+    Route::post('success-stories/{successStory}/like', [App\Http\Controllers\Api\SuccessStoryController::class, 'like']);
+    
+    // CRUD routes (user must own the story or be admin)
+    Route::post('success-stories', [App\Http\Controllers\Api\SuccessStoryController::class, 'store']);
+    Route::put('success-stories/{successStory}', [App\Http\Controllers\Api\SuccessStoryController::class, 'update']);
+    Route::delete('success-stories/{successStory}', [App\Http\Controllers\Api\SuccessStoryController::class, 'destroy']);
+    
+    // Admin routes
+    Route::get('admin/success-stories/analytics', [App\Http\Controllers\Api\SuccessStoryController::class, 'analytics']);
+    Route::post('admin/success-stories/{successStory}/toggle-feature', [App\Http\Controllers\Api\SuccessStoryController::class, 'toggleFeature']);
+});
