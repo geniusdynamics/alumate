@@ -750,13 +750,14 @@ const handleMeetingAction = (action: string, data?: any) => {
 </script>
 
 <style scoped>
-.hybrid-event-interface {
-  @apply space-y-6;
+.hybrid-event-interface > * + * {
+  margin-top: 1.5rem;
 }
 
 /* Fullscreen styles */
 .hybrid-event-interface:fullscreen {
-  @apply bg-gray-100 p-6;
+  background-color: #f3f4f6;
+  padding: 1.5rem;
 }
 
 /* Chat message animations */
@@ -787,14 +788,14 @@ const handleMeetingAction = (action: string, data?: any) => {
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
-  .hybrid-event-interface {
-    @apply space-y-4;
+  .hybrid-event-interface > * + * {
+    margin-top: 1rem;
   }
 }
 
 @media (max-width: 768px) {
   .hybrid-event-interface .grid {
-    @apply grid-cols-1;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
   }
 }
 </style>

@@ -1,4 +1,3 @@
-import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import { resolve } from 'node:path';
@@ -14,7 +13,7 @@ export default defineConfig({
             ssr: 'resources/js/ssr.ts',
             refresh: true,
         }),
-        tailwindcss(),
+
         vue({
             template: {
                 transformAssetUrls: {

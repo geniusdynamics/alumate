@@ -243,7 +243,9 @@ export default {
 }
 
 .online-indicator {
-  @apply absolute top-0 right-0;
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 .card-actions button:disabled {
@@ -255,6 +257,6 @@ export default {
 }
 
 .shared-connections img {
-  @apply ring-2 ring-white;
+  box-shadow: 0 0 0 2px white;
 }
 </style>

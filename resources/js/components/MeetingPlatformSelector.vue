@@ -1,5 +1,5 @@
 <template>
-  <div class="meeting-platform-selector">
+  <div class="meeting-platform-selector space-y-6">
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-3">
         Virtual Meeting Platform
@@ -448,10 +448,6 @@ watch([selectedPlatform, jitsiSettings, manualSettings], updateModelValue, { dee
 </script>
 
 <style scoped>
-.meeting-platform-selector {
-  @apply space-y-6;
-}
-
 /* Platform selection cards */
 .platform-card {
   transition: all 0.2s ease-in-out;

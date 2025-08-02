@@ -1,40 +1,40 @@
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div class="min-h-screen bg-gray-50">
         <Head title="Alumate - Alumni Management Platform" />
 
         <div class="relative min-h-screen">
             <!-- Header -->
-            <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
+            <header class="bg-white shadow-sm sticky top-0 z-50">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between items-center py-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 flex items-center">
-                                <div class="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center mr-3">
                                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                                     </svg>
                                 </div>
-                                <h1 class="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">Alumate</h1>
+                                <h1 class="text-2xl font-bold text-gray-900">Alumate</h1>
                             </div>
                         </div>
                         <div class="flex items-center space-x-4">
                             <Link
                                 v-if="$page.props.auth.user"
                                 :href="route('dashboard')"
-                                class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out shadow-lg"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
                             >
                                 Go to Dashboard
                             </Link>
                             <template v-else>
                                 <Link
                                     :href="route('login')"
-                                    class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out"
+                                    class="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
                                 >
                                     Sign In
                                 </Link>
                                 <Link
                                     :href="route('register')"
-                                    class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg text-sm font-medium transition duration-150 ease-in-out shadow-lg"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md text-sm font-medium transition duration-150 ease-in-out"
                                 >
                                     Get Started
                                 </Link>
@@ -49,13 +49,13 @@
                 <!-- Hero Section -->
                 <div class="text-center mb-20">
                     <div class="mb-8">
-                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 mb-6">
+                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mb-6">
                             🎓 Connecting Alumni with Opportunities
                         </span>
                     </div>
-                    <h2 class="text-5xl font-extrabold text-gray-900 sm:text-6xl md:text-7xl mb-6">
+                    <h2 class="text-5xl font-bold text-gray-900 sm:text-6xl mb-6">
                         Empower Your
-                        <span class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">Alumni Network</span>
+                        <span class="text-blue-600">Alumni Network</span>
                     </h2>
                     <p class="mt-6 max-w-3xl mx-auto text-xl text-gray-600 leading-relaxed">
                         The comprehensive platform that bridges the gap between educational institutions, graduates, and employers.
@@ -64,7 +64,7 @@
                     <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
                             :href="route('register')"
-                            class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition duration-150 ease-in-out shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
+                            class="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition duration-150 ease-in-out"
                         >
                             Start Your Journey
                             <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +73,7 @@
                         </Link>
                         <button
                             @click="scrollToFeatures"
-                            class="inline-flex items-center px-8 py-4 border-2 border-gray-300 text-lg font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out shadow-lg hover:shadow-xl"
+                            class="inline-flex items-center px-8 py-4 border-2 border-gray-300 text-lg font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition duration-150 ease-in-out"
                         >
                             Learn More
                             <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

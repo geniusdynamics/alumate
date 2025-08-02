@@ -187,13 +187,13 @@ import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import AnalyticsChart from '@/Components/AnalyticsChart.vue'
-import { 
-    UserGroupIcon, 
-    BriefcaseIcon, 
-    DocumentTextIcon, 
+import {
+    UserGroupIcon,
+    BriefcaseIcon,
+    DocumentTextIcon,
     BuildingOfficeIcon,
-    TrendingUpIcon,
-    TrendingDownIcon,
+    ArrowTrendingUpIcon,
+    ArrowTrendingDownIcon,
     MinusIcon,
     ExclamationTriangleIcon,
     InformationCircleIcon,
@@ -229,7 +229,7 @@ const getMetricIcon = (key) => {
         graduates: UserGroupIcon,
         jobs: BriefcaseIcon,
         applications: DocumentTextIcon,
-        employment_rate: TrendingUpIcon,
+        employment_rate: ArrowTrendingUpIcon,
     }
     return icons[key] || UserGroupIcon
 }
@@ -263,8 +263,8 @@ const getStatusBadgeClass = (status) => {
 
 const getTrendIcon = (trend) => {
     const icons = {
-        up: TrendingUpIcon,
-        down: TrendingDownIcon,
+        up: ArrowTrendingUpIcon,
+        down: ArrowTrendingDownIcon,
         neutral: MinusIcon,
     }
     return icons[trend] || MinusIcon

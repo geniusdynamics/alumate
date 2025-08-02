@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Stancl\Tenancy\Facades\Tenancy;
 use Carbon\Carbon;
 
 class InstitutionAdminDashboardController extends Controller
@@ -116,43 +117,69 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getBasicStats()
     {
+        $user = auth()->user();
+        $institutionId = $user->institution_id;
+
         return [
-            'total_graduates' => Graduate::count(),
-            'employed_graduates' => Graduate::whereJsonContains('employment_status->status', 'employed')->count(),
-            'total_courses' => Course::count(),
-            'active_jobs' => Job::where('status', 'active')->count(),
-            'pending_applications' => JobApplication::where('status', 'pending')->count(),
-            'staff_members' => User::whereIn('user_type', ['institution-admin', 'tutor'])->count(),
+            'total_graduates' => 0, // TODO: Implement tenant-specific graduate counting
+            'employed_graduates' => 0, // TODO: Implement tenant-specific employed graduate counting
+            'total_courses' => Course::where('institution_id', $institutionId)->count(),
+            'active_jobs' => 0, // TODO: Jobs are not directly linked to institutions
+            'pending_applications' => 0, // TODO: Applications are not directly linked to institutions
+            'staff_members' => User::where('institution_id', $institutionId)
+                ->whereHas('roles', function($query) {
+                    $query->whereIn('name', ['institution-admin', 'tutor']);
+                })->count(),
         ];
     }
 
     private function getRecentActivities()
     {
+        $user = Auth::user();
         $activities = collect();
 
-        // Recent graduate registrations
-        $recentGraduates = Graduate::with(['user', 'course'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get()
-            ->map(function ($graduate) {
-                return [
-                    'type' => 'graduate_registered',
-                    'message' => "New graduate {$graduate->user->name} registered for {$graduate->course->name}",
-                    'timestamp' => $graduate->created_at,
-                    'icon' => 'user-plus',
-                ];
-            });
+        if (!$user->institution_id) {
+            return $activities;
+        }
 
-        // Recent job applications
-        $recentApplications = JobApplication::with(['graduate.user', 'job'])
+        $tenant = Tenant::find($user->institution_id);
+        if (!$tenant) {
+            return $activities;
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            // Recent graduate registrations
+            $recentGraduates = Graduate::with(['course'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function ($graduate) {
+                    $courseName = $graduate->course ? $graduate->course->name : 'Unknown Course';
+                    return [
+                        'type' => 'graduate_registered',
+                        'message' => "New graduate {$graduate->name} registered for {$courseName}",
+                        'timestamp' => $graduate->created_at,
+                        'icon' => 'user-plus',
+                    ];
+                });
+        } finally {
+            Tenancy::end();
+        }
+
+        // Get recent job applications from central database
+        $recentApplications = JobApplication::with(['graduate', 'job'])
+            ->whereHas('graduate', function($q) use ($user) {
+                $q->where('tenant_id', $user->institution_id);
+            })
             ->orderBy('created_at', 'desc')
             ->limit(5)
             ->get()
             ->map(function ($application) {
                 return [
                     'type' => 'job_application',
-                    'message' => "{$application->graduate->user->name} applied for {$application->job->title}",
+                    'message' => "{$application->graduate->name} applied for {$application->job->title}",
                     'timestamp' => $application->created_at,
                     'icon' => 'briefcase',
                 ];
@@ -167,9 +194,26 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getEmploymentStats()
     {
-        $total = Graduate::count();
-        $employed = Graduate::whereJsonContains('employment_status->status', 'employed')->count();
-        $unemployed = Graduate::whereJsonContains('employment_status->status', 'unemployed')->count();
+        $user = Auth::user();
+
+        if (!$user->institution_id) {
+            return ['total' => 0, 'employed' => 0, 'unemployed' => 0, 'employment_rate' => 0];
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (!$tenant) {
+            return ['total' => 0, 'employed' => 0, 'unemployed' => 0, 'employment_rate' => 0];
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            $total = Graduate::count();
+            $employed = Graduate::whereJsonContains('employment_status->status', 'employed')->count();
+            $unemployed = Graduate::whereJsonContains('employment_status->status', 'unemployed')->count();
+        } finally {
+            Tenancy::end();
+        }
         $seeking = Graduate::whereJsonContains('employment_status->status', 'seeking')->count();
 
         return [

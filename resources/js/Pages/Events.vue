@@ -26,7 +26,7 @@
         <!-- Filters Sidebar -->
         <div class="lg:w-80 flex-shrink-0">
           <EventFilters
-            v-model:filters="filters"
+            :filters="filters"
             @update:filters="handleFiltersUpdate"
             :loading="loading"
           />

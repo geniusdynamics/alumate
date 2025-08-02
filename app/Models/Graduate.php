@@ -207,4 +207,24 @@ class Graduate extends Model
         // Log the employment status change
         $this->logEmploymentUpdate($oldStatus, $status, $jobDetails);
     }
+
+    /**
+     * Calculate profile completion percentage
+     */
+    public function getProfileCompletionPercentage(): float
+    {
+        $fields = [
+            'name', 'email', 'phone', 'address', 'graduation_year',
+            'course_id', 'employment_status', 'current_job_title'
+        ];
+
+        $completed = 0;
+        foreach ($fields as $field) {
+            if (!empty($this->$field)) {
+                $completed++;
+            }
+        }
+
+        return round(($completed / count($fields)) * 100, 1);
+    }
 }

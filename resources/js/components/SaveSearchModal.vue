@@ -226,91 +226,179 @@ onMounted(() => {
 
 <style scoped>
 .modal-overlay {
-  @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
 }
 
 .modal-content {
-  @apply bg-white rounded-lg shadow-xl max-w-lg w-full mx-4;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 32rem;
+  width: 100%;
+  margin-left: 1rem;
+  margin-right: 1rem;
 }
 
 .modal-header {
-  @apply flex justify-between items-center p-6 border-b border-gray-200;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-title {
-  @apply text-xl font-semibold text-gray-900;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #111827;
 }
 
 .close-button {
-  @apply text-gray-400 hover:text-gray-600;
+  color: #9ca3af;
+}
+
+.close-button:hover {
+  color: #4b5563;
 }
 
 .modal-body {
-  @apply p-6 space-y-6;
+  padding: 1.5rem;
 }
 
-.form-group {
-  @apply space-y-2;
+.modal-body > * + * {
+  margin-top: 1.5rem;
+}
+
+.form-group > * + * {
+  margin-top: 0.5rem;
 }
 
 .form-label {
-  @apply block text-sm font-medium text-gray-700;
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
 }
 
 .form-input,
 .form-select {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  ring: 2px solid #3b82f6;
+  border-color: transparent;
 }
 
 .form-help {
-  @apply text-sm text-gray-600;
+  font-size: 0.875rem;
+  color: #4b5563;
 }
 
 .search-summary {
-  @apply p-4 bg-gray-50 rounded-lg;
+  padding: 1rem;
+  background-color: #f9fafb;
+  border-radius: 0.5rem;
 }
 
 .summary-title {
-  @apply text-sm font-medium text-gray-900 mb-2;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #111827;
+  margin-bottom: 0.5rem;
 }
 
-.summary-content {
-  @apply space-y-1;
+.summary-content > * + * {
+  margin-top: 0.25rem;
 }
 
 .summary-item {
-  @apply text-sm text-gray-700;
+  font-size: 0.875rem;
+  color: #374151;
 }
 
 .checkbox-group {
-  @apply flex items-start gap-3;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
 }
 
 .checkbox-label {
-  @apply flex items-start gap-2 cursor-pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
 }
 
 .checkbox-input {
-  @apply mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500;
+  margin-top: 0.125rem;
+  border-radius: 0.25rem;
+  border-color: #d1d5db;
+  color: #2563eb;
+}
+
+.checkbox-input:focus {
+  ring: 2px solid #3b82f6;
 }
 
 .checkbox-text {
-  @apply text-sm text-gray-700;
+  font-size: 0.875rem;
+  color: #374151;
 }
 
 .form-actions {
-  @apply flex justify-end gap-3 pt-4 border-t border-gray-200;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .button {
-  @apply flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: colors 150ms;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .button.primary {
-  @apply bg-blue-600 text-white hover:bg-blue-700;
+  background-color: #2563eb;
+  color: white;
+}
+
+.button.primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
 }
 
 .button.secondary {
-  @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.button.secondary:hover:not(:disabled) {
+  background-color: #f9fafb;
 }
 </style>

@@ -345,7 +345,23 @@ export default {
 
 <style scoped>
 .alumni-directory {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8;
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .alumni-directory {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .alumni-directory {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
 }
 
 .loading-state .animate-pulse > div {

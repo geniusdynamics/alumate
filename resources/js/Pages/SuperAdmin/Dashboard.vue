@@ -1,118 +1,102 @@
 <template>
-    <div class="min-h-screen bg-gray-50">
+    <AdminLayout
+        app-name="Alumate"
+        user-role="Super Admin"
+        page-title="Dashboard"
+        :navigation-items="navigationItems"
+    >
         <Head title="Super Admin Dashboard" />
-        
-        <!-- Header -->
-        <div class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-6">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-900">Super Admin Dashboard</h1>
-                        <p class="mt-1 text-sm text-gray-600">System-wide overview and management</p>
-                    </div>
-                    <div class="flex space-x-3">
-                        <Link
-                            :href="route('super-admin.analytics')"
-                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-                        >
-                            <ChartBarIcon class="-ml-1 mr-2 h-5 w-5" />
-                            Analytics
-                        </Link>
-                        <Link
-                            :href="route('super-admin.reports')"
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                            <DocumentTextIcon class="-ml-1 mr-2 h-5 w-5" />
-                            Reports
-                        </Link>
-                    </div>
+
+        <!-- Welcome Section -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-white mb-2">Welcome Admin</h2>
+            <p class="text-gray-400">Here's what's happening with your platform today.</p>
+        </div>
+        <!-- System Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <DarkStatCard
+                title="Total Users"
+                :value="systemStats.total_users"
+                icon="UsersIcon"
+                color="blue"
+                change="+12%"
+            />
+            <DarkStatCard
+                title="Revenue"
+                :value="'$45,678'"
+                icon="CurrencyDollarIcon"
+                color="green"
+                change="+8.2%"
+            />
+            <DarkStatCard
+                title="Activity"
+                :value="2456"
+                icon="ChartBarIcon"
+                color="purple"
+                change="+15%"
+            />
+            <DarkStatCard
+                title="Views"
+                :value="34567"
+                icon="EyeIcon"
+                color="yellow"
+                change="-2.4%"
+            />
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-gray-800 border border-gray-700 rounded-lg mb-8">
+            <div class="px-6 py-4 border-b border-gray-700">
+                <h2 class="text-lg font-medium text-white">Quick Actions</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Link
+                        :href="route('super-admin.institutions')"
+                        class="flex items-center p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                        <BuildingOfficeIcon class="h-8 w-8 text-blue-400 mr-3" />
+                        <div>
+                            <div class="font-medium text-white">Manage Institutions</div>
+                            <div class="text-sm text-gray-400">{{ systemStats.total_institutions }} institutions</div>
+                        </div>
+                    </Link>
+
+                    <Link
+                        :href="route('super-admin.users')"
+                        class="flex items-center p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                        <UsersIcon class="h-8 w-8 text-green-400 mr-3" />
+                        <div>
+                            <div class="font-medium text-white">User Management</div>
+                            <div class="text-sm text-gray-400">{{ systemStats.total_users }} users</div>
+                        </div>
+                    </Link>
+
+                    <Link
+                        :href="route('super-admin.employer-verification')"
+                        class="flex items-center p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                        <ShieldCheckIcon class="h-8 w-8 text-orange-400 mr-3" />
+                        <div>
+                            <div class="font-medium text-white">Employer Verification</div>
+                            <div class="text-sm text-gray-400">{{ systemStats.pending_verifications }} pending</div>
+                        </div>
+                    </Link>
+
+                    <Link
+                        :href="route('super-admin.reports')"
+                        class="flex items-center p-4 border border-gray-600 rounded-lg hover:bg-gray-700 transition-colors"
+                    >
+                        <DocumentTextIcon class="h-8 w-8 text-purple-400 mr-3" />
+                        <div>
+                            <div class="font-medium text-white">System Reports</div>
+                            <div class="text-sm text-gray-400">Generate reports</div>
+                        </div>
+                    </Link>
                 </div>
             </div>
         </div>
-
-        <!-- Main Content -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- System Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <StatCard
-                    title="Total Institutions"
-                    :value="systemStats.total_institutions"
-                    icon="BuildingOfficeIcon"
-                    color="blue"
-                />
-                <StatCard
-                    title="Total Users"
-                    :value="systemStats.total_users"
-                    icon="UsersIcon"
-                    color="green"
-                />
-                <StatCard
-                    title="Total Graduates"
-                    :value="systemStats.total_graduates"
-                    icon="AcademicCapIcon"
-                    color="purple"
-                />
-                <StatCard
-                    title="Active Jobs"
-                    :value="systemStats.active_jobs"
-                    icon="BriefcaseIcon"
-                    color="yellow"
-                />
-            </div>
-
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-lg shadow mb-8">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-medium text-gray-900">Quick Actions</h2>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <Link
-                            :href="route('super-admin.institutions')"
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            <BuildingOfficeIcon class="h-8 w-8 text-blue-500 mr-3" />
-                            <div>
-                                <div class="font-medium text-gray-900">Manage Institutions</div>
-                                <div class="text-sm text-gray-500">{{ systemStats.total_institutions }} institutions</div>
-                            </div>
-                        </Link>
-                        
-                        <Link
-                            :href="route('super-admin.users')"
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            <UsersIcon class="h-8 w-8 text-green-500 mr-3" />
-                            <div>
-                                <div class="font-medium text-gray-900">User Management</div>
-                                <div class="text-sm text-gray-500">{{ systemStats.total_users }} users</div>
-                            </div>
-                        </Link>
-                        
-                        <Link
-                            :href="route('super-admin.employer-verification')"
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            <ShieldCheckIcon class="h-8 w-8 text-orange-500 mr-3" />
-                            <div>
-                                <div class="font-medium text-gray-900">Employer Verification</div>
-                                <div class="text-sm text-gray-500">{{ systemStats.pending_verifications }} pending</div>
-                            </div>
-                        </Link>
-                        
-                        <Link
-                            :href="route('super-admin.reports')"
-                            class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-                        >
-                            <DocumentTextIcon class="h-8 w-8 text-purple-500 mr-3" />
-                            <div>
-                                <div class="font-medium text-gray-900">System Reports</div>
-                                <div class="text-sm text-gray-500">Generate reports</div>
-                            </div>
-                        </Link>
-                    </div>
-                </div>
-            </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <!-- Institution Performance -->
@@ -262,16 +246,16 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+    </AdminLayout>
 </template>
 
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import { 
-    BuildingOfficeIcon, 
-    UsersIcon, 
-    AcademicCapIcon, 
+import { Head, Link } from '@inertiajs/vue3'
+import { computed } from 'vue'
+import {
+    BuildingOfficeIcon,
+    UsersIcon,
+    AcademicCapIcon,
     BriefcaseIcon,
     ChartBarIcon,
     DocumentTextIcon,
@@ -279,9 +263,10 @@ import {
     UserIcon,
     PlusIcon,
     CheckCircleIcon
-} from '@heroicons/vue/24/outline';
-import StatCard from '@/components/StatCard.vue';
-import { formatDistanceToNow } from 'date-fns';
+} from '@heroicons/vue/24/outline'
+import AdminLayout from '@/Components/AdminLayout.vue'
+import DarkStatCard from '@/Components/DarkStatCard.vue'
+import { formatDistanceToNow } from 'date-fns'
 
 const props = defineProps({
     systemStats: Object,
@@ -290,7 +275,70 @@ const props = defineProps({
     jobStats: Object,
     recentActivity: Array,
     systemHealth: Object,
-});
+})
+
+const navigationItems = computed(() => [
+    {
+        name: 'Dashboard',
+        href: route('super-admin.dashboard'),
+        icon: 'HomeIcon',
+        active: route().current('super-admin.dashboard')
+    },
+    {
+        name: 'Analytics',
+        href: route('super-admin.analytics'),
+        icon: 'ChartBarIcon',
+        active: route().current('super-admin.analytics')
+    },
+    {
+        name: 'Users',
+        href: route('super-admin.users'),
+        icon: 'UsersIcon',
+        active: route().current('super-admin.users')
+    },
+    {
+        name: 'Content',
+        href: '#',
+        icon: 'DocumentTextIcon',
+        active: false
+    },
+    {
+        name: 'Activity',
+        href: '#',
+        icon: 'ChartPieIcon',
+        active: false
+    },
+    {
+        name: 'Database',
+        href: '#',
+        icon: 'DatabaseIcon',
+        active: false
+    },
+    {
+        name: 'Security',
+        href: '#',
+        icon: 'ShieldCheckIcon',
+        active: false
+    },
+    {
+        name: 'Performance',
+        href: '#',
+        icon: 'ChartBarIcon',
+        active: false
+    },
+    {
+        name: 'Notifications',
+        href: '#',
+        icon: 'BellIcon',
+        active: false
+    },
+    {
+        name: 'Settings',
+        href: '#',
+        icon: 'CogIcon',
+        active: false
+    }
+])
 
 const getEmploymentRateColor = (rate) => {
     if (rate >= 80) return 'text-green-600';

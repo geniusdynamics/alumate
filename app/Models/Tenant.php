@@ -29,7 +29,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
      */
     public function users()
     {
-        return $this->hasMany(User::class, 'tenant_id', 'id');
+        return $this->hasMany(User::class, 'institution_id', 'id');
     }
 
     /**
@@ -37,7 +37,7 @@ class Tenant extends BaseTenant implements TenantWithDatabase
      */
     public function courses()
     {
-        return $this->hasMany(Course::class, 'tenant_id', 'id');
+        return $this->hasMany(Course::class, 'institution_id', 'id');
     }
 
     /**

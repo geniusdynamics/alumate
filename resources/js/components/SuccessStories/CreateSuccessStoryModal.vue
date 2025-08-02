@@ -336,11 +336,6 @@ const achievementTypes = [
   'leadership', 'community_service', 'innovation', 'research', 'entrepreneurship'
 ]
 
-defineEmits<{
-  close: []
-  created: [story: any]
-}>()
-
 const handleFeaturedImageUpload = (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
