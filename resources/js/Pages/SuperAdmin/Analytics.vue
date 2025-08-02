@@ -7,71 +7,91 @@
             <div class="flex justify-between items-center">
                 <div>
                     <h1 class="text-3xl font-bold text-white">System Analytics</h1>
-                    <p class="mt-1 text-sm text-gray-300">Comprehensive system-wide analytics and insights</p>
+                    <p class="mt-1 text-sm text-gray-300">Advanced analytics and insights across the platform</p>
                 </div>
-                    <div class="flex space-x-3">
-                        <select
-                            v-model="selectedTimeframe"
-                            @change="updateTimeframe"
-                            class="border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        >
-                            <option value="7">Last 7 days</option>
-                            <option value="30">Last 30 days</option>
-                            <option value="90">Last 90 days</option>
-                            <option value="365">Last year</option>
-                        </select>
-                        <Link
-                            :href="route('super-admin.dashboard')"
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                        >
-                            <ArrowLeftIcon class="-ml-1 mr-2 h-5 w-5" />
-                            Back to Dashboard
-                        </Link>
-                    </div>
+                <div class="flex space-x-3">
+                    <Link
+                        :href="route('super-admin.dashboard')"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                        <ArrowLeftIcon class="-ml-1 mr-2 h-5 w-5" />
+                        Back to Dashboard
+                    </Link>
                 </div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <!-- User Growth Chart -->
-            <div class="bg-white rounded-lg shadow mb-8">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-medium text-gray-900">User Growth</h2>
-                    <p class="text-sm text-gray-500">Daily user registrations over time</p>
+            <!-- Analytics Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <UsersIcon class="h-8 w-8 text-blue-600" />
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
+                                <dd class="text-lg font-medium text-gray-900">{{ analytics?.overview?.total_users || 0 }}</dd>
+                            </dl>
+                        </div>
+                    </div>
                 </div>
-                <div class="p-6">
-                    <div class="h-64 flex items-center justify-center bg-gray-50 rounded-lg">
-                        <div class="text-center">
-                            <ChartBarIcon class="mx-auto h-12 w-12 text-gray-400" />
-                            <p class="mt-2 text-sm text-gray-500">
-                                Chart showing {{ analytics.user_growth?.length || 0 }} data points
-                            </p>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <BriefcaseIcon class="h-8 w-8 text-green-600" />
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Active Jobs</dt>
+                                <dd class="text-lg font-medium text-gray-900">{{ analytics?.overview?.active_jobs || 0 }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <DocumentTextIcon class="h-8 w-8 text-purple-600" />
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Applications</dt>
+                                <dd class="text-lg font-medium text-gray-900">{{ analytics?.overview?.total_applications || 0 }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <ChartBarIcon class="h-8 w-8 text-yellow-600" />
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Employment Rate</dt>
+                                <dd class="text-lg font-medium text-gray-900">{{ analytics?.overview?.employment_rate || 0 }}%</dd>
+                            </dl>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Charts Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Institution Performance -->
+                <!-- User Growth Chart -->
                 <div class="bg-white rounded-lg shadow">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900">Institution Performance</h2>
+                        <h3 class="text-lg font-medium text-gray-900">User Growth</h3>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-4">
-                            <div v-for="institution in analytics.institution_performance" :key="institution.institution" class="flex items-center justify-between">
-                                <div>
-                                    <div class="font-medium text-gray-900">{{ institution.institution }}</div>
-                                    <div class="text-sm text-gray-500">{{ institution.performance.graduate_count }} graduates</div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-sm font-medium" :class="getEmploymentRateColor(institution.performance.employment_rate)">
-                                        {{ Math.round(institution.performance.employment_rate) }}% employed
-                                    </div>
-                                    <div class="text-xs text-gray-500">{{ institution.performance.active_jobs }} active jobs</div>
-                                </div>
-                            </div>
+                        <div class="h-64 flex items-center justify-center text-gray-500">
+                            Chart placeholder - User growth over time
                         </div>
                     </div>
                 </div>
@@ -79,103 +99,88 @@
                 <!-- Employment Trends -->
                 <div class="bg-white rounded-lg shadow">
                     <div class="px-6 py-4 border-b border-gray-200">
-                        <h2 class="text-lg font-medium text-gray-900">Employment Trends</h2>
+                        <h3 class="text-lg font-medium text-gray-900">Employment Trends</h3>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-4">
-                            <div v-for="trend in analytics.employment_trends" :key="trend.employment_status" class="flex items-center justify-between">
-                                <div class="flex items-center">
-                                    <div class="w-3 h-3 rounded-full mr-3" :class="getEmploymentStatusColor(trend.employment_status)"></div>
-                                    <span class="text-sm font-medium text-gray-900 capitalize">{{ trend.employment_status.replace('_', ' ') }}</span>
-                                </div>
-                                <span class="text-sm text-gray-500">{{ trend.count }} graduates</span>
-                            </div>
+                        <div class="h-64 flex items-center justify-center text-gray-500">
+                            Chart placeholder - Employment trends
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Job Market Analysis -->
+            <!-- Institution Performance -->
             <div class="bg-white rounded-lg shadow mb-8">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-medium text-gray-900">Job Market Analysis</h2>
+                    <h3 class="text-lg font-medium text-gray-900">Institution Performance</h3>
                 </div>
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Jobs by Type -->
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900 mb-3">Jobs by Type</h3>
-                            <div class="space-y-2">
-                                <div v-for="job in analytics.job_market_analysis.jobs_by_type" :key="job.job_type" class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">{{ job.job_type || 'Other' }}</span>
-                                    <span class="text-sm font-medium text-gray-900">{{ job.count }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Jobs by Location -->
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900 mb-3">Top Locations</h3>
-                            <div class="space-y-2">
-                                <div v-for="location in analytics.job_market_analysis.jobs_by_location" :key="location.location" class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">{{ location.location }}</span>
-                                    <span class="text-sm font-medium text-gray-900">{{ location.count }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Salary Ranges -->
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900 mb-3">Salary Ranges</h3>
-                            <div class="space-y-2">
-                                <div v-for="salary in analytics.job_market_analysis.salary_ranges" :key="salary.range" class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">{{ salary.range }}</span>
-                                    <span class="text-sm font-medium text-gray-900">{{ salary.count }}</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Graduates</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employed</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment Rate</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Jobs</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr v-for="institution in analytics?.institutions || []" :key="institution.id">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ institution.name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ institution.total_graduates || 0 }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ institution.employed_graduates || 0 }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        <span :class="getEmploymentRateColor(institution.employment_rate)">
+                                            {{ Math.round(institution.employment_rate || 0) }}%
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ institution.active_jobs || 0 }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- System Usage -->
+            <!-- Recent Activity -->
             <div class="bg-white rounded-lg shadow">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-lg font-medium text-gray-900">System Usage</h2>
+                    <h3 class="text-lg font-medium text-gray-900">Recent System Activity</h3>
                 </div>
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Daily Logins Chart -->
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900 mb-3">Daily Active Users</h3>
-                            <div class="h-32 flex items-center justify-center bg-gray-50 rounded-lg">
-                                <div class="text-center">
-                                    <ChartBarIcon class="mx-auto h-8 w-8 text-gray-400" />
-                                    <p class="mt-1 text-xs text-gray-500">
-                                        {{ analytics.system_usage?.daily_logins?.length || 0 }} data points
-                                    </p>
+                    <div class="flow-root">
+                        <ul class="-mb-8">
+                            <li v-for="(activity, index) in analytics?.recent_activities || []" :key="activity.id">
+                                <div class="relative pb-8" :class="{ 'pb-0': index === (analytics?.recent_activities?.length - 1) }">
+                                    <span v-if="index !== (analytics?.recent_activities?.length - 1)" class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                    <div class="relative flex space-x-3">
+                                        <div>
+                                            <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                                                <component :is="getActivityIcon(activity.type)" class="h-5 w-5 text-white" aria-hidden="true" />
+                                            </span>
+                                        </div>
+                                        <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                                            <div>
+                                                <p class="text-sm text-gray-500">{{ activity.description }}</p>
+                                            </div>
+                                            <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                                                {{ formatDate(activity.created_at) }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-
-                        <!-- Feature Usage -->
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-900 mb-3">Feature Usage</h3>
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">Job Applications</span>
-                                    <span class="text-sm font-medium text-gray-900">{{ analytics.system_usage?.feature_usage?.job_applications || 0 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">Profile Updates</span>
-                                    <span class="text-sm font-medium text-gray-900">{{ analytics.system_usage?.feature_usage?.profile_updates || 0 }}</span>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600">Job Posts</span>
-                                    <span class="text-sm font-medium text-gray-900">{{ analytics.system_usage?.feature_usage?.job_posts || 0 }}</span>
-                                </div>
-                            </div>
-                        </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -184,20 +189,23 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
 import AdminLayout from '@/Components/AdminLayout.vue';
 import {
-    ChartBarIcon,
     ArrowLeftIcon,
+    UsersIcon,
+    BriefcaseIcon,
+    DocumentTextIcon,
+    ChartBarIcon,
+    UserPlusIcon,
+    BuildingOfficeIcon,
+    AcademicCapIcon,
 } from '@heroicons/vue/24/outline';
+import { format } from 'date-fns';
 
 const props = defineProps({
     analytics: Object,
-    timeframe: String,
 });
-
-const selectedTimeframe = ref(props.timeframe);
 
 const getEmploymentRateColor = (rate) => {
     if (rate >= 80) return 'text-green-600';
@@ -205,21 +213,19 @@ const getEmploymentRateColor = (rate) => {
     return 'text-red-600';
 };
 
-const getEmploymentStatusColor = (status) => {
-    const colors = {
-        'employed': 'bg-green-500',
-        'self_employed': 'bg-blue-500',
-        'unemployed': 'bg-red-500',
-        'seeking_employment': 'bg-yellow-500',
-        'further_study': 'bg-purple-500',
+const getActivityIcon = (type) => {
+    const icons = {
+        'user': UserPlusIcon,
+        'institution': BuildingOfficeIcon,
+        'graduate': AcademicCapIcon,
+        'job': BriefcaseIcon,
+        'application': DocumentTextIcon,
     };
-    return colors[status] || 'bg-gray-500';
+    return icons[type] || DocumentTextIcon;
 };
 
-const updateTimeframe = () => {
-    router.get(route('super-admin.analytics'), { timeframe: selectedTimeframe.value }, {
-        preserveState: true,
-        replace: true,
-    });
+const formatDate = (dateString) => {
+    return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
 };
 </script>
+</template>

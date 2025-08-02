@@ -56,6 +56,13 @@ class InstitutionController extends Controller
         return redirect()->route('institutions.index');
     }
 
+    public function show(Tenant $institution)
+    {
+        return Inertia::render('SuperAdmin/Institutions/Show', [
+            'institution' => $institution,
+        ]);
+    }
+
     public function destroy(Tenant $institution)
     {
         $institution->delete();

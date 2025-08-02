@@ -251,10 +251,10 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getGraduatesByYear()
     {
-        return Graduate::selectRaw('YEAR(graduation_date) as year, COUNT(*) as count')
-            ->whereNotNull('graduation_date')
-            ->groupBy('year')
-            ->orderBy('year')
+        return Graduate::selectRaw('graduation_year as year, COUNT(*) as count')
+            ->whereNotNull('graduation_year')
+            ->groupBy('graduation_year')
+            ->orderBy('graduation_year')
             ->get();
     }
 

@@ -161,6 +161,9 @@ class GraduateController extends Controller
             'job_search_active' => 'boolean',
         ]);
 
+        // Add tenant_id from authenticated user's institution
+        $data['tenant_id'] = auth()->user()->institution_id;
+
         $graduate = Graduate::create($data);
         $graduate->updateProfileCompletion();
 

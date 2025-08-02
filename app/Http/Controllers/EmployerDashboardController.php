@@ -215,9 +215,7 @@ class EmployerDashboardController extends Controller
 
     private function getDashboardStatistics($employer)
     {
-        // Update job stats to ensure we have current data
-        $employer->updateJobStats();
-        $employer->refresh();
+        // Get current job statistics
 
         return [
             'total_jobs_posted' => $employer->total_jobs_posted ?? 0,

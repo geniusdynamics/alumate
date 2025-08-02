@@ -219,6 +219,9 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         $validatedData['course_id'] = $course->id;
         unset($validatedData['course_name']);
 
+        // Add tenant_id from authenticated user's institution
+        $validatedData['tenant_id'] = auth()->user()->institution_id;
+
         return $validatedData;
     }
 

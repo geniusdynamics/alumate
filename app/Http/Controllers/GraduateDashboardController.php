@@ -48,12 +48,13 @@ class GraduateDashboardController extends Controller
             if (!$graduate) {
                 // Create graduate record if it doesn't exist
                 $graduate = Graduate::create([
+                    'tenant_id' => $tenant->id,
                     'user_id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
                     'student_id' => 'STU' . str_pad($user->id, 6, '0', STR_PAD_LEFT),
                     'graduation_year' => now()->year,
-                    'employment_status' => ['status' => 'unemployed'],
+                    'employment_status' => 'unemployed',
                 ]);
             }
 
@@ -365,7 +366,7 @@ class GraduateDashboardController extends Controller
                 ->where('status', 'interviewed')->count(),
             'job_offers' => JobApplication::where('graduate_id', $graduate->id)
                 ->where('status', 'hired')->count(),
-            'employment_status' => $graduate->employment_status['status'] ?? 'unemployed',
+            'employment_status' => $graduate->employment_status ?? 'unemployed',
             'course_completion_year' => $graduate->graduation_year,
             'skills_count' => count($graduate->skills ?? []),
         ];
