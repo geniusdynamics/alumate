@@ -1,15 +1,14 @@
 <template>
-    <div class="min-h-screen bg-gray-50">
+    <AdminLayout>
         <Head title="System Analytics" />
-        
+
         <!-- Header -->
-        <div class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-6">
-                    <div>
-                        <h1 class="text-3xl font-bold text-gray-900">System Analytics</h1>
-                        <p class="mt-1 text-sm text-gray-600">Comprehensive system-wide analytics and insights</p>
-                    </div>
+        <div class="mb-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-white">System Analytics</h1>
+                    <p class="mt-1 text-sm text-gray-300">Comprehensive system-wide analytics and insights</p>
+                </div>
                     <div class="flex space-x-3">
                         <select
                             v-model="selectedTimeframe"
@@ -181,12 +180,13 @@
                 </div>
             </div>
         </div>
-    </div>
+    </AdminLayout>
 </template>
 
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import AdminLayout from '@/Components/AdminLayout.vue';
 import {
     ChartBarIcon,
     ArrowLeftIcon,

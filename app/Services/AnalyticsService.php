@@ -133,7 +133,7 @@ class AnalyticsService
         }
         
         if (!empty($filters['employment_status'])) {
-            $query->whereJsonContains('employment_status->status', $filters['employment_status']);
+            $query->where('employment_status', $filters['employment_status']);
         }
         
         $graduates = $query->get();
@@ -237,7 +237,7 @@ class AnalyticsService
     {
         return [
             'total_graduates' => Graduate::whereDate('created_at', '<=', $date)->count(),
-            'employed_graduates' => Graduate::whereJsonContains('employment_status->status', 'employed')
+            'employed_graduates' => Graduate::where('employment_status', 'employed')
                 ->whereDate('created_at', '<=', $date)->count(),
             'active_jobs' => Job::where('status', 'active')
                 ->whereDate('created_at', '<=', $date)->count(),
@@ -274,7 +274,7 @@ class AnalyticsService
             },
             'graduates as employed_count' => function ($query) use ($date) {
                 $query->whereDate('created_at', '<=', $date)
-                    ->whereJsonContains('employment_status->status', 'employed');
+                    ->where('employment_status', 'employed');
             }
         ])
         ->get()

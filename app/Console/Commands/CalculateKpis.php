@@ -190,16 +190,17 @@ class CalculateKpis extends Command
     private function getTimeToEmploymentBreakdown($date)
     {
         $graduates = \App\Models\Graduate::whereDate('created_at', '<=', $date)
-            ->whereJsonContains('employment_status->status', 'employed')
-            ->whereNotNull('employment_status->start_date')
+            ->where('employment_status', 'employed')
+            ->whereNotNull('employment_start_date')
             ->with('course')
             ->get();
 
         return $graduates->groupBy('course.name')
             ->map(function ($courseGraduates) {
                 $times = $courseGraduates->map(function ($graduate) {
-                    $graduationDate = Carbon::parse($graduate->graduation_date);
-                    $employmentDate = Carbon::parse($graduate->employment_status['start_date']);
+                    // Approximate graduation date as end of graduation year
+                    $graduationDate = Carbon::createFromDate($graduate->graduation_year, 12, 31);
+                    $employmentDate = Carbon::parse($graduate->employment_start_date);
                     
                     return $graduationDate->diffInDays($employmentDate);
                 });

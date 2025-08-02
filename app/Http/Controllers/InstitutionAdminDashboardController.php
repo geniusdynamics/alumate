@@ -7,6 +7,7 @@ use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\User;
+use App\Models\Tenant;
 use App\Models\ImportHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -209,12 +210,12 @@ class InstitutionAdminDashboardController extends Controller
 
         try {
             $total = Graduate::count();
-            $employed = Graduate::whereJsonContains('employment_status->status', 'employed')->count();
-            $unemployed = Graduate::whereJsonContains('employment_status->status', 'unemployed')->count();
+            $employed = Graduate::where('employment_status', 'employed')->count();
+            $unemployed = Graduate::where('employment_status', 'unemployed')->count();
+            $seeking = Graduate::where('employment_status', 'unemployed')->count(); // Assuming seeking is same as unemployed for now
         } finally {
             Tenancy::end();
         }
-        $seeking = Graduate::whereJsonContains('employment_status->status', 'seeking')->count();
 
         return [
             'total' => $total,
@@ -230,7 +231,7 @@ class InstitutionAdminDashboardController extends Controller
         return Course::withCount([
             'graduates',
             'graduates as employed_count' => function ($query) {
-                $query->whereJsonContains('employment_status->status', 'employed');
+                $query->where('employment_status', 'employed');
             }
         ])
         ->get()
@@ -262,7 +263,7 @@ class InstitutionAdminDashboardController extends Controller
         return Course::withCount([
             'graduates',
             'graduates as employed_count' => function ($query) {
-                $query->whereJsonContains('employment_status->status', 'employed');
+                $query->where('employment_status', 'employed');
             }
         ])
         ->get()
@@ -279,10 +280,17 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getSalaryRanges()
     {
-        return Graduate::whereJsonContains('employment_status->status', 'employed')
-            ->whereNotNull('employment_status->salary_range')
+        return Graduate::where('employment_status', 'employed')
+            ->whereNotNull('current_salary')
             ->get()
-            ->groupBy('employment_status.salary_range')
+            ->groupBy(function ($graduate) {
+                $salary = $graduate->current_salary;
+                if ($salary < 30000) return 'Under $30K';
+                if ($salary < 50000) return '$30K - $50K';
+                if ($salary < 75000) return '$50K - $75K';
+                if ($salary < 100000) return '$75K - $100K';
+                return 'Over $100K';
+            })
             ->map(function ($graduates, $range) {
                 return [
                     'range' => $range,
@@ -294,10 +302,10 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getTopEmployers()
     {
-        return Graduate::whereJsonContains('employment_status->status', 'employed')
-            ->whereNotNull('employment_status->company')
+        return Graduate::where('employment_status', 'employed')
+            ->whereNotNull('current_company')
             ->get()
-            ->groupBy('employment_status.company')
+            ->groupBy('current_company')
             ->map(function ($graduates, $company) {
                 return [
                     'company' => $company,
@@ -342,7 +350,7 @@ class InstitutionAdminDashboardController extends Controller
     private function getGraduateProgression()
     {
         return Graduate::with(['course'])
-            ->whereJsonContains('employment_status->status', 'employed')
+            ->where('employment_status', 'employed')
             ->get()
             ->groupBy('course.name')
             ->map(function ($graduates, $courseName) {
@@ -350,10 +358,10 @@ class InstitutionAdminDashboardController extends Controller
                     'course' => $courseName,
                     'progression' => $graduates->map(function ($graduate) {
                         return [
-                            'name' => $graduate->user->name,
-                            'company' => $graduate->employment_status['company'] ?? 'Unknown',
-                            'position' => $graduate->employment_status['job_title'] ?? 'Unknown',
-                            'start_date' => $graduate->employment_status['start_date'] ?? null,
+                            'name' => $graduate->name, // Graduate has name directly, not through user
+                            'company' => $graduate->current_company ?? 'Unknown',
+                            'position' => $graduate->current_job_title ?? 'Unknown',
+                            'start_date' => $graduate->employment_start_date ?? null,
                         ];
                     }),
                 ];
@@ -428,7 +436,7 @@ class InstitutionAdminDashboardController extends Controller
                 },
                 'graduates as employed_count' => function ($query) use ($startDate) {
                     $query->where('created_at', '>=', $startDate)
-                        ->whereJsonContains('employment_status->status', 'employed');
+                        ->where('employment_status', 'employed');
                 }
             ])
             ->get()

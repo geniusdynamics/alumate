@@ -46,7 +46,7 @@ class JobApplication extends Model
      */
     public function job(): BelongsTo
     {
-        return $this->belongsTo(JobPosting::class, 'job_id');
+        return $this->belongsTo(Job::class, 'job_id');
     }
 
     /**
@@ -63,6 +63,15 @@ class JobApplication extends Model
     public function introductionContact(): BelongsTo
     {
         return $this->belongsTo(User::class, 'introduction_contact_id');
+    }
+
+    /**
+     * Get the graduate profile for this application
+     * This assumes the user_id corresponds to a graduate
+     */
+    public function graduate(): BelongsTo
+    {
+        return $this->belongsTo(Graduate::class, 'user_id', 'user_id');
     }
 
     /**

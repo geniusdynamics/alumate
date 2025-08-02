@@ -434,12 +434,12 @@ class SuperAdminDashboardController extends Controller
                 ->limit(10)
                 ->get(),
             'salary_ranges' => Job::select(
-                    DB::raw('CASE 
-                        WHEN salary_min < 30000 THEN "Under 30k"
-                        WHEN salary_min < 50000 THEN "30k-50k"
-                        WHEN salary_min < 80000 THEN "50k-80k"
-                        ELSE "80k+"
-                    END as range'),
+                    DB::raw("CASE
+                        WHEN salary_min < 30000 THEN 'Under 30k'
+                        WHEN salary_min < 50000 THEN '30k-50k'
+                        WHEN salary_min < 80000 THEN '50k-80k'
+                        ELSE '80k+'
+                    END as range"),
                     DB::raw('COUNT(*) as count')
                 )
                 ->whereNotNull('salary_min')
@@ -553,14 +553,9 @@ class SuperAdminDashboardController extends Controller
                 ['employment_status' => 'employed', 'count' => 0],
                 ['employment_status' => 'seeking', 'count' => 0],
             ])
-                ->groupBy('employment_status')
-                ->get(),
+                ->groupBy('employment_status'),
             'recent_employment_changes' => collect([]), // Temporarily return empty data
             'top_employers' => collect([]) // Temporarily return empty data
-                ->groupBy('current_company')
-                ->orderBy('count', 'desc')
-                ->limit(10)
-                ->get(),
         ];
     }
 

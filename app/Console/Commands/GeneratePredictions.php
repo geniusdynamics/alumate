@@ -124,8 +124,7 @@ class GeneratePredictions extends Command
     {
         // Get recent graduates who are actively seeking employment
         return Graduate::with(['course', 'user'])
-            ->whereJsonContains('employment_status->status', 'seeking')
-            ->orWhereJsonContains('employment_status->status', 'unemployed')
+            ->where('employment_status', 'unemployed') // Combining seeking and unemployed as unemployed
             ->orderBy('graduation_date', 'desc')
             ->limit($limit)
             ->get();

@@ -266,7 +266,7 @@ class GraduateDashboardController extends Controller
         }
 
         if ($request->filled('employment_status')) {
-            $query->where('employment_status->status', $request->employment_status);
+            $query->where('employment_status', $request->employment_status);
         }
 
         $classmates = $query->orderBy('graduation_year', 'desc')

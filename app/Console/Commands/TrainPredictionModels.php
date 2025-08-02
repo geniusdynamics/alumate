@@ -326,18 +326,16 @@ class TrainPredictionModels extends Command
     private function getSalaryTrends($course)
     {
         $graduates = $course->graduates()
-            ->whereJsonContains('employment_status->status', 'employed')
-            ->whereNotNull('employment_status->salary_range')
+            ->where('employment_status', 'employed')
+            ->whereNotNull('current_salary')
             ->get();
 
         if ($graduates->isEmpty()) {
             return 0;
         }
 
-        // Simple average of salary midpoints
-        $salarySum = $graduates->sum(function ($graduate) {
-            return $this->getSalaryMidpoint($graduate->employment_status['salary_range']);
-        });
+        // Simple average of current salaries
+        $salarySum = $graduates->sum('current_salary');
 
         return $salarySum / $graduates->count();
     }

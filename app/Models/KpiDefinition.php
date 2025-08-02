@@ -251,7 +251,7 @@ class KpiDefinition extends Model
                     'numerator' => [
                         'model' => 'App\\Models\\Graduate',
                         'filters' => [
-                            ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed']
+                            ['field' => 'employment_status', 'operator' => '=', 'value' => 'employed']
                         ]
                     ],
                     'denominator' => [
@@ -296,7 +296,7 @@ class KpiDefinition extends Model
                         'model' => 'App\\Models\\Graduate',
                         'field' => 'days_to_employment',
                         'filters' => [
-                            ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed']
+                            ['field' => 'employment_status', 'operator' => '=', 'value' => 'employed']
                         ]
                     ]
                 ],

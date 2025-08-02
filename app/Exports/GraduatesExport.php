@@ -46,7 +46,7 @@ class GraduatesExport implements FromCollection, WithHeadings, WithMapping, With
         }
 
         if (!empty($this->filters['employment_status'])) {
-            $query->whereJsonContains('employment_status->status', $this->filters['employment_status']);
+            $query->where('employment_status', $this->filters['employment_status']);
         }
 
         if (!empty($this->filters['job_search_active'])) {

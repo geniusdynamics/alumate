@@ -298,7 +298,7 @@ class ReportBuilderService
         }
         
         if (!empty($filters['employment_status'])) {
-            $query->whereJsonContains('employment_status->status', $filters['employment_status']);
+            $query->where('employment_status', $filters['employment_status']);
         }
         
         if (!empty($filters['graduation_year'])) {
@@ -306,7 +306,24 @@ class ReportBuilderService
         }
         
         if (!empty($filters['salary_range'])) {
-            $query->whereJsonContains('employment_status->salary_range', $filters['salary_range']);
+            // Convert salary range to actual salary comparison
+            switch ($filters['salary_range']) {
+                case 'Under $30K':
+                    $query->where('current_salary', '<', 30000);
+                    break;
+                case '$30K - $50K':
+                    $query->whereBetween('current_salary', [30000, 49999]);
+                    break;
+                case '$50K - $75K':
+                    $query->whereBetween('current_salary', [50000, 74999]);
+                    break;
+                case '$75K - $100K':
+                    $query->whereBetween('current_salary', [75000, 99999]);
+                    break;
+                case 'Over $100K':
+                    $query->where('current_salary', '>=', 100000);
+                    break;
+            }
         }
     }
 
@@ -597,7 +614,7 @@ class ReportBuilderService
         $total = Graduate::count();
         if ($total === 0) return 0;
         
-        $employed = Graduate::whereJsonContains('employment_status->status', 'employed')->count();
+        $employed = Graduate::where('employment_status', 'employed')->count();
         
         return ($employed / $total) * 100;
     }

@@ -151,7 +151,7 @@ class EmployerDashboardController extends Controller
         }
 
         if ($request->filled('employment_status')) {
-            $query->where('employment_status->status', $request->employment_status);
+            $query->where('employment_status', $request->employment_status);
         }
 
         if ($request->filled('skills')) {
@@ -215,9 +215,13 @@ class EmployerDashboardController extends Controller
 
     private function getDashboardStatistics($employer)
     {
+        // Update job stats to ensure we have current data
+        $employer->updateJobStats();
+        $employer->refresh();
+
         return [
-            'total_jobs_posted' => $employer->total_jobs_posted,
-            'active_jobs' => $employer->active_jobs_count,
+            'total_jobs_posted' => $employer->total_jobs_posted ?? 0,
+            'active_jobs' => $employer->active_jobs_count ?? 0,
             'total_applications' => JobApplication::whereHas('job', function($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })->count(),
@@ -227,7 +231,7 @@ class EmployerDashboardController extends Controller
             'shortlisted_candidates' => JobApplication::whereHas('job', function($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })->where('status', 'shortlisted')->count(),
-            'total_hires' => $employer->total_hires,
+            'total_hires' => $employer->total_hires ?? 0,
             'profile_completion' => $employer->getProfileCompletionPercentage(),
             'remaining_job_posts' => $employer->getRemainingJobPosts(),
             'subscription_plan' => $employer->subscription_plan,
