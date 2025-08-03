@@ -25,6 +25,12 @@ Route::prefix('super-admin')->name('super-admin.')->middleware(['auth', 'role:su
     Route::get('employer-verification', [\App\Http\Controllers\SuperAdminDashboardController::class, 'employerVerification'])->name('employer-verification');
     Route::get('reports', [\App\Http\Controllers\SuperAdminDashboardController::class, 'reports'])->name('reports');
     Route::get('system-health', [\App\Http\Controllers\SuperAdminDashboardController::class, 'systemHealth'])->name('system-health');
+    Route::get('content', [\App\Http\Controllers\SuperAdminDashboardController::class, 'content'])->name('content');
+    Route::get('activity', [\App\Http\Controllers\SuperAdminDashboardController::class, 'activity'])->name('activity');
+    Route::get('database', [\App\Http\Controllers\SuperAdminDashboardController::class, 'database'])->name('database');
+    Route::get('performance', [\App\Http\Controllers\SuperAdminDashboardController::class, 'performance'])->name('performance');
+    Route::get('notifications', [\App\Http\Controllers\SuperAdminDashboardController::class, 'notifications'])->name('notifications');
+    Route::get('settings', [\App\Http\Controllers\SuperAdminDashboardController::class, 'settings'])->name('settings');
     Route::post('reports/export', [\App\Http\Controllers\SuperAdminDashboardController::class, 'exportReport'])->name('reports.export');
 });
 
@@ -184,6 +190,115 @@ Route::get('/announcements', [\App\Http\Controllers\AnnouncementController::clas
 Route::get('/announcements/{announcement}', [\App\Http\Controllers\AnnouncementController::class, 'show'])->name('announcements.show');
 Route::get('/discussions', [\App\Http\Controllers\DiscussionController::class, 'index'])->name('discussions.index');
 Route::get('/discussions/{discussion}', [\App\Http\Controllers\DiscussionController::class, 'show'])->name('discussions.show');
+
+// Social Features Routes
+Route::middleware(['auth'])->prefix('social')->name('social.')->group(function () {
+    Route::get('timeline', [\App\Http\Controllers\SocialController::class, 'timeline'])->name('timeline');
+    Route::get('posts/create', [\App\Http\Controllers\SocialController::class, 'createPost'])->name('posts.create');
+    Route::get('circles', [\App\Http\Controllers\SocialController::class, 'circles'])->name('circles');
+    Route::get('groups', [\App\Http\Controllers\SocialController::class, 'groups'])->name('groups');
+});
+
+// Alumni Network Routes
+Route::middleware(['auth'])->prefix('alumni')->name('alumni.')->group(function () {
+    Route::get('directory', [\App\Http\Controllers\AlumniController::class, 'directory'])->name('directory');
+    Route::get('recommendations', [\App\Http\Controllers\AlumniController::class, 'recommendations'])->name('recommendations');
+    Route::get('connections', [\App\Http\Controllers\AlumniController::class, 'connections'])->name('connections');
+});
+
+// Career Services Routes
+Route::middleware(['auth'])->prefix('career')->name('career.')->group(function () {
+    Route::get('timeline', [\App\Http\Controllers\CareerController::class, 'timeline'])->name('timeline');
+    Route::get('goals', [\App\Http\Controllers\CareerController::class, 'goals'])->name('goals');
+    Route::get('mentorship', [\App\Http\Controllers\CareerController::class, 'mentorship'])->name('mentorship');
+});
+
+// Job Matching Routes
+Route::middleware(['auth'])->prefix('jobs')->name('jobs.')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\JobController::class, 'dashboard'])->name('dashboard');
+    Route::get('recommendations', [\App\Http\Controllers\JobController::class, 'recommendations'])->name('recommendations');
+    Route::get('saved', [\App\Http\Controllers\JobController::class, 'saved'])->name('saved');
+});
+
+// Events Routes
+Route::middleware(['auth'])->prefix('events')->name('events.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\EventController::class, 'index'])->name('index');
+    Route::get('create', [\App\Http\Controllers\EventController::class, 'create'])->name('create');
+    Route::get('my-events', [\App\Http\Controllers\EventController::class, 'myEvents'])->name('my-events');
+});
+
+// Success Stories Routes
+Route::middleware(['auth'])->prefix('stories')->name('stories.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\SuccessStoryController::class, 'index'])->name('index');
+    Route::get('create', [\App\Http\Controllers\SuccessStoryController::class, 'create'])->name('create');
+    Route::get('my-stories', [\App\Http\Controllers\SuccessStoryController::class, 'myStories'])->name('my-stories');
+});
+
+// Student-specific routes
+Route::prefix('students')->name('students.')->middleware(['auth', 'role:student'])->group(function () {
+    Route::get('stories/discovery', [\App\Http\Controllers\StudentController::class, 'storiesDiscovery'])->name('stories.discovery');
+    Route::get('mentorship/hub', [\App\Http\Controllers\StudentController::class, 'mentorshipHub'])->name('mentorship.hub');
+    Route::get('mentors/browse', [\App\Http\Controllers\StudentController::class, 'browseMentors'])->name('mentors.browse');
+    Route::get('career-guidance', [\App\Http\Controllers\StudentController::class, 'careerGuidance'])->name('career-guidance');
+    Route::get('resources', [\App\Http\Controllers\StudentController::class, 'resources'])->name('resources');
+});
+
+// Speaker Bureau routes
+Route::prefix('speaker-bureau')->name('speaker-bureau.')->middleware(['auth'])->group(function () {
+    Route::get('/', [\App\Http\Controllers\SpeakerBureauController::class, 'index'])->name('index');
+    Route::get('speaker/{speaker}', [\App\Http\Controllers\SpeakerBureauController::class, 'show'])->name('speaker');
+    Route::match(['get', 'post'], 'request/{speaker?}', [\App\Http\Controllers\SpeakerBureauController::class, 'request'])->name('request');
+    Route::match(['get', 'post'], 'join', [\App\Http\Controllers\SpeakerBureauController::class, 'join'])->name('join');
+    Route::get('events', [\App\Http\Controllers\SpeakerBureauController::class, 'events'])->name('events');
+});
+
+// API Routes for AJAX requests
+Route::middleware(['auth'])->prefix('api')->name('api.')->group(function () {
+    // Connection API
+    Route::post('connections/request', [\App\Http\Controllers\Api\ConnectionController::class, 'request'])->name('connections.request');
+    Route::post('connections/{connection}/accept', [\App\Http\Controllers\Api\ConnectionController::class, 'accept'])->name('connections.accept');
+    Route::post('connections/{connection}/decline', [\App\Http\Controllers\Api\ConnectionController::class, 'decline'])->name('connections.decline');
+    Route::delete('connections/{connection}', [\App\Http\Controllers\Api\ConnectionController::class, 'remove'])->name('connections.remove');
+
+    // Post API
+    Route::post('posts', [\App\Http\Controllers\Api\PostController::class, 'store'])->name('posts.store');
+    Route::post('posts/{post}/react', [\App\Http\Controllers\Api\PostController::class, 'react'])->name('posts.react');
+    Route::post('posts/{post}/comments', [\App\Http\Controllers\Api\PostController::class, 'comment'])->name('posts.comment');
+
+    // Job API
+    Route::post('jobs/{job}/save', [\App\Http\Controllers\Api\JobController::class, 'save'])->name('jobs.save');
+    Route::delete('jobs/{job}/unsave', [\App\Http\Controllers\Api\JobController::class, 'unsave'])->name('jobs.unsave');
+    Route::post('jobs/{job}/apply', [\App\Http\Controllers\Api\JobController::class, 'apply'])->name('jobs.apply');
+
+    // Career API
+    Route::post('career/timeline', [\App\Http\Controllers\Api\CareerController::class, 'store'])->name('career.store');
+    Route::put('career/timeline/{timeline}', [\App\Http\Controllers\Api\CareerController::class, 'update'])->name('career.update');
+    Route::delete('career/timeline/{timeline}', [\App\Http\Controllers\Api\CareerController::class, 'destroy'])->name('career.destroy');
+    Route::post('career/milestones', [\App\Http\Controllers\Api\CareerController::class, 'storeMilestone'])->name('career.milestones.store');
+    Route::post('career/goals', [\App\Http\Controllers\Api\CareerController::class, 'storeGoal'])->name('career.goals.store');
+    Route::put('career/goals/{goal}', [\App\Http\Controllers\Api\CareerController::class, 'updateGoal'])->name('career.goals.update');
+    Route::delete('career/goals/{goal}', [\App\Http\Controllers\Api\CareerController::class, 'destroyGoal'])->name('career.goals.destroy');
+    Route::post('career/goals/{goal}/complete', [\App\Http\Controllers\Api\CareerController::class, 'completeGoal'])->name('career.goals.complete');
+
+    // Event API
+    Route::post('events/{event}/register', [\App\Http\Controllers\Api\EventController::class, 'register'])->name('events.register');
+    Route::delete('events/{event}/unregister', [\App\Http\Controllers\Api\EventController::class, 'unregister'])->name('events.unregister');
+    Route::post('events/{event}/favorite', [\App\Http\Controllers\Api\EventController::class, 'favorite'])->name('events.favorite');
+    Route::delete('events/{event}/unfavorite', [\App\Http\Controllers\Api\EventController::class, 'unfavorite'])->name('events.unfavorite');
+
+    // Mentorship API
+    Route::post('mentorship/become-mentor', [\App\Http\Controllers\Api\MentorshipController::class, 'becomeMentor'])->name('mentorship.become-mentor');
+    Route::post('mentorship/request', [\App\Http\Controllers\Api\MentorshipController::class, 'requestMentorship'])->name('mentorship.request');
+    Route::post('mentorship/{request}/accept', [\App\Http\Controllers\Api\MentorshipController::class, 'acceptRequest'])->name('mentorship.accept');
+    Route::post('mentorship/{request}/decline', [\App\Http\Controllers\Api\MentorshipController::class, 'declineRequest'])->name('mentorship.decline');
+    Route::post('mentorship/sessions', [\App\Http\Controllers\Api\MentorshipController::class, 'scheduleSession'])->name('mentorship.schedule-session');
+
+    // Reunion API
+    Route::post('reunions/{reunion}/rsvp', [\App\Http\Controllers\Api\ReunionController::class, 'rsvp'])->name('reunions.rsvp');
+    Route::post('reunions/{reunion}/favorite', [\App\Http\Controllers\Api\ReunionController::class, 'favorite'])->name('reunions.favorite');
+    Route::delete('reunions/{reunion}/unfavorite', [\App\Http\Controllers\Api\ReunionController::class, 'unfavorite'])->name('reunions.unfavorite');
+    Route::post('reunions/{reunion}/memories', [\App\Http\Controllers\Api\ReunionController::class, 'addMemory'])->name('reunions.memories.add');
+});
 
 require __DIR__ . '/settings.php';
 require __DIR__ . '/testing.php';

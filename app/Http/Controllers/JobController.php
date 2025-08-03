@@ -637,4 +637,141 @@ class JobController extends Controller
             'recommendations' => $recommendations,
         ]);
     }
+
+    public function dashboard()
+    {
+        $user = Auth::user();
+
+        // Get personalized job recommendations
+        $recommendations = $this->getJobRecommendations($user);
+
+        // Get user's job applications
+        $applications = \App\Models\JobApplication::where('user_id', $user->id)
+            ->with(['job.employer'])
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        // Get saved jobs
+        $savedJobs = $user->savedJobs()
+            ->with(['employer'])
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        // Get job matching insights
+        $insights = $this->getJobMatchingInsights($user);
+
+        // Get application statistics
+        $applicationStats = [
+            'total_applications' => \App\Models\JobApplication::where('user_id', $user->id)->count(),
+            'pending_applications' => \App\Models\JobApplication::where('user_id', $user->id)->where('status', 'pending')->count(),
+            'interview_invitations' => \App\Models\JobApplication::where('user_id', $user->id)->where('status', 'interview')->count(),
+            'job_offers' => \App\Models\JobApplication::where('user_id', $user->id)->where('status', 'offer')->count(),
+        ];
+
+        return inertia('Jobs/Dashboard', [
+            'recommendations' => $recommendations,
+            'applications' => $applications,
+            'savedJobs' => $savedJobs,
+            'insights' => $insights,
+            'applicationStats' => $applicationStats,
+        ]);
+    }
+
+    public function recommendations()
+    {
+        $user = Auth::user();
+        $recommendations = $this->getJobRecommendations($user, 50);
+
+        return inertia('Jobs/Recommendations', [
+            'recommendations' => $recommendations,
+        ]);
+    }
+
+    public function saved()
+    {
+        $user = Auth::user();
+
+        $savedJobs = $user->savedJobs()
+            ->with(['employer'])
+            ->latest()
+            ->paginate(20);
+
+        return inertia('Jobs/Saved', [
+            'savedJobs' => $savedJobs,
+        ]);
+    }
+
+    private function getJobRecommendations($user, $limit = 10)
+    {
+        $graduate = $user->graduate;
+        if (!$graduate) {
+            return collect();
+        }
+
+        // Get jobs matching user's profile
+        $jobs = Job::with(['employer', 'course'])
+            ->where('status', 'active')
+            ->where('application_deadline', '>=', now())
+            ->where(function ($query) use ($graduate) {
+                $query->where('course_id', $graduate->course_id)
+                      ->orWhere('experience_level', $graduate->experience_level ?? 'entry');
+            })
+            ->whereDoesntHave('applications', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->limit($limit)
+            ->get();
+
+        return $jobs;
+    }
+
+    private function getJobMatchingInsights($user)
+    {
+        $graduate = $user->graduate;
+        if (!$graduate) {
+            return [];
+        }
+
+        $insights = [];
+
+        // Profile completion insight
+        $profileCompletion = $graduate->profile_completion_percentage ?? 0;
+        if ($profileCompletion < 80) {
+            $insights[] = [
+                'type' => 'profile',
+                'title' => 'Complete Your Profile',
+                'message' => 'Complete your profile to get better job matches. Currently ' . $profileCompletion . '% complete.',
+                'action' => 'Update Profile',
+            ];
+        }
+
+        // Skills insight
+        $skillsCount = $user->skills()->count();
+        if ($skillsCount < 5) {
+            $insights[] = [
+                'type' => 'skills',
+                'title' => 'Add More Skills',
+                'message' => 'Add more skills to increase your job matching score.',
+                'action' => 'Add Skills',
+            ];
+        }
+
+        // Application activity insight
+        $recentApplications = \App\Models\JobApplication::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subDays(30))
+            ->count();
+
+        if ($recentApplications === 0) {
+            $insights[] = [
+                'type' => 'activity',
+                'title' => 'Start Applying',
+                'message' => 'You haven\'t applied to any jobs recently. Start applying to increase your chances.',
+                'action' => 'Browse Jobs',
+            ];
+        }
+
+        return $insights;
+    }
 }

@@ -4,7 +4,7 @@ import { usePage, Link } from '@inertiajs/vue3';
 import AppLogo from '@/components/common/AppLogo.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronUp, Home, Users, Settings, Shield, Bell } from 'lucide-vue-next';
+import { ChevronUp, Home, Users, Settings, Shield, Bell, MessageCircle, UserPlus, Briefcase, Calendar, Star, Target } from 'lucide-vue-next';
 import { computed } from 'vue';
 
 const page = usePage();
@@ -17,6 +17,49 @@ const menuItems = [
         icon: Home,
         href: route('dashboard'),
         active: route().current('dashboard')
+    },
+    // Social Features
+    {
+        title: 'Social Timeline',
+        icon: MessageCircle,
+        href: route('social.timeline'),
+        active: route().current('social.*'),
+        permission: 'view social'
+    },
+    {
+        title: 'Alumni Network',
+        icon: UserPlus,
+        href: route('alumni.directory'),
+        active: route().current('alumni.*'),
+        permission: 'view alumni'
+    },
+    {
+        title: 'Career Center',
+        icon: Target,
+        href: route('career.timeline'),
+        active: route().current('career.*'),
+        permission: 'view career'
+    },
+    {
+        title: 'Job Dashboard',
+        icon: Briefcase,
+        href: route('jobs.dashboard'),
+        active: route().current('jobs.dashboard') || route().current('jobs.recommendations'),
+        permission: 'view jobs'
+    },
+    {
+        title: 'Events',
+        icon: Calendar,
+        href: route('events.index'),
+        active: route().current('events.*'),
+        permission: 'view events'
+    },
+    {
+        title: 'Success Stories',
+        icon: Star,
+        href: route('stories.index'),
+        active: route().current('stories.*'),
+        permission: 'view stories'
     },
     {
         title: 'Users',

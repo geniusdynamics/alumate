@@ -298,45 +298,45 @@ const navigationItems = computed(() => [
     },
     {
         name: 'Content',
-        href: '#',
+        href: route('super-admin.content'),
         icon: 'DocumentTextIcon',
-        active: false
+        active: route().current('super-admin.content')
     },
     {
         name: 'Activity',
-        href: '#',
+        href: route('super-admin.activity'),
         icon: 'ChartPieIcon',
-        active: false
+        active: route().current('super-admin.activity')
     },
     {
         name: 'Database',
-        href: '#',
-        icon: 'DatabaseIcon',
-        active: false
+        href: route('super-admin.database'),
+        icon: 'CircleStackIcon',
+        active: route().current('super-admin.database')
     },
     {
         name: 'Security',
-        href: '#',
+        href: route('security.dashboard'),
         icon: 'ShieldCheckIcon',
-        active: false
+        active: route().current('security.dashboard')
     },
     {
         name: 'Performance',
-        href: '#',
+        href: route('super-admin.performance'),
         icon: 'ChartBarIcon',
-        active: false
+        active: route().current('super-admin.performance')
     },
     {
         name: 'Notifications',
-        href: '#',
+        href: route('super-admin.notifications'),
         icon: 'BellIcon',
-        active: false
+        active: route().current('super-admin.notifications')
     },
     {
         name: 'Settings',
-        href: '#',
+        href: route('super-admin.settings'),
         icon: 'CogIcon',
-        active: false
+        active: route().current('super-admin.settings')
     }
 ])
 

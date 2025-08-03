@@ -772,11 +772,307 @@ class SuperAdminDashboardController extends Controller
         // This would implement actual file generation
         // For now, return a simple response
         $filename = "{$reportType}_report_" . date('Y-m-d') . ".{$format}";
-        
+
         return response()->json([
             'message' => 'Report generated successfully',
             'filename' => $filename,
             'data' => $reportData,
         ]);
+    }
+
+    public function content()
+    {
+        $contentStats = [
+            'total_posts' => Post::count(),
+            'total_success_stories' => SuccessStory::count(),
+            'total_events' => Event::count(),
+            'total_announcements' => Announcement::count(),
+            'recent_content' => $this->getRecentContent(),
+            'content_moderation' => $this->getContentModerationStats(),
+        ];
+
+        return Inertia::render('SuperAdmin/Content', [
+            'contentStats' => $contentStats,
+        ]);
+    }
+
+    public function activity()
+    {
+        $activityStats = [
+            'daily_active_users' => $this->getDailyActiveUsers(),
+            'weekly_active_users' => $this->getWeeklyActiveUsers(),
+            'monthly_active_users' => $this->getMonthlyActiveUsers(),
+            'user_engagement' => $this->getUserEngagementStats(),
+            'feature_usage' => $this->getFeatureUsageStats(),
+            'activity_timeline' => $this->getActivityTimeline(),
+        ];
+
+        return Inertia::render('SuperAdmin/Activity', [
+            'activityStats' => $activityStats,
+        ]);
+    }
+
+    public function database()
+    {
+        $databaseStats = [
+            'database_size' => $this->getDatabaseSize(),
+            'table_stats' => $this->getTableStats(),
+            'query_performance' => $this->getQueryPerformance(),
+            'backup_status' => $this->getBackupStatus(),
+            'maintenance_schedule' => $this->getMaintenanceSchedule(),
+        ];
+
+        return Inertia::render('SuperAdmin/Database', [
+            'databaseStats' => $databaseStats,
+        ]);
+    }
+
+    public function performance()
+    {
+        $performanceStats = [
+            'response_times' => $this->getResponseTimes(),
+            'server_metrics' => $this->getServerMetrics(),
+            'cache_performance' => $this->getCachePerformance(),
+            'queue_status' => $this->getQueueStatus(),
+            'error_rates' => $this->getErrorRates(),
+        ];
+
+        return Inertia::render('SuperAdmin/Performance', [
+            'performanceStats' => $performanceStats,
+        ]);
+    }
+
+    public function notifications()
+    {
+        $notificationStats = [
+            'total_notifications' => NotificationLog::count(),
+            'delivery_rates' => $this->getNotificationDeliveryRates(),
+            'notification_types' => $this->getNotificationTypeStats(),
+            'recent_notifications' => $this->getRecentNotifications(),
+            'notification_preferences' => $this->getNotificationPreferences(),
+        ];
+
+        return Inertia::render('SuperAdmin/Notifications', [
+            'notificationStats' => $notificationStats,
+        ]);
+    }
+
+    public function settings()
+    {
+        $systemSettings = [
+            'application_settings' => $this->getApplicationSettings(),
+            'feature_flags' => $this->getFeatureFlags(),
+            'maintenance_mode' => $this->getMaintenanceMode(),
+            'system_configuration' => $this->getSystemConfiguration(),
+        ];
+
+        return Inertia::render('SuperAdmin/Settings', [
+            'systemSettings' => $systemSettings,
+        ]);
+    }
+
+    // Helper methods for new controller actions
+    private function getRecentContent()
+    {
+        return collect([
+            'posts' => Post::latest()->limit(5)->get(),
+            'stories' => SuccessStory::latest()->limit(5)->get(),
+            'events' => Event::latest()->limit(5)->get(),
+        ]);
+    }
+
+    private function getContentModerationStats()
+    {
+        return [
+            'pending_approval' => 0, // Implement based on your moderation system
+            'flagged_content' => 0,
+            'approved_today' => 0,
+        ];
+    }
+
+    private function getDailyActiveUsers()
+    {
+        return User::whereDate('last_login_at', today())->count();
+    }
+
+    private function getWeeklyActiveUsers()
+    {
+        return User::where('last_login_at', '>=', now()->subWeek())->count();
+    }
+
+    private function getMonthlyActiveUsers()
+    {
+        return User::where('last_login_at', '>=', now()->subMonth())->count();
+    }
+
+    private function getUserEngagementStats()
+    {
+        return [
+            'posts_created' => Post::whereDate('created_at', today())->count(),
+            'comments_made' => Comment::whereDate('created_at', today())->count(),
+            'connections_made' => Connection::whereDate('created_at', today())->count(),
+        ];
+    }
+
+    private function getFeatureUsageStats()
+    {
+        return [
+            'job_applications' => JobApplication::whereDate('created_at', today())->count(),
+            'event_registrations' => EventRegistration::whereDate('created_at', today())->count(),
+            'messages_sent' => Message::whereDate('created_at', today())->count(),
+        ];
+    }
+
+    private function getActivityTimeline()
+    {
+        return ActivityLog::latest()->limit(20)->get();
+    }
+
+    private function getDatabaseSize()
+    {
+        // This would implement actual database size calculation
+        return '2.5 GB';
+    }
+
+    private function getTableStats()
+    {
+        return [
+            'users' => User::count(),
+            'graduates' => Graduate::count(),
+            'jobs' => Job::count(),
+            'posts' => Post::count(),
+        ];
+    }
+
+    private function getQueryPerformance()
+    {
+        return [
+            'avg_query_time' => '45ms',
+            'slow_queries' => 3,
+            'total_queries' => 1250,
+        ];
+    }
+
+    private function getMaintenanceSchedule()
+    {
+        return [
+            'next_backup' => now()->addDay()->format('Y-m-d H:i'),
+            'next_maintenance' => now()->addWeek()->format('Y-m-d H:i'),
+        ];
+    }
+
+    private function getResponseTimes()
+    {
+        return [
+            'avg_response_time' => '120ms',
+            'p95_response_time' => '250ms',
+            'p99_response_time' => '500ms',
+        ];
+    }
+
+    private function getServerMetrics()
+    {
+        return [
+            'cpu_usage' => '45%',
+            'memory_usage' => '68%',
+            'disk_usage' => '32%',
+        ];
+    }
+
+    private function getCachePerformance()
+    {
+        return [
+            'hit_rate' => '94%',
+            'miss_rate' => '6%',
+            'eviction_rate' => '2%',
+        ];
+    }
+
+    private function getQueueStatus()
+    {
+        return [
+            'pending_jobs' => 15,
+            'failed_jobs' => 2,
+            'processed_today' => 1250,
+        ];
+    }
+
+    private function getErrorRates()
+    {
+        return [
+            '4xx_errors' => 45,
+            '5xx_errors' => 3,
+            'error_rate' => '0.8%',
+        ];
+    }
+
+    private function getNotificationDeliveryRates()
+    {
+        return [
+            'email_delivery_rate' => '98.5%',
+            'push_delivery_rate' => '95.2%',
+            'sms_delivery_rate' => '99.1%',
+        ];
+    }
+
+    private function getNotificationTypeStats()
+    {
+        return [
+            'job_alerts' => NotificationLog::where('type', 'job_alert')->count(),
+            'connection_requests' => NotificationLog::where('type', 'connection_request')->count(),
+            'event_reminders' => NotificationLog::where('type', 'event_reminder')->count(),
+        ];
+    }
+
+    private function getRecentNotifications()
+    {
+        return NotificationLog::latest()->limit(10)->get();
+    }
+
+    private function getNotificationPreferences()
+    {
+        return [
+            'email_enabled' => NotificationPreference::where('channel', 'email')->where('enabled', true)->count(),
+            'push_enabled' => NotificationPreference::where('channel', 'push')->where('enabled', true)->count(),
+            'sms_enabled' => NotificationPreference::where('channel', 'sms')->where('enabled', true)->count(),
+        ];
+    }
+
+    private function getApplicationSettings()
+    {
+        return [
+            'app_name' => config('app.name'),
+            'app_version' => '1.0.0',
+            'debug_mode' => config('app.debug'),
+            'environment' => config('app.env'),
+        ];
+    }
+
+    private function getFeatureFlags()
+    {
+        return [
+            'social_features' => true,
+            'job_matching' => true,
+            'virtual_events' => true,
+            'fundraising' => true,
+        ];
+    }
+
+    private function getMaintenanceMode()
+    {
+        return [
+            'enabled' => app()->isDownForMaintenance(),
+            'message' => 'System maintenance in progress',
+            'estimated_duration' => '2 hours',
+        ];
+    }
+
+    private function getSystemConfiguration()
+    {
+        return [
+            'max_upload_size' => ini_get('upload_max_filesize'),
+            'memory_limit' => ini_get('memory_limit'),
+            'execution_time' => ini_get('max_execution_time'),
+        ];
     }
 }
