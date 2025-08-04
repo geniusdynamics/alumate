@@ -131,7 +131,7 @@
                         </div>
                         <div class="p-6">
                             <div v-if="mentorshipGoals.length === 0" class="text-center py-8">
-                                <TargetIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                <FlagIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No goals set</h3>
                                 <p class="text-gray-500 dark:text-gray-400 mb-4">Set mentorship goals to track your progress and get better guidance</p>
                                 <button
@@ -210,7 +210,7 @@
                                 @click="showGoalModal = true"
                                 class="flex items-center space-x-3 text-sm text-gray-700 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 w-full text-left"
                             >
-                                <TargetIcon class="w-5 h-5" />
+                                <FlagIcon class="w-5 h-5" />
                                 <span>Set Goals</span>
                             </button>
                             <Link 
@@ -279,7 +279,7 @@ import MentorshipGoalCard from '@/Components/MentorshipGoalCard.vue'
 import MentorshipGoalModal from '@/Components/MentorshipGoalModal.vue'
 import {
     UserGroupIcon,
-    TargetIcon,
+    FlagIcon,
     MagnifyingGlassIcon,
     BookOpenIcon,
     BriefcaseIcon

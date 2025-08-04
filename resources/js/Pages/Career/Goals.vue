@@ -30,7 +30,7 @@
                         </div>
                         <div class="p-6">
                             <div v-if="activeGoals.length === 0" class="text-center py-12">
-                                <TargetIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                                <FlagIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No active goals</h3>
                                 <p class="text-gray-500 dark:text-gray-400 mb-4">Set your first career goal to start tracking your progress</p>
                                 <button 
@@ -189,7 +189,7 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import MilestoneCard from '@/Components/MilestoneCard.vue'
 import GoalModal from '@/Components/GoalModal.vue'
 import {
-    TargetIcon,
+    FlagIcon,
     BriefcaseIcon,
     MagnifyingGlassIcon,
     UserGroupIcon

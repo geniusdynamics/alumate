@@ -7,6 +7,7 @@ use App\Models\Graduate;
 use App\Models\Job;
 use App\Traits\Exportable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CourseController extends Controller
@@ -15,6 +16,16 @@ class CourseController extends Controller
 
     public function index(Request $request)
     {
+        $user = Auth::user();
+
+        // Initialize tenant context if user has institution_id
+        if ($user->institution_id) {
+            $tenant = \App\Models\Tenant::find($user->institution_id);
+            if ($tenant) {
+                tenancy()->initialize($tenant);
+            }
+        }
+
         $query = Course::with(['graduates']);
 
         // Apply filters

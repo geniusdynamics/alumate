@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Graduate;
 use App\Traits\Exportable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -14,6 +15,16 @@ class GraduateController extends Controller
     use Exportable;
     public function index(Request $request)
     {
+        $user = Auth::user();
+
+        // Initialize tenant context if user has institution_id
+        if ($user->institution_id) {
+            $tenant = \App\Models\Tenant::find($user->institution_id);
+            if ($tenant) {
+                tenancy()->initialize($tenant);
+            }
+        }
+
         $query = Graduate::with('course');
 
         // Apply filters

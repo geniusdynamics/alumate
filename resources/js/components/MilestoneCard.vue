@@ -132,10 +132,9 @@ import {
   ShareIcon,
   TrophyIcon,
   BriefcaseIcon,
-  AwardIcon,
-  CertificateIcon,
+  DocumentCheckIcon,
   FlagIcon,
-  TrendingUpIcon
+  ArrowTrendingUpIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -154,10 +153,10 @@ defineEmits(['edit', 'delete', 'congratulate', 'share'])
 // Methods
 const getIcon = (type) => {
   const icons = {
-    'promotion': TrendingUpIcon,
+    'promotion': ArrowTrendingUpIcon,
     'job_change': BriefcaseIcon,
-    'award': AwardIcon,
-    'certification': CertificateIcon,
+    'award': DocumentCheckIcon,
+    'certification': DocumentCheckIcon,
     'education': AcademicCapIcon,
     'achievement': TrophyIcon
   }

@@ -15,6 +15,7 @@ class JobApplication extends Model
         'user_id',
         'status',
         'applied_at',
+        'hired_at',
         'cover_letter',
         'resume_url',
         'introduction_requested',
@@ -24,11 +25,13 @@ class JobApplication extends Model
 
     protected $casts = [
         'applied_at' => 'datetime',
+        'hired_at' => 'datetime',
         'introduction_requested' => 'boolean',
     ];
 
     protected $dates = [
         'applied_at',
+        'hired_at',
         'created_at',
         'updated_at',
     ];
@@ -40,6 +43,7 @@ class JobApplication extends Model
     const STATUS_ACCEPTED = 'accepted';
     const STATUS_REJECTED = 'rejected';
     const STATUS_WITHDRAWN = 'withdrawn';
+    const STATUS_HIRED = 'hired';
 
     /**
      * Get the job posting for this application

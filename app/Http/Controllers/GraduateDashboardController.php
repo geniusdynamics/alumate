@@ -55,6 +55,7 @@ class GraduateDashboardController extends Controller
                     'student_id' => 'STU' . str_pad($user->id, 6, '0', STR_PAD_LEFT),
                     'graduation_year' => now()->year,
                     'employment_status' => 'unemployed',
+                    'course_id' => null, // Will be set later when user selects a course
                 ]);
             }
 

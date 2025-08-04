@@ -2,7 +2,7 @@
   <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 p-6">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-        <TargetIcon class="w-5 h-5 mr-2 text-blue-600" />
+        <FlagIcon class="w-5 h-5 mr-2 text-blue-600" />
         Career Goals & Suggestions
       </h3>
       <button
@@ -121,7 +121,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import {
-  TargetIcon,
+  FlagIcon,
   ChevronDownIcon,
   XMarkIcon,
   AcademicCapIcon,

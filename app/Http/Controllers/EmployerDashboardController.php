@@ -17,26 +17,32 @@ class EmployerDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // TODO: Implement proper employer profile access
-        // For now, create a mock employer profile
-        $employer = (object) [
-            'id' => $user->id,
-            'company_name' => 'Tech Corp',
-            'industry' => 'Technology',
-            'company_size' => '50-100',
-            'website' => 'https://techcorp.com',
-            'verification_status' => 'verified'
-        ];
+        // Get or create employer profile
+        $employer = $user->employer;
+
+        if (!$employer) {
+            // Create a default employer profile if none exists
+            $employer = \App\Models\Employer::create([
+                'user_id' => $user->id,
+                'company_name' => 'Your Company',
+                'industry' => 'Technology',
+                'company_size' => '1-10',
+                'verification_status' => 'pending',
+                'approved' => false,
+                'contact_person_name' => $user->name,
+                'contact_person_email' => $user->email,
+            ]);
+        }
 
         // Get dashboard statistics
         $statistics = $this->getDashboardStatistics($employer);
-        
+
         // Get recent activities
         $recentActivities = $this->getRecentActivities($employer);
-        
+
         // Get job performance metrics
         $jobMetrics = $this->getJobMetrics($employer);
-        
+
         // Get hiring analytics
         $hiringAnalytics = $this->getHiringAnalytics($employer);
 
@@ -290,7 +296,7 @@ class EmployerDashboardController extends Controller
         })
         ->where('status', 'hired')
         ->whereNotNull('hired_at')
-        ->selectRaw('AVG(DATEDIFF(hired_at, created_at)) as avg_days')
+        ->selectRaw('AVG(EXTRACT(DAY FROM (hired_at - created_at))) as avg_days')
         ->value('avg_days');
 
         return [

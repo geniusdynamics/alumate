@@ -164,7 +164,7 @@
                         </div>
                         <div class="p-6">
                             <div v-if="goals.length === 0" class="text-center py-4">
-                                <TargetIcon class="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                                <FlagIcon class="mx-auto h-8 w-8 text-gray-400 mb-2" />
                                 <p class="text-sm text-gray-500 dark:text-gray-400">No goals set yet</p>
                             </div>
                             <div v-else class="space-y-3">
@@ -237,7 +237,7 @@
                                 :href="route('career.goals')"
                                 class="flex items-center space-x-3 text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400"
                             >
-                                <TargetIcon class="w-5 h-5" />
+                                <FlagIcon class="w-5 h-5" />
                                 <span>Set Goals</span>
                             </Link>
                         </div>
@@ -265,7 +265,7 @@ import {
     BriefcaseIcon,
     CheckCircleIcon,
     TrophyIcon,
-    TargetIcon,
+    FlagIcon,
     PencilIcon,
     UserGroupIcon
 } from '@heroicons/vue/24/outline'

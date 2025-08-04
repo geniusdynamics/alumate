@@ -96,4 +96,3 @@ const getReasonIconClass = (type) => {
   return classMap[type] || 'w-4 h-4 text-gray-500'
 }
 </script>
-</style>

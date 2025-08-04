@@ -37,7 +37,8 @@ class User extends Authenticatable
         'two_factor_enabled',
         'timezone',
         'language',
-        'status'
+        'status',
+        'user_type'
     ];
 
     /**

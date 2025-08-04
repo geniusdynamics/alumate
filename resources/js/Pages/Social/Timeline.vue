@@ -27,7 +27,7 @@
                     <div class="space-y-6">
                         <div v-if="posts.data.length === 0" class="bg-white dark:bg-gray-800 rounded-lg shadow p-8 text-center">
                             <div class="text-gray-500 dark:text-gray-400">
-                                <MessageCircleIcon class="mx-auto h-12 w-12 mb-4" />
+                                <ChatBubbleLeftIcon class="mx-auto h-12 w-12 mb-4" />
                                 <h3 class="text-lg font-medium mb-2">No posts yet</h3>
                                 <p>Be the first to share something with your network!</p>
                             </div>
@@ -161,7 +161,7 @@ import PostComments from '@/Components/PostComments.vue'
 import PeopleYouMayKnow from '@/Components/PeopleYouMayKnow.vue'
 import { formatDistanceToNow } from 'date-fns'
 import {
-    MessageCircleIcon,
+    ChatBubbleLeftIcon,
     UserIcon,
     UsersIcon,
     UserGroupIcon,

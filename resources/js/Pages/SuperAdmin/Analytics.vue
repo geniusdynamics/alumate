@@ -228,4 +228,3 @@ const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
 };
 </script>
-</template>

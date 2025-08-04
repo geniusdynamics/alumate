@@ -47,7 +47,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import CommentForm from './CommentForm.vue'
-import CommentThread from './CommentThread.vue'
 
 const props = defineProps({
   postId: {
@@ -143,7 +142,6 @@ defineExpose({
   refresh: () => loadComments(1)
 })
 </script>
-</template>
 
 <script>
 // CommentThread component definition
