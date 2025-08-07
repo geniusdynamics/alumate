@@ -84,12 +84,14 @@
                             </div>
                             <div v-else class="space-y-4">
                                 <JobCard
-                                    v-for="job in recommendations"
+                                    v-for="job in jobRecommendations"
                                     :key="job.id"
                                     :job="job"
                                     :show-match-score="true"
-                                    @applied="handleJobApplied"
-                                    @saved="handleJobSaved"
+                                    @clicked="handleJobClicked"
+                                    @apply="startApplication"
+                                    @save="handleJobSaved"
+                                    @request-introduction="handleIntroductionRequest"
                                 />
                             </div>
                         </div>
@@ -235,13 +237,63 @@
                 </div>
             </div>
         </div>
+
+        <!-- Job Details Modal -->
+        <JobDetailsModal
+            v-if="showJobModal"
+            :job="selectedJob"
+            @close="closeModals"
+            @apply="startApplication"
+            @save="handleJobSaved"
+            @request-introduction="handleIntroductionRequest"
+        />
+
+        <!-- Application Modal -->
+        <ApplicationModal
+            v-if="showApplicationModal"
+            :job="selectedJob"
+            @submit="handleJobApplied"
+            @close="closeModals"
+        />
+
+        <!-- Introduction Request Modal -->
+        <IntroductionRequestModal
+            v-if="showIntroductionModal"
+            :job="selectedJob"
+            @send="sendIntroductionRequest"
+            @close="closeModals"
+        />
+
+        <!-- User Flow Integration -->
+        <UserFlowIntegration />
+        
+        <!-- Real-time Updates -->
+        <RealTimeUpdates 
+            :show-job-updates="true"
+            :show-activity-feed="true"
+        />
+        
+        <!-- Cross-feature Connections -->
+        <CrossFeatureConnections 
+            context="job-dashboard"
+            :context-data="{ recommendations: jobRecommendations, applications: userApplications }"
+        />
     </AppLayout>
 </template>
 
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
+import { ref, reactive, onMounted } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
-import JobCard from '@/Components/JobCard.vue'
+import JobCard from '@/components/JobCard.vue'
+import JobDetailsModal from '@/components/JobDetailsModal.vue'
+import ApplicationModal from '@/components/ApplicationModal.vue'
+import IntroductionRequestModal from '@/components/IntroductionRequestModal.vue'
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue'
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue'
+import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue'
+import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates'
+import userFlowIntegration from '@/services/UserFlowIntegration'
 import { formatDistanceToNow } from 'date-fns'
 import {
     BriefcaseIcon,
@@ -261,6 +313,37 @@ const props = defineProps({
     savedJobs: Array,
     insights: Array,
     applicationStats: Object,
+})
+
+const showJobModal = ref(false)
+const showApplicationModal = ref(false)
+const showIntroductionModal = ref(false)
+const selectedJob = ref(null)
+const jobRecommendations = reactive([...props.recommendations])
+const userApplications = reactive([...props.applications])
+const userSavedJobs = reactive([...props.savedJobs])
+
+// Real-time updates
+const realTimeUpdates = useRealTimeUpdates()
+
+onMounted(() => {
+    // Set up user flow integration callbacks
+    userFlowIntegration.on('jobSaved', (jobId) => {
+        // Update saved jobs list
+        const job = jobRecommendations.find(j => j.id === jobId)
+        if (job && !userSavedJobs.find(sj => sj.id === jobId)) {
+            userSavedJobs.unshift(job)
+        }
+    })
+    
+    userFlowIntegration.on('jobApplicationSubmitted', (application) => {
+        // Add to applications list
+        userApplications.unshift(application)
+        
+        // Update application stats
+        props.applicationStats.total_applications++
+        props.applicationStats.pending_applications++
+    })
 })
 
 const formatTimeAgo = (timestamp) => {
@@ -287,13 +370,72 @@ const formatStatus = (status) => {
     return statuses[status] || status
 }
 
-const handleJobApplied = (jobId) => {
-    // Handle job application
-    console.log('Applied to job:', jobId)
+const handleJobClicked = (job) => {
+    selectedJob.value = job
+    showJobModal.value = true
 }
 
-const handleJobSaved = (jobId) => {
-    // Handle job saving
-    console.log('Saved job:', jobId)
+const handleJobApplied = async (job, applicationData) => {
+    try {
+        await userFlowIntegration.applyToJobAndTrack(job.id, applicationData)
+        showApplicationModal.value = false
+        selectedJob.value = null
+    } catch (error) {
+        console.error('Failed to apply to job:', error)
+    }
+}
+
+const handleJobSaved = async (jobId) => {
+    try {
+        await userFlowIntegration.saveJobAndUpdate(jobId)
+    } catch (error) {
+        console.error('Failed to save job:', error)
+    }
+}
+
+const handleIntroductionRequest = (job) => {
+    selectedJob.value = job
+    showIntroductionModal.value = true
+}
+
+const sendIntroductionRequest = async (connectionId, message) => {
+    try {
+        const response = await fetch('/api/introductions/request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            },
+            body: JSON.stringify({
+                connection_id: connectionId,
+                job_id: selectedJob.value.id,
+                message: message
+            })
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+            userFlowIntegration.showNotification('Introduction request sent!', 'success')
+            showIntroductionModal.value = false
+            selectedJob.value = null
+        } else {
+            throw new Error(result.message || 'Failed to send introduction request')
+        }
+    } catch (error) {
+        userFlowIntegration.showNotification('Failed to send introduction request: ' + error.message, 'error')
+    }
+}
+
+const startApplication = (job) => {
+    selectedJob.value = job
+    showApplicationModal.value = true
+}
+
+const closeModals = () => {
+    showJobModal.value = false
+    showApplicationModal.value = false
+    showIntroductionModal.value = false
+    selectedJob.value = null
 }
 </script>

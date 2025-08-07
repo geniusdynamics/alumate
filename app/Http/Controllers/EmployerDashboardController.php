@@ -26,7 +26,7 @@ class EmployerDashboardController extends Controller
                 'user_id' => $user->id,
                 'company_name' => 'Your Company',
                 'industry' => 'Technology',
-                'company_size' => '1-10',
+                'company_size' => 'small',
                 'verification_status' => 'pending',
                 'approved' => false,
                 'contact_person_name' => $user->name,

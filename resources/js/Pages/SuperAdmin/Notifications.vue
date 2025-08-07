@@ -165,8 +165,8 @@
 <script setup>
 import { Head } from '@inertiajs/vue3'
 import { computed } from 'vue'
-import AdminLayout from '@/Components/AdminLayout.vue'
-import DarkStatCard from '@/Components/DarkStatCard.vue'
+import AdminLayout from '@/components/AdminLayout.vue'
+import DarkStatCard from '@/components/DarkStatCard.vue'
 import { formatDistanceToNow } from 'date-fns'
 import { BellIcon } from '@heroicons/vue/24/outline'
 

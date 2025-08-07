@@ -37,6 +37,8 @@ class Graduate extends Model
         'job_search_active',
         'last_profile_update',
         'last_employment_update',
+        'profile_visibility',
+        'user_id',
     ];
 
     protected $casts = [
@@ -56,6 +58,11 @@ class Graduate extends Model
     ];
 
     // Relationships
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function course()
     {
         return $this->belongsTo(Course::class);

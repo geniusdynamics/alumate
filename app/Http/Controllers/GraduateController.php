@@ -25,7 +25,7 @@ class GraduateController extends Controller
             }
         }
 
-        $query = Graduate::with('course');
+        $query = Graduate::with(['course', 'tenant']);
 
         // Apply filters
         if ($request->filled('search')) {
@@ -119,16 +119,23 @@ class GraduateController extends Controller
             $query->orderBy($sortBy, $sortOrder);
         }
 
-        $graduates = $query->paginate(15)->withQueryString();
+        $graduates = $query->paginate(10)->withQueryString();
 
         // Get filter options
         $graduationYears = Graduate::distinct()->pluck('graduation_year')->sort()->values();
         $employmentStatuses = ['unemployed', 'employed', 'self_employed', 'further_studies', 'other'];
         $academicStandings = ['excellent', 'very_good', 'good', 'satisfactory', 'pass'];
 
+        // Get courses safely
+        try {
+            $courses = Course::all();
+        } catch (\Exception $e) {
+            $courses = collect();
+        }
+
         return Inertia::render('Graduates/Index', [
             'graduates' => $graduates,
-            'courses' => Course::all(),
+            'courses' => $courses,
             'graduationYears' => $graduationYears,
             'employmentStatuses' => $employmentStatuses,
             'academicStandings' => $academicStandings,
@@ -364,9 +371,15 @@ class GraduateController extends Controller
 
     public function exportFields()
     {
-        $export = new \App\Exports\GraduatesExport();
-        return response()->json([
-            'available_fields' => $export->getAvailableFields()
-        ]);
+        try {
+            $export = new \App\Exports\GraduatesExport();
+            return response()->json([
+                'available_fields' => $export->getAvailableFields()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to load export fields: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

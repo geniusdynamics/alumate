@@ -1,8 +1,10 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\DashboardIntegrationTest.php
- [ ] super admin dashboard loads
- [ ] institution admin dashboard loads
- [ ] employer dashboard loads
- [ ] graduate dashboard loads
- [ ] super admin analytics loads
- [ ] super admin reports loads
+Hero Section (Tests\Feature\HeroSection)
+ [ ] Homepage loads with individual audience
+ [ ] Homepage loads with institutional audience
+ [ ] Cta click tracking
+ [ ] Ab test conversion tracking
+ [ ] Homepage service provides dual audience content
+ [ ] Ab testing service provides variants
+ [ ] Hero section displays statistics
+ [ ] Hero section displays testimonials
 

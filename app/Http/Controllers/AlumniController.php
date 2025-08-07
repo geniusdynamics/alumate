@@ -70,7 +70,7 @@ class AlumniController extends Controller
         ]);
     }
 
-    public function recommendations()
+    public function recommendations(Request $request)
     {
         $user = Auth::user();
         $graduate = $user->graduate;
@@ -78,6 +78,15 @@ class AlumniController extends Controller
         if (!$graduate) {
             return Inertia::render('Alumni/Recommendations', [
                 'recommendations' => collect(),
+                'connectionInsights' => collect(),
+                'networkStats' => [
+                    'total_connections' => 0,
+                    'mutual_connections' => 0,
+                    'same_institution' => 0,
+                ],
+                'institutions' => Institution::all(),
+                'industries' => collect(),
+                'currentFilters' => $request->only(['institution_id', 'industry', 'location']),
                 'message' => 'Complete your graduate profile to get personalized recommendations.',
             ]);
         }
@@ -87,25 +96,80 @@ class AlumniController extends Controller
 
         // Same course and graduation year
         $coursemates = $this->getCoursemates($graduate);
-        $recommendations = $recommendations->merge($coursemates);
+        $recommendations = $recommendations->merge($coursemates->map(function ($alumni) {
+            return [
+                'user' => $alumni,
+                'reason' => 'Same course and graduation year',
+                'match_score' => 95,
+                'mutual_connections' => 0, // Calculate actual mutual connections
+            ];
+        }));
 
         // Same institution, different course
         $institutionAlumni = $this->getInstitutionAlumni($graduate);
-        $recommendations = $recommendations->merge($institutionAlumni);
+        $recommendations = $recommendations->merge($institutionAlumni->map(function ($alumni) {
+            return [
+                'user' => $alumni,
+                'reason' => 'Same institution',
+                'match_score' => 80,
+                'mutual_connections' => 0,
+            ];
+        }));
 
         // Same industry/field
         $industryPeers = $this->getIndustryPeers($graduate);
-        $recommendations = $recommendations->merge($industryPeers);
+        $recommendations = $recommendations->merge($industryPeers->map(function ($alumni) {
+            return [
+                'user' => $alumni,
+                'reason' => 'Same industry',
+                'match_score' => 70,
+                'mutual_connections' => 0,
+            ];
+        }));
+
+        // Apply filters
+        if ($request->filled('institution_id')) {
+            $recommendations = $recommendations->filter(function ($rec) use ($request) {
+                return $rec['user']->institution_id == $request->institution_id;
+            });
+        }
+
+        if ($request->filled('industry')) {
+            $recommendations = $recommendations->filter(function ($rec) use ($request) {
+                return $rec['user']->current_industry == $request->industry;
+            });
+        }
+
+        if ($request->filled('location')) {
+            $recommendations = $recommendations->filter(function ($rec) use ($request) {
+                return stripos($rec['user']->current_location, $request->location) !== false;
+            });
+        }
 
         // Remove duplicates and already connected users
-        $recommendations = $recommendations->unique('id')
-            ->filter(function ($alumni) use ($user) {
-                return !$this->isAlreadyConnected($user, $alumni->user);
+        $recommendations = $recommendations->unique('user.id')
+            ->filter(function ($rec) use ($user) {
+                return !$this->isAlreadyConnected($user, $rec['user']->user);
             })
             ->take(20);
 
+        // Get network stats
+        $networkStats = $this->getNetworkStats($user);
+
+        // Get connection insights
+        $connectionInsights = $this->getConnectionInsights($user, $graduate);
+
+        // Get filter options
+        $institutions = Institution::all();
+        $industries = Graduate::distinct()->pluck('current_industry')->filter()->sort()->values();
+
         return Inertia::render('Alumni/Recommendations', [
-            'recommendations' => $recommendations,
+            'recommendations' => $recommendations->values(),
+            'connectionInsights' => $connectionInsights,
+            'networkStats' => $networkStats,
+            'institutions' => $institutions,
+            'industries' => $industries,
+            'currentFilters' => $request->only(['institution_id', 'industry', 'location']),
         ]);
     }
 
@@ -186,5 +250,84 @@ class AlumniController extends Controller
             $query->where('user_id', $targetUser->id)
                   ->where('connected_user_id', $user->id);
         })->exists();
+    }
+
+    private function getNetworkStats($user)
+    {
+        $totalConnections = Connection::where(function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                  ->orWhere('connected_user_id', $user->id);
+        })->where('status', 'accepted')->count();
+
+        $graduate = $user->graduate;
+        $sameInstitution = 0;
+        $mutualConnections = 0;
+
+        if ($graduate) {
+            $sameInstitution = Connection::where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->orWhere('connected_user_id', $user->id);
+            })
+            ->where('status', 'accepted')
+            ->whereHas('user.graduate', function ($q) use ($graduate) {
+                $q->where('institution_id', $graduate->institution_id);
+            })
+            ->orWhereHas('connectedUser.graduate', function ($q) use ($graduate) {
+                $q->where('institution_id', $graduate->institution_id);
+            })
+            ->count();
+        }
+
+        return [
+            'total_connections' => $totalConnections,
+            'mutual_connections' => $mutualConnections,
+            'same_institution' => $sameInstitution,
+        ];
+    }
+
+    private function getConnectionInsights($user, $graduate)
+    {
+        $insights = collect();
+
+        if ($graduate) {
+            // Industry insights
+            $industryConnections = Connection::where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->orWhere('connected_user_id', $user->id);
+            })
+            ->where('status', 'accepted')
+            ->count();
+
+            if ($industryConnections < 5) {
+                $insights->push([
+                    'type' => 'industry_growth',
+                    'title' => 'Expand Your Industry Network',
+                    'message' => 'Connect with more professionals in your industry to unlock new opportunities.',
+                    'action' => 'Find Industry Peers',
+                ]);
+            }
+
+            // Institution insights
+            $institutionConnections = Connection::where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                      ->orWhere('connected_user_id', $user->id);
+            })
+            ->where('status', 'accepted')
+            ->whereHas('user.graduate', function ($q) use ($graduate) {
+                $q->where('institution_id', $graduate->institution_id);
+            })
+            ->count();
+
+            if ($institutionConnections < 3) {
+                $insights->push([
+                    'type' => 'institution_network',
+                    'title' => 'Connect with Alumni',
+                    'message' => 'Build stronger ties with fellow alumni from your institution.',
+                    'action' => 'Browse Alumni Directory',
+                ]);
+            }
+        }
+
+        return $insights;
     }
 }

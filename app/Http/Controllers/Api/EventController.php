@@ -140,4 +140,64 @@ class EventController extends Controller
             'message' => 'Event removed from favorites.'
         ]);
     }
+
+    public function submitFeedback(Request $request, Event $event)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'feedback' => 'nullable|string|max:2000',
+            'would_recommend' => 'required|boolean',
+            'suggestions' => 'nullable|string|max:1000'
+        ]);
+
+        $user = Auth::user();
+
+        // Check if user attended the event
+        $registration = EventRegistration::where('event_id', $event->id)
+            ->where('user_id', $user->id)
+            ->where('status', 'confirmed')
+            ->first();
+
+        if (!$registration) {
+            throw ValidationException::withMessages([
+                'event' => 'You must have attended this event to provide feedback.'
+            ]);
+        }
+
+        // Check if feedback already exists
+        $existingFeedback = \DB::table('event_feedback')
+            ->where('event_id', $event->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if ($existingFeedback) {
+            // Update existing feedback
+            \DB::table('event_feedback')
+                ->where('id', $existingFeedback->id)
+                ->update([
+                    'rating' => $request->rating,
+                    'feedback' => $request->feedback,
+                    'would_recommend' => $request->would_recommend,
+                    'suggestions' => $request->suggestions,
+                    'updated_at' => now()
+                ]);
+        } else {
+            // Create new feedback
+            \DB::table('event_feedback')->insert([
+                'event_id' => $event->id,
+                'user_id' => $user->id,
+                'rating' => $request->rating,
+                'feedback' => $request->feedback,
+                'would_recommend' => $request->would_recommend,
+                'suggestions' => $request->suggestions,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Thank you for your feedback!'
+        ]);
+    }
 }

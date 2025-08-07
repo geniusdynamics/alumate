@@ -139,4 +139,59 @@ class ConnectionController extends Controller
             'message' => 'Connection removed successfully.'
         ]);
     }
+
+    public function startConversation(Request $request)
+    {
+        $request->validate([
+            'participant_id' => 'required|exists:users,id',
+            'context' => 'nullable|string',
+            'context_id' => 'nullable|integer',
+            'initial_message' => 'nullable|string|max:1000'
+        ]);
+
+        $user = Auth::user();
+        $participantId = $request->participant_id;
+
+        // Check if conversation already exists
+        $existingConversation = \DB::table('conversations')
+            ->where(function ($query) use ($user, $participantId) {
+                $query->whereJsonContains('participants', [$user->id, $participantId])
+                      ->orWhereJsonContains('participants', [$participantId, $user->id]);
+            })
+            ->first();
+
+        if ($existingConversation) {
+            return response()->json([
+                'success' => true,
+                'data' => ['conversation_id' => $existingConversation->id],
+                'message' => 'Conversation already exists.'
+            ]);
+        }
+
+        // Create new conversation
+        $conversationId = \DB::table('conversations')->insertGetId([
+            'participants' => json_encode([$user->id, $participantId]),
+            'context' => $request->context,
+            'context_id' => $request->context_id,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // Send initial message if provided
+        if ($request->initial_message) {
+            \DB::table('messages')->insert([
+                'conversation_id' => $conversationId,
+                'sender_id' => $user->id,
+                'content' => $request->initial_message,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => ['conversation_id' => $conversationId],
+            'message' => 'Conversation started successfully.'
+        ]);
+    }
 }

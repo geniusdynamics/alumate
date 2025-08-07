@@ -9,6 +9,7 @@ const props = defineProps({
     studyModes: Array,
     departments: Array,
     filters: Object,
+    error: String,
 });
 
 const search = ref(props.filters.search || '');

@@ -147,10 +147,11 @@
 
                     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         <AlumniCard
-                            v-for="alumnus in alumni.data"
+                            v-for="alumnus in alumniList"
                             :key="alumnus.id"
                             :alumnus="alumnus"
                             @connect-requested="handleConnectRequest"
+                            @profile-viewed="viewAlumniProfile"
                         />
                     </div>
 
@@ -161,16 +162,54 @@
                 </div>
             </div>
         </div>
+
+        <!-- Connection Request Modal -->
+        <ConnectionRequestModal
+            v-if="showConnectionModal"
+            :alumni="selectedAlumniForConnection"
+            @send-request="sendConnectionRequest"
+            @close="closeConnectionModal"
+        />
+
+        <!-- Alumni Profile Modal -->
+        <AlumniProfile
+            v-if="showProfileModal"
+            :alumni="selectedAlumni"
+            @close="closeProfileModal"
+            @connect-requested="handleConnectRequest"
+        />
+
+        <!-- User Flow Integration -->
+        <UserFlowIntegration />
+        
+        <!-- Real-time Updates -->
+        <RealTimeUpdates 
+            :show-connection-status="true"
+            :show-activity-feed="true"
+        />
+        
+        <!-- Cross-feature Connections -->
+        <CrossFeatureConnections 
+            context="alumni-directory"
+            :context-data="{ alumni: alumniList }"
+        />
     </AppLayout>
 </template>
 
 <script setup>
 import { Head, router } from '@inertiajs/vue3'
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
-import AlumniCard from '@/Components/AlumniCard.vue'
-import Pagination from '@/Components/Pagination.vue'
-import { UsersIcon } from '@heroicons/vue/24/outline'
+import AlumniCard from '@/components/AlumniCard.vue'
+import Pagination from '@/components/Pagination.vue'
+import ConnectionRequestModal from '@/components/ConnectionRequestModal.vue'
+import AlumniProfile from '@/components/AlumniProfile.vue'
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue'
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue'
+import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue'
+import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates'
+import userFlowIntegration from '@/services/UserFlowIntegration'
+import { UsersIcon, UserPlusIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
     alumni: Object,
@@ -189,6 +228,39 @@ const searchForm = reactive({
     industry: props.filters.industry || '',
 })
 
+const showConnectionModal = ref(false)
+const showProfileModal = ref(false)
+const selectedAlumni = ref(null)
+const selectedAlumniForConnection = ref(null)
+const alumniList = reactive([...props.alumni.data])
+
+// Real-time updates
+const realTimeUpdates = useRealTimeUpdates()
+
+onMounted(() => {
+    // Set up real-time connection updates
+    realTimeUpdates.onConnectionRequest((connection) => {
+        userFlowIntegration.showNotification('New connection request received!', 'info')
+    })
+    
+    // Set up user flow integration callbacks
+    userFlowIntegration.on('connectionRequested', (connection) => {
+        // Update alumni card to show pending status
+        const alumni = alumniList.find(a => a.id === connection.connected_user_id)
+        if (alumni) {
+            alumni.connection_status = 'pending'
+        }
+    })
+    
+    userFlowIntegration.on('connectionAccepted', (connection) => {
+        // Update alumni card to show connected status
+        const alumni = alumniList.find(a => a.id === connection.user_id || a.id === connection.connected_user_id)
+        if (alumni) {
+            alumni.connection_status = 'connected'
+        }
+    })
+})
+
 const applyFilters = () => {
     router.get(route('alumni.directory'), searchForm, {
         preserveState: true,
@@ -203,15 +275,38 @@ const clearFilters = () => {
     applyFilters()
 }
 
-const handleConnectRequest = (alumniId) => {
-    // Handle connection request
-    router.post(route('api.connections.request'), {
-        user_id: alumniId
-    }, {
-        preserveState: true,
-        onSuccess: () => {
-            // Show success message or update UI
+const handleConnectRequest = async (alumni) => {
+    selectedAlumniForConnection.value = alumni
+    showConnectionModal.value = true
+}
+
+const sendConnectionRequest = async (message = '') => {
+    if (selectedAlumniForConnection.value) {
+        try {
+            await userFlowIntegration.sendConnectionRequestAndUpdate(
+                selectedAlumniForConnection.value.id, 
+                message
+            )
+            showConnectionModal.value = false
+            selectedAlumniForConnection.value = null
+        } catch (error) {
+            console.error('Failed to send connection request:', error)
         }
-    })
+    }
+}
+
+const viewAlumniProfile = (alumni) => {
+    selectedAlumni.value = alumni
+    showProfileModal.value = true
+}
+
+const closeProfileModal = () => {
+    showProfileModal.value = false
+    selectedAlumni.value = null
+}
+
+const closeConnectionModal = () => {
+    showConnectionModal.value = false
+    selectedAlumniForConnection.value = null
 }
 </script>

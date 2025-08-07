@@ -5,6 +5,10 @@ import { Sidebar } from '@/components/ui/sidebar';
 import AppHeader from '@/components/layout/AppHeader.vue';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
+import OnboardingSystem from '@/components/onboarding/OnboardingSystem.vue';
+import MobileNavigation from '@/components/MobileNavigation.vue';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
@@ -30,14 +34,33 @@ const flash = computed(() => page.props.flash);
             <SidebarInset>
                 <AppHeader :breadcrumbs="breadcrumbs" />
                 <div class="flex flex-1 flex-col gap-4 p-4">
+                    <!-- Real-time Updates Component -->
+                    <RealTimeUpdates 
+                        :show-activity-feed="false"
+                        :show-post-updates="true"
+                        :show-connection-status="true"
+                        :show-event-updates="true"
+                        :show-job-updates="true"
+                        :show-mentorship-updates="true"
+                    />
+                    
                     <div v-if="flash.success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
                         <strong class="font-bold">Success!</strong>
                         <span class="block sm:inline">{{ flash.success }}</span>
                     </div>
                     <slot />
                 </div>
+                
+                <!-- User Flow Integration Component -->
+                <UserFlowIntegration />
+                
+                <!-- Onboarding System -->
+                <OnboardingSystem />
             </SidebarInset>
         </SidebarProvider>
+
+        <!-- Mobile Navigation -->
+        <MobileNavigation />
     </div>
 </template>
 

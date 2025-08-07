@@ -82,6 +82,119 @@ class EventController extends Controller
         ]);
     }
 
+    public function discovery(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Build query for events
+        $query = Event::with(['creator', 'institution', 'registrations'])
+            ->where('status', 'published')
+            ->where('start_date', '>=', now());
+
+        // Apply filters
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        if ($request->filled('location')) {
+            $query->where('location', 'like', '%' . $request->location . '%');
+        }
+
+        if ($request->filled('date_range')) {
+            $dateRange = $request->date_range;
+            switch ($dateRange) {
+                case 'this_week':
+                    $query->whereBetween('start_date', [now(), now()->addWeek()]);
+                    break;
+                case 'this_month':
+                    $query->whereBetween('start_date', [now(), now()->addMonth()]);
+                    break;
+                case 'next_month':
+                    $query->whereBetween('start_date', [now()->addMonth(), now()->addMonths(2)]);
+                    break;
+            }
+        }
+
+        if ($request->filled('virtual_only') && $request->virtual_only) {
+            $query->where('is_virtual', true);
+        }
+
+        // Apply sorting
+        $sortBy = $request->get('sort', 'date');
+        switch ($sortBy) {
+            case 'popularity':
+                $query->withCount('registrations')->orderBy('registrations_count', 'desc');
+                break;
+            case 'relevance':
+                // Sort by relevance based on user's profile
+                $query->orderBy('start_date', 'asc');
+                break;
+            default:
+                $query->orderBy('start_date', 'asc');
+        }
+
+        $events = $query->paginate(20);
+
+        // Get featured events
+        $featuredEvents = Event::where('is_featured', true)
+            ->where('status', 'published')
+            ->where('start_date', '>=', now())
+            ->with(['creator', 'institution', 'registrations'])
+            ->limit(4)
+            ->get();
+
+        // Get user's events
+        $myEvents = [];
+        if ($user) {
+            $myEvents = Event::whereHas('registrations', function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->where('start_date', '>=', now())
+            ->limit(5)
+            ->get();
+        }
+
+        // Get upcoming reunions
+        $upcomingReunions = Event::where('type', 'reunion')
+            ->where('status', 'published')
+            ->where('start_date', '>=', now())
+            ->limit(3)
+            ->get();
+
+        // Get event categories with counts
+        $eventCategories = Event::where('status', 'published')
+            ->where('start_date', '>=', now())
+            ->selectRaw('type as name, COUNT(*) as count')
+            ->groupBy('type')
+            ->get()
+            ->map(function ($category) {
+                return [
+                    'name' => ucfirst(str_replace('_', ' ', $category->name)),
+                    'count' => $category->count,
+                ];
+            });
+
+        // Get filter options
+        $eventTypes = ['networking', 'workshop', 'seminar', 'reunion', 'career_fair', 'social', 'fundraising'];
+        $locations = Event::where('status', 'published')
+            ->distinct()
+            ->pluck('location')
+            ->filter()
+            ->sort()
+            ->values();
+
+        return Inertia::render('Events/Discovery', [
+            'events' => $events,
+            'featuredEvents' => $featuredEvents,
+            'myEvents' => $myEvents,
+            'upcomingReunions' => $upcomingReunions,
+            'eventCategories' => $eventCategories,
+            'eventTypes' => $eventTypes,
+            'locations' => $locations,
+            'filters' => $request->only(['type', 'location', 'date_range', 'virtual_only']),
+        ]);
+    }
+
     public function myEvents()
     {
         $user = Auth::user();

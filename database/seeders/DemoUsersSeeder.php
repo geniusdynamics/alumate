@@ -85,6 +85,22 @@ class DemoUsersSeeder extends Seeder
         );
         $employer->assignRole($employerRole);
 
+        // Create employer profile with correct company_size values
+        \App\Models\Employer::firstOrCreate(
+            ['user_id' => $employer->id],
+            [
+                'company_name' => 'TechCorp Solutions',
+                'industry' => 'Technology',
+                'company_size' => 'small', // Use enum value instead of '1-10'
+                'verification_status' => 'verified',
+                'approved' => true,
+                'contact_person_name' => 'TechCorp Recruiter',
+                'contact_person_email' => 'techcorp@company.com',
+                'can_post_jobs' => true,
+                'can_search_graduates' => true,
+            ]
+        );
+
         // Create Graduate
         $graduate = User::firstOrCreate(
             ['email' => 'john.smith@student.edu'],
@@ -96,6 +112,33 @@ class DemoUsersSeeder extends Seeder
             ]
         );
         $graduate->assignRole($graduateRole);
+
+        // Create graduate profile in tenant context
+        tenancy()->initialize('tech-institute');
+        
+        // First, ensure we have a course to reference
+        $course = \App\Models\Course::firstOrCreate(
+            ['name' => 'Computer Science'],
+            [
+                'description' => 'Bachelor of Computer Science',
+                'duration' => 4,
+                'level' => 'undergraduate',
+            ]
+        );
+        
+        \App\Models\Graduate::firstOrCreate(
+            ['email' => 'john.smith@student.edu'],
+            [
+                'tenant_id' => 'tech-institute',
+                'name' => 'John Smith',
+                'email' => 'john.smith@student.edu',
+                'phone' => '+1234567890',
+                'graduation_year' => 2023,
+                'course_id' => $course->id,
+                'user_id' => $graduate->id,
+            ]
+        );
+        tenancy()->end();
 
         $this->command->info('Demo users created successfully!');
         $this->command->info('Super Admin: admin@system.com / password');

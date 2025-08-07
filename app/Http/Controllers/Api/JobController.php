@@ -106,4 +106,50 @@ class JobController extends Controller
             'application' => $application
         ], 201);
     }
+
+    public function requestReferral(Request $request)
+    {
+        $request->validate([
+            'job_id' => 'required|exists:jobs,id',
+            'referrer_id' => 'required|exists:users,id',
+            'message' => 'nullable|string|max:1000'
+        ]);
+
+        $user = Auth::user();
+        $job = Job::findOrFail($request->job_id);
+        $referrer = User::findOrFail($request->referrer_id);
+
+        // Check if connection exists
+        $connection = Connection::where(function ($query) use ($user, $referrer) {
+            $query->where('user_id', $user->id)
+                  ->where('connected_user_id', $referrer->id);
+        })->orWhere(function ($query) use ($user, $referrer) {
+            $query->where('user_id', $referrer->id)
+                  ->where('connected_user_id', $user->id);
+        })->where('status', 'accepted')->first();
+
+        if (!$connection) {
+            throw ValidationException::withMessages([
+                'referrer_id' => 'You must be connected to request a referral.'
+            ]);
+        }
+
+        // Create referral request
+        $referralRequest = \DB::table('referral_requests')->insert([
+            'requester_id' => $user->id,
+            'referrer_id' => $referrer->id,
+            'job_id' => $job->id,
+            'message' => $request->message,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        // TODO: Send notification to referrer
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Referral request sent successfully.'
+        ]);
+    }
 }

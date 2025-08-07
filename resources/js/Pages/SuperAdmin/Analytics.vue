@@ -190,7 +190,7 @@
 
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
-import AdminLayout from '@/Components/AdminLayout.vue';
+import AdminLayout from '@/components/AdminLayout.vue';
 import {
     ArrowLeftIcon,
     UsersIcon,

@@ -196,6 +196,8 @@ declare global {
   const TooltipContent: typeof import('./resources/js/components/ui/tooltip/index')['TooltipContent']
   const TooltipProvider: typeof import('./resources/js/components/ui/tooltip/index')['TooltipProvider']
   const TooltipTrigger: typeof import('./resources/js/components/ui/tooltip/index')['TooltipTrigger']
+  const UserDashboardIntegration: typeof import('./resources/js/components/UserDashboardIntegration.vue')['default']
+  const UserFlowIntegration: typeof import('./resources/js/services/UserFlowIntegration.js')['default']
   const WorkshopCalendar: typeof import('./resources/js/components/WorkshopCalendar.vue')['default']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
@@ -438,6 +440,7 @@ declare global {
   const usePreferredReducedTransparency: typeof import('@vueuse/core')['usePreferredReducedTransparency']
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
+  const useRealTimeUpdates: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useRealTimeUpdates']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
   const useSSRWidth: typeof import('@vueuse/core')['useSSRWidth']
@@ -480,6 +483,7 @@ declare global {
   const useTransition: typeof import('@vueuse/core')['useTransition']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
   const useUserMedia: typeof import('@vueuse/core')['useUserMedia']
+  const useUserPreferences: typeof import('./resources/js/composables/useUserPreferences.js')['useUserPreferences']
   const useVModel: typeof import('@vueuse/core')['useVModel']
   const useVModels: typeof import('@vueuse/core')['useVModels']
   const useVibrate: typeof import('@vueuse/core')['useVibrate']
@@ -739,6 +743,7 @@ declare module 'vue' {
     readonly TooltipContent: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipContent']>
     readonly TooltipProvider: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipProvider']>
     readonly TooltipTrigger: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipTrigger']>
+    readonly UserFlowIntegration: UnwrapRef<typeof import('./resources/js/services/UserFlowIntegration.js')['default']>
     readonly WorkshopCalendar: UnwrapRef<typeof import('./resources/js/components/WorkshopCalendar.vue')['default']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -981,6 +986,7 @@ declare module 'vue' {
     readonly usePreferredReducedTransparency: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedTransparency']>
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
+    readonly useRealTimeUpdates: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['useRealTimeUpdates']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
     readonly useResizeObserver: UnwrapRef<typeof import('@vueuse/core')['useResizeObserver']>
     readonly useSSRWidth: UnwrapRef<typeof import('@vueuse/core')['useSSRWidth']>
@@ -1023,6 +1029,7 @@ declare module 'vue' {
     readonly useTransition: UnwrapRef<typeof import('@vueuse/core')['useTransition']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
+    readonly useUserPreferences: UnwrapRef<typeof import('./resources/js/composables/useUserPreferences.js')['useUserPreferences']>
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>

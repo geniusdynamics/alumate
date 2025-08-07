@@ -1,0 +1,218 @@
+/* Alumni Map Styles */
+
+/* Custom marker styles */
+.custom-cluster-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-alumni-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+.custom-user-icon {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Cluster marker styles */
+.cluster-marker {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: 3px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cluster-marker:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.cluster-count {
+  color: white;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Alumni marker styles */
+.alumni-marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid white;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.alumni-marker:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.alumni-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* User location marker */
+.user-location-marker {
+  width: 30px;
+  height: 30px;
+  background: #28a745;
+  border: 3px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+  }
+}
+
+/* Popup styles */
+.leaflet-popup-content-wrapper {
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+}
+
+.cluster-popup,
+.alumni-popup {
+  padding: 12px;
+  min-width: 200px;
+}
+
+.alumni-popup {
+  min-width: 250px;
+}
+
+.alumni-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.alumni-popup-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.alumni-details {
+  margin-bottom: 10px;
+}
+
+.alumni-details p {
+  margin: 2px 0;
+}
+
+/* Map controls */
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: white !important;
+  border: none !important;
+  color: #495057 !important;
+  font-weight: bold !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background-color: #f8f9fa !important;
+  color: #007bff !important;
+}
+
+/* Attribution */
+.leaflet-control-attribution {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 10px !important;
+}
+
+/* Loading overlay */
+.map-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(2px);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .alumni-marker {
+    width: 35px;
+    height: 35px;
+  }
+  
+  .cluster-marker {
+    font-size: 0.9em;
+  }
+  
+  .alumni-popup,
+  .cluster-popup {
+    min-width: 180px;
+    font-size: 0.9em;
+  }
+  
+  .alumni-popup-photo {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .leaflet-control-zoom a {
+    background-color: #343a40 !important;
+    color: #f8f9fa !important;
+  }
+  
+  .leaflet-control-zoom a:hover {
+    background-color: #495057 !important;
+    color: #007bff !important;
+  }
+  
+  .leaflet-popup-content-wrapper {
+    background-color: #343a40;
+    color: #f8f9fa;
+  }
+  
+  .leaflet-popup-tip {
+    background-color: #343a40;
+  }
+}

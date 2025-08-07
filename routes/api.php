@@ -428,3 +428,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/career/networking-recommendations', [StudentCareerGuidanceController::class, 'getNetworkingRecommendations']);
     Route::get('student/career/timeline-examples', [StudentCareerGuidanceController::class, 'getCareerTimelineExamples']);
 });
+
+// Alumni Map routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Map data endpoints
+    Route::post('alumni/map', [App\Http\Controllers\Api\AlumniMapController::class, 'getAlumniByLocation']);
+    Route::post('alumni/map/clusters', [App\Http\Controllers\Api\AlumniMapController::class, 'getClusters']);
+    Route::get('alumni/nearby', [App\Http\Controllers\Api\AlumniMapController::class, 'getNearbyAlumni']);
+    Route::get('alumni/map/heatmap', [App\Http\Controllers\Api\AlumniMapController::class, 'getHeatmapData']);
+    Route::get('alumni/search', [App\Http\Controllers\Api\AlumniMapController::class, 'searchAlumni']);
+    
+    // Regional data endpoints
+    Route::get('regions/{region}/stats', [App\Http\Controllers\Api\AlumniMapController::class, 'getRegionalStats']);
+    Route::get('regions/{region}/groups', [App\Http\Controllers\Api\AlumniMapController::class, 'getSuggestedGroups']);
+    
+    // Filter and location endpoints
+    Route::get('alumni/filter-options', [App\Http\Controllers\Api\AlumniMapController::class, 'getFilterOptions']);
+    Route::post('alumni/location', [App\Http\Controllers\Api\AlumniMapController::class, 'updateLocation']);
+});

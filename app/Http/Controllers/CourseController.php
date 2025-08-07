@@ -26,7 +26,27 @@ class CourseController extends Controller
             }
         }
 
-        $query = Course::with(['graduates']);
+        // Start with courses query and handle potential database errors gracefully
+        try {
+            $query = Course::with(['graduates']);
+            
+            // If user has institution_id, filter by institution or show all for super-admin
+            if ($user->institution_id && !$user->hasRole('super-admin')) {
+                $query->where('institution_id', $user->institution_id);
+            }
+        } catch (\Exception $e) {
+            // Log the error and return empty result with error message
+            \Log::error('Course index query failed: ' . $e->getMessage());
+            
+            return Inertia::render('Courses/Index', [
+                'courses' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15),
+                'levels' => ['certificate', 'diploma', 'advanced_diploma', 'degree', 'other'],
+                'studyModes' => ['full_time', 'part_time', 'online', 'hybrid'],
+                'departments' => [],
+                'filters' => [],
+                'error' => 'Unable to load courses. Please contact your administrator.'
+            ]);
+        }
 
         // Apply filters
         if ($request->filled('search')) {

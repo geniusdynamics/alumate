@@ -33,39 +33,84 @@
                             </div>
                         </div>
 
-                        <div v-for="post in posts.data" :key="post.id" class="bg-white dark:bg-gray-800 rounded-lg shadow">
+                        <div v-for="post in timelinePosts" :key="post.id" class="bg-white dark:bg-gray-800 rounded-lg shadow">
                             <!-- Post Header -->
                             <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                                <div class="flex items-center space-x-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
-                                            <UserIcon class="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                                                <UserIcon class="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                                            </div>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                                {{ post.user.name }}
+                                            </p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ formatTimeAgo(post.created_at) }}
+                                                <span v-if="post.updated_at !== post.created_at" class="ml-1">(edited)</span>
+                                            </p>
                                         </div>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ post.user.name }}
-                                        </p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            {{ formatTimeAgo(post.created_at) }}
-                                        </p>
+                                    
+                                    <!-- Post Options -->
+                                    <div v-if="canEditPost(post)" class="relative">
+                                        <button 
+                                            @click="togglePostOptions(post.id)"
+                                            class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                        >
+                                            <EllipsisHorizontalIcon class="w-5 h-5" />
+                                        </button>
+                                        
+                                        <div 
+                                            v-if="showPostOptions[post.id]"
+                                            class="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg border border-gray-200 dark:border-gray-600 z-10"
+                                        >
+                                            <button 
+                                                @click="startEditingPost(post)"
+                                                class="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            >
+                                                <PencilIcon class="w-4 h-4 mr-2" />
+                                                Edit Post
+                                            </button>
+                                            <button 
+                                                @click="handlePostDeleted(post.id)"
+                                                class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                            >
+                                                <TrashIcon class="w-4 h-4 mr-2" />
+                                                Delete Post
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Post Content -->
+                            <!-- Post Content or Edit Form -->
                             <div class="p-6">
-                                <p class="text-gray-900 dark:text-white whitespace-pre-wrap">{{ post.content }}</p>
-                                
-                                <!-- Post Images -->
-                                <div v-if="post.images && post.images.length > 0" class="mt-4 grid grid-cols-2 gap-2">
-                                    <img 
-                                        v-for="image in post.images" 
-                                        :key="image.id"
-                                        :src="image.url" 
-                                        :alt="image.alt_text"
-                                        class="rounded-lg object-cover h-48 w-full"
+                                <div v-if="editingPost && editingPost.id === post.id">
+                                    <!-- Edit Form -->
+                                    <PostCreator 
+                                        :edit-post="post"
+                                        :user-circles="userCircles"
+                                        :user-groups="userGroups"
+                                        @post-updated="handlePostUpdated"
+                                        @cancel="cancelEditing"
                                     />
+                                </div>
+                                <div v-else>
+                                    <p class="text-gray-900 dark:text-white whitespace-pre-wrap">{{ post.content }}</p>
+                                    
+                                    <!-- Post Images -->
+                                    <div v-if="post.images && post.images.length > 0" class="mt-4 grid grid-cols-2 gap-2">
+                                        <img 
+                                            v-for="image in post.images" 
+                                            :key="image.id"
+                                            :src="image.url" 
+                                            :alt="image.alt_text"
+                                            class="rounded-lg object-cover h-48 w-full"
+                                        />
+                                    </div>
                                 </div>
                             </div>
 
@@ -148,24 +193,47 @@
                 </div>
             </div>
         </div>
+
+        <!-- User Flow Integration -->
+        <UserFlowIntegration />
+        
+        <!-- Real-time Updates -->
+        <RealTimeUpdates 
+            :show-post-updates="true"
+            :show-engagement-counters="true"
+        />
+        
+        <!-- Cross-feature Connections -->
+        <CrossFeatureConnections 
+            context="social-timeline"
+            :context-data="{ posts: timelinePosts }"
+        />
     </AppLayout>
 </template>
 
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3'
-import { ref } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
-import PostCreator from '@/Components/PostCreator.vue'
-import PostReactions from '@/Components/PostReactions.vue'
-import PostComments from '@/Components/PostComments.vue'
-import PeopleYouMayKnow from '@/Components/PeopleYouMayKnow.vue'
+import PostCreator from '@/components/PostCreator.vue'
+import PostReactions from '@/components/PostReactions.vue'
+import PostComments from '@/components/PostComments.vue'
+import PeopleYouMayKnow from '@/components/PeopleYouMayKnow.vue'
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue'
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue'
+import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue'
 import { formatDistanceToNow } from 'date-fns'
+import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates'
+import userFlowIntegration from '@/services/UserFlowIntegration'
 import {
     ChatBubbleLeftIcon,
     UserIcon,
     UsersIcon,
     UserGroupIcon,
-    MagnifyingGlassIcon
+    MagnifyingGlassIcon,
+    PencilIcon,
+    TrashIcon,
+    EllipsisHorizontalIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -176,38 +244,134 @@ const props = defineProps({
 })
 
 const loadingMore = ref(false)
+const timelinePosts = reactive([...props.posts.data])
+const editingPost = ref(null)
+const showPostOptions = ref({})
+
+// Real-time updates
+const realTimeUpdates = useRealTimeUpdates()
+
+onMounted(() => {
+    // Set up real-time event listeners
+    realTimeUpdates.onPostCreated((post) => {
+        // Add new post to the beginning of the timeline
+        timelinePosts.unshift(post)
+        userFlowIntegration.showNotification('New post from your network!', 'info')
+    })
+    
+    realTimeUpdates.onPostUpdated((post) => {
+        // Update existing post
+        const index = timelinePosts.findIndex(p => p.id === post.id)
+        if (index > -1) {
+            timelinePosts[index] = post
+        }
+    })
+    
+    realTimeUpdates.onPostEngagement((postId, engagement) => {
+        // Update post engagement
+        const post = timelinePosts.find(p => p.id === postId)
+        if (post) {
+            post.engagements = engagement
+        }
+    })
+    
+    realTimeUpdates.onCommentAdded((postId, comment) => {
+        // Add new comment
+        const post = timelinePosts.find(p => p.id === postId)
+        if (post) {
+            post.comments.push(comment)
+        }
+    })
+    
+    // Set up user flow integration callbacks
+    userFlowIntegration.on('postCreated', (post) => {
+        timelinePosts.unshift(post)
+    })
+    
+    userFlowIntegration.on('postUpdated', (post) => {
+        const index = timelinePosts.findIndex(p => p.id === post.id)
+        if (index > -1) {
+            timelinePosts[index] = post
+            editingPost.value = null
+        }
+    })
+    
+    userFlowIntegration.on('postDeleted', (postId) => {
+        const index = timelinePosts.findIndex(p => p.id === postId)
+        if (index > -1) {
+            timelinePosts.splice(index, 1)
+        }
+    })
+})
 
 const formatTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true })
 }
 
-const handlePostCreated = (newPost) => {
-    // Refresh the page to show the new post
-    router.reload()
+const handlePostCreated = async (postData) => {
+    try {
+        await userFlowIntegration.createPostAndRefreshTimeline(postData)
+    } catch (error) {
+        console.error('Failed to create post:', error)
+    }
+}
+
+const handlePostUpdated = async (postId, updateData) => {
+    try {
+        await userFlowIntegration.updatePostAndRefresh(postId, updateData)
+    } catch (error) {
+        console.error('Failed to update post:', error)
+    }
+}
+
+const handlePostDeleted = async (postId) => {
+    if (confirm('Are you sure you want to delete this post?')) {
+        try {
+            await userFlowIntegration.deletePostAndRefresh(postId)
+        } catch (error) {
+            console.error('Failed to delete post:', error)
+        }
+    }
 }
 
 const handleReactionUpdated = (postId, reactions) => {
-    // Update the post reactions in the local state
-    const post = props.posts.data.find(p => p.id === postId)
+    const post = timelinePosts.find(p => p.id === postId)
     if (post) {
         post.engagements = reactions
     }
 }
 
 const handleCommentAdded = (postId, comment) => {
-    // Add the new comment to the post
-    const post = props.posts.data.find(p => p.id === postId)
+    const post = timelinePosts.find(p => p.id === postId)
     if (post) {
         post.comments.push(comment)
     }
 }
 
-const handleConnectionRequested = (userId) => {
-    // Remove the user from suggested connections
-    const index = props.suggestedConnections.findIndex(user => user.id === userId)
-    if (index > -1) {
-        props.suggestedConnections.splice(index, 1)
+const handleConnectionRequested = async (userId) => {
+    try {
+        await userFlowIntegration.sendConnectionRequestAndUpdate(userId)
+        // Remove from suggested connections
+        const index = props.suggestedConnections.findIndex(user => user.id === userId)
+        if (index > -1) {
+            props.suggestedConnections.splice(index, 1)
+        }
+    } catch (error) {
+        console.error('Failed to send connection request:', error)
     }
+}
+
+const togglePostOptions = (postId) => {
+    showPostOptions.value[postId] = !showPostOptions.value[postId]
+}
+
+const startEditingPost = (post) => {
+    editingPost.value = post
+    showPostOptions.value[post.id] = false
+}
+
+const cancelEditing = () => {
+    editingPost.value = null
 }
 
 const loadMorePosts = () => {
@@ -221,5 +385,9 @@ const loadMorePosts = () => {
             }
         })
     }
+}
+
+const canEditPost = (post) => {
+    return post.user.id === props.auth?.user?.id
 }
 </script>
