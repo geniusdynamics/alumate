@@ -1134,3 +1134,340 @@ export interface VolumeDiscount {
   discountPercentage: number
   description: string
 }
+
+// Strategic CTA and Conversion System Interfaces
+export interface StrategicCTA {
+  id: string
+  type: 'contextual' | 'section' | 'sticky-header' | 'floating'
+  placement: 'hero' | 'features' | 'testimonials' | 'pricing' | 'footer' | 'inline'
+  audience: AudienceType | 'both'
+  text: string
+  action: string
+  section: string
+  mobileOptimized: boolean
+  contextual: boolean
+  priority: number
+  conditions?: CTACondition[]
+}
+
+export interface CTACondition {
+  type: 'scroll_depth' | 'time_on_page' | 'section_viewed' | 'engagement_level'
+  operator: 'greater_than' | 'less_than' | 'equals'
+  value: number | string
+}
+
+export interface ExitIntentOffer {
+  badge: string
+  title: string
+  description: string
+  details?: string[]
+  countdown?: number
+  countdownLabel?: string
+}
+
+export type EngagementLevel = 'low' | 'medium' | 'high'
+
+export interface ProgressiveCTA {
+  id: string
+  label: string
+  message: string
+  text: string
+  action: string
+  section: string
+  triggerDepth: number
+}
+
+export interface MicroCTA {
+  id: string
+  text: string
+  icon: string
+  tooltip: string
+  action: string
+  section: string
+  position: { top: number; left: number }
+}
+
+export interface UrgencyIndicator {
+  icon: string
+  text: string
+}
+
+export interface FloatingCTAContent {
+  title: string
+  subtitle: string
+  primaryCTA: {
+    text: string
+    description: string
+    action: string
+    icon: string
+  }
+  secondaryCTA?: {
+    text: string
+    description: string
+    action: string
+    icon: string
+  }
+  tertiaryCTA?: {
+    text: string
+    description: string
+    action: string
+    icon: string
+  }
+  trustIndicators?: Array<{
+    icon: string
+    text: string
+  }>
+}
+
+export interface ContextualCTAData {
+  id: string
+  title?: string
+  description?: string
+  text: string
+  action: string
+  section?: string
+  variant?: 'primary' | 'secondary' | 'success' | 'warning'
+  size?: 'small' | 'medium' | 'large'
+  urgent?: boolean
+  animated?: boolean
+  icon?: string
+  image?: string
+  imageAlt?: string
+  buttonIcon?: string
+  buttonVariant?: 'primary' | 'secondary'
+  showArrow?: boolean
+  benefits?: string[]
+  socialProof?: Array<{
+    icon: string
+    text: string
+  }>
+  secondaryAction?: {
+    text: string
+    action: string
+  }
+  urgency?: {
+    text: string
+    countdown?: number
+  }
+  trustBadges?: Array<{
+    name: string
+    image: string
+    description: string
+  }>
+  backgroundPattern?: 'dots' | 'lines'
+}
+
+export interface SectionCTAData {
+  id: string
+  text: string
+  action: string
+  section?: string
+  placement: 'inline' | 'floating' | 'banner' | 'sidebar'
+  style?: 'default' | 'minimal' | 'prominent' | 'urgent'
+  sticky?: boolean
+  primaryIcon?: string
+  showArrow?: boolean
+  contextualMessage?: {
+    title: string
+    description: string
+    progress?: {
+      percentage: number
+      text: string
+    }
+  }
+  secondaryAction?: {
+    text: string
+    action: string
+    icon?: string
+  }
+  tertiaryAction?: {
+    text: string
+    action?: string
+    href: string
+    preventDefault?: boolean
+  }
+  additionalContext?: {
+    valueProps?: Array<{
+      icon: string
+      text: string
+    }>
+    socialProof?: {
+      avatars: string[]
+      count: string
+      label: string
+    }
+    riskFree?: string
+  }
+  dismissible?: boolean
+  backgroundElements?: Array<{
+    id: string
+    type: 'circle' | 'square' | 'triangle'
+    style: Record<string, string>
+  }>
+}
+
+export interface StickyHeaderCTAData {
+  id: string
+  text: string
+  compactText?: string
+  action: string
+  primaryIcon?: string
+  secondaryAction?: {
+    text: string
+    action: string
+    icon?: string
+  }
+  trustIndicators?: Array<{
+    icon: string
+    text: string
+  }>
+  notification?: {
+    text: string
+  }
+}
+
+// Conversion Tracking and Analytics Interfaces
+export interface ConversionFunnelStep {
+  id: string
+  name: string
+  order: number
+  required: boolean
+}
+
+export interface ConversionMetrics {
+  totalConversions: number
+  conversionRate: number
+  averageTimeToConversion: number
+  topConvertingCTAs: Array<{
+    ctaId: string
+    conversions: number
+    rate: number
+  }>
+  funnelDropoffPoints: Array<{
+    stepId: string
+    dropoffRate: number
+  }>
+  audiencePerformance: {
+    individual: { conversions: number; rate: number }
+    institutional: { conversions: number; rate: number }
+  }
+}
+
+export interface UserBehaviorEvent {
+  elementId?: string
+  elementText?: string
+  section?: string
+  x?: number
+  y?: number
+  relativeX?: number
+  relativeY?: number
+  timestamp?: number
+  customData?: Record<string, any>
+}
+
+// Heat Map Interfaces
+export interface HeatMapData {
+  clicks: HeatMapClick[]
+  scrollDepth: HeatMapScroll[]
+  timeSpent: HeatMapTimeSpent[]
+  ctaPerformance: CTAPerformanceData[]
+}
+
+export interface HeatMapClick {
+  x: number
+  y: number
+  relativeX: number
+  relativeY: number
+  element: string
+  elementId: string
+  elementClass: string
+  elementText: string
+  section: string
+  timestamp: number
+  viewportWidth: number
+  viewportHeight: number
+  pageUrl: string
+  audience: AudienceType
+}
+
+export interface HeatMapScroll {
+  scrollY: number
+  scrollPercentage: number
+  timestamp: number
+  timeSinceLastScroll: number
+  viewportHeight: number
+  documentHeight: number
+  pageUrl: string
+  audience: AudienceType
+}
+
+export interface HeatMapTimeSpent {
+  section: string
+  timeSpent: number
+  timestamp: number
+  pageUrl: string
+  audience: AudienceType
+}
+
+export interface CTAPerformanceData {
+  ctaId: string
+  ctaText: string
+  ctaType: string
+  section: string
+  position: {
+    x: number
+    y: number
+    relativeX: number
+    relativeY: number
+  }
+  timestamp: number
+  pageUrl: string
+  audience: AudienceType
+  viewportWidth: number
+  viewportHeight: number
+}
+
+// A/B Testing Result Interfaces
+export interface ABTestResult {
+  testId: string
+  testName: string
+  status: 'running' | 'completed' | 'paused'
+  startDate: Date
+  endDate?: Date
+  variants: ABTestVariantResult[]
+  winner?: string
+  statisticalSignificance: boolean
+  confidenceLevel: number
+}
+
+export interface ABTestVariantResult {
+  variantId: string
+  variantName: string
+  participants: number
+  conversions: number
+  conversionRate: number
+  improvement: number
+  statisticalSignificance: boolean
+}
+
+export interface ABTestStatistics {
+  testId: string
+  totalParticipants: number
+  totalConversions: number
+  overallConversionRate: number
+  variants: Array<{
+    variantId: string
+    participants: number
+    conversions: number
+    conversionRate: number
+    confidenceInterval: {
+      lower: number
+      upper: number
+    }
+  }>
+  significance: {
+    pValue: number
+    significant: boolean
+    confidenceLevel: number
+  }
+}
