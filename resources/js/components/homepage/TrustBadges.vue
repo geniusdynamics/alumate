@@ -422,7 +422,9 @@ defineExpose({
 
 <style scoped>
 .trust-badges {
-  @apply py-12 bg-gray-50;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: #f9fafb;
 }
 
 .trust-badge-item {
@@ -483,33 +485,18 @@ defineExpose({
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .trust-badges {
-    @apply py-8;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
   }
   
-  .trust-badges .grid-cols-2 {
-    @apply grid-cols-2;
-  }
-  
-  .trust-badges .md\:grid-cols-4 {
-    @apply grid-cols-3;
-  }
-  
-  .trust-badges .lg\:grid-cols-6 {
-    @apply grid-cols-3;
+  .trust-badges .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 480px) {
-  .trust-badges .grid-cols-2 {
-    @apply grid-cols-1;
-  }
-  
-  .trust-badges .md\:grid-cols-4 {
-    @apply grid-cols-2;
-  }
-  
-  .trust-badges .lg\:grid-cols-6 {
-    @apply grid-cols-2;
+  .trust-badges .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -527,21 +514,23 @@ defineExpose({
 /* Focus styles for keyboard navigation */
 .trust-badges button:focus,
 .trust-badges img:focus {
-  @apply outline-none ring-2 ring-blue-500 ring-offset-2 rounded;
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px rgba(59, 130, 246, 0.1);
+  border-radius: 0.25rem;
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .trust-badges .bg-gray-50 {
-    background-color: #ffffff;
+  .trust-badges [class*="bg-gray-50"] {
+    background-color: #ffffff !important;
   }
   
-  .trust-badges .text-gray-600 {
-    color: #000000;
+  .trust-badges [class*="text-gray-600"] {
+    color: #000000 !important;
   }
   
-  .trust-badges .bg-gray-900 {
-    background-color: #000000;
+  .trust-badges [class*="bg-gray-900"] {
+    background-color: #000000 !important;
   }
 }
 

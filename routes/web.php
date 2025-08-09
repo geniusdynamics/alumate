@@ -6,9 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+Route::get('/', [\App\Http\Controllers\HomepageController::class, 'index'])->name('home');
 
 // Homepage Enhancement Routes
 Route::get('/homepage', [\App\Http\Controllers\HomepageController::class, 'index'])->name('homepage.index');
@@ -24,12 +22,28 @@ Route::prefix('api/homepage')->name('api.homepage.')->group(function () {
     Route::get('statistics', [\App\Http\Controllers\Api\HomepageController::class, 'getStatistics'])->name('statistics');
     Route::get('testimonials', [\App\Http\Controllers\Api\HomepageController::class, 'getTestimonials'])->name('testimonials');
     Route::get('trust-badges', [\App\Http\Controllers\Api\HomepageController::class, 'getTrustBadges'])->name('trust-badges');
+    Route::get('platform-preview', [\App\Http\Controllers\Api\HomepageController::class, 'getPlatformPreview'])->name('platform-preview');
     Route::get('success-stories', [\App\Http\Controllers\Api\HomepageController::class, 'getSuccessStories'])->name('success-stories');
     Route::get('features', [\App\Http\Controllers\Api\HomepageController::class, 'getFeatures'])->name('features');
+    Route::get('branded-apps', [\App\Http\Controllers\Api\HomepageController::class, 'getBrandedAppsData'])->name('branded-apps');
     Route::post('calculator', [\App\Http\Controllers\Api\HomepageController::class, 'calculateValue'])->name('calculator');
+    
+    // Career Calculator Routes
+    Route::post('calculator/calculate', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'calculate'])->name('calculator.calculate');
+    Route::post('calculator/email-report', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'emailReport'])->name('calculator.email-report');
+    Route::get('calculator/benchmarks', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'benchmarks'])->name('calculator.benchmarks');
+    
+    // Pricing Routes
+    Route::get('pricing/plans', [\App\Http\Controllers\Api\PricingController::class, 'getPlans'])->name('pricing.plans');
+    Route::get('pricing/feature-comparison', [\App\Http\Controllers\Api\PricingController::class, 'getFeatureComparison'])->name('pricing.feature-comparison');
+    Route::post('pricing/track-interaction', [\App\Http\Controllers\Api\PricingController::class, 'trackInteraction'])->name('pricing.track-interaction');
+    Route::get('pricing/statistics', [\App\Http\Controllers\Api\PricingController::class, 'getStatistics'])->name('pricing.statistics');
     Route::post('demo-request', [\App\Http\Controllers\Api\HomepageController::class, 'requestDemo'])->name('demo-request');
     Route::post('trial-signup', [\App\Http\Controllers\Api\HomepageController::class, 'trialSignup'])->name('trial-signup');
     Route::post('lead-capture', [\App\Http\Controllers\Api\HomepageController::class, 'captureLeads'])->name('lead-capture');
+    
+    // Lead capture statistics
+    Route::get('lead-statistics', [\App\Http\Controllers\Api\HomepageController::class, 'getLeadStatistics'])->name('lead-statistics');
     
     // Audience Detection and Personalization Routes
     Route::get('detect-audience', [\App\Http\Controllers\Api\HomepageController::class, 'detectAudience'])->name('detect-audience');
@@ -43,6 +57,12 @@ Route::prefix('api/homepage')->name('api.homepage.')->group(function () {
     Route::post('ab-test-conversion', [\App\Http\Controllers\Api\HomepageController::class, 'trackABTestConversion'])->name('ab-test-conversion');
     Route::get('active-ab-tests', [\App\Http\Controllers\Api\HomepageController::class, 'getActiveABTests'])->name('active-ab-tests');
     Route::get('ab-test-results/{testId}', [\App\Http\Controllers\Api\HomepageController::class, 'getABTestResults'])->name('ab-test-results');
+    
+    // Enterprise Metrics and ROI Routes
+    Route::get('enterprise-metrics', [\App\Http\Controllers\Api\HomepageController::class, 'getEnterpriseMetrics'])->name('enterprise-metrics');
+    Route::get('institutional-comparison', [\App\Http\Controllers\Api\HomepageController::class, 'getInstitutionalComparison'])->name('institutional-comparison');
+    Route::get('implementation-timeline', [\App\Http\Controllers\Api\HomepageController::class, 'getImplementationTimeline'])->name('implementation-timeline');
+    Route::get('success-metrics-tracking', [\App\Http\Controllers\Api\HomepageController::class, 'getSuccessMetricsTracking'])->name('success-metrics-tracking');
     
     // Content Management Routes
     Route::get('content-config', [\App\Http\Controllers\Api\HomepageController::class, 'getContentManagementConfig'])->name('content-config');

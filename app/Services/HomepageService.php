@@ -165,64 +165,283 @@ class HomepageService
             [
                 'id' => 'networking',
                 'title' => 'Smart Alumni Networking',
-                'description' => 'Connect with alumni based on shared interests, career goals, and industry focus.',
+                'description' => 'Connect with alumni based on shared interests, career goals, and industry focus using AI-powered recommendations.',
                 'benefits' => [
                     'AI-powered connection recommendations',
                     'Industry-specific networking groups',
-                    'Professional conversation starters'
+                    'Professional conversation starters',
+                    'Mutual connection discovery',
+                    'Privacy-controlled networking'
                 ],
                 'screenshot' => '/images/features/networking-dashboard.png',
+                'demo_video' => '/videos/features/networking-demo.mp4',
+                'demo_url' => '/demo/networking',
+                'icon' => 'network',
+                'category' => 'networking',
                 'usage_stats' => [
-                    'connections_made_monthly' => 12000,
-                    'satisfaction_rate' => 94
+                    [
+                        'metric' => 'connections_made_monthly',
+                        'value' => 12000,
+                        'label' => 'Monthly Connections',
+                        'trend' => 'up'
+                    ]
+                ],
+                'target_persona' => [
+                    [
+                        'id' => 'recent_grad',
+                        'name' => 'Recent Graduates',
+                        'description' => 'New alumni looking to build professional networks',
+                        'career_stage' => 'recent_grad',
+                        'primary_goals' => ['Find mentors', 'Job opportunities'],
+                        'pain_points' => ['Limited network', 'Career uncertainty']
+                    ],
+                    [
+                        'id' => 'mid_career',
+                        'name' => 'Mid-Career Professionals',
+                        'description' => 'Experienced professionals seeking career advancement',
+                        'career_stage' => 'mid_career',
+                        'primary_goals' => ['Career advancement', 'Industry connections'],
+                        'pain_points' => ['Career plateau', 'Limited industry connections']
+                    ]
+                ],
+                'hotspots' => [
+                    [
+                        'x' => 30,
+                        'y' => 25,
+                        'title' => 'Connection Recommendations',
+                        'description' => 'AI-powered suggestions based on your profile and goals'
+                    ],
+                    [
+                        'x' => 70,
+                        'y' => 60,
+                        'title' => 'Industry Groups',
+                        'description' => 'Join groups specific to your industry and interests'
+                    ]
                 ]
             ],
             [
                 'id' => 'mentorship',
                 'title' => 'Career Mentorship Matching',
-                'description' => 'Get paired with experienced alumni mentors in your field.',
+                'description' => 'Get paired with experienced alumni mentors in your field through our intelligent matching system.',
                 'benefits' => [
                     'Personalized mentor matching',
                     'Structured mentorship programs',
-                    'Goal tracking and progress monitoring'
+                    'Goal tracking and progress monitoring',
+                    'Video call integration',
+                    'Mentorship resource library'
                 ],
                 'screenshot' => '/images/features/mentorship-matching.png',
+                'demo_video' => '/videos/features/mentorship-demo.mp4',
+                'demo_url' => '/demo/mentorship',
+                'icon' => 'users',
+                'category' => 'mentorship',
                 'usage_stats' => [
-                    'active_mentorships' => 1800,
-                    'success_rate' => 89
+                    [
+                        'metric' => 'active_mentorships',
+                        'value' => 1800,
+                        'label' => 'Active Mentorships',
+                        'trend' => 'up'
+                    ]
+                ],
+                'target_persona' => [
+                    [
+                        'id' => 'recent_grad',
+                        'name' => 'Recent Graduates',
+                        'description' => 'New alumni seeking career guidance',
+                        'career_stage' => 'recent_grad',
+                        'primary_goals' => ['Career guidance', 'Skill development'],
+                        'pain_points' => ['Lack of experience', 'Career direction']
+                    ]
+                ]
+            ],
+            [
+                'id' => 'job_board',
+                'title' => 'Exclusive Alumni Job Board',
+                'description' => 'Access job opportunities shared exclusively within your alumni network, with referral tracking.',
+                'benefits' => [
+                    'Alumni-exclusive job postings',
+                    'Referral tracking system',
+                    'Application status updates',
+                    'Salary insights and benchmarks',
+                    'Interview preparation resources'
+                ],
+                'screenshot' => '/images/features/job-board.png',
+                'demo_video' => '/videos/features/job-board-demo.mp4',
+                'icon' => 'briefcase',
+                'category' => 'jobs',
+                'usage_stats' => [
+                    [
+                        'metric' => 'job_placements',
+                        'value' => 3200,
+                        'label' => 'Job Placements',
+                        'trend' => 'up'
+                    ]
+                ],
+                'target_persona' => [
+                    [
+                        'id' => 'job_seeker',
+                        'name' => 'Job Seekers',
+                        'description' => 'Alumni actively looking for new opportunities',
+                        'career_stage' => 'mid_career',
+                        'primary_goals' => ['Find new job', 'Career change'],
+                        'pain_points' => ['Limited opportunities', 'Competition']
+                    ]
+                ]
+            ],
+            [
+                'id' => 'events',
+                'title' => 'Alumni Events & Networking',
+                'description' => 'Discover and attend alumni events, both virtual and in-person, tailored to your interests.',
+                'benefits' => [
+                    'Personalized event recommendations',
+                    'Virtual and in-person events',
+                    'RSVP and calendar integration',
+                    'Event networking tools',
+                    'Post-event connection facilitation'
+                ],
+                'screenshot' => '/images/features/events-calendar.png',
+                'demo_video' => '/videos/features/events-demo.mp4',
+                'icon' => 'calendar',
+                'category' => 'events',
+                'usage_stats' => [
+                    [
+                        'metric' => 'events_monthly',
+                        'value' => 850,
+                        'label' => 'Monthly Events',
+                        'trend' => 'up'
+                    ]
+                ],
+                'target_persona' => [
+                    [
+                        'id' => 'networker',
+                        'name' => 'Active Networkers',
+                        'description' => 'Alumni who actively participate in networking events',
+                        'career_stage' => 'mid_career',
+                        'primary_goals' => ['Expand network', 'Industry insights'],
+                        'pain_points' => ['Finding relevant events', 'Time constraints']
+                    ]
                 ]
             ]
         ]);
 
         $institutionalFeatures = collect([
             [
-                'id' => 'branded_apps',
-                'title' => 'Custom Branded Mobile Apps',
-                'description' => 'Deploy your own branded alumni app with full customization.',
-                'benefits' => [
-                    'Complete white-label solution',
-                    'Custom branding and features',
-                    'App store deployment included'
-                ],
-                'screenshot' => '/images/features/branded-app-showcase.png',
-                'usage_stats' => [
-                    'apps_deployed' => 45,
-                    'average_downloads' => 8500
-                ]
-            ],
-            [
                 'id' => 'admin_dashboard',
                 'title' => 'Comprehensive Admin Dashboard',
-                'description' => 'Manage your entire alumni community with powerful analytics.',
+                'description' => 'Manage your entire alumni community with powerful analytics and engagement tools.',
                 'benefits' => [
                     'Real-time engagement analytics',
                     'Event management tools',
-                    'Communication campaign builder'
+                    'Communication campaign builder',
+                    'Alumni directory management',
+                    'Custom reporting and insights'
                 ],
+                'target_institution' => 'university',
                 'screenshot' => '/images/features/admin-dashboard.png',
+                'demo_video' => '/videos/features/admin-dashboard-demo.mp4',
+                'demo_url' => '/demo/admin-dashboard',
+                'pricing_tier' => 'enterprise',
+                'customization_level' => 'advanced',
+                'icon' => 'dashboard',
                 'usage_stats' => [
-                    'institutions_using' => 150,
-                    'time_saved_monthly' => '40 hours'
+                    [
+                        'metric' => 'institutions_using',
+                        'value' => 150,
+                        'label' => 'Institutions Using',
+                        'trend' => 'up'
+                    ]
+                ],
+                'hotspots' => [
+                    [
+                        'x' => 25,
+                        'y' => 30,
+                        'title' => 'Analytics Overview',
+                        'description' => 'Real-time engagement metrics and trends'
+                    ],
+                    [
+                        'x' => 75,
+                        'y' => 45,
+                        'title' => 'Event Management',
+                        'description' => 'Create and manage alumni events with RSVP tracking'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'branded_mobile_app',
+                'title' => 'Custom Branded Mobile Apps',
+                'description' => 'Deploy your own branded alumni app with full customization and white-label solutions.',
+                'benefits' => [
+                    'Complete white-label solution',
+                    'Custom branding and features',
+                    'App store deployment included',
+                    'Push notification campaigns',
+                    'Offline functionality'
+                ],
+                'target_institution' => 'university',
+                'screenshot' => '/images/features/branded-app-showcase.png',
+                'demo_video' => '/videos/features/branded-app-demo.mp4',
+                'pricing_tier' => 'enterprise',
+                'customization_level' => 'full',
+                'icon' => 'mobile',
+                'usage_stats' => [
+                    [
+                        'metric' => 'apps_deployed',
+                        'value' => 45,
+                        'label' => 'Apps Deployed',
+                        'trend' => 'up'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'analytics_reporting',
+                'title' => 'Advanced Analytics & Reporting',
+                'description' => 'Comprehensive analytics suite with custom reporting and data visualization tools.',
+                'benefits' => [
+                    'Custom dashboard creation',
+                    'Alumni engagement metrics',
+                    'Event performance analytics',
+                    'ROI tracking and reporting',
+                    'Data export capabilities'
+                ],
+                'target_institution' => 'university',
+                'screenshot' => '/images/features/analytics-dashboard.png',
+                'demo_video' => '/videos/features/analytics-demo.mp4',
+                'pricing_tier' => 'professional',
+                'customization_level' => 'basic',
+                'icon' => 'chart',
+                'usage_stats' => [
+                    [
+                        'metric' => 'reports_generated',
+                        'value' => 25000,
+                        'label' => 'Reports Generated',
+                        'trend' => 'up'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'integration_suite',
+                'title' => 'Enterprise Integration Suite',
+                'description' => 'Seamlessly integrate with your existing CRM, email, and event management systems.',
+                'benefits' => [
+                    'CRM system integration',
+                    'Email platform connectivity',
+                    'Single sign-on (SSO) support',
+                    'API access and webhooks',
+                    'Data synchronization tools'
+                ],
+                'target_institution' => 'corporate',
+                'screenshot' => '/images/features/integrations.png',
+                'demo_video' => '/videos/features/integrations-demo.mp4',
+                'pricing_tier' => 'enterprise',
+                'customization_level' => 'advanced',
+                'icon' => 'integration',
+                'usage_stats' => [
+                    [
+                        'metric' => 'active_integrations',
+                        'value' => 120,
+                        'label' => 'Active Integrations',
+                        'trend' => 'up'
+                    ]
                 ]
             ]
         ]);
@@ -499,6 +718,475 @@ class HomepageService
                     'popular' => false,
                     'trial_available' => true
                 ]
+            ]
+        ];
+    }
+
+    /**
+     * Get branded apps showcase data for institutional audience
+     */
+    public function getBrandedAppsData(): array
+    {
+        return [
+            'featured_apps' => [
+                [
+                    'id' => 'stanford-alumni',
+                    'institution_name' => 'Stanford University',
+                    'institution_type' => 'university',
+                    'logo' => '/images/institutions/stanford-logo.png',
+                    'app_icon' => '/images/apps/stanford-app-icon.png',
+                    'app_store_url' => 'https://apps.apple.com/us/app/stanford-alumni/id123456789',
+                    'play_store_url' => 'https://play.google.com/store/apps/details?id=edu.stanford.alumni',
+                    'screenshots' => [
+                        [
+                            'id' => 'stanford-home',
+                            'url' => '/images/apps/stanford/home-screen.png',
+                            'title' => 'Home Dashboard',
+                            'description' => 'Personalized alumni dashboard with news and updates',
+                            'device' => 'iphone',
+                            'category' => 'home'
+                        ],
+                        [
+                            'id' => 'stanford-network',
+                            'url' => '/images/apps/stanford/networking-screen.png',
+                            'title' => 'Alumni Network',
+                            'description' => 'Connect with fellow Stanford alumni worldwide',
+                            'device' => 'iphone',
+                            'category' => 'networking'
+                        ],
+                        [
+                            'id' => 'stanford-events',
+                            'url' => '/images/apps/stanford/events-screen.png',
+                            'title' => 'Events & Reunions',
+                            'description' => 'Discover and register for alumni events',
+                            'device' => 'iphone',
+                            'category' => 'events'
+                        ]
+                    ],
+                    'customizations' => [
+                        [
+                            'category' => 'branding',
+                            'name' => 'Custom Color Scheme',
+                            'description' => 'Stanford Cardinal red throughout the app',
+                            'implemented' => true,
+                            'complexity' => 'basic'
+                        ],
+                        [
+                            'category' => 'features',
+                            'name' => 'Class Year Groups',
+                            'description' => 'Automatic grouping by graduation year',
+                            'implemented' => true,
+                            'complexity' => 'advanced'
+                        ],
+                        [
+                            'category' => 'integrations',
+                            'name' => 'Stanford Directory Integration',
+                            'description' => 'Sync with official alumni directory',
+                            'implemented' => true,
+                            'complexity' => 'custom'
+                        ]
+                    ],
+                    'user_count' => 15000,
+                    'engagement_stats' => [
+                        [
+                            'metric' => 'daily_active_users',
+                            'value' => 2500,
+                            'unit' => 'count',
+                            'trend' => 'up',
+                            'period' => 'last_30_days'
+                        ],
+                        [
+                            'metric' => 'session_duration',
+                            'value' => 12,
+                            'unit' => 'minutes',
+                            'trend' => 'up',
+                            'period' => 'average'
+                        ]
+                    ],
+                    'launch_date' => '2023-09-01',
+                    'featured' => true
+                ],
+                [
+                    'id' => 'mit-connect',
+                    'institution_name' => 'MIT',
+                    'institution_type' => 'university',
+                    'logo' => '/images/institutions/mit-logo.png',
+                    'app_icon' => '/images/apps/mit-app-icon.png',
+                    'app_store_url' => 'https://apps.apple.com/us/app/mit-alumni/id987654321',
+                    'play_store_url' => 'https://play.google.com/store/apps/details?id=edu.mit.alumni',
+                    'screenshots' => [
+                        [
+                            'id' => 'mit-home',
+                            'url' => '/images/apps/mit/home-screen.png',
+                            'title' => 'MIT Connect Home',
+                            'description' => 'Tech-focused alumni dashboard',
+                            'device' => 'iphone',
+                            'category' => 'home'
+                        ],
+                        [
+                            'id' => 'mit-innovation',
+                            'url' => '/images/apps/mit/innovation-screen.png',
+                            'title' => 'Innovation Hub',
+                            'description' => 'Startup and innovation networking',
+                            'device' => 'iphone',
+                            'category' => 'networking'
+                        ]
+                    ],
+                    'customizations' => [
+                        [
+                            'category' => 'branding',
+                            'name' => 'MIT Brand Colors',
+                            'description' => 'Cardinal red and steel gray theme',
+                            'implemented' => true,
+                            'complexity' => 'basic'
+                        ],
+                        [
+                            'category' => 'features',
+                            'name' => 'Startup Showcase',
+                            'description' => 'Dedicated section for alumni startups',
+                            'implemented' => true,
+                            'complexity' => 'advanced'
+                        ]
+                    ],
+                    'user_count' => 12000,
+                    'engagement_stats' => [
+                        [
+                            'metric' => 'daily_active_users',
+                            'value' => 1800,
+                            'unit' => 'count',
+                            'trend' => 'up',
+                            'period' => 'last_30_days'
+                        ],
+                        [
+                            'metric' => 'retention_rate',
+                            'value' => 78,
+                            'unit' => 'percentage',
+                            'trend' => 'stable',
+                            'period' => '30_day'
+                        ]
+                    ],
+                    'launch_date' => '2023-11-15',
+                    'featured' => true
+                ],
+                [
+                    'id' => 'google-alumni',
+                    'institution_name' => 'Google',
+                    'institution_type' => 'corporate',
+                    'logo' => '/images/institutions/google-logo.png',
+                    'app_icon' => '/images/apps/google-app-icon.png',
+                    'app_store_url' => 'https://apps.apple.com/us/app/google-alumni/id456789123',
+                    'play_store_url' => 'https://play.google.com/store/apps/details?id=com.google.alumni',
+                    'screenshots' => [
+                        [
+                            'id' => 'google-home',
+                            'url' => '/images/apps/google/home-screen.png',
+                            'title' => 'Google Alumni Hub',
+                            'description' => 'Corporate alumni networking platform',
+                            'device' => 'android',
+                            'category' => 'home'
+                        ]
+                    ],
+                    'customizations' => [
+                        [
+                            'category' => 'branding',
+                            'name' => 'Google Material Design',
+                            'description' => 'Full Google brand integration',
+                            'implemented' => true,
+                            'complexity' => 'advanced'
+                        ]
+                    ],
+                    'user_count' => 8500,
+                    'engagement_stats' => [
+                        [
+                            'metric' => 'daily_active_users',
+                            'value' => 1200,
+                            'unit' => 'count',
+                            'trend' => 'up',
+                            'period' => 'last_30_days'
+                        ]
+                    ],
+                    'launch_date' => '2024-01-20',
+                    'featured' => false
+                ]
+            ],
+            'customization_options' => [
+                [
+                    'id' => 'branding-options',
+                    'category' => 'branding',
+                    'name' => 'Visual Branding',
+                    'description' => 'Complete visual customization with your institution\'s brand identity',
+                    'options' => [
+                        [
+                            'id' => 'logo-placement',
+                            'name' => 'Custom Logo Placement',
+                            'description' => 'Your logo prominently displayed throughout the app',
+                            'type' => 'logo',
+                            'required' => true
+                        ],
+                        [
+                            'id' => 'color-scheme',
+                            'name' => 'Brand Color Scheme',
+                            'description' => 'Primary and secondary colors matching your brand',
+                            'type' => 'color',
+                            'required' => true
+                        ],
+                        [
+                            'id' => 'typography',
+                            'name' => 'Custom Typography',
+                            'description' => 'Brand-consistent fonts and text styling',
+                            'type' => 'text',
+                            'required' => false
+                        ]
+                    ],
+                    'examples' => [
+                        [
+                            'id' => 'stanford-branding',
+                            'name' => 'Stanford University',
+                            'description' => 'Cardinal red theme with Stanford tree logo',
+                            'before_image' => '/images/examples/generic-app.png',
+                            'after_image' => '/images/examples/stanford-branded.png',
+                            'institution_type' => 'university'
+                        ]
+                    ],
+                    'level' => 'basic'
+                ],
+                [
+                    'id' => 'feature-customization',
+                    'category' => 'features',
+                    'name' => 'Feature Customization',
+                    'description' => 'Tailor app features to your institution\'s specific needs',
+                    'options' => [
+                        [
+                            'id' => 'custom-sections',
+                            'name' => 'Custom Content Sections',
+                            'description' => 'Add institution-specific content areas',
+                            'type' => 'feature',
+                            'required' => false
+                        ],
+                        [
+                            'id' => 'event-integration',
+                            'name' => 'Event System Integration',
+                            'description' => 'Connect with your existing event management',
+                            'type' => 'integration',
+                            'required' => false
+                        ]
+                    ],
+                    'examples' => [
+                        [
+                            'id' => 'mit-features',
+                            'name' => 'MIT Innovation Hub',
+                            'description' => 'Custom startup showcase and innovation tracking',
+                            'before_image' => '/images/examples/standard-features.png',
+                            'after_image' => '/images/examples/mit-innovation.png',
+                            'institution_type' => 'university'
+                        ]
+                    ],
+                    'level' => 'advanced'
+                ],
+                [
+                    'id' => 'integration-options',
+                    'category' => 'integrations',
+                    'name' => 'System Integrations',
+                    'description' => 'Connect with your existing institutional systems',
+                    'options' => [
+                        [
+                            'id' => 'crm-integration',
+                            'name' => 'CRM System Integration',
+                            'description' => 'Sync with Salesforce, HubSpot, or custom CRM',
+                            'type' => 'integration',
+                            'required' => false
+                        ],
+                        [
+                            'id' => 'sso-integration',
+                            'name' => 'Single Sign-On (SSO)',
+                            'description' => 'Integrate with institutional authentication',
+                            'type' => 'integration',
+                            'required' => false
+                        ]
+                    ],
+                    'examples' => [],
+                    'level' => 'enterprise'
+                ],
+                [
+                    'id' => 'analytics-customization',
+                    'category' => 'analytics',
+                    'name' => 'Analytics & Reporting',
+                    'description' => 'Custom analytics dashboards and reporting tools',
+                    'options' => [
+                        [
+                            'id' => 'custom-dashboards',
+                            'name' => 'Custom Analytics Dashboards',
+                            'description' => 'Tailored metrics and KPI tracking',
+                            'type' => 'feature',
+                            'required' => false
+                        ],
+                        [
+                            'id' => 'automated-reports',
+                            'name' => 'Automated Reporting',
+                            'description' => 'Scheduled reports for administrators',
+                            'type' => 'feature',
+                            'required' => false
+                        ]
+                    ],
+                    'examples' => [],
+                    'level' => 'advanced'
+                ]
+            ],
+            'app_store_integration' => [
+                'apple_app_store' => true,
+                'google_play_store' => true,
+                'custom_domain' => true,
+                'white_label' => true,
+                'institution_branding' => true,
+                'review_management' => true,
+                'analytics_integration' => true
+            ],
+            'development_timeline' => [
+                'phases' => [
+                    [
+                        'id' => 'discovery-planning',
+                        'name' => 'Discovery & Planning',
+                        'description' => 'Requirements gathering, brand analysis, and technical planning',
+                        'duration' => '2-3 weeks',
+                        'deliverables' => [
+                            'Technical requirements document',
+                            'Brand integration guidelines',
+                            'Feature specification document',
+                            'Project timeline and milestones'
+                        ],
+                        'dependencies' => [],
+                        'milestones' => [
+                            [
+                                'id' => 'requirements-complete',
+                                'name' => 'Requirements Finalized',
+                                'description' => 'All technical and brand requirements documented',
+                                'due_date' => 'Week 2',
+                                'status' => 'pending'
+                            ],
+                            [
+                                'id' => 'design-approval',
+                                'name' => 'Design Mockups Approved',
+                                'description' => 'Brand-integrated design mockups approved',
+                                'due_date' => 'Week 3',
+                                'status' => 'pending'
+                            ]
+                        ]
+                    ],
+                    [
+                        'id' => 'design-branding',
+                        'name' => 'Design & Branding',
+                        'description' => 'UI/UX design with full brand integration and customization',
+                        'duration' => '3-4 weeks',
+                        'deliverables' => [
+                            'Branded UI/UX designs',
+                            'Interactive prototypes',
+                            'Brand style guide implementation',
+                            'App store assets (icons, screenshots)'
+                        ],
+                        'dependencies' => ['discovery-planning'],
+                        'milestones' => [
+                            [
+                                'id' => 'ui-designs-complete',
+                                'name' => 'UI Designs Complete',
+                                'description' => 'All screen designs with branding complete',
+                                'due_date' => 'Week 6',
+                                'status' => 'pending'
+                            ],
+                            [
+                                'id' => 'prototype-testing',
+                                'name' => 'Prototype User Testing',
+                                'description' => 'Interactive prototype tested with stakeholders',
+                                'due_date' => 'Week 7',
+                                'status' => 'pending'
+                            ]
+                        ]
+                    ],
+                    [
+                        'id' => 'development',
+                        'name' => 'App Development',
+                        'description' => 'Native iOS and Android app development with custom features',
+                        'duration' => '6-8 weeks',
+                        'deliverables' => [
+                            'Native iOS application',
+                            'Native Android application',
+                            'Backend API integration',
+                            'Push notification system',
+                            'Offline functionality'
+                        ],
+                        'dependencies' => ['design-branding'],
+                        'milestones' => [
+                            [
+                                'id' => 'alpha-build',
+                                'name' => 'Alpha Build Complete',
+                                'description' => 'Core functionality implemented',
+                                'due_date' => 'Week 11',
+                                'status' => 'pending'
+                            ],
+                            [
+                                'id' => 'beta-testing',
+                                'name' => 'Beta Testing Phase',
+                                'description' => 'Internal testing with stakeholders',
+                                'due_date' => 'Week 14',
+                                'status' => 'pending'
+                            ]
+                        ]
+                    ],
+                    [
+                        'id' => 'testing-qa',
+                        'name' => 'Testing & Quality Assurance',
+                        'description' => 'Comprehensive testing, bug fixes, and performance optimization',
+                        'duration' => '2-3 weeks',
+                        'deliverables' => [
+                            'Comprehensive test suite',
+                            'Performance optimization',
+                            'Security audit completion',
+                            'Bug fixes and refinements'
+                        ],
+                        'dependencies' => ['development'],
+                        'milestones' => [
+                            [
+                                'id' => 'qa-complete',
+                                'name' => 'QA Testing Complete',
+                                'description' => 'All testing phases completed successfully',
+                                'due_date' => 'Week 16',
+                                'status' => 'pending'
+                            ]
+                        ]
+                    ],
+                    [
+                        'id' => 'deployment-launch',
+                        'name' => 'Deployment & Launch',
+                        'description' => 'App store submission, approval, and official launch',
+                        'duration' => '1-2 weeks',
+                        'deliverables' => [
+                            'App Store submission and approval',
+                            'Google Play submission and approval',
+                            'Launch marketing materials',
+                            'User onboarding documentation',
+                            'Admin training materials'
+                        ],
+                        'dependencies' => ['testing-qa'],
+                        'milestones' => [
+                            [
+                                'id' => 'store-approval',
+                                'name' => 'App Store Approval',
+                                'description' => 'Apps approved on both iOS and Android stores',
+                                'due_date' => 'Week 17',
+                                'status' => 'pending'
+                            ],
+                            [
+                                'id' => 'official-launch',
+                                'name' => 'Official Launch',
+                                'description' => 'Apps publicly available and launched',
+                                'due_date' => 'Week 18',
+                                'status' => 'pending'
+                            ]
+                        ]
+                    ]
+                ],
+                'total_duration' => '14-20 weeks',
+                'estimated_cost' => 'Starting at $75,000',
+                'maintenance_cost' => '$2,000-5,000/month'
             ]
         ];
     }
@@ -840,6 +1528,275 @@ class HomepageService
     }
 
     /**
+     * Get platform preview data including screenshots and tour steps
+     */
+    public function getPlatformPreviewData(string $audience): array
+    {
+        // Mock data for now - will be replaced with real database queries
+        $screenshots = [
+            [
+                'id' => 'dashboard-desktop',
+                'title' => 'Alumni Dashboard',
+                'description' => 'Your personalized dashboard showing connections, opportunities, and recent activity.',
+                'image' => '/images/screenshots/dashboard-desktop.png',
+                'thumbnail' => '/images/screenshots/dashboard-desktop-thumb.png',
+                'device' => 'desktop',
+                'hotspots' => [
+                    [
+                        'x' => 25,
+                        'y' => 30,
+                        'title' => 'Connection Recommendations',
+                        'description' => 'AI-powered suggestions for new alumni connections based on your profile and interests.',
+                        'feature' => 'networking',
+                        'action' => 'view_connections'
+                    ],
+                    [
+                        'x' => 75,
+                        'y' => 45,
+                        'title' => 'Job Opportunities',
+                        'description' => 'Exclusive job postings shared within your alumni network.',
+                        'feature' => 'jobs',
+                        'action' => 'view_jobs'
+                    ],
+                    [
+                        'x' => 50,
+                        'y' => 70,
+                        'title' => 'Upcoming Events',
+                        'description' => 'Alumni events and networking opportunities in your area.',
+                        'feature' => 'events',
+                        'action' => 'view_events'
+                    ]
+                ],
+                'features' => [
+                    [
+                        'id' => 'personalized_feed',
+                        'title' => 'Personalized Activity Feed',
+                        'description' => 'Stay updated with relevant alumni news and opportunities'
+                    ],
+                    [
+                        'id' => 'quick_actions',
+                        'title' => 'Quick Actions',
+                        'description' => 'Access key features with one-click shortcuts'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'networking-desktop',
+                'title' => 'Alumni Network',
+                'description' => 'Browse and connect with alumni based on shared interests, location, and career goals.',
+                'image' => '/images/screenshots/networking-desktop.png',
+                'device' => 'desktop',
+                'hotspots' => [
+                    [
+                        'x' => 20,
+                        'y' => 25,
+                        'title' => 'Search Filters',
+                        'description' => 'Filter alumni by industry, location, graduation year, and more.',
+                        'feature' => 'search'
+                    ],
+                    [
+                        'x' => 60,
+                        'y' => 40,
+                        'title' => 'Alumni Profiles',
+                        'description' => 'View detailed profiles with career history and interests.',
+                        'feature' => 'profiles'
+                    ]
+                ],
+                'features' => [
+                    [
+                        'id' => 'advanced_search',
+                        'title' => 'Advanced Search',
+                        'description' => 'Find alumni using multiple criteria and filters'
+                    ],
+                    [
+                        'id' => 'connection_requests',
+                        'title' => 'Smart Connection Requests',
+                        'description' => 'Send personalized connection requests with context'
+                    ]
+                ]
+            ],
+            [
+                'id' => 'dashboard-mobile',
+                'title' => 'Mobile Dashboard',
+                'description' => 'Access your alumni network on the go with our mobile-optimized interface.',
+                'image' => '/images/screenshots/dashboard-mobile.png',
+                'device' => 'mobile',
+                'hotspots' => [
+                    [
+                        'x' => 50,
+                        'y' => 30,
+                        'title' => 'Mobile Navigation',
+                        'description' => 'Easy access to all platform features from your mobile device.',
+                        'feature' => 'navigation'
+                    ]
+                ],
+                'features' => [
+                    [
+                        'id' => 'mobile_optimized',
+                        'title' => 'Mobile Optimized',
+                        'description' => 'Full functionality optimized for mobile devices'
+                    ]
+                ]
+            ]
+        ];
+
+        $tourSteps = [
+            [
+                'id' => 'welcome',
+                'title' => 'Welcome to Your Alumni Platform',
+                'description' => 'Let\'s take a quick tour of the key features that will help you advance your career.',
+                'screenshot' => '/images/tour/step-1-welcome.png',
+                'callouts' => [
+                    [
+                        'x' => 50,
+                        'y' => 20,
+                        'title' => 'Your Dashboard',
+                        'description' => 'This is your personalized homepage',
+                        'type' => 'info'
+                    ]
+                ],
+                'duration' => 5000
+            ],
+            [
+                'id' => 'networking',
+                'title' => 'Connect with Alumni',
+                'description' => 'Discover and connect with alumni who share your interests and career goals.',
+                'screenshot' => '/images/tour/step-2-networking.png',
+                'callouts' => [
+                    [
+                        'x' => 30,
+                        'y' => 40,
+                        'title' => 'Smart Recommendations',
+                        'description' => 'AI-powered connection suggestions',
+                        'type' => 'highlight'
+                    ]
+                ],
+                'duration' => 7000
+            ],
+            [
+                'id' => 'opportunities',
+                'title' => 'Discover Opportunities',
+                'description' => 'Access exclusive job postings and career opportunities shared by your network.',
+                'screenshot' => '/images/tour/step-3-opportunities.png',
+                'callouts' => [
+                    [
+                        'x' => 70,
+                        'y' => 50,
+                        'title' => 'Exclusive Jobs',
+                        'description' => 'Jobs shared only within your alumni network',
+                        'type' => 'highlight'
+                    ]
+                ],
+                'duration' => 6000
+            ]
+        ];
+
+        // Customize for institutional audience
+        if ($audience === 'institutional') {
+            $screenshots = [
+                [
+                    'id' => 'admin-dashboard-desktop',
+                    'title' => 'Admin Dashboard',
+                    'description' => 'Comprehensive analytics and management tools for your alumni community.',
+                    'image' => '/images/screenshots/admin-dashboard-desktop.png',
+                    'device' => 'desktop',
+                    'hotspots' => [
+                        [
+                            'x' => 25,
+                            'y' => 30,
+                            'title' => 'Engagement Analytics',
+                            'description' => 'Real-time metrics showing alumni engagement and activity.',
+                            'feature' => 'analytics'
+                        ],
+                        [
+                            'x' => 75,
+                            'y' => 45,
+                            'title' => 'Event Management',
+                            'description' => 'Create and manage alumni events with RSVP tracking.',
+                            'feature' => 'events'
+                        ]
+                    ],
+                    'features' => [
+                        [
+                            'id' => 'real_time_analytics',
+                            'title' => 'Real-time Analytics',
+                            'description' => 'Monitor engagement metrics and community growth'
+                        ],
+                        [
+                            'id' => 'event_management',
+                            'title' => 'Event Management',
+                            'description' => 'Comprehensive event planning and tracking tools'
+                        ]
+                    ]
+                ],
+                [
+                    'id' => 'branded-app-desktop',
+                    'title' => 'Branded Mobile App',
+                    'description' => 'Deploy your own custom-branded mobile app for alumni engagement.',
+                    'image' => '/images/screenshots/branded-app-desktop.png',
+                    'device' => 'desktop',
+                    'hotspots' => [
+                        [
+                            'x' => 40,
+                            'y' => 35,
+                            'title' => 'App Customization',
+                            'description' => 'Customize colors, branding, and features for your institution.',
+                            'feature' => 'branding'
+                        ]
+                    ],
+                    'features' => [
+                        [
+                            'id' => 'white_label',
+                            'title' => 'White Label Solution',
+                            'description' => 'Complete branding customization for your institution'
+                        ]
+                    ]
+                ]
+            ];
+
+            $tourSteps = [
+                [
+                    'id' => 'admin_welcome',
+                    'title' => 'Welcome to Your Alumni Management Platform',
+                    'description' => 'Let\'s explore the tools that will help you engage your alumni community.',
+                    'screenshot' => '/images/tour/admin-step-1-welcome.png',
+                    'callouts' => [
+                        [
+                            'x' => 50,
+                            'y' => 20,
+                            'title' => 'Admin Dashboard',
+                            'description' => 'Your central hub for alumni management',
+                            'type' => 'info'
+                        ]
+                    ],
+                    'duration' => 5000
+                ],
+                [
+                    'id' => 'analytics',
+                    'title' => 'Powerful Analytics',
+                    'description' => 'Monitor engagement, track events, and measure the success of your programs.',
+                    'screenshot' => '/images/tour/admin-step-2-analytics.png',
+                    'callouts' => [
+                        [
+                            'x' => 30,
+                            'y' => 40,
+                            'title' => 'Real-time Metrics',
+                            'description' => 'Live engagement and participation data',
+                            'type' => 'highlight'
+                        ]
+                    ],
+                    'duration' => 7000
+                ]
+            ];
+        }
+
+        return [
+            'screenshots' => $screenshots,
+            'tour_steps' => $tourSteps
+        ];
+    }
+
+    /**
      * Get industry-specific multiplier for salary calculations
      */
     private function getIndustryMultiplier(string $industry): float
@@ -859,4 +1816,553 @@ class HomepageService
 
         return $multipliers[$industry] ?? 0.15;
     }
+
+    /**
+     * Get enterprise metrics and ROI data for institutional clients
+     */
+    public function getEnterpriseMetrics(array $params = []): array
+    {
+        $timeframe = $params['timeframe'] ?? '12_months';
+        $requestedMetrics = $params['metrics'] ?? ['engagement', 'financial', 'operational', 'growth'];
+        
+        // Mock enterprise metrics data - will be replaced with real database queries
+        $allMetrics = [
+            [
+                'id' => 'engagement_rate',
+                'name' => 'Alumni Engagement Rate',
+                'category' => 'engagement',
+                'metric' => 'engagement',
+                'beforeValue' => 25,
+                'afterValue' => 75,
+                'improvementPercentage' => 200,
+                'timeframe' => $timeframe,
+                'verified' => true,
+                'unit' => 'percentage'
+            ],
+            [
+                'id' => 'event_attendance',
+                'name' => 'Event Attendance',
+                'category' => 'operational',
+                'metric' => 'event_attendance',
+                'beforeValue' => 200,
+                'afterValue' => 800,
+                'improvementPercentage' => 300,
+                'timeframe' => $timeframe,
+                'verified' => true,
+                'unit' => 'count'
+            ],
+            [
+                'id' => 'donation_revenue',
+                'name' => 'Annual Donation Revenue',
+                'category' => 'financial',
+                'metric' => 'donations',
+                'beforeValue' => 500000,
+                'afterValue' => 1250000,
+                'improvementPercentage' => 150,
+                'timeframe' => $timeframe,
+                'verified' => true,
+                'unit' => 'currency'
+            ],
+            [
+                'id' => 'app_downloads',
+                'name' => 'Mobile App Downloads',
+                'category' => 'growth',
+                'metric' => 'app_downloads',
+                'beforeValue' => 0,
+                'afterValue' => 15000,
+                'improvementPercentage' => 100,
+                'timeframe' => $timeframe,
+                'verified' => true,
+                'unit' => 'count'
+            ],
+            [
+                'id' => 'response_time',
+                'name' => 'Admin Response Time',
+                'category' => 'operational',
+                'metric' => 'response_time',
+                'beforeValue' => 72,
+                'afterValue' => 24,
+                'improvementPercentage' => 67,
+                'timeframe' => $timeframe,
+                'verified' => false,
+                'unit' => 'days'
+            ],
+            [
+                'id' => 'cost_per_engagement',
+                'name' => 'Cost Per Alumni Engagement',
+                'category' => 'financial',
+                'metric' => 'cost_efficiency',
+                'beforeValue' => 45,
+                'afterValue' => 18,
+                'improvementPercentage' => 60,
+                'timeframe' => $timeframe,
+                'verified' => true,
+                'unit' => 'currency'
+            ]
+        ];
+
+        // Filter metrics based on requested categories
+        $filteredMetrics = array_filter($allMetrics, function($metric) use ($requestedMetrics) {
+            return in_array($metric['category'], $requestedMetrics);
+        });
+
+        // Calculate ROI data
+        $roiData = [
+            'percentage' => 350,
+            'investment' => 75000,
+            'return' => 262500,
+            'timeframe' => str_replace('_', ' ', $timeframe)
+        ];
+
+        return [
+            'metrics' => array_values($filteredMetrics),
+            'roi_data' => $roiData,
+            'summary' => [
+                'total_metrics' => count($filteredMetrics),
+                'verified_metrics' => count(array_filter($filteredMetrics, fn($m) => $m['verified'])),
+                'average_improvement' => round(array_sum(array_column($filteredMetrics, 'improvementPercentage')) / count($filteredMetrics))
+            ]
+        ];
+    }
+
+    /**
+     * Get institutional before/after comparison data
+     */
+    public function getInstitutionalComparison(array $params = []): array
+    {
+        $institutionId = $params['institution_id'] ?? 'stanford_university';
+        $caseStudyId = $params['case_study_id'] ?? 'stanford_digital_transformation';
+
+        // Mock institutional comparison data
+        return [
+            'title' => 'Digital Transformation Success',
+            'subtitle' => 'How Stanford University revolutionized alumni engagement',
+            'institution_name' => 'Stanford University',
+            'institution_type' => 'university',
+            'institution_logo' => '/images/institutions/stanford-logo.png',
+            'alumni_count' => 250000,
+            'before_metrics' => [
+                [
+                    'key' => 'engagement',
+                    'label' => 'Alumni Engagement Rate',
+                    'value' => 25,
+                    'unit' => 'percentage'
+                ],
+                [
+                    'key' => 'events',
+                    'label' => 'Monthly Events',
+                    'value' => 5,
+                    'unit' => 'count'
+                ],
+                [
+                    'key' => 'donations',
+                    'label' => 'Annual Donations',
+                    'value' => 500000,
+                    'unit' => 'currency'
+                ],
+                [
+                    'key' => 'app_usage',
+                    'label' => 'Digital Platform Usage',
+                    'value' => 0,
+                    'unit' => 'percentage'
+                ]
+            ],
+            'after_metrics' => [
+                [
+                    'key' => 'engagement',
+                    'label' => 'Alumni Engagement Rate',
+                    'value' => 75,
+                    'unit' => 'percentage'
+                ],
+                [
+                    'key' => 'events',
+                    'label' => 'Monthly Events',
+                    'value' => 20,
+                    'unit' => 'count'
+                ],
+                [
+                    'key' => 'donations',
+                    'label' => 'Annual Donations',
+                    'value' => 1250000,
+                    'unit' => 'currency'
+                ],
+                [
+                    'key' => 'app_usage',
+                    'label' => 'Digital Platform Usage',
+                    'value' => 85,
+                    'unit' => 'percentage'
+                ]
+            ],
+            'before_challenges' => [
+                'Low alumni participation in events',
+                'Limited digital engagement channels',
+                'Difficulty tracking alumni career progress',
+                'Inefficient communication methods',
+                'Lack of mobile accessibility'
+            ],
+            'after_benefits' => [
+                'Increased alumni participation by 200%',
+                'Streamlined digital communication platform',
+                'Real-time alumni career tracking',
+                'Automated engagement workflows',
+                'Mobile-first alumni experience'
+            ],
+            'timeframe' => '18 months',
+            'impact_summary' => 'Stanford University achieved a 200% increase in alumni engagement through strategic digital transformation, resulting in higher event attendance, increased donations, and improved alumni satisfaction.'
+        ];
+    }
+
+    /**
+     * Get implementation timeline data for institutional projects
+     */
+    public function getImplementationTimeline(array $params = []): array
+    {
+        $institutionType = $params['institution_type'] ?? 'university';
+        $alumniCount = $params['alumni_count'] ?? 50000;
+        $complexity = $params['complexity'] ?? 'standard';
+
+        // Adjust timeline based on complexity and size
+        $baseWeeks = 12;
+        $complexityMultiplier = [
+            'basic' => 0.8,
+            'standard' => 1.0,
+            'advanced' => 1.3,
+            'enterprise' => 1.6
+        ];
+        
+        $sizeMultiplier = $alumniCount > 100000 ? 1.2 : ($alumniCount > 25000 ? 1.1 : 1.0);
+        $totalWeeks = round($baseWeeks * $complexityMultiplier[$complexity] * $sizeMultiplier);
+
+        return [
+            'title' => 'Implementation Timeline',
+            'subtitle' => 'Step-by-step project execution plan',
+            'total_duration' => "{$totalWeeks} weeks",
+            'phases' => [
+                [
+                    'id' => '1',
+                    'name' => 'Discovery & Planning',
+                    'description' => 'Initial assessment and project planning phase',
+                    'duration' => '3-4 weeks',
+                    'deliverables' => [
+                        'Project plan and timeline',
+                        'Technical specifications',
+                        'Resource allocation plan',
+                        'Risk assessment',
+                        'Stakeholder alignment'
+                    ],
+                    'dependencies' => [],
+                    'milestones' => [
+                        [
+                            'id' => '1-1',
+                            'name' => 'Kickoff meeting',
+                            'description' => 'Project initiation and team introductions',
+                            'dueDate' => 'Week 1',
+                            'status' => 'completed'
+                        ],
+                        [
+                            'id' => '1-2',
+                            'name' => 'Requirements gathering',
+                            'description' => 'Detailed requirements collection and analysis',
+                            'dueDate' => 'Week 2',
+                            'status' => 'completed'
+                        ],
+                        [
+                            'id' => '1-3',
+                            'name' => 'Technical architecture review',
+                            'description' => 'System architecture and integration planning',
+                            'dueDate' => 'Week 3',
+                            'status' => 'completed'
+                        ]
+                    ],
+                    'status' => 'completed'
+                ],
+                [
+                    'id' => '2',
+                    'name' => 'Platform Configuration',
+                    'description' => 'Core platform setup and customization',
+                    'duration' => '4-6 weeks',
+                    'deliverables' => [
+                        'Configured platform environment',
+                        'Custom branding implementation',
+                        'Initial data migration',
+                        'Basic integrations setup',
+                        'Security configuration'
+                    ],
+                    'dependencies' => ['Discovery & Planning'],
+                    'milestones' => [
+                        [
+                            'id' => '2-1',
+                            'name' => 'Environment setup',
+                            'description' => 'Production and staging environments configured',
+                            'dueDate' => 'Week 5',
+                            'status' => 'in_progress'
+                        ],
+                        [
+                            'id' => '2-2',
+                            'name' => 'Branding implementation',
+                            'description' => 'Custom branding and theming applied',
+                            'dueDate' => 'Week 7',
+                            'status' => 'pending'
+                        ],
+                        [
+                            'id' => '2-3',
+                            'name' => 'Data migration',
+                            'description' => 'Alumni data imported and validated',
+                            'dueDate' => 'Week 8',
+                            'status' => 'pending'
+                        ]
+                    ],
+                    'status' => 'in_progress'
+                ],
+                [
+                    'id' => '3',
+                    'name' => 'Mobile App Development',
+                    'description' => 'Custom branded mobile application development',
+                    'duration' => '6-8 weeks',
+                    'deliverables' => [
+                        'iOS and Android applications',
+                        'App store submissions',
+                        'Push notification setup',
+                        'Offline functionality',
+                        'App analytics integration'
+                    ],
+                    'dependencies' => ['Platform Configuration'],
+                    'milestones' => [
+                        [
+                            'id' => '3-1',
+                            'name' => 'App development kickoff',
+                            'description' => 'Mobile development team onboarded',
+                            'dueDate' => 'Week 9',
+                            'status' => 'pending'
+                        ],
+                        [
+                            'id' => '3-2',
+                            'name' => 'Beta app release',
+                            'description' => 'Internal testing version available',
+                            'dueDate' => 'Week 12',
+                            'status' => 'pending'
+                        ],
+                        [
+                            'id' => '3-3',
+                            'name' => 'App store approval',
+                            'description' => 'Apps approved and published',
+                            'dueDate' => 'Week 15',
+                            'status' => 'pending'
+                        ]
+                    ],
+                    'status' => 'pending'
+                ],
+                [
+                    'id' => '4',
+                    'name' => 'Testing & Quality Assurance',
+                    'description' => 'Comprehensive testing and bug fixes',
+                    'duration' => '2-3 weeks',
+                    'deliverables' => [
+                        'Test plan execution',
+                        'Bug fixes and optimizations',
+                        'Performance testing',
+                        'Security audit',
+                        'User acceptance testing'
+                    ],
+                    'dependencies' => ['Mobile App Development'],
+                    'milestones' => [
+                        [
+                            'id' => '4-1',
+                            'name' => 'System testing complete',
+                            'description' => 'All functional testing completed',
+                            'dueDate' => 'Week 16',
+                            'status' => 'pending'
+                        ],
+                        [
+                            'id' => '4-2',
+                            'name' => 'User acceptance testing',
+                            'description' => 'Stakeholder testing and approval',
+                            'dueDate' => 'Week 17',
+                            'status' => 'pending'
+                        ]
+                    ],
+                    'status' => 'pending'
+                ],
+                [
+                    'id' => '5',
+                    'name' => 'Launch & Training',
+                    'description' => 'Go-live preparation and user training',
+                    'duration' => '2-3 weeks',
+                    'deliverables' => [
+                        'Staff training completion',
+                        'Launch communication plan',
+                        'Support documentation',
+                        'Monitoring setup',
+                        'Success metrics baseline'
+                    ],
+                    'dependencies' => ['Testing & Quality Assurance'],
+                    'milestones' => [
+                        [
+                            'id' => '5-1',
+                            'name' => 'Staff training complete',
+                            'description' => 'All administrators trained on platform',
+                            'dueDate' => 'Week 18',
+                            'status' => 'pending'
+                        ],
+                        [
+                            'id' => '5-2',
+                            'name' => 'Soft launch',
+                            'description' => 'Limited user group launch',
+                            'dueDate' => 'Week 19',
+                            'status' => 'pending'
+                        ],
+                        [
+                            'id' => '5-3',
+                            'name' => 'Full launch',
+                            'description' => 'Platform available to all alumni',
+                            'dueDate' => 'Week 20',
+                            'status' => 'pending'
+                        ]
+                    ],
+                    'status' => 'pending'
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * Get success metrics tracking data for institutions
+     */
+    public function getSuccessMetricsTracking(array $params = []): array
+    {
+        $institutionId = $params['institution_id'] ?? null;
+        $dateFrom = $params['date_from'] ?? now()->subMonths(6);
+        $dateTo = $params['date_to'] ?? now();
+        $requestedMetrics = $params['metrics'] ?? null;
+
+        // Mock success metrics tracking data
+        $allMetrics = [
+            [
+                'id' => 'alumni_engagement',
+                'name' => 'Alumni Engagement Rate',
+                'category' => 'engagement',
+                'current_value' => 75,
+                'target_value' => 80,
+                'unit' => 'percentage',
+                'trend' => 'up',
+                'trending' => true,
+                'change_from_previous' => 12,
+                'verified' => true
+            ],
+            [
+                'id' => 'event_attendance',
+                'name' => 'Monthly Event Attendance',
+                'category' => 'operational',
+                'current_value' => 850,
+                'target_value' => 1000,
+                'unit' => 'count',
+                'trend' => 'up',
+                'trending' => true,
+                'change_from_previous' => 25,
+                'verified' => true
+            ],
+            [
+                'id' => 'app_downloads',
+                'name' => 'Mobile App Downloads',
+                'category' => 'growth',
+                'current_value' => 15000,
+                'target_value' => 20000,
+                'unit' => 'count',
+                'trend' => 'up',
+                'trending' => true,
+                'change_from_previous' => 35,
+                'verified' => true
+            ],
+            [
+                'id' => 'donation_revenue',
+                'name' => 'Quarterly Donation Revenue',
+                'category' => 'financial',
+                'current_value' => 312500,
+                'target_value' => 350000,
+                'unit' => 'currency',
+                'trend' => 'up',
+                'trending' => true,
+                'change_from_previous' => 18,
+                'verified' => false
+            ],
+            [
+                'id' => 'response_time',
+                'name' => 'Admin Response Time',
+                'category' => 'operational',
+                'current_value' => 24,
+                'target_value' => 12,
+                'unit' => 'days',
+                'trend' => 'down',
+                'trending' => true,
+                'change_from_previous' => -33,
+                'verified' => true
+            ],
+            [
+                'id' => 'user_satisfaction',
+                'name' => 'User Satisfaction Score',
+                'category' => 'engagement',
+                'current_value' => 87,
+                'target_value' => 90,
+                'unit' => 'percentage',
+                'trend' => 'stable',
+                'trending' => false,
+                'change_from_previous' => 2,
+                'verified' => true
+            ]
+        ];
+
+        // Filter metrics if specific ones are requested
+        if ($requestedMetrics) {
+            $allMetrics = array_filter($allMetrics, function($metric) use ($requestedMetrics) {
+                return in_array($metric['id'], $requestedMetrics);
+            });
+        }
+
+        // Mock insights
+        $insights = [
+            [
+                'id' => 'engagement_trend',
+                'title' => 'Strong Engagement Growth',
+                'description' => 'Alumni engagement has increased by 12% this quarter, driven by mobile app adoption and improved event programming.',
+                'type' => 'positive'
+            ],
+            [
+                'id' => 'app_adoption',
+                'title' => 'Mobile App Success',
+                'description' => 'Mobile app downloads exceeded expectations by 35%, indicating strong alumni interest in mobile-first experiences.',
+                'type' => 'positive'
+            ],
+            [
+                'id' => 'response_improvement',
+                'title' => 'Response Time Optimization',
+                'description' => 'Admin response times have improved significantly but still need work to reach the 12-day target.',
+                'type' => 'warning'
+            ]
+        ];
+
+        return [
+            'title' => 'Success Metrics Tracking',
+            'subtitle' => 'Real-time performance monitoring and insights',
+            'metrics' => array_values($allMetrics),
+            'insights' => $insights,
+            'last_updated' => now(),
+            'summary' => [
+                'metrics_on_track' => count(array_filter($allMetrics, function($m) {
+                    $progress = ($m['current_value'] / $m['target_value']) * 100;
+                    return $progress >= 80 && $progress < 100;
+                })),
+                'metrics_exceeding' => count(array_filter($allMetrics, function($m) {
+                    return ($m['current_value'] / $m['target_value']) * 100 >= 100;
+                })),
+                'metrics_behind' => count(array_filter($allMetrics, function($m) {
+                    return ($m['current_value'] / $m['target_value']) * 100 < 80;
+                })),
+                'average_progress' => round(array_sum(array_map(function($m) {
+                    return min(100, ($m['current_value'] / $m['target_value']) * 100);
+                }, $allMetrics)) / count($allMetrics))
+            ]
+        ];
+    }
+
+
 }

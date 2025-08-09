@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\HomepageService;
 use App\Services\PersonalizationService;
+use App\Services\LeadCaptureService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
@@ -109,6 +110,32 @@ class HomepageController extends Controller
     }
 
     /**
+     * Get platform preview data including screenshots and tour steps
+     */
+    public function getPlatformPreview(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+            ]);
+
+            $audience = $validated['audience'] ?? 'individual';
+            $previewData = $this->homepageService->getPlatformPreviewData($audience);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $previewData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch platform preview data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get success stories filtered by audience
      */
     public function getSuccessStories(Request $request): JsonResponse
@@ -126,10 +153,25 @@ class HomepageController extends Controller
      */
     public function getFeatures(Request $request): JsonResponse
     {
-        $audience = $request->get('audience', 'individual');
-        $features = $this->homepageService->getFeatures($audience);
-        
-        return response()->json($features);
+        try {
+            $validated = $request->validate([
+                'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+            ]);
+
+            $audience = $validated['audience'] ?? 'individual';
+            $features = $this->homepageService->getFeatures($audience);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $features->toArray()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch features',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -151,46 +193,7 @@ class HomepageController extends Controller
         return response()->json($calculation);
     }
 
-    /**
-     * Handle demo requests for institutional clients
-     */
-    public function requestDemo(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'institution_name' => 'required|string',
-            'contact_name' => 'required|string',
-            'email' => 'required|email',
-            'phone' => 'nullable|string',
-            'role' => 'required|string',
-            'alumni_count' => 'nullable|integer',
-            'current_solution' => 'nullable|string',
-            'timeline' => 'nullable|string',
-            'message' => 'nullable|string'
-        ]);
 
-        $result = $this->homepageService->processDemoRequest($validated);
-        
-        return response()->json($result);
-    }
-
-    /**
-     * Handle trial signups for individual users
-     */
-    public function trialSignup(Request $request): JsonResponse
-    {
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'email' => 'required|email',
-            'graduation_year' => 'nullable|integer',
-            'institution' => 'nullable|string',
-            'current_role' => 'nullable|string',
-            'industry' => 'nullable|string'
-        ]);
-
-        $result = $this->homepageService->processTrialSignup($validated);
-        
-        return response()->json($result);
-    }
 
     /**
      * Capture leads from various homepage interactions
@@ -401,6 +404,136 @@ class HomepageController extends Controller
     }
 
     /**
+     * Get branded apps showcase data for institutional audience
+     */
+    public function getBrandedAppsData(Request $request): JsonResponse
+    {
+        try {
+            $brandedAppsData = $this->homepageService->getBrandedAppsData();
+            
+            return response()->json([
+                'success' => true,
+                'data' => $brandedAppsData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch branded apps data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get enterprise metrics and ROI data for institutional clients
+     */
+    public function getEnterpriseMetrics(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'institution_id' => 'nullable|string',
+                'timeframe' => 'nullable|in:3_months,6_months,12_months,18_months,24_months',
+                'metrics' => 'nullable|array',
+                'metrics.*' => 'in:engagement,financial,operational,growth'
+            ]);
+
+            $metricsData = $this->homepageService->getEnterpriseMetrics($validated);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $metricsData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch enterprise metrics',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get institutional before/after comparison data
+     */
+    public function getInstitutionalComparison(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'institution_id' => 'nullable|string',
+                'case_study_id' => 'nullable|string'
+            ]);
+
+            $comparisonData = $this->homepageService->getInstitutionalComparison($validated);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $comparisonData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch institutional comparison data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get implementation timeline data for institutional projects
+     */
+    public function getImplementationTimeline(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'institution_type' => 'nullable|in:university,college,corporate,nonprofit',
+                'alumni_count' => 'nullable|integer',
+                'complexity' => 'nullable|in:basic,standard,advanced,enterprise'
+            ]);
+
+            $timelineData = $this->homepageService->getImplementationTimeline($validated);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $timelineData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch implementation timeline',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get success metrics tracking data for institutions
+     */
+    public function getSuccessMetricsTracking(Request $request): JsonResponse
+    {
+        try {
+            $validated = $request->validate([
+                'institution_id' => 'nullable|string',
+                'date_from' => 'nullable|date',
+                'date_to' => 'nullable|date',
+                'metrics' => 'nullable|array'
+            ]);
+
+            $trackingData = $this->homepageService->getSuccessMetricsTracking($validated);
+            
+            return response()->json([
+                'success' => true,
+                'data' => $trackingData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch success metrics tracking',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get personalization analytics
      */
     public function getPersonalizationAnalytics(Request $request): JsonResponse
@@ -542,5 +675,83 @@ class HomepageController extends Controller
         $request->session()->put('tracking_user_id', $trackingId);
         
         return $trackingId;
+    }
+
+    /**
+     * Request a demo (updated for lead capture)
+     */
+    public function requestDemo(Request $request): JsonResponse
+    {
+        $request->validate([
+            'institutionName' => 'required|string|max:255',
+            'contactName' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'title' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:50',
+            'alumniCount' => 'nullable|string',
+            'currentSolution' => 'nullable|string',
+            'interests' => 'nullable|array',
+            'preferredTime' => 'nullable|string',
+            'message' => 'nullable|string|max:1000',
+            'planId' => 'nullable|string',
+            'source' => 'nullable|string'
+        ]);
+
+        try {
+            $result = app(LeadCaptureService::class)->processDemoRequest($request->all());
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Trial signup (updated for lead capture)
+     */
+    public function trialSignup(Request $request): JsonResponse
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'graduationYear' => 'nullable|integer|min:1950|max:' . (date('Y') + 10),
+            'institution' => 'nullable|string|max:255',
+            'currentRole' => 'nullable|string|max:255',
+            'industry' => 'nullable|string',
+            'referralSource' => 'nullable|string',
+            'planId' => 'nullable|string',
+            'source' => 'nullable|string'
+        ]);
+
+        try {
+            $result = app(LeadCaptureService::class)->processTrialSignup($request->all());
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 422);
+        }
+    }
+
+    /**
+     * Get lead capture statistics
+     */
+    public function getLeadStatistics(): JsonResponse
+    {
+        try {
+            $statistics = app(LeadCaptureService::class)->getLeadStatistics();
+            return response()->json([
+                'success' => true,
+                'data' => $statistics
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve statistics'
+            ], 500);
+        }
     }
 }

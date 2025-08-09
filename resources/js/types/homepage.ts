@@ -320,6 +320,14 @@ export interface CalculatorInput {
   educationLevel?: string
   currentSalary?: number
   targetRole?: string
+  preferredCompanySize?: string
+  workStyle?: string
+  skillsToLearn?: string
+  goalTimeline?: string
+  primaryChallenge?: string
+  networkingLevel?: number
+  timeInvestment?: string
+  additionalInfo?: string
 }
 
 export interface CalculationResult {
@@ -368,9 +376,28 @@ export interface EnterprisePricing {
 
 export interface PricingFeature {
   name: string
-  description: string
+  description?: string
   included: boolean
-  limit?: number
+  limit?: string
+}
+
+export interface PricingPlan {
+  id: string
+  name: string
+  description: string
+  price: number | null
+  originalPrice?: number
+  billingPeriod: string
+  ctaText: string
+  featured: boolean
+  features: PricingFeature[]
+  additionalInfo?: string
+}
+
+export interface ComparisonFeature {
+  name: string
+  key: string
+  description?: string
 }
 
 export interface PricingLimitation {
@@ -392,12 +419,14 @@ export interface DemoRequestData {
   institutionName: string
   contactName: string
   email: string
+  title?: string
   phone?: string
-  role: string
-  alumniCount?: number
+  alumniCount?: string
   currentSolution?: string
-  timeline?: string
+  interests?: string[]
+  preferredTime?: string
   message?: string
+  timestamp?: string
 }
 
 export interface TrialSignupData {
@@ -597,4 +626,180 @@ export interface ServiceLevelAgreement {
   responseTime: string
   supportLevel: string
   penalties: string[]
+}
+
+// Admin Dashboard Interfaces
+export interface AdminDashboard {
+  features: AdminFeature[]
+  analytics: DashboardAnalytics
+  managementTools: ManagementTool[]
+  customization: CustomizationOption[]
+}
+
+export interface AdminFeature {
+  id: string
+  name: string
+  description: string
+  category: 'analytics' | 'management' | 'customization' | 'integrations'
+  screenshot: string
+  hotspots: FeatureHotspot[]
+  benefits: string[]
+}
+
+export interface DashboardAnalytics {
+  totalAlumni: number
+  activeUsers: number
+  engagementRate: number
+  eventsThisMonth: number
+}
+
+export interface ManagementTool {
+  id: string
+  name: string
+  description: string
+  capabilities: string[]
+}
+
+export interface CustomizationOption {
+  id: string
+  name: string
+  description: string
+  level: 'basic' | 'advanced' | 'enterprise'
+}
+
+export interface FeatureHotspot {
+  id: string
+  x: number
+  y: number
+  title?: string
+  description: string
+  image?: string
+  details?: string[]
+  benefits?: Array<{
+    title: string
+    description: string
+    icon: any
+  }>
+  stats?: Array<{
+    label: string
+    value: string
+  }>
+  technical?: {
+    integrations?: string[]
+    requirements?: string[]
+  }
+}
+
+// Branded Apps Interfaces
+export interface BrandedApp {
+  id: string
+  institutionName: string
+  institutionType: 'university' | 'college' | 'corporate' | 'nonprofit'
+  logo: string
+  appIcon: string
+  appStoreUrl?: string
+  playStoreUrl?: string
+  screenshots: AppScreenshot[]
+  customizations: AppCustomization[]
+  userCount: number
+  engagementStats: EngagementMetric[]
+  launchDate: Date
+  featured: boolean
+}
+
+export interface AppScreenshot {
+  id: string
+  url: string
+  title: string
+  description: string
+  device: 'iphone' | 'android' | 'tablet'
+  category: 'home' | 'profile' | 'networking' | 'events' | 'messaging'
+}
+
+export interface AppCustomization {
+  category: 'branding' | 'features' | 'integrations' | 'analytics'
+  name: string
+  description: string
+  implemented: boolean
+  complexity: 'basic' | 'advanced' | 'custom'
+}
+
+export interface EngagementMetric {
+  metric: 'daily_active_users' | 'session_duration' | 'feature_usage' | 'retention_rate'
+  value: number
+  unit: 'count' | 'minutes' | 'percentage'
+  trend: 'up' | 'down' | 'stable'
+  period: string
+}
+
+export interface CustomizationOption {
+  id: string
+  category: 'branding' | 'features' | 'integrations' | 'analytics'
+  name: string
+  description: string
+  options: CustomizationDetail[]
+  examples: CustomizationExample[]
+  level: 'basic' | 'advanced' | 'enterprise'
+}
+
+export interface CustomizationDetail {
+  id: string
+  name: string
+  description: string
+  type: 'color' | 'logo' | 'text' | 'feature' | 'integration'
+  defaultValue?: string
+  options?: string[]
+  required: boolean
+}
+
+export interface CustomizationExample {
+  id: string
+  name: string
+  description: string
+  beforeImage: string
+  afterImage: string
+  institutionType: string
+}
+
+export interface AppStoreIntegration {
+  appleAppStore: boolean
+  googlePlayStore: boolean
+  customDomain: boolean
+  whiteLabel: boolean
+  institutionBranding: boolean
+  reviewManagement: boolean
+  analyticsIntegration: boolean
+}
+
+export interface DevelopmentTimeline {
+  phases: DevelopmentPhase[]
+  totalDuration: string
+  estimatedCost: string
+  maintenanceCost: string
+}
+
+export interface DevelopmentPhase {
+  id: string
+  name: string
+  description: string
+  duration: string
+  deliverables: string[]
+  dependencies: string[]
+  milestones: PhaseMilestone[]
+}
+
+export interface PhaseMilestone {
+  id: string
+  name: string
+  description: string
+  dueDate: string
+  status: 'pending' | 'in_progress' | 'completed' | 'delayed'
+}
+
+export interface BrandedAppsShowcaseProps {
+  featuredApps: BrandedApp[]
+  customizationOptions: CustomizationOption[]
+  appStoreIntegration: AppStoreIntegration
+  developmentTimeline: DevelopmentTimeline
+  audience: AudienceType
 }

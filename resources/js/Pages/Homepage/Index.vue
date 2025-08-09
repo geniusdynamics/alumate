@@ -48,6 +48,20 @@
       @demo-request="handleDemoRequest"
     />
 
+    <!-- Branded Apps Showcase (only for institutional audience) -->
+    <BrandedAppsShowcase 
+      v-if="currentAudience === 'institutional'"
+      :featured-apps="brandedAppsData.featured_apps"
+      :customization-options="brandedAppsData.customization_options"
+      :app-store-integration="brandedAppsData.app_store_integration"
+      :development-timeline="brandedAppsData.development_timeline"
+      :audience="currentAudience"
+      @demo-request="handleDemoRequest"
+      @case-studies-download="handleCaseStudiesDownload"
+      @app-store-click="handleAppStoreClick"
+      @screenshot-view="handleScreenshotView"
+    />
+
     <!-- Platform Preview -->
     <PlatformPreview 
       :audience="currentAudience"
@@ -94,6 +108,7 @@ import FeaturesShowcase from '@/components/homepage/FeaturesShowcase.vue'
 import SuccessStoriesSection from '@/components/homepage/SuccessStoriesSection.vue'
 import ValueCalculator from '@/components/homepage/ValueCalculator.vue'
 import AdminDashboardPreview from '@/components/homepage/AdminDashboardPreview.vue'
+import BrandedAppsShowcase from '@/components/homepage/BrandedAppsShowcase.vue'
 import PlatformPreview from '@/components/homepage/PlatformPreview.vue'
 import InstitutionalFeatures from '@/components/homepage/InstitutionalFeatures.vue'
 import PricingSection from '@/components/homepage/PricingSection.vue'
@@ -127,6 +142,25 @@ const testimonials = ref(props.content?.testimonials?.items || [])
 const platformFeatures = ref(props.content?.features?.items || [])
 const successStories = ref([])
 const activeABTests = ref(props.abTests || {})
+const brandedAppsData = ref({
+  featured_apps: [],
+  customization_options: [],
+  app_store_integration: {
+    appleAppStore: true,
+    googlePlayStore: true,
+    customDomain: true,
+    whiteLabel: true,
+    institutionBranding: true,
+    reviewManagement: true,
+    analyticsIntegration: true
+  },
+  development_timeline: { 
+    phases: [], 
+    totalDuration: '14-20 weeks', 
+    estimatedCost: 'Starting at $75,000', 
+    maintenanceCost: '$2,000-5,000/month' 
+  }
+})
 
 // Computed properties
 const pageTitle = computed(() => {
@@ -306,6 +340,34 @@ const handleDemoRequest = (data?: any) => {
   })
 }
 
+const handleCaseStudiesDownload = () => {
+  // Handle case studies download
+  trackEvent('case_studies_download', {
+    audience: currentAudience.value,
+    source: 'branded_apps_showcase'
+  })
+  // Trigger download
+  window.open('/case-studies/download', '_blank')
+}
+
+const handleAppStoreClick = (appId: string, platform: 'ios' | 'android') => {
+  // Handle app store link clicks
+  trackEvent('app_store_click', {
+    audience: currentAudience.value,
+    app_id: appId,
+    platform: platform
+  })
+}
+
+const handleScreenshotView = (appId: string, screenshotId: string) => {
+  // Handle screenshot modal views
+  trackEvent('screenshot_view', {
+    audience: currentAudience.value,
+    app_id: appId,
+    screenshot_id: screenshotId
+  })
+}
+
 const loadAudienceSpecificData = async () => {
   try {
     // Load statistics
@@ -323,6 +385,15 @@ const loadAudienceSpecificData = async () => {
     // Load success stories
     const storiesResponse = await fetch(`/api/homepage/success-stories?audience=${currentAudience.value}`)
     successStories.value = await storiesResponse.json()
+
+    // Load branded apps data (only for institutional audience)
+    if (currentAudience.value === 'institutional') {
+      const brandedAppsResponse = await fetch('/api/homepage/branded-apps')
+      const brandedAppsResult = await brandedAppsResponse.json()
+      if (brandedAppsResult.success) {
+        brandedAppsData.value = brandedAppsResult.data
+      }
+    }
   } catch (error) {
     console.error('Error loading homepage data:', error)
   }
