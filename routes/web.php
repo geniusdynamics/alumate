@@ -8,6 +8,26 @@ use Inertia\Inertia;
 
 Route::get('/', [\App\Http\Controllers\HomepageController::class, 'index'])->name('home');
 
+// Health Check Routes
+Route::get('/health-check/homepage', [\App\Http\Controllers\HealthCheckController::class, 'homepage'])->name('health-check.homepage');
+
+// Monitoring Dashboard Routes (Admin only)
+Route::middleware(['auth', 'role:super-admin'])->prefix('monitoring')->name('monitoring.')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\MonitoringDashboardController::class, 'index'])->name('dashboard');
+    
+    // API endpoints for monitoring dashboard
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('data', [\App\Http\Controllers\MonitoringDashboardController::class, 'data'])->name('data');
+        Route::get('uptime', [\App\Http\Controllers\MonitoringDashboardController::class, 'uptime'])->name('uptime');
+        Route::get('conversion-metrics', [\App\Http\Controllers\MonitoringDashboardController::class, 'conversionMetrics'])->name('conversion-metrics');
+        Route::get('performance-metrics', [\App\Http\Controllers\MonitoringDashboardController::class, 'performanceMetrics'])->name('performance-metrics');
+        Route::get('error-logs', [\App\Http\Controllers\MonitoringDashboardController::class, 'errorLogs'])->name('error-logs');
+        Route::get('system-health', [\App\Http\Controllers\MonitoringDashboardController::class, 'systemHealth'])->name('system-health');
+        Route::post('record-metric', [\App\Http\Controllers\MonitoringDashboardController::class, 'recordMetric'])->name('record-metric');
+        Route::post('test-alert', [\App\Http\Controllers\MonitoringDashboardController::class, 'testAlert'])->name('test-alert');
+    });
+});
+
 // Homepage Enhancement Routes
 Route::get('/homepage', [\App\Http\Controllers\HomepageController::class, 'index'])->name('homepage.index');
 Route::get('/homepage/institutional', [\App\Http\Controllers\HomepageController::class, 'institutional'])->name('homepage.institutional');
@@ -589,4 +609,92 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/ping', function () {
         return response()->json(['status' => 'ok']);
     });
+});
+
+// Homepage Content Management Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('homepage-content')->name('homepage-content.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\HomepageContentController::class, 'index'])->name('index');
+        Route::get('/content', [\App\Http\Controllers\Admin\HomepageContentController::class, 'getContent'])->name('content');
+        Route::put('/', [\App\Http\Controllers\Admin\HomepageContentController::class, 'update'])->name('update');
+        Route::post('/bulk-update', [\App\Http\Controllers\Admin\HomepageContentController::class, 'bulkUpdate'])->name('bulk-update');
+        Route::post('/{contentId}/request-approval', [\App\Http\Controllers\Admin\HomepageContentController::class, 'requestApproval'])->name('request-approval');
+        Route::post('/{contentId}/approve', [\App\Http\Controllers\Admin\HomepageContentController::class, 'approve'])->name('approve');
+        Route::post('/{contentId}/reject', [\App\Http\Controllers\Admin\HomepageContentController::class, 'reject'])->name('reject');
+        Route::post('/{contentId}/publish', [\App\Http\Controllers\Admin\HomepageContentController::class, 'publish'])->name('publish');
+        Route::get('/{contentId}/history', [\App\Http\Controllers\Admin\HomepageContentController::class, 'history'])->name('history');
+        Route::post('/{contentId}/revert', [\App\Http\Controllers\Admin\HomepageContentController::class, 'revert'])->name('revert');
+        Route::post('/preview', [\App\Http\Controllers\Admin\HomepageContentController::class, 'preview'])->name('preview');
+        Route::get('/export', [\App\Http\Controllers\Admin\HomepageContentController::class, 'export'])->name('export');
+        Route::post('/import', [\App\Http\Controllers\Admin\HomepageContentController::class, 'import'])->name('import');
+    });
+});
+
+// A/B Testing Management Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('ab-tests')->name('ab-tests.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ABTestController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\ABTestController::class, 'store'])->name('store');
+        Route::get('/{test}', [\App\Http\Controllers\ABTestController::class, 'show'])->name('show');
+        Route::put('/{test}', [\App\Http\Controllers\ABTestController::class, 'update'])->name('update');
+        Route::delete('/{test}', [\App\Http\Controllers\ABTestController::class, 'destroy'])->name('destroy');
+        Route::post('/{test}/start', [\App\Http\Controllers\ABTestController::class, 'start'])->name('start');
+        Route::post('/{test}/stop', [\App\Http\Controllers\ABTestController::class, 'stop'])->name('stop');
+        Route::get('/{test}/results', [\App\Http\Controllers\ABTestController::class, 'results'])->name('results');
+        Route::get('/{test}/export', [\App\Http\Controllers\ABTestController::class, 'export'])->name('export');
+    });
+});
+
+// Lead Management Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('lead-management')->name('lead-management.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LeadManagementController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\LeadManagementController::class, 'store'])->name('store');
+        Route::get('/{lead}', [\App\Http\Controllers\Admin\LeadManagementController::class, 'show'])->name('show');
+        Route::put('/{lead}', [\App\Http\Controllers\Admin\LeadManagementController::class, 'update'])->name('update');
+        Route::post('/{lead}/qualify', [\App\Http\Controllers\Admin\LeadManagementController::class, 'qualify'])->name('qualify');
+        Route::post('/{lead}/follow-up', [\App\Http\Controllers\Admin\LeadManagementController::class, 'createFollowUp'])->name('follow-up');
+        Route::post('/{lead}/activity', [\App\Http\Controllers\Admin\LeadManagementController::class, 'addActivity'])->name('activity');
+        Route::post('/{lead}/behavior', [\App\Http\Controllers\Admin\LeadManagementController::class, 'updateBehavior'])->name('behavior');
+        Route::get('/analytics/data', [\App\Http\Controllers\Admin\LeadManagementController::class, 'analytics'])->name('analytics');
+        Route::post('/bulk-sync', [\App\Http\Controllers\Admin\LeadManagementController::class, 'bulkSync'])->name('bulk-sync');
+        Route::get('/export', [\App\Http\Controllers\Admin\LeadManagementController::class, 'export'])->name('export');
+        
+        // Lead scoring rules
+        Route::get('/scoring-rules', [\App\Http\Controllers\Admin\LeadManagementController::class, 'getScoringRules'])->name('scoring-rules');
+        Route::post('/scoring-rules', [\App\Http\Controllers\Admin\LeadManagementController::class, 'storeScoringRule'])->name('scoring-rules.store');
+        
+        // CRM integrations
+        Route::get('/crm-integrations', [\App\Http\Controllers\Admin\LeadManagementController::class, 'getCrmIntegrations'])->name('crm-integrations');
+        Route::post('/crm-integrations', [\App\Http\Controllers\Admin\LeadManagementController::class, 'storeCrmIntegration'])->name('crm-integrations.store');
+        Route::post('/crm-integrations/{integration}/test', [\App\Http\Controllers\Admin\LeadManagementController::class, 'testCrmConnection'])->name('crm-integrations.test');
+    });
+});
+
+// Landing Page Builder Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('landing-pages')->name('landing-pages.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LandingPageController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\LandingPageController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\LandingPageController::class, 'store'])->name('store');
+        Route::get('/{landingPage}', [\App\Http\Controllers\Admin\LandingPageController::class, 'show'])->name('show');
+        Route::get('/{landingPage}/edit', [\App\Http\Controllers\Admin\LandingPageController::class, 'edit'])->name('edit');
+        Route::put('/{landingPage}', [\App\Http\Controllers\Admin\LandingPageController::class, 'update'])->name('update');
+        Route::post('/{landingPage}/publish', [\App\Http\Controllers\Admin\LandingPageController::class, 'publish'])->name('publish');
+        Route::post('/{landingPage}/unpublish', [\App\Http\Controllers\Admin\LandingPageController::class, 'unpublish'])->name('unpublish');
+        Route::post('/{landingPage}/duplicate', [\App\Http\Controllers\Admin\LandingPageController::class, 'duplicate'])->name('duplicate');
+        Route::delete('/{landingPage}', [\App\Http\Controllers\Admin\LandingPageController::class, 'destroy'])->name('destroy');
+        Route::get('/{landingPage}/analytics', [\App\Http\Controllers\Admin\LandingPageController::class, 'analytics'])->name('analytics');
+        
+        // API endpoints for builder
+        Route::get('/api/templates', [\App\Http\Controllers\Admin\LandingPageController::class, 'getTemplates'])->name('api.templates');
+        Route::get('/api/components', [\App\Http\Controllers\Admin\LandingPageController::class, 'getComponents'])->name('api.components');
+    });
+});
+
+// Public Landing Page Routes
+Route::prefix('landing')->name('landing-page.')->group(function () {
+    Route::get('/{slug}', [\App\Http\Controllers\LandingPagePublicController::class, 'show'])->name('show');
+    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPagePublicController::class, 'submitForm'])->name('submit');
+    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPagePublicController::class, 'trackEvent'])->name('track');
 });

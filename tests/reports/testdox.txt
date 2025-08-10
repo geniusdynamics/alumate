@@ -1,17 +1,13 @@
-Pricing Controller (Tests\Feature\PricingController)
- [ ] It can get individual pricing plans
- [ ] It can get institutional pricing plans
- [ ] It validates audience parameter
- [ ] It requires audience parameter
- [ ] It can get feature comparison
- [ ] It can track pricing interactions
- [ ] It validates tracking data
- [ ] It can get pricing statistics
- [ ] Individual plans have correct structure
- [ ] Institutional plans have correct structure
- [ ] Featured plans are correctly identified
- [ ] Comparison matrix includes all plans and features
- [ ] Pricing data is cached
- [ ] Statistics include correct calculations
- [ ] Tracking handles optional fields
+Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)
+ [ ] Uptime monitoring detects down endpoints
+ [ ] Performance alert is sent when threshold exceeded
+ [ ] Error alert is sent with proper rate limiting
+ [ ] Conversion monitoring detects low conversion rates
+ [ ] Security monitoring detects suspicious activity
+ [ ] Alert notification email is sent
+ [ ] Slack alert is sent when configured
+ [ ] Sentry integration captures alerts
+ [ ] Monitoring dashboard returns comprehensive data
+ [ ] Health check endpoint returns proper status
+ [ ] Monitoring command runs successfully
 

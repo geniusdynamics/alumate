@@ -1,0 +1,136 @@
+name: Homepage Production Deployment
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'resources/js/Pages/Homepage/**'
+      - 'resources/js/Components/Homepage/**'
+      - 'app/Http/Controllers/HomepageController.php'
+      - 'app/Services/Homepage/**'
+      - 'routes/web.php'
+      - 'database/migrations/*homepage*'
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+  PHP_VERSION: '8.2'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader
+        
+      - name: Install Node dependencies
+        run: npm ci
+        
+      - name: Create environment file
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          
+      - name: Run PHP tests
+        run: php artisan test --filter=Homepage
+        
+      - name: Run JavaScript tests
+        run: npm run test:homepage --run
+        
+      - name: Build assets
+        run: npm run build
+        
+      - name: Run deployment verification tests
+        run: php artisan test tests/Feature/DeploymentVerificationTest.php
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader
+          npm ci
+          
+      - name: Build production assets
+        run: npm run build
+        
+      - name: Deploy to production
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          echo "$DEPLOY_KEY" > deploy_key
+          chmod 600 deploy_key
+          
+          # Create deployment package
+          tar -czf homepage-deployment.tar.gz \
+            --exclude=node_modules \
+            --exclude=.git \
+            --exclude=tests \
+            --exclude=storage/logs \
+            public/build \
+            app/Http/Controllers/HomepageController.php \
+            app/Services/Homepage \
+            resources/js/Pages/Homepage \
+            resources/js/Components/Homepage \
+            database/migrations \
+            routes/web.php \
+            composer.json \
+            composer.lock \
+            package.json \
+            package-lock.json
+            
+          # Deploy to server
+          scp -i deploy_key -o StrictHostKeyChecking=no \
+            homepage-deployment.tar.gz \
+            scripts/deploy-homepage.sh \
+            $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
+            
+          ssh -i deploy_key -o StrictHostKeyChecking=no \
+            $DEPLOY_USER@$DEPLOY_HOST \
+            "cd $DEPLOY_PATH && bash deploy-homepage.sh"
+            
+      - name: Verify deployment
+        env:
+          PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+        run: |
+          # Wait for deployment to complete
+          sleep 30
+          
+          # Run deployment verification
+          curl -f $PRODUCTION_URL/health-check/homepage || exit 1
+          
+          # Run smoke tests
+          npm run test:smoke --run

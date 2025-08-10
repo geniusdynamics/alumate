@@ -11,85 +11,139 @@
         @audience-changed="handleAudienceChange"
       />
 
-    <!-- Hero Section -->
-    <HeroSection 
-      :audience="currentAudience"
-      :hero-data="heroData"
-      @cta-click="handleCTAClick"
-    />
+      <!-- Hero Section - Critical, load immediately -->
+      <HeroSection 
+        :audience="currentAudience"
+        :hero-data="heroData"
+        @cta-click="handleCTAClick"
+      />
 
-    <!-- Social Proof Section -->
-    <SocialProofSection 
-      :audience="currentAudience"
-      :statistics="platformStatistics"
-      :testimonials="testimonials"
-    />
+      <!-- Social Proof Section - Critical, load immediately -->
+      <SocialProofSection 
+        :audience="currentAudience"
+        :statistics="platformStatistics"
+        :testimonials="testimonials"
+      />
 
-    <!-- Features Showcase -->
-    <FeaturesShowcase 
-      :audience="currentAudience"
-      :features="platformFeatures"
-    />
+      <!-- Features Showcase - Lazy load -->
+      <LazyComponent
+        :component-loader="() => import('@/components/homepage/FeaturesShowcase.vue')"
+        :component-props="{ audience: currentAudience, features: platformFeatures }"
+        :root-margin="'200px'"
+      >
+        <template #placeholder>
+          <div class="h-96 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+        <template #loading>
+          <div class="flex items-center justify-center h-96">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        </template>
+      </LazyComponent>
 
-    <!-- Success Stories -->
-    <SuccessStoriesSection 
-      :audience="currentAudience"
-      :stories="successStories"
-    />
+      <!-- Success Stories - Lazy load -->
+      <LazyComponent
+        :component-loader="() => import('@/components/homepage/SuccessStoriesSection.vue')"
+        :component-props="{ audience: currentAudience, stories: successStories }"
+        :root-margin="'200px'"
+      >
+        <template #placeholder>
+          <div class="h-96 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+      </LazyComponent>
 
-    <!-- Value Calculator (Individual) / Admin Dashboard Preview (Institutional) -->
-    <ValueCalculator 
-      v-if="currentAudience === 'individual'"
-      @calculation-complete="handleCalculationComplete"
-    />
-    
-    <AdminDashboardPreview 
-      v-if="currentAudience === 'institutional'"
-      @demo-request="handleDemoRequest"
-    />
+      <!-- Value Calculator (Individual) / Admin Dashboard Preview (Institutional) - Lazy load -->
+      <LazyComponent
+        v-if="currentAudience === 'individual'"
+        :component-loader="() => import('@/components/homepage/ValueCalculator.vue')"
+        :component-props="{ onCalculationComplete: handleCalculationComplete }"
+        :root-margin="'100px'"
+      >
+        <template #placeholder>
+          <div class="h-64 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+      </LazyComponent>
+      
+      <LazyComponent
+        v-if="currentAudience === 'institutional'"
+        :component-loader="() => import('@/components/homepage/AdminDashboardPreview.vue')"
+        :component-props="{ onDemoRequest: handleDemoRequest }"
+        :root-margin="'100px'"
+      >
+        <template #placeholder>
+          <div class="h-64 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+      </LazyComponent>
 
-    <!-- Branded Apps Showcase (only for institutional audience) -->
-    <BrandedAppsShowcase 
-      v-if="currentAudience === 'institutional'"
-      :featured-apps="brandedAppsData.featured_apps"
-      :customization-options="brandedAppsData.customization_options"
-      :app-store-integration="brandedAppsData.app_store_integration"
-      :development-timeline="brandedAppsData.development_timeline"
-      :audience="currentAudience"
-      @demo-request="handleDemoRequest"
-      @case-studies-download="handleCaseStudiesDownload"
-      @app-store-click="handleAppStoreClick"
-      @screenshot-view="handleScreenshotView"
-    />
+      <!-- Branded Apps Showcase (only for institutional audience) - Lazy load -->
+      <LazyComponent
+        v-if="currentAudience === 'institutional'"
+        :component-loader="() => import('@/components/homepage/BrandedAppsShowcase.vue')"
+        :component-props="{
+          featuredApps: brandedAppsData.featured_apps,
+          customizationOptions: brandedAppsData.customization_options,
+          appStoreIntegration: brandedAppsData.app_store_integration,
+          developmentTimeline: brandedAppsData.development_timeline,
+          audience: currentAudience,
+          onDemoRequest: handleDemoRequest,
+          onCaseStudiesDownload: handleCaseStudiesDownload,
+          onAppStoreClick: handleAppStoreClick,
+          onScreenshotView: handleScreenshotView
+        }"
+        :root-margin="'150px'"
+      >
+        <template #placeholder>
+          <div class="h-80 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+      </LazyComponent>
 
-    <!-- Platform Preview -->
-    <PlatformPreview 
-      :audience="currentAudience"
-    />
+      <!-- Platform Preview - Lazy load -->
+      <LazyComponent
+        :component-loader="() => import('@/components/homepage/PlatformPreview.vue')"
+        :component-props="{ audience: currentAudience }"
+        :root-margin="'150px'"
+      >
+        <template #placeholder>
+          <div class="h-96 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+      </LazyComponent>
 
-    <!-- Institutional Features (only for institutional audience) -->
-    <InstitutionalFeatures 
-      v-if="currentAudience === 'institutional'"
-      @demo-request="handleDemoRequest"
-    />
+      <!-- Institutional Features (only for institutional audience) - Lazy load -->
+      <LazyComponent
+        v-if="currentAudience === 'institutional'"
+        :component-loader="() => import('@/components/homepage/InstitutionalFeatures.vue')"
+        :component-props="{ onDemoRequest: handleDemoRequest }"
+        :root-margin="'150px'"
+      >
+        <template #placeholder>
+          <div class="h-80 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+      </LazyComponent>
+      <!-- Pricing Section - Lazy load -->
+      <LazyComponent
+        :component-loader="() => import('@/components/homepage/PricingSection.vue')"
+        :component-props="{ 
+          audience: currentAudience,
+          onTrialSignup: handleTrialSignup,
+          onDemoRequest: handleDemoRequest
+        }"
+        :root-margin="'100px'"
+      >
+        <template #placeholder>
+          <div class="h-96 bg-gray-50 animate-pulse rounded-lg"></div>
+        </template>
+      </LazyComponent>
 
-    <!-- Pricing Section -->
-    <PricingSection 
-      :audience="currentAudience"
-      @trial-signup="handleTrialSignup"
-      @demo-request="handleDemoRequest"
-    />
+      <!-- Trust Indicators - Load immediately (important for conversion) -->
+      <TrustIndicators 
+        :audience="currentAudience"
+      />
 
-    <!-- Trust Indicators -->
-    <TrustIndicators 
-      :audience="currentAudience"
-    />
-
-    <!-- Multiple Conversion CTAs -->
-    <ConversionCTAs 
-      :audience="currentAudience"
-      @cta-click="handleCTAClick"
-    />
+      <!-- Multiple Conversion CTAs - Load immediately (critical for conversion) -->
+      <ConversionCTAs 
+        :audience="currentAudience"
+        @cta-click="handleCTAClick"
+      />
     </div>
   </HomepageLayout>
 </template>
@@ -104,16 +158,12 @@ import HomepageLayout from '@/layouts/HomepageLayout.vue'
 import AudienceSelector from '@/components/homepage/AudienceSelector.vue'
 import HeroSection from '@/components/homepage/HeroSection.vue'
 import SocialProofSection from '@/components/homepage/SocialProofSection.vue'
-import FeaturesShowcase from '@/components/homepage/FeaturesShowcase.vue'
-import SuccessStoriesSection from '@/components/homepage/SuccessStoriesSection.vue'
-import ValueCalculator from '@/components/homepage/ValueCalculator.vue'
-import AdminDashboardPreview from '@/components/homepage/AdminDashboardPreview.vue'
-import BrandedAppsShowcase from '@/components/homepage/BrandedAppsShowcase.vue'
-import PlatformPreview from '@/components/homepage/PlatformPreview.vue'
-import InstitutionalFeatures from '@/components/homepage/InstitutionalFeatures.vue'
-import PricingSection from '@/components/homepage/PricingSection.vue'
 import TrustIndicators from '@/components/homepage/TrustIndicators.vue'
 import ConversionCTAs from '@/components/homepage/ConversionCTAs.vue'
+
+// Performance and Lazy Loading
+import LazyComponent from '@/components/ui/LazyComponent.vue'
+import { performanceService } from '@/services/PerformanceService'
 
 // Props
 interface Props {
@@ -467,7 +517,21 @@ const scrollToSection = (sectionId: string) => {
 
 // Lifecycle
 onMounted(() => {
+  // Start performance monitoring
+  performanceService.markStart('homepage-load')
+  
   loadAudienceSpecificData()
+  
+  // Mark homepage as loaded
+  performanceService.markEnd('homepage-load')
+  
+  // Check performance budget
+  setTimeout(() => {
+    const budget = performanceService.checkPerformanceBudget()
+    if (!budget.passed) {
+      console.warn('Performance budget violations:', budget.violations)
+    }
+  }, 2000)
 })
 
 // Watch for audience changes

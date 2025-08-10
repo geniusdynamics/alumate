@@ -51,4 +51,89 @@ export default defineConfig({
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
     },
+    build: {
+        // Code splitting configuration
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // Vendor chunks
+                    'vendor-vue': ['vue', '@inertiajs/vue3'],
+                    'vendor-ui': ['@headlessui/vue', '@heroicons/vue', 'lucide-vue-next'],
+                    'vendor-utils': ['lodash-es', 'date-fns', 'clsx'],
+                    'vendor-charts': ['chart.js'],
+                    'vendor-maps': ['leaflet', 'vue-leaflet'],
+                    
+                    // Homepage chunks
+                    'homepage-core': [
+                        './resources/js/components/homepage/HeroSection.vue',
+                        './resources/js/components/homepage/AudienceSelector.vue',
+                        './resources/js/components/homepage/SocialProofSection.vue'
+                    ],
+                    'homepage-features': [
+                        './resources/js/components/homepage/FeaturesShowcase.vue',
+                        './resources/js/components/homepage/PlatformPreview.vue',
+                        './resources/js/components/homepage/ValueCalculator.vue'
+                    ],
+                    'homepage-institutional': [
+                        './resources/js/components/homepage/InstitutionalFeatures.vue',
+                        './resources/js/components/homepage/AdminDashboardPreview.vue',
+                        './resources/js/components/homepage/BrandedAppsShowcase.vue'
+                    ],
+                    'homepage-conversion': [
+                        './resources/js/components/homepage/ConversionCTAs.vue',
+                        './resources/js/components/homepage/PricingSection.vue',
+                        './resources/js/components/homepage/TrustIndicators.vue'
+                    ]
+                },
+                // Optimize chunk sizes
+                chunkFileNames: (chunkInfo) => {
+                    const facadeModuleId = chunkInfo.facadeModuleId
+                    if (facadeModuleId) {
+                        if (facadeModuleId.includes('homepage')) {
+                            return 'assets/homepage/[name]-[hash].js'
+                        }
+                        if (facadeModuleId.includes('components')) {
+                            return 'assets/components/[name]-[hash].js'
+                        }
+                    }
+                    return 'assets/[name]-[hash].js'
+                }
+            }
+        },
+        // Asset optimization
+        assetsInlineLimit: 4096, // Inline assets smaller than 4kb
+        cssCodeSplit: true, // Split CSS into separate files
+        sourcemap: process.env.NODE_ENV === 'development',
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: process.env.NODE_ENV === 'production',
+                drop_debugger: process.env.NODE_ENV === 'production',
+            },
+        },
+    },
+    // Performance optimizations
+    optimizeDeps: {
+        include: [
+            'vue',
+            '@inertiajs/vue3',
+            '@headlessui/vue',
+            '@heroicons/vue',
+            'lodash-es',
+            'date-fns',
+            'clsx'
+        ],
+        exclude: [
+            // Exclude large libraries that should be loaded on demand
+            'chart.js',
+            'leaflet',
+            'vue-leaflet'
+        ]
+    },
+    // Server configuration for development
+    server: {
+        hmr: {
+            overlay: false
+        }
+    }
 });

@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
             \App\Http\Middleware\SecurityMonitoring::class,
+            \App\Http\Middleware\SecurityHeaders::class,
         ]);
 
         // Register Spatie Permission middleware

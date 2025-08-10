@@ -446,3 +446,35 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('alumni/filter-options', [App\Http\Controllers\Api\AlumniMapController::class, 'getFilterOptions']);
     Route::post('alumni/location', [App\Http\Controllers\Api\AlumniMapController::class, 'updateLocation']);
 });
+
+// Analytics routes
+Route::prefix('analytics')->group(function () {
+    // Event tracking endpoints
+    Route::post('events', [App\Http\Controllers\AnalyticsController::class, 'storeEvents']);
+    Route::post('conversion', [App\Http\Controllers\AnalyticsController::class, 'storeConversion']);
+    Route::post('error', [App\Http\Controllers\AnalyticsController::class, 'storeError']);
+    
+    // Analytics and reporting endpoints
+    Route::post('metrics', [App\Http\Controllers\AnalyticsController::class, 'getMetrics']);
+    Route::post('reports/{reportType}', [App\Http\Controllers\AnalyticsController::class, 'generateReport']);
+    Route::post('export', [App\Http\Controllers\AnalyticsController::class, 'exportData']);
+    Route::post('conversion-report', [App\Http\Controllers\AnalyticsController::class, 'getConversionReport']);
+});
+
+// A/B Testing routes
+Route::prefix('ab-tests')->group(function () {
+    // Public endpoints for test participation
+    Route::get('active', [App\Http\Controllers\ABTestController::class, 'getActiveTests']);
+    Route::post('assignments', [App\Http\Controllers\ABTestController::class, 'storeAssignment']);
+    Route::post('conversions', [App\Http\Controllers\ABTestController::class, 'storeConversion']);
+    
+    // Test results and statistics
+    Route::get('{testId}/results', [App\Http\Controllers\ABTestController::class, 'getTestResults']);
+    Route::get('{testId}/statistics', [App\Http\Controllers\ABTestController::class, 'getTestStatistics']);
+    
+    // Admin endpoints for test management (add auth middleware in production)
+    Route::get('/', [App\Http\Controllers\ABTestController::class, 'getAllTests']);
+    Route::post('/', [App\Http\Controllers\ABTestController::class, 'createTest']);
+    Route::patch('{testId}', [App\Http\Controllers\ABTestController::class, 'updateTest']);
+    Route::delete('{testId}', [App\Http\Controllers\ABTestController::class, 'deleteTest']);
+});

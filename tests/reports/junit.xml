@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="15" assertions="0" errors="15" failures="0" skipped="0" time="0.000000">
-    <testsuite name="Feature" tests="15" assertions="0" errors="15" failures="0" skipped="0" time="0.000000">
-      <testsuite name="Tests\Feature\PricingControllerTest" file="Pricing Controller (Tests\Feature\PricingController)" tests="15" assertions="0" errors="15" failures="0" skipped="0" time="0.000000">
-        <testcase name="It can get individual pricing plans" file="Pricing Controller (Tests\Feature\PricingController)::It can get individual pricing plans" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It can get individual pricing plansIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+  <testsuite name="Tests\Feature\Homepage\MonitoringAlertingTest" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)" tests="11" assertions="0" errors="11" failures="0" skipped="0" time="0.000000">
+    <testcase name="Uptime monitoring detects down endpoints" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Uptime monitoring detects down endpoints" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Uptime monitoring detects down endpointsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -62,7 +60,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -123,10 +121,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="It can get institutional pricing plans" file="Pricing Controller (Tests\Feature\PricingController)::It can get institutional pricing plans" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It can get institutional pricing plansIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Performance alert is sent when threshold exceeded" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Performance alert is sent when threshold exceeded" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Performance alert is sent when threshold exceededIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -184,7 +182,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -245,10 +243,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="It validates audience parameter" file="Pricing Controller (Tests\Feature\PricingController)::It validates audience parameter" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It validates audience parameterIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Error alert is sent with proper rate limiting" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Error alert is sent with proper rate limiting" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Error alert is sent with proper rate limitingIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -306,7 +304,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -367,10 +365,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="It requires audience parameter" file="Pricing Controller (Tests\Feature\PricingController)::It requires audience parameter" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It requires audience parameterIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Conversion monitoring detects low conversion rates" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Conversion monitoring detects low conversion rates" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Conversion monitoring detects low conversion ratesIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -428,7 +426,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -489,10 +487,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="It can get feature comparison" file="Pricing Controller (Tests\Feature\PricingController)::It can get feature comparison" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It can get feature comparisonIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Security monitoring detects suspicious activity" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Security monitoring detects suspicious activity" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Security monitoring detects suspicious activityIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -550,7 +548,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -611,10 +609,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="It can track pricing interactions" file="Pricing Controller (Tests\Feature\PricingController)::It can track pricing interactions" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It can track pricing interactionsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Alert notification email is sent" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Alert notification email is sent" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Alert notification email is sentIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -672,7 +670,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -733,10 +731,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="It validates tracking data" file="Pricing Controller (Tests\Feature\PricingController)::It validates tracking data" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It validates tracking dataIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Slack alert is sent when configured" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Slack alert is sent when configured" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Slack alert is sent when configuredIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -794,7 +792,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -855,10 +853,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="It can get pricing statistics" file="Pricing Controller (Tests\Feature\PricingController)::It can get pricing statistics" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">It can get pricing statisticsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Sentry integration captures alerts" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Sentry integration captures alerts" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Sentry integration captures alertsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -916,7 +914,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -977,10 +975,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="Individual plans have correct structure" file="Pricing Controller (Tests\Feature\PricingController)::Individual plans have correct structure" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">Individual plans have correct structureIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Monitoring dashboard returns comprehensive data" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Monitoring dashboard returns comprehensive data" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Monitoring dashboard returns comprehensive dataIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -1038,7 +1036,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -1099,10 +1097,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="Institutional plans have correct structure" file="Pricing Controller (Tests\Feature\PricingController)::Institutional plans have correct structure" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">Institutional plans have correct structureIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Health check endpoint returns proper status" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Health check endpoint returns proper status" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Health check endpoint returns proper statusIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -1160,7 +1158,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -1221,10 +1219,10 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="Featured plans are correctly identified" file="Pricing Controller (Tests\Feature\PricingController)::Featured plans are correctly identified" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">Featured plans are correctly identifiedIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
+    <testcase name="Monitoring command runs successfully" file="Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)::Monitoring command runs successfully" class="Tests\Feature\Homepage\MonitoringAlertingTest" classname="Tests.Feature.Homepage.MonitoringAlertingTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Monitoring command runs successfullyIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
@@ -1282,7 +1280,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20
 Caused by
 PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
 
@@ -1343,497 +1341,7 @@ at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\Interacts
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
 at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
 at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="Comparison matrix includes all plans and features" file="Pricing Controller (Tests\Feature\PricingController)::Comparison matrix includes all plans and features" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">Comparison matrix includes all plans and featuresIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
-Caused by
-PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="Pricing data is cached" file="Pricing Controller (Tests\Feature\PricingController)::Pricing data is cached" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">Pricing data is cachedIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
-Caused by
-PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="Statistics include correct calculations" file="Pricing Controller (Tests\Feature\PricingController)::Statistics include correct calculations" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">Statistics include correct calculationsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
-Caused by
-PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-        <testcase name="Tracking handles optional fields" file="Pricing Controller (Tests\Feature\PricingController)::Tracking handles optional fields" class="Tests\Feature\PricingControllerTest" classname="Tests.Feature.PricingControllerTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Database\QueryException">Tracking handles optional fieldsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist (Connection: pgsql, SQL: alter table "job_applications" add constraint "job_applications_graduate_id_foreign" foreign key ("graduate_id") references "graduates" ("id") on delete cascade)&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16
-Caused by
-PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "graduates" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
-at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Blueprint.php:119
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:618
-at vendor\laravel\framework\src\Illuminate\Database\Schema\Builder.php:460
-at vendor\laravel\framework\src\Illuminate\Support\Facades\Facade.php:361
-at database\migrations\2025_08_04_045047_add_graduate_id_to_job_applications_table.php:13
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:514
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Concerns\ManagesTransactions.php:32
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:447
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Console\View\Components\Task.php:41
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:805
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:250
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:210
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:137
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:116
-at vendor\laravel\framework\src\Illuminate\Database\Migrations\Migrator.php:665
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:109
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\MigrateCommand.php:88
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:68
-at vendor\laravel\framework\src\Illuminate\Console\Concerns\CallsCommands.php:29
-at vendor\laravel\framework\src\Illuminate\Database\Console\Migrations\FreshCommand.php:81
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:36
-at vendor\laravel\framework\src\Illuminate\Container\Util.php:43
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:96
-at vendor\laravel\framework\src\Illuminate\Container\BoundMethod.php:35
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:754
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:211
-at vendor\symfony\console\Command\Command.php:318
-at vendor\laravel\framework\src\Illuminate\Console\Command.php:180
-at vendor\symfony\console\Application.php:1074
-at vendor\symfony\console\Application.php:341
-at vendor\symfony\console\Application.php:192
-at vendor\laravel\framework\src\Illuminate\Console\Application.php:165
-at vendor\laravel\framework\src\Illuminate\Foundation\Console\Kernel.php:426
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:330
-at vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:533
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithConsole.php:87
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:101
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:84
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\RefreshDatabase.php:25
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:207
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\InteractsWithTestCaseLifecycle.php:96
-at vendor\laravel\framework\src\Illuminate\Foundation\Testing\TestCase.php:44
-at tests\TestCase.php:23
-at tests\Feature\PricingControllerTest.php:16</error>
-        </testcase>
-      </testsuite>
-    </testsuite>
+at tests\Feature\Homepage\MonitoringAlertingTest.php:20</error>
+    </testcase>
   </testsuite>
 </testsuites>

@@ -6,12 +6,15 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const ABTestingService: typeof import('./resources/js/services/ABTestingService')['ABTestingService']
+  const AccessibilityService: typeof import('./resources/js/services/AccessibilityService')['default']
   const Accordion: typeof import('./resources/js/components/ui/accordion/index')['Accordion']
   const AccordionContent: typeof import('./resources/js/components/ui/accordion/index')['AccordionContent']
   const AccordionItem: typeof import('./resources/js/components/ui/accordion/index')['AccordionItem']
   const AccordionTrigger: typeof import('./resources/js/components/ui/accordion/index')['AccordionTrigger']
   const AlumniCard: typeof import('./resources/js/components/AlumniCard.vue')['default']
   const AlumniProfile: typeof import('./resources/js/components/AlumniProfile.vue')['default']
+  const AnalyticsService: typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']
   const AutoForm: typeof import('./resources/js/components/ui/auto-form/index')['AutoForm']
   const AutoFormField: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormField']
   const AutoFormFieldArray: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldArray']
@@ -35,6 +38,7 @@ declare global {
   const BreadcrumbPage: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbPage']
   const BreadcrumbSeparator: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbSeparator']
   const Button: typeof import('./resources/js/components/ui/button/index')['Button']
+  const CDNService: typeof import('./resources/js/services/CDNService')['default']
   const Calendar: typeof import('./resources/js/components/ui/calendar/index')['Calendar']
   const CalendarCell: typeof import('./resources/js/components/ui/calendar/index')['CalendarCell']
   const CalendarCellTrigger: typeof import('./resources/js/components/ui/calendar/index')['CalendarCellTrigger']
@@ -60,6 +64,7 @@ declare global {
   const CollapsibleTrigger: typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleTrigger']
   const CommentThread: typeof import('./resources/js/components/PostComments.vue')['CommentThread']
   const ConnectionRequestModal: typeof import('./resources/js/components/ConnectionRequestModal.vue')['default']
+  const ConversionTrackingService: typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']
   const DEFAULT_ZOD_HANDLERS: typeof import('./resources/js/components/ui/auto-form/constant')['DEFAULT_ZOD_HANDLERS']
   const DependencyType: typeof import('./resources/js/components/ui/auto-form/interface')['DependencyType']
   const Dialog: typeof import('./resources/js/components/ui/dialog/index')['Dialog']
@@ -98,6 +103,7 @@ declare global {
   const FormItem: typeof import('./resources/js/components/ui/form/index')['FormItem']
   const FormLabel: typeof import('./resources/js/components/ui/form/index')['FormLabel']
   const FormMessage: typeof import('./resources/js/components/ui/form/index')['FormMessage']
+  const HeatMapService: typeof import('./resources/js/services/HeatMapService')['HeatMapService']
   const INPUT_COMPONENTS: typeof import('./resources/js/components/ui/auto-form/constant')['INPUT_COMPONENTS']
   const Input: typeof import('./resources/js/components/ui/input/index')['Input']
   const Label: typeof import('./resources/js/components/ui/label/index')['Label']
@@ -110,14 +116,17 @@ declare global {
   const NavigationMenuList: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuList']
   const NavigationMenuTrigger: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuTrigger']
   const NavigationMenuViewport: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuViewport']
+  const PerformanceService: typeof import('./resources/js/services/PerformanceService')['default']
   const Popover: typeof import('./resources/js/components/ui/popover/index')['Popover']
   const PopoverAnchor: typeof import('./resources/js/components/ui/popover/index')['PopoverAnchor']
   const PopoverContent: typeof import('./resources/js/components/ui/popover/index')['PopoverContent']
   const PopoverTrigger: typeof import('./resources/js/components/ui/popover/index')['PopoverTrigger']
   const PostCreator: typeof import('./resources/js/components/PostCreator.vue')['default']
+  const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
   const Progress: typeof import('./resources/js/components/ui/progress/index')['Progress']
   const RadioGroup: typeof import('./resources/js/components/ui/radio-group/index')['RadioGroup']
   const RadioGroupItem: typeof import('./resources/js/components/ui/radio-group/index')['RadioGroupItem']
+  const SEOService: typeof import('./resources/js/services/SEOService')['default']
   const SIDEBAR_COOKIE_MAX_AGE: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_MAX_AGE']
   const SIDEBAR_COOKIE_NAME: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_NAME']
   const SIDEBAR_KEYBOARD_SHORTCUT: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_KEYBOARD_SHORTCUT']
@@ -199,11 +208,13 @@ declare global {
   const UserDashboardIntegration: typeof import('./resources/js/components/UserDashboardIntegration.vue')['default']
   const UserFlowIntegration: typeof import('./resources/js/services/UserFlowIntegration.js')['default']
   const WorkshopCalendar: typeof import('./resources/js/components/WorkshopCalendar.vue')['default']
+  const accessibilityService: typeof import('./resources/js/services/AccessibilityService')['accessibilityService']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const beautifyObjectName: typeof import('./resources/js/components/ui/auto-form/utils')['beautifyObjectName']
   const booleanishToBoolean: typeof import('./resources/js/components/ui/auto-form/utils')['booleanishToBoolean']
   const buttonVariants: typeof import('./resources/js/components/ui/button/index')['buttonVariants']
+  const cdnService: typeof import('./resources/js/services/CDNService')['cdnService']
   const cn: typeof import('./resources/js/utils/cn')['cn']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
@@ -280,6 +291,8 @@ declare global {
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
+  const performanceService: typeof import('./resources/js/services/PerformanceService')['performanceService']
+  const preloadService: typeof import('./resources/js/services/PreloadService')['preloadService']
   const provide: typeof import('vue')['provide']
   const provideDependencies: typeof import('./resources/js/components/ui/auto-form/dependencies')['provideDependencies']
   const provideLocal: typeof import('@vueuse/core')['provideLocal']
@@ -300,6 +313,7 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const seoService: typeof import('./resources/js/services/SEOService')['seoService']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
@@ -325,6 +339,7 @@ declare global {
   const until: typeof import('@vueuse/core')['until']
   const updateTheme: typeof import('./resources/js/composables/useAppearance')['updateTheme']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
+  const useAnalytics: typeof import('./resources/js/composables/useAnalytics')['useAnalytics']
   const useAnimate: typeof import('@vueuse/core')['useAnimate']
   const useAppearance: typeof import('./resources/js/composables/useAppearance')['useAppearance']
   const useArrayDifference: typeof import('@vueuse/core')['useArrayDifference']
@@ -354,6 +369,7 @@ declare global {
   const useCloned: typeof import('@vueuse/core')['useCloned']
   const useColorMode: typeof import('@vueuse/core')['useColorMode']
   const useConfirmDialog: typeof import('@vueuse/core')['useConfirmDialog']
+  const useConversionTracking: typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']
   const useCountdown: typeof import('@vueuse/core')['useCountdown']
   const useCounter: typeof import('@vueuse/core')['useCounter']
   const useCssModule: typeof import('vue')['useCssModule']
@@ -383,6 +399,7 @@ declare global {
   const useEventBus: typeof import('@vueuse/core')['useEventBus']
   const useEventListener: typeof import('@vueuse/core')['useEventListener']
   const useEventSource: typeof import('@vueuse/core')['useEventSource']
+  const useExitIntent: typeof import('./resources/js/composables/useExitIntent')['useExitIntent']
   const useEyeDropper: typeof import('@vueuse/core')['useEyeDropper']
   const useFavicon: typeof import('@vueuse/core')['useFavicon']
   const useFetch: typeof import('@vueuse/core')['useFetch']
@@ -405,6 +422,9 @@ declare global {
   const useIntervalFn: typeof import('@vueuse/core')['useIntervalFn']
   const useKeyModifier: typeof import('@vueuse/core')['useKeyModifier']
   const useLastChanged: typeof import('@vueuse/core')['useLastChanged']
+  const useLazyComponent: typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']
+  const useLazyImage: typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']
+  const useLazyLoading: typeof import('./resources/js/composables/useLazyLoading')['useLazyLoading']
   const useLocalStorage: typeof import('@vueuse/core')['useLocalStorage']
   const useMagicKeys: typeof import('@vueuse/core')['useMagicKeys']
   const useManualRefHistory: typeof import('@vueuse/core')['useManualRefHistory']
@@ -449,6 +469,7 @@ declare global {
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
   const useScroll: typeof import('@vueuse/core')['useScroll']
   const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
+  const useScrollTracking: typeof import('./resources/js/composables/useScrollTracking')['useScrollTracking']
   const useSessionStorage: typeof import('@vueuse/core')['useSessionStorage']
   const useShare: typeof import('@vueuse/core')['useShare']
   const useSidebar: typeof import('./resources/js/components/ui/sidebar/utils')['useSidebar']
@@ -541,8 +562,41 @@ declare global {
   export type { SidebarProps, SidebarMenuButtonVariants } from './resources/js/components/ui/sidebar/index'
   import('./resources/js/components/ui/sidebar/index')
   // @ts-ignore
+  export type { ABTestingService } from './resources/js/services/ABTestingService'
+  import('./resources/js/services/ABTestingService')
+  // @ts-ignore
+  export type { AccessibilityOptions, AriaLiveRegion } from './resources/js/services/AccessibilityService'
+  import('./resources/js/services/AccessibilityService')
+  // @ts-ignore
+  export type { AnalyticsService, AnalyticsConfig, AnalyticsMetrics } from './resources/js/services/AnalyticsService'
+  import('./resources/js/services/AnalyticsService')
+  // @ts-ignore
+  export type { CDNConfig, ImageOptions } from './resources/js/services/CDNService'
+  import('./resources/js/services/CDNService')
+  // @ts-ignore
+  export type { ConversionTrackingService } from './resources/js/services/ConversionTrackingService'
+  import('./resources/js/services/ConversionTrackingService')
+  // @ts-ignore
+  export type { HeatMapService } from './resources/js/services/HeatMapService'
+  import('./resources/js/services/HeatMapService')
+  // @ts-ignore
+  export type { PerformanceMetrics, ResourceTiming } from './resources/js/services/PerformanceService'
+  import('./resources/js/services/PerformanceService')
+  // @ts-ignore
+  export type { PreloadResource } from './resources/js/services/PreloadService'
+  import('./resources/js/services/PreloadService')
+  // @ts-ignore
+  export type { SEOMetadata, StructuredData } from './resources/js/services/SEOService'
+  import('./resources/js/services/SEOService')
+  // @ts-ignore
   export type { UploadedFile, UploadResponse, UploadProgress } from './resources/js/services/fileUploadService'
   import('./resources/js/services/fileUploadService')
+  // @ts-ignore
+  export type { AnalyticsOptions } from './resources/js/composables/useAnalytics'
+  import('./resources/js/composables/useAnalytics')
+  // @ts-ignore
+  export type { LazyLoadOptions } from './resources/js/composables/useLazyLoading'
+  import('./resources/js/composables/useLazyLoading')
   // @ts-ignore
   export type { Toast } from './resources/js/composables/useToast'
   import('./resources/js/composables/useToast')
@@ -553,12 +607,15 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
+    readonly ABTestingService: UnwrapRef<typeof import('./resources/js/services/ABTestingService')['ABTestingService']>
+    readonly AccessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['default']>
     readonly Accordion: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['Accordion']>
     readonly AccordionContent: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionContent']>
     readonly AccordionItem: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionItem']>
     readonly AccordionTrigger: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionTrigger']>
     readonly AlumniCard: UnwrapRef<typeof import('./resources/js/components/AlumniCard.vue')['default']>
     readonly AlumniProfile: UnwrapRef<typeof import('./resources/js/components/AlumniProfile.vue')['default']>
+    readonly AnalyticsService: UnwrapRef<typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']>
     readonly AutoForm: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoForm']>
     readonly AutoFormField: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormField']>
     readonly AutoFormFieldArray: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldArray']>
@@ -582,6 +639,7 @@ declare module 'vue' {
     readonly BreadcrumbPage: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbPage']>
     readonly BreadcrumbSeparator: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbSeparator']>
     readonly Button: UnwrapRef<typeof import('./resources/js/components/ui/button/index')['Button']>
+    readonly CDNService: UnwrapRef<typeof import('./resources/js/services/CDNService')['default']>
     readonly Calendar: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['Calendar']>
     readonly CalendarCell: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarCell']>
     readonly CalendarCellTrigger: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarCellTrigger']>
@@ -607,6 +665,7 @@ declare module 'vue' {
     readonly CollapsibleTrigger: UnwrapRef<typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleTrigger']>
     readonly CommentThread: UnwrapRef<typeof import('./resources/js/components/PostComments.vue')['CommentThread']>
     readonly ConnectionRequestModal: UnwrapRef<typeof import('./resources/js/components/ConnectionRequestModal.vue')['default']>
+    readonly ConversionTrackingService: UnwrapRef<typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']>
     readonly DEFAULT_ZOD_HANDLERS: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/constant')['DEFAULT_ZOD_HANDLERS']>
     readonly DependencyType: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/interface')['DependencyType']>
     readonly Dialog: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['Dialog']>
@@ -645,6 +704,7 @@ declare module 'vue' {
     readonly FormItem: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormItem']>
     readonly FormLabel: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormLabel']>
     readonly FormMessage: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormMessage']>
+    readonly HeatMapService: UnwrapRef<typeof import('./resources/js/services/HeatMapService')['HeatMapService']>
     readonly INPUT_COMPONENTS: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/constant')['INPUT_COMPONENTS']>
     readonly Input: UnwrapRef<typeof import('./resources/js/components/ui/input/index')['Input']>
     readonly Label: UnwrapRef<typeof import('./resources/js/components/ui/label/index')['Label']>
@@ -657,14 +717,17 @@ declare module 'vue' {
     readonly NavigationMenuList: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuList']>
     readonly NavigationMenuTrigger: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuTrigger']>
     readonly NavigationMenuViewport: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuViewport']>
+    readonly PerformanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['default']>
     readonly Popover: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['Popover']>
     readonly PopoverAnchor: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverAnchor']>
     readonly PopoverContent: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverContent']>
     readonly PopoverTrigger: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverTrigger']>
     readonly PostCreator: UnwrapRef<typeof import('./resources/js/components/PostCreator.vue')['default']>
+    readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
     readonly Progress: UnwrapRef<typeof import('./resources/js/components/ui/progress/index')['Progress']>
     readonly RadioGroup: UnwrapRef<typeof import('./resources/js/components/ui/radio-group/index')['RadioGroup']>
     readonly RadioGroupItem: UnwrapRef<typeof import('./resources/js/components/ui/radio-group/index')['RadioGroupItem']>
+    readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>
     readonly SIDEBAR_COOKIE_MAX_AGE: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_MAX_AGE']>
     readonly SIDEBAR_COOKIE_NAME: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_NAME']>
     readonly SIDEBAR_KEYBOARD_SHORTCUT: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_KEYBOARD_SHORTCUT']>
@@ -745,11 +808,13 @@ declare module 'vue' {
     readonly TooltipTrigger: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipTrigger']>
     readonly UserFlowIntegration: UnwrapRef<typeof import('./resources/js/services/UserFlowIntegration.js')['default']>
     readonly WorkshopCalendar: UnwrapRef<typeof import('./resources/js/components/WorkshopCalendar.vue')['default']>
+    readonly accessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['accessibilityService']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly beautifyObjectName: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['beautifyObjectName']>
     readonly booleanishToBoolean: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['booleanishToBoolean']>
     readonly buttonVariants: UnwrapRef<typeof import('./resources/js/components/ui/button/index')['buttonVariants']>
+    readonly cdnService: UnwrapRef<typeof import('./resources/js/services/CDNService')['cdnService']>
     readonly cn: UnwrapRef<typeof import('./resources/js/utils/cn')['cn']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
@@ -826,6 +891,8 @@ declare module 'vue' {
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
+    readonly performanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['performanceService']>
+    readonly preloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['preloadService']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideDependencies: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/dependencies')['provideDependencies']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
@@ -846,6 +913,7 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly seoService: UnwrapRef<typeof import('./resources/js/services/SEOService')['seoService']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
@@ -871,6 +939,7 @@ declare module 'vue' {
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
     readonly updateTheme: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['updateTheme']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
+    readonly useAnalytics: UnwrapRef<typeof import('./resources/js/composables/useAnalytics')['useAnalytics']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useAppearance: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['useAppearance']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
@@ -900,6 +969,7 @@ declare module 'vue' {
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
     readonly useColorMode: UnwrapRef<typeof import('@vueuse/core')['useColorMode']>
     readonly useConfirmDialog: UnwrapRef<typeof import('@vueuse/core')['useConfirmDialog']>
+    readonly useConversionTracking: UnwrapRef<typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']>
     readonly useCountdown: UnwrapRef<typeof import('@vueuse/core')['useCountdown']>
     readonly useCounter: UnwrapRef<typeof import('@vueuse/core')['useCounter']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
@@ -929,6 +999,7 @@ declare module 'vue' {
     readonly useEventBus: UnwrapRef<typeof import('@vueuse/core')['useEventBus']>
     readonly useEventListener: UnwrapRef<typeof import('@vueuse/core')['useEventListener']>
     readonly useEventSource: UnwrapRef<typeof import('@vueuse/core')['useEventSource']>
+    readonly useExitIntent: UnwrapRef<typeof import('./resources/js/composables/useExitIntent')['useExitIntent']>
     readonly useEyeDropper: UnwrapRef<typeof import('@vueuse/core')['useEyeDropper']>
     readonly useFavicon: UnwrapRef<typeof import('@vueuse/core')['useFavicon']>
     readonly useFetch: UnwrapRef<typeof import('@vueuse/core')['useFetch']>
@@ -951,6 +1022,9 @@ declare module 'vue' {
     readonly useIntervalFn: UnwrapRef<typeof import('@vueuse/core')['useIntervalFn']>
     readonly useKeyModifier: UnwrapRef<typeof import('@vueuse/core')['useKeyModifier']>
     readonly useLastChanged: UnwrapRef<typeof import('@vueuse/core')['useLastChanged']>
+    readonly useLazyComponent: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']>
+    readonly useLazyImage: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']>
+    readonly useLazyLoading: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyLoading']>
     readonly useLocalStorage: UnwrapRef<typeof import('@vueuse/core')['useLocalStorage']>
     readonly useMagicKeys: UnwrapRef<typeof import('@vueuse/core')['useMagicKeys']>
     readonly useManualRefHistory: UnwrapRef<typeof import('@vueuse/core')['useManualRefHistory']>
@@ -995,6 +1069,7 @@ declare module 'vue' {
     readonly useScriptTag: UnwrapRef<typeof import('@vueuse/core')['useScriptTag']>
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
     readonly useScrollLock: UnwrapRef<typeof import('@vueuse/core')['useScrollLock']>
+    readonly useScrollTracking: UnwrapRef<typeof import('./resources/js/composables/useScrollTracking')['useScrollTracking']>
     readonly useSessionStorage: UnwrapRef<typeof import('@vueuse/core')['useSessionStorage']>
     readonly useShare: UnwrapRef<typeof import('@vueuse/core')['useShare']>
     readonly useSidebar: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['useSidebar']>

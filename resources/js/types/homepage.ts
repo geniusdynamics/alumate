@@ -1,5 +1,19 @@
 // Homepage TypeScript Interfaces
 
+import { boolean } from "zod"
+
+import { number } from "zod"
+
+import { number } from "zod"
+
+import { number } from "zod"
+
+import { number } from "zod"
+
+import { string } from "zod"
+
+import { string } from "zod"
+
 export type AudienceType = 'individual' | 'institutional'
 
 export interface HomepageData {
@@ -1441,6 +1455,93 @@ export interface ABTestResult {
 }
 
 export interface ABTestVariantResult {
+  variantId: string
+  variantName: string
+  sampleSize: number
+  conversions: number
+  conversionRate: number
+  confidence: number
+}
+
+// A/B Testing Statistics Interface
+export interface ABTestStatistics {
+  testId: string
+  totalAssignments: number
+  totalConversions: number
+  totalValue: number
+  overallConversionRate: number
+  dailyStats: Array<{
+    date: string
+    assignments: number
+  }>
+  goalStats: Array<{
+    goal_id: string
+    conversions: number
+    total_value: number
+  }>
+}
+
+// Additional Event Types for Analytics Service
+export interface PageViewEvent {
+  page: string
+  referrer?: string
+  additionalData?: Record<string, any>
+}
+
+export interface SectionViewEvent {
+  section: string
+  timeSpent?: number
+  scrollDepth?: number
+  viewportVisible?: boolean
+  interactionCount?: number
+}
+
+export interface FormSubmissionEvent {
+  formType: string
+  formId?: string
+  success: boolean
+  errorMessage?: string
+  formData?: Record<string, any>
+  validationErrors?: string[]
+  timeToComplete?: number
+  fieldInteractions?: Record<string, number>
+  abandonmentPoint?: string
+  completedFields?: string[]
+}
+
+export interface CalculatorUsageEvent {
+  step: number
+  stepName?: string
+  totalSteps: number
+  completed: boolean
+  calculatorData?: Record<string, any>
+  timeSpent?: number
+  backtrackCount?: number
+  helpUsed?: boolean
+}
+
+export interface ScrollTrackingEvent {
+  percentage: number
+  section?: string
+  scrollSpeed?: number
+  scrollDirection?: 'up' | 'down'
+}
+
+// Enhanced CTA Click Event
+export interface CTAClickEvent {
+  action: string
+  section: string
+  audience: AudienceType
+  ctaText?: string
+  ctaPosition?: string
+  ctaType?: string
+  targetUrl?: string
+  clickCoordinates?: {
+    x: number
+    y: number
+  }
+  additionalData?: Record<string, any>
+}
   variantId: string
   variantName: string
   participants: number
