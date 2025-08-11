@@ -7,6 +7,11 @@ import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    define: {
+        // Handle any global defines if needed
+        __VUE_OPTIONS_API__: true,
+        __VUE_PROD_DEVTOOLS__: false,
+    },
     plugins: [
         laravel({
             input: ['resources/js/app.ts'],
@@ -50,6 +55,23 @@ export default defineConfig({
             dts: true,
             dirs: ['resources/js/components/**', 'resources/js/layouts/**'],
             deep: true,
+            resolvers: [
+                // Custom resolver to handle remaining naming conflicts
+                (componentName) => {
+                    // Handle specific component conflicts by prioritizing certain directories
+                    const componentMappings = {
+                        'InputError': 'resources/js/components/InputError.vue',
+                        'AppHeader': 'resources/js/components/layout/AppHeader.vue',
+                        'GuidedTour': 'resources/js/components/onboarding/GuidedTour.vue',
+                        'SuccessStoryCard': 'resources/js/components/SuccessStories/SuccessStoryCard.vue',
+                        'Skeleton': 'resources/js/components/ui/skeleton/Skeleton.vue',
+                    }
+                    
+                    if (componentMappings[componentName]) {
+                        return componentMappings[componentName]
+                    }
+                }
+            ]
         }),
     ],
     resolve: {
@@ -57,10 +79,19 @@ export default defineConfig({
             '@': path.resolve(__dirname, './resources/js'),
             'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
         },
+        // Fix for vue-leaflet package resolution issues
+        dedupe: ['vue'],
     },
     build: {
         // Code splitting configuration
         rollupOptions: {
+            external: (id) => {
+                // Externalize problematic packages
+                if (id.includes('vue-leaflet')) {
+                    return true;
+                }
+                return false;
+            },
             output: {
                 manualChunks: {
                     // Vendor chunks
@@ -68,7 +99,7 @@ export default defineConfig({
                     'vendor-ui': ['@headlessui/vue', '@heroicons/vue', 'lucide-vue-next'],
                     'vendor-utils': ['lodash-es', 'date-fns', 'clsx'],
                     'vendor-charts': ['chart.js'],
-                    'vendor-maps': ['leaflet', 'vue-leaflet'],
+                    'vendor-maps': ['leaflet'],
                     
                     // Homepage chunks
                     'homepage-core': [
@@ -111,6 +142,12 @@ export default defineConfig({
         assetsInlineLimit: 4096, // Inline assets smaller than 4kb
         cssCodeSplit: true, // Split CSS into separate files
         sourcemap: process.env.NODE_ENV === 'development',
+        // Handle CSS imports properly
+        cssPreprocessorOptions: {
+            css: {
+                charset: false
+            }
+        },
         minify: 'terser',
         terserOptions: {
             compress: {
@@ -128,13 +165,12 @@ export default defineConfig({
             '@heroicons/vue',
             'lodash-es',
             'date-fns',
-            'clsx'
+            'clsx',
+            'leaflet'
         ],
         exclude: [
             // Exclude large libraries that should be loaded on demand
-            'chart.js',
-            'leaflet',
-            'vue-leaflet'
+            'chart.js'
         ]
     },
     // Server configuration for development
