@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Job;
 use App\Models\Course;
 use App\Models\Graduate;
+use App\Models\Job;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -19,12 +19,12 @@ class JobListController extends Controller
 
         // Search filters
         if ($request->search) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhere('description', 'like', "%{$request->search}%")
-                  ->orWhereHas('employer', function($eq) use ($request) {
-                      $eq->where('company_name', 'like', "%{$request->search}%");
-                  });
+                    ->orWhere('description', 'like', "%{$request->search}%")
+                    ->orWhereHas('employer', function ($eq) use ($request) {
+                        $eq->where('company_name', 'like', "%{$request->search}%");
+                    });
             });
         }
 
@@ -49,32 +49,32 @@ class JobListController extends Controller
         }
 
         if ($request->salary_min) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('salary_min', '>=', $request->salary_min)
-                  ->orWhere('salary_max', '>=', $request->salary_min);
+                    ->orWhere('salary_max', '>=', $request->salary_min);
             });
         }
 
         if ($request->salary_max) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('salary_max', '<=', $request->salary_max)
-                  ->orWhere('salary_min', '<=', $request->salary_max);
+                    ->orWhere('salary_min', '<=', $request->salary_max);
             });
         }
 
         // Skills matching
         if ($request->skills && is_array($request->skills)) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 foreach ($request->skills as $skill) {
                     $q->orWhereJsonContains('required_skills', $skill)
-                      ->orWhereJsonContains('preferred_qualifications', $skill);
+                        ->orWhereJsonContains('preferred_qualifications', $skill);
                 }
             });
         }
 
         // Benefits filter
         if ($request->benefits && is_array($request->benefits)) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 foreach ($request->benefits as $benefit) {
                     $q->orWhereJsonContains('benefits', $benefit);
                 }
@@ -83,14 +83,14 @@ class JobListController extends Controller
 
         // Company size filter (if available in employer data)
         if ($request->company_size) {
-            $query->whereHas('employer', function($eq) use ($request) {
+            $query->whereHas('employer', function ($eq) use ($request) {
                 $eq->where('company_size', $request->company_size);
             });
         }
 
         // Industry filter
         if ($request->industry) {
-            $query->whereHas('employer', function($eq) use ($request) {
+            $query->whereHas('employer', function ($eq) use ($request) {
                 $eq->where('industry', $request->industry);
             });
         }
@@ -107,7 +107,7 @@ class JobListController extends Controller
 
         switch ($sortBy) {
             case 'salary':
-                $query->orderByRaw('COALESCE(salary_max, salary_min) ' . $sortOrder);
+                $query->orderByRaw('COALESCE(salary_max, salary_min) '.$sortOrder);
                 break;
             case 'deadline':
                 $query->orderBy('application_deadline', $sortOrder);
@@ -154,9 +154,9 @@ class JobListController extends Controller
             'locations' => $locations,
             'recommendations' => $recommendations,
             'filters' => $request->only([
-                'search', 'location', 'course_id', 'experience_level', 
-                'job_type', 'work_arrangement', 'salary_min', 'salary_max', 
-                'skills', 'sort_by', 'sort_order'
+                'search', 'location', 'course_id', 'experience_level',
+                'job_type', 'work_arrangement', 'salary_min', 'salary_max',
+                'skills', 'sort_by', 'sort_order',
             ]),
             'filter_options' => [
                 'experience_levels' => [
@@ -194,7 +194,7 @@ class JobListController extends Controller
         // Check if current user can apply
         $canApply = false;
         $hasApplied = false;
-        
+
         if (Auth::check() && Auth::user()->user_type === 'graduate') {
             $graduate = Graduate::where('user_id', Auth::id())->first();
             if ($graduate) {
@@ -228,7 +228,7 @@ class JobListController extends Controller
             ->get();
 
         $recommendations = [];
-        
+
         foreach ($jobs as $job) {
             $matchData = $job->calculateMatchScore($graduate);
             if ($matchData['score'] >= 50) { // Only recommend jobs with 50%+ match
@@ -241,7 +241,7 @@ class JobListController extends Controller
         }
 
         // Sort by match score and limit
-        usort($recommendations, function($a, $b) {
+        usort($recommendations, function ($a, $b) {
             return $b['match_score'] <=> $a['match_score'];
         });
 
@@ -255,19 +255,19 @@ class JobListController extends Controller
         ]);
 
         $query = $request->q;
-        
+
         $jobs = Job::where('status', 'active')
             ->notExpired()
-            ->where(function($q) use ($query) {
+            ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%")
-                  ->orWhereJsonContains('required_skills', $query)
-                  ->orWhereHas('employer', function($eq) use ($query) {
-                      $eq->where('company_name', 'like', "%{$query}%");
-                  })
-                  ->orWhereHas('course', function($cq) use ($query) {
-                      $cq->where('name', 'like', "%{$query}%");
-                  });
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhereJsonContains('required_skills', $query)
+                    ->orWhereHas('employer', function ($eq) use ($query) {
+                        $eq->where('company_name', 'like', "%{$query}%");
+                    })
+                    ->orWhereHas('course', function ($cq) use ($query) {
+                        $cq->where('name', 'like', "%{$query}%");
+                    });
             })
             ->with(['employer.user', 'course'])
             ->orderBy('created_at', 'desc')

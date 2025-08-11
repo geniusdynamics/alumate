@@ -24,7 +24,7 @@ $checks = [
 ];
 
 foreach ($checks as $item => $exists) {
-    echo ($exists ? "✅" : "❌") . " {$item}\n";
+    echo ($exists ? '✅' : '❌')." {$item}\n";
 }
 
 // Check 2: Laravel Configuration
@@ -33,29 +33,29 @@ echo "-------------------------\n";
 
 try {
     echo "✅ Laravel app boots successfully\n";
-    
+
     // Check if routes are working
     $router = app('router');
     $routes = $router->getRoutes();
-    echo "✅ Routes loaded: " . count($routes) . " routes\n";
-    
+    echo '✅ Routes loaded: '.count($routes)." routes\n";
+
     // Check database connection
     try {
         \DB::connection()->getPdo();
         echo "✅ Database connection working\n";
     } catch (Exception $e) {
-        echo "❌ Database connection failed: " . $e->getMessage() . "\n";
+        echo '❌ Database connection failed: '.$e->getMessage()."\n";
     }
-    
+
     // Check if Inertia is configured
     if (class_exists('Inertia\Inertia')) {
         echo "✅ Inertia.js is available\n";
     } else {
         echo "❌ Inertia.js not found\n";
     }
-    
+
 } catch (Exception $e) {
-    echo "❌ Laravel configuration error: " . $e->getMessage() . "\n";
+    echo '❌ Laravel configuration error: '.$e->getMessage()."\n";
 }
 
 // Check 3: Environment
@@ -102,15 +102,15 @@ if (is_writable('../../storage')) {
 echo "\n🚀 Recommendations:\n";
 echo "===================\n";
 
-if (!is_dir('../../node_modules')) {
+if (! is_dir('../../node_modules')) {
     echo "1. Install Node.js dependencies: npm install\n";
 }
 
-if (!file_exists('../../public/build/manifest.json')) {
+if (! file_exists('../../public/build/manifest.json')) {
     echo "2. Build frontend assets: npm run build\n";
 }
 
-if (!env('APP_KEY')) {
+if (! env('APP_KEY')) {
     echo "3. Generate application key: php artisan key:generate\n";
 }
 

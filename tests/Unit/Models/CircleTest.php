@@ -4,7 +4,6 @@ namespace Tests\Unit\Models;
 
 use App\Models\Circle;
 use App\Models\User;
-use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -19,7 +18,7 @@ class CircleTest extends TestCase
             'type' => 'school_year',
             'criteria' => [
                 'institution_name' => 'Test University',
-                'graduation_year' => 2020
+                'graduation_year' => 2020,
             ],
             'auto_generated' => true,
         ]);

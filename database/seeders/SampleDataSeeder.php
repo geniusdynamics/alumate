@@ -2,9 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Company;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class SampleDataSeeder extends Seeder

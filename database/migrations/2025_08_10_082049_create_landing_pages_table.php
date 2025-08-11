@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['status', 'target_audience']);
             $table->index(['campaign_type', 'campaign_name']);
             $table->index(['created_by', 'status']);

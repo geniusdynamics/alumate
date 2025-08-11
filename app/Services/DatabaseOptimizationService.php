@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class DatabaseOptimizationService
 {
     private array $queryLog = [];
+
     private array $slowQueries = [];
+
     private float $slowQueryThreshold = 100; // milliseconds
 
     public function __construct()
@@ -29,7 +29,7 @@ class DatabaseOptimizationService
                 'sql' => $query->sql,
                 'bindings' => $query->bindings,
                 'time' => $query->time,
-                'timestamp' => microtime(true)
+                'timestamp' => microtime(true),
             ];
 
             // Track slow queries
@@ -39,13 +39,13 @@ class DatabaseOptimizationService
                     'bindings' => $query->bindings,
                     'time' => $query->time,
                     'timestamp' => microtime(true),
-                    'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10)
+                    'backtrace' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10),
                 ];
 
                 Log::warning('Slow query detected', [
                     'sql' => $query->sql,
                     'time' => $query->time,
-                    'bindings' => $query->bindings
+                    'bindings' => $query->bindings,
                 ]);
             }
         });
@@ -71,14 +71,14 @@ class DatabaseOptimizationService
             return [
                 'total_alumni' => (int) $statistics[0]->total_alumni,
                 'employed_alumni' => (int) $statistics[0]->employed_alumni,
-                'employment_rate' => $statistics[0]->total_alumni > 0 
+                'employment_rate' => $statistics[0]->total_alumni > 0
                     ? round(($statistics[0]->employed_alumni / $statistics[0]->total_alumni) * 100, 1)
                     : 0,
                 'active_jobs' => (int) $statistics[0]->active_jobs,
                 'companies_represented' => (int) $statistics[0]->companies_represented,
                 'successful_placements' => (int) $statistics[0]->successful_placements,
                 'average_salary' => (int) $statistics[0]->average_salary,
-                'cached_at' => now()->toISOString()
+                'cached_at' => now()->toISOString(),
             ];
         });
     }
@@ -158,12 +158,12 @@ class DatabaseOptimizationService
                 WHERE id = ?
             ", [$graduateId]);
 
-            if (!$graduate || $graduate->employment_status === 'employed') {
+            if (! $graduate || $graduate->employment_status === 'employed') {
                 return [];
             }
 
             $skills = json_decode($graduate->skills, true) ?? [];
-            $skillsPlaceholder = str_repeat('?,', count($skills) - 1) . '?';
+            $skillsPlaceholder = str_repeat('?,', count($skills) - 1).'?';
 
             return DB::select("
                 SELECT 
@@ -203,36 +203,36 @@ class DatabaseOptimizationService
             // Graduates table indexes
             "CREATE INDEX IF NOT EXISTS idx_graduates_employment_status ON graduates ((JSON_EXTRACT(employment_status, '$.status')))",
             "CREATE INDEX IF NOT EXISTS idx_graduates_course_employment ON graduates (course_id, (JSON_EXTRACT(employment_status, '$.status')))",
-            "CREATE INDEX IF NOT EXISTS idx_graduates_skills ON graduates ((CAST(skills AS CHAR(255) ARRAY)))",
-            "CREATE INDEX IF NOT EXISTS idx_graduates_graduation_year ON graduates (graduation_year)",
-            "CREATE INDEX IF NOT EXISTS idx_graduates_job_search ON graduates (job_search_active, allow_employer_contact)",
+            'CREATE INDEX IF NOT EXISTS idx_graduates_skills ON graduates ((CAST(skills AS CHAR(255) ARRAY)))',
+            'CREATE INDEX IF NOT EXISTS idx_graduates_graduation_year ON graduates (graduation_year)',
+            'CREATE INDEX IF NOT EXISTS idx_graduates_job_search ON graduates (job_search_active, allow_employer_contact)',
 
             // Jobs table indexes
-            "CREATE INDEX IF NOT EXISTS idx_jobs_status_course ON jobs (status, course_id)",
-            "CREATE INDEX IF NOT EXISTS idx_jobs_employer_status ON jobs (employer_id, status)",
-            "CREATE INDEX IF NOT EXISTS idx_jobs_created_status ON jobs (created_at, status)",
-            "CREATE INDEX IF NOT EXISTS idx_jobs_required_skills ON jobs ((CAST(required_skills AS CHAR(255) ARRAY)))",
+            'CREATE INDEX IF NOT EXISTS idx_jobs_status_course ON jobs (status, course_id)',
+            'CREATE INDEX IF NOT EXISTS idx_jobs_employer_status ON jobs (employer_id, status)',
+            'CREATE INDEX IF NOT EXISTS idx_jobs_created_status ON jobs (created_at, status)',
+            'CREATE INDEX IF NOT EXISTS idx_jobs_required_skills ON jobs ((CAST(required_skills AS CHAR(255) ARRAY)))',
 
             // Job applications indexes
-            "CREATE INDEX IF NOT EXISTS idx_job_applications_status ON job_applications (status)",
-            "CREATE INDEX IF NOT EXISTS idx_job_applications_job_graduate ON job_applications (job_id, graduate_id)",
-            "CREATE INDEX IF NOT EXISTS idx_job_applications_graduate_status ON job_applications (graduate_id, status)",
+            'CREATE INDEX IF NOT EXISTS idx_job_applications_status ON job_applications (status)',
+            'CREATE INDEX IF NOT EXISTS idx_job_applications_job_graduate ON job_applications (job_id, graduate_id)',
+            'CREATE INDEX IF NOT EXISTS idx_job_applications_graduate_status ON job_applications (graduate_id, status)',
 
             // Testimonials indexes
-            "CREATE INDEX IF NOT EXISTS idx_testimonials_featured_approved ON testimonials (featured, approved)",
-            "CREATE INDEX IF NOT EXISTS idx_testimonials_graduate_approved ON testimonials (graduate_id, approved)",
+            'CREATE INDEX IF NOT EXISTS idx_testimonials_featured_approved ON testimonials (featured, approved)',
+            'CREATE INDEX IF NOT EXISTS idx_testimonials_graduate_approved ON testimonials (graduate_id, approved)',
 
             // Success stories indexes
-            "CREATE INDEX IF NOT EXISTS idx_success_stories_featured_approved ON success_stories (featured, approved)",
-            "CREATE INDEX IF NOT EXISTS idx_success_stories_graduate_approved ON success_stories (graduate_id, approved)",
+            'CREATE INDEX IF NOT EXISTS idx_success_stories_featured_approved ON success_stories (featured, approved)',
+            'CREATE INDEX IF NOT EXISTS idx_success_stories_graduate_approved ON success_stories (graduate_id, approved)',
 
             // Employers indexes
-            "CREATE INDEX IF NOT EXISTS idx_employers_verified ON employers (verified)",
-            "CREATE INDEX IF NOT EXISTS idx_employers_industry ON employers (industry)",
+            'CREATE INDEX IF NOT EXISTS idx_employers_verified ON employers (verified)',
+            'CREATE INDEX IF NOT EXISTS idx_employers_industry ON employers (industry)',
 
             // Courses indexes
-            "CREATE INDEX IF NOT EXISTS idx_courses_active ON courses (active)",
-            "CREATE INDEX IF NOT EXISTS idx_courses_department ON courses (department)"
+            'CREATE INDEX IF NOT EXISTS idx_courses_active ON courses (active)',
+            'CREATE INDEX IF NOT EXISTS idx_courses_department ON courses (department)',
         ];
 
         foreach ($indexes as $index) {
@@ -242,7 +242,7 @@ class DatabaseOptimizationService
             } catch (\Exception $e) {
                 Log::warning('Failed to create database index', [
                     'index' => $index,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -261,7 +261,7 @@ class DatabaseOptimizationService
         $queryTypes = [];
         foreach ($this->queryLog as $query) {
             $type = $this->getQueryType($query['sql']);
-            if (!isset($queryTypes[$type])) {
+            if (! isset($queryTypes[$type])) {
                 $queryTypes[$type] = ['count' => 0, 'total_time' => 0];
             }
             $queryTypes[$type]['count']++;
@@ -273,7 +273,7 @@ class DatabaseOptimizationService
         $queryHashes = [];
         foreach ($this->queryLog as $query) {
             $hash = md5($query['sql']);
-            if (!isset($queryHashes[$hash])) {
+            if (! isset($queryHashes[$hash])) {
                 $queryHashes[$hash] = ['sql' => $query['sql'], 'count' => 0];
             }
             $queryHashes[$hash]['count']++;
@@ -293,7 +293,7 @@ class DatabaseOptimizationService
             'slow_queries' => array_slice($this->slowQueries, 0, 10), // Top 10 slowest
             'query_types' => $queryTypes,
             'duplicate_queries' => array_slice($duplicateQueries, 0, 10), // Top 10 duplicates
-            'recommendations' => $this->generateOptimizationRecommendations($queryTypes, $duplicateQueries)
+            'recommendations' => $this->generateOptimizationRecommendations($queryTypes, $duplicateQueries),
         ];
     }
 
@@ -333,15 +333,29 @@ class DatabaseOptimizationService
     private function getQueryType(string $sql): string
     {
         $sql = trim(strtoupper($sql));
-        
-        if (strpos($sql, 'SELECT') === 0) return 'SELECT';
-        if (strpos($sql, 'INSERT') === 0) return 'INSERT';
-        if (strpos($sql, 'UPDATE') === 0) return 'UPDATE';
-        if (strpos($sql, 'DELETE') === 0) return 'DELETE';
-        if (strpos($sql, 'CREATE') === 0) return 'CREATE';
-        if (strpos($sql, 'ALTER') === 0) return 'ALTER';
-        if (strpos($sql, 'DROP') === 0) return 'DROP';
-        
+
+        if (strpos($sql, 'SELECT') === 0) {
+            return 'SELECT';
+        }
+        if (strpos($sql, 'INSERT') === 0) {
+            return 'INSERT';
+        }
+        if (strpos($sql, 'UPDATE') === 0) {
+            return 'UPDATE';
+        }
+        if (strpos($sql, 'DELETE') === 0) {
+            return 'DELETE';
+        }
+        if (strpos($sql, 'CREATE') === 0) {
+            return 'CREATE';
+        }
+        if (strpos($sql, 'ALTER') === 0) {
+            return 'ALTER';
+        }
+        if (strpos($sql, 'DROP') === 0) {
+            return 'DROP';
+        }
+
         return 'OTHER';
     }
 
@@ -363,9 +377,9 @@ class DatabaseOptimizationService
             'total_queries' => count($this->queryLog),
             'slow_queries' => count($this->slowQueries),
             'total_time' => array_sum(array_column($this->queryLog, 'time')),
-            'average_time' => count($this->queryLog) > 0 
+            'average_time' => count($this->queryLog) > 0
                 ? array_sum(array_column($this->queryLog, 'time')) / count($this->queryLog)
-                : 0
+                : 0,
         ];
     }
 
@@ -376,13 +390,13 @@ class DatabaseOptimizationService
     {
         // Set optimal MySQL settings for performance
         $optimizations = [
-            "SET SESSION query_cache_type = ON",
-            "SET SESSION query_cache_size = 67108864", // 64MB
-            "SET SESSION innodb_buffer_pool_size = 134217728", // 128MB
-            "SET SESSION max_connections = 200",
-            "SET SESSION innodb_log_file_size = 67108864", // 64MB
-            "SET SESSION innodb_flush_log_at_trx_commit = 2",
-            "SET SESSION innodb_file_per_table = ON"
+            'SET SESSION query_cache_type = ON',
+            'SET SESSION query_cache_size = 67108864', // 64MB
+            'SET SESSION innodb_buffer_pool_size = 134217728', // 128MB
+            'SET SESSION max_connections = 200',
+            'SET SESSION innodb_log_file_size = 67108864', // 64MB
+            'SET SESSION innodb_flush_log_at_trx_commit = 2',
+            'SET SESSION innodb_file_per_table = ON',
         ];
 
         foreach ($optimizations as $optimization) {
@@ -391,7 +405,7 @@ class DatabaseOptimizationService
             } catch (\Exception $e) {
                 Log::warning('Failed to apply database optimization', [
                     'optimization' => $optimization,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }

@@ -35,9 +35,9 @@ class MessageController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('subject', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
+                    ->orWhere('content', 'like', "%{$search}%");
             });
         }
 
@@ -54,7 +54,7 @@ class MessageController extends Controller
     public function show(Message $message)
     {
         $user = Auth::user();
-        
+
         // Check if user can view this message
         if ($message->sender_id !== $user->id && $message->recipient_id !== $user->id) {
             abort(403);
@@ -63,7 +63,7 @@ class MessageController extends Controller
         $message->load(['sender', 'recipient', 'relatedJob.employer', 'relatedApplication.job']);
 
         // Mark as read if user is the recipient
-        if ($message->recipient_id === $user->id && !$message->read_at) {
+        if ($message->recipient_id === $user->id && ! $message->read_at) {
             $message->markAsRead();
         }
 
@@ -118,7 +118,7 @@ class MessageController extends Controller
     public function reply(Message $originalMessage)
     {
         $user = Auth::user();
-        
+
         // Check if user can reply to this message
         if ($originalMessage->sender_id !== $user->id && $originalMessage->recipient_id !== $user->id) {
             abort(403);
@@ -134,7 +134,7 @@ class MessageController extends Controller
     public function sendReply(Request $request, Message $originalMessage)
     {
         $user = Auth::user();
-        
+
         // Check if user can reply to this message
         if ($originalMessage->sender_id !== $user->id && $originalMessage->recipient_id !== $user->id) {
             abort(403);
@@ -145,14 +145,14 @@ class MessageController extends Controller
         ]);
 
         // Determine recipient (the other person in the conversation)
-        $recipientId = $originalMessage->sender_id === $user->id 
-            ? $originalMessage->recipient_id 
+        $recipientId = $originalMessage->sender_id === $user->id
+            ? $originalMessage->recipient_id
             : $originalMessage->sender_id;
 
         $reply = Message::create([
             'sender_id' => $user->id,
             'recipient_id' => $recipientId,
-            'subject' => 'Re: ' . $originalMessage->subject,
+            'subject' => 'Re: '.$originalMessage->subject,
             'content' => $request->content,
             'type' => $originalMessage->type,
             'related_job_id' => $originalMessage->related_job_id,
@@ -169,7 +169,7 @@ class MessageController extends Controller
     public function archive(Message $message)
     {
         $user = Auth::user();
-        
+
         // Check if user can archive this message
         if ($message->sender_id !== $user->id && $message->recipient_id !== $user->id) {
             abort(403);
@@ -183,7 +183,7 @@ class MessageController extends Controller
     public function unarchive(Message $message)
     {
         $user = Auth::user();
-        
+
         // Check if user can unarchive this message
         if ($message->sender_id !== $user->id && $message->recipient_id !== $user->id) {
             abort(403);
@@ -197,7 +197,7 @@ class MessageController extends Controller
     public function destroy(Message $message)
     {
         $user = Auth::user();
-        
+
         // Only sender can delete the message
         if ($message->sender_id !== $user->id) {
             abort(403);
@@ -212,7 +212,7 @@ class MessageController extends Controller
     public function markAsRead(Message $message)
     {
         $user = Auth::user();
-        
+
         if ($message->recipient_id === $user->id) {
             $message->markAsRead();
         }

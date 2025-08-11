@@ -84,14 +84,14 @@ class ReunionPhoto extends Model
     {
         return $query->where(function ($q) use ($user) {
             $q->where('visibility', 'public')
-              ->orWhere('visibility', 'alumni_only')
-              ->orWhere(function ($subQ) use ($user) {
-                  $subQ->where('visibility', 'class_only')
-                       ->whereHas('event', function ($eventQ) use ($user) {
-                           $eventQ->where('graduation_year', $user->graduation_year ?? null)
-                                  ->where('institution_id', $user->institution_id);
-                       });
-              });
+                ->orWhere('visibility', 'alumni_only')
+                ->orWhere(function ($subQ) use ($user) {
+                    $subQ->where('visibility', 'class_only')
+                        ->whereHas('event', function ($eventQ) use ($user) {
+                            $eventQ->where('graduation_year', $user->graduation_year ?? null)
+                                ->where('institution_id', $user->institution_id);
+                        });
+                });
         });
     }
 
@@ -104,12 +104,12 @@ class ReunionPhoto extends Model
     public function getThumbnailUrl(): string
     {
         $pathInfo = pathinfo($this->file_path);
-        $thumbnailPath = $pathInfo['dirname'] . '/thumbnails/' . $pathInfo['filename'] . '_thumb.' . $pathInfo['extension'];
-        
+        $thumbnailPath = $pathInfo['dirname'].'/thumbnails/'.$pathInfo['filename'].'_thumb.'.$pathInfo['extension'];
+
         if (Storage::exists($thumbnailPath)) {
             return Storage::url($thumbnailPath);
         }
-        
+
         return $this->getUrl();
     }
 
@@ -144,8 +144,8 @@ class ReunionPhoto extends Model
 
     public function canBeEditedBy(User $user): bool
     {
-        return $user->id === $this->uploaded_by || 
-               $user->hasRole('admin') || 
+        return $user->id === $this->uploaded_by ||
+               $user->hasRole('admin') ||
                $this->event->canUserEdit($user);
     }
 
@@ -153,12 +153,12 @@ class ReunionPhoto extends Model
     {
         $bytes = $this->file_size;
         $units = ['B', 'KB', 'MB', 'GB'];
-        
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
-        return round($bytes, 2) . ' ' . $units[$i];
+
+        return round($bytes, 2).' '.$units[$i];
     }
 
     public function incrementLikes(): void

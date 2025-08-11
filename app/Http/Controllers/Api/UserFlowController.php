@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Job;
-use App\Models\Event;
-use App\Models\Post;
 use App\Models\Connection;
+use App\Models\Event;
+use App\Models\Job;
+use App\Models\Post;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,44 +26,44 @@ class UserFlowController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // Get user's connections
             $connectionIds = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->where('status', 'accepted')
-            ->get()
-            ->map(function ($connection) use ($user) {
-                return $connection->user_id === $user->id 
-                    ? $connection->connected_user_id 
-                    : $connection->user_id;
-            });
+                ->where('status', 'accepted')
+                ->get()
+                ->map(function ($connection) use ($user) {
+                    return $connection->user_id === $user->id
+                        ? $connection->connected_user_id
+                        : $connection->user_id;
+                });
 
             // Get jobs from companies where connections work
             $jobs = Job::whereHas('employer.employees', function ($query) use ($connectionIds) {
                 $query->whereIn('user_id', $connectionIds);
             })
-            ->where('status', 'active')
-            ->where('application_deadline', '>', now())
-            ->with(['employer', 'employer.employees' => function ($query) use ($connectionIds) {
-                $query->whereIn('user_id', $connectionIds);
-            }])
-            ->limit(5)
-            ->get();
+                ->where('status', 'active')
+                ->where('application_deadline', '>', now())
+                ->with(['employer', 'employer.employees' => function ($query) use ($connectionIds) {
+                    $query->whereIn('user_id', $connectionIds);
+                }])
+                ->limit(5)
+                ->get();
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'jobs' => $jobs,
-                    'message' => 'Network-based job recommendations retrieved successfully'
-                ]
+                    'message' => 'Network-based job recommendations retrieved successfully',
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get network job recommendations: ' . $e->getMessage()
+                'message' => 'Failed to get network job recommendations: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -75,30 +75,30 @@ class UserFlowController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // Get other attendees of the event
             $attendees = User::whereHas('eventRegistrations', function ($query) use ($event) {
                 $query->where('event_id', $event->id)
-                      ->where('status', 'confirmed');
+                    ->where('status', 'confirmed');
             })
-            ->where('id', '!=', $user->id)
-            ->with(['profile', 'currentEmployment'])
-            ->limit(20)
-            ->get();
+                ->where('id', '!=', $user->id)
+                ->with(['profile', 'currentEmployment'])
+                ->limit(20)
+                ->get();
 
             // Add connection status for each attendee
             $connectionIds = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->pluck('user_id', 'connected_user_id')
-            ->merge(
-                Connection::where(function ($query) use ($user) {
-                    $query->where('user_id', $user->id)
-                          ->orWhere('connected_user_id', $user->id);
-                })
-                ->pluck('connected_user_id', 'user_id')
-            );
+                ->pluck('user_id', 'connected_user_id')
+                ->merge(
+                    Connection::where(function ($query) use ($user) {
+                        $query->where('user_id', $user->id)
+                            ->orWhere('connected_user_id', $user->id);
+                    })
+                        ->pluck('connected_user_id', 'user_id')
+                );
 
             $attendees->each(function ($attendee) use ($connectionIds) {
                 $attendee->connection_status = $connectionIds->has($attendee->id) ? 'connected' : 'none';
@@ -108,14 +108,14 @@ class UserFlowController extends Controller
                 'success' => true,
                 'data' => [
                     'attendees' => $attendees,
-                    'message' => 'Event attendees retrieved successfully'
-                ]
+                    'message' => 'Event attendees retrieved successfully',
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get event attendees: ' . $e->getMessage()
+                'message' => 'Failed to get event attendees: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -127,19 +127,19 @@ class UserFlowController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // Get posts from user's network that have low engagement
             $connectionIds = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->where('status', 'accepted')
-            ->get()
-            ->map(function ($connection) use ($user) {
-                return $connection->user_id === $user->id 
-                    ? $connection->connected_user_id 
-                    : $connection->user_id;
-            });
+                ->where('status', 'accepted')
+                ->get()
+                ->map(function ($connection) use ($user) {
+                    return $connection->user_id === $user->id
+                        ? $connection->connected_user_id
+                        : $connection->user_id;
+                });
 
             $posts = Post::whereIn('user_id', $connectionIds)
                 ->where('created_at', '>', now()->subDays(7))
@@ -157,14 +157,14 @@ class UserFlowController extends Controller
                 'success' => true,
                 'data' => [
                     'posts' => $posts,
-                    'message' => 'Engagement opportunities retrieved successfully'
-                ]
+                    'message' => 'Engagement opportunities retrieved successfully',
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get engagement opportunities: ' . $e->getMessage()
+                'message' => 'Failed to get engagement opportunities: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -176,42 +176,42 @@ class UserFlowController extends Controller
     {
         try {
             $user = Auth::user();
-            
+
             // Get user's current connections
             $currentConnectionIds = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->get()
-            ->map(function ($connection) use ($user) {
-                return $connection->user_id === $user->id 
-                    ? $connection->connected_user_id 
-                    : $connection->user_id;
-            })
-            ->push($user->id); // Exclude self
+                ->get()
+                ->map(function ($connection) use ($user) {
+                    return $connection->user_id === $user->id
+                        ? $connection->connected_user_id
+                        : $connection->user_id;
+                })
+                ->push($user->id); // Exclude self
 
             // Find users with mutual connections
             $recommendations = User::whereHas('connections', function ($query) use ($currentConnectionIds) {
                 $query->whereIn('user_id', $currentConnectionIds)
-                      ->orWhereIn('connected_user_id', $currentConnectionIds);
+                    ->orWhereIn('connected_user_id', $currentConnectionIds);
             })
-            ->whereNotIn('id', $currentConnectionIds)
-            ->with(['profile', 'currentEmployment'])
-            ->limit(10)
-            ->get();
+                ->whereNotIn('id', $currentConnectionIds)
+                ->with(['profile', 'currentEmployment'])
+                ->limit(10)
+                ->get();
 
             // Add mutual connection count
             $recommendations->each(function ($recommendation) use ($currentConnectionIds) {
                 $mutualCount = Connection::where(function ($query) use ($recommendation) {
                     $query->where('user_id', $recommendation->id)
-                          ->orWhere('connected_user_id', $recommendation->id);
+                        ->orWhere('connected_user_id', $recommendation->id);
                 })
-                ->where(function ($query) use ($currentConnectionIds) {
-                    $query->whereIn('user_id', $currentConnectionIds)
-                          ->orWhereIn('connected_user_id', $currentConnectionIds);
-                })
-                ->count();
-                
+                    ->where(function ($query) use ($currentConnectionIds) {
+                        $query->whereIn('user_id', $currentConnectionIds)
+                            ->orWhereIn('connected_user_id', $currentConnectionIds);
+                    })
+                    ->count();
+
                 $recommendation->mutual_connections_count = $mutualCount;
             });
 
@@ -219,14 +219,14 @@ class UserFlowController extends Controller
                 'success' => true,
                 'data' => [
                     'recommendations' => $recommendations,
-                    'message' => 'Connection recommendations retrieved successfully'
-                ]
+                    'message' => 'Connection recommendations retrieved successfully',
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get connection recommendations: ' . $e->getMessage()
+                'message' => 'Failed to get connection recommendations: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -254,19 +254,19 @@ class UserFlowController extends Controller
                 $insights[] = [
                     'type' => 'skill_gap',
                     'title' => 'Skill Development Opportunity',
-                    'message' => 'Consider learning ' . $trendingSkills->first()->skill_name . ' - it\'s in high demand',
+                    'message' => 'Consider learning '.$trendingSkills->first()->skill_name.' - it\'s in high demand',
                     'action' => 'View Skill Recommendations',
-                    'data' => $trendingSkills
+                    'data' => $trendingSkills,
                 ];
             }
 
             // Network growth suggestions
             $connectionCount = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->where('status', 'accepted')
-            ->count();
+                ->where('status', 'accepted')
+                ->count();
 
             if ($connectionCount < 10) {
                 $insights[] = [
@@ -274,7 +274,7 @@ class UserFlowController extends Controller
                     'title' => 'Expand Your Network',
                     'message' => 'Connect with more alumni to unlock better opportunities',
                     'action' => 'Find Alumni',
-                    'data' => ['current_connections' => $connectionCount]
+                    'data' => ['current_connections' => $connectionCount],
                 ];
             }
 
@@ -282,7 +282,7 @@ class UserFlowController extends Controller
             $similarProfiles = User::where('id', '!=', $user->id)
                 ->whereHas('profile', function ($query) use ($user) {
                     $query->where('course_id', $user->profile->course_id ?? null)
-                          ->where('graduation_year', '<=', ($user->profile->graduation_year ?? 0) - 2);
+                        ->where('graduation_year', '<=', ($user->profile->graduation_year ?? 0) - 2);
                 })
                 ->with('currentEmployment')
                 ->limit(5)
@@ -294,7 +294,7 @@ class UserFlowController extends Controller
                     'title' => 'Career Path Insights',
                     'message' => 'See how alumni from your course have progressed in their careers',
                     'action' => 'View Career Paths',
-                    'data' => $similarProfiles
+                    'data' => $similarProfiles,
                 ];
             }
 
@@ -302,14 +302,14 @@ class UserFlowController extends Controller
                 'success' => true,
                 'data' => [
                     'insights' => $insights,
-                    'message' => 'Career insights retrieved successfully'
-                ]
+                    'message' => 'Career insights retrieved successfully',
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get career insights: ' . $e->getMessage()
+                'message' => 'Failed to get career insights: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -322,28 +322,28 @@ class UserFlowController extends Controller
         $request->validate([
             'referrer_id' => 'required|exists:users,id',
             'job_id' => 'required|exists:jobs,id',
-            'message' => 'nullable|string|max:1000'
+            'message' => 'nullable|string|max:1000',
         ]);
 
         try {
             $user = Auth::user();
-            
+
             // Check if connection exists
             $connection = Connection::where(function ($query) use ($user, $request) {
                 $query->where('user_id', $user->id)
-                      ->where('connected_user_id', $request->referrer_id);
+                    ->where('connected_user_id', $request->referrer_id);
             })
-            ->orWhere(function ($query) use ($user, $request) {
-                $query->where('user_id', $request->referrer_id)
-                      ->where('connected_user_id', $user->id);
-            })
-            ->where('status', 'accepted')
-            ->first();
+                ->orWhere(function ($query) use ($user, $request) {
+                    $query->where('user_id', $request->referrer_id)
+                        ->where('connected_user_id', $user->id);
+                })
+                ->where('status', 'accepted')
+                ->first();
 
-            if (!$connection) {
+            if (! $connection) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You must be connected to request a referral'
+                    'message' => 'You must be connected to request a referral',
                 ], 403);
             }
 
@@ -355,20 +355,20 @@ class UserFlowController extends Controller
                 'message' => $request->message,
                 'status' => 'pending',
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
             // TODO: Send notification to referrer
 
             return response()->json([
                 'success' => true,
-                'message' => 'Referral request sent successfully'
+                'message' => 'Referral request sent successfully',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send referral request: ' . $e->getMessage()
+                'message' => 'Failed to send referral request: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -382,28 +382,28 @@ class UserFlowController extends Controller
             'connection_id' => 'required|exists:users,id',
             'target_user_id' => 'nullable|exists:users,id',
             'job_id' => 'nullable|exists:jobs,id',
-            'message' => 'required|string|max:1000'
+            'message' => 'required|string|max:1000',
         ]);
 
         try {
             $user = Auth::user();
-            
+
             // Verify connection exists
             $connection = Connection::where(function ($query) use ($user, $request) {
                 $query->where('user_id', $user->id)
-                      ->where('connected_user_id', $request->connection_id);
+                    ->where('connected_user_id', $request->connection_id);
             })
-            ->orWhere(function ($query) use ($user, $request) {
-                $query->where('user_id', $request->connection_id)
-                      ->where('connected_user_id', $user->id);
-            })
-            ->where('status', 'accepted')
-            ->first();
+                ->orWhere(function ($query) use ($user, $request) {
+                    $query->where('user_id', $request->connection_id)
+                        ->where('connected_user_id', $user->id);
+                })
+                ->where('status', 'accepted')
+                ->first();
 
-            if (!$connection) {
+            if (! $connection) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Connection not found'
+                    'message' => 'Connection not found',
                 ], 404);
             }
 
@@ -416,20 +416,20 @@ class UserFlowController extends Controller
                 'message' => $request->message,
                 'status' => 'pending',
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
             // TODO: Send notification to connector
 
             return response()->json([
                 'success' => true,
-                'message' => 'Introduction request sent successfully'
+                'message' => 'Introduction request sent successfully',
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send introduction request: ' . $e->getMessage()
+                'message' => 'Failed to send introduction request: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -443,12 +443,12 @@ class UserFlowController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'feedback' => 'nullable|string|max:2000',
             'would_recommend' => 'required|boolean',
-            'topics_of_interest' => 'nullable|array'
+            'topics_of_interest' => 'nullable|array',
         ]);
 
         try {
             $user = Auth::user();
-            
+
             // Check if user attended the event
             $registration = DB::table('event_registrations')
                 ->where('event_id', $event->id)
@@ -456,10 +456,10 @@ class UserFlowController extends Controller
                 ->where('status', 'confirmed')
                 ->first();
 
-            if (!$registration) {
+            if (! $registration) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You must have attended the event to provide feedback'
+                    'message' => 'You must have attended the event to provide feedback',
                 ], 403);
             }
 
@@ -472,12 +472,12 @@ class UserFlowController extends Controller
                 'would_recommend' => $request->would_recommend,
                 'topics_of_interest' => json_encode($request->topics_of_interest ?? []),
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
             // Get follow-up recommendations based on feedback
             $recommendations = [];
-            
+
             if ($request->topics_of_interest) {
                 $relatedEvents = Event::where('status', 'published')
                     ->where('id', '!=', $event->id)
@@ -485,7 +485,7 @@ class UserFlowController extends Controller
                     ->where(function ($query) use ($request) {
                         foreach ($request->topics_of_interest as $topic) {
                             $query->orWhere('description', 'like', "%{$topic}%")
-                                  ->orWhere('title', 'like', "%{$topic}%");
+                                ->orWhere('title', 'like', "%{$topic}%");
                         }
                     })
                     ->limit(3)
@@ -500,14 +500,14 @@ class UserFlowController extends Controller
                 'success' => true,
                 'data' => [
                     'message' => 'Thank you for your feedback!',
-                    'recommendations' => $recommendations
-                ]
+                    'recommendations' => $recommendations,
+                ],
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to submit feedback: ' . $e->getMessage()
+                'message' => 'Failed to submit feedback: '.$e->getMessage(),
             ], 500);
         }
     }

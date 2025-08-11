@@ -2,21 +2,22 @@
 
 namespace App\Services;
 
-use App\Models\JobPosting;
-use App\Models\JobMatchScore;
-use App\Models\User;
-use App\Models\Connection;
 use App\Models\Circle;
+use App\Models\Connection;
+use App\Models\JobMatchScore;
+use App\Models\JobPosting;
+use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class JobMatchingService
 {
     // Scoring weights (must total 100%)
     const WEIGHT_CONNECTIONS = 0.35;  // 35%
+
     const WEIGHT_SKILLS = 0.25;       // 25%
+
     const WEIGHT_EDUCATION = 0.20;    // 20%
+
     const WEIGHT_CIRCLES = 0.20;      // 20%
 
     /**
@@ -53,7 +54,7 @@ class JobMatchingService
 
         // Score increases with more connections, but with diminishing returns
         $baseScore = min($connectionCount * 20, 80); // Max 80 for 4+ connections
-        
+
         // Bonus for senior connections or hiring managers
         $seniorBonus = $mutualConnections->filter(function ($connection) {
             return $this->isSeniorRole($connection->title ?? '');
@@ -92,7 +93,7 @@ class JobMatchingService
     public function getEducationScore(User $user, JobPosting $job): float
     {
         $userEducations = $user->educations ?? collect();
-        
+
         if ($userEducations->isEmpty()) {
             return 30; // Low score if no education data
         }
@@ -131,15 +132,15 @@ class JobMatchingService
     public function getCircleScore(User $user, JobPosting $job): float
     {
         $userCircles = $user->circles->pluck('id');
-        
+
         if ($userCircles->isEmpty()) {
             return 0;
         }
 
         // Find employees at the company who share circles with the user
         $companyEmployees = User::whereHas('careerTimelines', function ($query) use ($job) {
-            $query->where('company', 'ILIKE', '%' . $job->company->name . '%')
-                  ->where('is_current', true);
+            $query->where('company', 'ILIKE', '%'.$job->company->name.'%')
+                ->where('is_current', true);
         })->get();
 
         if ($companyEmployees->isEmpty()) {
@@ -161,7 +162,7 @@ class JobMatchingService
         }
 
         $overlapPercentage = ($sharedCircleCount / $totalPossibleShares) * 100;
-        
+
         // Bonus for having many employees in shared circles
         $employeeBonus = min($companyEmployees->count() * 5, 20);
 
@@ -182,7 +183,7 @@ class JobMatchingService
                 'type' => 'connections',
                 'reason' => "You have {$mutualConnections->count()} connection(s) at {$job->company->name}",
                 'score' => $this->getConnectionScore($user, $job),
-                'details' => $mutualConnections->take(3)->pluck('name')->toArray()
+                'details' => $mutualConnections->take(3)->pluck('name')->toArray(),
             ];
         }
 
@@ -194,12 +195,12 @@ class JobMatchingService
             array_map('strtolower', $jobSkills)
         );
 
-        if (!empty($matchingSkills)) {
+        if (! empty($matchingSkills)) {
             $reasons[] = [
                 'type' => 'skills',
-                'reason' => "Your skills match " . count($matchingSkills) . " of the required skills",
+                'reason' => 'Your skills match '.count($matchingSkills).' of the required skills',
                 'score' => $this->getSkillsScore($user, $job),
-                'details' => array_slice($matchingSkills, 0, 5)
+                'details' => array_slice($matchingSkills, 0, 5),
             ];
         }
 
@@ -208,9 +209,9 @@ class JobMatchingService
         if ($educationScore > 50) {
             $reasons[] = [
                 'type' => 'education',
-                'reason' => "Your educational background is relevant to this role",
+                'reason' => 'Your educational background is relevant to this role',
                 'score' => $educationScore,
-                'details' => $user->educations->take(2)->pluck('degree')->toArray()
+                'details' => $user->educations->take(2)->pluck('degree')->toArray(),
             ];
         }
 
@@ -219,14 +220,14 @@ class JobMatchingService
         if ($circleScore > 0) {
             $reasons[] = [
                 'type' => 'circles',
-                'reason' => "You share alumni circles with employees at this company",
+                'reason' => 'You share alumni circles with employees at this company',
                 'score' => $circleScore,
-                'details' => []
+                'details' => [],
             ];
         }
 
         // Sort by score descending
-        usort($reasons, fn($a, $b) => $b['score'] <=> $a['score']);
+        usort($reasons, fn ($a, $b) => $b['score'] <=> $a['score']);
 
         return $reasons;
     }
@@ -238,17 +239,17 @@ class JobMatchingService
     {
         return User::whereHas('connections', function ($query) use ($user) {
             $query->where('connected_user_id', $user->id)
-                  ->where('status', 'accepted');
+                ->where('status', 'accepted');
         })
-        ->whereHas('careerTimelines', function ($query) use ($job) {
-            $query->where('company', 'ILIKE', '%' . $job->company->name . '%')
-                  ->where('is_current', true);
-        })
-        ->with(['careerTimelines' => function ($query) use ($job) {
-            $query->where('company', 'ILIKE', '%' . $job->company->name . '%')
-                  ->where('is_current', true);
-        }])
-        ->get();
+            ->whereHas('careerTimelines', function ($query) use ($job) {
+                $query->where('company', 'ILIKE', '%'.$job->company->name.'%')
+                    ->where('is_current', true);
+            })
+            ->with(['careerTimelines' => function ($query) use ($job) {
+                $query->where('company', 'ILIKE', '%'.$job->company->name.'%')
+                    ->where('is_current', true);
+            }])
+            ->get();
     }
 
     /**
@@ -309,19 +310,19 @@ class JobMatchingService
     {
         $techDegrees = ['computer science', 'software engineering', 'information technology', 'engineering'];
         $businessDegrees = ['business', 'mba', 'management', 'marketing', 'finance'];
-        
-        $isTechJob = str_contains($jobTitle, 'engineer') || str_contains($jobTitle, 'developer') || 
+
+        $isTechJob = str_contains($jobTitle, 'engineer') || str_contains($jobTitle, 'developer') ||
                      str_contains($jobTitle, 'technical') || str_contains($jobDescription, 'programming');
-        
+
         $isBusinessJob = str_contains($jobTitle, 'manager') || str_contains($jobTitle, 'director') ||
                         str_contains($jobTitle, 'analyst') || str_contains($jobDescription, 'business');
 
         if ($isTechJob) {
-            return collect($techDegrees)->some(fn($techDegree) => str_contains($degree, $techDegree));
+            return collect($techDegrees)->some(fn ($techDegree) => str_contains($degree, $techDegree));
         }
 
         if ($isBusinessJob) {
-            return collect($businessDegrees)->some(fn($businessDegree) => str_contains($degree, $businessDegree));
+            return collect($businessDegrees)->some(fn ($businessDegree) => str_contains($degree, $businessDegree));
         }
 
         return false;
@@ -333,7 +334,7 @@ class JobMatchingService
     private function isFieldRelevant(string $field, string $jobTitle, string $jobDescription): bool
     {
         $fieldWords = explode(' ', $field);
-        $jobWords = explode(' ', $jobTitle . ' ' . $jobDescription);
+        $jobWords = explode(' ', $jobTitle.' '.$jobDescription);
 
         return collect($fieldWords)->intersect($jobWords)->isNotEmpty();
     }
@@ -344,8 +345,8 @@ class JobMatchingService
     private function isPrestigiousSchool(string $school): bool
     {
         $prestigiousKeywords = ['harvard', 'stanford', 'mit', 'berkeley', 'yale', 'princeton', 'columbia'];
-        
-        return collect($prestigiousKeywords)->some(fn($keyword) => str_contains($school, $keyword));
+
+        return collect($prestigiousKeywords)->some(fn ($keyword) => str_contains($school, $keyword));
     }
 
     /**
@@ -354,7 +355,7 @@ class JobMatchingService
     private function isSeniorRole(string $title): bool
     {
         $seniorKeywords = ['senior', 'lead', 'principal', 'director', 'manager', 'vp', 'head of', 'chief'];
-        
-        return collect($seniorKeywords)->some(fn($keyword) => str_contains(strtolower($title), $keyword));
+
+        return collect($seniorKeywords)->some(fn ($keyword) => str_contains(strtolower($title), $keyword));
     }
 }

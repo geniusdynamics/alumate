@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
+use App\Mail\CareerCalculatorReport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\CareerCalculatorReport;
 
 class CareerCalculatorService
 {
@@ -32,7 +31,7 @@ class CareerCalculatorService
         'energy' => 1.2,
         'agriculture' => 0.9,
         'real_estate' => 1.1,
-        'other' => 1.0
+        'other' => 1.0,
     ];
 
     /**
@@ -60,7 +59,7 @@ class CareerCalculatorService
         'charlotte' => 1.0,
         'tampa' => 0.95,
         'remote' => 1.0,
-        'default' => 1.0
+        'default' => 1.0,
     ];
 
     /**
@@ -78,7 +77,7 @@ class CareerCalculatorService
         'entrepreneur' => 75000,
         'consultant' => 95000,
         'between_jobs' => 70000,
-        'career_change' => 70000
+        'career_change' => 70000,
     ];
 
     /**
@@ -111,13 +110,13 @@ class CareerCalculatorService
                     'calculated_at' => now(),
                     'industry_multiplier' => $this->getIndustryMultiplier($input['industry']),
                     'location_multiplier' => $this->getLocationMultiplier($input['location'] ?? ''),
-                    'experience_factor' => $this->getExperienceFactor($input['experienceYears'])
-                ]
+                    'experience_factor' => $this->getExperienceFactor($input['experienceYears']),
+                ],
             ];
         } catch (\Exception $e) {
             Log::error('Career calculator error', [
                 'input' => $input,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -129,9 +128,9 @@ class CareerCalculatorService
     private function calculateBaseSalary(array $input): int
     {
         $baseSalary = self::BASE_SALARIES[$input['currentRole']] ?? 70000;
-        
+
         // Apply current salary if provided
-        if (!empty($input['currentSalary']) && $input['currentSalary'] > 0) {
+        if (! empty($input['currentSalary']) && $input['currentSalary'] > 0) {
             $baseSalary = $input['currentSalary'];
         }
 
@@ -194,7 +193,7 @@ class CareerCalculatorService
         $baseMonths = 18; // Base 18 months
 
         // Adjust based on goal timeline
-        if (!empty($input['goalTimeline'])) {
+        if (! empty($input['goalTimeline'])) {
             switch ($input['goalTimeline']) {
                 case '3_months':
                     $baseMonths = 6;
@@ -220,7 +219,7 @@ class CareerCalculatorService
         }
 
         // Adjust based on time investment
-        if (!empty($input['timeInvestment'])) {
+        if (! empty($input['timeInvestment'])) {
             switch ($input['timeInvestment']) {
                 case '10_hours':
                     $baseMonths -= 3;
@@ -273,7 +272,7 @@ class CareerCalculatorService
         $baseProbability += ($networkingLevel - 3) * 5;
 
         // Adjust based on time investment
-        if (!empty($input['timeInvestment'])) {
+        if (! empty($input['timeInvestment'])) {
             switch ($input['timeInvestment']) {
                 case '10_hours':
                     $baseProbability += 15;
@@ -350,7 +349,7 @@ class CareerCalculatorService
                 'action' => 'Join 2-3 industry-specific alumni groups and attend monthly events',
                 'priority' => 'high',
                 'timeframe' => '1-2 months',
-                'expectedOutcome' => 'Build 15-20 new professional connections'
+                'expectedOutcome' => 'Build 15-20 new professional connections',
             ];
         }
 
@@ -361,7 +360,7 @@ class CareerCalculatorService
                 'action' => 'Connect with alumni in similar roles to benchmark compensation and negotiation strategies',
                 'priority' => 'high',
                 'timeframe' => '2-3 months',
-                'expectedOutcome' => 'Gain market insights for 15-25% salary increase'
+                'expectedOutcome' => 'Gain market insights for 15-25% salary increase',
             ];
         }
 
@@ -371,7 +370,7 @@ class CareerCalculatorService
                 'action' => 'Leverage alumni network for referrals and insider information on job openings',
                 'priority' => 'high',
                 'timeframe' => '1-3 months',
-                'expectedOutcome' => 'Access to hidden job market and referral opportunities'
+                'expectedOutcome' => 'Access to hidden job market and referral opportunities',
             ];
         }
 
@@ -381,7 +380,7 @@ class CareerCalculatorService
                 'action' => 'Find mentors in your target skill areas and join relevant professional development groups',
                 'priority' => 'medium',
                 'timeframe' => '2-4 months',
-                'expectedOutcome' => 'Accelerated skill acquisition and career guidance'
+                'expectedOutcome' => 'Accelerated skill acquisition and career guidance',
             ];
         }
 
@@ -391,7 +390,7 @@ class CareerCalculatorService
                 'action' => 'Connect with alumni in executive positions for mentorship and leadership insights',
                 'priority' => 'high',
                 'timeframe' => '3-6 months',
-                'expectedOutcome' => 'Leadership skills and executive presence development'
+                'expectedOutcome' => 'Leadership skills and executive presence development',
             ];
         }
 
@@ -402,7 +401,7 @@ class CareerCalculatorService
                 'action' => 'Set up informational interviews with alumni in your target companies',
                 'priority' => 'high',
                 'timeframe' => '1-2 months',
-                'expectedOutcome' => 'Insider knowledge of upcoming opportunities'
+                'expectedOutcome' => 'Insider knowledge of upcoming opportunities',
             ];
         }
 
@@ -412,7 +411,7 @@ class CareerCalculatorService
                 'action' => 'Schedule career coaching sessions with experienced alumni mentors',
                 'priority' => 'medium',
                 'timeframe' => '1-3 months',
-                'expectedOutcome' => 'Clear career path and actionable next steps'
+                'expectedOutcome' => 'Clear career path and actionable next steps',
             ];
         }
 
@@ -423,7 +422,7 @@ class CareerCalculatorService
                 'action' => 'Complete your profile and actively participate in alumni discussions',
                 'priority' => 'medium',
                 'timeframe' => '2-4 weeks',
-                'expectedOutcome' => 'Increased visibility and networking opportunities'
+                'expectedOutcome' => 'Increased visibility and networking opportunities',
             ];
         }
 
@@ -437,20 +436,21 @@ class CareerCalculatorService
     {
         try {
             Mail::to($email)->send(new CareerCalculatorReport($formData, $result));
-            
+
             // Log the email send for analytics
             Log::info('Career calculator email report sent', [
                 'email' => $email,
                 'projected_increase' => $result['projectedSalaryIncrease'],
-                'success_probability' => $result['successProbability']
+                'success_probability' => $result['successProbability'],
             ]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to send career calculator email', [
                 'email' => $email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -461,15 +461,15 @@ class CareerCalculatorService
     private function validateInput(array $input): void
     {
         $required = ['currentRole', 'industry', 'experienceYears', 'careerGoals'];
-        
+
         foreach ($required as $field) {
             if (empty($input[$field])) {
                 throw new \InvalidArgumentException("Missing required field: {$field}");
             }
         }
 
-        if (!is_array($input['careerGoals']) || empty($input['careerGoals'])) {
-            throw new \InvalidArgumentException("Career goals must be a non-empty array");
+        if (! is_array($input['careerGoals']) || empty($input['careerGoals'])) {
+            throw new \InvalidArgumentException('Career goals must be a non-empty array');
         }
     }
 
@@ -481,23 +481,34 @@ class CareerCalculatorService
     private function getLocationMultiplier(string $location): float
     {
         $location = strtolower($location);
-        
+
         foreach (self::LOCATION_MULTIPLIERS as $key => $multiplier) {
             if (str_contains($location, $key)) {
                 return $multiplier;
             }
         }
-        
+
         return self::LOCATION_MULTIPLIERS['default'];
     }
 
     private function getExperienceFactor(int $years): float
     {
-        if ($years <= 1) return 0.8;
-        if ($years <= 3) return 0.9;
-        if ($years <= 5) return 1.0;
-        if ($years <= 10) return 1.1;
-        if ($years <= 15) return 1.2;
+        if ($years <= 1) {
+            return 0.8;
+        }
+        if ($years <= 3) {
+            return 0.9;
+        }
+        if ($years <= 5) {
+            return 1.0;
+        }
+        if ($years <= 10) {
+            return 1.1;
+        }
+        if ($years <= 15) {
+            return 1.2;
+        }
+
         return 1.3;
     }
 
@@ -513,7 +524,7 @@ class CareerCalculatorService
             'professional' => 0.15,
             'certification' => 0.03,
             'bootcamp' => 0.04,
-            'self_taught' => 0.02
+            'self_taught' => 0.02,
         ];
 
         return $bonuses[$level] ?? 0;
@@ -524,7 +535,7 @@ class CareerCalculatorService
         $timeInvestment = $input['timeInvestment'] ?? '3_hours';
         $hourlyRate = 50; // Estimated opportunity cost per hour
 
-        $hoursPerWeek = match($timeInvestment) {
+        $hoursPerWeek = match ($timeInvestment) {
             '1_hour' => 1.5,
             '3_hours' => 4,
             '6_hours' => 8,

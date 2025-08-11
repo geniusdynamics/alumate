@@ -1,9 +1,9 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
 // Bootstrap Laravel
-$app = require_once __DIR__ . '/../../bootstrap/app.php';
+$app = require_once __DIR__.'/../../bootstrap/app.php';
 $app->make('Illuminate\Contracts\Console\Kernel')->bootstrap();
 
 echo "🔍 Testing Navigation Fixes Implementation\n";
@@ -16,7 +16,7 @@ $routes = $router->getRoutes();
 
 $testRoutes = [
     'super-admin.content',
-    'super-admin.activity', 
+    'super-admin.activity',
     'super-admin.database',
     'super-admin.performance',
     'super-admin.notifications',
@@ -28,7 +28,7 @@ $testRoutes = [
     'career.timeline',
     'jobs.dashboard',
     'events.index',
-    'stories.index'
+    'stories.index',
 ];
 
 foreach ($testRoutes as $routeName) {
@@ -44,10 +44,10 @@ foreach ($testRoutes as $routeName) {
 echo "\n2. Testing Controllers...\n";
 $controllers = [
     'App\Http\Controllers\SocialController',
-    'App\Http\Controllers\AlumniController', 
+    'App\Http\Controllers\AlumniController',
     'App\Http\Controllers\CareerController',
     'App\Http\Controllers\EventController',
-    'App\Http\Controllers\SuccessStoryController'
+    'App\Http\Controllers\SuccessStoryController',
 ];
 
 foreach ($controllers as $controller) {
@@ -70,7 +70,7 @@ $vuePages = [
     'resources/js/Pages/Social/Timeline.vue',
     'resources/js/Pages/Alumni/Directory.vue',
     'resources/js/Pages/Jobs/Dashboard.vue',
-    'resources/js/Pages/Career/Timeline.vue'
+    'resources/js/Pages/Career/Timeline.vue',
 ];
 
 foreach ($vuePages as $page) {
@@ -93,7 +93,7 @@ $models = [
     'App\Models\MentorProfile',
     'App\Models\MentorshipRequest',
     'App\Models\Event',
-    'App\Models\SuccessStory'
+    'App\Models\SuccessStory',
 ];
 
 foreach ($models as $model) {
@@ -111,7 +111,7 @@ $components = [
     'resources/js/Components/PostCreator.vue',
     'resources/js/Components/Timeline.vue',
     'resources/js/Components/AlumniCard.vue',
-    'resources/js/Components/JobCard.vue'
+    'resources/js/Components/JobCard.vue',
 ];
 
 foreach ($components as $component) {

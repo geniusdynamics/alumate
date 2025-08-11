@@ -43,7 +43,7 @@ class SocialProfile extends Model
      */
     public function getAvatarUrlAttribute(): ?string
     {
-        if (!$this->profile_data) {
+        if (! $this->profile_data) {
             return null;
         }
 
@@ -62,7 +62,7 @@ class SocialProfile extends Model
      */
     public function getProfileUrlAttribute(): ?string
     {
-        if (!$this->profile_data) {
+        if (! $this->profile_data) {
             return null;
         }
 
@@ -81,12 +81,12 @@ class SocialProfile extends Model
      */
     public function getDisplayNameAttribute(): ?string
     {
-        if (!$this->profile_data) {
+        if (! $this->profile_data) {
             return null;
         }
 
         return match ($this->provider) {
-            'linkedin' => $this->profile_data['localizedFirstName'] . ' ' . $this->profile_data['localizedLastName'],
+            'linkedin' => $this->profile_data['localizedFirstName'].' '.$this->profile_data['localizedLastName'],
             'github' => $this->profile_data['name'] ?? $this->profile_data['login'],
             'twitter' => $this->profile_data['name'] ?? $this->profile_data['username'],
             'facebook' => $this->profile_data['name'] ?? null,
@@ -100,7 +100,7 @@ class SocialProfile extends Model
      */
     public function isTokenExpired(): bool
     {
-        if (!$this->profile_data || !isset($this->profile_data['expires_at'])) {
+        if (! $this->profile_data || ! isset($this->profile_data['expires_at'])) {
             return false;
         }
 

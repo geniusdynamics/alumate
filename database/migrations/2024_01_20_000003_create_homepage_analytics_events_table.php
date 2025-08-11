@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('utm_campaign')->nullable();
             $table->timestamp('event_timestamp');
             $table->timestamps();
-            
+
             $table->index(['event_type', 'event_timestamp']);
             $table->index(['session_id', 'event_timestamp']);
             $table->index(['user_id', 'event_timestamp']);

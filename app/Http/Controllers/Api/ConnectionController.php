@@ -15,7 +15,7 @@ class ConnectionController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'message' => 'nullable|string|max:500'
+            'message' => 'nullable|string|max:500',
         ]);
 
         $user = Auth::user();
@@ -24,22 +24,22 @@ class ConnectionController extends Controller
         // Check if user is trying to connect to themselves
         if ($user->id === $targetUserId) {
             throw ValidationException::withMessages([
-                'user_id' => 'You cannot connect to yourself.'
+                'user_id' => 'You cannot connect to yourself.',
             ]);
         }
 
         // Check if connection already exists
         $existingConnection = Connection::where(function ($query) use ($user, $targetUserId) {
             $query->where('user_id', $user->id)
-                  ->where('connected_user_id', $targetUserId);
+                ->where('connected_user_id', $targetUserId);
         })->orWhere(function ($query) use ($user, $targetUserId) {
             $query->where('user_id', $targetUserId)
-                  ->where('connected_user_id', $user->id);
+                ->where('connected_user_id', $user->id);
         })->first();
 
         if ($existingConnection) {
             throw ValidationException::withMessages([
-                'user_id' => 'Connection already exists or is pending.'
+                'user_id' => 'Connection already exists or is pending.',
             ]);
         }
 
@@ -55,7 +55,7 @@ class ConnectionController extends Controller
 
         return response()->json([
             'message' => 'Connection request sent successfully.',
-            'connection' => $connection
+            'connection' => $connection,
         ]);
     }
 
@@ -71,21 +71,21 @@ class ConnectionController extends Controller
         // Check if connection is still pending
         if ($connection->status !== 'pending') {
             throw ValidationException::withMessages([
-                'connection' => 'This connection request is no longer pending.'
+                'connection' => 'This connection request is no longer pending.',
             ]);
         }
 
         // Accept the connection
         $connection->update([
             'status' => 'accepted',
-            'accepted_at' => now()
+            'accepted_at' => now(),
         ]);
 
         // TODO: Send notification to requester
 
         return response()->json([
             'message' => 'Connection request accepted.',
-            'connection' => $connection->load(['user', 'connectedUser'])
+            'connection' => $connection->load(['user', 'connectedUser']),
         ]);
     }
 
@@ -101,18 +101,18 @@ class ConnectionController extends Controller
         // Check if connection is still pending
         if ($connection->status !== 'pending') {
             throw ValidationException::withMessages([
-                'connection' => 'This connection request is no longer pending.'
+                'connection' => 'This connection request is no longer pending.',
             ]);
         }
 
         // Decline the connection
         $connection->update([
             'status' => 'declined',
-            'declined_at' => now()
+            'declined_at' => now(),
         ]);
 
         return response()->json([
-            'message' => 'Connection request declined.'
+            'message' => 'Connection request declined.',
         ]);
     }
 
@@ -128,7 +128,7 @@ class ConnectionController extends Controller
         // Check if connection is accepted
         if ($connection->status !== 'accepted') {
             throw ValidationException::withMessages([
-                'connection' => 'You can only remove accepted connections.'
+                'connection' => 'You can only remove accepted connections.',
             ]);
         }
 
@@ -136,7 +136,7 @@ class ConnectionController extends Controller
         $connection->delete();
 
         return response()->json([
-            'message' => 'Connection removed successfully.'
+            'message' => 'Connection removed successfully.',
         ]);
     }
 
@@ -146,7 +146,7 @@ class ConnectionController extends Controller
             'participant_id' => 'required|exists:users,id',
             'context' => 'nullable|string',
             'context_id' => 'nullable|integer',
-            'initial_message' => 'nullable|string|max:1000'
+            'initial_message' => 'nullable|string|max:1000',
         ]);
 
         $user = Auth::user();
@@ -156,7 +156,7 @@ class ConnectionController extends Controller
         $existingConversation = \DB::table('conversations')
             ->where(function ($query) use ($user, $participantId) {
                 $query->whereJsonContains('participants', [$user->id, $participantId])
-                      ->orWhereJsonContains('participants', [$participantId, $user->id]);
+                    ->orWhereJsonContains('participants', [$participantId, $user->id]);
             })
             ->first();
 
@@ -164,7 +164,7 @@ class ConnectionController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => ['conversation_id' => $existingConversation->id],
-                'message' => 'Conversation already exists.'
+                'message' => 'Conversation already exists.',
             ]);
         }
 
@@ -174,7 +174,7 @@ class ConnectionController extends Controller
             'context' => $request->context,
             'context_id' => $request->context_id,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         // Send initial message if provided
@@ -184,14 +184,14 @@ class ConnectionController extends Controller
                 'sender_id' => $user->id,
                 'content' => $request->initial_message,
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
         }
 
         return response()->json([
             'success' => true,
             'data' => ['conversation_id' => $conversationId],
-            'message' => 'Conversation started successfully.'
+            'message' => 'Conversation started successfully.',
         ]);
     }
 }

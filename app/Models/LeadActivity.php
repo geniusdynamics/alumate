@@ -46,7 +46,7 @@ class LeadActivity extends Model
      */
     public function isCompleted(): bool
     {
-        return !is_null($this->completed_at);
+        return ! is_null($this->completed_at);
     }
 
     /**
@@ -54,13 +54,13 @@ class LeadActivity extends Model
      */
     public function isScheduled(): bool
     {
-        return !is_null($this->scheduled_at);
+        return ! is_null($this->scheduled_at);
     }
 
     /**
      * Mark activity as completed
      */
-    public function markCompleted(string $outcome = null): void
+    public function markCompleted(?string $outcome = null): void
     {
         $this->update([
             'completed_at' => now(),
@@ -98,7 +98,7 @@ class LeadActivity extends Model
     public function scopeOverdue($query)
     {
         return $query->whereNotNull('scheduled_at')
-                    ->whereNull('completed_at')
-                    ->where('scheduled_at', '<', now());
+            ->whereNull('completed_at')
+            ->where('scheduled_at', '<', now());
     }
 }

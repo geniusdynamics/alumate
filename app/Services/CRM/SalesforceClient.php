@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Http;
 class SalesforceClient implements CrmClientInterface
 {
     private array $config;
+
     private string $baseUrl;
+
     private ?string $accessToken = null;
 
     public function __construct(array $config)
@@ -20,7 +22,7 @@ class SalesforceClient implements CrmClientInterface
     {
         try {
             $this->authenticate();
-            
+
             $response = $this->makeRequest('GET', '/services/data/v58.0/sobjects/Lead/describe');
 
             return [
@@ -53,7 +55,7 @@ class SalesforceClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to create lead in Salesforce: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to create lead in Salesforce: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function updateLead(string $crmId, array $data): array
@@ -72,7 +74,7 @@ class SalesforceClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to update lead in Salesforce: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to update lead in Salesforce: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function getLead(string $crmId): array
@@ -85,7 +87,7 @@ class SalesforceClient implements CrmClientInterface
             return $response['data'];
         }
 
-        throw new \Exception('Failed to get lead from Salesforce: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to get lead from Salesforce: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function deleteLead(string $crmId): bool
@@ -108,7 +110,7 @@ class SalesforceClient implements CrmClientInterface
         $soql = "SELECT Id, FirstName, LastName, Email, Company FROM Lead WHERE {$whereClause}";
 
         $response = $this->makeRequest('GET', '/services/data/v58.0/query', [
-            'q' => $soql
+            'q' => $soql,
         ]);
 
         if ($response['status'] === 200) {
@@ -130,7 +132,7 @@ class SalesforceClient implements CrmClientInterface
                     'name' => $field['name'],
                     'label' => $field['label'],
                     'type' => $field['type'],
-                    'required' => !$field['nillable'] && !$field['defaultedOnCreate'],
+                    'required' => ! $field['nillable'] && ! $field['defaultedOnCreate'],
                 ];
             }, $response['data']['fields'] ?? []);
         }
@@ -144,7 +146,7 @@ class SalesforceClient implements CrmClientInterface
             return;
         }
 
-        $response = Http::asForm()->post($this->baseUrl . '/services/oauth2/token', [
+        $response = Http::asForm()->post($this->baseUrl.'/services/oauth2/token', [
             'grant_type' => 'client_credentials',
             'client_id' => $this->config['client_id'],
             'client_secret' => $this->config['client_secret'],
@@ -155,7 +157,7 @@ class SalesforceClient implements CrmClientInterface
             $this->accessToken = $data['access_token'];
             $this->baseUrl = $data['instance_url'];
         } else {
-            throw new \Exception('Failed to authenticate with Salesforce: ' . $response->body());
+            throw new \Exception('Failed to authenticate with Salesforce: '.$response->body());
         }
     }
 
@@ -163,14 +165,14 @@ class SalesforceClient implements CrmClientInterface
     {
         try {
             $request = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Authorization' => 'Bearer '.$this->accessToken,
                 'Content-Type' => 'application/json',
             ]);
 
-            if ($method === 'GET' && !empty($data)) {
-                $response = $request->get($this->baseUrl . $endpoint, $data);
+            if ($method === 'GET' && ! empty($data)) {
+                $response = $request->get($this->baseUrl.$endpoint, $data);
             } else {
-                $response = $request->$method($this->baseUrl . $endpoint, $data);
+                $response = $request->$method($this->baseUrl.$endpoint, $data);
             }
 
             return [

@@ -78,10 +78,10 @@ class ApiIntegrationTest extends TestCase
                     '*' => [
                         'event_type',
                         'event_data',
-                        'created_at'
-                    ]
-                ]
-            ]
+                        'created_at',
+                    ],
+                ],
+            ],
         ]);
     }
 

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->integer('priority')->default(0); // Rule execution order
             $table->timestamps();
-            
+
             $table->index(['trigger_type', 'is_active']);
             $table->index(['priority']);
         });

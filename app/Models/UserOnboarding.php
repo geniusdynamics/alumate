@@ -21,7 +21,7 @@ class UserOnboarding extends Model
         'feature_discovery_viewed_at',
         'whats_new_viewed_at',
         'completed_at',
-        'skipped_at'
+        'skipped_at',
     ];
 
     protected $casts = [
@@ -34,7 +34,7 @@ class UserOnboarding extends Model
         'feature_discovery_viewed_at' => 'datetime',
         'whats_new_viewed_at' => 'datetime',
         'completed_at' => 'datetime',
-        'skipped_at' => 'datetime'
+        'skipped_at' => 'datetime',
     ];
 
     /**
@@ -69,9 +69,11 @@ class UserOnboarding extends Model
         $progress = $this->progress ?? [];
         $completedSteps = $progress['completed_steps'] ?? [];
         $totalSteps = $this->getTotalStepsForRole();
-        
-        if ($totalSteps === 0) return 100;
-        
+
+        if ($totalSteps === 0) {
+            return 100;
+        }
+
         return round((count($completedSteps) / $totalSteps) * 100);
     }
 
@@ -81,14 +83,14 @@ class UserOnboarding extends Model
     private function getTotalStepsForRole(): int
     {
         $role = $this->user->roles->first()?->name ?? 'graduate';
-        
+
         $stepCounts = [
             'graduate' => 7,
             'employer' => 4,
             'institution-admin' => 4,
-            'student' => 4
+            'student' => 4,
         ];
-        
+
         return $stepCounts[$role] ?? 7;
     }
 
@@ -122,8 +124,8 @@ class UserOnboarding extends Model
     public function markStepCompleted(string $stepId): void
     {
         $progress = $this->progress ?? ['completed_steps' => [], 'skipped_steps' => []];
-        
-        if (!in_array($stepId, $progress['completed_steps'])) {
+
+        if (! in_array($stepId, $progress['completed_steps'])) {
             $progress['completed_steps'][] = $stepId;
             $this->update(['progress' => $progress]);
         }
@@ -135,8 +137,8 @@ class UserOnboarding extends Model
     public function markStepSkipped(string $stepId): void
     {
         $progress = $this->progress ?? ['completed_steps' => [], 'skipped_steps' => []];
-        
-        if (!in_array($stepId, $progress['skipped_steps'])) {
+
+        if (! in_array($stepId, $progress['skipped_steps'])) {
             $progress['skipped_steps'][] = $stepId;
             $this->update(['progress' => $progress]);
         }
@@ -148,8 +150,8 @@ class UserOnboarding extends Model
     public function addExploredFeature(string $featureId): void
     {
         $exploredFeatures = $this->explored_features ?? [];
-        
-        if (!in_array($featureId, $exploredFeatures)) {
+
+        if (! in_array($featureId, $exploredFeatures)) {
             $exploredFeatures[] = $featureId;
             $this->update(['explored_features' => $exploredFeatures]);
         }
@@ -161,8 +163,8 @@ class UserOnboarding extends Model
     public function addDismissedPrompt(string $prompt): void
     {
         $dismissedPrompts = $this->dismissed_prompts ?? [];
-        
-        if (!in_array($prompt, $dismissedPrompts)) {
+
+        if (! in_array($prompt, $dismissedPrompts)) {
             $dismissedPrompts[] = $prompt;
             $this->update(['dismissed_prompts' => $dismissedPrompts]);
         }

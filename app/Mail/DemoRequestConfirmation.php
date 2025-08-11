@@ -28,7 +28,7 @@ class DemoRequestConfirmation extends Mailable
                 'interests' => $this->demoData['interests'],
                 'preferredTime' => $this->demoData['preferred_time'],
                 'salesEmail' => 'sales@example.com',
-                'salesPhone' => '+1 (555) 123-4567'
+                'salesPhone' => '+1 (555) 123-4567',
             ]);
     }
 }

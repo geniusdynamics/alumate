@@ -16,10 +16,10 @@ class CircleManager
     public function generateCirclesForUser(User $user): Collection
     {
         $circles = collect();
-        
+
         // Get user's education history
         $educations = $user->educations()->get();
-        
+
         if ($educations->isEmpty()) {
             return $circles;
         }
@@ -32,7 +32,7 @@ class CircleManager
                     'institution_name' => $education->institution_name,
                     'graduation_year' => $education->end_year,
                 ]);
-                
+
                 if ($circle) {
                     $circles->push($circle);
                 }
@@ -42,13 +42,13 @@ class CircleManager
         // Generate multi-school circles for users with multiple educations
         if ($educations->count() > 1) {
             $schoolCombinations = $this->getSchoolCombinations($educations);
-            
+
             foreach ($schoolCombinations as $combination) {
                 $circle = $this->findOrCreateCircle([
                     'type' => 'multi_school',
                     'institution_names' => $combination,
                 ]);
-                
+
                 if ($circle) {
                     $circles->push($circle);
                 }
@@ -69,7 +69,7 @@ class CircleManager
         try {
             return DB::transaction(function () use ($criteria) {
                 $circle = $this->findExistingCircle($criteria);
-                
+
                 if ($circle) {
                     return $circle;
                 }
@@ -79,8 +79,9 @@ class CircleManager
         } catch (\Exception $e) {
             Log::error('Failed to find or create circle', [
                 'criteria' => $criteria,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -91,13 +92,13 @@ class CircleManager
     protected function findExistingCircle(array $criteria): ?Circle
     {
         $query = Circle::where('type', $criteria['type'])
-                      ->where('auto_generated', true);
+            ->where('auto_generated', true);
 
         switch ($criteria['type']) {
             case 'school_year':
                 return $query->whereJsonContains('criteria->institution_name', $criteria['institution_name'])
-                            ->whereJsonContains('criteria->graduation_year', $criteria['graduation_year'])
-                            ->first();
+                    ->whereJsonContains('criteria->graduation_year', $criteria['graduation_year'])
+                    ->first();
 
             case 'multi_school':
                 // For multi-school circles, we need to match the exact combination
@@ -105,7 +106,7 @@ class CircleManager
                     $institutionNames = $criteria['institution_names'];
                     sort($institutionNames); // Ensure consistent ordering
                     $q->whereJsonLength('criteria->institution_names', count($institutionNames));
-                    
+
                     foreach ($institutionNames as $institutionName) {
                         $q->whereJsonContains('criteria->institution_names', $institutionName);
                     }
@@ -122,7 +123,7 @@ class CircleManager
     protected function createNewCircle(array $criteria): Circle
     {
         $name = $this->generateCircleName($criteria);
-        
+
         return Circle::create([
             'name' => $name,
             'type' => $criteria['type'],
@@ -140,16 +141,17 @@ class CircleManager
         switch ($criteria['type']) {
             case 'school_year':
                 $schoolName = $criteria['institution_name'] ?? 'Unknown School';
+
                 return "{$schoolName} Class of {$criteria['graduation_year']}";
 
             case 'multi_school':
                 $schoolNames = collect($criteria['institution_names'])->sort()->take(3)->implode(', ');
                 $remaining = count($criteria['institution_names']) - 3;
-                
+
                 if ($remaining > 0) {
                     $schoolNames .= " and {$remaining} more";
                 }
-                
+
                 return "Multi-School Alumni: {$schoolNames}";
 
             case 'custom':
@@ -166,13 +168,13 @@ class CircleManager
     public function getSchoolCombinations(Collection $educations): array
     {
         $institutionNames = $educations->pluck('institution_name')->unique()->filter()->values()->toArray();
-        
+
         if (count($institutionNames) < 2) {
             return [];
         }
 
         $combinations = [];
-        
+
         // Generate combinations of 2 or more schools
         for ($i = 2; $i <= count($institutionNames); $i++) {
             $combinations = array_merge($combinations, $this->getCombinations($institutionNames, $i));
@@ -193,11 +195,11 @@ class CircleManager
         }
 
         $combinations = [];
-        
+
         for ($i = 0; $i <= count($array) - $size; $i++) {
             $head = $array[$i];
             $tail = array_slice($array, $i + 1);
-            
+
             foreach ($this->getCombinations($tail, $size - 1) as $combination) {
                 $combinations[] = array_merge([$head], $combination);
             }
@@ -227,7 +229,7 @@ class CircleManager
             DB::transaction(function () use ($user) {
                 // Remove user from all auto-generated circles
                 $autoGeneratedCircles = Circle::autoGenerated()->get();
-                
+
                 foreach ($autoGeneratedCircles as $circle) {
                     $circle->removeMember($user);
                 }
@@ -238,7 +240,7 @@ class CircleManager
         } catch (\Exception $e) {
             Log::error('Failed to update circles for user', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -249,10 +251,10 @@ class CircleManager
     public function getEligibleCirclesForUser(User $user): Collection
     {
         $eligibleCircles = collect();
-        
+
         // Get all auto-generated circles
         $circles = Circle::autoGenerated()->get();
-        
+
         foreach ($circles as $circle) {
             if ($circle->canUserJoin($user)) {
                 $eligibleCircles->push($circle);
@@ -268,7 +270,7 @@ class CircleManager
     public function cleanupEmptyCircles(): int
     {
         $deletedCount = 0;
-        
+
         $emptyCircles = Circle::autoGenerated()
             ->where('member_count', 0)
             ->where('created_at', '<', now()->subDays(7)) // Only delete circles older than 7 days
@@ -281,7 +283,7 @@ class CircleManager
             } catch (\Exception $e) {
                 Log::error('Failed to delete empty circle', [
                     'circle_id' => $circle->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }

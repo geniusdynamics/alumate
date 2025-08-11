@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\Graduate;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
 
 class AlumniMapControllerTest extends TestCase
 {
@@ -25,7 +25,7 @@ class AlumniMapControllerTest extends TestCase
         Graduate::factory()->create([
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -34,21 +34,21 @@ class AlumniMapControllerTest extends TestCase
                     'north' => 45.0,
                     'south' => 35.0,
                     'east' => -70.0,
-                    'west' => -80.0
-                ]
+                    'west' => -80.0,
+                ],
             ]);
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    '*' => [
-                        'id',
-                        'first_name',
-                        'last_name',
-                        'latitude',
-                        'longitude',
-                        'profile_visibility'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                '*' => [
+                    'id',
+                    'first_name',
+                    'last_name',
+                    'latitude',
+                    'longitude',
+                    'profile_visibility',
+                ],
+            ]);
     }
 
     public function test_can_get_location_clusters()
@@ -56,22 +56,22 @@ class AlumniMapControllerTest extends TestCase
         Graduate::factory()->count(5)->create([
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
             ->postJson('/api/alumni/map/clusters', [
-                'zoom_level' => 5
+                'zoom_level' => 5,
             ]);
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    '*' => [
-                        'latitude',
-                        'longitude',
-                        'count'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                '*' => [
+                    'latitude',
+                    'longitude',
+                    'count',
+                ],
+            ]);
     }
 
     public function test_can_get_nearby_alumni()
@@ -81,28 +81,28 @@ class AlumniMapControllerTest extends TestCase
             'user_id' => $this->user->id,
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         // Create nearby alumni
         Graduate::factory()->create([
             'latitude' => 40.7589,
             'longitude' => -73.9851,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
             ->getJson('/api/alumni/nearby?radius=25');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    '*' => [
-                        'id',
-                        'first_name',
-                        'last_name',
-                        'distance'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                '*' => [
+                    'id',
+                    'first_name',
+                    'last_name',
+                    'distance',
+                ],
+            ]);
     }
 
     public function test_can_get_regional_stats()
@@ -110,20 +110,20 @@ class AlumniMapControllerTest extends TestCase
         Graduate::factory()->count(3)->create([
             'country' => 'United States',
             'industry' => 'Technology',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
             ->getJson('/api/regions/United%20States/stats');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'total_alumni',
-                    'industries',
-                    'graduation_years',
-                    'top_companies',
-                    'average_experience'
-                ]);
+            ->assertJsonStructure([
+                'total_alumni',
+                'industries',
+                'graduation_years',
+                'top_companies',
+                'average_experience',
+            ]);
     }
 
     public function test_can_get_filter_options()
@@ -132,12 +132,12 @@ class AlumniMapControllerTest extends TestCase
             ->getJson('/api/alumni/filter-options');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'graduation_years',
-                    'industries',
-                    'countries',
-                    'states'
-                ]);
+            ->assertJsonStructure([
+                'graduation_years',
+                'industries',
+                'countries',
+                'states',
+            ]);
     }
 
     public function test_can_update_user_location()
@@ -149,20 +149,20 @@ class AlumniMapControllerTest extends TestCase
                 'city' => 'New York',
                 'state' => 'NY',
                 'country' => 'United States',
-                'privacy_level' => 'public'
+                'privacy_level' => 'public',
             ]);
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'message',
-                    'location' => [
-                        'latitude',
-                        'longitude',
-                        'city',
-                        'state',
-                        'country'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'message',
+                'location' => [
+                    'latitude',
+                    'longitude',
+                    'city',
+                    'state',
+                    'country',
+                ],
+            ]);
 
         $this->user->refresh();
         $this->assertEquals(40.7128, $this->user->latitude);
@@ -177,23 +177,23 @@ class AlumniMapControllerTest extends TestCase
                     'north' => 95.0, // Invalid latitude
                     'south' => 35.0,
                     'east' => -70.0,
-                    'west' => -80.0
-                ]
+                    'west' => -80.0,
+                ],
             ]);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['bounds.north']);
+            ->assertJsonValidationErrors(['bounds.north']);
     }
 
     public function test_validates_zoom_level()
     {
         $response = $this->actingAs($this->user)
             ->postJson('/api/alumni/map/clusters', [
-                'zoom_level' => 25 // Invalid zoom level
+                'zoom_level' => 25, // Invalid zoom level
             ]);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['zoom_level']);
+            ->assertJsonValidationErrors(['zoom_level']);
     }
 
     public function test_can_search_alumni()
@@ -204,7 +204,7 @@ class AlumniMapControllerTest extends TestCase
             'current_company' => 'Google',
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         // Create user graduate for location-based search
@@ -212,7 +212,7 @@ class AlumniMapControllerTest extends TestCase
             'user_id' => $this->user->id,
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -228,8 +228,8 @@ class AlumniMapControllerTest extends TestCase
                 'north' => 45.0,
                 'south' => 35.0,
                 'east' => -70.0,
-                'west' => -80.0
-            ]
+                'west' => -80.0,
+            ],
         ]);
 
         $response->assertStatus(401);
@@ -240,27 +240,27 @@ class AlumniMapControllerTest extends TestCase
         Graduate::factory()->count(10)->create([
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
-            ->getJson('/api/alumni/map/heatmap?' . http_build_query([
+            ->getJson('/api/alumni/map/heatmap?'.http_build_query([
                 'bounds' => [
                     'north' => 45.0,
                     'south' => 35.0,
                     'east' => -70.0,
-                    'west' => -80.0
-                ]
+                    'west' => -80.0,
+                ],
             ]));
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    '*' => [
-                        'lat',
-                        'lng',
-                        'intensity'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                '*' => [
+                    'lat',
+                    'lng',
+                    'intensity',
+                ],
+            ]);
     }
 
     public function test_can_get_suggested_groups()
@@ -270,7 +270,7 @@ class AlumniMapControllerTest extends TestCase
             'latitude' => 40.7128,
             'longitude' => -74.0060,
             'industry' => 'Technology',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -286,7 +286,7 @@ class AlumniMapControllerTest extends TestCase
             'industry' => 'Technology',
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         Graduate::factory()->create([
@@ -294,7 +294,7 @@ class AlumniMapControllerTest extends TestCase
             'industry' => 'Healthcare',
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $response = $this->actingAs($this->user)
@@ -303,16 +303,16 @@ class AlumniMapControllerTest extends TestCase
                     'north' => 45.0,
                     'south' => 35.0,
                     'east' => -70.0,
-                    'west' => -80.0
+                    'west' => -80.0,
                 ],
                 'filters' => [
                     'graduation_year' => [2020],
-                    'industry' => ['Technology']
-                ]
+                    'industry' => ['Technology'],
+                ],
             ]);
 
         $response->assertStatus(200);
-        
+
         $alumni = $response->json();
         $this->assertCount(1, $alumni);
         $this->assertEquals(2020, $alumni[0]['graduation_year']);

@@ -22,7 +22,7 @@ return [
             'queue' => 'sync',
             'mail' => 'array',
         ],
-        
+
         'ci' => [
             'database' => [
                 'connection' => 'mysql',
@@ -36,12 +36,12 @@ return [
             'queue' => 'redis',
             'mail' => 'array',
         ],
-        
+
         'staging' => [
             'database' => [
                 'connection' => 'pgsql',
                 'host' => env('DB_HOST'),
-                'database' => env('DB_DATABASE') . '_test',
+                'database' => env('DB_DATABASE').'_test',
                 'username' => env('DB_USERNAME'),
                 'password' => env('DB_PASSWORD'),
             ],
@@ -69,7 +69,7 @@ return [
             'time_limit' => 300, // 5 minutes
             'coverage_required' => 90,
         ],
-        
+
         'integration' => [
             'directory' => 'tests/Integration',
             'parallel' => false, // Database transactions may conflict
@@ -77,7 +77,7 @@ return [
             'time_limit' => 600, // 10 minutes
             'coverage_required' => 80,
         ],
-        
+
         'feature' => [
             'directory' => 'tests/Feature',
             'parallel' => true,
@@ -85,7 +85,7 @@ return [
             'time_limit' => 900, // 15 minutes
             'coverage_required' => 85,
         ],
-        
+
         'end_to_end' => [
             'directory' => 'tests/EndToEnd',
             'parallel' => false, // Sequential execution for user journeys
@@ -93,7 +93,7 @@ return [
             'time_limit' => 1800, // 30 minutes
             'coverage_required' => 70,
         ],
-        
+
         'performance' => [
             'directory' => 'tests/Performance',
             'parallel' => false,
@@ -101,7 +101,7 @@ return [
             'time_limit' => 3600, // 1 hour
             'coverage_required' => 60,
         ],
-        
+
         'security' => [
             'directory' => 'tests/Security',
             'parallel' => true,
@@ -125,13 +125,13 @@ return [
         'driver' => 'xdebug', // xdebug, pcov, phpdbg
         'output_formats' => ['html', 'xml', 'clover', 'text'],
         'output_directory' => 'tests/reports/coverage',
-        
+
         'thresholds' => [
             'high' => 90,
             'medium' => 70,
             'low' => 50,
         ],
-        
+
         'exclude_directories' => [
             'vendor',
             'node_modules',
@@ -139,7 +139,7 @@ return [
             'bootstrap/cache',
             'tests',
         ],
-        
+
         'exclude_files' => [
             'server.php',
             'artisan',
@@ -163,13 +163,13 @@ return [
             'page_load_time' => 500, // milliseconds
             'memory_usage' => '256M',
         ],
-        
+
         'load_testing' => [
             'concurrent_users' => 100,
             'test_duration' => 300, // seconds
             'ramp_up_time' => 60, // seconds
         ],
-        
+
         'stress_testing' => [
             'max_concurrent_users' => 1000,
             'test_duration' => 600, // seconds
@@ -199,7 +199,7 @@ return [
             'file_upload' => true,
             'information_disclosure' => true,
         ],
-        
+
         'security_headers' => [
             'x-frame-options',
             'x-content-type-options',
@@ -207,7 +207,7 @@ return [
             'strict-transport-security',
             'content-security-policy',
         ],
-        
+
         'password_policies' => [
             'min_length' => 8,
             'require_uppercase' => true,
@@ -229,7 +229,7 @@ return [
     'reporting' => [
         'formats' => ['json', 'html', 'xml', 'junit'],
         'output_directory' => 'tests/reports',
-        
+
         'notifications' => [
             'enabled' => env('TEST_NOTIFICATIONS', false),
             'channels' => ['slack', 'email'],
@@ -237,7 +237,7 @@ return [
             'on_success' => false,
             'on_coverage_drop' => true,
         ],
-        
+
         'metrics' => [
             'track_execution_time' => true,
             'track_memory_usage' => true,
@@ -261,12 +261,12 @@ return [
             'large_dataset_count' => 1000,
             'performance_dataset_count' => 10000,
         ],
-        
+
         'seeders' => [
             'run_before_tests' => true,
             'cleanup_after_tests' => true,
         ],
-        
+
         'fixtures' => [
             'directory' => 'tests/fixtures',
             'auto_load' => true,
@@ -285,7 +285,7 @@ return [
     'parallel' => [
         'enabled' => env('TEST_PARALLEL', false),
         'processes' => env('TEST_PARALLEL_PROCESSES', 4),
-        'database_template' => env('DB_DATABASE', 'graduate_tracking') . '_test_template',
+        'database_template' => env('DB_DATABASE', 'graduate_tracking').'_test_template',
     ],
 
     /*
@@ -302,7 +302,7 @@ return [
         'retry_failed_tests' => 3,
         'fail_fast' => false,
         'generate_artifacts' => true,
-        
+
         'quality_gates' => [
             'min_coverage' => 80,
             'max_failure_rate' => 5,
@@ -326,7 +326,7 @@ return [
             'sms_service' => true,
             'file_storage' => true,
         ],
-        
+
         'database_mocking' => [
             'enabled' => false,
             'mock_slow_queries' => true,
@@ -348,7 +348,7 @@ return [
         'log_queries' => true,
         'log_requests' => true,
         'dump_on_failure' => true,
-        
+
         'profiling' => [
             'enabled' => false,
             'memory_profiling' => true,

@@ -39,15 +39,15 @@ class NotificationTemplate extends Model
     {
         $content = $this->content;
         $subject = $this->subject;
-        
+
         foreach ($variables as $key => $value) {
-            $placeholder = '{{' . $key . '}}';
+            $placeholder = '{{'.$key.'}}';
             $content = str_replace($placeholder, $value, $content);
             if ($subject) {
                 $subject = str_replace($placeholder, $value, $subject);
             }
         }
-        
+
         return [
             'subject' => $subject,
             'content' => $content,

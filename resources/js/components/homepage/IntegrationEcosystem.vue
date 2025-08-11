@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="integration-ecosystem py-16 bg-white">
     <div class="container mx-auto px-4">
       <!-- Section Header -->
@@ -738,7 +738,7 @@ import type {
   TrainingProgram 
 } from '@/types/homepage'
 
-interface Props extends IntegrationEcosystemProps {}
+interface Props extends /* @vue-ignore */ IntegrationEcosystemProps {}
 
 const props = defineProps<Props>()
 

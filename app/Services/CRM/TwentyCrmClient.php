@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 class TwentyCrmClient implements CrmClientInterface
 {
     private array $config;
+
     private string $baseUrl;
 
     public function __construct(array $config)
@@ -34,11 +35,11 @@ class TwentyCrmClient implements CrmClientInterface
                         }
                     }
                 ',
-                'variables' => ['first' => 1]
+                'variables' => ['first' => 1],
             ]);
 
             return [
-                'connected' => $response['status'] === 200 && !isset($response['data']['errors']),
+                'connected' => $response['status'] === 200 && ! isset($response['data']['errors']),
                 'message' => $response['status'] === 200 ? 'Connection successful' : 'Connection failed',
                 'data' => $response['data'] ?? null,
             ];
@@ -76,12 +77,12 @@ class TwentyCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $mutation,
-            'variables' => ['data' => $twentyData]
+            'variables' => ['data' => $twentyData],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['createPerson'])) {
             $personData = $response['data']['data']['createPerson'];
-            
+
             return [
                 'id' => $personData['id'],
                 'success' => true,
@@ -90,7 +91,7 @@ class TwentyCrmClient implements CrmClientInterface
         }
 
         $errorMessage = $response['data']['errors'][0]['message'] ?? 'Unknown error';
-        throw new \Exception('Failed to create lead in Twenty CRM: ' . $errorMessage);
+        throw new \Exception('Failed to create lead in Twenty CRM: '.$errorMessage);
     }
 
     public function updateLead(string $crmId, array $data): array
@@ -118,8 +119,8 @@ class TwentyCrmClient implements CrmClientInterface
             'query' => $mutation,
             'variables' => [
                 'id' => $crmId,
-                'data' => $twentyData
-            ]
+                'data' => $twentyData,
+            ],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['updatePerson'])) {
@@ -131,7 +132,7 @@ class TwentyCrmClient implements CrmClientInterface
         }
 
         $errorMessage = $response['data']['errors'][0]['message'] ?? 'Unknown error';
-        throw new \Exception('Failed to update lead in Twenty CRM: ' . $errorMessage);
+        throw new \Exception('Failed to update lead in Twenty CRM: '.$errorMessage);
     }
 
     public function getLead(string $crmId): array
@@ -161,7 +162,7 @@ class TwentyCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $query,
-            'variables' => ['id' => $crmId]
+            'variables' => ['id' => $crmId],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['person'])) {
@@ -169,7 +170,7 @@ class TwentyCrmClient implements CrmClientInterface
         }
 
         $errorMessage = $response['data']['errors'][0]['message'] ?? 'Unknown error';
-        throw new \Exception('Failed to get lead from Twenty CRM: ' . $errorMessage);
+        throw new \Exception('Failed to get lead from Twenty CRM: '.$errorMessage);
     }
 
     public function deleteLead(string $crmId): bool
@@ -184,7 +185,7 @@ class TwentyCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $mutation,
-            'variables' => ['id' => $crmId]
+            'variables' => ['id' => $crmId],
         ]);
 
         return $response['status'] === 200 && isset($response['data']['data']['deletePerson']);
@@ -199,7 +200,7 @@ class TwentyCrmClient implements CrmClientInterface
             $filters[] = [
                 'field' => $twentyField,
                 'operator' => 'eq',
-                'value' => $value
+                'value' => $value,
             ];
         }
 
@@ -228,7 +229,7 @@ class TwentyCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $query,
-            'variables' => ['filters' => $filters]
+            'variables' => ['filters' => $filters],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['people']['edges'])) {
@@ -259,7 +260,7 @@ class TwentyCrmClient implements CrmClientInterface
         ';
 
         $response = $this->makeRequest('POST', '/graphql', [
-            'query' => $query
+            'query' => $query,
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['__type']['fields'])) {
@@ -286,12 +287,12 @@ class TwentyCrmClient implements CrmClientInterface
 
             // Twenty CRM uses API key authentication
             if (isset($this->config['api_key'])) {
-                $headers['Authorization'] = 'Bearer ' . $this->config['api_key'];
+                $headers['Authorization'] = 'Bearer '.$this->config['api_key'];
             }
 
             $request = Http::withHeaders($headers);
 
-            $response = $request->$method($this->baseUrl . $endpoint, $data);
+            $response = $request->$method($this->baseUrl.$endpoint, $data);
 
             return [
                 'status' => $response->status(),
@@ -334,7 +335,7 @@ class TwentyCrmClient implements CrmClientInterface
         }
 
         // Handle company creation/linking
-        if (isset($data['company']) && !empty($data['company'])) {
+        if (isset($data['company']) && ! empty($data['company'])) {
             // In a real implementation, you'd first check if company exists or create it
             $mapped['companyName'] = $data['company'];
         }
@@ -383,21 +384,21 @@ class TwentyCrmClient implements CrmClientInterface
         $companyData = [
             'name' => $data['name'],
             'domainName' => $data['domain'] ?? null,
-            'employees' => isset($data['employees']) ? (int)$data['employees'] : null,
+            'employees' => isset($data['employees']) ? (int) $data['employees'] : null,
             'linkedinLink' => $data['linkedin_url'] ?? null,
             'xLink' => $data['twitter_url'] ?? null,
         ];
 
         if (isset($data['annual_revenue'])) {
             $companyData['annualRecurringRevenue'] = [
-                'amountMicros' => (int)($data['annual_revenue'] * 1000000), // Convert to micros
+                'amountMicros' => (int) ($data['annual_revenue'] * 1000000), // Convert to micros
                 'currencyCode' => $data['currency'] ?? 'USD',
             ];
         }
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $mutation,
-            'variables' => ['data' => $companyData]
+            'variables' => ['data' => $companyData],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['createCompany'])) {
@@ -409,7 +410,7 @@ class TwentyCrmClient implements CrmClientInterface
         }
 
         $errorMessage = $response['data']['errors'][0]['message'] ?? 'Unknown error';
-        throw new \Exception('Failed to create company in Twenty CRM: ' . $errorMessage);
+        throw new \Exception('Failed to create company in Twenty CRM: '.$errorMessage);
     }
 
     /**
@@ -440,7 +441,7 @@ class TwentyCrmClient implements CrmClientInterface
         $opportunityData = [
             'name' => $data['name'],
             'stage' => $data['stage'] ?? 'NEW',
-            'probability' => isset($data['probability']) ? (int)$data['probability'] : 0,
+            'probability' => isset($data['probability']) ? (int) $data['probability'] : 0,
             'closeDate' => $data['close_date'] ?? null,
             'personId' => $data['person_id'] ?? null,
             'companyId' => $data['company_id'] ?? null,
@@ -448,14 +449,14 @@ class TwentyCrmClient implements CrmClientInterface
 
         if (isset($data['amount'])) {
             $opportunityData['amount'] = [
-                'amountMicros' => (int)($data['amount'] * 1000000), // Convert to micros
+                'amountMicros' => (int) ($data['amount'] * 1000000), // Convert to micros
                 'currencyCode' => $data['currency'] ?? 'USD',
             ];
         }
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $mutation,
-            'variables' => ['data' => $opportunityData]
+            'variables' => ['data' => $opportunityData],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['createOpportunity'])) {
@@ -467,7 +468,7 @@ class TwentyCrmClient implements CrmClientInterface
         }
 
         $errorMessage = $response['data']['errors'][0]['message'] ?? 'Unknown error';
-        throw new \Exception('Failed to create opportunity in Twenty CRM: ' . $errorMessage);
+        throw new \Exception('Failed to create opportunity in Twenty CRM: '.$errorMessage);
     }
 
     /**
@@ -499,7 +500,7 @@ class TwentyCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $mutation,
-            'variables' => ['data' => $activityData]
+            'variables' => ['data' => $activityData],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['createActivity'])) {
@@ -511,7 +512,7 @@ class TwentyCrmClient implements CrmClientInterface
         }
 
         $errorMessage = $response['data']['errors'][0]['message'] ?? 'Unknown error';
-        throw new \Exception('Failed to add note in Twenty CRM: ' . $errorMessage);
+        throw new \Exception('Failed to add note in Twenty CRM: '.$errorMessage);
     }
 
     /**
@@ -547,7 +548,7 @@ class TwentyCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $query,
-            'variables' => ['assigneeId' => $personId]
+            'variables' => ['assigneeId' => $personId],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['activities']['edges'])) {
@@ -588,7 +589,7 @@ class TwentyCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('POST', '/graphql', [
             'query' => $query,
-            'variables' => ['personId' => $personId]
+            'variables' => ['personId' => $personId],
         ]);
 
         if ($response['status'] === 200 && isset($response['data']['data']['opportunities']['edges'])) {

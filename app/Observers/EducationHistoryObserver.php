@@ -2,8 +2,8 @@
 
 namespace App\Observers;
 
-use App\Models\EducationHistory;
 use App\Jobs\UpdateUserCirclesJob;
+use App\Models\EducationHistory;
 use Illuminate\Support\Facades\Log;
 
 class EducationHistoryObserver
@@ -39,20 +39,20 @@ class EducationHistoryObserver
     {
         try {
             $user = $educationHistory->user;
-            
+
             if ($user) {
                 // Dispatch job to update circles in the background
                 UpdateUserCirclesJob::dispatch($user);
-                
+
                 Log::info('Dispatched circle update job due to education history change', [
                     'user_id' => $user->id,
-                    'education_history_id' => $educationHistory->id
+                    'education_history_id' => $educationHistory->id,
                 ]);
             }
         } catch (\Exception $e) {
             Log::error('Failed to dispatch circle update job for education history change', [
                 'education_history_id' => $educationHistory->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

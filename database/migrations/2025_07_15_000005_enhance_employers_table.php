@@ -19,9 +19,9 @@ return new class extends Migration
                 'verified',
                 'rejected',
                 'suspended',
-                'requires_resubmission'
+                'requires_resubmission',
             ])->default('pending')->after('approved');
-            
+
             // Add verification details
             $table->json('verification_documents')->nullable()->after('verification_status');
             $table->timestamp('verification_submitted_at')->nullable()->after('verification_documents');
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->unsignedBigInteger('verified_by')->nullable()->after('verification_completed_at');
             $table->text('verification_notes')->nullable()->after('verified_by');
             $table->text('rejection_reason')->nullable()->after('verification_notes');
-            
+
             // Add comprehensive company details
             $table->string('company_registration_number')->nullable()->after('company_phone');
             $table->string('company_tax_number')->nullable()->after('company_registration_number');
@@ -37,53 +37,53 @@ return new class extends Migration
             $table->enum('company_size', ['startup', 'small', 'medium', 'large', 'enterprise'])->nullable()->after('company_website');
             $table->string('industry')->nullable()->after('company_size');
             $table->text('company_description')->nullable()->after('industry');
-            
+
             // Add contact person details
             $table->string('contact_person_name')->nullable()->after('company_description');
             $table->string('contact_person_title')->nullable()->after('contact_person_name');
             $table->string('contact_person_email')->nullable()->after('contact_person_title');
             $table->string('contact_person_phone')->nullable()->after('contact_person_email');
-            
+
             // Add business information
             $table->year('established_year')->nullable()->after('contact_person_phone');
             $table->integer('employee_count')->nullable()->after('established_year');
             $table->json('business_locations')->nullable()->after('employee_count');
             $table->json('services_products')->nullable()->after('business_locations');
-            
+
             // Add hiring statistics
             $table->integer('total_jobs_posted')->default(0)->after('services_products');
             $table->integer('active_jobs_count')->default(0)->after('total_jobs_posted');
             $table->integer('total_hires')->default(0)->after('active_jobs_count');
             $table->decimal('average_time_to_hire', 5, 2)->nullable()->after('total_hires');
-            
+
             // Add employer rating and feedback
             $table->decimal('employer_rating', 3, 2)->nullable()->after('average_time_to_hire');
             $table->integer('total_reviews')->default(0)->after('employer_rating');
             $table->json('employer_benefits')->nullable()->after('total_reviews');
-            
+
             // Add subscription and plan information
             $table->enum('subscription_plan', ['free', 'basic', 'premium', 'enterprise'])->default('free')->after('employer_benefits');
             $table->timestamp('subscription_expires_at')->nullable()->after('subscription_plan');
             $table->integer('job_posting_limit')->default(5)->after('subscription_expires_at');
             $table->integer('jobs_posted_this_month')->default(0)->after('job_posting_limit');
-            
+
             // Add account status and settings
             $table->boolean('is_active')->default(true)->after('jobs_posted_this_month');
             $table->boolean('can_post_jobs')->default(false)->after('is_active');
             $table->boolean('can_search_graduates')->default(false)->after('can_post_jobs');
             $table->json('notification_preferences')->nullable()->after('can_search_graduates');
-            
+
             // Add compliance and legal
             $table->boolean('terms_accepted')->default(false)->after('notification_preferences');
             $table->timestamp('terms_accepted_at')->nullable()->after('terms_accepted');
             $table->boolean('privacy_policy_accepted')->default(false)->after('terms_accepted_at');
             $table->timestamp('privacy_policy_accepted_at')->nullable()->after('privacy_policy_accepted');
-            
+
             // Add tracking timestamps
             $table->timestamp('last_login_at')->nullable()->after('privacy_policy_accepted_at');
             $table->timestamp('last_job_posted_at')->nullable()->after('last_login_at');
             $table->timestamp('profile_completed_at')->nullable()->after('last_job_posted_at');
-            
+
             // Add foreign key for verifier
             $table->foreign('verified_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
@@ -139,7 +139,7 @@ return new class extends Migration
                 'privacy_policy_accepted_at',
                 'last_login_at',
                 'last_job_posted_at',
-                'profile_completed_at'
+                'profile_completed_at',
             ]);
         });
     }

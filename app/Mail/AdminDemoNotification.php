@@ -19,10 +19,10 @@ class AdminDemoNotification extends Mailable
 
     public function build()
     {
-        return $this->subject('New Demo Request - ' . $this->demoData['institution_name'])
+        return $this->subject('New Demo Request - '.$this->demoData['institution_name'])
             ->view('emails.admin-demo-notification')
             ->with([
-                'demoData' => $this->demoData
+                'demoData' => $this->demoData,
             ]);
     }
 }

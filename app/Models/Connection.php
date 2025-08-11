@@ -69,7 +69,7 @@ class Connection extends Model
     {
         $this->status = 'accepted';
         $this->connected_at = now();
-        
+
         $saved = $this->save();
 
         if ($saved) {
@@ -101,14 +101,14 @@ class Connection extends Model
     public function block(): bool
     {
         $this->status = 'blocked';
-        
+
         $saved = $this->save();
 
         if ($saved) {
             // Remove any reciprocal connection
             static::where('user_id', $this->connected_user_id)
-                  ->where('connected_user_id', $this->user_id)
-                  ->delete();
+                ->where('connected_user_id', $this->user_id)
+                ->delete();
         }
 
         return $saved;
@@ -127,8 +127,8 @@ class Connection extends Model
      */
     public function getOtherUser(User $currentUser): User
     {
-        return $this->user_id === $currentUser->id 
-            ? $this->connectedUser 
+        return $this->user_id === $currentUser->id
+            ? $this->connectedUser
             : $this->user;
     }
 
@@ -142,9 +142,9 @@ class Connection extends Model
         }
 
         return static::where('user_id', $this->connected_user_id)
-                    ->where('connected_user_id', $this->user_id)
-                    ->where('status', 'accepted')
-                    ->exists();
+            ->where('connected_user_id', $this->user_id)
+            ->where('status', 'accepted')
+            ->exists();
     }
 
     /**
@@ -167,7 +167,7 @@ class Connection extends Model
     {
         return $query->where(function ($q) use ($user) {
             $q->where('user_id', $user->id)
-              ->orWhere('connected_user_id', $user->id);
+                ->orWhere('connected_user_id', $user->id);
         });
     }
 
@@ -177,12 +177,12 @@ class Connection extends Model
     public function scopeMutualConnections($query, User $user1, User $user2)
     {
         $user1Connections = static::where('user_id', $user1->id)
-                                  ->where('status', 'accepted')
-                                  ->pluck('connected_user_id');
+            ->where('status', 'accepted')
+            ->pluck('connected_user_id');
 
         $user2Connections = static::where('user_id', $user2->id)
-                                  ->where('status', 'accepted')
-                                  ->pluck('connected_user_id');
+            ->where('status', 'accepted')
+            ->pluck('connected_user_id');
 
         $mutualIds = $user1Connections->intersect($user2Connections);
 
@@ -199,8 +199,8 @@ class Connection extends Model
         // Prevent duplicate connections
         static::creating(function ($connection) {
             $existing = static::where('user_id', $connection->user_id)
-                             ->where('connected_user_id', $connection->connected_user_id)
-                             ->first();
+                ->where('connected_user_id', $connection->connected_user_id)
+                ->first();
 
             if ($existing) {
                 return false;

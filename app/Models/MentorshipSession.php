@@ -43,7 +43,7 @@ class MentorshipSession extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('status', 'scheduled')
-                    ->where('scheduled_at', '>', now());
+            ->where('scheduled_at', '>', now());
     }
 
     public function scopeCompleted($query)
@@ -60,28 +60,31 @@ class MentorshipSession extends Model
     {
         return $query->whereBetween('scheduled_at', [
             now()->startOfWeek(),
-            now()->endOfWeek()
+            now()->endOfWeek(),
         ]);
     }
 
-    public function complete(array $feedback = null): bool
+    public function complete(?array $feedback = null): bool
     {
         $this->status = 'completed';
         if ($feedback) {
             $this->feedback = $feedback;
         }
+
         return $this->save();
     }
 
     public function cancel(): bool
     {
         $this->status = 'cancelled';
+
         return $this->save();
     }
 
     public function markNoShow(): bool
     {
         $this->status = 'no_show';
+
         return $this->save();
     }
 

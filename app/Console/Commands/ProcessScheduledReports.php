@@ -27,7 +27,7 @@ class ProcessScheduledReports extends Command
         $reportId = $this->option('report');
         $dryRun = $this->option('dry-run');
 
-        $this->info("Processing scheduled reports...");
+        $this->info('Processing scheduled reports...');
 
         try {
             if ($reportId) {
@@ -36,10 +36,12 @@ class ProcessScheduledReports extends Command
                 $this->processAllScheduledReports($dryRun);
             }
 
-            $this->info("Scheduled reports processing completed!");
+            $this->info('Scheduled reports processing completed!');
+
             return 0;
         } catch (\Exception $e) {
-            $this->error("Failed to process scheduled reports: " . $e->getMessage());
+            $this->error('Failed to process scheduled reports: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -47,19 +49,22 @@ class ProcessScheduledReports extends Command
     private function processSpecificReport($reportId, $dryRun)
     {
         $report = CustomReport::find($reportId);
-        
-        if (!$report) {
+
+        if (! $report) {
             $this->error("Report not found: {$reportId}");
+
             return;
         }
 
-        if (!$report->is_scheduled) {
+        if (! $report->is_scheduled) {
             $this->warn("Report is not scheduled: {$report->name}");
+
             return;
         }
 
         if ($dryRun) {
             $this->info("Would process report: {$report->name}");
+
             return;
         }
 
@@ -76,15 +81,17 @@ class ProcessScheduledReports extends Command
             });
 
         if ($reports->isEmpty()) {
-            $this->info("No scheduled reports need processing at this time.");
+            $this->info('No scheduled reports need processing at this time.');
+
             return;
         }
 
         if ($dryRun) {
-            $this->info("Reports that would be processed:");
+            $this->info('Reports that would be processed:');
             foreach ($reports as $report) {
                 $this->line("  - {$report->name} (ID: {$report->id}) - {$report->schedule_frequency}");
             }
+
             return;
         }
 
@@ -100,8 +107,8 @@ class ProcessScheduledReports extends Command
                 $processed++;
             } catch (\Exception $e) {
                 $failed++;
-                $this->error("Failed to process report {$report->name}: " . $e->getMessage());
-                \Log::error("Scheduled report processing failed", [
+                $this->error("Failed to process report {$report->name}: ".$e->getMessage());
+                \Log::error('Scheduled report processing failed', [
                     'report_id' => $report->id,
                     'report_name' => $report->name,
                     'error' => $e->getMessage(),
@@ -114,7 +121,7 @@ class ProcessScheduledReports extends Command
         $bar->finish();
         $this->newLine();
 
-        $this->info("Processing summary:");
+        $this->info('Processing summary:');
         $this->line("  ✓ Processed: {$processed}");
         if ($failed > 0) {
             $this->line("  ✗ Failed: {$failed}");
@@ -134,18 +141,18 @@ class ProcessScheduledReports extends Command
 
         if ($execution->isCompleted()) {
             $this->info("✓ Report completed: {$report->name}");
-            
+
             // Send delivery if configured
             $this->deliverReport($report, $execution);
         } else {
-            throw new \Exception("Report execution failed: " . $execution->error_message);
+            throw new \Exception('Report execution failed: '.$execution->error_message);
         }
     }
 
     private function deliverReport(CustomReport $report, $execution)
     {
         $deliveryConfig = $report->schedule_config['delivery'] ?? [];
-        
+
         if (empty($deliveryConfig)) {
             return;
         }
@@ -170,13 +177,13 @@ class ProcessScheduledReports extends Command
     private function deliverByEmail(CustomReport $report, $execution, $config)
     {
         $recipients = $config['recipients'] ?? [$report->user->email];
-        
+
         foreach ($recipients as $recipient) {
             try {
                 \Mail::to($recipient)->send(new \App\Mail\ScheduledReportDelivery($report, $execution));
                 $this->info("  ✓ Email sent to: {$recipient}");
             } catch (\Exception $e) {
-                $this->error("  ✗ Failed to send email to {$recipient}: " . $e->getMessage());
+                $this->error("  ✗ Failed to send email to {$recipient}: ".$e->getMessage());
             }
         }
     }
@@ -184,9 +191,10 @@ class ProcessScheduledReports extends Command
     private function deliverBySlack(CustomReport $report, $execution, $config)
     {
         $webhookUrl = $config['webhook_url'] ?? null;
-        
-        if (!$webhookUrl) {
-            $this->error("  ✗ Slack webhook URL not configured");
+
+        if (! $webhookUrl) {
+            $this->error('  ✗ Slack webhook URL not configured');
+
             return;
         }
 
@@ -218,23 +226,24 @@ class ProcessScheduledReports extends Command
             ];
 
             $response = \Http::post($webhookUrl, $message);
-            
+
             if ($response->successful()) {
-                $this->info("  ✓ Slack notification sent");
+                $this->info('  ✓ Slack notification sent');
             } else {
-                $this->error("  ✗ Slack notification failed: " . $response->body());
+                $this->error('  ✗ Slack notification failed: '.$response->body());
             }
         } catch (\Exception $e) {
-            $this->error("  ✗ Failed to send Slack notification: " . $e->getMessage());
+            $this->error('  ✗ Failed to send Slack notification: '.$e->getMessage());
         }
     }
 
     private function deliverByWebhook(CustomReport $report, $execution, $config)
     {
         $webhookUrl = $config['url'] ?? null;
-        
-        if (!$webhookUrl) {
-            $this->error("  ✗ Webhook URL not configured");
+
+        if (! $webhookUrl) {
+            $this->error('  ✗ Webhook URL not configured');
+
             return;
         }
 
@@ -256,16 +265,16 @@ class ProcessScheduledReports extends Command
             ];
 
             $headers = $config['headers'] ?? [];
-            
+
             $response = \Http::withHeaders($headers)->post($webhookUrl, $payload);
-            
+
             if ($response->successful()) {
-                $this->info("  ✓ Webhook delivered");
+                $this->info('  ✓ Webhook delivered');
             } else {
-                $this->error("  ✗ Webhook delivery failed: " . $response->body());
+                $this->error('  ✗ Webhook delivery failed: '.$response->body());
             }
         } catch (\Exception $e) {
-            $this->error("  ✗ Failed to deliver webhook: " . $e->getMessage());
+            $this->error('  ✗ Failed to deliver webhook: '.$e->getMessage());
         }
     }
 }

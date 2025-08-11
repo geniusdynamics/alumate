@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\ElasticsearchService;
 use App\Models\SavedSearch;
 use App\Models\SearchAlert;
-use Illuminate\Http\Request;
+use App\Services\ElasticsearchService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
@@ -28,8 +28,8 @@ class SearchController extends Controller
             'query' => 'nullable|string|max:255',
             'filters' => 'nullable|array',
             'filters.graduation_year' => 'nullable|array',
-            'filters.graduation_year.min' => 'nullable|integer|min:1900|max:' . date('Y'),
-            'filters.graduation_year.max' => 'nullable|integer|min:1900|max:' . date('Y'),
+            'filters.graduation_year.min' => 'nullable|integer|min:1900|max:'.date('Y'),
+            'filters.graduation_year.max' => 'nullable|integer|min:1900|max:'.date('Y'),
             'filters.location' => 'nullable|string|max:255',
             'filters.industry' => 'nullable|array',
             'filters.industry.*' => 'string|max:255',
@@ -42,14 +42,14 @@ class SearchController extends Controller
             'filters.location_center.lat' => 'nullable|numeric',
             'filters.location_center.lon' => 'nullable|numeric',
             'page' => 'nullable|integer|min:1',
-            'size' => 'nullable|integer|min:1|max:100'
+            'size' => 'nullable|integer|min:1|max:100',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -60,7 +60,7 @@ class SearchController extends Controller
 
         $pagination = [
             'size' => $size,
-            'from' => ($page - 1) * $size
+            'from' => ($page - 1) * $size,
         ];
 
         try {
@@ -74,14 +74,14 @@ class SearchController extends Controller
                     'aggregations' => $results['aggregations'],
                     'page' => $page,
                     'size' => $size,
-                    'total_pages' => ceil($results['total'] / $size)
-                ]
+                    'total_pages' => ceil($results['total'] / $size),
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Search failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -92,14 +92,14 @@ class SearchController extends Controller
     public function suggestions(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'query' => 'required|string|min:2|max:255'
+            'query' => 'required|string|min:2|max:255',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -110,13 +110,13 @@ class SearchController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $suggestions
+                'data' => $suggestions,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Suggestions failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -131,14 +131,14 @@ class SearchController extends Controller
             'query' => 'required|string|max:255',
             'filters' => 'nullable|array',
             'create_alert' => 'nullable|boolean',
-            'alert_frequency' => 'nullable|in:daily,weekly,monthly'
+            'alert_frequency' => 'nullable|in:daily,weekly,monthly',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -149,7 +149,7 @@ class SearchController extends Controller
             $name = $request->input('name');
 
             // Generate name if not provided
-            if (!$name) {
+            if (! $name) {
                 $name = $this->generateSearchName($query, $filters);
             }
 
@@ -161,12 +161,12 @@ class SearchController extends Controller
             if ($existingSearch) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'You already have a saved search with this name'
+                    'message' => 'You already have a saved search with this name',
                 ], 409);
             }
 
             $savedSearch = $this->elasticsearchService->saveSearch($user, $query, $filters);
-            
+
             // Update the name if provided
             if ($request->has('name')) {
                 $savedSearch->update(['name' => $name]);
@@ -175,7 +175,7 @@ class SearchController extends Controller
             // Create alert if requested
             if ($request->input('create_alert', false)) {
                 $alert = $this->elasticsearchService->createSearchAlert($user, $savedSearch->id);
-                
+
                 if ($request->has('alert_frequency')) {
                     $alert->update(['frequency' => $request->input('alert_frequency')]);
                 }
@@ -184,13 +184,13 @@ class SearchController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Search saved successfully',
-                'data' => $savedSearch->load('alerts')
+                'data' => $savedSearch->load('alerts'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to save search',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -202,7 +202,7 @@ class SearchController extends Controller
     {
         try {
             $user = $request->user();
-            
+
             $savedSearches = SavedSearch::where('user_id', $user->id)
                 ->with('alerts')
                 ->orderBy('created_at', 'desc')
@@ -210,13 +210,13 @@ class SearchController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $savedSearches
+                'data' => $savedSearches,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve saved searches',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -228,15 +228,15 @@ class SearchController extends Controller
     {
         try {
             $user = $request->user();
-            
+
             $savedSearch = SavedSearch::where('user_id', $user->id)
                 ->where('id', $searchId)
                 ->first();
 
-            if (!$savedSearch) {
+            if (! $savedSearch) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Saved search not found'
+                    'message' => 'Saved search not found',
                 ], 404);
             }
 
@@ -244,13 +244,13 @@ class SearchController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Saved search deleted successfully'
+                'message' => 'Saved search deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete saved search',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -262,28 +262,28 @@ class SearchController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'frequency' => 'nullable|in:daily,weekly,monthly',
-            'is_active' => 'nullable|boolean'
+            'is_active' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $user = $request->user();
-            
+
             $alert = SearchAlert::where('user_id', $user->id)
                 ->where('id', $alertId)
                 ->first();
 
-            if (!$alert) {
+            if (! $alert) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Search alert not found'
+                    'message' => 'Search alert not found',
                 ], 404);
             }
 
@@ -297,13 +297,13 @@ class SearchController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Search alert updated successfully',
-                'data' => $alert
+                'data' => $alert,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update search alert',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -314,28 +314,28 @@ class SearchController extends Controller
     protected function generateSearchName(string $query, array $filters): string
     {
         $parts = [];
-        
-        if (!empty($query)) {
+
+        if (! empty($query)) {
             $parts[] = "\"$query\"";
         }
-        
-        if (!empty($filters['location'])) {
+
+        if (! empty($filters['location'])) {
             $parts[] = "in {$filters['location']}";
         }
-        
-        if (!empty($filters['industry'])) {
+
+        if (! empty($filters['industry'])) {
             $industry = is_array($filters['industry']) ? implode(', ', $filters['industry']) : $filters['industry'];
             $parts[] = "in $industry";
         }
-        
-        if (!empty($filters['graduation_year'])) {
+
+        if (! empty($filters['graduation_year'])) {
             if (is_array($filters['graduation_year'])) {
                 $parts[] = "graduated {$filters['graduation_year']['min']}-{$filters['graduation_year']['max']}";
             } else {
                 $parts[] = "graduated {$filters['graduation_year']}";
             }
         }
-        
+
         return implode(' ', $parts) ?: 'All Alumni';
     }
 }

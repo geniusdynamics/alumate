@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('feedback_for_applicant')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->unique(['application_id', 'reviewer_id']);
             $table->index(['application_id', 'recommendation']);
             $table->index(['reviewer_id', 'created_at']);

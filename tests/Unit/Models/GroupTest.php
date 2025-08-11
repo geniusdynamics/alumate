@@ -3,8 +3,8 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Group;
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -36,7 +36,7 @@ class GroupTest extends TestCase
     public function test_group_casts_settings_as_array()
     {
         $group = Group::factory()->create([
-            'settings' => ['test' => 'value']
+            'settings' => ['test' => 'value'],
         ]);
 
         $this->assertIsArray($group->settings);
@@ -105,9 +105,9 @@ class GroupTest extends TestCase
     public function test_group_can_check_posting_permissions()
     {
         $group = Group::factory()->create([
-            'settings' => ['posting_restriction' => 'admins_only']
+            'settings' => ['posting_restriction' => 'admins_only'],
         ]);
-        
+
         $admin = User::factory()->create();
         $member = User::factory()->create();
 

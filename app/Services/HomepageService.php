@@ -23,7 +23,7 @@ class HomepageService
             'mentorship_matches' => 1800,
             'events_hosted' => 850,
             'companies_represented' => 2400,
-            'last_updated' => now()
+            'last_updated' => now(),
         ];
 
         if ($audience === 'institutional') {
@@ -31,7 +31,7 @@ class HomepageService
                 'institutions_served' => 150,
                 'branded_apps_deployed' => 45,
                 'average_engagement_increase' => 300,
-                'admin_satisfaction_rate' => 96
+                'admin_satisfaction_rate' => 96,
             ]);
         }
 
@@ -53,12 +53,12 @@ class HomepageService
                     'graduation_year' => 2019,
                     'current_role' => 'Software Engineer',
                     'current_company' => 'Google',
-                    'profile_image' => '/images/testimonials/sarah-chen.jpg'
+                    'profile_image' => '/images/testimonials/sarah-chen.jpg',
                 ],
                 'metrics' => [
                     'salary_increase' => 65,
-                    'time_to_placement' => 45
-                ]
+                    'time_to_placement' => 45,
+                ],
             ],
             [
                 'id' => 2,
@@ -68,13 +68,13 @@ class HomepageService
                     'graduation_year' => 2016,
                     'current_role' => 'Product Manager',
                     'current_company' => 'Microsoft',
-                    'profile_image' => '/images/testimonials/michael-rodriguez.jpg'
+                    'profile_image' => '/images/testimonials/michael-rodriguez.jpg',
                 ],
                 'metrics' => [
                     'salary_increase' => 45,
-                    'career_advancement' => 'Senior to Director'
-                ]
-            ]
+                    'career_advancement' => 'Senior to Director',
+                ],
+            ],
         ]);
 
         $institutionalTestimonials = collect([
@@ -84,19 +84,19 @@ class HomepageService
                 'institution' => [
                     'name' => 'Stanford University',
                     'type' => 'university',
-                    'logo' => '/images/institutions/stanford-logo.png'
+                    'logo' => '/images/institutions/stanford-logo.png',
                 ],
                 'administrator' => [
                     'name' => 'Dr. Jennifer Walsh',
                     'title' => 'Director of Alumni Relations',
-                    'profile_image' => '/images/testimonials/jennifer-walsh.jpg'
+                    'profile_image' => '/images/testimonials/jennifer-walsh.jpg',
                 ],
                 'results' => [
                     'engagement_increase' => 400,
                     'app_downloads' => 15000,
-                    'event_attendance_increase' => 250
-                ]
-            ]
+                    'event_attendance_increase' => 250,
+                ],
+            ],
         ]);
 
         return $audience === 'institutional' ? $institutionalTestimonials : $individualTestimonials;
@@ -119,37 +119,37 @@ class HomepageService
                     'current_role' => 'Tech Lead',
                     'current_company' => 'Stripe',
                     'industry' => 'Technology',
-                    'career_stage' => 'mid_career'
+                    'career_stage' => 'mid_career',
                 ],
                 'career_progression' => [
                     'before' => [
                         'role' => 'Recent Graduate',
-                        'salary' => 65000
+                        'salary' => 65000,
                     ],
                     'after' => [
                         'role' => 'Tech Lead',
-                        'salary' => 180000
+                        'salary' => 180000,
                     ],
-                    'timeframe' => '3 years'
+                    'timeframe' => '3 years',
                 ],
                 'platform_impact' => [
                     'connections_made' => 45,
                     'mentors_worked_with' => 3,
-                    'referrals_received' => 8
-                ]
-            ]
+                    'referrals_received' => 8,
+                ],
+            ],
         ]);
 
         // Apply filters
-        if (!empty($filters['industry'])) {
+        if (! empty($filters['industry'])) {
             $stories = $stories->where('alumni_profile.industry', $filters['industry']);
         }
 
-        if (!empty($filters['graduation_year'])) {
+        if (! empty($filters['graduation_year'])) {
             $stories = $stories->where('alumni_profile.graduation_year', $filters['graduation_year']);
         }
 
-        if (!empty($filters['career_stage'])) {
+        if (! empty($filters['career_stage'])) {
             $stories = $stories->where('alumni_profile.career_stage', $filters['career_stage']);
         }
 
@@ -171,7 +171,7 @@ class HomepageService
                     'Industry-specific networking groups',
                     'Professional conversation starters',
                     'Mutual connection discovery',
-                    'Privacy-controlled networking'
+                    'Privacy-controlled networking',
                 ],
                 'screenshot' => '/images/features/networking-dashboard.png',
                 'demo_video' => '/videos/features/networking-demo.mp4',
@@ -183,8 +183,8 @@ class HomepageService
                         'metric' => 'connections_made_monthly',
                         'value' => 12000,
                         'label' => 'Monthly Connections',
-                        'trend' => 'up'
-                    ]
+                        'trend' => 'up',
+                    ],
                 ],
                 'target_persona' => [
                     [
@@ -193,7 +193,7 @@ class HomepageService
                         'description' => 'New alumni looking to build professional networks',
                         'career_stage' => 'recent_grad',
                         'primary_goals' => ['Find mentors', 'Job opportunities'],
-                        'pain_points' => ['Limited network', 'Career uncertainty']
+                        'pain_points' => ['Limited network', 'Career uncertainty'],
                     ],
                     [
                         'id' => 'mid_career',
@@ -201,23 +201,23 @@ class HomepageService
                         'description' => 'Experienced professionals seeking career advancement',
                         'career_stage' => 'mid_career',
                         'primary_goals' => ['Career advancement', 'Industry connections'],
-                        'pain_points' => ['Career plateau', 'Limited industry connections']
-                    ]
+                        'pain_points' => ['Career plateau', 'Limited industry connections'],
+                    ],
                 ],
                 'hotspots' => [
                     [
                         'x' => 30,
                         'y' => 25,
                         'title' => 'Connection Recommendations',
-                        'description' => 'AI-powered suggestions based on your profile and goals'
+                        'description' => 'AI-powered suggestions based on your profile and goals',
                     ],
                     [
                         'x' => 70,
                         'y' => 60,
                         'title' => 'Industry Groups',
-                        'description' => 'Join groups specific to your industry and interests'
-                    ]
-                ]
+                        'description' => 'Join groups specific to your industry and interests',
+                    ],
+                ],
             ],
             [
                 'id' => 'mentorship',
@@ -228,7 +228,7 @@ class HomepageService
                     'Structured mentorship programs',
                     'Goal tracking and progress monitoring',
                     'Video call integration',
-                    'Mentorship resource library'
+                    'Mentorship resource library',
                 ],
                 'screenshot' => '/images/features/mentorship-matching.png',
                 'demo_video' => '/videos/features/mentorship-demo.mp4',
@@ -240,8 +240,8 @@ class HomepageService
                         'metric' => 'active_mentorships',
                         'value' => 1800,
                         'label' => 'Active Mentorships',
-                        'trend' => 'up'
-                    ]
+                        'trend' => 'up',
+                    ],
                 ],
                 'target_persona' => [
                     [
@@ -250,9 +250,9 @@ class HomepageService
                         'description' => 'New alumni seeking career guidance',
                         'career_stage' => 'recent_grad',
                         'primary_goals' => ['Career guidance', 'Skill development'],
-                        'pain_points' => ['Lack of experience', 'Career direction']
-                    ]
-                ]
+                        'pain_points' => ['Lack of experience', 'Career direction'],
+                    ],
+                ],
             ],
             [
                 'id' => 'job_board',
@@ -263,7 +263,7 @@ class HomepageService
                     'Referral tracking system',
                     'Application status updates',
                     'Salary insights and benchmarks',
-                    'Interview preparation resources'
+                    'Interview preparation resources',
                 ],
                 'screenshot' => '/images/features/job-board.png',
                 'demo_video' => '/videos/features/job-board-demo.mp4',
@@ -274,8 +274,8 @@ class HomepageService
                         'metric' => 'job_placements',
                         'value' => 3200,
                         'label' => 'Job Placements',
-                        'trend' => 'up'
-                    ]
+                        'trend' => 'up',
+                    ],
                 ],
                 'target_persona' => [
                     [
@@ -284,9 +284,9 @@ class HomepageService
                         'description' => 'Alumni actively looking for new opportunities',
                         'career_stage' => 'mid_career',
                         'primary_goals' => ['Find new job', 'Career change'],
-                        'pain_points' => ['Limited opportunities', 'Competition']
-                    ]
-                ]
+                        'pain_points' => ['Limited opportunities', 'Competition'],
+                    ],
+                ],
             ],
             [
                 'id' => 'events',
@@ -297,7 +297,7 @@ class HomepageService
                     'Virtual and in-person events',
                     'RSVP and calendar integration',
                     'Event networking tools',
-                    'Post-event connection facilitation'
+                    'Post-event connection facilitation',
                 ],
                 'screenshot' => '/images/features/events-calendar.png',
                 'demo_video' => '/videos/features/events-demo.mp4',
@@ -308,8 +308,8 @@ class HomepageService
                         'metric' => 'events_monthly',
                         'value' => 850,
                         'label' => 'Monthly Events',
-                        'trend' => 'up'
-                    ]
+                        'trend' => 'up',
+                    ],
                 ],
                 'target_persona' => [
                     [
@@ -318,10 +318,10 @@ class HomepageService
                         'description' => 'Alumni who actively participate in networking events',
                         'career_stage' => 'mid_career',
                         'primary_goals' => ['Expand network', 'Industry insights'],
-                        'pain_points' => ['Finding relevant events', 'Time constraints']
-                    ]
-                ]
-            ]
+                        'pain_points' => ['Finding relevant events', 'Time constraints'],
+                    ],
+                ],
+            ],
         ]);
 
         $institutionalFeatures = collect([
@@ -334,7 +334,7 @@ class HomepageService
                     'Event management tools',
                     'Communication campaign builder',
                     'Alumni directory management',
-                    'Custom reporting and insights'
+                    'Custom reporting and insights',
                 ],
                 'target_institution' => 'university',
                 'screenshot' => '/images/features/admin-dashboard.png',
@@ -348,23 +348,23 @@ class HomepageService
                         'metric' => 'institutions_using',
                         'value' => 150,
                         'label' => 'Institutions Using',
-                        'trend' => 'up'
-                    ]
+                        'trend' => 'up',
+                    ],
                 ],
                 'hotspots' => [
                     [
                         'x' => 25,
                         'y' => 30,
                         'title' => 'Analytics Overview',
-                        'description' => 'Real-time engagement metrics and trends'
+                        'description' => 'Real-time engagement metrics and trends',
                     ],
                     [
                         'x' => 75,
                         'y' => 45,
                         'title' => 'Event Management',
-                        'description' => 'Create and manage alumni events with RSVP tracking'
-                    ]
-                ]
+                        'description' => 'Create and manage alumni events with RSVP tracking',
+                    ],
+                ],
             ],
             [
                 'id' => 'branded_mobile_app',
@@ -375,7 +375,7 @@ class HomepageService
                     'Custom branding and features',
                     'App store deployment included',
                     'Push notification campaigns',
-                    'Offline functionality'
+                    'Offline functionality',
                 ],
                 'target_institution' => 'university',
                 'screenshot' => '/images/features/branded-app-showcase.png',
@@ -388,9 +388,9 @@ class HomepageService
                         'metric' => 'apps_deployed',
                         'value' => 45,
                         'label' => 'Apps Deployed',
-                        'trend' => 'up'
-                    ]
-                ]
+                        'trend' => 'up',
+                    ],
+                ],
             ],
             [
                 'id' => 'analytics_reporting',
@@ -401,7 +401,7 @@ class HomepageService
                     'Alumni engagement metrics',
                     'Event performance analytics',
                     'ROI tracking and reporting',
-                    'Data export capabilities'
+                    'Data export capabilities',
                 ],
                 'target_institution' => 'university',
                 'screenshot' => '/images/features/analytics-dashboard.png',
@@ -414,9 +414,9 @@ class HomepageService
                         'metric' => 'reports_generated',
                         'value' => 25000,
                         'label' => 'Reports Generated',
-                        'trend' => 'up'
-                    ]
-                ]
+                        'trend' => 'up',
+                    ],
+                ],
             ],
             [
                 'id' => 'integration_suite',
@@ -427,7 +427,7 @@ class HomepageService
                     'Email platform connectivity',
                     'Single sign-on (SSO) support',
                     'API access and webhooks',
-                    'Data synchronization tools'
+                    'Data synchronization tools',
                 ],
                 'target_institution' => 'corporate',
                 'screenshot' => '/images/features/integrations.png',
@@ -440,10 +440,10 @@ class HomepageService
                         'metric' => 'active_integrations',
                         'value' => 120,
                         'label' => 'Active Integrations',
-                        'trend' => 'up'
-                    ]
-                ]
-            ]
+                        'trend' => 'up',
+                    ],
+                ],
+            ],
         ]);
 
         return $audience === 'institutional' ? $institutionalFeatures : $individualFeatures;
@@ -458,9 +458,9 @@ class HomepageService
         $baseIncrease = 35; // Base salary increase percentage
         $experienceMultiplier = min($data['experience_years'] * 0.05, 0.3);
         $industryMultiplier = $this->getIndustryMultiplier($data['industry']);
-        
+
         $projectedIncrease = $baseIncrease + ($baseIncrease * $experienceMultiplier) + ($baseIncrease * $industryMultiplier);
-        
+
         return [
             'projected_salary_increase' => round($projectedIncrease),
             'networking_value' => 'High',
@@ -469,9 +469,9 @@ class HomepageService
                 'Connect with 5-10 alumni in your industry',
                 'Join relevant professional groups',
                 'Attend 2-3 networking events monthly',
-                'Seek mentorship from senior professionals'
+                'Seek mentorship from senior professionals',
             ],
-            'success_probability' => 87
+            'success_probability' => 87,
         ];
     }
 
@@ -487,9 +487,9 @@ class HomepageService
             'next_steps' => [
                 'Discovery call scheduled',
                 'Custom demo preparation',
-                'Proposal development'
+                'Proposal development',
             ],
-            'estimated_response_time' => '24 hours'
+            'estimated_response_time' => '24 hours',
         ];
     }
 
@@ -506,8 +506,8 @@ class HomepageService
             'features_included' => [
                 'Basic networking features',
                 'Limited mentorship access',
-                'Event browsing'
-            ]
+                'Event browsing',
+            ],
         ];
     }
 
@@ -519,9 +519,9 @@ class HomepageService
         // Mock lead capture - will be replaced with CRM integration
         return [
             'success' => true,
-            'lead_id' => 'LEAD_' . uniqid(),
+            'lead_id' => 'LEAD_'.uniqid(),
             'follow_up_scheduled' => true,
-            'message' => 'Thank you for your interest. We\'ll be in touch soon.'
+            'message' => 'Thank you for your interest. We\'ll be in touch soon.',
         ];
     }
 
@@ -530,8 +530,8 @@ class HomepageService
      */
     public function getPersonalizedContent(string $audience, array $context = []): array
     {
-        $cacheKey = "homepage_content_{$audience}_" . md5(serialize($context));
-        
+        $cacheKey = "homepage_content_{$audience}_".md5(serialize($context));
+
         return Cache::remember($cacheKey, 3600, function () use ($audience, $context) {
             return [
                 'hero' => $this->getHeroContent($audience, $context),
@@ -539,7 +539,7 @@ class HomepageService
                 'testimonials' => $this->getTestimonialsContent($audience, $context),
                 'pricing' => $this->getPricingContent($audience, $context),
                 'cta' => $this->getCTAContent($audience, $context),
-                'meta' => $this->getMetaContent($audience, $context)
+                'meta' => $this->getMetaContent($audience, $context),
             ];
         });
     }
@@ -555,25 +555,25 @@ class HomepageService
                 'subtitle' => 'Join thousands of alumni advancing their careers through meaningful professional networking',
                 'description' => 'Connect with alumni in your field, find mentors, discover job opportunities, and build lasting professional relationships.',
                 'background_image' => '/images/hero/individual-networking.jpg',
-                'background_video' => '/videos/hero/alumni-success-stories.mp4'
+                'background_video' => '/videos/hero/alumni-success-stories.mp4',
             ],
             'institutional' => [
                 'headline' => 'Transform Alumni Engagement with Your Branded Platform',
                 'subtitle' => 'Increase alumni participation by 300% with custom mobile apps and comprehensive analytics',
                 'description' => 'Empower your institution with white-label alumni solutions, branded mobile apps, and powerful engagement tools.',
                 'background_image' => '/images/hero/institutional-dashboard.jpg',
-                'background_video' => '/videos/hero/institutional-success.mp4'
-            ]
+                'background_video' => '/videos/hero/institutional-success.mp4',
+            ],
         ];
 
         $content = $baseContent[$audience] ?? $baseContent['individual'];
 
         // Personalize based on context
-        if (!empty($context['referrer']) && str_contains($context['referrer'], '.edu')) {
-            $content['headline'] = 'Welcome, ' . $this->extractInstitutionName($context['referrer']) . ' Alumni!';
+        if (! empty($context['referrer']) && str_contains($context['referrer'], '.edu')) {
+            $content['headline'] = 'Welcome, '.$this->extractInstitutionName($context['referrer']).' Alumni!';
         }
 
-        if (!empty($context['utm_campaign'])) {
+        if (! empty($context['utm_campaign'])) {
             $content = $this->personalizeForCampaign($content, $context['utm_campaign']);
         }
 
@@ -586,16 +586,16 @@ class HomepageService
     public function getFeaturesContent(string $audience, array $context = []): array
     {
         $features = $this->getFeatures($audience);
-        
+
         // Add audience-specific metadata
         return [
-            'title' => $audience === 'institutional' 
-                ? 'Comprehensive Alumni Engagement Solutions' 
+            'title' => $audience === 'institutional'
+                ? 'Comprehensive Alumni Engagement Solutions'
                 : 'Powerful Career Development Tools',
             'subtitle' => $audience === 'institutional'
                 ? 'Everything you need to build a thriving alumni community'
                 : 'Connect, learn, and grow with your alumni network',
-            'items' => $features->toArray()
+            'items' => $features->toArray(),
         ];
     }
 
@@ -605,15 +605,15 @@ class HomepageService
     public function getTestimonialsContent(string $audience, array $context = []): array
     {
         $testimonials = $this->getTestimonials($audience);
-        
+
         return [
-            'title' => $audience === 'institutional' 
-                ? 'Trusted by Leading Institutions' 
+            'title' => $audience === 'institutional'
+                ? 'Trusted by Leading Institutions'
                 : 'Success Stories from Alumni Like You',
             'subtitle' => $audience === 'institutional'
                 ? 'See how universities and organizations are transforming alumni engagement'
                 : 'Discover how alumni are advancing their careers through our platform',
-            'items' => $testimonials->toArray()
+            'items' => $testimonials->toArray(),
         ];
     }
 
@@ -635,9 +635,9 @@ class HomepageService
                             'Up to 5,000 alumni',
                             'Basic analytics dashboard',
                             'Email support',
-                            'Standard integrations'
+                            'Standard integrations',
                         ],
-                        'popular' => false
+                        'popular' => false,
                     ],
                     [
                         'name' => 'Enterprise',
@@ -649,9 +649,9 @@ class HomepageService
                             'Branded mobile app',
                             'Priority support',
                             'Custom integrations',
-                            'Dedicated success manager'
+                            'Dedicated success manager',
                         ],
-                        'popular' => true
+                        'popular' => true,
                     ],
                     [
                         'name' => 'Custom',
@@ -662,12 +662,12 @@ class HomepageService
                             'Full white-label solution',
                             'Custom development',
                             '24/7 dedicated support',
-                            'On-premise deployment option'
+                            'On-premise deployment option',
                         ],
                         'popular' => false,
-                        'custom_quote' => true
-                    ]
-                ]
+                        'custom_quote' => true,
+                    ],
+                ],
             ];
         }
 
@@ -683,10 +683,10 @@ class HomepageService
                         'Basic alumni directory access',
                         'Limited messaging',
                         'Event browsing',
-                        'Basic profile'
+                        'Basic profile',
                     ],
                     'popular' => false,
-                    'trial_available' => false
+                    'trial_available' => false,
                 ],
                 [
                     'name' => 'Professional',
@@ -698,10 +698,10 @@ class HomepageService
                         'Mentorship matching',
                         'Job board access',
                         'Event registration',
-                        'Career resources'
+                        'Career resources',
                     ],
                     'popular' => true,
-                    'trial_available' => true
+                    'trial_available' => true,
                 ],
                 [
                     'name' => 'Premium',
@@ -713,12 +713,12 @@ class HomepageService
                         'Exclusive networking events',
                         'Career coaching sessions',
                         'Industry insights reports',
-                        'Personal brand building tools'
+                        'Personal brand building tools',
                     ],
                     'popular' => false,
-                    'trial_available' => true
-                ]
-            ]
+                    'trial_available' => true,
+                ],
+            ],
         ];
     }
 
@@ -744,7 +744,7 @@ class HomepageService
                             'title' => 'Home Dashboard',
                             'description' => 'Personalized alumni dashboard with news and updates',
                             'device' => 'iphone',
-                            'category' => 'home'
+                            'category' => 'home',
                         ],
                         [
                             'id' => 'stanford-network',
@@ -752,7 +752,7 @@ class HomepageService
                             'title' => 'Alumni Network',
                             'description' => 'Connect with fellow Stanford alumni worldwide',
                             'device' => 'iphone',
-                            'category' => 'networking'
+                            'category' => 'networking',
                         ],
                         [
                             'id' => 'stanford-events',
@@ -760,8 +760,8 @@ class HomepageService
                             'title' => 'Events & Reunions',
                             'description' => 'Discover and register for alumni events',
                             'device' => 'iphone',
-                            'category' => 'events'
-                        ]
+                            'category' => 'events',
+                        ],
                     ],
                     'customizations' => [
                         [
@@ -769,22 +769,22 @@ class HomepageService
                             'name' => 'Custom Color Scheme',
                             'description' => 'Stanford Cardinal red throughout the app',
                             'implemented' => true,
-                            'complexity' => 'basic'
+                            'complexity' => 'basic',
                         ],
                         [
                             'category' => 'features',
                             'name' => 'Class Year Groups',
                             'description' => 'Automatic grouping by graduation year',
                             'implemented' => true,
-                            'complexity' => 'advanced'
+                            'complexity' => 'advanced',
                         ],
                         [
                             'category' => 'integrations',
                             'name' => 'Stanford Directory Integration',
                             'description' => 'Sync with official alumni directory',
                             'implemented' => true,
-                            'complexity' => 'custom'
-                        ]
+                            'complexity' => 'custom',
+                        ],
                     ],
                     'user_count' => 15000,
                     'engagement_stats' => [
@@ -793,18 +793,18 @@ class HomepageService
                             'value' => 2500,
                             'unit' => 'count',
                             'trend' => 'up',
-                            'period' => 'last_30_days'
+                            'period' => 'last_30_days',
                         ],
                         [
                             'metric' => 'session_duration',
                             'value' => 12,
                             'unit' => 'minutes',
                             'trend' => 'up',
-                            'period' => 'average'
-                        ]
+                            'period' => 'average',
+                        ],
                     ],
                     'launch_date' => '2023-09-01',
-                    'featured' => true
+                    'featured' => true,
                 ],
                 [
                     'id' => 'mit-connect',
@@ -821,7 +821,7 @@ class HomepageService
                             'title' => 'MIT Connect Home',
                             'description' => 'Tech-focused alumni dashboard',
                             'device' => 'iphone',
-                            'category' => 'home'
+                            'category' => 'home',
                         ],
                         [
                             'id' => 'mit-innovation',
@@ -829,8 +829,8 @@ class HomepageService
                             'title' => 'Innovation Hub',
                             'description' => 'Startup and innovation networking',
                             'device' => 'iphone',
-                            'category' => 'networking'
-                        ]
+                            'category' => 'networking',
+                        ],
                     ],
                     'customizations' => [
                         [
@@ -838,15 +838,15 @@ class HomepageService
                             'name' => 'MIT Brand Colors',
                             'description' => 'Cardinal red and steel gray theme',
                             'implemented' => true,
-                            'complexity' => 'basic'
+                            'complexity' => 'basic',
                         ],
                         [
                             'category' => 'features',
                             'name' => 'Startup Showcase',
                             'description' => 'Dedicated section for alumni startups',
                             'implemented' => true,
-                            'complexity' => 'advanced'
-                        ]
+                            'complexity' => 'advanced',
+                        ],
                     ],
                     'user_count' => 12000,
                     'engagement_stats' => [
@@ -855,18 +855,18 @@ class HomepageService
                             'value' => 1800,
                             'unit' => 'count',
                             'trend' => 'up',
-                            'period' => 'last_30_days'
+                            'period' => 'last_30_days',
                         ],
                         [
                             'metric' => 'retention_rate',
                             'value' => 78,
                             'unit' => 'percentage',
                             'trend' => 'stable',
-                            'period' => '30_day'
-                        ]
+                            'period' => '30_day',
+                        ],
                     ],
                     'launch_date' => '2023-11-15',
-                    'featured' => true
+                    'featured' => true,
                 ],
                 [
                     'id' => 'google-alumni',
@@ -883,8 +883,8 @@ class HomepageService
                             'title' => 'Google Alumni Hub',
                             'description' => 'Corporate alumni networking platform',
                             'device' => 'android',
-                            'category' => 'home'
-                        ]
+                            'category' => 'home',
+                        ],
                     ],
                     'customizations' => [
                         [
@@ -892,8 +892,8 @@ class HomepageService
                             'name' => 'Google Material Design',
                             'description' => 'Full Google brand integration',
                             'implemented' => true,
-                            'complexity' => 'advanced'
-                        ]
+                            'complexity' => 'advanced',
+                        ],
                     ],
                     'user_count' => 8500,
                     'engagement_stats' => [
@@ -902,12 +902,12 @@ class HomepageService
                             'value' => 1200,
                             'unit' => 'count',
                             'trend' => 'up',
-                            'period' => 'last_30_days'
-                        ]
+                            'period' => 'last_30_days',
+                        ],
                     ],
                     'launch_date' => '2024-01-20',
-                    'featured' => false
-                ]
+                    'featured' => false,
+                ],
             ],
             'customization_options' => [
                 [
@@ -921,22 +921,22 @@ class HomepageService
                             'name' => 'Custom Logo Placement',
                             'description' => 'Your logo prominently displayed throughout the app',
                             'type' => 'logo',
-                            'required' => true
+                            'required' => true,
                         ],
                         [
                             'id' => 'color-scheme',
                             'name' => 'Brand Color Scheme',
                             'description' => 'Primary and secondary colors matching your brand',
                             'type' => 'color',
-                            'required' => true
+                            'required' => true,
                         ],
                         [
                             'id' => 'typography',
                             'name' => 'Custom Typography',
                             'description' => 'Brand-consistent fonts and text styling',
                             'type' => 'text',
-                            'required' => false
-                        ]
+                            'required' => false,
+                        ],
                     ],
                     'examples' => [
                         [
@@ -945,10 +945,10 @@ class HomepageService
                             'description' => 'Cardinal red theme with Stanford tree logo',
                             'before_image' => '/images/examples/generic-app.png',
                             'after_image' => '/images/examples/stanford-branded.png',
-                            'institution_type' => 'university'
-                        ]
+                            'institution_type' => 'university',
+                        ],
                     ],
-                    'level' => 'basic'
+                    'level' => 'basic',
                 ],
                 [
                     'id' => 'feature-customization',
@@ -961,15 +961,15 @@ class HomepageService
                             'name' => 'Custom Content Sections',
                             'description' => 'Add institution-specific content areas',
                             'type' => 'feature',
-                            'required' => false
+                            'required' => false,
                         ],
                         [
                             'id' => 'event-integration',
                             'name' => 'Event System Integration',
                             'description' => 'Connect with your existing event management',
                             'type' => 'integration',
-                            'required' => false
-                        ]
+                            'required' => false,
+                        ],
                     ],
                     'examples' => [
                         [
@@ -978,10 +978,10 @@ class HomepageService
                             'description' => 'Custom startup showcase and innovation tracking',
                             'before_image' => '/images/examples/standard-features.png',
                             'after_image' => '/images/examples/mit-innovation.png',
-                            'institution_type' => 'university'
-                        ]
+                            'institution_type' => 'university',
+                        ],
                     ],
-                    'level' => 'advanced'
+                    'level' => 'advanced',
                 ],
                 [
                     'id' => 'integration-options',
@@ -994,18 +994,18 @@ class HomepageService
                             'name' => 'CRM System Integration',
                             'description' => 'Sync with Salesforce, HubSpot, or custom CRM',
                             'type' => 'integration',
-                            'required' => false
+                            'required' => false,
                         ],
                         [
                             'id' => 'sso-integration',
                             'name' => 'Single Sign-On (SSO)',
                             'description' => 'Integrate with institutional authentication',
                             'type' => 'integration',
-                            'required' => false
-                        ]
+                            'required' => false,
+                        ],
                     ],
                     'examples' => [],
-                    'level' => 'enterprise'
+                    'level' => 'enterprise',
                 ],
                 [
                     'id' => 'analytics-customization',
@@ -1018,19 +1018,19 @@ class HomepageService
                             'name' => 'Custom Analytics Dashboards',
                             'description' => 'Tailored metrics and KPI tracking',
                             'type' => 'feature',
-                            'required' => false
+                            'required' => false,
                         ],
                         [
                             'id' => 'automated-reports',
                             'name' => 'Automated Reporting',
                             'description' => 'Scheduled reports for administrators',
                             'type' => 'feature',
-                            'required' => false
-                        ]
+                            'required' => false,
+                        ],
                     ],
                     'examples' => [],
-                    'level' => 'advanced'
-                ]
+                    'level' => 'advanced',
+                ],
             ],
             'app_store_integration' => [
                 'apple_app_store' => true,
@@ -1039,7 +1039,7 @@ class HomepageService
                 'white_label' => true,
                 'institution_branding' => true,
                 'review_management' => true,
-                'analytics_integration' => true
+                'analytics_integration' => true,
             ],
             'development_timeline' => [
                 'phases' => [
@@ -1052,7 +1052,7 @@ class HomepageService
                             'Technical requirements document',
                             'Brand integration guidelines',
                             'Feature specification document',
-                            'Project timeline and milestones'
+                            'Project timeline and milestones',
                         ],
                         'dependencies' => [],
                         'milestones' => [
@@ -1061,16 +1061,16 @@ class HomepageService
                                 'name' => 'Requirements Finalized',
                                 'description' => 'All technical and brand requirements documented',
                                 'due_date' => 'Week 2',
-                                'status' => 'pending'
+                                'status' => 'pending',
                             ],
                             [
                                 'id' => 'design-approval',
                                 'name' => 'Design Mockups Approved',
                                 'description' => 'Brand-integrated design mockups approved',
                                 'due_date' => 'Week 3',
-                                'status' => 'pending'
-                            ]
-                        ]
+                                'status' => 'pending',
+                            ],
+                        ],
                     ],
                     [
                         'id' => 'design-branding',
@@ -1081,7 +1081,7 @@ class HomepageService
                             'Branded UI/UX designs',
                             'Interactive prototypes',
                             'Brand style guide implementation',
-                            'App store assets (icons, screenshots)'
+                            'App store assets (icons, screenshots)',
                         ],
                         'dependencies' => ['discovery-planning'],
                         'milestones' => [
@@ -1090,16 +1090,16 @@ class HomepageService
                                 'name' => 'UI Designs Complete',
                                 'description' => 'All screen designs with branding complete',
                                 'due_date' => 'Week 6',
-                                'status' => 'pending'
+                                'status' => 'pending',
                             ],
                             [
                                 'id' => 'prototype-testing',
                                 'name' => 'Prototype User Testing',
                                 'description' => 'Interactive prototype tested with stakeholders',
                                 'due_date' => 'Week 7',
-                                'status' => 'pending'
-                            ]
-                        ]
+                                'status' => 'pending',
+                            ],
+                        ],
                     ],
                     [
                         'id' => 'development',
@@ -1111,7 +1111,7 @@ class HomepageService
                             'Native Android application',
                             'Backend API integration',
                             'Push notification system',
-                            'Offline functionality'
+                            'Offline functionality',
                         ],
                         'dependencies' => ['design-branding'],
                         'milestones' => [
@@ -1120,16 +1120,16 @@ class HomepageService
                                 'name' => 'Alpha Build Complete',
                                 'description' => 'Core functionality implemented',
                                 'due_date' => 'Week 11',
-                                'status' => 'pending'
+                                'status' => 'pending',
                             ],
                             [
                                 'id' => 'beta-testing',
                                 'name' => 'Beta Testing Phase',
                                 'description' => 'Internal testing with stakeholders',
                                 'due_date' => 'Week 14',
-                                'status' => 'pending'
-                            ]
-                        ]
+                                'status' => 'pending',
+                            ],
+                        ],
                     ],
                     [
                         'id' => 'testing-qa',
@@ -1140,7 +1140,7 @@ class HomepageService
                             'Comprehensive test suite',
                             'Performance optimization',
                             'Security audit completion',
-                            'Bug fixes and refinements'
+                            'Bug fixes and refinements',
                         ],
                         'dependencies' => ['development'],
                         'milestones' => [
@@ -1149,9 +1149,9 @@ class HomepageService
                                 'name' => 'QA Testing Complete',
                                 'description' => 'All testing phases completed successfully',
                                 'due_date' => 'Week 16',
-                                'status' => 'pending'
-                            ]
-                        ]
+                                'status' => 'pending',
+                            ],
+                        ],
                     ],
                     [
                         'id' => 'deployment-launch',
@@ -1163,7 +1163,7 @@ class HomepageService
                             'Google Play submission and approval',
                             'Launch marketing materials',
                             'User onboarding documentation',
-                            'Admin training materials'
+                            'Admin training materials',
                         ],
                         'dependencies' => ['testing-qa'],
                         'milestones' => [
@@ -1172,22 +1172,22 @@ class HomepageService
                                 'name' => 'App Store Approval',
                                 'description' => 'Apps approved on both iOS and Android stores',
                                 'due_date' => 'Week 17',
-                                'status' => 'pending'
+                                'status' => 'pending',
                             ],
                             [
                                 'id' => 'official-launch',
                                 'name' => 'Official Launch',
                                 'description' => 'Apps publicly available and launched',
                                 'due_date' => 'Week 18',
-                                'status' => 'pending'
-                            ]
-                        ]
-                    ]
+                                'status' => 'pending',
+                            ],
+                        ],
+                    ],
                 ],
                 'total_duration' => '14-20 weeks',
                 'estimated_cost' => 'Starting at $75,000',
-                'maintenance_cost' => '$2,000-5,000/month'
-            ]
+                'maintenance_cost' => '$2,000-5,000/month',
+            ],
         ];
     }
 
@@ -1203,22 +1203,22 @@ class HomepageService
                     'action' => 'demo',
                     'variant' => 'primary',
                     'tracking_event' => 'institutional_demo_request',
-                    'href' => '/demo-request'
+                    'href' => '/demo-request',
                 ],
                 'secondary' => [
                     'text' => 'Download Case Studies',
                     'action' => 'download',
                     'variant' => 'secondary',
                     'tracking_event' => 'institutional_case_study_download',
-                    'href' => '/case-studies'
+                    'href' => '/case-studies',
                 ],
                 'tertiary' => [
                     'text' => 'Contact Sales',
                     'action' => 'contact',
                     'variant' => 'outline',
                     'tracking_event' => 'institutional_contact_sales',
-                    'href' => '/contact-sales'
-                ]
+                    'href' => '/contact-sales',
+                ],
             ];
         }
 
@@ -1228,15 +1228,15 @@ class HomepageService
                 'action' => 'trial',
                 'variant' => 'primary',
                 'tracking_event' => 'individual_trial_start',
-                'href' => '/register'
+                'href' => '/register',
             ],
             'secondary' => [
                 'text' => 'Join Waitlist',
                 'action' => 'waitlist',
                 'variant' => 'secondary',
                 'tracking_event' => 'individual_waitlist_join',
-                'href' => '/waitlist'
-            ]
+                'href' => '/waitlist',
+            ],
         ];
     }
 
@@ -1249,14 +1249,14 @@ class HomepageService
             return [
                 'title' => 'Alumni Engagement Platform for Universities & Organizations | AlumniConnect',
                 'description' => 'Transform your alumni community with branded mobile apps, comprehensive analytics, and powerful engagement tools. Trusted by 150+ institutions worldwide.',
-                'keywords' => 'alumni engagement, university alumni platform, branded alumni app, institutional alumni solutions, alumni analytics'
+                'keywords' => 'alumni engagement, university alumni platform, branded alumni app, institutional alumni solutions, alumni analytics',
             ];
         }
 
         return [
             'title' => 'Professional Alumni Networking Platform | AlumniConnect',
             'description' => 'Connect with alumni, find mentors, discover job opportunities, and advance your career through meaningful professional networking.',
-            'keywords' => 'alumni networking, career advancement, professional mentorship, job opportunities, alumni connections'
+            'keywords' => 'alumni networking, career advancement, professional mentorship, job opportunities, alumni connections',
         ];
     }
 
@@ -1270,32 +1270,32 @@ class HomepageService
                 'individual' => [
                     'control' => [
                         'headline' => 'Accelerate Your Career Through Alumni Connections',
-                        'subtitle' => 'Join thousands of alumni advancing their careers'
+                        'subtitle' => 'Join thousands of alumni advancing their careers',
                     ],
                     'variant_a' => [
                         'headline' => 'Unlock Your Career Potential with Alumni Network',
-                        'subtitle' => 'Connect with successful alumni and fast-track your career growth'
+                        'subtitle' => 'Connect with successful alumni and fast-track your career growth',
                     ],
                     'variant_b' => [
                         'headline' => 'Your Next Career Move Starts Here',
-                        'subtitle' => 'Leverage the power of alumni connections for career success'
-                    ]
+                        'subtitle' => 'Leverage the power of alumni connections for career success',
+                    ],
                 ],
                 'institutional' => [
                     'control' => [
                         'headline' => 'Transform Alumni Engagement with Your Branded Platform',
-                        'subtitle' => 'Increase alumni participation by 300% with custom solutions'
+                        'subtitle' => 'Increase alumni participation by 300% with custom solutions',
                     ],
                     'variant_a' => [
                         'headline' => 'Build a Thriving Alumni Community',
-                        'subtitle' => 'Engage alumni with branded apps and powerful analytics'
+                        'subtitle' => 'Engage alumni with branded apps and powerful analytics',
                     ],
                     'variant_b' => [
                         'headline' => 'The Complete Alumni Engagement Solution',
-                        'subtitle' => 'From mobile apps to analytics - everything you need in one platform'
-                    ]
-                ]
-            ]
+                        'subtitle' => 'From mobile apps to analytics - everything you need in one platform',
+                    ],
+                ],
+            ],
         ];
 
         return $variations[$testId][$audience] ?? [];
@@ -1313,15 +1313,349 @@ class HomepageService
                 'data' => $data,
                 'timestamp' => now(),
                 'user_agent' => request()->userAgent(),
-                'ip' => request()->ip()
+                'ip' => request()->ip(),
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to track personalization event', [
                 'error' => $e->getMessage(),
                 'audience' => $audience,
-                'event' => $event
+                'event' => $event,
             ]);
         }
+    }
+
+    /**
+     * Get default content when personalized content fails or returns null
+     */
+    public function getDefaultContent(string $audience = 'individual'): array
+    {
+        if ($audience === 'institutional') {
+            return [
+                'hero' => [
+                    'headline' => 'Transform Alumni Engagement with Your Institution',
+                    'subtitle' => 'Increase alumni participation with comprehensive engagement tools',
+                    'description' => 'Empower your institution with white-label solutions and powerful analytics',
+                    'background_image' => '/images/hero/institutional-default.jpg',
+                    'background_video' => null,
+                ],
+                'features' => [
+                    'title' => 'Complete Alumni Engagement Solutions',
+                    'subtitle' => 'Everything you need to build a thriving alumni community',
+                    'items' => [
+                        [
+                            'id' => 'branded_apps',
+                            'title' => 'Branded Mobile Apps',
+                            'description' => 'Custom mobile applications with your institution\'s branding',
+                            'icon' => 'mobile-app',
+                        ],
+                        [
+                            'id' => 'analytics',
+                            'title' => 'Advanced Analytics',
+                            'description' => 'Comprehensive reporting and engagement insights',
+                            'icon' => 'analytics',
+                        ],
+                    ],
+                ],
+                'testimonials' => [
+                    'title' => 'Trusted by Leading Institutions',
+                    'subtitle' => 'See how organizations are transforming alumni engagement',
+                    'items' => [],
+                ],
+                'pricing' => [
+                    'title' => 'Enterprise Solutions',
+                    'subtitle' => 'Flexible pricing that scales with your community',
+                    'tiers' => [],
+                ],
+                'cta' => [
+                    'primary' => [
+                        'text' => 'Request Demo',
+                        'action' => 'demo',
+                        'href' => '/demo-request',
+                    ],
+                    'secondary' => [
+                        'text' => 'Learn More',
+                        'action' => 'learn',
+                        'href' => '/learn-more',
+                    ],
+                ],
+                'meta' => [
+                    'title' => 'Alumni Engagement Platform for Institutions',
+                    'description' => 'Transform your alumni community with branded solutions and analytics',
+                    'keywords' => 'alumni engagement, institutional solutions',
+                ],
+            ];
+        }
+
+        // Default individual audience content
+        return [
+            'hero' => [
+                'headline' => 'Connect. Engage. Thrive.',
+                'subtitle' => 'Join the alumni community that transforms careers',
+                'description' => 'Build meaningful connections and advance your career through alumni networking',
+                'background_image' => '/images/hero/individual-default.jpg',
+                'background_video' => null,
+            ],
+            'features' => [
+                'title' => 'Powerful Career Development Tools',
+                'subtitle' => 'Connect, learn, and grow with your alumni network',
+                'items' => [
+                    [
+                        'id' => 'networking',
+                        'title' => 'Alumni Networking',
+                        'description' => 'Connect with alumni in your field and industry',
+                        'icon' => 'network',
+                    ],
+                    [
+                        'id' => 'mentorship',
+                        'title' => 'Mentorship Matching',
+                        'description' => 'Find experienced mentors to guide your career',
+                        'icon' => 'mentor',
+                    ],
+                ],
+            ],
+            'testimonials' => [
+                'title' => 'Success Stories from Alumni',
+                'subtitle' => 'Discover how alumni are advancing their careers',
+                'items' => [],
+            ],
+            'pricing' => [
+                'title' => 'Choose Your Plan',
+                'subtitle' => 'Start free, upgrade when ready',
+                'tiers' => [],
+            ],
+            'cta' => [
+                'primary' => [
+                    'text' => 'Get Started',
+                    'action' => 'signup',
+                    'href' => '/register',
+                ],
+                'secondary' => [
+                    'text' => 'Learn More',
+                    'action' => 'learn',
+                    'href' => '/learn-more',
+                ],
+            ],
+            'meta' => [
+                'title' => 'Alumni Networking Platform',
+                'description' => 'Connect with alumni and advance your career through meaningful networking',
+                'keywords' => 'alumni networking, career advancement',
+            ],
+        ];
+    }
+
+    /**
+     * Apply A/B test variants to content only if variants exist and are valid
+     */
+    public function applyABTestVariants(array $content, array $abTests, string $audience): array
+    {
+        // If content is not array, default it
+        if (! is_array($content)) {
+            $content = [];
+        }
+
+        if (empty($abTests) || ! is_array($abTests)) {
+            return $content;
+        }
+
+        foreach ($abTests as $testId => $testData) {
+            // Iterate only when each $testData is array
+            if (! is_array($testData)) {
+                continue;
+            }
+
+            // $variant = $testData['variant'] if array; else continue
+            if (! isset($testData['variant']) || ! is_array($testData['variant'])) {
+                continue;
+            }
+            $variant = $testData['variant'];
+
+            // $overrides = $variant['component_overrides'] if array; else []
+            $overrides = [];
+            if (isset($variant['component_overrides']) && is_array($variant['component_overrides'])) {
+                $overrides = $variant['component_overrides'];
+            }
+
+            // If overrides contain key matching $audience and is array, call mergeContentOverrides
+            if (isset($overrides[$audience]) && is_array($overrides[$audience])) {
+                $content = $this->mergeContentOverrides($content, $overrides[$audience]);
+            } else {
+                // Otherwise apply general keys (headline/subtitle) safely
+                $generalKeys = ['headline', 'subtitle'];
+                foreach ($generalKeys as $key) {
+                    if (isset($overrides[$key])) {
+                        $content[$key] = $overrides[$key];
+                    }
+                }
+            }
+        }
+
+        return $content;
+    }
+
+    /**
+     * Format A/B tests for frontend consumption with strict null safety
+     */
+    public function formatABTestsForFrontend($abTests): array
+    {
+        // If $abTests is not array, return []
+        if (! is_array($abTests)) {
+            return [];
+        }
+
+        $formatted = [];
+        foreach ($abTests as $testId => $testData) {
+            // Skip non-array entries
+            if (! is_array($testData)) {
+                continue;
+            }
+
+            // Safely extract test name and variant fields with ?? fallbacks
+            $test = $testData['test'] ?? [];
+            $variant = $testData['variant'] ?? [];
+
+            // Extract test name with fallback
+            $testName = null;
+            if (is_array($test)) {
+                $testName = $test['name'] ?? null;
+            }
+            $testName = $testName ?? 'unknown';
+
+            // Extract variant ID and name with fallbacks
+            $variantId = null;
+            $variantName = null;
+            if (is_array($variant)) {
+                $variantId = $variant['id'] ?? null;
+                $variantName = $variant['name'] ?? null;
+            }
+
+            // Validate id and variant_id; if missing, synthesize readable placeholders
+            $finalTestId = is_string($testId) && ! empty(trim($testId)) ? $testId : 'unknown';
+            $finalVariantId = is_string($variantId) && ! empty(trim($variantId)) ? $variantId : 'unknown';
+            $finalVariantName = is_string($variantName) && ! empty(trim($variantName)) ? $variantName : 'unknown';
+
+            // Always add entry with synthesized placeholders if needed
+            $formatted[$finalTestId] = [
+                'id' => $finalTestId,
+                'name' => $testName,
+                'variant_id' => $finalVariantId,
+                'variant_name' => $finalVariantName,
+            ];
+        }
+
+        // Always return an array; no exceptions from malformed entries
+        return $formatted;
+    }
+
+    /**
+     * Merge content overrides with deep null-safe merging
+     */
+    private function mergeContentOverrides(array $content, array $overrides): array
+    {
+        // Ensure content has hero and cta structure; if missing, initialize subsections
+        if (! isset($content['hero']) || ! is_array($content['hero'])) {
+            $content['hero'] = [];
+        }
+        if (! isset($content['cta']) || ! is_array($content['cta'])) {
+            $content['cta'] = [];
+        }
+
+        foreach ($overrides as $key => $value) {
+            // For known keys (headline, subtitle, primary_cta_text, secondary_cta_text), update safely
+            $knownKeys = ['headline', 'subtitle', 'primary_cta_text', 'secondary_cta_text'];
+            if (in_array($key, $knownKeys)) {
+                if ($key === 'headline' || $key === 'subtitle') {
+                    $content['hero'][$key] = $value;
+                } elseif ($key === 'primary_cta_text') {
+                    if (! isset($content['cta']['primary']) || ! is_array($content['cta']['primary'])) {
+                        $content['cta']['primary'] = [];
+                    }
+                    $content['cta']['primary']['text'] = $value;
+                } elseif ($key === 'secondary_cta_text') {
+                    if (! isset($content['cta']['secondary']) || ! is_array($content['cta']['secondary'])) {
+                        $content['cta']['secondary'] = [];
+                    }
+                    $content['cta']['secondary']['text'] = $value;
+                }
+            } else {
+                // For other keys, call setNestedValue only when the key is a non-empty string; ignore invalid
+                if (is_string($key) && ! empty(trim($key))) {
+                    if (strpos($key, '.') !== false) {
+                        // Handle nested keys like 'hero.headline'
+                        $this->setNestedValue($content, $key, $value);
+                    } else {
+                        // Direct key assignment with null safety
+                        if (! isset($content[$key])) {
+                            $content[$key] = [];
+                        }
+                        if (is_array($value) && is_array($content[$key])) {
+                            $content[$key] = array_merge($content[$key], $value);
+                        } else {
+                            $content[$key] = $value;
+                        }
+                    }
+                }
+                // Ignore invalid keys (non-string or empty)
+            }
+        }
+
+        return $content;
+    }
+
+    /**
+     * Set nested array value using dot notation with null safety
+     */
+    private function setNestedValue(array &$array, string $key, $value): void
+    {
+        // Split by '.'; walk the path creating arrays when missing or when existing value is not array
+        $keys = explode('.', $key);
+        $current = &$array;
+
+        foreach ($keys as $k) {
+            // Guard against empty path segments; skip on invalid
+            if (empty(trim($k))) {
+                return;
+            }
+
+            // Ensure strict array type before descent
+            if (! isset($current[$k]) || ! is_array($current[$k])) {
+                $current[$k] = [];
+            }
+            $current = &$current[$k];
+        }
+
+        $current = $value;
+    }
+
+    /**
+     * Deep merge minimal defaults into content to ensure required keys exist
+     */
+    public function deepMergeDefaults(array $content, string $audience): array
+    {
+        $defaults = $this->getDefaultContent($audience);
+
+        return $this->deepMergeArrays($defaults, $content);
+    }
+
+    /**
+     * Deep merge two arrays, preserving non-empty values from source array
+     */
+    private function deepMergeArrays(array $defaults, array $content): array
+    {
+        foreach ($defaults as $key => $defaultValue) {
+            if (! array_key_exists($key, $content)) {
+                // Key missing in content, use default
+                $content[$key] = $defaultValue;
+            } elseif (is_array($defaultValue) && is_array($content[$key])) {
+                // Both are arrays, recurse
+                $content[$key] = $this->deepMergeArrays($defaultValue, $content[$key]);
+            } elseif (empty($content[$key]) && ! empty($defaultValue)) {
+                // Content is empty but default has value, use default
+                $content[$key] = $defaultValue;
+            }
+            // Otherwise keep existing content value
+        }
+
+        return $content;
     }
 
     /**
@@ -1335,27 +1669,27 @@ class HomepageService
                 'hero' => [
                     'fields' => ['headline', 'subtitle', 'description', 'background_image', 'background_video'],
                     'required' => ['headline', 'subtitle'],
-                    'max_length' => ['headline' => 100, 'subtitle' => 200, 'description' => 500]
+                    'max_length' => ['headline' => 100, 'subtitle' => 200, 'description' => 500],
                 ],
                 'features' => [
                     'fields' => ['title', 'subtitle', 'items'],
                     'required' => ['title', 'items'],
-                    'max_items' => 6
+                    'max_items' => 6,
                 ],
                 'testimonials' => [
                     'fields' => ['title', 'subtitle', 'items'],
                     'required' => ['title', 'items'],
-                    'max_items' => 10
+                    'max_items' => 10,
                 ],
                 'pricing' => [
                     'fields' => ['title', 'subtitle', 'tiers'],
                     'required' => ['title', 'tiers'],
-                    'max_tiers' => 4
-                ]
+                    'max_tiers' => 4,
+                ],
             ],
             'cache_duration' => 3600,
             'version_control' => true,
-            'approval_workflow' => true
+            'approval_workflow' => true,
         ];
     }
 
@@ -1366,13 +1700,13 @@ class HomepageService
     {
         $url = parse_url($referrer);
         $domain = $url['host'] ?? '';
-        
+
         // Simple extraction logic - can be enhanced
         $parts = explode('.', $domain);
         if (count($parts) >= 2) {
             return ucfirst($parts[0]);
         }
-        
+
         return 'University';
     }
 
@@ -1384,16 +1718,16 @@ class HomepageService
         $campaignPersonalizations = [
             'career_fair' => [
                 'headline' => 'Ready to Take the Next Step in Your Career?',
-                'subtitle' => 'Connect with alumni who can help you land your dream job'
+                'subtitle' => 'Connect with alumni who can help you land your dream job',
             ],
             'reunion' => [
                 'headline' => 'Reconnect and Advance Your Career',
-                'subtitle' => 'Turn reunion connections into career opportunities'
+                'subtitle' => 'Turn reunion connections into career opportunities',
             ],
             'graduation' => [
                 'headline' => 'Welcome to Your Alumni Network!',
-                'subtitle' => 'Start building professional connections that will shape your career'
-            ]
+                'subtitle' => 'Start building professional connections that will shape your career',
+            ],
         ];
 
         if (isset($campaignPersonalizations[$campaign])) {
@@ -1415,40 +1749,40 @@ class HomepageService
                 'name' => 'SOC 2 Type II',
                 'image' => '/images/badges/soc2-type2.png',
                 'description' => 'SOC 2 Type II compliance ensures the highest standards of security, availability, and confidentiality.',
-                'verification_url' => 'https://example.com/soc2-verification'
+                'verification_url' => 'https://example.com/soc2-verification',
             ],
             [
                 'id' => '2',
                 'name' => 'GDPR Compliant',
                 'image' => '/images/badges/gdpr-compliant.png',
                 'description' => 'Full compliance with the General Data Protection Regulation for EU data protection.',
-                'verification_url' => 'https://example.com/gdpr-verification'
+                'verification_url' => 'https://example.com/gdpr-verification',
             ],
             [
                 'id' => '3',
                 'name' => 'ISO 27001',
                 'image' => '/images/badges/iso-27001.png',
                 'description' => 'ISO 27001 certified information security management system.',
-                'verification_url' => 'https://example.com/iso-verification'
+                'verification_url' => 'https://example.com/iso-verification',
             ],
             [
                 'id' => '4',
                 'name' => 'Privacy Shield',
                 'image' => '/images/badges/privacy-shield.png',
-                'description' => 'EU-US Privacy Shield framework compliance for international data transfers.'
+                'description' => 'EU-US Privacy Shield framework compliance for international data transfers.',
             ],
             [
                 'id' => '5',
                 'name' => 'SSL Secured',
                 'image' => '/images/badges/ssl-secured.png',
-                'description' => '256-bit SSL encryption protects all data in transit.'
+                'description' => '256-bit SSL encryption protects all data in transit.',
             ],
             [
                 'id' => '6',
                 'name' => 'CCPA Compliant',
                 'image' => '/images/badges/ccpa-compliant.png',
-                'description' => 'California Consumer Privacy Act compliance for enhanced privacy rights.'
-            ]
+                'description' => 'California Consumer Privacy Act compliance for enhanced privacy rights.',
+            ],
         ];
 
         $companyLogos = [
@@ -1457,57 +1791,57 @@ class HomepageService
                 'name' => 'Google',
                 'logo' => '/images/companies/google-logo.png',
                 'website' => 'https://google.com',
-                'category' => 'Technology'
+                'category' => 'Technology',
             ],
             [
                 'id' => '2',
                 'name' => 'Microsoft',
                 'logo' => '/images/companies/microsoft-logo.png',
                 'website' => 'https://microsoft.com',
-                'category' => 'Technology'
+                'category' => 'Technology',
             ],
             [
                 'id' => '3',
                 'name' => 'Apple',
                 'logo' => '/images/companies/apple-logo.png',
                 'website' => 'https://apple.com',
-                'category' => 'Technology'
+                'category' => 'Technology',
             ],
             [
                 'id' => '4',
                 'name' => 'Amazon',
                 'logo' => '/images/companies/amazon-logo.png',
                 'website' => 'https://amazon.com',
-                'category' => 'Technology'
+                'category' => 'Technology',
             ],
             [
                 'id' => '5',
                 'name' => 'Meta',
                 'logo' => '/images/companies/meta-logo.png',
                 'website' => 'https://meta.com',
-                'category' => 'Technology'
+                'category' => 'Technology',
             ],
             [
                 'id' => '6',
                 'name' => 'Netflix',
                 'logo' => '/images/companies/netflix-logo.png',
                 'website' => 'https://netflix.com',
-                'category' => 'Entertainment'
+                'category' => 'Entertainment',
             ],
             [
                 'id' => '7',
                 'name' => 'Tesla',
                 'logo' => '/images/companies/tesla-logo.png',
                 'website' => 'https://tesla.com',
-                'category' => 'Automotive'
+                'category' => 'Automotive',
             ],
             [
                 'id' => '8',
                 'name' => 'Goldman Sachs',
                 'logo' => '/images/companies/goldman-sachs-logo.png',
                 'website' => 'https://goldmansachs.com',
-                'category' => 'Finance'
-            ]
+                'category' => 'Finance',
+            ],
         ];
 
         // Add audience-specific badges for institutional clients
@@ -1517,13 +1851,13 @@ class HomepageService
                 'name' => 'FERPA Compliant',
                 'image' => '/images/badges/ferpa-compliant.png',
                 'description' => 'Family Educational Rights and Privacy Act compliance for educational institutions.',
-                'verification_url' => 'https://example.com/ferpa-verification'
+                'verification_url' => 'https://example.com/ferpa-verification',
             ];
         }
 
         return [
             'trust_badges' => $trustBadges,
-            'company_logos' => $companyLogos
+            'company_logos' => $companyLogos,
         ];
     }
 
@@ -1548,7 +1882,7 @@ class HomepageService
                         'title' => 'Connection Recommendations',
                         'description' => 'AI-powered suggestions for new alumni connections based on your profile and interests.',
                         'feature' => 'networking',
-                        'action' => 'view_connections'
+                        'action' => 'view_connections',
                     ],
                     [
                         'x' => 75,
@@ -1556,7 +1890,7 @@ class HomepageService
                         'title' => 'Job Opportunities',
                         'description' => 'Exclusive job postings shared within your alumni network.',
                         'feature' => 'jobs',
-                        'action' => 'view_jobs'
+                        'action' => 'view_jobs',
                     ],
                     [
                         'x' => 50,
@@ -1564,21 +1898,21 @@ class HomepageService
                         'title' => 'Upcoming Events',
                         'description' => 'Alumni events and networking opportunities in your area.',
                         'feature' => 'events',
-                        'action' => 'view_events'
-                    ]
+                        'action' => 'view_events',
+                    ],
                 ],
                 'features' => [
                     [
                         'id' => 'personalized_feed',
                         'title' => 'Personalized Activity Feed',
-                        'description' => 'Stay updated with relevant alumni news and opportunities'
+                        'description' => 'Stay updated with relevant alumni news and opportunities',
                     ],
                     [
                         'id' => 'quick_actions',
                         'title' => 'Quick Actions',
-                        'description' => 'Access key features with one-click shortcuts'
-                    ]
-                ]
+                        'description' => 'Access key features with one-click shortcuts',
+                    ],
+                ],
             ],
             [
                 'id' => 'networking-desktop',
@@ -1592,28 +1926,28 @@ class HomepageService
                         'y' => 25,
                         'title' => 'Search Filters',
                         'description' => 'Filter alumni by industry, location, graduation year, and more.',
-                        'feature' => 'search'
+                        'feature' => 'search',
                     ],
                     [
                         'x' => 60,
                         'y' => 40,
                         'title' => 'Alumni Profiles',
                         'description' => 'View detailed profiles with career history and interests.',
-                        'feature' => 'profiles'
-                    ]
+                        'feature' => 'profiles',
+                    ],
                 ],
                 'features' => [
                     [
                         'id' => 'advanced_search',
                         'title' => 'Advanced Search',
-                        'description' => 'Find alumni using multiple criteria and filters'
+                        'description' => 'Find alumni using multiple criteria and filters',
                     ],
                     [
                         'id' => 'connection_requests',
                         'title' => 'Smart Connection Requests',
-                        'description' => 'Send personalized connection requests with context'
-                    ]
-                ]
+                        'description' => 'Send personalized connection requests with context',
+                    ],
+                ],
             ],
             [
                 'id' => 'dashboard-mobile',
@@ -1627,17 +1961,17 @@ class HomepageService
                         'y' => 30,
                         'title' => 'Mobile Navigation',
                         'description' => 'Easy access to all platform features from your mobile device.',
-                        'feature' => 'navigation'
-                    ]
+                        'feature' => 'navigation',
+                    ],
                 ],
                 'features' => [
                     [
                         'id' => 'mobile_optimized',
                         'title' => 'Mobile Optimized',
-                        'description' => 'Full functionality optimized for mobile devices'
-                    ]
-                ]
-            ]
+                        'description' => 'Full functionality optimized for mobile devices',
+                    ],
+                ],
+            ],
         ];
 
         $tourSteps = [
@@ -1652,10 +1986,10 @@ class HomepageService
                         'y' => 20,
                         'title' => 'Your Dashboard',
                         'description' => 'This is your personalized homepage',
-                        'type' => 'info'
-                    ]
+                        'type' => 'info',
+                    ],
                 ],
-                'duration' => 5000
+                'duration' => 5000,
             ],
             [
                 'id' => 'networking',
@@ -1668,10 +2002,10 @@ class HomepageService
                         'y' => 40,
                         'title' => 'Smart Recommendations',
                         'description' => 'AI-powered connection suggestions',
-                        'type' => 'highlight'
-                    ]
+                        'type' => 'highlight',
+                    ],
                 ],
-                'duration' => 7000
+                'duration' => 7000,
             ],
             [
                 'id' => 'opportunities',
@@ -1684,11 +2018,11 @@ class HomepageService
                         'y' => 50,
                         'title' => 'Exclusive Jobs',
                         'description' => 'Jobs shared only within your alumni network',
-                        'type' => 'highlight'
-                    ]
+                        'type' => 'highlight',
+                    ],
                 ],
-                'duration' => 6000
-            ]
+                'duration' => 6000,
+            ],
         ];
 
         // Customize for institutional audience
@@ -1706,28 +2040,28 @@ class HomepageService
                             'y' => 30,
                             'title' => 'Engagement Analytics',
                             'description' => 'Real-time metrics showing alumni engagement and activity.',
-                            'feature' => 'analytics'
+                            'feature' => 'analytics',
                         ],
                         [
                             'x' => 75,
                             'y' => 45,
                             'title' => 'Event Management',
                             'description' => 'Create and manage alumni events with RSVP tracking.',
-                            'feature' => 'events'
-                        ]
+                            'feature' => 'events',
+                        ],
                     ],
                     'features' => [
                         [
                             'id' => 'real_time_analytics',
                             'title' => 'Real-time Analytics',
-                            'description' => 'Monitor engagement metrics and community growth'
+                            'description' => 'Monitor engagement metrics and community growth',
                         ],
                         [
                             'id' => 'event_management',
                             'title' => 'Event Management',
-                            'description' => 'Comprehensive event planning and tracking tools'
-                        ]
-                    ]
+                            'description' => 'Comprehensive event planning and tracking tools',
+                        ],
+                    ],
                 ],
                 [
                     'id' => 'branded-app-desktop',
@@ -1741,17 +2075,17 @@ class HomepageService
                             'y' => 35,
                             'title' => 'App Customization',
                             'description' => 'Customize colors, branding, and features for your institution.',
-                            'feature' => 'branding'
-                        ]
+                            'feature' => 'branding',
+                        ],
                     ],
                     'features' => [
                         [
                             'id' => 'white_label',
                             'title' => 'White Label Solution',
-                            'description' => 'Complete branding customization for your institution'
-                        ]
-                    ]
-                ]
+                            'description' => 'Complete branding customization for your institution',
+                        ],
+                    ],
+                ],
             ];
 
             $tourSteps = [
@@ -1766,10 +2100,10 @@ class HomepageService
                             'y' => 20,
                             'title' => 'Admin Dashboard',
                             'description' => 'Your central hub for alumni management',
-                            'type' => 'info'
-                        ]
+                            'type' => 'info',
+                        ],
                     ],
-                    'duration' => 5000
+                    'duration' => 5000,
                 ],
                 [
                     'id' => 'analytics',
@@ -1782,17 +2116,17 @@ class HomepageService
                             'y' => 40,
                             'title' => 'Real-time Metrics',
                             'description' => 'Live engagement and participation data',
-                            'type' => 'highlight'
-                        ]
+                            'type' => 'highlight',
+                        ],
                     ],
-                    'duration' => 7000
-                ]
+                    'duration' => 7000,
+                ],
             ];
         }
 
         return [
             'screenshots' => $screenshots,
-            'tour_steps' => $tourSteps
+            'tour_steps' => $tourSteps,
         ];
     }
 
@@ -1811,7 +2145,7 @@ class HomepageService
             'Government' => 0.12,
             'Manufacturing' => 0.14,
             'Retail' => 0.11,
-            'Media' => 0.16
+            'Media' => 0.16,
         ];
 
         return $multipliers[$industry] ?? 0.15;
@@ -1824,7 +2158,7 @@ class HomepageService
     {
         $timeframe = $params['timeframe'] ?? '12_months';
         $requestedMetrics = $params['metrics'] ?? ['engagement', 'financial', 'operational', 'growth'];
-        
+
         // Mock enterprise metrics data - will be replaced with real database queries
         $allMetrics = [
             [
@@ -1837,7 +2171,7 @@ class HomepageService
                 'improvementPercentage' => 200,
                 'timeframe' => $timeframe,
                 'verified' => true,
-                'unit' => 'percentage'
+                'unit' => 'percentage',
             ],
             [
                 'id' => 'event_attendance',
@@ -1849,7 +2183,7 @@ class HomepageService
                 'improvementPercentage' => 300,
                 'timeframe' => $timeframe,
                 'verified' => true,
-                'unit' => 'count'
+                'unit' => 'count',
             ],
             [
                 'id' => 'donation_revenue',
@@ -1861,7 +2195,7 @@ class HomepageService
                 'improvementPercentage' => 150,
                 'timeframe' => $timeframe,
                 'verified' => true,
-                'unit' => 'currency'
+                'unit' => 'currency',
             ],
             [
                 'id' => 'app_downloads',
@@ -1873,7 +2207,7 @@ class HomepageService
                 'improvementPercentage' => 100,
                 'timeframe' => $timeframe,
                 'verified' => true,
-                'unit' => 'count'
+                'unit' => 'count',
             ],
             [
                 'id' => 'response_time',
@@ -1885,7 +2219,7 @@ class HomepageService
                 'improvementPercentage' => 67,
                 'timeframe' => $timeframe,
                 'verified' => false,
-                'unit' => 'days'
+                'unit' => 'days',
             ],
             [
                 'id' => 'cost_per_engagement',
@@ -1897,12 +2231,12 @@ class HomepageService
                 'improvementPercentage' => 60,
                 'timeframe' => $timeframe,
                 'verified' => true,
-                'unit' => 'currency'
-            ]
+                'unit' => 'currency',
+            ],
         ];
 
         // Filter metrics based on requested categories
-        $filteredMetrics = array_filter($allMetrics, function($metric) use ($requestedMetrics) {
+        $filteredMetrics = array_filter($allMetrics, function ($metric) use ($requestedMetrics) {
             return in_array($metric['category'], $requestedMetrics);
         });
 
@@ -1911,7 +2245,7 @@ class HomepageService
             'percentage' => 350,
             'investment' => 75000,
             'return' => 262500,
-            'timeframe' => str_replace('_', ' ', $timeframe)
+            'timeframe' => str_replace('_', ' ', $timeframe),
         ];
 
         return [
@@ -1919,9 +2253,9 @@ class HomepageService
             'roi_data' => $roiData,
             'summary' => [
                 'total_metrics' => count($filteredMetrics),
-                'verified_metrics' => count(array_filter($filteredMetrics, fn($m) => $m['verified'])),
-                'average_improvement' => round(array_sum(array_column($filteredMetrics, 'improvementPercentage')) / count($filteredMetrics))
-            ]
+                'verified_metrics' => count(array_filter($filteredMetrics, fn ($m) => $m['verified'])),
+                'average_improvement' => round(array_sum(array_column($filteredMetrics, 'improvementPercentage')) / count($filteredMetrics)),
+            ],
         ];
     }
 
@@ -1946,69 +2280,69 @@ class HomepageService
                     'key' => 'engagement',
                     'label' => 'Alumni Engagement Rate',
                     'value' => 25,
-                    'unit' => 'percentage'
+                    'unit' => 'percentage',
                 ],
                 [
                     'key' => 'events',
                     'label' => 'Monthly Events',
                     'value' => 5,
-                    'unit' => 'count'
+                    'unit' => 'count',
                 ],
                 [
                     'key' => 'donations',
                     'label' => 'Annual Donations',
                     'value' => 500000,
-                    'unit' => 'currency'
+                    'unit' => 'currency',
                 ],
                 [
                     'key' => 'app_usage',
                     'label' => 'Digital Platform Usage',
                     'value' => 0,
-                    'unit' => 'percentage'
-                ]
+                    'unit' => 'percentage',
+                ],
             ],
             'after_metrics' => [
                 [
                     'key' => 'engagement',
                     'label' => 'Alumni Engagement Rate',
                     'value' => 75,
-                    'unit' => 'percentage'
+                    'unit' => 'percentage',
                 ],
                 [
                     'key' => 'events',
                     'label' => 'Monthly Events',
                     'value' => 20,
-                    'unit' => 'count'
+                    'unit' => 'count',
                 ],
                 [
                     'key' => 'donations',
                     'label' => 'Annual Donations',
                     'value' => 1250000,
-                    'unit' => 'currency'
+                    'unit' => 'currency',
                 ],
                 [
                     'key' => 'app_usage',
                     'label' => 'Digital Platform Usage',
                     'value' => 85,
-                    'unit' => 'percentage'
-                ]
+                    'unit' => 'percentage',
+                ],
             ],
             'before_challenges' => [
                 'Low alumni participation in events',
                 'Limited digital engagement channels',
                 'Difficulty tracking alumni career progress',
                 'Inefficient communication methods',
-                'Lack of mobile accessibility'
+                'Lack of mobile accessibility',
             ],
             'after_benefits' => [
                 'Increased alumni participation by 200%',
                 'Streamlined digital communication platform',
                 'Real-time alumni career tracking',
                 'Automated engagement workflows',
-                'Mobile-first alumni experience'
+                'Mobile-first alumni experience',
             ],
             'timeframe' => '18 months',
-            'impact_summary' => 'Stanford University achieved a 200% increase in alumni engagement through strategic digital transformation, resulting in higher event attendance, increased donations, and improved alumni satisfaction.'
+            'impact_summary' => 'Stanford University achieved a 200% increase in alumni engagement through strategic digital transformation, resulting in higher event attendance, increased donations, and improved alumni satisfaction.',
         ];
     }
 
@@ -2027,9 +2361,9 @@ class HomepageService
             'basic' => 0.8,
             'standard' => 1.0,
             'advanced' => 1.3,
-            'enterprise' => 1.6
+            'enterprise' => 1.6,
         ];
-        
+
         $sizeMultiplier = $alumniCount > 100000 ? 1.2 : ($alumniCount > 25000 ? 1.1 : 1.0);
         $totalWeeks = round($baseWeeks * $complexityMultiplier[$complexity] * $sizeMultiplier);
 
@@ -2048,7 +2382,7 @@ class HomepageService
                         'Technical specifications',
                         'Resource allocation plan',
                         'Risk assessment',
-                        'Stakeholder alignment'
+                        'Stakeholder alignment',
                     ],
                     'dependencies' => [],
                     'milestones' => [
@@ -2057,24 +2391,24 @@ class HomepageService
                             'name' => 'Kickoff meeting',
                             'description' => 'Project initiation and team introductions',
                             'dueDate' => 'Week 1',
-                            'status' => 'completed'
+                            'status' => 'completed',
                         ],
                         [
                             'id' => '1-2',
                             'name' => 'Requirements gathering',
                             'description' => 'Detailed requirements collection and analysis',
                             'dueDate' => 'Week 2',
-                            'status' => 'completed'
+                            'status' => 'completed',
                         ],
                         [
                             'id' => '1-3',
                             'name' => 'Technical architecture review',
                             'description' => 'System architecture and integration planning',
                             'dueDate' => 'Week 3',
-                            'status' => 'completed'
-                        ]
+                            'status' => 'completed',
+                        ],
                     ],
-                    'status' => 'completed'
+                    'status' => 'completed',
                 ],
                 [
                     'id' => '2',
@@ -2086,7 +2420,7 @@ class HomepageService
                         'Custom branding implementation',
                         'Initial data migration',
                         'Basic integrations setup',
-                        'Security configuration'
+                        'Security configuration',
                     ],
                     'dependencies' => ['Discovery & Planning'],
                     'milestones' => [
@@ -2095,24 +2429,24 @@ class HomepageService
                             'name' => 'Environment setup',
                             'description' => 'Production and staging environments configured',
                             'dueDate' => 'Week 5',
-                            'status' => 'in_progress'
+                            'status' => 'in_progress',
                         ],
                         [
                             'id' => '2-2',
                             'name' => 'Branding implementation',
                             'description' => 'Custom branding and theming applied',
                             'dueDate' => 'Week 7',
-                            'status' => 'pending'
+                            'status' => 'pending',
                         ],
                         [
                             'id' => '2-3',
                             'name' => 'Data migration',
                             'description' => 'Alumni data imported and validated',
                             'dueDate' => 'Week 8',
-                            'status' => 'pending'
-                        ]
+                            'status' => 'pending',
+                        ],
                     ],
-                    'status' => 'in_progress'
+                    'status' => 'in_progress',
                 ],
                 [
                     'id' => '3',
@@ -2124,7 +2458,7 @@ class HomepageService
                         'App store submissions',
                         'Push notification setup',
                         'Offline functionality',
-                        'App analytics integration'
+                        'App analytics integration',
                     ],
                     'dependencies' => ['Platform Configuration'],
                     'milestones' => [
@@ -2133,24 +2467,24 @@ class HomepageService
                             'name' => 'App development kickoff',
                             'description' => 'Mobile development team onboarded',
                             'dueDate' => 'Week 9',
-                            'status' => 'pending'
+                            'status' => 'pending',
                         ],
                         [
                             'id' => '3-2',
                             'name' => 'Beta app release',
                             'description' => 'Internal testing version available',
                             'dueDate' => 'Week 12',
-                            'status' => 'pending'
+                            'status' => 'pending',
                         ],
                         [
                             'id' => '3-3',
                             'name' => 'App store approval',
                             'description' => 'Apps approved and published',
                             'dueDate' => 'Week 15',
-                            'status' => 'pending'
-                        ]
+                            'status' => 'pending',
+                        ],
                     ],
-                    'status' => 'pending'
+                    'status' => 'pending',
                 ],
                 [
                     'id' => '4',
@@ -2162,7 +2496,7 @@ class HomepageService
                         'Bug fixes and optimizations',
                         'Performance testing',
                         'Security audit',
-                        'User acceptance testing'
+                        'User acceptance testing',
                     ],
                     'dependencies' => ['Mobile App Development'],
                     'milestones' => [
@@ -2171,17 +2505,17 @@ class HomepageService
                             'name' => 'System testing complete',
                             'description' => 'All functional testing completed',
                             'dueDate' => 'Week 16',
-                            'status' => 'pending'
+                            'status' => 'pending',
                         ],
                         [
                             'id' => '4-2',
                             'name' => 'User acceptance testing',
                             'description' => 'Stakeholder testing and approval',
                             'dueDate' => 'Week 17',
-                            'status' => 'pending'
-                        ]
+                            'status' => 'pending',
+                        ],
                     ],
-                    'status' => 'pending'
+                    'status' => 'pending',
                 ],
                 [
                     'id' => '5',
@@ -2193,7 +2527,7 @@ class HomepageService
                         'Launch communication plan',
                         'Support documentation',
                         'Monitoring setup',
-                        'Success metrics baseline'
+                        'Success metrics baseline',
                     ],
                     'dependencies' => ['Testing & Quality Assurance'],
                     'milestones' => [
@@ -2202,26 +2536,26 @@ class HomepageService
                             'name' => 'Staff training complete',
                             'description' => 'All administrators trained on platform',
                             'dueDate' => 'Week 18',
-                            'status' => 'pending'
+                            'status' => 'pending',
                         ],
                         [
                             'id' => '5-2',
                             'name' => 'Soft launch',
                             'description' => 'Limited user group launch',
                             'dueDate' => 'Week 19',
-                            'status' => 'pending'
+                            'status' => 'pending',
                         ],
                         [
                             'id' => '5-3',
                             'name' => 'Full launch',
                             'description' => 'Platform available to all alumni',
                             'dueDate' => 'Week 20',
-                            'status' => 'pending'
-                        ]
+                            'status' => 'pending',
+                        ],
                     ],
-                    'status' => 'pending'
-                ]
-            ]
+                    'status' => 'pending',
+                ],
+            ],
         ];
     }
 
@@ -2247,7 +2581,7 @@ class HomepageService
                 'trend' => 'up',
                 'trending' => true,
                 'change_from_previous' => 12,
-                'verified' => true
+                'verified' => true,
             ],
             [
                 'id' => 'event_attendance',
@@ -2259,7 +2593,7 @@ class HomepageService
                 'trend' => 'up',
                 'trending' => true,
                 'change_from_previous' => 25,
-                'verified' => true
+                'verified' => true,
             ],
             [
                 'id' => 'app_downloads',
@@ -2271,7 +2605,7 @@ class HomepageService
                 'trend' => 'up',
                 'trending' => true,
                 'change_from_previous' => 35,
-                'verified' => true
+                'verified' => true,
             ],
             [
                 'id' => 'donation_revenue',
@@ -2283,7 +2617,7 @@ class HomepageService
                 'trend' => 'up',
                 'trending' => true,
                 'change_from_previous' => 18,
-                'verified' => false
+                'verified' => false,
             ],
             [
                 'id' => 'response_time',
@@ -2295,7 +2629,7 @@ class HomepageService
                 'trend' => 'down',
                 'trending' => true,
                 'change_from_previous' => -33,
-                'verified' => true
+                'verified' => true,
             ],
             [
                 'id' => 'user_satisfaction',
@@ -2307,13 +2641,13 @@ class HomepageService
                 'trend' => 'stable',
                 'trending' => false,
                 'change_from_previous' => 2,
-                'verified' => true
-            ]
+                'verified' => true,
+            ],
         ];
 
         // Filter metrics if specific ones are requested
         if ($requestedMetrics) {
-            $allMetrics = array_filter($allMetrics, function($metric) use ($requestedMetrics) {
+            $allMetrics = array_filter($allMetrics, function ($metric) use ($requestedMetrics) {
                 return in_array($metric['id'], $requestedMetrics);
             });
         }
@@ -2324,20 +2658,20 @@ class HomepageService
                 'id' => 'engagement_trend',
                 'title' => 'Strong Engagement Growth',
                 'description' => 'Alumni engagement has increased by 12% this quarter, driven by mobile app adoption and improved event programming.',
-                'type' => 'positive'
+                'type' => 'positive',
             ],
             [
                 'id' => 'app_adoption',
                 'title' => 'Mobile App Success',
                 'description' => 'Mobile app downloads exceeded expectations by 35%, indicating strong alumni interest in mobile-first experiences.',
-                'type' => 'positive'
+                'type' => 'positive',
             ],
             [
                 'id' => 'response_improvement',
                 'title' => 'Response Time Optimization',
                 'description' => 'Admin response times have improved significantly but still need work to reach the 12-day target.',
-                'type' => 'warning'
-            ]
+                'type' => 'warning',
+            ],
         ];
 
         return [
@@ -2347,22 +2681,21 @@ class HomepageService
             'insights' => $insights,
             'last_updated' => now(),
             'summary' => [
-                'metrics_on_track' => count(array_filter($allMetrics, function($m) {
+                'metrics_on_track' => count(array_filter($allMetrics, function ($m) {
                     $progress = ($m['current_value'] / $m['target_value']) * 100;
+
                     return $progress >= 80 && $progress < 100;
                 })),
-                'metrics_exceeding' => count(array_filter($allMetrics, function($m) {
+                'metrics_exceeding' => count(array_filter($allMetrics, function ($m) {
                     return ($m['current_value'] / $m['target_value']) * 100 >= 100;
                 })),
-                'metrics_behind' => count(array_filter($allMetrics, function($m) {
+                'metrics_behind' => count(array_filter($allMetrics, function ($m) {
                     return ($m['current_value'] / $m['target_value']) * 100 < 80;
                 })),
-                'average_progress' => round(array_sum(array_map(function($m) {
+                'average_progress' => round(array_sum(array_map(function ($m) {
                     return min(100, ($m['current_value'] / $m['target_value']) * 100);
-                }, $allMetrics)) / count($allMetrics))
-            ]
+                }, $allMetrics)) / count($allMetrics)),
+            ],
         ];
     }
-
-
 }

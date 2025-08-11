@@ -1,13 +1,5 @@
-Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)
- [ ] Uptime monitoring detects down endpoints
- [ ] Performance alert is sent when threshold exceeded
- [ ] Error alert is sent with proper rate limiting
- [ ] Conversion monitoring detects low conversion rates
- [ ] Security monitoring detects suspicious activity
- [ ] Alert notification email is sent
- [ ] Slack alert is sent when configured
- [ ] Sentry integration captures alerts
- [ ] Monitoring dashboard returns comprehensive data
- [ ] Health check endpoint returns proper status
- [ ] Monitoring command runs successfully
+D:\DevCenter\abuilds\alumate\tests\Feature\HomepageControllerTest.php
+ [ ] index handles null service responses gracefully
+ [ ] institutional handles malformed ab tests safely
+ [ ] getMetaData falls back to hero and defaults
 

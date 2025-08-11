@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Services\PricingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Tests\TestCase;
 
 class PricingControllerTest extends TestCase
 {
@@ -39,19 +39,19 @@ class PricingControllerTest extends TestCase
                             'features' => [
                                 '*' => [
                                     'name',
-                                    'included'
-                                ]
-                            ]
-                        ]
+                                    'included',
+                                ],
+                            ],
+                        ],
                     ],
                     'comparison_features' => [
                         '*' => [
                             'name',
                             'key',
-                            'description'
-                        ]
-                    ]
-                ]
+                            'description',
+                        ],
+                    ],
+                ],
             ]);
 
         $data = $response->json('data');
@@ -70,7 +70,7 @@ class PricingControllerTest extends TestCase
         $data = $response->json('data');
         $this->assertEquals('institutional', $data['audience']);
         $this->assertCount(3, $data['plans']); // Professional, Enterprise, Custom
-        
+
         // Check for institutional-specific features
         $this->assertContains('Branded Mobile App', array_column($data['comparison_features'], 'name'));
         $this->assertContains('Admin Dashboard', array_column($data['comparison_features'], 'name'));
@@ -108,10 +108,10 @@ class PricingControllerTest extends TestCase
                     'comparison_matrix' => [
                         '*' => [
                             'feature',
-                            'plan_values'
-                        ]
-                    ]
-                ]
+                            'plan_values',
+                        ],
+                    ],
+                ],
             ]);
 
         $data = $response->json('data');
@@ -129,8 +129,8 @@ class PricingControllerTest extends TestCase
             'section' => 'pricing_cards',
             'additional_data' => [
                 'scroll_depth' => 75,
-                'time_on_section' => 30
-            ]
+                'time_on_section' => 30,
+            ],
         ];
 
         $response = $this->postJson('/api/pricing/track-interaction', $interactionData);
@@ -138,7 +138,7 @@ class PricingControllerTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Interaction tracked successfully'
+                'message' => 'Interaction tracked successfully',
             ]);
     }
 
@@ -166,22 +166,22 @@ class PricingControllerTest extends TestCase
                     'featured_plans' => [
                         'individual',
                         'institutional',
-                        'total'
+                        'total',
                     ],
                     'price_ranges' => [
                         'individual' => [
                             'min',
                             'max',
-                            'average'
+                            'average',
                         ],
                         'institutional' => [
                             'min',
                             'max',
-                            'average'
-                        ]
+                            'average',
+                        ],
                     ],
-                    'last_updated'
-                ]
+                    'last_updated',
+                ],
             ]);
 
         $data = $response->json('data');
@@ -249,20 +249,20 @@ class PricingControllerTest extends TestCase
         // Individual plans
         $response = $this->getJson('/api/pricing/plans?audience=individual');
         $plans = $response->json('data.plans');
-        
-        $featuredPlans = array_filter($plans, fn($plan) => $plan['featured']);
+
+        $featuredPlans = array_filter($plans, fn ($plan) => $plan['featured']);
         $this->assertCount(1, $featuredPlans);
-        
+
         $featuredPlan = array_values($featuredPlans)[0];
         $this->assertEquals('professional', $featuredPlan['id']);
 
         // Institutional plans
         $response = $this->getJson('/api/pricing/plans?audience=institutional');
         $plans = $response->json('data.plans');
-        
-        $featuredPlans = array_filter($plans, fn($plan) => $plan['featured']);
+
+        $featuredPlans = array_filter($plans, fn ($plan) => $plan['featured']);
         $this->assertCount(1, $featuredPlans);
-        
+
         $featuredPlan = array_values($featuredPlans)[0];
         $this->assertEquals('enterprise_inst', $featuredPlan['id']);
     }
@@ -281,7 +281,7 @@ class PricingControllerTest extends TestCase
         foreach ($matrix as $featureRow) {
             $this->assertArrayHasKey('feature', $featureRow);
             $this->assertArrayHasKey('plan_values', $featureRow);
-            
+
             foreach ($plans as $plan) {
                 $this->assertArrayHasKey($plan['id'], $featureRow['plan_values']);
             }
@@ -342,7 +342,7 @@ class PricingControllerTest extends TestCase
     {
         $minimalData = [
             'event' => 'section_viewed',
-            'audience' => 'institutional'
+            'audience' => 'institutional',
         ];
 
         $response = $this->postJson('/api/pricing/track-interaction', $minimalData);
@@ -355,8 +355,8 @@ class PricingControllerTest extends TestCase
             'section' => 'comparison_table',
             'additional_data' => [
                 'previous_plan' => 'free',
-                'conversion_source' => 'feature_comparison'
-            ]
+                'conversion_source' => 'feature_comparison',
+            ],
         ];
 
         $response = $this->postJson('/api/pricing/track-interaction', $fullData);

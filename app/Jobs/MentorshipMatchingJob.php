@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\User;
-use App\Services\MentorshipService;
 use App\Notifications\MentorSuggestionsNotification;
+use App\Services\MentorshipService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -43,7 +43,7 @@ class MentorshipMatchingJob implements ShouldQueue
                 }
             }
         } catch (\Exception $e) {
-            Log::error('MentorshipMatchingJob failed: ' . $e->getMessage());
+            Log::error('MentorshipMatchingJob failed: '.$e->getMessage());
             throw $e;
         }
     }

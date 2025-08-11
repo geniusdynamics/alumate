@@ -76,18 +76,27 @@ class JobGraduateMatch extends Model
         if ($this->compatibility_score) {
             return round(($this->match_score * 0.7) + ($this->compatibility_score * 0.3), 2);
         }
-        
+
         return $this->match_score;
     }
 
     public function getMatchQuality()
     {
         $score = $this->getOverallScore();
-        
-        if ($score >= 90) return 'excellent';
-        if ($score >= 80) return 'very_good';
-        if ($score >= 70) return 'good';
-        if ($score >= 60) return 'fair';
+
+        if ($score >= 90) {
+            return 'excellent';
+        }
+        if ($score >= 80) {
+            return 'very_good';
+        }
+        if ($score >= 70) {
+            return 'good';
+        }
+        if ($score >= 60) {
+            return 'fair';
+        }
+
         return 'poor';
     }
 
@@ -121,7 +130,7 @@ class JobGraduateMatch extends Model
     public function getMissingSkills()
     {
         $factors = $this->match_factors ?? [];
-        
+
         if (isset($factors['skills_match']['missing_skills'])) {
             return $factors['skills_match']['missing_skills'];
         }
@@ -155,24 +164,27 @@ class JobGraduateMatch extends Model
 
     public function shouldRecommend()
     {
-        return $this->getOverallScore() >= 70 && !$this->is_recommended;
+        return $this->getOverallScore() >= 70 && ! $this->is_recommended;
     }
 
     public function markAsRecommended()
     {
         $this->update(['is_recommended' => true]);
+
         return $this;
     }
 
     public function markAsViewed()
     {
         $this->update(['is_viewed' => true]);
+
         return $this;
     }
 
     public function markAsApplied()
     {
         $this->update(['is_applied' => true]);
+
         return $this;
     }
 }

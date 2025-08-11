@@ -2,14 +2,14 @@
 
 require_once '../../vendor/autoload.php';
 
-use App\Models\User;
 use App\Models\Course;
-use App\Models\Graduate;
 use App\Models\Employer;
+use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\KpiDefinition;
 use App\Models\PredictionModel;
+use App\Models\User;
 use Spatie\Permission\Models\Role;
 
 // Bootstrap Laravel
@@ -27,13 +27,13 @@ try {
 
     // Create a test user
     $user = User::firstOrCreate([
-        'email' => 'admin@test.com'
+        'email' => 'admin@test.com',
     ], [
         'name' => 'Test Admin',
         'password' => bcrypt('password'),
         'email_verified_at' => now(),
     ]);
-    
+
     $user->assignRole('super-admin');
     echo "✓ Created admin user: admin@test.com (password: password)\n";
 
@@ -49,7 +49,7 @@ try {
     $createdCourses = [];
     foreach ($courses as $courseData) {
         $course = Course::firstOrCreate([
-            'code' => $courseData['code']
+            'code' => $courseData['code'],
         ], [
             'name' => $courseData['name'],
             'department' => $courseData['department'],
@@ -63,7 +63,7 @@ try {
         ]);
         $createdCourses[] = $course;
     }
-    echo "✓ Created " . count($createdCourses) . " courses\n";
+    echo '✓ Created '.count($createdCourses)." courses\n";
 
     // Create employers
     $employers = [
@@ -77,17 +77,17 @@ try {
     $createdEmployers = [];
     foreach ($employers as $employerData) {
         $employerUser = User::firstOrCreate([
-            'email' => strtolower(str_replace(' ', '', $employerData['company_name'])) . '@company.com'
+            'email' => strtolower(str_replace(' ', '', $employerData['company_name'])).'@company.com',
         ], [
             'name' => $employerData['company_name'],
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
         ]);
-        
+
         $employerUser->assignRole('employer');
 
         $employer = Employer::firstOrCreate([
-            'user_id' => $employerUser->id
+            'user_id' => $employerUser->id,
         ], [
             'company_name' => $employerData['company_name'],
             'industry' => $employerData['industry'],
@@ -98,30 +98,30 @@ try {
         ]);
         $createdEmployers[] = $employer;
     }
-    echo "✓ Created " . count($createdEmployers) . " employers\n";
+    echo '✓ Created '.count($createdEmployers)." employers\n";
 
     // Create graduates
     $graduateCount = 50;
     $createdGraduates = [];
-    
+
     for ($i = 1; $i <= $graduateCount; $i++) {
         $graduateUser = User::firstOrCreate([
-            'email' => "graduate{$i}@test.com"
+            'email' => "graduate{$i}@test.com",
         ], [
             'name' => "Graduate {$i}",
             'password' => bcrypt('password'),
             'email_verified_at' => now(),
         ]);
-        
+
         $graduateUser->assignRole('graduate');
 
         $course = $createdCourses[array_rand($createdCourses)];
         $graduationYear = rand(2022, 2024);
-        
+
         // Random employment status
         $employmentStatuses = ['employed', 'unemployed', 'seeking'];
         $status = $employmentStatuses[array_rand($employmentStatuses)];
-        
+
         $employmentStatus = ['status' => $status];
         if ($status === 'employed') {
             $employer = $createdEmployers[array_rand($createdEmployers)];
@@ -132,7 +132,7 @@ try {
         }
 
         $graduate = Graduate::firstOrCreate([
-            'user_id' => $graduateUser->id
+            'user_id' => $graduateUser->id,
         ], [
             'course_id' => $course->id,
             'student_id' => "STU{$i}",
@@ -152,14 +152,14 @@ try {
     // Create jobs
     $jobCount = 30;
     $createdJobs = [];
-    
+
     for ($i = 1; $i <= $jobCount; $i++) {
         $employer = $createdEmployers[array_rand($createdEmployers)];
         $course = $createdCourses[array_rand($createdCourses)];
-        
+
         $job = Job::firstOrCreate([
             'title' => "Job Position {$i}",
-            'employer_id' => $employer->id
+            'employer_id' => $employer->id,
         ], [
             'course_id' => $course->id,
             'description' => "Sample job description for position {$i}",
@@ -178,19 +178,19 @@ try {
 
     // Create job applications
     $applicationCount = 100;
-    
+
     for ($i = 1; $i <= $applicationCount; $i++) {
         $graduate = $createdGraduates[array_rand($createdGraduates)];
         $job = $createdJobs[array_rand($createdJobs)];
-        
+
         // Check if application already exists
         $existingApplication = JobApplication::where('graduate_id', $graduate->id)
             ->where('job_id', $job->id)
             ->first();
-            
-        if (!$existingApplication) {
+
+        if (! $existingApplication) {
             $status = ['pending', 'reviewed', 'interviewed', 'hired', 'rejected'][array_rand(['pending', 'reviewed', 'interviewed', 'hired', 'rejected'])];
-            
+
             JobApplication::create([
                 'graduate_id' => $graduate->id,
                 'job_id' => $job->id,
@@ -214,13 +214,13 @@ try {
                 'numerator' => [
                     'model' => 'App\\Models\\Graduate',
                     'filters' => [
-                        ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed']
-                    ]
+                        ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed'],
+                    ],
                 ],
                 'denominator' => [
                     'model' => 'App\\Models\\Graduate',
-                    'filters' => []
-                ]
+                    'filters' => [],
+                ],
             ],
             'target_type' => 'minimum',
             'target_value' => 80.0,
@@ -237,13 +237,13 @@ try {
                 'numerator' => [
                     'model' => 'App\\Models\\JobApplication',
                     'filters' => [
-                        ['field' => 'status', 'operator' => '=', 'value' => 'hired']
-                    ]
+                        ['field' => 'status', 'operator' => '=', 'value' => 'hired'],
+                    ],
                 ],
                 'denominator' => [
                     'model' => 'App\\Models\\JobApplication',
-                    'filters' => []
-                ]
+                    'filters' => [],
+                ],
             ],
             'target_type' => 'minimum',
             'target_value' => 25.0,
@@ -254,7 +254,7 @@ try {
 
     foreach ($kpis as $kpiData) {
         KpiDefinition::firstOrCreate([
-            'key' => $kpiData['key']
+            'key' => $kpiData['key'],
         ], $kpiData);
     }
     echo "✓ Created KPI definitions\n";
@@ -293,7 +293,7 @@ try {
 
     foreach ($models as $modelData) {
         PredictionModel::firstOrCreate([
-            'type' => $modelData['type']
+            'type' => $modelData['type'],
         ], $modelData);
     }
     echo "✓ Created prediction models\n";
@@ -307,6 +307,6 @@ try {
     echo "5. Visit /analytics/predictions to see predictive analytics\n";
 
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo "Stack trace: " . $e->getTraceAsString() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo 'Stack trace: '.$e->getTraceAsString()."\n";
 }

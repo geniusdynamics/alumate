@@ -17,6 +17,7 @@ class CalculateJobMatchesJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 300; // 5 minutes
+
     public $tries = 3;
 
     /**
@@ -49,9 +50,9 @@ class CalculateJobMatchesJob implements ShouldQueue
                 'user_id' => $this->userId,
                 'recalculate_all' => $this->recalculateAll,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             throw $e;
         }
     }
@@ -64,26 +65,28 @@ class CalculateJobMatchesJob implements ShouldQueue
         $job = JobPosting::find($this->jobId);
         $user = User::find($this->userId);
 
-        if (!$job || !$user) {
+        if (! $job || ! $user) {
             Log::warning('Job or user not found for match calculation', [
                 'job_id' => $this->jobId,
-                'user_id' => $this->userId
+                'user_id' => $this->userId,
             ]);
+
             return;
         }
 
-        if (!$job->isActive()) {
+        if (! $job->isActive()) {
             Log::info('Skipping inactive job for match calculation', [
-                'job_id' => $this->jobId
+                'job_id' => $this->jobId,
             ]);
+
             return;
         }
 
         $jobMatchingService->storeMatchScore($job, $user);
-        
+
         Log::info('Calculated single job match', [
             'job_id' => $this->jobId,
-            'user_id' => $this->userId
+            'user_id' => $this->userId,
         ]);
     }
 
@@ -94,10 +97,11 @@ class CalculateJobMatchesJob implements ShouldQueue
     {
         $job = JobPosting::find($this->jobId);
 
-        if (!$job || !$job->isActive()) {
+        if (! $job || ! $job->isActive()) {
             Log::warning('Job not found or inactive for match calculation', [
-                'job_id' => $this->jobId
+                'job_id' => $this->jobId,
             ]);
+
             return;
         }
 
@@ -115,7 +119,7 @@ class CalculateJobMatchesJob implements ShouldQueue
                         Log::error('Failed to calculate match for user', [
                             'job_id' => $job->id,
                             'user_id' => $user->id,
-                            'error' => $e->getMessage()
+                            'error' => $e->getMessage(),
                         ]);
                     }
                 }
@@ -123,7 +127,7 @@ class CalculateJobMatchesJob implements ShouldQueue
 
         Log::info('Calculated job matches for all users', [
             'job_id' => $this->jobId,
-            'processed_users' => $processedCount
+            'processed_users' => $processedCount,
         ]);
     }
 
@@ -134,10 +138,11 @@ class CalculateJobMatchesJob implements ShouldQueue
     {
         $user = User::find($this->userId);
 
-        if (!$user) {
+        if (! $user) {
             Log::warning('User not found for match calculation', [
-                'user_id' => $this->userId
+                'user_id' => $this->userId,
             ]);
+
             return;
         }
 
@@ -155,7 +160,7 @@ class CalculateJobMatchesJob implements ShouldQueue
                         Log::error('Failed to calculate match for job', [
                             'job_id' => $job->id,
                             'user_id' => $user->id,
-                            'error' => $e->getMessage()
+                            'error' => $e->getMessage(),
                         ]);
                     }
                 }
@@ -163,7 +168,7 @@ class CalculateJobMatchesJob implements ShouldQueue
 
         Log::info('Calculated user matches for all jobs', [
             'user_id' => $this->userId,
-            'processed_jobs' => $processedCount
+            'processed_jobs' => $processedCount,
         ]);
     }
 
@@ -191,7 +196,7 @@ class CalculateJobMatchesJob implements ShouldQueue
                                     Log::error('Failed to calculate match in full recalculation', [
                                         'job_id' => $job->id,
                                         'user_id' => $user->id,
-                                        'error' => $e->getMessage()
+                                        'error' => $e->getMessage(),
                                     ]);
                                 }
                             }
@@ -200,7 +205,7 @@ class CalculateJobMatchesJob implements ShouldQueue
             });
 
         Log::info('Completed full job match recalculation', [
-            'total_matches_processed' => $processedCount
+            'total_matches_processed' => $processedCount,
         ]);
     }
 
@@ -214,7 +219,7 @@ class CalculateJobMatchesJob implements ShouldQueue
             'user_id' => $this->userId,
             'recalculate_all' => $this->recalculateAll,
             'exception' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 

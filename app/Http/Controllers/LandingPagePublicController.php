@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\LandingPage;
 use App\Models\LandingPageAnalytics;
 use App\Services\LandingPageService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -63,7 +63,7 @@ class LandingPagePublicController extends Controller
         // Validate form data based on form config
         $formConfig = $landingPage->form_config ?? [];
         $validationRules = $this->buildValidationRules($formConfig);
-        
+
         $validated = $request->validate($validationRules);
 
         try {
@@ -193,7 +193,7 @@ class LandingPagePublicController extends Controller
 
         foreach ($fields as $field) {
             $fieldRules = [];
-            
+
             if ($field['required'] ?? false) {
                 $fieldRules[] = 'required';
             }
@@ -216,7 +216,7 @@ class LandingPagePublicController extends Controller
             }
 
             if (isset($field['max_length'])) {
-                $fieldRules[] = 'max:' . $field['max_length'];
+                $fieldRules[] = 'max:'.$field['max_length'];
             }
 
             $rules[$field['name']] = implode('|', $fieldRules);
@@ -234,9 +234,9 @@ class LandingPagePublicController extends Controller
             return $request->session()->get('visitor_id');
         }
 
-        $visitorId = 'visitor_' . \Str::random(16);
+        $visitorId = 'visitor_'.\Str::random(16);
         $request->session()->put('visitor_id', $visitorId);
-        
+
         return $visitorId;
     }
 
@@ -260,11 +260,11 @@ class LandingPagePublicController extends Controller
     private function getDeviceType(Request $request): string
     {
         $userAgent = $request->userAgent();
-        
+
         if (preg_match('/Mobile|Android|iPhone|iPad/', $userAgent)) {
             return preg_match('/iPad/', $userAgent) ? 'tablet' : 'mobile';
         }
-        
+
         return 'desktop';
     }
 
@@ -274,12 +274,20 @@ class LandingPagePublicController extends Controller
     private function getBrowser(Request $request): string
     {
         $userAgent = $request->userAgent();
-        
-        if (preg_match('/Chrome/', $userAgent)) return 'Chrome';
-        if (preg_match('/Firefox/', $userAgent)) return 'Firefox';
-        if (preg_match('/Safari/', $userAgent)) return 'Safari';
-        if (preg_match('/Edge/', $userAgent)) return 'Edge';
-        
+
+        if (preg_match('/Chrome/', $userAgent)) {
+            return 'Chrome';
+        }
+        if (preg_match('/Firefox/', $userAgent)) {
+            return 'Firefox';
+        }
+        if (preg_match('/Safari/', $userAgent)) {
+            return 'Safari';
+        }
+        if (preg_match('/Edge/', $userAgent)) {
+            return 'Edge';
+        }
+
         return 'Other';
     }
 
@@ -289,13 +297,23 @@ class LandingPagePublicController extends Controller
     private function getOS(Request $request): string
     {
         $userAgent = $request->userAgent();
-        
-        if (preg_match('/Windows/', $userAgent)) return 'Windows';
-        if (preg_match('/Mac/', $userAgent)) return 'macOS';
-        if (preg_match('/Linux/', $userAgent)) return 'Linux';
-        if (preg_match('/Android/', $userAgent)) return 'Android';
-        if (preg_match('/iOS/', $userAgent)) return 'iOS';
-        
+
+        if (preg_match('/Windows/', $userAgent)) {
+            return 'Windows';
+        }
+        if (preg_match('/Mac/', $userAgent)) {
+            return 'macOS';
+        }
+        if (preg_match('/Linux/', $userAgent)) {
+            return 'Linux';
+        }
+        if (preg_match('/Android/', $userAgent)) {
+            return 'Android';
+        }
+        if (preg_match('/iOS/', $userAgent)) {
+            return 'iOS';
+        }
+
         return 'Other';
     }
 }

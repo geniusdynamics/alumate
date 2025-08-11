@@ -3,18 +3,16 @@
 namespace App\Services;
 
 use App\Models\Event;
-use App\Models\User;
-use App\Models\ReunionPhoto;
 use App\Models\ReunionMemory;
-use App\Models\ReunionPhotoLike;
-use App\Models\ReunionMemoryLike;
-use App\Models\ReunionPhotoComment;
 use App\Models\ReunionMemoryComment;
+use App\Models\ReunionMemoryLike;
+use App\Models\ReunionPhoto;
+use App\Models\ReunionPhotoComment;
+use App\Models\ReunionPhotoLike;
+use App\Models\User;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ReunionService
 {
@@ -34,7 +32,7 @@ class ReunionService
         }
 
         // Set default memory collection settings
-        if (!isset($eventData['memory_collection_settings'])) {
+        if (! isset($eventData['memory_collection_settings'])) {
             $eventData['memory_collection_settings'] = [
                 'allow_anonymous_submissions' => false,
                 'require_approval' => true,
@@ -49,17 +47,17 @@ class ReunionService
 
     public function uploadReunionPhoto(Event $event, UploadedFile $file, User $user, array $data = []): ReunionPhoto
     {
-        if (!$event->hasPhotoSharing()) {
+        if (! $event->hasPhotoSharing()) {
             throw new \Exception('Photo sharing is not enabled for this reunion.');
         }
 
         // Generate unique filename
-        $filename = time() . '_' . $file->getClientOriginalName();
-        $path = "reunion-photos/{$event->id}/" . $filename;
-        
+        $filename = time().'_'.$file->getClientOriginalName();
+        $path = "reunion-photos/{$event->id}/".$filename;
+
         // Store the file
-        $file->storeAs('public/' . dirname($path), basename($path));
-        
+        $file->storeAs('public/'.dirname($path), basename($path));
+
         // Extract metadata
         $metadata = [
             'original_name' => $file->getClientOriginalName(),
@@ -78,16 +76,16 @@ class ReunionService
         ]);
 
         $photo = ReunionPhoto::create($photoData);
-        
+
         // Generate thumbnail
         $this->generateThumbnail($photo);
-        
+
         return $photo;
     }
 
     public function createReunionMemory(Event $event, User $user, array $data): ReunionMemory
     {
-        if (!$event->hasMemoryWall()) {
+        if (! $event->hasMemoryWall()) {
             throw new \Exception('Memory wall is not enabled for this reunion.');
         }
 
@@ -98,7 +96,7 @@ class ReunionService
 
         // Set approval status based on event settings
         $settings = $event->getMemoryCollectionSettings();
-        $memoryData['is_approved'] = !($settings['require_approval'] ?? true);
+        $memoryData['is_approved'] = ! ($settings['require_approval'] ?? true);
 
         return ReunionMemory::create($memoryData);
     }
@@ -122,7 +120,7 @@ class ReunionService
 
     public function unlikePhoto(ReunionPhoto $photo, User $user): bool
     {
-        if (!$photo->isLikedBy($user)) {
+        if (! $photo->isLikedBy($user)) {
             return false;
         }
 
@@ -155,7 +153,7 @@ class ReunionService
 
     public function unlikeMemory(ReunionMemory $memory, User $user): bool
     {
-        if (!$memory->isLikedBy($user)) {
+        if (! $memory->isLikedBy($user)) {
             return false;
         }
 
@@ -244,11 +242,11 @@ class ReunionService
             ->published()
             ->where(function ($query) use ($user) {
                 $query->where('visibility', 'public')
-                      ->orWhere('visibility', 'alumni_only')
-                      ->orWhere(function ($subQuery) use ($user) {
-                          $subQuery->where('visibility', 'institution_only')
-                                   ->where('institution_id', $user->institution_id);
-                      });
+                    ->orWhere('visibility', 'alumni_only')
+                    ->orWhere(function ($subQuery) use ($user) {
+                        $subQuery->where('visibility', 'institution_only')
+                            ->where('institution_id', $user->institution_id);
+                    });
             })
             ->with(['organizer', 'institution'])
             ->orderBy('start_date', 'desc')
@@ -257,7 +255,7 @@ class ReunionService
 
     public function getUpcomingReunionMilestones(User $user): Collection
     {
-        if (!$user->graduation_year) {
+        if (! $user->graduation_year) {
             return collect();
         }
 
@@ -267,7 +265,7 @@ class ReunionService
 
         // Common reunion milestones
         $milestones = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50];
-        
+
         $upcomingMilestones = collect($milestones)
             ->filter(function ($milestone) use ($yearsSinceGraduation) {
                 return $milestone > $yearsSinceGraduation;
@@ -325,7 +323,7 @@ class ReunionService
 
     private function getImageDimensions(UploadedFile $file): ?array
     {
-        if (!in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif'])) {
+        if (! in_array($file->getMimeType(), ['image/jpeg', 'image/png', 'image/gif'])) {
             return null;
         }
 
@@ -381,16 +379,16 @@ class ReunionService
     {
         // This would typically use an image processing library like Intervention Image
         // For now, we'll just create a placeholder implementation
-        $originalPath = storage_path('app/public/' . $photo->file_path);
-        $thumbnailDir = dirname($originalPath) . '/thumbnails';
-        
-        if (!is_dir($thumbnailDir)) {
+        $originalPath = storage_path('app/public/'.$photo->file_path);
+        $thumbnailDir = dirname($originalPath).'/thumbnails';
+
+        if (! is_dir($thumbnailDir)) {
             mkdir($thumbnailDir, 0755, true);
         }
-        
+
         // In a real implementation, you would resize the image here
         // For now, we'll just copy the original as a placeholder
-        $thumbnailPath = $thumbnailDir . '/' . pathinfo($photo->file_name, PATHINFO_FILENAME) . '_thumb.' . pathinfo($photo->file_name, PATHINFO_EXTENSION);
+        $thumbnailPath = $thumbnailDir.'/'.pathinfo($photo->file_name, PATHINFO_FILENAME).'_thumb.'.pathinfo($photo->file_name, PATHINFO_EXTENSION);
         copy($originalPath, $thumbnailPath);
     }
 

@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Models\Graduate;
 use App\Services\AlumniMapService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
 
 class AlumniMapServiceTest extends TestCase
 {
@@ -31,7 +31,7 @@ class AlumniMapServiceTest extends TestCase
             'city' => 'New York',
             'state' => 'NY',
             'country' => 'United States',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         Graduate::factory()->create([
@@ -42,7 +42,7 @@ class AlumniMapServiceTest extends TestCase
             'city' => 'Los Angeles',
             'state' => 'CA',
             'country' => 'United States',
-            'profile_visibility' => 'alumni_only'
+            'profile_visibility' => 'alumni_only',
         ]);
 
         // Create alumni outside bounds
@@ -53,14 +53,14 @@ class AlumniMapServiceTest extends TestCase
             'longitude' => -0.1278,
             'city' => 'London',
             'country' => 'United Kingdom',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $bounds = [
             'north' => 45.0,
             'south' => 30.0,
             'east' => -70.0,
-            'west' => -125.0
+            'west' => -125.0,
         ];
 
         $alumni = $this->service->getAlumniByLocation($bounds);
@@ -77,21 +77,21 @@ class AlumniMapServiceTest extends TestCase
             'graduation_year' => 2020,
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         Graduate::factory()->create([
             'graduation_year' => 2021,
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $bounds = [
             'north' => 45.0,
             'south' => 35.0,
             'east' => -70.0,
-            'west' => -80.0
+            'west' => -80.0,
         ];
 
         $filters = ['graduation_year' => [2020]];
@@ -111,14 +111,14 @@ class AlumniMapServiceTest extends TestCase
                 'industry' => 'Technology',
                 'graduation_year' => 2020 + $i,
                 'country' => 'United States',
-                'profile_visibility' => 'public'
+                'profile_visibility' => 'public',
             ]);
         }
 
         $clusters = $this->service->getLocationClusters(5);
 
         $this->assertGreaterThan(0, $clusters->count());
-        
+
         $firstCluster = $clusters->first();
         $this->assertArrayHasKey('latitude', $firstCluster);
         $this->assertArrayHasKey('longitude', $firstCluster);
@@ -133,7 +133,7 @@ class AlumniMapServiceTest extends TestCase
             'industry' => 'Technology',
             'graduation_year' => 2020,
             'current_company' => 'Google',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         Graduate::factory()->count(2)->create([
@@ -141,7 +141,7 @@ class AlumniMapServiceTest extends TestCase
             'industry' => 'Healthcare',
             'graduation_year' => 2021,
             'current_company' => 'Hospital Corp',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $stats = $this->service->getRegionalStats('United States', 'country');
@@ -161,21 +161,21 @@ class AlumniMapServiceTest extends TestCase
         $user = Graduate::factory()->create([
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         // Create nearby alumni
         Graduate::factory()->create([
             'latitude' => 40.7589, // ~5km away
             'longitude' => -73.9851,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         // Create far away alumni
         Graduate::factory()->create([
             'latitude' => 34.0522, // Los Angeles - far away
             'longitude' => -118.2437,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $nearbyAlumni = $this->service->findNearbyAlumni($user->id, 25);
@@ -193,7 +193,7 @@ class AlumniMapServiceTest extends TestCase
             'latitude' => 40.7128,
             'longitude' => -74.0060,
             'industry' => 'Technology',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         Graduate::factory()->count(3)->create([
@@ -202,19 +202,19 @@ class AlumniMapServiceTest extends TestCase
             'latitude' => 40.7128,
             'longitude' => -74.0060,
             'industry' => 'Finance',
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $location = [
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'radius' => 50
+            'radius' => 50,
         ];
 
         $suggestions = $this->service->suggestRegionalGroups($location);
 
         $this->assertGreaterThan(0, $suggestions->count());
-        
+
         // Should suggest both city-based and industry-based groups
         $groupTypes = $suggestions->pluck('type')->unique();
         $this->assertTrue($groupTypes->contains('city') || $groupTypes->contains('industry'));
@@ -237,20 +237,20 @@ class AlumniMapServiceTest extends TestCase
         Graduate::factory()->create([
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'private'
+            'profile_visibility' => 'private',
         ]);
 
         Graduate::factory()->create([
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $bounds = [
             'north' => 45.0,
             'south' => 35.0,
             'east' => -70.0,
-            'west' => -80.0
+            'west' => -80.0,
         ];
 
         $alumni = $this->service->getAlumniByLocation($bounds);
@@ -265,14 +265,14 @@ class AlumniMapServiceTest extends TestCase
         Graduate::factory()->count(1200)->create([
             'latitude' => 40.7128,
             'longitude' => -74.0060,
-            'profile_visibility' => 'public'
+            'profile_visibility' => 'public',
         ]);
 
         $bounds = [
             'north' => 45.0,
             'south' => 35.0,
             'east' => -70.0,
-            'west' => -80.0
+            'west' => -80.0,
         ];
 
         $alumni = $this->service->getAlumniByLocation($bounds);

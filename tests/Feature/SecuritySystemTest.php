@@ -2,11 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\SecurityEvent;
 use App\Models\FailedLoginAttempt;
+use App\Models\SecurityEvent;
 use App\Models\SessionSecurity;
-use App\Models\TwoFactorAuth;
+use App\Models\User;
 use App\Services\SecurityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -19,18 +18,19 @@ class SecuritySystemTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected $securityService;
+
     protected $superAdmin;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->securityService = app(SecurityService::class);
-        
+
         // Create roles
         Role::create(['name' => 'super-admin']);
         Role::create(['name' => 'graduate']);
-        
+
         // Create super admin user
         $this->superAdmin = User::factory()->create([
             'email' => 'admin@test.com',
@@ -108,17 +108,17 @@ class SecuritySystemTest extends TestCase
     public function test_two_factor_auth_enable_disable()
     {
         $user = User::factory()->create();
-        
+
         // Enable 2FA
         $twoFactor = $this->securityService->enableTwoFactorAuth($user);
-        
+
         $this->assertTrue($twoFactor->enabled);
         $this->assertNotNull($twoFactor->secret);
         $this->assertNotEmpty($twoFactor->recovery_codes);
 
         // Disable 2FA
         $this->securityService->disableTwoFactorAuth($user);
-        
+
         $twoFactor->refresh();
         $this->assertFalse($twoFactor->enabled);
         $this->assertNull($twoFactor->secret);
@@ -128,15 +128,15 @@ class SecuritySystemTest extends TestCase
     public function test_rate_limit_detection()
     {
         $identifier = 'test_user_123';
-        
+
         // Should not be rate limited initially
         $this->assertFalse($this->securityService->detectRateLimitViolation($identifier, 5, 1));
-        
+
         // Simulate multiple requests
         for ($i = 0; $i < 4; $i++) {
             $this->assertFalse($this->securityService->detectRateLimitViolation($identifier, 5, 1));
         }
-        
+
         // Should be rate limited on 6th attempt
         $this->assertTrue($this->securityService->detectRateLimitViolation($identifier, 5, 1));
     }
@@ -145,11 +145,11 @@ class SecuritySystemTest extends TestCase
     {
         // Mock a request with SQL injection attempt
         $this->app['request']->merge(['test' => "'; DROP TABLE users; --"]);
-        
+
         $isMalicious = $this->securityService->detectMaliciousRequest();
-        
+
         $this->assertTrue($isMalicious);
-        
+
         // Should log security event
         $this->assertDatabaseHas('security_events', [
             'event_type' => SecurityEvent::TYPE_MALICIOUS_REQUEST,
@@ -160,9 +160,9 @@ class SecuritySystemTest extends TestCase
     public function test_security_dashboard_access()
     {
         $this->actingAs($this->superAdmin)
-             ->get(route('security.dashboard'))
-             ->assertStatus(200)
-             ->assertInertia(fn ($page) => $page->component('Security/Dashboard'));
+            ->get(route('security.dashboard'))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('Security/Dashboard'));
     }
 
     public function test_security_dashboard_unauthorized_access()
@@ -171,8 +171,8 @@ class SecuritySystemTest extends TestCase
         $regularUser->assignRole('graduate');
 
         $this->actingAs($regularUser)
-             ->get(route('security.dashboard'))
-             ->assertStatus(403);
+            ->get(route('security.dashboard'))
+            ->assertStatus(403);
     }
 
     public function test_security_events_listing()
@@ -181,9 +181,9 @@ class SecuritySystemTest extends TestCase
         SecurityEvent::factory()->count(5)->create();
 
         $this->actingAs($this->superAdmin)
-             ->get(route('security.events'))
-             ->assertStatus(200)
-             ->assertInertia(fn ($page) => $page->component('Security/Events'));
+            ->get(route('security.events'))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('Security/Events'));
     }
 
     public function test_security_event_resolution()
@@ -197,11 +197,11 @@ class SecuritySystemTest extends TestCase
         ]);
 
         $this->actingAs($this->superAdmin)
-             ->post(route('security.events.resolve', $event), [
-                 'notes' => 'Resolved by admin'
-             ])
-             ->assertRedirect()
-             ->assertSessionHas('success');
+            ->post(route('security.events.resolve', $event), [
+                'notes' => 'Resolved by admin',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
 
         $event->refresh();
         $this->assertTrue($event->resolved);
@@ -220,9 +220,9 @@ class SecuritySystemTest extends TestCase
         ]);
 
         $this->actingAs($this->superAdmin)
-             ->get(route('security.failed-logins'))
-             ->assertStatus(200)
-             ->assertInertia(fn ($page) => $page->component('Security/FailedLogins'));
+            ->get(route('security.failed-logins'))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('Security/FailedLogins'));
     }
 
     public function test_ip_unblocking()
@@ -236,12 +236,12 @@ class SecuritySystemTest extends TestCase
         ]);
 
         $this->actingAs($this->superAdmin)
-             ->post(route('security.unblock-ip'), [
-                 'email' => 'test@example.com',
-                 'ip_address' => '192.168.1.1',
-             ])
-             ->assertRedirect()
-             ->assertSessionHas('success');
+            ->post(route('security.unblock-ip'), [
+                'email' => 'test@example.com',
+                'ip_address' => '192.168.1.1',
+            ])
+            ->assertRedirect()
+            ->assertSessionHas('success');
 
         $attempt->refresh();
         $this->assertNull($attempt->blocked_until);
@@ -261,9 +261,9 @@ class SecuritySystemTest extends TestCase
         ]);
 
         $this->actingAs($this->superAdmin)
-             ->get(route('security.sessions'))
-             ->assertStatus(200)
-             ->assertInertia(fn ($page) => $page->component('Security/ActiveSessions'));
+            ->get(route('security.sessions'))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('Security/ActiveSessions'));
     }
 
     public function test_session_termination()
@@ -278,9 +278,9 @@ class SecuritySystemTest extends TestCase
         ]);
 
         $this->actingAs($this->superAdmin)
-             ->post(route('security.sessions.terminate', $session))
-             ->assertRedirect()
-             ->assertSessionHas('success');
+            ->post(route('security.sessions.terminate', $session))
+            ->assertRedirect()
+            ->assertSessionHas('success');
 
         $session->refresh();
         $this->assertTrue($session->expires_at->isPast());
@@ -289,16 +289,16 @@ class SecuritySystemTest extends TestCase
     public function test_two_factor_setup_page()
     {
         $this->actingAs($this->superAdmin)
-             ->get(route('security.two-factor.setup'))
-             ->assertStatus(200)
-             ->assertInertia(fn ($page) => $page->component('Security/TwoFactorSetup'));
+            ->get(route('security.two-factor.setup'))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('Security/TwoFactorSetup'));
     }
 
     public function test_system_health_monitoring()
     {
         $this->actingAs($this->superAdmin)
-             ->get(route('security.system-health'))
-             ->assertStatus(200)
-             ->assertInertia(fn ($page) => $page->component('Security/SystemHealth'));
+            ->get(route('security.system-health'))
+            ->assertStatus(200)
+            ->assertInertia(fn ($page) => $page->component('Security/SystemHealth'));
     }
 }

@@ -35,7 +35,7 @@ return new class extends Migration
             $table->timestamp('synced_at')->nullable(); // Last sync with CRM
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['status', 'priority']);
             $table->index(['lead_type', 'source']);
             $table->index(['assigned_to', 'status']);

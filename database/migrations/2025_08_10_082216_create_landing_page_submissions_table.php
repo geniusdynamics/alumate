@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('status', ['new', 'processed', 'converted', 'spam'])->default('new');
             $table->timestamp('processed_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['landing_page_id', 'status']);
             $table->index(['lead_id', 'status']);
             $table->index(['created_at', 'status']);

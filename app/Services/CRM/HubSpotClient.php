@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 class HubSpotClient implements CrmClientInterface
 {
     private array $config;
+
     private string $baseUrl = 'https://api.hubapi.com';
 
     public function __construct(array $config)
@@ -17,7 +18,7 @@ class HubSpotClient implements CrmClientInterface
     public function testConnection(): array
     {
         $response = $this->makeRequest('GET', '/crm/v3/objects/contacts', [
-            'limit' => 1
+            'limit' => 1,
         ]);
 
         return [
@@ -30,7 +31,7 @@ class HubSpotClient implements CrmClientInterface
     public function createLead(array $data): array
     {
         $hubspotData = [
-            'properties' => $this->mapToHubSpotFields($data)
+            'properties' => $this->mapToHubSpotFields($data),
         ];
 
         $response = $this->makeRequest('POST', '/crm/v3/objects/contacts', $hubspotData);
@@ -43,13 +44,13 @@ class HubSpotClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to create lead in HubSpot: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to create lead in HubSpot: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function updateLead(string $crmId, array $data): array
     {
         $hubspotData = [
-            'properties' => $this->mapToHubSpotFields($data)
+            'properties' => $this->mapToHubSpotFields($data),
         ];
 
         $response = $this->makeRequest('PATCH', "/crm/v3/objects/contacts/{$crmId}", $hubspotData);
@@ -62,7 +63,7 @@ class HubSpotClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to update lead in HubSpot: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to update lead in HubSpot: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function getLead(string $crmId): array
@@ -73,7 +74,7 @@ class HubSpotClient implements CrmClientInterface
             return $response['data'];
         }
 
-        throw new \Exception('Failed to get lead from HubSpot: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to get lead from HubSpot: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function deleteLead(string $crmId): bool
@@ -94,9 +95,9 @@ class HubSpotClient implements CrmClientInterface
                             'operator' => 'EQ',
                             'value' => $value,
                         ];
-                    }, array_keys($criteria), $criteria)
-                ]
-            ]
+                    }, array_keys($criteria), $criteria),
+                ],
+            ],
         ];
 
         $response = $this->makeRequest('POST', '/crm/v3/objects/contacts/search', $searchData);
@@ -130,9 +131,9 @@ class HubSpotClient implements CrmClientInterface
     {
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->config['access_token'],
+                'Authorization' => 'Bearer '.$this->config['access_token'],
                 'Content-Type' => 'application/json',
-            ])->$method($this->baseUrl . $endpoint, $data);
+            ])->$method($this->baseUrl.$endpoint, $data);
 
             return [
                 'status' => $response->status(),

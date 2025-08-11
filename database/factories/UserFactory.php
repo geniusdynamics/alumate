@@ -177,10 +177,10 @@ class UserFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'profile_data' => [
                 'bio' => fake()->paragraph(),
-                'location' => fake()->city() . ', ' . fake()->country(),
+                'location' => fake()->city().', '.fake()->country(),
                 'website' => fake()->url(),
-                'linkedin' => 'https://linkedin.com/in/' . fake()->userName(),
-                'twitter' => '@' . fake()->userName(),
+                'linkedin' => 'https://linkedin.com/in/'.fake()->userName(),
+                'twitter' => '@'.fake()->userName(),
                 'skills' => fake()->randomElements([
                     'PHP', 'JavaScript', 'Python', 'Java', 'C#', 'Ruby',
                     'Laravel', 'React', 'Vue.js', 'Angular', 'Node.js',

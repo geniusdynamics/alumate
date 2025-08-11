@@ -21,27 +21,27 @@ class HomepageSecurityMonitoring
     public function handle(Request $request, Closure $next): Response
     {
         // Only monitor homepage-related routes
-        if (!$this->isHomepageRoute($request)) {
+        if (! $this->isHomepageRoute($request)) {
             return $next($request);
         }
-        
+
         // Check for suspicious activity
         $this->checkSuspiciousActivity($request);
-        
+
         // Check rate limiting
         $this->checkRateLimit($request);
-        
+
         // Check for malicious patterns
         $this->checkMaliciousPatterns($request);
-        
+
         $response = $next($request);
-        
+
         // Log the request for analysis
         $this->logRequest($request, $response);
-        
+
         return $response;
     }
-    
+
     /**
      * Check if this is a homepage-related route.
      */
@@ -53,18 +53,18 @@ class HomepageSecurityMonitoring
             '/api/homepage',
             '/health-check/homepage',
         ];
-        
+
         $path = $request->path();
-        
+
         foreach ($homepageRoutes as $route) {
-            if ($path === trim($route, '/') || str_starts_with($path, trim($route, '/') . '/')) {
+            if ($path === trim($route, '/') || str_starts_with($path, trim($route, '/').'/')) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Check for suspicious activity patterns.
      */
@@ -72,14 +72,14 @@ class HomepageSecurityMonitoring
     {
         $ip = $request->ip();
         $cacheKey = "suspicious_activity_{$ip}";
-        
+
         // Track request count per IP
         $requestCount = Cache::increment($cacheKey, 1);
-        
+
         if ($requestCount === 1) {
             Cache::put($cacheKey, 1, 300); // 5 minutes window
         }
-        
+
         // Alert if too many requests from single IP
         if ($requestCount > 50) { // 50 requests in 5 minutes
             $this->monitoring->recordError(
@@ -95,7 +95,7 @@ class HomepageSecurityMonitoring
                 'warning'
             );
         }
-        
+
         // Critical alert for extremely high volume
         if ($requestCount > 100) {
             $this->monitoring->recordError(
@@ -111,7 +111,7 @@ class HomepageSecurityMonitoring
             );
         }
     }
-    
+
     /**
      * Check rate limiting violations.
      */
@@ -120,27 +120,27 @@ class HomepageSecurityMonitoring
         $ip = $request->ip();
         $endpoint = $request->path();
         $cacheKey = "rate_limit_{$ip}_{$endpoint}";
-        
+
         $requestCount = Cache::increment($cacheKey, 1);
-        
+
         if ($requestCount === 1) {
             Cache::put($cacheKey, 1, 60); // 1 minute window
         }
-        
+
         // Different limits for different endpoints
         $limits = [
             'api' => 30,     // 30 requests per minute for API endpoints
             'page' => 60,    // 60 requests per minute for page loads
             'default' => 45, // 45 requests per minute default
         ];
-        
+
         $limit = $limits['default'];
         if (str_contains($endpoint, 'api/')) {
             $limit = $limits['api'];
-        } elseif (!str_contains($endpoint, 'api/')) {
+        } elseif (! str_contains($endpoint, 'api/')) {
             $limit = $limits['page'];
         }
-        
+
         if ($requestCount > $limit) {
             $this->monitoring->recordError(
                 'rate_limit_violation',
@@ -156,7 +156,7 @@ class HomepageSecurityMonitoring
             );
         }
     }
-    
+
     /**
      * Check for malicious patterns in request.
      */
@@ -165,7 +165,7 @@ class HomepageSecurityMonitoring
         $url = $request->fullUrl();
         $userAgent = $request->userAgent() ?? '';
         $input = json_encode($request->all());
-        
+
         $patterns = [
             'sql_injection' => [
                 'patterns' => ['union select', 'drop table', '1=1', 'or 1=1', 'select * from', 'insert into'],
@@ -188,7 +188,7 @@ class HomepageSecurityMonitoring
                 'severity' => 'warning',
             ],
         ];
-        
+
         foreach ($patterns as $type => $config) {
             foreach ($config['patterns'] as $pattern) {
                 if (
@@ -209,7 +209,7 @@ class HomepageSecurityMonitoring
                         ],
                         $config['severity']
                     );
-                    
+
                     // Log to security log
                     Log::channel('homepage-alerts')->critical("Security threat detected: {$type}", [
                         'pattern' => $pattern,
@@ -217,23 +217,23 @@ class HomepageSecurityMonitoring
                         'url' => $url,
                         'user_agent' => $userAgent,
                     ]);
-                    
+
                     break; // Only alert once per request per type
                 }
             }
         }
     }
-    
+
     /**
      * Log request for analysis.
      */
     private function logRequest(Request $request, Response $response): void
     {
         // Only log if analytics table exists
-        if (!\Schema::hasTable('homepage_analytics_events')) {
+        if (! \Schema::hasTable('homepage_analytics_events')) {
             return;
         }
-        
+
         try {
             \DB::table('homepage_analytics_events')->insert([
                 'event_type' => 'page_view',

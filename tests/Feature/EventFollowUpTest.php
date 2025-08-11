@@ -3,13 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Event;
-use App\Models\User;
-use App\Models\EventRegistration;
 use App\Models\EventCheckIn;
+use App\Models\EventConnectionRecommendation;
 use App\Models\EventFeedback;
 use App\Models\EventHighlight;
 use App\Models\EventNetworkingConnection;
-use App\Models\EventConnectionRecommendation;
+use App\Models\EventRegistration;
+use App\Models\User;
 use App\Services\EventFollowUpService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,27 +19,29 @@ class EventFollowUpTest extends TestCase
     use RefreshDatabase;
 
     protected EventFollowUpService $followUpService;
+
     protected User $user;
+
     protected Event $event;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->followUpService = app(EventFollowUpService::class);
         $this->user = User::factory()->create();
         $this->event = Event::factory()->create();
-        
+
         // Register and check in the user
         EventRegistration::factory()->create([
             'event_id' => $this->event->id,
             'user_id' => $this->user->id,
-            'status' => 'registered'
+            'status' => 'registered',
         ]);
-        
+
         EventCheckIn::factory()->create([
             'event_id' => $this->event->id,
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
     }
 
@@ -62,7 +64,7 @@ class EventFollowUpTest extends TestCase
             ->postJson("/api/events/{$this->event->id}/feedback", $feedbackData);
 
         $response->assertStatus(200);
-        
+
         $this->assertDatabaseHas('event_feedback', [
             'event_id' => $this->event->id,
             'user_id' => $this->user->id,
@@ -104,7 +106,7 @@ class EventFollowUpTest extends TestCase
             ->postJson("/api/events/{$this->event->id}/highlights", $highlightData);
 
         $response->assertStatus(200);
-        
+
         $this->assertDatabaseHas('event_highlights', [
             'event_id' => $this->event->id,
             'created_by' => $this->user->id,
@@ -136,11 +138,11 @@ class EventFollowUpTest extends TestCase
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/highlights/{$highlight->id}/interact", [
-                'type' => 'like'
+                'type' => 'like',
             ]);
 
         $response->assertStatus(200);
-        
+
         $this->assertDatabaseHas('event_highlight_interactions', [
             'highlight_id' => $highlight->id,
             'user_id' => $this->user->id,
@@ -151,17 +153,17 @@ class EventFollowUpTest extends TestCase
     public function test_user_can_create_networking_connection()
     {
         $otherUser = User::factory()->create();
-        
+
         // Register and check in the other user
         EventRegistration::factory()->create([
             'event_id' => $this->event->id,
             'user_id' => $otherUser->id,
-            'status' => 'registered'
+            'status' => 'registered',
         ]);
-        
+
         EventCheckIn::factory()->create([
             'event_id' => $this->event->id,
-            'user_id' => $otherUser->id
+            'user_id' => $otherUser->id,
         ]);
 
         $connectionData = [
@@ -176,7 +178,7 @@ class EventFollowUpTest extends TestCase
             ->postJson("/api/events/{$this->event->id}/connections", $connectionData);
 
         $response->assertStatus(200);
-        
+
         $this->assertDatabaseHas('event_networking_connections', [
             'event_id' => $this->event->id,
             'user_id' => $this->user->id,
@@ -189,17 +191,17 @@ class EventFollowUpTest extends TestCase
     {
         // Create other attendees
         $attendees = User::factory()->count(3)->create();
-        
+
         foreach ($attendees as $attendee) {
             EventRegistration::factory()->create([
                 'event_id' => $this->event->id,
                 'user_id' => $attendee->id,
-                'status' => 'registered'
+                'status' => 'registered',
             ]);
-            
+
             EventCheckIn::factory()->create([
                 'event_id' => $this->event->id,
-                'user_id' => $attendee->id
+                'user_id' => $attendee->id,
             ]);
         }
 
@@ -207,7 +209,7 @@ class EventFollowUpTest extends TestCase
             ->postJson("/api/events/{$this->event->id}/generate-recommendations");
 
         $response->assertStatus(200);
-        
+
         // Should have created some recommendations
         $this->assertTrue(
             EventConnectionRecommendation::where('event_id', $this->event->id)
@@ -219,7 +221,7 @@ class EventFollowUpTest extends TestCase
     public function test_user_can_get_connection_recommendations()
     {
         $otherUser = User::factory()->create();
-        
+
         EventConnectionRecommendation::factory()->create([
             'event_id' => $this->event->id,
             'user_id' => $this->user->id,
@@ -241,7 +243,7 @@ class EventFollowUpTest extends TestCase
             'overall_rating' => 5,
             'would_recommend' => true,
         ]);
-        
+
         EventFeedback::factory()->count(2)->create([
             'event_id' => $this->event->id,
             'overall_rating' => 3,

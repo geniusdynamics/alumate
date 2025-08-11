@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\EventRegistration;
 use App\Models\EventFavorite;
+use App\Models\EventRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -19,19 +19,19 @@ class EventController extends Controller
         // Check if event is still accepting registrations
         if ($event->status !== 'published') {
             throw ValidationException::withMessages([
-                'event' => 'This event is not available for registration.'
+                'event' => 'This event is not available for registration.',
             ]);
         }
 
         if ($event->registration_deadline && $event->registration_deadline < now()) {
             throw ValidationException::withMessages([
-                'event' => 'Registration deadline has passed.'
+                'event' => 'Registration deadline has passed.',
             ]);
         }
 
         if ($event->max_attendees && $event->registrations()->count() >= $event->max_attendees) {
             throw ValidationException::withMessages([
-                'event' => 'This event is fully booked.'
+                'event' => 'This event is fully booked.',
             ]);
         }
 
@@ -42,7 +42,7 @@ class EventController extends Controller
 
         if ($existingRegistration) {
             throw ValidationException::withMessages([
-                'event' => 'You are already registered for this event.'
+                'event' => 'You are already registered for this event.',
             ]);
         }
 
@@ -51,14 +51,14 @@ class EventController extends Controller
             'event_id' => $event->id,
             'user_id' => $user->id,
             'status' => 'confirmed',
-            'registered_at' => now()
+            'registered_at' => now(),
         ]);
 
         // TODO: Send confirmation email/notification
 
         return response()->json([
             'message' => 'Successfully registered for the event.',
-            'registration' => $registration
+            'registration' => $registration,
         ]);
     }
 
@@ -71,16 +71,16 @@ class EventController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
-        if (!$registration) {
+        if (! $registration) {
             throw ValidationException::withMessages([
-                'event' => 'You are not registered for this event.'
+                'event' => 'You are not registered for this event.',
             ]);
         }
 
         // Check if cancellation is allowed
         if ($event->cancellation_deadline && $event->cancellation_deadline < now()) {
             throw ValidationException::withMessages([
-                'event' => 'Cancellation deadline has passed.'
+                'event' => 'Cancellation deadline has passed.',
             ]);
         }
 
@@ -88,7 +88,7 @@ class EventController extends Controller
         $registration->delete();
 
         return response()->json([
-            'message' => 'Successfully unregistered from the event.'
+            'message' => 'Successfully unregistered from the event.',
         ]);
     }
 
@@ -103,18 +103,18 @@ class EventController extends Controller
 
         if ($existingFavorite) {
             throw ValidationException::withMessages([
-                'event' => 'Event is already in your favorites.'
+                'event' => 'Event is already in your favorites.',
             ]);
         }
 
         // Add to favorites
         EventFavorite::create([
             'event_id' => $event->id,
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         return response()->json([
-            'message' => 'Event added to favorites.'
+            'message' => 'Event added to favorites.',
         ]);
     }
 
@@ -127,9 +127,9 @@ class EventController extends Controller
             ->where('user_id', $user->id)
             ->first();
 
-        if (!$favorite) {
+        if (! $favorite) {
             throw ValidationException::withMessages([
-                'event' => 'Event is not in your favorites.'
+                'event' => 'Event is not in your favorites.',
             ]);
         }
 
@@ -137,7 +137,7 @@ class EventController extends Controller
         $favorite->delete();
 
         return response()->json([
-            'message' => 'Event removed from favorites.'
+            'message' => 'Event removed from favorites.',
         ]);
     }
 
@@ -147,7 +147,7 @@ class EventController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'feedback' => 'nullable|string|max:2000',
             'would_recommend' => 'required|boolean',
-            'suggestions' => 'nullable|string|max:1000'
+            'suggestions' => 'nullable|string|max:1000',
         ]);
 
         $user = Auth::user();
@@ -158,9 +158,9 @@ class EventController extends Controller
             ->where('status', 'confirmed')
             ->first();
 
-        if (!$registration) {
+        if (! $registration) {
             throw ValidationException::withMessages([
-                'event' => 'You must have attended this event to provide feedback.'
+                'event' => 'You must have attended this event to provide feedback.',
             ]);
         }
 
@@ -179,7 +179,7 @@ class EventController extends Controller
                     'feedback' => $request->feedback,
                     'would_recommend' => $request->would_recommend,
                     'suggestions' => $request->suggestions,
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
         } else {
             // Create new feedback
@@ -191,13 +191,13 @@ class EventController extends Controller
                 'would_recommend' => $request->would_recommend,
                 'suggestions' => $request->suggestions,
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'Thank you for your feedback!'
+            'message' => 'Thank you for your feedback!',
         ]);
     }
 }

@@ -58,7 +58,7 @@ class EventFollowUpActivity extends Model
     // Helper methods
     public function getActivityTypeLabel(): string
     {
-        return match($this->activity_type) {
+        return match ($this->activity_type) {
             'survey_completed' => 'Survey Completed',
             'connections_made' => 'Connections Made',
             'content_shared' => 'Content Shared',
@@ -72,8 +72,8 @@ class EventFollowUpActivity extends Model
     public function getActivityDescription(): string
     {
         $data = $this->activity_data ?? [];
-        
-        return match($this->activity_type) {
+
+        return match ($this->activity_type) {
             'survey_completed' => 'Completed post-event survey',
             'connections_made' => sprintf('Made %d new connections', $data['count'] ?? 1),
             'content_shared' => sprintf('Shared %s', $data['content_type'] ?? 'content'),
@@ -87,6 +87,7 @@ class EventFollowUpActivity extends Model
     public function getActivityValue(string $key): mixed
     {
         $data = $this->activity_data ?? [];
+
         return $data[$key] ?? null;
     }
 

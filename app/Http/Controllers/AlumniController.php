@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Graduate;
-use App\Models\User;
 use App\Models\Connection;
 use App\Models\Course;
+use App\Models\Graduate;
 use App\Models\Institution;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class AlumniController extends Controller
 {
     public function directory(Request $request)
     {
         $user = Auth::user();
-        
+
         // Build query for alumni directory
         $query = Graduate::with(['user', 'course', 'institution', 'currentJob'])
             ->whereHas('user', function ($q) {
@@ -37,20 +37,20 @@ class AlumniController extends Controller
         }
 
         if ($request->filled('location')) {
-            $query->where('current_location', 'like', '%' . $request->location . '%');
+            $query->where('current_location', 'like', '%'.$request->location.'%');
         }
 
         if ($request->filled('industry')) {
             $query->whereHas('currentJob', function ($q) use ($request) {
-                $q->where('industry', 'like', '%' . $request->industry . '%');
+                $q->where('industry', 'like', '%'.$request->industry.'%');
             });
         }
 
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->whereHas('user', function ($q) use ($searchTerm) {
-                $q->where('name', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('email', 'like', '%' . $searchTerm . '%');
+                $q->where('name', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('email', 'like', '%'.$searchTerm.'%');
             });
         }
 
@@ -75,7 +75,7 @@ class AlumniController extends Controller
         $user = Auth::user();
         $graduate = $user->graduate;
 
-        if (!$graduate) {
+        if (! $graduate) {
             return Inertia::render('Alumni/Recommendations', [
                 'recommendations' => collect(),
                 'connectionInsights' => collect(),
@@ -149,7 +149,7 @@ class AlumniController extends Controller
         // Remove duplicates and already connected users
         $recommendations = $recommendations->unique('user.id')
             ->filter(function ($rec) use ($user) {
-                return !$this->isAlreadyConnected($user, $rec['user']->user);
+                return ! $this->isAlreadyConnected($user, $rec['user']->user);
             })
             ->take(20);
 
@@ -176,7 +176,7 @@ class AlumniController extends Controller
     public function connections()
     {
         $user = Auth::user();
-        
+
         // Get user's connections
         $connections = Connection::where('user_id', $user->id)
             ->orWhere('connected_user_id', $user->id)
@@ -184,8 +184,8 @@ class AlumniController extends Controller
             ->with(['user.graduate', 'connectedUser.graduate'])
             ->get()
             ->map(function ($connection) use ($user) {
-                return $connection->user_id === $user->id 
-                    ? $connection->connectedUser 
+                return $connection->user_id === $user->id
+                    ? $connection->connectedUser
                     : $connection->user;
             });
 
@@ -230,7 +230,7 @@ class AlumniController extends Controller
 
     private function getIndustryPeers($graduate)
     {
-        if (!$graduate->current_industry) {
+        if (! $graduate->current_industry) {
             return collect();
         }
 
@@ -245,10 +245,10 @@ class AlumniController extends Controller
     {
         return Connection::where(function ($query) use ($user, $targetUser) {
             $query->where('user_id', $user->id)
-                  ->where('connected_user_id', $targetUser->id);
+                ->where('connected_user_id', $targetUser->id);
         })->orWhere(function ($query) use ($user, $targetUser) {
             $query->where('user_id', $targetUser->id)
-                  ->where('connected_user_id', $user->id);
+                ->where('connected_user_id', $user->id);
         })->exists();
     }
 
@@ -256,7 +256,7 @@ class AlumniController extends Controller
     {
         $totalConnections = Connection::where(function ($query) use ($user) {
             $query->where('user_id', $user->id)
-                  ->orWhere('connected_user_id', $user->id);
+                ->orWhere('connected_user_id', $user->id);
         })->where('status', 'accepted')->count();
 
         $graduate = $user->graduate;
@@ -266,16 +266,16 @@ class AlumniController extends Controller
         if ($graduate) {
             $sameInstitution = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->where('status', 'accepted')
-            ->whereHas('user.graduate', function ($q) use ($graduate) {
-                $q->where('institution_id', $graduate->institution_id);
-            })
-            ->orWhereHas('connectedUser.graduate', function ($q) use ($graduate) {
-                $q->where('institution_id', $graduate->institution_id);
-            })
-            ->count();
+                ->where('status', 'accepted')
+                ->whereHas('user.graduate', function ($q) use ($graduate) {
+                    $q->where('institution_id', $graduate->institution_id);
+                })
+                ->orWhereHas('connectedUser.graduate', function ($q) use ($graduate) {
+                    $q->where('institution_id', $graduate->institution_id);
+                })
+                ->count();
         }
 
         return [
@@ -293,10 +293,10 @@ class AlumniController extends Controller
             // Industry insights
             $industryConnections = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->where('status', 'accepted')
-            ->count();
+                ->where('status', 'accepted')
+                ->count();
 
             if ($industryConnections < 5) {
                 $insights->push([
@@ -310,13 +310,13 @@ class AlumniController extends Controller
             // Institution insights
             $institutionConnections = Connection::where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
-                      ->orWhere('connected_user_id', $user->id);
+                    ->orWhere('connected_user_id', $user->id);
             })
-            ->where('status', 'accepted')
-            ->whereHas('user.graduate', function ($q) use ($graduate) {
-                $q->where('institution_id', $graduate->institution_id);
-            })
-            ->count();
+                ->where('status', 'accepted')
+                ->whereHas('user.graduate', function ($q) use ($graduate) {
+                    $q->where('institution_id', $graduate->institution_id);
+                })
+                ->count();
 
             if ($institutionConnections < 3) {
                 $insights->push([

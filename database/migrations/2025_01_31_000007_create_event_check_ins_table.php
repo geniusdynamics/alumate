@@ -17,10 +17,10 @@ return new class extends Migration
             $table->json('location_data')->nullable(); // GPS coordinates, venue area, etc.
             $table->text('notes')->nullable();
             $table->timestamps();
-            
+
             // Unique constraint to prevent duplicate check-ins
             $table->unique(['event_id', 'user_id']);
-            
+
             // Indexes
             $table->index(['event_id', 'checked_in_at']);
             $table->index('user_id');

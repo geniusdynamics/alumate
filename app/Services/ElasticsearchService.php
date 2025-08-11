@@ -2,20 +2,19 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\SavedSearch;
 use App\Models\SearchAlert;
+use App\Models\User;
 use Elasticsearch\Client;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class ElasticsearchService
 {
     protected Client $client;
+
     protected string $alumniIndex;
+
     protected array $config;
 
     public function __construct()
@@ -44,32 +43,32 @@ class ElasticsearchService
     {
         try {
             // Check if user allows being searchable
-            if (!$user->privacy_settings['searchable'] ?? true) {
+            if (! $user->privacy_settings['searchable'] ?? true) {
                 return $this->removeUser($user);
             }
 
             $body = $this->prepareUserDocument($user);
-            
+
             $params = [
                 'index' => $this->alumniIndex,
                 'id' => $user->id,
-                'body' => $body
+                'body' => $body,
             ];
 
             $response = $this->client->index($params);
-            
+
             Log::info('User indexed successfully', [
                 'user_id' => $user->id,
-                'result' => $response['result'] ?? 'unknown'
+                'result' => $response['result'] ?? 'unknown',
             ]);
 
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to index user', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -82,17 +81,18 @@ class ElasticsearchService
         try {
             $params = [
                 'index' => $this->alumniIndex,
-                'id' => $user->id
+                'id' => $user->id,
             ];
 
             $this->client->delete($params);
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to remove user from index', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -105,20 +105,20 @@ class ElasticsearchService
         try {
             $searchParams = $this->buildSearchParams($query, $filters, $pagination);
             $response = $this->client->search($searchParams);
-            
+
             return $this->formatSearchResponse($response, $pagination);
         } catch (\Exception $e) {
             Log::error('Search failed', [
                 'query' => $query,
                 'filters' => $filters,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return [
                 'users' => [],
                 'total' => 0,
                 'aggregations' => [],
-                'suggestions' => []
+                'suggestions' => [],
             ];
         }
     }
@@ -141,28 +141,29 @@ class ElasticsearchService
                             'prefix' => $partialQuery,
                             'completion' => [
                                 'field' => 'name.autocomplete',
-                                'size' => 10
-                            ]
+                                'size' => 10,
+                            ],
                         ],
                         'company_suggest' => [
                             'prefix' => $partialQuery,
                             'completion' => [
                                 'field' => 'company.autocomplete',
-                                'size' => 10
-                            ]
-                        ]
-                    ]
-                ]
+                                'size' => 10,
+                            ],
+                        ],
+                    ],
+                ],
             ];
 
             $response = $this->client->search($params);
+
             return $this->formatSuggestions($response);
         } catch (\Exception $e) {
             Log::error('Suggestions failed', [
                 'query' => $partialQuery,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return [];
         }
     }
@@ -177,7 +178,7 @@ class ElasticsearchService
             'name' => $this->generateSearchName($query, $filters),
             'query' => $query,
             'filters' => $filters,
-            'result_count' => $this->getSearchResultCount($query, $filters)
+            'result_count' => $this->getSearchResultCount($query, $filters),
         ]);
     }
 
@@ -187,13 +188,13 @@ class ElasticsearchService
     public function createSearchAlert(User $user, int $searchId): SearchAlert
     {
         $savedSearch = SavedSearch::findOrFail($searchId);
-        
+
         return SearchAlert::create([
             'user_id' => $user->id,
             'saved_search_id' => $searchId,
             'frequency' => 'daily', // default frequency
             'is_active' => true,
-            'last_sent_at' => null
+            'last_sent_at' => null,
         ]);
     }
 
@@ -205,14 +206,14 @@ class ElasticsearchService
         try {
             $searchParams = $this->buildSearchParams($query, $filters, ['size' => 0]);
             $response = $this->client->search($searchParams);
-            
+
             return $response['hits']['total']['value'] ?? 0;
         } catch (\Exception $e) {
             Log::error('Failed to get search count', [
                 'query' => $query,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return 0;
         }
     }
@@ -224,13 +225,13 @@ class ElasticsearchService
     {
         try {
             $indexConfig = $this->config['indices']['alumni'];
-            
+
             $params = [
                 'index' => $this->alumniIndex,
                 'body' => [
                     'settings' => $indexConfig['settings'],
-                    'mappings' => $indexConfig['mappings']
-                ]
+                    'mappings' => $indexConfig['mappings'],
+                ],
             ];
 
             // Delete index if it exists
@@ -239,18 +240,18 @@ class ElasticsearchService
             }
 
             $this->client->indices()->create($params);
-            
+
             Log::info('Elasticsearch index created successfully', [
-                'index' => $this->alumniIndex
+                'index' => $this->alumniIndex,
             ]);
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to create index', [
                 'index' => $this->alumniIndex,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -272,7 +273,7 @@ class ElasticsearchService
             'school' => $user->school ?? '',
             'created_at' => $user->created_at?->toISOString(),
             'updated_at' => $user->updated_at?->toISOString(),
-            'privacy_settings' => $user->privacy_settings ?? []
+            'privacy_settings' => $user->privacy_settings ?? [],
         ];
 
         // Add current job information
@@ -285,7 +286,7 @@ class ElasticsearchService
         if ($user->latitude && $user->longitude) {
             $document['location_coordinates'] = [
                 'lat' => $user->latitude,
-                'lon' => $user->longitude
+                'lon' => $user->longitude,
             ];
         }
 
@@ -297,7 +298,7 @@ class ElasticsearchService
                     'degree' => $education->degree,
                     'field_of_study' => $education->field_of_study,
                     'graduation_year' => $education->graduation_year,
-                    'start_year' => $education->start_year
+                    'start_year' => $education->start_year,
                 ];
             })->toArray();
         }
@@ -311,7 +312,7 @@ class ElasticsearchService
                     'industry' => $experience->industry,
                     'start_date' => $experience->start_date?->toISOString(),
                     'end_date' => $experience->end_date?->toISOString(),
-                    'is_current' => $experience->is_current
+                    'is_current' => $experience->is_current,
                 ];
             })->toArray();
         }
@@ -326,7 +327,7 @@ class ElasticsearchService
     {
         $size = $pagination['size'] ?? $this->config['search']['default_size'];
         $from = $pagination['from'] ?? 0;
-        
+
         $searchParams = [
             'index' => $this->alumniIndex,
             'body' => [
@@ -334,8 +335,8 @@ class ElasticsearchService
                 'from' => $from,
                 'query' => $this->buildQuery($query, $filters),
                 'highlight' => $this->config['search']['highlight'],
-                'aggs' => $this->buildAggregations()
-            ]
+                'aggs' => $this->buildAggregations(),
+            ],
         ];
 
         return $searchParams;
@@ -350,68 +351,68 @@ class ElasticsearchService
         $filter = [];
 
         // Main search query
-        if (!empty($query)) {
+        if (! empty($query)) {
             $must[] = [
                 'multi_match' => [
                     'query' => $query,
                     'fields' => [
-                        'name^' . $this->config['search']['boost']['name'],
-                        'company^' . $this->config['search']['boost']['company'],
-                        'title^' . $this->config['search']['boost']['title'],
-                        'skills^' . $this->config['search']['boost']['skills'],
-                        'bio^' . $this->config['search']['boost']['bio']
+                        'name^'.$this->config['search']['boost']['name'],
+                        'company^'.$this->config['search']['boost']['company'],
+                        'title^'.$this->config['search']['boost']['title'],
+                        'skills^'.$this->config['search']['boost']['skills'],
+                        'bio^'.$this->config['search']['boost']['bio'],
                     ],
                     'fuzziness' => $this->config['search']['fuzziness'],
-                    'operator' => 'and'
-                ]
+                    'operator' => 'and',
+                ],
             ];
         } else {
-            $must[] = ['match_all' => new \stdClass()];
+            $must[] = ['match_all' => new \stdClass];
         }
 
         // Apply filters
-        if (!empty($filters['graduation_year'])) {
+        if (! empty($filters['graduation_year'])) {
             if (is_array($filters['graduation_year'])) {
                 $filter[] = [
                     'range' => [
                         'graduation_year' => [
                             'gte' => $filters['graduation_year']['min'] ?? 1950,
-                            'lte' => $filters['graduation_year']['max'] ?? date('Y')
-                        ]
-                    ]
+                            'lte' => $filters['graduation_year']['max'] ?? date('Y'),
+                        ],
+                    ],
                 ];
             } else {
                 $filter[] = ['term' => ['graduation_year' => $filters['graduation_year']]];
             }
         }
 
-        if (!empty($filters['location'])) {
+        if (! empty($filters['location'])) {
             $filter[] = ['term' => ['location.keyword' => $filters['location']]];
         }
 
-        if (!empty($filters['industry'])) {
+        if (! empty($filters['industry'])) {
             $filter[] = ['terms' => ['industry' => (array) $filters['industry']]];
         }
 
-        if (!empty($filters['company'])) {
+        if (! empty($filters['company'])) {
             $filter[] = ['term' => ['company.keyword' => $filters['company']]];
         }
 
-        if (!empty($filters['school'])) {
+        if (! empty($filters['school'])) {
             $filter[] = ['term' => ['school.keyword' => $filters['school']]];
         }
 
-        if (!empty($filters['skills'])) {
+        if (! empty($filters['skills'])) {
             $filter[] = ['terms' => ['skills.keyword' => (array) $filters['skills']]];
         }
 
         // Geographic filter
-        if (!empty($filters['location_radius']) && !empty($filters['location_center'])) {
+        if (! empty($filters['location_radius']) && ! empty($filters['location_center'])) {
             $filter[] = [
                 'geo_distance' => [
                     'distance' => $filters['location_radius'],
-                    'location_coordinates' => $filters['location_center']
-                ]
+                    'location_coordinates' => $filters['location_center'],
+                ],
             ];
         }
 
@@ -421,8 +422,8 @@ class ElasticsearchService
         return [
             'bool' => [
                 'must' => $must,
-                'filter' => $filter
-            ]
+                'filter' => $filter,
+            ],
         ];
     }
 
@@ -436,39 +437,39 @@ class ElasticsearchService
                 'terms' => [
                     'field' => 'graduation_year',
                     'size' => 50,
-                    'order' => ['_key' => 'desc']
-                ]
+                    'order' => ['_key' => 'desc'],
+                ],
             ],
             'locations' => [
                 'terms' => [
                     'field' => 'location.keyword',
-                    'size' => 20
-                ]
+                    'size' => 20,
+                ],
             ],
             'industries' => [
                 'terms' => [
                     'field' => 'industry',
-                    'size' => 20
-                ]
+                    'size' => 20,
+                ],
             ],
             'companies' => [
                 'terms' => [
                     'field' => 'company.keyword',
-                    'size' => 20
-                ]
+                    'size' => 20,
+                ],
             ],
             'schools' => [
                 'terms' => [
                     'field' => 'school.keyword',
-                    'size' => 20
-                ]
+                    'size' => 20,
+                ],
             ],
             'skills' => [
                 'terms' => [
                     'field' => 'skills.keyword',
-                    'size' => 30
-                ]
-            ]
+                    'size' => 30,
+                ],
+            ],
         ];
     }
 
@@ -485,6 +486,7 @@ class ElasticsearchService
             $source = $hit['_source'];
             $source['highlight'] = $hit['highlight'] ?? [];
             $source['score'] = $hit['_score'];
+
             return $source;
         });
 
@@ -492,7 +494,7 @@ class ElasticsearchService
             'users' => $users,
             'total' => $total,
             'aggregations' => $this->formatAggregations($aggregations),
-            'suggestions' => []
+            'suggestions' => [],
         ];
     }
 
@@ -507,7 +509,7 @@ class ElasticsearchService
             $formatted[$key] = collect($aggregation['buckets'] ?? [])->map(function ($bucket) {
                 return [
                     'key' => $bucket['key'],
-                    'count' => $bucket['doc_count']
+                    'count' => $bucket['doc_count'],
                 ];
             });
         }
@@ -521,14 +523,14 @@ class ElasticsearchService
     protected function formatSuggestions(array $response): array
     {
         $suggestions = [];
-        
+
         foreach ($response['suggest'] ?? [] as $suggestionType => $suggestionData) {
             foreach ($suggestionData as $suggestion) {
                 foreach ($suggestion['options'] ?? [] as $option) {
                     $suggestions[] = [
                         'text' => $option['text'],
                         'type' => str_replace('_suggest', '', $suggestionType),
-                        'score' => $option['_score'] ?? 0
+                        'score' => $option['_score'] ?? 0,
                     ];
                 }
             }
@@ -548,28 +550,28 @@ class ElasticsearchService
     protected function generateSearchName(string $query, array $filters): string
     {
         $parts = [];
-        
-        if (!empty($query)) {
+
+        if (! empty($query)) {
             $parts[] = "\"$query\"";
         }
-        
-        if (!empty($filters['location'])) {
+
+        if (! empty($filters['location'])) {
             $parts[] = "in {$filters['location']}";
         }
-        
-        if (!empty($filters['industry'])) {
+
+        if (! empty($filters['industry'])) {
             $industry = is_array($filters['industry']) ? implode(', ', $filters['industry']) : $filters['industry'];
             $parts[] = "in $industry";
         }
-        
-        if (!empty($filters['graduation_year'])) {
+
+        if (! empty($filters['graduation_year'])) {
             if (is_array($filters['graduation_year'])) {
                 $parts[] = "graduated {$filters['graduation_year']['min']}-{$filters['graduation_year']['max']}";
             } else {
                 $parts[] = "graduated {$filters['graduation_year']}";
             }
         }
-        
+
         return implode(' ', $parts) ?: 'All Alumni';
     }
 }

@@ -32,7 +32,7 @@ class CreatePostsTableTest extends TestCase
             'metadata',
             'created_at',
             'updated_at',
-            'deleted_at'
+            'deleted_at',
         ];
 
         foreach ($columns as $column) {
@@ -53,23 +53,23 @@ class CreatePostsTableTest extends TestCase
         $this->assertEquals('bigint', $doctrineTable->getColumn('id')->getType()->getName());
         $this->assertEquals('bigint', $doctrineTable->getColumn('user_id')->getType()->getName());
         $this->assertEquals('text', $doctrineTable->getColumn('content')->getType()->getName());
-        
+
         // JSON columns might be reported differently depending on database
         $this->assertContains(
             $doctrineTable->getColumn('media_urls')->getType()->getName(),
             ['json', 'text', 'longtext']
         );
-        
+
         $this->assertContains(
             $doctrineTable->getColumn('circle_ids')->getType()->getName(),
             ['json', 'text', 'longtext']
         );
-        
+
         $this->assertContains(
             $doctrineTable->getColumn('group_ids')->getType()->getName(),
             ['json', 'text', 'longtext']
         );
-        
+
         $this->assertContains(
             $doctrineTable->getColumn('metadata')->getType()->getName(),
             ['json', 'text', 'longtext']
@@ -80,9 +80,9 @@ class CreatePostsTableTest extends TestCase
     public function it_has_required_indexes()
     {
         $indexes = Schema::getConnection()->getDoctrineSchemaManager()->listTableIndexes('posts');
-        
+
         $indexNames = array_keys($indexes);
-        
+
         // Check for timeline performance index
         $this->assertContains('idx_posts_timeline', $indexNames);
         $this->assertContains('idx_posts_user', $indexNames);
@@ -94,9 +94,9 @@ class CreatePostsTableTest extends TestCase
     public function it_has_foreign_key_constraint()
     {
         $foreignKeys = Schema::getConnection()->getDoctrineSchemaManager()->listTableForeignKeys('posts');
-        
+
         $this->assertCount(1, $foreignKeys);
-        
+
         $userForeignKey = $foreignKeys[0];
         $this->assertEquals(['user_id'], $userForeignKey->getLocalColumns());
         $this->assertEquals('users', $userForeignKey->getForeignTableName());
@@ -114,10 +114,10 @@ class CreatePostsTableTest extends TestCase
     {
         // Rollback the migration
         $this->artisan('migrate:rollback', ['--step' => 1]);
-        
+
         // Verify table is dropped
         $this->assertFalse(Schema::hasTable('posts'));
-        
+
         // Re-run migration for cleanup
         $this->artisan('migrate');
     }

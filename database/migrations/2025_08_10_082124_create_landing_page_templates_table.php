@@ -26,7 +26,7 @@ return new class extends Migration
             $table->json('tags')->nullable(); // For categorization
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
-            
+
             $table->index(['category', 'is_active']);
             $table->index(['is_active', 'is_premium']);
         });

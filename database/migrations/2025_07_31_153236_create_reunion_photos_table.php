@@ -28,7 +28,7 @@ return new class extends Migration
             $table->datetime('taken_at')->nullable(); // When photo was taken
             $table->timestamps();
             $table->softDeletes();
-            
+
             // Indexes
             $table->index(['event_id', 'is_approved', 'visibility']);
             $table->index(['uploaded_by', 'created_at']);

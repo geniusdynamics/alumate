@@ -13,6 +13,7 @@ class CareerCalculatorReport extends Mailable
     use Queueable, SerializesModels;
 
     public array $formData;
+
     public array $result;
 
     /**
@@ -48,7 +49,7 @@ class CareerCalculatorReport extends Mailable
                 'successRate' => $this->result['successProbability'],
                 'timeline' => $this->result['careerAdvancementTimeline'],
                 'roi' => $this->result['roiEstimate'],
-                'recommendations' => $this->result['personalizedRecommendations']
+                'recommendations' => $this->result['personalizedRecommendations'],
             ]
         );
     }

@@ -2,13 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Comment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PostCommentNotification extends Notification implements ShouldQueue
@@ -16,7 +16,9 @@ class PostCommentNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected Post $post;
+
     protected Comment $comment;
+
     protected User $commenter;
 
     public function __construct(Post $post, Comment $comment, User $commenter)
@@ -49,8 +51,8 @@ class PostCommentNotification extends Notification implements ShouldQueue
             'commenter_avatar' => $this->commenter->avatar_url,
             'comment_content' => substr($this->comment->content, 0, 100),
             'post_content' => substr($this->post->content, 0, 100),
-            'is_reply' => !is_null($this->comment->parent_id),
-            'created_at' => now()->toISOString()
+            'is_reply' => ! is_null($this->comment->parent_id),
+            'created_at' => now()->toISOString(),
         ];
     }
 
@@ -76,13 +78,13 @@ class PostCommentNotification extends Notification implements ShouldQueue
     public function toMail($notifiable): MailMessage
     {
         $actionText = $this->comment->parent_id ? 'replied to' : 'commented on';
-        
+
         return (new MailMessage)
             ->subject("{$this->commenter->name} {$actionText} your post")
             ->greeting("Hi {$notifiable->name}!")
             ->line("{$this->commenter->name} {$actionText} your post:")
-            ->line('"' . substr($this->post->content, 0, 100) . '"')
-            ->line('Comment: "' . substr($this->comment->content, 0, 100) . '"')
+            ->line('"'.substr($this->post->content, 0, 100).'"')
+            ->line('Comment: "'.substr($this->comment->content, 0, 100).'"')
             ->action('View Post', url("/posts/{$this->post->id}"))
             ->line('Thank you for being part of our alumni community!');
     }

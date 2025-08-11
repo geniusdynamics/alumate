@@ -6,15 +6,15 @@ use App\Models\Event;
 use App\Models\EventRegistration;
 use App\Models\Institution;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class EventController extends Controller
 {
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         // Build query for events
         $query = Event::with(['creator', 'institution', 'registrations'])
             ->where('status', 'published')
@@ -30,14 +30,14 @@ class EventController extends Controller
         }
 
         if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
+            $query->where('location', 'like', '%'.$request->location.'%');
         }
 
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('description', 'like', '%' . $searchTerm . '%');
+                $q->where('title', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('description', 'like', '%'.$searchTerm.'%');
             });
         }
 
@@ -67,9 +67,9 @@ class EventController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         // Check if user can create events
-        if (!$user->can('create events')) {
+        if (! $user->can('create events')) {
             abort(403, 'You do not have permission to create events.');
         }
 
@@ -85,7 +85,7 @@ class EventController extends Controller
     public function discovery(Request $request)
     {
         $user = Auth::user();
-        
+
         // Build query for events
         $query = Event::with(['creator', 'institution', 'registrations'])
             ->where('status', 'published')
@@ -97,7 +97,7 @@ class EventController extends Controller
         }
 
         if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
+            $query->where('location', 'like', '%'.$request->location.'%');
         }
 
         if ($request->filled('date_range')) {
@@ -149,9 +149,9 @@ class EventController extends Controller
             $myEvents = Event::whereHas('registrations', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->where('start_date', '>=', now())
-            ->limit(5)
-            ->get();
+                ->where('start_date', '>=', now())
+                ->limit(5)
+                ->get();
         }
 
         // Get upcoming reunions
@@ -198,14 +198,14 @@ class EventController extends Controller
     public function myEvents()
     {
         $user = Auth::user();
-        
+
         // Get events user has registered for
         $registeredEvents = Event::whereHas('registrations', function ($query) use ($user) {
             $query->where('user_id', $user->id);
         })
-        ->with(['creator', 'institution'])
-        ->orderBy('start_date', 'asc')
-        ->get();
+            ->with(['creator', 'institution'])
+            ->orderBy('start_date', 'asc')
+            ->get();
 
         // Get events user has created (if applicable)
         $createdEvents = Event::where('creator_id', $user->id)
@@ -226,9 +226,9 @@ class EventController extends Controller
     public function show(Event $event)
     {
         $user = Auth::user();
-        
+
         $event->load(['creator', 'institution', 'registrations.user']);
-        
+
         // Check if user is registered
         $isRegistered = false;
         if ($user) {
@@ -255,7 +255,7 @@ class EventController extends Controller
     private function getSuggestedEvents($user)
     {
         $graduate = $user->graduate;
-        if (!$graduate) {
+        if (! $graduate) {
             return collect();
         }
 

@@ -2,16 +2,16 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
+use App\Mail\AdminDemoNotification;
+use App\Mail\AdminTrialNotification;
+use App\Mail\DemoRequestConfirmation;
+use App\Mail\TrialSignupConfirmation;
 use App\Services\LeadCaptureService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
-use App\Mail\TrialSignupConfirmation;
-use App\Mail\DemoRequestConfirmation;
-use App\Mail\AdminTrialNotification;
-use App\Mail\AdminDemoNotification;
+use Illuminate\Support\Facades\Mail;
+use Tests\TestCase;
 
 class LeadCaptureServiceTest extends TestCase
 {
@@ -22,7 +22,7 @@ class LeadCaptureServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new LeadCaptureService();
+        $this->service = new LeadCaptureService;
         Cache::flush();
         Mail::fake();
         Log::fake();
@@ -40,7 +40,7 @@ class LeadCaptureServiceTest extends TestCase
             'industry' => 'technology',
             'referralSource' => 'search_engine',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $result = $this->service->processTrialSignup($data);
@@ -63,7 +63,7 @@ class LeadCaptureServiceTest extends TestCase
             'industry' => 'technology',
             'referralSource' => 'search_engine',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processTrialSignup($data);
@@ -72,8 +72,8 @@ class LeadCaptureServiceTest extends TestCase
         $cacheKeys = Cache::getRedis()->keys('*trial_lead_*');
         $this->assertCount(1, $cacheKeys);
 
-        $cachedData = Cache::get(str_replace(config('cache.prefix') . ':', '', $cacheKeys[0]));
-        
+        $cachedData = Cache::get(str_replace(config('cache.prefix').':', '', $cacheKeys[0]));
+
         $this->assertEquals('John Doe', $cachedData['name']);
         $this->assertEquals('john@example.com', $cachedData['email']);
         $this->assertEquals('Test University', $cachedData['institution']);
@@ -87,7 +87,7 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processTrialSignup($data);
@@ -106,7 +106,7 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processTrialSignup($data);
@@ -129,7 +129,7 @@ class LeadCaptureServiceTest extends TestCase
             'preferredTime' => 'morning',
             'message' => 'Looking to improve alumni engagement',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $result = $this->service->processDemoRequest($data);
@@ -155,7 +155,7 @@ class LeadCaptureServiceTest extends TestCase
             'preferredTime' => 'morning',
             'message' => '  Looking to improve alumni engagement  ',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processDemoRequest($data);
@@ -164,8 +164,8 @@ class LeadCaptureServiceTest extends TestCase
         $cacheKeys = Cache::getRedis()->keys('*demo_lead_*');
         $this->assertCount(1, $cacheKeys);
 
-        $cachedData = Cache::get(str_replace(config('cache.prefix') . ':', '', $cacheKeys[0]));
-        
+        $cachedData = Cache::get(str_replace(config('cache.prefix').':', '', $cacheKeys[0]));
+
         $this->assertEquals('Test University', $cachedData['institution_name']);
         $this->assertEquals('Jane Smith', $cachedData['contact_name']);
         $this->assertEquals('jane@testuniversity.edu', $cachedData['email']);
@@ -182,7 +182,7 @@ class LeadCaptureServiceTest extends TestCase
             'contactName' => 'Jane Smith',
             'email' => 'jane@testuniversity.edu',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processDemoRequest($data);
@@ -202,7 +202,7 @@ class LeadCaptureServiceTest extends TestCase
             'contactName' => 'Jane Smith',
             'email' => 'jane@testuniversity.edu',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processDemoRequest($data);
@@ -222,19 +222,19 @@ class LeadCaptureServiceTest extends TestCase
             'currentSolution' => 'none',
             'interests' => ['analytics', 'integrations', 'fundraising'],
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $result = $this->service->processDemoRequest($highPriorityData);
-        
+
         $cacheKeys = Cache::getRedis()->keys('*demo_lead_*');
-        $cachedData = Cache::get(str_replace(config('cache.prefix') . ':', '', $cacheKeys[0]));
-        
+        $cachedData = Cache::get(str_replace(config('cache.prefix').':', '', $cacheKeys[0]));
+
         $this->assertEquals('high', $cachedData['priority']);
 
         // Low priority demo (small alumni count + few interests)
         Cache::flush();
-        
+
         $lowPriorityData = [
             'institutionName' => 'Small College',
             'contactName' => 'John Doe',
@@ -243,14 +243,14 @@ class LeadCaptureServiceTest extends TestCase
             'currentSolution' => 'crm',
             'interests' => ['mobile_app'],
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processDemoRequest($lowPriorityData);
-        
+
         $cacheKeys = Cache::getRedis()->keys('*demo_lead_*');
-        $cachedData = Cache::get(str_replace(config('cache.prefix') . ':', '', $cacheKeys[0]));
-        
+        $cachedData = Cache::get(str_replace(config('cache.prefix').':', '', $cacheKeys[0]));
+
         $this->assertEquals('low', $cachedData['priority']);
     }
 
@@ -261,7 +261,7 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processTrialSignup($data);
@@ -270,7 +270,7 @@ class LeadCaptureServiceTest extends TestCase
         $cacheKeys = Cache::getRedis()->keys('*trial_lead_*');
         $this->assertCount(1, $cacheKeys);
 
-        $cachedData = Cache::get(str_replace(config('cache.prefix') . ':', '', $cacheKeys[0]));
+        $cachedData = Cache::get(str_replace(config('cache.prefix').':', '', $cacheKeys[0]));
         $this->assertEquals('John Doe', $cachedData['name']);
         $this->assertEquals('john@example.com', $cachedData['email']);
         $this->assertEquals('professional', $cachedData['plan_id']);
@@ -284,7 +284,7 @@ class LeadCaptureServiceTest extends TestCase
             'contactName' => 'Jane Smith',
             'email' => 'jane@testuniversity.edu',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processDemoRequest($data);
@@ -293,7 +293,7 @@ class LeadCaptureServiceTest extends TestCase
         $cacheKeys = Cache::getRedis()->keys('*demo_lead_*');
         $this->assertCount(1, $cacheKeys);
 
-        $cachedData = Cache::get(str_replace(config('cache.prefix') . ':', '', $cacheKeys[0]));
+        $cachedData = Cache::get(str_replace(config('cache.prefix').':', '', $cacheKeys[0]));
         $this->assertEquals('Test University', $cachedData['institution_name']);
         $this->assertEquals('Jane Smith', $cachedData['contact_name']);
         $this->assertEquals('jane@testuniversity.edu', $cachedData['email']);
@@ -306,7 +306,7 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processTrialSignup($data);
@@ -314,7 +314,7 @@ class LeadCaptureServiceTest extends TestCase
         // Check that conversion metrics were tracked
         $today = now()->format('Y-m-d');
         $metrics = Cache::get("conversion_metrics_trial_{$today}");
-        
+
         $this->assertNotNull($metrics);
         $this->assertEquals(1, $metrics['count']);
         $this->assertEquals(1, $metrics['sources']['pricing_modal']);
@@ -327,7 +327,7 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $result = $this->service->processTrialSignup($data);
@@ -348,7 +348,7 @@ class LeadCaptureServiceTest extends TestCase
             'contactName' => 'Jane Smith',
             'email' => 'jane@testuniversity.edu',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $result = $this->service->processDemoRequest($data);
@@ -371,7 +371,7 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->expectException(\Exception::class);
@@ -391,7 +391,7 @@ class LeadCaptureServiceTest extends TestCase
             'contactName' => 'Jane Smith',
             'email' => 'jane@testuniversity.edu',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->expectException(\Exception::class);
@@ -408,14 +408,14 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ]);
 
         $this->service->processTrialSignup([
             'name' => 'Jane Smith',
             'email' => 'jane@example.com',
             'planId' => 'professional',
-            'source' => 'website'
+            'source' => 'website',
         ]);
 
         $this->service->processDemoRequest([
@@ -423,7 +423,7 @@ class LeadCaptureServiceTest extends TestCase
             'contactName' => 'Bob Johnson',
             'email' => 'bob@testuniversity.edu',
             'planId' => 'enterprise',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ]);
 
         $statistics = $this->service->getLeadStatistics();
@@ -431,7 +431,7 @@ class LeadCaptureServiceTest extends TestCase
         $this->assertEquals(2, $statistics['today']['trials']);
         $this->assertEquals(1, $statistics['today']['demos']);
         $this->assertEquals(3, $statistics['today']['total']);
-        
+
         $this->assertEquals(1, $statistics['sources']['trial']['pricing_modal']);
         $this->assertEquals(1, $statistics['sources']['trial']['website']);
         $this->assertEquals(1, $statistics['sources']['demo']['pricing_modal']);
@@ -444,13 +444,13 @@ class LeadCaptureServiceTest extends TestCase
             'name' => 'John Doe',
             'email' => 'john@example.com',
             'planId' => 'professional',
-            'source' => 'pricing_modal'
+            'source' => 'pricing_modal',
         ];
 
         $this->service->processTrialSignup($data);
 
         $cacheKeys = Cache::getRedis()->keys('*trial_lead_*');
-        $cachedData = Cache::get(str_replace(config('cache.prefix') . ':', '', $cacheKeys[0]));
+        $cachedData = Cache::get(str_replace(config('cache.prefix').':', '', $cacheKeys[0]));
 
         $trialStart = $cachedData['trial_start_date'];
         $trialEnd = $cachedData['trial_end_date'];
@@ -469,13 +469,13 @@ class LeadCaptureServiceTest extends TestCase
             'planId' => 'professional',
             'source' => 'pricing_modal',
             'industry' => 'technology',
-            'referralSource' => 'search_engine'
+            'referralSource' => 'search_engine',
         ];
 
         $this->service->processTrialSignup($data);
 
         Log::assertLogged('info', function ($message, $context) {
-            return $message === 'Analytics event tracked' && 
+            return $message === 'Analytics event tracked' &&
                    $context['event'] === 'trial_signup' &&
                    $context['properties']['plan_id'] === 'professional';
         });

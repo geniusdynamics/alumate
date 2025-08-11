@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Services\EventsService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class EventsController extends Controller
@@ -18,8 +18,8 @@ class EventsController extends Controller
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only([
-            'type', 'format', 'date_range', 'location', 
-            'radius', 'tags', 'search'
+            'type', 'format', 'date_range', 'location',
+            'radius', 'tags', 'search',
         ]);
 
         $events = $this->eventsService->getEventsForUser(
@@ -36,21 +36,21 @@ class EventsController extends Controller
                 'last_page' => $events->lastPage(),
                 'per_page' => $events->perPage(),
                 'total' => $events->total(),
-            ]
+            ],
         ]);
     }
 
     public function show(Event $event, Request $request): JsonResponse
     {
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json([
                 'success' => false,
-                'message' => 'You do not have permission to view this event.'
+                'message' => 'You do not have permission to view this event.',
             ], 403);
         }
 
         $event->load(['organizer', 'institution']);
-        
+
         // Add user-specific data
         $userData = [
             'is_registered' => $event->isUserRegistered($request->user()),
@@ -61,7 +61,7 @@ class EventsController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => array_merge($event->toArray(), ['user_data' => $userData])
+            'data' => array_merge($event->toArray(), ['user_data' => $userData]),
         ]);
     }
 
@@ -98,7 +98,7 @@ class EventsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -111,22 +111,22 @@ class EventsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Event created successfully',
-                'data' => $event
+                'data' => $event,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create event: ' . $e->getMessage()
+                'message' => 'Failed to create event: '.$e->getMessage(),
             ], 500);
         }
     }
 
     public function update(Event $event, Request $request): JsonResponse
     {
-        if (!$event->canUserEdit($request->user())) {
+        if (! $event->canUserEdit($request->user())) {
             return response()->json([
                 'success' => false,
-                'message' => 'You do not have permission to edit this event.'
+                'message' => 'You do not have permission to edit this event.',
             ], 403);
         }
 
@@ -161,7 +161,7 @@ class EventsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -174,22 +174,22 @@ class EventsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Event updated successfully',
-                'data' => $updatedEvent
+                'data' => $updatedEvent,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update event: ' . $e->getMessage()
+                'message' => 'Failed to update event: '.$e->getMessage(),
             ], 500);
         }
     }
 
     public function destroy(Event $event, Request $request): JsonResponse
     {
-        if (!$event->canUserEdit($request->user())) {
+        if (! $event->canUserEdit($request->user())) {
             return response()->json([
                 'success' => false,
-                'message' => 'You do not have permission to delete this event.'
+                'message' => 'You do not have permission to delete this event.',
             ], 403);
         }
 
@@ -198,27 +198,27 @@ class EventsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Event deleted successfully'
+                'message' => 'Event deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete event: ' . $e->getMessage()
+                'message' => 'Failed to delete event: '.$e->getMessage(),
             ], 500);
         }
     }
 
     public function register(Event $event, Request $request): JsonResponse
     {
-        if (!$event->canRegister()) {
+        if (! $event->canRegister()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Registration is not available for this event.'
+                'message' => 'Registration is not available for this event.',
             ], 400);
         }
 
         $validator = Validator::make($request->all(), [
-            'guests_count' => 'nullable|integer|min:0|max:' . $event->max_guests_per_attendee,
+            'guests_count' => 'nullable|integer|min:0|max:'.$event->max_guests_per_attendee,
             'guest_details' => 'nullable|array',
             'special_requirements' => 'nullable|string',
             'additional_data' => 'nullable|array',
@@ -228,7 +228,7 @@ class EventsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -242,12 +242,12 @@ class EventsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Successfully registered for event',
-                'data' => $registration
+                'data' => $registration,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -262,7 +262,7 @@ class EventsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -275,12 +275,12 @@ class EventsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Registration cancelled successfully'
+                'message' => 'Registration cancelled successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
@@ -297,7 +297,7 @@ class EventsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -311,22 +311,22 @@ class EventsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Successfully checked in',
-                'data' => $checkIn
+                'data' => $checkIn,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     public function attendees(Event $event, Request $request): JsonResponse
     {
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json([
                 'success' => false,
-                'message' => 'You do not have permission to view event attendees.'
+                'message' => 'You do not have permission to view event attendees.',
             ], 403);
         }
 
@@ -335,16 +335,16 @@ class EventsController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $attendees
+            'data' => $attendees,
         ]);
     }
 
     public function analytics(Event $event, Request $request): JsonResponse
     {
-        if (!$event->canUserEdit($request->user())) {
+        if (! $event->canUserEdit($request->user())) {
             return response()->json([
                 'success' => false,
-                'message' => 'You do not have permission to view event analytics.'
+                'message' => 'You do not have permission to view event analytics.',
             ], 403);
         }
 
@@ -352,7 +352,7 @@ class EventsController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $analytics
+            'data' => $analytics,
         ]);
     }
 
@@ -365,7 +365,7 @@ class EventsController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $events
+            'data' => $events,
         ]);
     }
 
@@ -378,7 +378,7 @@ class EventsController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $events
+            'data' => $events,
         ]);
     }
 }

@@ -5,8 +5,8 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class DemoUsersSeeder extends Seeder
 {
@@ -115,7 +115,7 @@ class DemoUsersSeeder extends Seeder
 
         // Create graduate profile in tenant context
         tenancy()->initialize('tech-institute');
-        
+
         // First, ensure we have a course to reference
         $course = \App\Models\Course::firstOrCreate(
             ['name' => 'Computer Science'],
@@ -125,7 +125,7 @@ class DemoUsersSeeder extends Seeder
                 'level' => 'undergraduate',
             ]
         );
-        
+
         \App\Models\Graduate::firstOrCreate(
             ['email' => 'john.smith@student.edu'],
             [

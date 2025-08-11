@@ -13,6 +13,7 @@ class EmployerAndJobTest extends TestCase
     use RefreshDatabase;
 
     protected $employerUser;
+
     protected $employer;
 
     protected function setUp(): void

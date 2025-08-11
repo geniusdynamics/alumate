@@ -77,9 +77,9 @@ class Message extends Model
 
     public function scopeForUser($query, $userId)
     {
-        return $query->where(function($q) use ($userId) {
+        return $query->where(function ($q) use ($userId) {
             $q->where('sender_id', $userId)
-              ->orWhere('recipient_id', $userId);
+                ->orWhere('recipient_id', $userId);
         });
     }
 

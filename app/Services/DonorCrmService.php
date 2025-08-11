@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\DonorProfile;
+use App\Models\CampaignDonation;
 use App\Models\DonorInteraction;
+use App\Models\DonorProfile;
 use App\Models\DonorStewardshipPlan;
 use App\Models\MajorGiftProspect;
 use App\Models\User;
-use App\Models\CampaignDonation;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class DonorCrmService
 {
@@ -34,11 +33,11 @@ class DonorCrmService
     public function updateDonorProfile(DonorProfile $profile, array $data): DonorProfile
     {
         $profile->update($data);
-        
+
         // Recalculate tier if giving amounts changed
         if (isset($data['lifetime_giving'])) {
             $profile->update([
-                'donor_tier' => $this->determineDonorTier($data['lifetime_giving'])
+                'donor_tier' => $this->determineDonorTier($data['lifetime_giving']),
             ]);
         }
 
@@ -80,7 +79,7 @@ class DonorCrmService
     public function getDonorDashboard(User $officer): array
     {
         $assignedProfiles = DonorProfile::where('assigned_officer_id', $officer->id)->get();
-        
+
         return [
             'total_donors' => $assignedProfiles->count(),
             'major_donors' => $assignedProfiles->where('donor_tier', 'major')->count(),
@@ -107,7 +106,7 @@ class DonorCrmService
     {
         return DonorProfile::where('assigned_officer_id', $officer->id)
             ->needsContact()
-            ->with(['user', 'interactions' => function($query) {
+            ->with(['user', 'interactions' => function ($query) {
                 $query->latest()->limit(3);
             }])
             ->orderBy('next_contact_date')
@@ -179,7 +178,7 @@ class DonorCrmService
 
     private function determineDonorTier(float $lifetimeGiving): string
     {
-        return match(true) {
+        return match (true) {
             $lifetimeGiving >= 1000000 => 'legacy',
             $lifetimeGiving >= 100000 => 'principal',
             $lifetimeGiving >= 10000 => 'major',
@@ -195,8 +194,8 @@ class DonorCrmService
 
         $recent = $donations->where('created_at', '>=', now()->subMonths(6))->sum('amount');
         $previous = $donations->where('created_at', '<', now()->subMonths(6))
-                             ->where('created_at', '>=', now()->subYear())
-                             ->sum('amount');
+            ->where('created_at', '>=', now()->subYear())
+            ->sum('amount');
 
         if ($previous == 0) {
             return $recent > 0 ? 'increasing' : 'stable';
@@ -204,7 +203,7 @@ class DonorCrmService
 
         $change = ($recent - $previous) / $previous;
 
-        return match(true) {
+        return match (true) {
             $change > 0.2 => 'increasing',
             $change < -0.2 => 'decreasing',
             default => 'stable'
@@ -214,22 +213,22 @@ class DonorCrmService
     private function getPreferredContactMethod(Collection $interactions): ?string
     {
         return $interactions->groupBy('type')
-                          ->map->count()
-                          ->sortDesc()
-                          ->keys()
-                          ->first();
+            ->map->count()
+            ->sortDesc()
+            ->keys()
+            ->first();
     }
 
     private function getBestContactTime(Collection $interactions): ?string
     {
         $successful = $interactions->whereIn('outcome', ['positive', 'neutral']);
-        
+
         if ($successful->isEmpty()) {
             return null;
         }
 
         // Analyze interaction dates to find patterns
-        $dayOfWeek = $successful->groupBy(function($interaction) {
+        $dayOfWeek = $successful->groupBy(function ($interaction) {
             return $interaction->interaction_date->format('l');
         })->map->count()->sortDesc()->keys()->first();
 
@@ -238,7 +237,7 @@ class DonorCrmService
 
     private function analyzeGivingSeasonality(Collection $donations): array
     {
-        return $donations->groupBy(function($donation) {
+        return $donations->groupBy(function ($donation) {
             return $donation->created_at->format('M');
         })->map->sum('amount')->toArray();
     }
@@ -246,9 +245,12 @@ class DonorCrmService
     private function calculateResponseRate(Collection $interactions): float
     {
         $total = $interactions->count();
-        if ($total === 0) return 0;
+        if ($total === 0) {
+            return 0;
+        }
 
         $positive = $interactions->whereIn('outcome', ['positive', 'neutral'])->count();
+
         return round(($positive / $total) * 100, 1);
     }
 
@@ -266,7 +268,7 @@ class DonorCrmService
             ->recent(180)
             ->where('outcome', 'positive')
             ->count();
-        
+
         if ($recentPositive >= 2) {
             $score += 25;
         }
@@ -283,7 +285,7 @@ class DonorCrmService
             }
         }
 
-        return match(true) {
+        return match (true) {
             $score >= 75 => 'high',
             $score >= 50 => 'medium',
             $score >= 25 => 'low',

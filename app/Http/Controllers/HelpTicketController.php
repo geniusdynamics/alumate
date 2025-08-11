@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\HelpTicket;
 use App\Models\HelpTicketResponse;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -17,7 +16,7 @@ class HelpTicketController extends Controller
             ->paginate(20);
 
         return Inertia::render('HelpTickets/Index', [
-            'tickets' => $tickets
+            'tickets' => $tickets,
         ]);
     }
 
@@ -48,7 +47,7 @@ class HelpTicketController extends Controller
         $helpTicket->load(['user', 'responses.user']);
 
         return Inertia::render('HelpTickets/Show', [
-            'ticket' => $helpTicket
+            'ticket' => $helpTicket,
         ]);
     }
 

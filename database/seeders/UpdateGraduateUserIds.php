@@ -2,12 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Tenant;
-use Stancl\Tenancy\Facades\Tenancy;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Stancl\Tenancy\Facades\Tenancy;
 
 class UpdateGraduateUserIds extends Seeder
 {

@@ -18,7 +18,7 @@ class AlumniMapService
                 'id', 'first_name', 'last_name', 'graduation_year',
                 'current_position', 'current_company', 'industry',
                 'latitude', 'longitude', 'city', 'state', 'country',
-                'profile_photo_path', 'profile_visibility'
+                'profile_photo_path', 'profile_visibility',
             ])
             ->where('profile_visibility', '!=', 'private')
             ->whereNotNull('latitude')
@@ -27,23 +27,23 @@ class AlumniMapService
         // Apply geographic bounds
         if (isset($bounds['north'], $bounds['south'], $bounds['east'], $bounds['west'])) {
             $query->whereBetween('latitude', [$bounds['south'], $bounds['north']])
-                  ->whereBetween('longitude', [$bounds['west'], $bounds['east']]);
+                ->whereBetween('longitude', [$bounds['west'], $bounds['east']]);
         }
 
         // Apply filters
-        if (!empty($filters['graduation_year'])) {
+        if (! empty($filters['graduation_year'])) {
             $query->whereIn('graduation_year', (array) $filters['graduation_year']);
         }
 
-        if (!empty($filters['industry'])) {
+        if (! empty($filters['industry'])) {
             $query->whereIn('industry', (array) $filters['industry']);
         }
 
-        if (!empty($filters['country'])) {
+        if (! empty($filters['country'])) {
             $query->whereIn('country', (array) $filters['country']);
         }
 
-        if (!empty($filters['state'])) {
+        if (! empty($filters['state'])) {
             $query->whereIn('state', (array) $filters['state']);
         }
 
@@ -56,7 +56,7 @@ class AlumniMapService
     public function getLocationClusters(int $zoomLevel, array $bounds = []): Collection
     {
         $precision = $this->getClusterPrecision($zoomLevel);
-        
+
         $query = Graduate::query()
             ->select([
                 DB::raw("ROUND(latitude, {$precision}) as cluster_lat"),
@@ -65,34 +65,34 @@ class AlumniMapService
                 DB::raw('GROUP_CONCAT(DISTINCT industry) as industries'),
                 DB::raw('MIN(graduation_year) as earliest_year'),
                 DB::raw('MAX(graduation_year) as latest_year'),
-                DB::raw('GROUP_CONCAT(DISTINCT country) as countries')
+                DB::raw('GROUP_CONCAT(DISTINCT country) as countries'),
             ])
             ->where('profile_visibility', '!=', 'private')
             ->whereNotNull('latitude')
             ->whereNotNull('longitude');
 
         // Apply bounds if provided
-        if (!empty($bounds)) {
+        if (! empty($bounds)) {
             $query->whereBetween('latitude', [$bounds['south'], $bounds['north']])
-                  ->whereBetween('longitude', [$bounds['west'], $bounds['east']]);
+                ->whereBetween('longitude', [$bounds['west'], $bounds['east']]);
         }
 
         return $query->groupBy('cluster_lat', 'cluster_lng')
-                    ->having('alumni_count', '>', 0)
-                    ->get()
-                    ->map(function ($cluster) {
-                        return [
-                            'latitude' => (float) $cluster->cluster_lat,
-                            'longitude' => (float) $cluster->cluster_lng,
-                            'count' => (int) $cluster->alumni_count,
-                            'industries' => array_filter(explode(',', $cluster->industries ?? '')),
-                            'year_range' => [
-                                'min' => (int) $cluster->earliest_year,
-                                'max' => (int) $cluster->latest_year
-                            ],
-                            'countries' => array_unique(array_filter(explode(',', $cluster->countries ?? '')))
-                        ];
-                    });
+            ->having('alumni_count', '>', 0)
+            ->get()
+            ->map(function ($cluster) {
+                return [
+                    'latitude' => (float) $cluster->cluster_lat,
+                    'longitude' => (float) $cluster->cluster_lng,
+                    'count' => (int) $cluster->alumni_count,
+                    'industries' => array_filter(explode(',', $cluster->industries ?? '')),
+                    'year_range' => [
+                        'min' => (int) $cluster->earliest_year,
+                        'max' => (int) $cluster->latest_year,
+                    ],
+                    'countries' => array_unique(array_filter(explode(',', $cluster->countries ?? ''))),
+                ];
+            });
     }
 
     /**
@@ -100,7 +100,7 @@ class AlumniMapService
      */
     public function getRegionalStats(string $region, string $regionType = 'country'): array
     {
-        $column = match($regionType) {
+        $column = match ($regionType) {
             'country' => 'country',
             'state' => 'state',
             'city' => 'city',
@@ -113,14 +113,14 @@ class AlumniMapService
             ->get();
 
         $totalAlumni = $alumni->count();
-        
+
         if ($totalAlumni === 0) {
             return [
                 'total_alumni' => 0,
                 'industries' => [],
                 'graduation_years' => [],
                 'top_companies' => [],
-                'average_experience' => 0
+                'average_experience' => 0,
             ];
         }
 
@@ -149,7 +149,7 @@ class AlumniMapService
             'industries' => $industries->toArray(),
             'graduation_years' => $graduationYears->toArray(),
             'top_companies' => $topCompanies->toArray(),
-            'average_experience' => round($averageExperience, 1)
+            'average_experience' => round($averageExperience, 1),
         ];
     }
 
@@ -167,13 +167,13 @@ class AlumniMapService
             ->select([
                 'id', 'first_name', 'last_name', 'city', 'state', 'country',
                 'industry', 'graduation_year', 'latitude', 'longitude',
-                DB::raw("
+                DB::raw('
                     (6371 * acos(
                         cos(radians(?)) * cos(radians(latitude)) * 
                         cos(radians(longitude) - radians(?)) + 
                         sin(radians(?)) * sin(radians(latitude))
                     )) AS distance
-                ")
+                '),
             ])
             ->where('profile_visibility', '!=', 'private')
             ->whereNotNull('latitude')
@@ -188,7 +188,7 @@ class AlumniMapService
 
         // City-based groups
         $cityGroups = $nearbyAlumni->groupBy('city')
-            ->filter(fn($group) => $group->count() >= 3)
+            ->filter(fn ($group) => $group->count() >= 3)
             ->map(function ($group, $city) {
                 return [
                     'type' => 'city',
@@ -198,14 +198,14 @@ class AlumniMapService
                     'industries' => $group->pluck('industry')->unique()->values(),
                     'year_range' => [
                         'min' => $group->min('graduation_year'),
-                        'max' => $group->max('graduation_year')
-                    ]
+                        'max' => $group->max('graduation_year'),
+                    ],
                 ];
             });
 
         // Industry-based groups in the region
         $industryGroups = $nearbyAlumni->groupBy('industry')
-            ->filter(fn($group) => $group->count() >= 5)
+            ->filter(fn ($group) => $group->count() >= 5)
             ->map(function ($group, $industry) use ($location) {
                 return [
                     'type' => 'industry',
@@ -215,15 +215,15 @@ class AlumniMapService
                     'cities' => $group->pluck('city')->unique()->values(),
                     'year_range' => [
                         'min' => $group->min('graduation_year'),
-                        'max' => $group->max('graduation_year')
-                    ]
+                        'max' => $group->max('graduation_year'),
+                    ],
                 ];
             });
 
         return $suggestions->merge($cityGroups->values())
-                          ->merge($industryGroups->values())
-                          ->sortByDesc('member_count')
-                          ->take(10);
+            ->merge($industryGroups->values())
+            ->sortByDesc('member_count')
+            ->take(10);
     }
 
     /**
@@ -232,23 +232,23 @@ class AlumniMapService
     public function findNearbyAlumni(int $userId, int $radiusKm = 25): Collection
     {
         $user = Graduate::findOrFail($userId);
-        
-        if (!$user->latitude || !$user->longitude) {
+
+        if (! $user->latitude || ! $user->longitude) {
             return collect();
         }
 
         return Graduate::query()
             ->select([
-                'id', 'first_name', 'last_name', 'current_position', 
+                'id', 'first_name', 'last_name', 'current_position',
                 'current_company', 'industry', 'city', 'state',
                 'profile_photo_path', 'latitude', 'longitude',
-                DB::raw("
+                DB::raw('
                     (6371 * acos(
                         cos(radians(?)) * cos(radians(latitude)) * 
                         cos(radians(longitude) - radians(?)) + 
                         sin(radians(?)) * sin(radians(latitude))
                     )) AS distance
-                ")
+                '),
             ])
             ->where('id', '!=', $userId)
             ->where('profile_visibility', '!=', 'private')
@@ -271,11 +271,11 @@ class AlumniMapService
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
 
-        $a = sin($dLat/2) * sin($dLat/2) +
+        $a = sin($dLat / 2) * sin($dLat / 2) +
              cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-             sin($dLon/2) * sin($dLon/2);
+             sin($dLon / 2) * sin($dLon / 2);
 
-        $c = 2 * atan2(sqrt($a), sqrt(1-$a));
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
         return $earthRadius * $c;
     }
@@ -285,7 +285,7 @@ class AlumniMapService
      */
     private function getClusterPrecision(int $zoomLevel): int
     {
-        return match(true) {
+        return match (true) {
             $zoomLevel <= 3 => 0,  // Country level
             $zoomLevel <= 6 => 1,  // State/Province level
             $zoomLevel <= 9 => 2,  // City level

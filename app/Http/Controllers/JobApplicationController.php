@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Graduate;
+use App\Models\Job;
+use App\Models\JobApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
-use App\Models\Graduate;
-use App\Models\Job;
-use App\Models\JobApplication;
 use Inertia\Inertia;
 
 class JobApplicationController extends Controller
@@ -16,7 +16,7 @@ class JobApplicationController extends Controller
     public function index(Request $request, Job $job)
     {
         $this->authorize('view', $job);
-        
+
         $query = JobApplication::where('job_id', $job->id)
             ->with(['graduate.user', 'graduate.course']);
 
@@ -34,27 +34,27 @@ class JobApplicationController extends Controller
         }
 
         if ($request->search) {
-            $query->whereHas('graduate', function($q) use ($request) {
+            $query->whereHas('graduate', function ($q) use ($request) {
                 $q->where('first_name', 'like', "%{$request->search}%")
-                  ->orWhere('last_name', 'like', "%{$request->search}%")
-                  ->orWhere('email', 'like', "%{$request->search}%");
+                    ->orWhere('last_name', 'like', "%{$request->search}%")
+                    ->orWhere('email', 'like', "%{$request->search}%");
             });
         }
 
         if ($request->course_id) {
-            $query->whereHas('graduate', function($q) use ($request) {
+            $query->whereHas('graduate', function ($q) use ($request) {
                 $q->where('course_id', $request->course_id);
             });
         }
 
         if ($request->gpa_min) {
-            $query->whereHas('graduate', function($q) use ($request) {
+            $query->whereHas('graduate', function ($q) use ($request) {
                 $q->where('gpa', '>=', $request->gpa_min);
             });
         }
 
         if ($request->skills && is_array($request->skills)) {
-            $query->whereHas('graduate', function($q) use ($request) {
+            $query->whereHas('graduate', function ($q) use ($request) {
                 foreach ($request->skills as $skill) {
                     $q->whereJsonContains('skills', $skill);
                 }
@@ -71,7 +71,7 @@ class JobApplicationController extends Controller
                 break;
             case 'gpa':
                 $query->join('graduates', 'job_applications.graduate_id', '=', 'graduates.id')
-                      ->orderBy('graduates.gpa', $sortOrder);
+                    ->orderBy('graduates.gpa', $sortOrder);
                 break;
             case 'status':
                 $query->orderBy('status', $sortOrder);
@@ -84,7 +84,7 @@ class JobApplicationController extends Controller
 
         // Calculate match scores for applications without them
         foreach ($applications as $application) {
-            if (!$application->match_score) {
+            if (! $application->match_score) {
                 $application->calculateMatchScore();
             }
         }
@@ -114,11 +114,11 @@ class JobApplicationController extends Controller
     public function show(JobApplication $application)
     {
         $this->authorize('view', $application->job);
-        
+
         $application->load(['graduate.user', 'graduate.course', 'job.employer', 'statusChanger']);
-        
+
         // Calculate match score if not exists
-        if (!$application->match_score) {
+        if (! $application->match_score) {
             $application->calculateMatchScore();
         }
 
@@ -139,8 +139,8 @@ class JobApplicationController extends Controller
     public function myApplications(Request $request)
     {
         $graduate = Graduate::where('user_id', Auth::id())->first();
-        
-        if (!$graduate) {
+
+        if (! $graduate) {
             return redirect()->route('dashboard')->with('error', 'Graduate profile not found.');
         }
 
@@ -153,11 +153,11 @@ class JobApplicationController extends Controller
         }
 
         if ($request->search) {
-            $query->whereHas('job', function($q) use ($request) {
+            $query->whereHas('job', function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhereHas('employer', function($eq) use ($request) {
-                      $eq->where('company_name', 'like', "%{$request->search}%");
-                  });
+                    ->orWhereHas('employer', function ($eq) use ($request) {
+                        $eq->where('company_name', 'like', "%{$request->search}%");
+                    });
             });
         }
 
@@ -183,8 +183,8 @@ class JobApplicationController extends Controller
     public function store(Request $request, Job $job)
     {
         $graduate = Graduate::where('user_id', Auth::id())->first();
-        
-        if (!$graduate) {
+
+        if (! $graduate) {
             return back()->with('error', 'Graduate profile not found.');
         }
 
@@ -257,9 +257,9 @@ class JobApplicationController extends Controller
 
         $request->validate([
             'status' => ['required', Rule::in([
-                'pending', 'reviewed', 'shortlisted', 'interview_scheduled', 
-                'interviewed', 'reference_check', 'offer_made', 'offer_accepted', 
-                'offer_declined', 'hired', 'rejected', 'withdrawn'
+                'pending', 'reviewed', 'shortlisted', 'interview_scheduled',
+                'interviewed', 'reference_check', 'offer_made', 'offer_accepted',
+                'offer_declined', 'hired', 'rejected', 'withdrawn',
             ])],
             'notes' => 'nullable|string|max:1000',
         ]);
@@ -317,7 +317,7 @@ class JobApplicationController extends Controller
     {
         // Ensure the authenticated user is the graduate who received the offer
         $graduate = Graduate::where('user_id', Auth::id())->first();
-        if (!$graduate || $application->graduate_id !== $graduate->id) {
+        if (! $graduate || $application->graduate_id !== $graduate->id) {
             abort(403, 'Unauthorized');
         }
 
@@ -429,7 +429,7 @@ class JobApplicationController extends Controller
     {
         $this->authorize('view', $application->job);
 
-        if (!$application->resume_file_path || !Storage::disk('private')->exists($application->resume_file_path)) {
+        if (! $application->resume_file_path || ! Storage::disk('private')->exists($application->resume_file_path)) {
             abort(404, 'Resume not found.');
         }
 
@@ -444,14 +444,14 @@ class JobApplicationController extends Controller
         $this->authorize('view', $application->job);
 
         $documents = $application->additional_documents ?? [];
-        
-        if (!isset($documents[$documentIndex])) {
+
+        if (! isset($documents[$documentIndex])) {
             abort(404, 'Document not found.');
         }
 
         $document = $documents[$documentIndex];
-        
-        if (!Storage::disk('private')->exists($document['path'])) {
+
+        if (! Storage::disk('private')->exists($document['path'])) {
             abort(404, 'Document file not found.');
         }
 
@@ -469,13 +469,13 @@ class JobApplicationController extends Controller
             'status_breakdown' => $applications->groupBy('status')->map->count(),
             'applications_by_course' => $applications->groupBy('graduate.course.name')->map->count(),
             'applications_by_gpa' => [
-                '3.5+' => $applications->filter(fn($app) => $app->graduate->gpa >= 3.5)->count(),
-                '3.0-3.49' => $applications->filter(fn($app) => $app->graduate->gpa >= 3.0 && $app->graduate->gpa < 3.5)->count(),
-                '2.5-2.99' => $applications->filter(fn($app) => $app->graduate->gpa >= 2.5 && $app->graduate->gpa < 3.0)->count(),
-                'Below 2.5' => $applications->filter(fn($app) => $app->graduate->gpa < 2.5)->count(),
+                '3.5+' => $applications->filter(fn ($app) => $app->graduate->gpa >= 3.5)->count(),
+                '3.0-3.49' => $applications->filter(fn ($app) => $app->graduate->gpa >= 3.0 && $app->graduate->gpa < 3.5)->count(),
+                '2.5-2.99' => $applications->filter(fn ($app) => $app->graduate->gpa >= 2.5 && $app->graduate->gpa < 3.0)->count(),
+                'Below 2.5' => $applications->filter(fn ($app) => $app->graduate->gpa < 2.5)->count(),
             ],
             'average_match_score' => $applications->avg('match_score'),
-            'application_timeline' => $applications->groupBy(function($app) {
+            'application_timeline' => $applications->groupBy(function ($app) {
                 return $app->created_at->format('Y-m-d');
             })->map->count(),
             'conversion_funnel' => [

@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Services\CareerCalculatorService;
 use App\Mail\CareerCalculatorReport;
+use App\Services\CareerCalculatorService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -17,7 +17,7 @@ class CareerCalculatorServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new CareerCalculatorService();
+        $this->service = new CareerCalculatorService;
     }
 
     public function test_calculates_career_value_with_basic_input()
@@ -28,7 +28,7 @@ class CareerCalculatorServiceTest extends TestCase
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase', 'promotion'],
             'location' => 'San Francisco, CA',
-            'educationLevel' => 'bachelor'
+            'educationLevel' => 'bachelor',
         ];
 
         $result = $this->service->calculateCareerValue($input);
@@ -62,7 +62,7 @@ class CareerCalculatorServiceTest extends TestCase
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
             'location' => 'Austin, TX',
-            'educationLevel' => 'bachelor'
+            'educationLevel' => 'bachelor',
         ];
 
         $educationInput = [
@@ -71,7 +71,7 @@ class CareerCalculatorServiceTest extends TestCase
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
             'location' => 'Austin, TX',
-            'educationLevel' => 'bachelor'
+            'educationLevel' => 'bachelor',
         ];
 
         $techResult = $this->service->calculateCareerValue($techInput);
@@ -92,7 +92,7 @@ class CareerCalculatorServiceTest extends TestCase
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
             'location' => 'San Francisco, CA',
-            'educationLevel' => 'bachelor'
+            'educationLevel' => 'bachelor',
         ];
 
         $austinInput = [
@@ -101,7 +101,7 @@ class CareerCalculatorServiceTest extends TestCase
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
             'location' => 'Austin, TX',
-            'educationLevel' => 'bachelor'
+            'educationLevel' => 'bachelor',
         ];
 
         $sfResult = $this->service->calculateCareerValue($sfInput);
@@ -124,7 +124,7 @@ class CareerCalculatorServiceTest extends TestCase
             'location' => 'Seattle, WA',
             'educationLevel' => 'bachelor',
             'networkingLevel' => 2,
-            'primaryChallenge' => 'finding_opportunities'
+            'primaryChallenge' => 'finding_opportunities',
         ];
 
         $result = $this->service->calculateCareerValue($input);
@@ -153,7 +153,7 @@ class CareerCalculatorServiceTest extends TestCase
 
         // Should have salary-related recommendation
         $salaryRecommendation = collect($recommendations)->first(function ($rec) {
-            return str_contains(strtolower($rec['category']), 'salary') || 
+            return str_contains(strtolower($rec['category']), 'salary') ||
                    str_contains(strtolower($rec['action']), 'salary');
         });
         $this->assertNotNull($salaryRecommendation);
@@ -168,7 +168,7 @@ class CareerCalculatorServiceTest extends TestCase
             'careerGoals' => ['job_change'],
             'goalTimeline' => '3_months',
             'networkingLevel' => 4,
-            'timeInvestment' => '10_hours'
+            'timeInvestment' => '10_hours',
         ];
 
         $longTermInput = [
@@ -178,7 +178,7 @@ class CareerCalculatorServiceTest extends TestCase
             'careerGoals' => ['job_change'],
             'goalTimeline' => '2_years',
             'networkingLevel' => 2,
-            'timeInvestment' => '1_hour'
+            'timeInvestment' => '1_hour',
         ];
 
         $urgentResult = $this->service->calculateCareerValue($urgentInput);
@@ -198,7 +198,7 @@ class CareerCalculatorServiceTest extends TestCase
             'careerGoals' => ['promotion'],
             'educationLevel' => 'master',
             'networkingLevel' => 5,
-            'timeInvestment' => '10_hours'
+            'timeInvestment' => '10_hours',
         ];
 
         $lowSuccessInput = [
@@ -208,7 +208,7 @@ class CareerCalculatorServiceTest extends TestCase
             'careerGoals' => ['salary_increase'],
             'educationLevel' => 'bachelor',
             'networkingLevel' => 1,
-            'timeInvestment' => '1_hour'
+            'timeInvestment' => '1_hour',
         ];
 
         $highResult = $this->service->calculateCareerValue($highSuccessInput);
@@ -226,14 +226,14 @@ class CareerCalculatorServiceTest extends TestCase
             'industry' => 'technology',
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
-            'timeInvestment' => '6_hours'
+            'timeInvestment' => '6_hours',
         ];
 
         $result = $this->service->calculateCareerValue($input);
 
         $this->assertIsFloat($result['roiEstimate']);
         $this->assertGreaterThan(0, $result['roiEstimate']);
-        
+
         // ROI should be reasonable (between 1x and 20x)
         $this->assertLessThan(20, $result['roiEstimate']);
     }
@@ -246,7 +246,7 @@ class CareerCalculatorServiceTest extends TestCase
         $this->service->calculateCareerValue([
             'industry' => 'technology',
             'experienceYears' => 5,
-            'careerGoals' => ['salary_increase']
+            'careerGoals' => ['salary_increase'],
         ]);
     }
 
@@ -259,7 +259,7 @@ class CareerCalculatorServiceTest extends TestCase
             'currentRole' => 'software_engineer',
             'industry' => 'technology',
             'experienceYears' => 5,
-            'careerGoals' => []
+            'careerGoals' => [],
         ]);
     }
 
@@ -271,7 +271,7 @@ class CareerCalculatorServiceTest extends TestCase
             'currentRole' => 'software_engineer',
             'industry' => 'technology',
             'experienceYears' => 5,
-            'careerGoals' => ['salary_increase']
+            'careerGoals' => ['salary_increase'],
         ];
 
         $result = [
@@ -280,7 +280,7 @@ class CareerCalculatorServiceTest extends TestCase
             'careerAdvancementTimeline' => '12-18 months',
             'personalizedRecommendations' => [],
             'successProbability' => 85,
-            'roiEstimate' => 5.2
+            'roiEstimate' => 5.2,
         ];
 
         $success = $this->service->sendEmailReport('test@example.com', $formData, $result);
@@ -338,14 +338,14 @@ class CareerCalculatorServiceTest extends TestCase
             'industry' => 'technology',
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
-            'currentSalary' => 120000
+            'currentSalary' => 120000,
         ];
 
         $withoutSalaryInput = [
             'currentRole' => 'software_engineer',
             'industry' => 'technology',
             'experienceYears' => 5,
-            'careerGoals' => ['salary_increase']
+            'careerGoals' => ['salary_increase'],
         ];
 
         $withSalaryResult = $this->service->calculateCareerValue($withSalaryInput);
@@ -365,7 +365,7 @@ class CareerCalculatorServiceTest extends TestCase
             'industry' => 'technology',
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
-            'location' => 'San Francisco, CA'
+            'location' => 'San Francisco, CA',
         ];
 
         $result = $this->service->calculateCareerValue($input);

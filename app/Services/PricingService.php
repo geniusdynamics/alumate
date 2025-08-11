@@ -13,8 +13,8 @@ class PricingService
     public function getPlansForAudience(string $audience): array
     {
         return Cache::remember("pricing_plans_{$audience}", 3600, function () use ($audience) {
-            return $audience === 'individual' 
-                ? $this->getIndividualPlans() 
+            return $audience === 'individual'
+                ? $this->getIndividualPlans()
                 : $this->getInstitutionalPlans();
         });
     }
@@ -41,9 +41,9 @@ class PricingService
                     ['name' => 'Job board access', 'included' => false],
                     ['name' => 'Mentorship matching', 'included' => false],
                     ['name' => 'Advanced networking tools', 'included' => false],
-                    ['name' => 'Priority support', 'included' => false]
+                    ['name' => 'Priority support', 'included' => false],
                 ],
-                'additional_info' => 'No credit card required'
+                'additional_info' => 'No credit card required',
             ],
             [
                 'id' => 'professional',
@@ -62,9 +62,9 @@ class PricingService
                     ['name' => 'Job board access', 'included' => true],
                     ['name' => 'Mentorship matching', 'included' => true],
                     ['name' => 'Advanced networking tools', 'included' => true],
-                    ['name' => 'Priority support', 'included' => true]
+                    ['name' => 'Priority support', 'included' => true],
                 ],
-                'additional_info' => '14-day free trial'
+                'additional_info' => '14-day free trial',
             ],
             [
                 'id' => 'executive',
@@ -83,10 +83,10 @@ class PricingService
                     ['name' => 'Concierge support', 'included' => true],
                     ['name' => 'Custom integrations', 'included' => true],
                     ['name' => 'Speaking opportunities', 'included' => true],
-                    ['name' => 'Board connections', 'included' => true]
+                    ['name' => 'Board connections', 'included' => true],
                 ],
-                'additional_info' => '30-day free trial'
-            ]
+                'additional_info' => '30-day free trial',
+            ],
         ];
     }
 
@@ -112,9 +112,9 @@ class PricingService
                     ['name' => 'Email support', 'included' => true],
                     ['name' => 'Custom branding', 'included' => false],
                     ['name' => 'Advanced integrations', 'included' => false],
-                    ['name' => 'Dedicated support', 'included' => false]
+                    ['name' => 'Dedicated support', 'included' => false],
                 ],
-                'additional_info' => 'Setup fee may apply'
+                'additional_info' => 'Setup fee may apply',
             ],
             [
                 'id' => 'enterprise_inst',
@@ -132,9 +132,9 @@ class PricingService
                     ['name' => 'Priority support', 'included' => true],
                     ['name' => 'Custom branding', 'included' => true],
                     ['name' => 'Advanced integrations', 'included' => true],
-                    ['name' => 'Dedicated support', 'included' => true]
+                    ['name' => 'Dedicated support', 'included' => true],
                 ],
-                'additional_info' => 'Includes implementation support'
+                'additional_info' => 'Includes implementation support',
             ],
             [
                 'id' => 'custom_inst',
@@ -152,10 +152,10 @@ class PricingService
                     ['name' => 'Dedicated account manager', 'included' => true],
                     ['name' => 'Custom integrations', 'included' => true],
                     ['name' => 'SLA guarantees', 'included' => true],
-                    ['name' => 'On-premise deployment', 'included' => true]
+                    ['name' => 'On-premise deployment', 'included' => true],
                 ],
-                'additional_info' => 'Contact us for custom quote'
-            ]
+                'additional_info' => 'Contact us for custom quote',
+            ],
         ];
     }
 
@@ -168,38 +168,38 @@ class PricingService
             [
                 'name' => 'Alumni Directory Access',
                 'key' => 'directory_access',
-                'description' => 'Search and connect with alumni'
+                'description' => 'Search and connect with alumni',
             ],
             [
                 'name' => 'Messaging',
                 'key' => 'messaging',
-                'description' => 'Direct messaging with other alumni'
+                'description' => 'Direct messaging with other alumni',
             ],
             [
                 'name' => 'Event Management',
                 'key' => 'events',
-                'description' => 'Create and manage networking events'
+                'description' => 'Create and manage networking events',
             ],
             [
                 'name' => 'Job Board',
                 'key' => 'job_board',
-                'description' => 'Access to exclusive job opportunities'
+                'description' => 'Access to exclusive job opportunities',
             ],
             [
                 'name' => 'Mentorship Matching',
                 'key' => 'mentorship',
-                'description' => 'AI-powered mentor matching'
+                'description' => 'AI-powered mentor matching',
             ],
             [
                 'name' => 'Analytics',
                 'key' => 'analytics',
-                'description' => 'Insights and engagement metrics'
+                'description' => 'Insights and engagement metrics',
             ],
             [
                 'name' => 'Support Level',
                 'key' => 'support',
-                'description' => 'Customer support availability'
-            ]
+                'description' => 'Customer support availability',
+            ],
         ];
 
         if ($audience === 'institutional') {
@@ -207,18 +207,18 @@ class PricingService
                 [
                     'name' => 'Branded Mobile App',
                     'key' => 'branded_app',
-                    'description' => 'Custom mobile app with your branding'
+                    'description' => 'Custom mobile app with your branding',
                 ],
                 [
                     'name' => 'Admin Dashboard',
                     'key' => 'admin_dashboard',
-                    'description' => 'Comprehensive administrative controls'
+                    'description' => 'Comprehensive administrative controls',
                 ],
                 [
                     'name' => 'Custom Integrations',
                     'key' => 'integrations',
-                    'description' => 'Connect with your existing systems'
-                ]
+                    'description' => 'Connect with your existing systems',
+                ],
             ]);
         }
 
@@ -236,7 +236,7 @@ class PricingService
         return [
             'plans' => $plans,
             'features' => $features,
-            'comparison_matrix' => $this->buildComparisonMatrix($plans, $features)
+            'comparison_matrix' => $this->buildComparisonMatrix($plans, $features),
         ];
     }
 
@@ -250,7 +250,7 @@ class PricingService
         foreach ($features as $feature) {
             $featureRow = [
                 'feature' => $feature,
-                'plan_values' => []
+                'plan_values' => [],
             ];
 
             foreach ($plans as $plan) {
@@ -271,15 +271,24 @@ class PricingService
         // Map feature keys to plan features
         $featureMap = [
             'directory_access' => function ($plan) {
-                if ($plan['id'] === 'free') return 'Limited';
+                if ($plan['id'] === 'free') {
+                    return 'Limited';
+                }
+
                 return true;
             },
             'messaging' => function ($plan) {
-                if ($plan['id'] === 'free') return '5/month';
+                if ($plan['id'] === 'free') {
+                    return '5/month';
+                }
+
                 return 'Unlimited';
             },
             'events' => function ($plan) {
-                if ($plan['id'] === 'free') return false;
+                if ($plan['id'] === 'free') {
+                    return false;
+                }
+
                 return true;
             },
             'job_board' => function ($plan) {
@@ -289,14 +298,26 @@ class PricingService
                 return $this->planHasFeature($plan, 'Mentorship');
             },
             'analytics' => function ($plan) {
-                if ($this->planHasFeature($plan, 'Advanced analytics')) return 'Advanced';
-                if ($this->planHasFeature($plan, 'analytics')) return 'Basic';
+                if ($this->planHasFeature($plan, 'Advanced analytics')) {
+                    return 'Advanced';
+                }
+                if ($this->planHasFeature($plan, 'analytics')) {
+                    return 'Basic';
+                }
+
                 return false;
             },
             'support' => function ($plan) {
-                if ($this->planHasFeature($plan, 'Concierge')) return 'Concierge';
-                if ($this->planHasFeature($plan, 'Priority')) return 'Priority';
-                if ($this->planHasFeature($plan, 'support')) return 'Standard';
+                if ($this->planHasFeature($plan, 'Concierge')) {
+                    return 'Concierge';
+                }
+                if ($this->planHasFeature($plan, 'Priority')) {
+                    return 'Priority';
+                }
+                if ($this->planHasFeature($plan, 'support')) {
+                    return 'Standard';
+                }
+
                 return false;
             },
             'branded_app' => function ($plan) {
@@ -307,7 +328,7 @@ class PricingService
             },
             'integrations' => function ($plan) {
                 return $this->planHasFeature($plan, 'integrations');
-            }
+            },
         ];
 
         if (isset($featureMap[$featureKey])) {
@@ -327,6 +348,7 @@ class PricingService
                 return true;
             }
         }
+
         return false;
     }
 
@@ -345,7 +367,7 @@ class PricingService
         } catch (\Exception $e) {
             Log::error('Failed to track pricing interaction', [
                 'error' => $e->getMessage(),
-                'data' => $data
+                'data' => $data,
             ]);
         }
     }
@@ -363,9 +385,9 @@ class PricingService
                 'featured_plans' => $this->getFeaturedPlansCount(),
                 'price_ranges' => [
                     'individual' => $this->getPriceRange('individual'),
-                    'institutional' => $this->getPriceRange('institutional')
+                    'institutional' => $this->getPriceRange('institutional'),
                 ],
-                'last_updated' => now()->toISOString()
+                'last_updated' => now()->toISOString(),
             ];
         });
     }
@@ -381,7 +403,7 @@ class PricingService
         return [
             'individual' => $individualFeatured,
             'institutional' => $institutionalFeatured,
-            'total' => $individualFeatured + $institutionalFeatured
+            'total' => $individualFeatured + $institutionalFeatured,
         ];
     }
 
@@ -393,7 +415,7 @@ class PricingService
         $plans = $this->getPlansForAudience($audience);
         $prices = collect($plans)
             ->pluck('price')
-            ->filter(fn($price) => $price !== null)
+            ->filter(fn ($price) => $price !== null)
             ->values();
 
         if ($prices->isEmpty()) {
@@ -403,7 +425,7 @@ class PricingService
         return [
             'min' => $prices->min(),
             'max' => $prices->max(),
-            'average' => round($prices->average(), 2)
+            'average' => round($prices->average(), 2),
         ];
     }
 }

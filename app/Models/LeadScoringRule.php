@@ -26,12 +26,12 @@ class LeadScoringRule extends Model
      */
     public function matches(Lead $lead, array $context = []): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
         foreach ($this->conditions as $condition) {
-            if (!$this->evaluateCondition($condition, $lead, $context)) {
+            if (! $this->evaluateCondition($condition, $lead, $context)) {
                 return false;
             }
         }
@@ -102,7 +102,7 @@ class LeadScoringRule extends Model
             case 'contains':
                 return str_contains(strtolower($actual), strtolower($expected));
             case 'not_contains':
-                return !str_contains(strtolower($actual), strtolower($expected));
+                return ! str_contains(strtolower($actual), strtolower($expected));
             case 'starts_with':
                 return str_starts_with(strtolower($actual), strtolower($expected));
             case 'ends_with':
@@ -110,7 +110,7 @@ class LeadScoringRule extends Model
             case 'in':
                 return in_array($actual, (array) $expected);
             case 'not_in':
-                return !in_array($actual, (array) $expected);
+                return ! in_array($actual, (array) $expected);
             default:
                 return false;
         }

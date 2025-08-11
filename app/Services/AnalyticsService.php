@@ -3,16 +3,15 @@
 namespace App\Services;
 
 use App\Models\AnalyticsSnapshot;
+use App\Models\Course;
+use App\Models\Employer;
+use App\Models\Graduate;
+use App\Models\Job;
+use App\Models\JobApplication;
 use App\Models\KpiDefinition;
 use App\Models\KpiValue;
 use App\Models\PredictionModel;
-use App\Models\Graduate;
-use App\Models\Course;
-use App\Models\Job;
-use App\Models\JobApplication;
-use App\Models\Employer;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class AnalyticsService
@@ -20,7 +19,7 @@ class AnalyticsService
     public function generateDailySnapshot($date = null)
     {
         $date = $date ?? now()->toDateString();
-        
+
         $data = [
             'overview' => $this->getOverviewMetrics($date),
             'employment' => $this->getEmploymentMetrics($date),
@@ -40,7 +39,7 @@ class AnalyticsService
     {
         $date = $date ?? now()->startOfWeek()->toDateString();
         $endDate = Carbon::parse($date)->endOfWeek();
-        
+
         $data = [
             'period' => ['start' => $date, 'end' => $endDate->toDateString()],
             'trends' => $this->getWeeklyTrends($date, $endDate),
@@ -58,7 +57,7 @@ class AnalyticsService
     {
         $date = $date ?? now()->startOfMonth()->toDateString();
         $endDate = Carbon::parse($date)->endOfMonth();
-        
+
         $data = [
             'period' => ['start' => $date, 'end' => $endDate->toDateString()],
             'summary' => $this->getMonthlySummary($date, $endDate),
@@ -75,14 +74,14 @@ class AnalyticsService
     public function calculateKpiValues($date = null)
     {
         $date = $date ?? now()->toDateString();
-        
+
         $kpis = KpiDefinition::active()->get();
         $results = [];
-        
+
         foreach ($kpis as $kpi) {
             try {
                 $value = $kpi->calculateValue($date);
-                
+
                 KpiValue::updateOrCreate(
                     ['kpi_definition_id' => $kpi->id, 'measurement_date' => $date],
                     [
@@ -91,23 +90,23 @@ class AnalyticsService
                         'metadata' => ['calculated_at' => now()],
                     ]
                 );
-                
+
                 $results[$kpi->key] = $value;
             } catch (\Exception $e) {
-                \Log::error("Failed to calculate KPI {$kpi->key}: " . $e->getMessage());
+                \Log::error("Failed to calculate KPI {$kpi->key}: ".$e->getMessage());
             }
         }
-        
+
         return $results;
     }
 
     public function getAnalyticsDashboard($timeframe = '30_days')
     {
         $cacheKey = "analytics_dashboard_{$timeframe}";
-        
+
         return Cache::remember($cacheKey, 300, function () use ($timeframe) {
             $period = $this->parsePeriod($timeframe);
-            
+
             return [
                 'overview' => $this->getDashboardOverview($period),
                 'kpis' => $this->getDashboardKpis($period),
@@ -122,22 +121,22 @@ class AnalyticsService
     public function getEmploymentAnalytics($filters = [])
     {
         $query = Graduate::with(['course', 'user']);
-        
+
         // Apply filters
-        if (!empty($filters['course_id'])) {
+        if (! empty($filters['course_id'])) {
             $query->where('course_id', $filters['course_id']);
         }
-        
-        if (!empty($filters['graduation_year'])) {
+
+        if (! empty($filters['graduation_year'])) {
             $query->where('graduation_year', $filters['graduation_year']);
         }
-        
-        if (!empty($filters['employment_status'])) {
+
+        if (! empty($filters['employment_status'])) {
             $query->where('employment_status', $filters['employment_status']);
         }
-        
+
         $graduates = $query->get();
-        
+
         return [
             'summary' => $this->getEmploymentSummary($graduates),
             'by_course' => $this->getEmploymentByCourse($graduates),
@@ -152,13 +151,13 @@ class AnalyticsService
     public function getCourseAnalytics($courseId = null)
     {
         $query = Course::with(['graduates']);
-        
+
         if ($courseId) {
             $query->where('id', $courseId);
         }
-        
+
         $courses = $query->get();
-        
+
         return [
             'performance' => $this->getCoursePerformanceAnalysis($courses),
             'outcomes' => $this->getCourseOutcomeAnalysis($courses),
@@ -171,22 +170,22 @@ class AnalyticsService
     public function getJobMarketAnalytics($filters = [])
     {
         $query = Job::with(['employer', 'course', 'applications']);
-        
+
         // Apply filters
-        if (!empty($filters['location'])) {
-            $query->where('location', 'like', '%' . $filters['location'] . '%');
+        if (! empty($filters['location'])) {
+            $query->where('location', 'like', '%'.$filters['location'].'%');
         }
-        
-        if (!empty($filters['job_type'])) {
+
+        if (! empty($filters['job_type'])) {
             $query->where('job_type', $filters['job_type']);
         }
-        
-        if (!empty($filters['salary_range'])) {
+
+        if (! empty($filters['salary_range'])) {
             $query->whereBetween('salary_min', $filters['salary_range']);
         }
-        
+
         $jobs = $query->get();
-        
+
         return [
             'market_overview' => $this->getJobMarketOverview($jobs),
             'demand_analysis' => $this->getJobDemandAnalysis($jobs),
@@ -202,33 +201,33 @@ class AnalyticsService
     {
         $models = PredictionModel::active()->get();
         $results = [];
-        
+
         foreach ($models as $model) {
             try {
                 if ($model->needsRetraining()) {
                     $model->train();
                 }
-                
+
                 $predictions = $this->generateModelPredictions($model);
                 $results[$model->type] = $predictions;
             } catch (\Exception $e) {
-                \Log::error("Failed to generate predictions for model {$model->id}: " . $e->getMessage());
+                \Log::error("Failed to generate predictions for model {$model->id}: ".$e->getMessage());
             }
         }
-        
+
         return $results;
     }
 
     public function exportAnalyticsData($type, $filters = [], $format = 'csv')
     {
-        $data = match($type) {
+        $data = match ($type) {
             'employment' => $this->getEmploymentAnalytics($filters),
             'courses' => $this->getCourseAnalytics(),
             'job_market' => $this->getJobMarketAnalytics($filters),
             'kpis' => $this->getKpiExportData($filters),
             default => [],
         };
-        
+
         return $this->formatExportData($data, $format);
     }
 
@@ -251,14 +250,14 @@ class AnalyticsService
     {
         $graduates = Graduate::whereDate('created_at', '<=', $date)->get();
         $total = $graduates->count();
-        
+
         if ($total === 0) {
             return ['employment_rate' => 0, 'by_status' => []];
         }
-        
+
         $byStatus = $graduates->groupBy('employment_status.status')
             ->map->count();
-        
+
         return [
             'employment_rate' => ($byStatus['employed'] ?? 0) / $total * 100,
             'by_status' => $byStatus,
@@ -275,18 +274,18 @@ class AnalyticsService
             'graduates as employed_count' => function ($query) use ($date) {
                 $query->whereDate('created_at', '<=', $date)
                     ->where('employment_status', 'employed');
-            }
+            },
         ])
-        ->get()
-        ->map(function ($course) {
-            return [
-                'id' => $course->id,
-                'name' => $course->name,
-                'graduates_count' => $course->graduates_count,
-                'employment_rate' => $course->graduates_count > 0 ? 
-                    ($course->employed_count / $course->graduates_count) * 100 : 0,
-            ];
-        });
+            ->get()
+            ->map(function ($course) {
+                return [
+                    'id' => $course->id,
+                    'name' => $course->name,
+                    'graduates_count' => $course->graduates_count,
+                    'employment_rate' => $course->graduates_count > 0 ?
+                        ($course->employed_count / $course->graduates_count) * 100 : 0,
+                ];
+            });
     }
 
     private function getJobMetrics($date)
@@ -306,7 +305,7 @@ class AnalyticsService
     private function getApplicationMetrics($date)
     {
         $applications = JobApplication::whereDate('created_at', '<=', $date);
-        
+
         return [
             'total_applications' => $applications->count(),
             'by_status' => $applications->get()->groupBy('status')->map->count(),
@@ -328,7 +327,7 @@ class AnalyticsService
     private function getKpiBreakdown($kpi, $date)
     {
         // Generate detailed breakdown for KPI value
-        return match($kpi->key) {
+        return match ($kpi->key) {
             'employment_rate' => $this->getEmploymentRateBreakdown($date),
             'job_placement_rate' => $this->getJobPlacementRateBreakdown($date),
             default => [],
@@ -344,7 +343,7 @@ class AnalyticsService
             ->map(function ($graduates) {
                 $total = $graduates->count();
                 $employed = $graduates->where('employment_status.status', 'employed')->count();
-                
+
                 return [
                     'total' => $total,
                     'employed' => $employed,
@@ -362,7 +361,7 @@ class AnalyticsService
             ->map(function ($applications) {
                 $total = $applications->count();
                 $hired = $applications->where('status', 'hired')->count();
-                
+
                 return [
                     'total' => $total,
                     'hired' => $hired,
@@ -373,7 +372,7 @@ class AnalyticsService
 
     private function parsePeriod($timeframe)
     {
-        return match($timeframe) {
+        return match ($timeframe) {
             '7_days' => ['start' => now()->subDays(7), 'end' => now()],
             '30_days' => ['start' => now()->subDays(30), 'end' => now()],
             '90_days' => ['start' => now()->subDays(90), 'end' => now()],
@@ -445,15 +444,15 @@ class AnalyticsService
     {
         // Get recent alerts or generate new ones based on KPI thresholds
         $alerts = [];
-        
+
         $kpis = KpiDefinition::active()->with('latestValue')->get();
-        
+
         foreach ($kpis as $kpi) {
             if ($kpi->isInWarningZone()) {
                 $alerts[] = [
                     'type' => 'kpi_warning',
                     'title' => "KPI Warning: {$kpi->name}",
-                    'message' => "Current value is below warning threshold",
+                    'message' => 'Current value is below warning threshold',
                     'severity' => 'warning',
                     'data' => [
                         'kpi' => $kpi->key,
@@ -463,7 +462,7 @@ class AnalyticsService
                 ];
             }
         }
-        
+
         return $alerts;
     }
 
@@ -484,13 +483,13 @@ class AnalyticsService
     {
         $graduates = Graduate::whereBetween('created_at', [$period['start'], $period['end']])->get();
         $total = $graduates->count();
-        
+
         if ($total === 0) {
             return 0;
         }
-        
+
         $employed = $graduates->where('employment_status.status', 'employed')->count();
-        
+
         return ($employed / $total) * 100;
     }
 
@@ -500,37 +499,37 @@ class AnalyticsService
             return $graduate->employment_status['status'] === 'employed' &&
                    isset($graduate->employment_status['start_date']);
         });
-        
+
         if ($employedGraduates->isEmpty()) {
             return 0;
         }
-        
+
         $totalDays = $employedGraduates->sum(function ($graduate) {
             $graduationDate = Carbon::parse($graduate->graduation_date);
             $employmentDate = Carbon::parse($graduate->employment_status['start_date']);
-            
+
             return $graduationDate->diffInDays($employmentDate);
         });
-        
+
         return $totalDays / $employedGraduates->count();
     }
 
     private function calculateApplicationSuccessRate($applications)
     {
         $total = $applications->count();
-        
+
         if ($total === 0) {
             return 0;
         }
-        
+
         $successful = $applications->where('status', 'hired')->count();
-        
+
         return ($successful / $total) * 100;
     }
 
     private function formatExportData($data, $format)
     {
-        return match($format) {
+        return match ($format) {
             'csv' => $this->formatAsCsv($data),
             'excel' => $this->formatAsExcel($data),
             'json' => $this->formatAsJson($data),

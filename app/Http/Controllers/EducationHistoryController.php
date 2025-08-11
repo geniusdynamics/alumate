@@ -14,6 +14,7 @@ class EducationHistoryController extends Controller
     {
         $graduate = Graduate::where('email', Auth::user()->email)->firstOrFail();
         $educationHistories = EducationHistory::where('graduate_id', $graduate->id)->get();
+
         return Inertia::render('Education/Index', ['educationHistories' => $educationHistories]);
     }
 
@@ -30,7 +31,7 @@ class EducationHistoryController extends Controller
             'degree' => 'required|string|max:255',
             'field_of_study' => 'required|string|max:255',
             'start_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y')),
-            'end_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y')+5),
+            'end_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y') + 5),
         ]);
 
         $graduate->educationHistories()->create($request->all());

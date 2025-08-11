@@ -84,14 +84,14 @@ class ReunionMemory extends Model
     {
         return $query->where(function ($q) use ($user) {
             $q->where('visibility', 'public')
-              ->orWhere('visibility', 'alumni_only')
-              ->orWhere(function ($subQ) use ($user) {
-                  $subQ->where('visibility', 'class_only')
-                       ->whereHas('event', function ($eventQ) use ($user) {
-                           $eventQ->where('graduation_year', $user->graduation_year ?? null)
-                                  ->where('institution_id', $user->institution_id);
-                       });
-              });
+                ->orWhere('visibility', 'alumni_only')
+                ->orWhere(function ($subQ) use ($user) {
+                    $subQ->where('visibility', 'class_only')
+                        ->whereHas('event', function ($eventQ) use ($user) {
+                            $eventQ->where('graduation_year', $user->graduation_year ?? null)
+                                ->where('institution_id', $user->institution_id);
+                        });
+                });
         });
     }
 
@@ -127,8 +127,8 @@ class ReunionMemory extends Model
 
     public function canBeEditedBy(User $user): bool
     {
-        return $user->id === $this->submitted_by || 
-               $user->hasRole('admin') || 
+        return $user->id === $this->submitted_by ||
+               $user->hasRole('admin') ||
                $this->event->canUserEdit($user);
     }
 

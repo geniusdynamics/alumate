@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employer;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class CompanyApprovalController extends Controller
@@ -12,6 +11,7 @@ class CompanyApprovalController extends Controller
     {
         $this->authorize('viewAny', Employer::class);
         $employers = Employer::where('approved', false)->with('user')->get();
+
         return Inertia::render('Companies/Index', ['employers' => $employers]);
     }
 

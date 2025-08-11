@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\PricingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class PricingController extends Controller
 {
@@ -19,7 +19,7 @@ class PricingController extends Controller
     public function getPlans(Request $request): JsonResponse
     {
         $request->validate([
-            'audience' => 'required|in:individual,institutional'
+            'audience' => 'required|in:individual,institutional',
         ]);
 
         $audience = $request->input('audience');
@@ -30,8 +30,8 @@ class PricingController extends Controller
             'data' => [
                 'audience' => $audience,
                 'plans' => $plans,
-                'comparison_features' => $this->pricingService->getComparisonFeatures($audience)
-            ]
+                'comparison_features' => $this->pricingService->getComparisonFeatures($audience),
+            ],
         ]);
     }
 
@@ -41,7 +41,7 @@ class PricingController extends Controller
     public function getFeatureComparison(Request $request): JsonResponse
     {
         $request->validate([
-            'audience' => 'required|in:individual,institutional'
+            'audience' => 'required|in:individual,institutional',
         ]);
 
         $audience = $request->input('audience');
@@ -49,7 +49,7 @@ class PricingController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $comparison
+            'data' => $comparison,
         ]);
     }
 
@@ -63,7 +63,7 @@ class PricingController extends Controller
             'audience' => 'required|in:individual,institutional',
             'plan_id' => 'nullable|string',
             'section' => 'nullable|string',
-            'additional_data' => 'nullable|array'
+            'additional_data' => 'nullable|array',
         ]);
 
         $this->pricingService->trackPricingInteraction([
@@ -74,12 +74,12 @@ class PricingController extends Controller
             'additional_data' => $request->input('additional_data', []),
             'user_agent' => $request->userAgent(),
             'ip_address' => $request->ip(),
-            'timestamp' => now()
+            'timestamp' => now(),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Interaction tracked successfully'
+            'message' => 'Interaction tracked successfully',
         ]);
     }
 
@@ -92,7 +92,7 @@ class PricingController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $statistics
+            'data' => $statistics,
         ]);
     }
 }

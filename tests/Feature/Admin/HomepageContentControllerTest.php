@@ -17,9 +17,8 @@ test('can view content management index', function () {
     $response = $this->get('/admin/homepage-content');
 
     $response->assertStatus(200);
-    $response->assertInertia(fn ($page) => 
-        $page->component('Admin/HomepageContent/Index')
-             ->has('content', 3)
+    $response->assertInertia(fn ($page) => $page->component('Admin/HomepageContent/Index')
+        ->has('content', 3)
     );
 });
 
@@ -40,9 +39,9 @@ test('can get content via api', function () {
             'hero' => [
                 'headline' => [
                     'value' => 'Test headline',
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     ]);
 });
 
@@ -262,9 +261,9 @@ test('can preview content changes', function () {
                 'headline' => [
                     'value' => 'Preview headline',
                     'preview' => true,
-                ]
-            ]
-        ]
+                ],
+            ],
+        ],
     ]);
 });
 

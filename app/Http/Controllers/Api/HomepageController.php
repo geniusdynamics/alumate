@@ -4,10 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\HomepageService;
-use App\Services\PersonalizationService;
 use App\Services\LeadCaptureService;
-use Illuminate\Http\Request;
+use App\Services\PersonalizationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class HomepageController extends Controller
@@ -25,35 +26,45 @@ class HomepageController extends Controller
     {
         try {
             $validated = $request->validate([
-                'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+                'audience' => ['nullable', Rule::in(['individual', 'institutional'])],
             ]);
 
             $audience = $validated['audience'] ?? 'individual';
             $statisticsData = $this->homepageService->getPlatformStatistics($audience);
-            
+
             // Transform the data to match the expected format
             $statistics = [];
             foreach ($statisticsData as $key => $value) {
                 if ($key === 'last_updated') {
                     continue; // Handle separately
                 }
-                
+
                 $statistics[] = $this->transformStatistic($key, $value, $audience);
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
                     'statistics' => $statistics,
-                    'last_updated' => $statisticsData['last_updated'] ?? now()
-                ]
+                    'last_updated' => $statisticsData['last_updated'] ?? now(),
+                ],
             ]);
         } catch (\Exception $e) {
+            logger()->error('Homepage statistics service call failed', [
+                'error' => $e->getMessage(),
+                'audience' => $audience,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Graceful degradation: return default statistics structure
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch statistics',
-                'error' => $e->getMessage()
-            ], 500);
+                'success' => true,
+                'data' => [
+                    'statistics' => [],
+                    'last_updated' => now(),
+                    'message' => 'Statistics temporarily unavailable',
+                ],
+            ]);
         }
     }
 
@@ -64,22 +75,29 @@ class HomepageController extends Controller
     {
         try {
             $validated = $request->validate([
-                'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+                'audience' => ['nullable', Rule::in(['individual', 'institutional'])],
             ]);
 
             $audience = $validated['audience'] ?? 'individual';
             $testimonials = $this->homepageService->getTestimonials($audience);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $testimonials->toArray()
+                'data' => $testimonials->toArray(),
             ]);
         } catch (\Exception $e) {
+            logger()->error('Homepage testimonials service call failed', [
+                'error' => $e->getMessage(),
+                'audience' => $audience,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Graceful degradation: return empty testimonials array
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch testimonials',
-                'error' => $e->getMessage()
-            ], 500);
+                'success' => true,
+                'data' => [],
+                'message' => 'Testimonials temporarily unavailable',
+            ]);
         }
     }
 
@@ -90,22 +108,32 @@ class HomepageController extends Controller
     {
         try {
             $validated = $request->validate([
-                'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+                'audience' => ['nullable', Rule::in(['individual', 'institutional'])],
             ]);
 
             $audience = $validated['audience'] ?? 'individual';
             $trustData = $this->homepageService->getTrustBadgesAndLogos($audience);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $trustData
+                'data' => $trustData,
             ]);
         } catch (\Exception $e) {
+            logger()->error('Homepage trust badges service call failed', [
+                'error' => $e->getMessage(),
+                'audience' => $audience,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Graceful degradation: return empty trust data
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch trust badges',
-                'error' => $e->getMessage()
-            ], 500);
+                'success' => true,
+                'data' => [
+                    'trust_badges' => [],
+                    'company_logos' => [],
+                    'message' => 'Trust badges temporarily unavailable',
+                ],
+            ]);
         }
     }
 
@@ -116,21 +144,21 @@ class HomepageController extends Controller
     {
         try {
             $validated = $request->validate([
-                'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+                'audience' => ['nullable', Rule::in(['individual', 'institutional'])],
             ]);
 
             $audience = $validated['audience'] ?? 'individual';
             $previewData = $this->homepageService->getPlatformPreviewData($audience);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $previewData
+                'data' => $previewData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch platform preview data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -142,9 +170,9 @@ class HomepageController extends Controller
     {
         $audience = $request->get('audience', 'individual');
         $filters = $request->only(['industry', 'graduation_year', 'career_stage']);
-        
+
         $stories = $this->homepageService->getSuccessStories($audience, $filters);
-        
+
         return response()->json($stories);
     }
 
@@ -155,22 +183,29 @@ class HomepageController extends Controller
     {
         try {
             $validated = $request->validate([
-                'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+                'audience' => ['nullable', Rule::in(['individual', 'institutional'])],
             ]);
 
             $audience = $validated['audience'] ?? 'individual';
             $features = $this->homepageService->getFeatures($audience);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $features->toArray()
+                'data' => $features->toArray(),
             ]);
         } catch (\Exception $e) {
+            logger()->error('Homepage features service call failed', [
+                'error' => $e->getMessage(),
+                'audience' => $audience,
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Graceful degradation: return empty features array
             return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch features',
-                'error' => $e->getMessage()
-            ], 500);
+                'success' => true,
+                'data' => [],
+                'message' => 'Features temporarily unavailable',
+            ]);
         }
     }
 
@@ -185,15 +220,13 @@ class HomepageController extends Controller
             'experience_years' => 'required|integer|min:0',
             'career_goals' => 'required|array',
             'location' => 'nullable|string',
-            'education_level' => 'nullable|string'
+            'education_level' => 'nullable|string',
         ]);
 
         $calculation = $this->homepageService->calculateCareerValue($validated);
-        
+
         return response()->json($calculation);
     }
-
-
 
     /**
      * Capture leads from various homepage interactions
@@ -205,11 +238,11 @@ class HomepageController extends Controller
             'source' => 'required|string',
             'audience' => 'required|in:individual,institutional',
             'interest_level' => 'nullable|string',
-            'additional_data' => 'nullable|array'
+            'additional_data' => 'nullable|array',
         ]);
 
         $result = $this->homepageService->captureLeads($validated);
-        
+
         return response()->json($result);
     }
 
@@ -218,9 +251,27 @@ class HomepageController extends Controller
      */
     public function detectAudience(Request $request): JsonResponse
     {
-        $detection = $this->personalizationService->detectAudience($request);
-        
-        return response()->json($detection);
+        try {
+            $detection = $this->personalizationService->detectAudience($request);
+
+            return response()->json($detection);
+        } catch (\Exception $e) {
+            logger()->error('Audience detection service call failed', [
+                'error' => $e->getMessage(),
+                'user_agent' => $request->userAgent(),
+                'referrer' => $request->header('referer'),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Graceful degradation: return default individual audience
+            return response()->json([
+                'detected_audience' => 'individual',
+                'confidence' => 0,
+                'factors' => [],
+                'fallback' => 'individual',
+                'message' => 'Detection temporarily unavailable',
+            ]);
+        }
     }
 
     /**
@@ -231,21 +282,21 @@ class HomepageController extends Controller
         $validated = $request->validate([
             'audience' => ['required', Rule::in(['individual', 'institutional'])],
             'sections' => 'nullable|array',
-            'sections.*' => Rule::in(['hero', 'features', 'testimonials', 'pricing', 'cta', 'meta'])
+            'sections.*' => Rule::in(['hero', 'features', 'testimonials', 'pricing', 'cta', 'meta']),
         ]);
 
         $audience = $validated['audience'];
         $content = $this->personalizationService->getPersonalizedContent($audience, $request);
 
         // Filter to requested sections if specified
-        if (!empty($validated['sections'])) {
+        if (! empty($validated['sections'])) {
             $content = array_intersect_key($content, array_flip($validated['sections']));
         }
 
         return response()->json([
             'audience' => $audience,
             'content' => $content,
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ]);
     }
 
@@ -267,7 +318,7 @@ class HomepageController extends Controller
         return response()->json([
             'success' => true,
             'preference' => $preference,
-            'message' => 'Audience preference stored successfully'
+            'message' => 'Audience preference stored successfully',
         ]);
     }
 
@@ -280,7 +331,7 @@ class HomepageController extends Controller
 
         return response()->json([
             'preference' => $preference,
-            'has_preference' => !is_null($preference)
+            'has_preference' => ! is_null($preference),
         ]);
     }
 
@@ -291,7 +342,7 @@ class HomepageController extends Controller
     {
         $validated = $request->validate([
             'audience' => ['required', Rule::in(['individual', 'institutional'])],
-            'test_id' => 'required|string'
+            'test_id' => 'required|string',
         ]);
 
         $variations = $this->homepageService->getContentVariations(
@@ -302,7 +353,7 @@ class HomepageController extends Controller
         return response()->json([
             'test_id' => $validated['test_id'],
             'audience' => $validated['audience'],
-            'variations' => $variations
+            'variations' => $variations,
         ]);
     }
 
@@ -314,11 +365,11 @@ class HomepageController extends Controller
         $validated = $request->validate([
             'test_id' => 'required|string',
             'user_id' => 'nullable|string',
-            'audience' => ['required', Rule::in(['individual', 'institutional'])]
+            'audience' => ['required', Rule::in(['individual', 'institutional'])],
         ]);
 
         $userId = $validated['user_id'] ?? $this->generateAnonymousUserId($request);
-        
+
         $variant = $this->abTestingService->getVariant(
             $validated['test_id'],
             $userId,
@@ -328,7 +379,7 @@ class HomepageController extends Controller
         return response()->json([
             'variant' => $variant,
             'user_id' => $userId,
-            'has_variant' => $variant !== null
+            'has_variant' => $variant !== null,
         ]);
     }
 
@@ -342,22 +393,48 @@ class HomepageController extends Controller
             'variant_id' => 'required|string',
             'goal' => 'required|string',
             'user_id' => 'nullable|string',
-            'additional_data' => 'nullable|array'
+            'additional_data' => 'nullable|array',
         ]);
+
+        // Validate strings are non-empty after trimming
+        $testId = trim($validated['test_id']);
+        $variantId = trim($validated['variant_id']);
+        $goal = trim($validated['goal']);
+
+        if (empty($testId) || empty($variantId) || empty($goal)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'test_id, variant_id, and goal cannot be empty',
+            ], 400);
+        }
 
         $userId = $validated['user_id'] ?? $this->generateAnonymousUserId($request);
 
-        $this->abTestingService->trackConversion(
-            $validated['test_id'],
-            $validated['variant_id'],
-            $validated['goal'],
-            $userId,
-            $validated['additional_data'] ?? []
-        );
+        // Guard service call in try/catch and log on failure
+        try {
+            $this->abTestingService->trackConversion(
+                $testId,
+                $variantId,
+                $goal,
+                $userId,
+                $validated['additional_data'] ?? []
+            );
+        } catch (\Exception $e) {
+            logger()->error('A/B test conversion tracking service call failed', [
+                'error' => $e->getMessage(),
+                'test_id' => $testId,
+                'variant_id' => $variantId,
+                'goal' => $goal,
+                'user_id' => $userId,
+                'audience' => $request->header('X-Audience', 'unknown'),
+                'trace' => $e->getTraceAsString(),
+            ]);
+        }
 
+        // Ensure responses remain JSON success irrespective of telemetry errors, for stability
         return response()->json([
             'success' => true,
-            'message' => 'Conversion tracked successfully'
+            'message' => 'Conversion tracked successfully',
         ]);
     }
 
@@ -368,7 +445,7 @@ class HomepageController extends Controller
     {
         // In production, add proper authorization check
         $results = $this->abTestingService->getTestResults($testId);
-        
+
         return response()->json($results);
     }
 
@@ -379,17 +456,17 @@ class HomepageController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'nullable|string',
-            'audience' => ['required', Rule::in(['individual', 'institutional'])]
+            'audience' => ['required', Rule::in(['individual', 'institutional'])],
         ]);
 
         $userId = $validated['user_id'] ?? $this->generateAnonymousUserId($request);
-        
+
         $activeTests = $this->abTestingService->getActiveTests($userId, $validated['audience']);
-        
+
         return response()->json([
             'user_id' => $userId,
             'audience' => $validated['audience'],
-            'active_tests' => $activeTests
+            'active_tests' => $activeTests,
         ]);
     }
 
@@ -399,7 +476,7 @@ class HomepageController extends Controller
     public function getContentManagementConfig(Request $request): JsonResponse
     {
         $config = $this->homepageService->getContentManagementConfig();
-        
+
         return response()->json($config);
     }
 
@@ -410,16 +487,16 @@ class HomepageController extends Controller
     {
         try {
             $brandedAppsData = $this->homepageService->getBrandedAppsData();
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $brandedAppsData
+                'data' => $brandedAppsData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch branded apps data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -434,20 +511,20 @@ class HomepageController extends Controller
                 'institution_id' => 'nullable|string',
                 'timeframe' => 'nullable|in:3_months,6_months,12_months,18_months,24_months',
                 'metrics' => 'nullable|array',
-                'metrics.*' => 'in:engagement,financial,operational,growth'
+                'metrics.*' => 'in:engagement,financial,operational,growth',
             ]);
 
             $metricsData = $this->homepageService->getEnterpriseMetrics($validated);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $metricsData
+                'data' => $metricsData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch enterprise metrics',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -460,20 +537,20 @@ class HomepageController extends Controller
         try {
             $validated = $request->validate([
                 'institution_id' => 'nullable|string',
-                'case_study_id' => 'nullable|string'
+                'case_study_id' => 'nullable|string',
             ]);
 
             $comparisonData = $this->homepageService->getInstitutionalComparison($validated);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $comparisonData
+                'data' => $comparisonData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch institutional comparison data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -487,20 +564,20 @@ class HomepageController extends Controller
             $validated = $request->validate([
                 'institution_type' => 'nullable|in:university,college,corporate,nonprofit',
                 'alumni_count' => 'nullable|integer',
-                'complexity' => 'nullable|in:basic,standard,advanced,enterprise'
+                'complexity' => 'nullable|in:basic,standard,advanced,enterprise',
             ]);
 
             $timelineData = $this->homepageService->getImplementationTimeline($validated);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $timelineData
+                'data' => $timelineData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch implementation timeline',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -515,20 +592,20 @@ class HomepageController extends Controller
                 'institution_id' => 'nullable|string',
                 'date_from' => 'nullable|date',
                 'date_to' => 'nullable|date',
-                'metrics' => 'nullable|array'
+                'metrics' => 'nullable|array',
             ]);
 
             $trackingData = $this->homepageService->getSuccessMetricsTracking($validated);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $trackingData
+                'data' => $trackingData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to fetch success metrics tracking',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -542,11 +619,11 @@ class HomepageController extends Controller
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date',
             'audience' => ['nullable', Rule::in(['individual', 'institutional'])],
-            'metrics' => 'nullable|array'
+            'metrics' => 'nullable|array',
         ]);
 
         $analytics = $this->personalizationService->getPersonalizationAnalytics($validated);
-        
+
         return response()->json($analytics);
     }
 
@@ -556,14 +633,14 @@ class HomepageController extends Controller
     public function clearPersonalizationCache(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'audience' => ['nullable', Rule::in(['individual', 'institutional'])]
+            'audience' => ['nullable', Rule::in(['individual', 'institutional'])],
         ]);
 
         $this->personalizationService->clearPersonalizationCache($validated['audience'] ?? null);
 
         return response()->json([
             'success' => true,
-            'message' => 'Personalization cache cleared successfully'
+            'message' => 'Personalization cache cleared successfully',
         ]);
     }
 
@@ -578,73 +655,73 @@ class HomepageController extends Controller
                     'label' => 'Alumni Connected',
                     'icon' => 'users',
                     'format' => 'number',
-                    'suffix' => '+'
+                    'suffix' => '+',
                 ],
                 'successful_connections' => [
                     'label' => 'Successful Connections',
                     'icon' => 'network',
                     'format' => 'number',
-                    'suffix' => '+'
+                    'suffix' => '+',
                 ],
                 'job_placements' => [
                     'label' => 'Job Placements',
                     'icon' => 'briefcase',
                     'format' => 'number',
-                    'suffix' => '+'
+                    'suffix' => '+',
                 ],
                 'average_salary_increase' => [
                     'label' => 'Average Salary Increase',
                     'icon' => 'trending-up',
-                    'format' => 'percentage'
+                    'format' => 'percentage',
                 ],
                 'mentorship_matches' => [
                     'label' => 'Mentorship Matches',
                     'icon' => 'users',
                     'format' => 'number',
-                    'suffix' => '+'
+                    'suffix' => '+',
                 ],
                 'events_hosted' => [
                     'label' => 'Events Hosted',
                     'icon' => 'calendar',
                     'format' => 'number',
-                    'suffix' => '+'
+                    'suffix' => '+',
                 ],
                 'companies_represented' => [
                     'label' => 'Companies Represented',
                     'icon' => 'building',
                     'format' => 'number',
-                    'suffix' => '+'
-                ]
+                    'suffix' => '+',
+                ],
             ],
             'institutional' => [
                 'institutions_served' => [
                     'label' => 'Institutions Served',
                     'icon' => 'building',
                     'format' => 'number',
-                    'suffix' => '+'
+                    'suffix' => '+',
                 ],
                 'branded_apps_deployed' => [
                     'label' => 'Branded Apps Deployed',
                     'icon' => 'mobile',
-                    'format' => 'number'
+                    'format' => 'number',
                 ],
                 'average_engagement_increase' => [
                     'label' => 'Average Engagement Increase',
                     'icon' => 'trending-up',
-                    'format' => 'percentage'
+                    'format' => 'percentage',
                 ],
                 'admin_satisfaction_rate' => [
                     'label' => 'Admin Satisfaction Rate',
                     'icon' => 'star',
-                    'format' => 'percentage'
-                ]
-            ]
+                    'format' => 'percentage',
+                ],
+            ],
         ];
 
         $mapping = $statisticMappings[$audience][$key] ?? [
             'label' => ucwords(str_replace('_', ' ', $key)),
             'icon' => 'users',
-            'format' => 'number'
+            'format' => 'number',
         ];
 
         return [
@@ -654,7 +731,7 @@ class HomepageController extends Controller
             'icon' => $mapping['icon'],
             'format' => $mapping['format'],
             'suffix' => $mapping['suffix'] ?? null,
-            'animateOnScroll' => true
+            'animateOnScroll' => true,
         ];
     }
 
@@ -664,16 +741,16 @@ class HomepageController extends Controller
     private function generateAnonymousUserId(Request $request): string
     {
         if (auth()->check()) {
-            return 'user_' . auth()->id();
+            return 'user_'.auth()->id();
         }
-        
+
         if ($request->session()->has('tracking_user_id')) {
             return $request->session()->get('tracking_user_id');
         }
-        
-        $trackingId = 'anon_' . \Illuminate\Support\Str::random(16);
+
+        $trackingId = 'anon_'.\Illuminate\Support\Str::random(16);
         $request->session()->put('tracking_user_id', $trackingId);
-        
+
         return $trackingId;
     }
 
@@ -694,16 +771,17 @@ class HomepageController extends Controller
             'preferredTime' => 'nullable|string',
             'message' => 'nullable|string|max:1000',
             'planId' => 'nullable|string',
-            'source' => 'nullable|string'
+            'source' => 'nullable|string',
         ]);
 
         try {
             $result = app(LeadCaptureService::class)->processDemoRequest($request->all());
+
             return response()->json($result);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
@@ -716,22 +794,23 @@ class HomepageController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'graduationYear' => 'nullable|integer|min:1950|max:' . (date('Y') + 10),
+            'graduationYear' => 'nullable|integer|min:1950|max:'.(date('Y') + 10),
             'institution' => 'nullable|string|max:255',
             'currentRole' => 'nullable|string|max:255',
             'industry' => 'nullable|string',
             'referralSource' => 'nullable|string',
             'planId' => 'nullable|string',
-            'source' => 'nullable|string'
+            'source' => 'nullable|string',
         ]);
 
         try {
             $result = app(LeadCaptureService::class)->processTrialSignup($request->all());
+
             return response()->json($result);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
@@ -743,14 +822,15 @@ class HomepageController extends Controller
     {
         try {
             $statistics = app(LeadCaptureService::class)->getLeadStatistics();
+
             return response()->json([
                 'success' => true,
-                'data' => $statistics
+                'data' => $statistics,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to retrieve statistics'
+                'message' => 'Failed to retrieve statistics',
             ], 500);
         }
     }

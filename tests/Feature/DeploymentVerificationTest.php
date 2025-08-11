@@ -17,7 +17,7 @@ class DeploymentVerificationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->deploymentService = new DeploymentService();
+        $this->deploymentService = new DeploymentService;
     }
 
     /** @test */

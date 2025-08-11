@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('commit_hash')->nullable();
             $table->json('rollback_data')->nullable();
             $table->timestamps();
-            
+
             $table->index(['status', 'environment']);
             $table->index(['started_at', 'environment']);
         });

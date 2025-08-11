@@ -12,7 +12,7 @@ class AnnouncementController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        
+
         $query = Announcement::with(['creator'])
             ->published()
             ->forUser($user);
@@ -33,7 +33,7 @@ class AnnouncementController extends Controller
 
         // Mark announcements as read when viewed
         foreach ($announcements as $announcement) {
-            if (!$announcement->isReadBy($user)) {
+            if (! $announcement->isReadBy($user)) {
                 $announcement->markAsReadBy($user);
             }
         }
@@ -47,19 +47,19 @@ class AnnouncementController extends Controller
     public function show(Announcement $announcement)
     {
         $user = Auth::user();
-        
+
         // Check if user can view this announcement
         $canView = Announcement::published()
             ->forUser($user)
             ->where('id', $announcement->id)
             ->exists();
 
-        if (!$canView) {
+        if (! $canView) {
             abort(404);
         }
 
         $announcement->load(['creator']);
-        
+
         // Mark as read
         $announcement->markAsReadBy($user);
 
@@ -71,14 +71,14 @@ class AnnouncementController extends Controller
     public function create()
     {
         $this->authorize('create', Announcement::class);
-        
+
         return Inertia::render('Announcements/Create');
     }
 
     public function store(Request $request)
     {
         $this->authorize('create', Announcement::class);
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -112,7 +112,7 @@ class AnnouncementController extends Controller
     public function edit(Announcement $announcement)
     {
         $this->authorize('update', $announcement);
-        
+
         return Inertia::render('Announcements/Edit', [
             'announcement' => $announcement,
         ]);
@@ -121,7 +121,7 @@ class AnnouncementController extends Controller
     public function update(Request $request, Announcement $announcement)
     {
         $this->authorize('update', $announcement);
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -151,7 +151,7 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
         $this->authorize('delete', $announcement);
-        
+
         $announcement->delete();
 
         return redirect()->route('announcements.index')
@@ -161,7 +161,7 @@ class AnnouncementController extends Controller
     public function publish(Announcement $announcement)
     {
         $this->authorize('update', $announcement);
-        
+
         $announcement->publish();
 
         return back()->with('success', 'Announcement published successfully!');
@@ -170,7 +170,7 @@ class AnnouncementController extends Controller
     public function unpublish(Announcement $announcement)
     {
         $this->authorize('update', $announcement);
-        
+
         $announcement->unpublish();
 
         return back()->with('success', 'Announcement unpublished successfully!');
@@ -187,10 +187,10 @@ class AnnouncementController extends Controller
     public function getUnread()
     {
         $user = Auth::user();
-        
+
         $unreadAnnouncements = Announcement::published()
             ->forUser($user)
-            ->whereDoesntHave('reads', function($query) use ($user) {
+            ->whereDoesntHave('reads', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
             ->orderByDesc('is_pinned')

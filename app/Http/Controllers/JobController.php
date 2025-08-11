@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Job;
 use App\Models\Course;
 use App\Models\Graduate;
+use App\Models\Job;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class JobController extends Controller
 {
     public function index(Request $request)
     {
         $employer = Auth::user()->employer;
-        
+
         // Check and update expired jobs
         $this->checkExpiredJobs($employer);
-        
+
         $query = Job::where('employer_id', $employer->id)
-            ->with(['course', 'applications' => function($q) {
+            ->with(['course', 'applications' => function ($q) {
                 $q->selectRaw('job_id, COUNT(*) as count, 
                     SUM(CASE WHEN status IN ("reviewed", "shortlisted", "interviewed", "hired") THEN 1 ELSE 0 END) as viewed_count,
                     SUM(CASE WHEN status IN ("shortlisted", "interviewed", "hired") THEN 1 ELSE 0 END) as shortlisted_count')
-                  ->groupBy('job_id');
+                    ->groupBy('job_id');
             }]);
 
         // Apply filters
@@ -32,9 +31,9 @@ class JobController extends Controller
         }
 
         if ($request->search) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhere('description', 'like', "%{$request->search}%");
+                    ->orWhere('description', 'like', "%{$request->search}%");
             });
         }
 
@@ -86,7 +85,7 @@ class JobController extends Controller
     public function create()
     {
         $courses = Course::active()->orderBy('name')->get(['id', 'name', 'skills_gained']);
-        
+
         return inertia('Jobs/Create', [
             'courses' => $courses,
         ]);
@@ -95,8 +94,8 @@ class JobController extends Controller
     public function store(Request $request)
     {
         $employer = Auth::user()->employer;
-        
-        if (!$employer) {
+
+        if (! $employer) {
             return back()->with('error', 'You must be registered as an employer to post jobs.');
         }
 
@@ -129,7 +128,7 @@ class JobController extends Controller
 
         // Determine if job requires approval
         $requiresApproval = $employer->verification_status !== 'verified';
-        
+
         $data['employer_id'] = $employer->id;
         $data['status'] = $requiresApproval ? 'pending_approval' : 'active';
         $data['requires_approval'] = $requiresApproval;
@@ -138,11 +137,11 @@ class JobController extends Controller
         $job = Job::create($data);
 
         // Send job to matching graduates if approved
-        if (!$requiresApproval) {
+        if (! $requiresApproval) {
             $job->sendToGraduates();
         }
 
-        $message = $requiresApproval 
+        $message = $requiresApproval
             ? 'Job posted successfully and is pending admin approval.'
             : 'Job posted successfully and is now active.';
 
@@ -152,16 +151,17 @@ class JobController extends Controller
     public function show(Job $job)
     {
         $this->authorize('view', $job);
-        
+
         $job->load(['course', 'employer.user', 'applications.graduate']);
         $job->incrementViewCount();
 
         // Get matching graduates for recommendations
         $matchingGraduates = $job->getMatchingGraduates(10);
-        
+
         // Calculate match scores
-        $graduateMatches = $matchingGraduates->map(function($graduate) use ($job) {
+        $graduateMatches = $matchingGraduates->map(function ($graduate) use ($job) {
             $matchData = $job->calculateMatchScore($graduate);
+
             return [
                 'graduate' => $graduate,
                 'match_score' => $matchData['score'],
@@ -179,9 +179,9 @@ class JobController extends Controller
     public function edit(Job $job)
     {
         $this->authorize('update', $job);
-        
+
         $courses = Course::active()->orderBy('name')->get(['id', 'name', 'skills_gained']);
-        
+
         return inertia('Jobs/Edit', [
             'job' => $job,
             'courses' => $courses,
@@ -237,7 +237,7 @@ class JobController extends Controller
     {
         $this->authorize('update', $job);
         $job->pause();
-        
+
         return back()->with('success', 'Job paused successfully.');
     }
 
@@ -245,7 +245,7 @@ class JobController extends Controller
     {
         $this->authorize('update', $job);
         $job->resume();
-        
+
         return back()->with('success', 'Job resumed successfully.');
     }
 
@@ -253,14 +253,14 @@ class JobController extends Controller
     {
         $this->authorize('update', $job);
         $job->markAsFilled();
-        
+
         return back()->with('success', 'Job marked as filled.');
     }
 
     public function extend(Request $request, Job $job)
     {
         $this->authorize('update', $job);
-        
+
         $request->validate([
             'application_deadline' => 'required|date|after:today',
         ]);
@@ -277,7 +277,7 @@ class JobController extends Controller
     public function analytics(Job $job)
     {
         $this->authorize('view', $job);
-        
+
         $analytics = $job->getJobPerformanceMetrics();
 
         // Application trends (last 30 days)
@@ -289,8 +289,9 @@ class JobController extends Controller
             ->get();
 
         // View trends (last 30 days) - would need a job_views table for this
-        $viewTrends = collect(range(0, 29))->map(function($daysAgo) {
+        $viewTrends = collect(range(0, 29))->map(function ($daysAgo) {
             $date = now()->subDays($daysAgo)->toDateString();
+
             return [
                 'date' => $date,
                 'views' => rand(0, 50), // Placeholder - implement proper view tracking
@@ -309,7 +310,7 @@ class JobController extends Controller
             ->with('graduate.course')
             ->get()
             ->groupBy('graduate.course.name')
-            ->map(function($applications) {
+            ->map(function ($applications) {
                 return $applications->count();
             });
 
@@ -318,15 +319,15 @@ class JobController extends Controller
         if ($job->required_skills) {
             foreach ($job->required_skills as $skill) {
                 $matchingApplicants = $job->applications()
-                    ->whereHas('graduate', function($q) use ($skill) {
+                    ->whereHas('graduate', function ($q) use ($skill) {
                         $q->whereJsonContains('skills', $skill);
                     })
                     ->count();
-                
+
                 $skillsAnalysis[$skill] = [
                     'total_applicants' => $matchingApplicants,
-                    'match_rate' => $job->total_applications > 0 
-                        ? round(($matchingApplicants / $job->total_applications) * 100, 1) 
+                    'match_rate' => $job->total_applications > 0
+                        ? round(($matchingApplicants / $job->total_applications) * 100, 1)
                         : 0,
                 ];
             }
@@ -359,7 +360,7 @@ class JobController extends Controller
     public function recommend(Request $request, Job $job)
     {
         $this->authorize('view', $job);
-        
+
         $request->validate([
             'graduate_ids' => 'required|array',
             'graduate_ids.*' => 'exists:graduates,id',
@@ -367,7 +368,7 @@ class JobController extends Controller
         ]);
 
         $graduates = Graduate::whereIn('id', $request->graduate_ids)->get();
-        
+
         foreach ($graduates as $graduate) {
             // Send job recommendation notification
             $graduate->user->notifications()->create([
@@ -383,13 +384,13 @@ class JobController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Job recommended to ' . count($graduates) . ' graduates.');
+        return back()->with('success', 'Job recommended to '.count($graduates).' graduates.');
     }
 
     public function renew(Request $request, Job $job)
     {
         $this->authorize('update', $job);
-        
+
         $request->validate([
             'application_deadline' => 'required|date|after:today',
         ]);
@@ -402,7 +403,7 @@ class JobController extends Controller
     public function duplicate(Job $job)
     {
         $this->authorize('create', Job::class);
-        
+
         $newJob = $job->replicate();
         $newJob->status = 'draft';
         $newJob->total_applications = 0;
@@ -420,7 +421,7 @@ class JobController extends Controller
     public function bulkAction(Request $request)
     {
         $this->authorize('viewAny', Job::class);
-        
+
         $request->validate([
             'action' => 'required|in:pause,resume,delete,extend',
             'job_ids' => 'required|array',
@@ -449,7 +450,7 @@ class JobController extends Controller
                     $count++;
                     break;
                 case 'extend':
-                    $newDeadline = $job->application_deadline 
+                    $newDeadline = $job->application_deadline
                         ? $job->application_deadline->addDays($request->extension_days)
                         : now()->addDays($request->extension_days);
                     $job->renewJob($newDeadline);
@@ -486,13 +487,13 @@ class JobController extends Controller
     public function autoRenew(Request $request, Job $job)
     {
         $this->authorize('update', $job);
-        
+
         $request->validate([
             'auto_renew_days' => 'required|integer|min:7|max:90',
         ]);
 
         $newDeadline = now()->addDays($request->auto_renew_days);
-        
+
         $job->update([
             'application_deadline' => $newDeadline,
             'status' => 'active',
@@ -507,7 +508,7 @@ class JobController extends Controller
     public function getJobInsights(Job $job)
     {
         $this->authorize('view', $job);
-        
+
         $insights = [
             'performance_metrics' => $job->getJobPerformanceMetrics(),
             'application_trends' => $job->applications()
@@ -526,7 +527,7 @@ class JobController extends Controller
 
     private function getSkillsDemandAnalysis($job)
     {
-        if (!$job->required_skills) {
+        if (! $job->required_skills) {
             return [];
         }
 
@@ -536,7 +537,7 @@ class JobController extends Controller
                 ->where('course_id', $job->course_id)
                 ->whereJsonContains('required_skills', $skill)
                 ->count();
-            
+
             $supplyCount = Graduate::where('course_id', $job->course_id)
                 ->whereJsonContains('skills', $skill)
                 ->count();
@@ -572,7 +573,7 @@ class JobController extends Controller
     private function getOptimizationSuggestions($job)
     {
         $suggestions = [];
-        
+
         // Low application rate suggestions
         if ($job->total_applications < 5 && $job->created_at->diffInDays(now()) > 7) {
             $suggestions[] = [
@@ -588,7 +589,7 @@ class JobController extends Controller
             ->where('experience_level', $job->experience_level)
             ->where('id', '!=', $job->id)
             ->avg('salary_max');
-        
+
         if ($avgSalary && $job->salary_max && $job->salary_max < ($avgSalary * 0.8)) {
             $suggestions[] = [
                 'type' => 'salary_competitiveness',
@@ -602,7 +603,7 @@ class JobController extends Controller
         $courseSkills = $job->course->skills_gained ?? [];
         $jobSkills = $job->required_skills ?? [];
         $mismatchedSkills = array_diff($jobSkills, $courseSkills);
-        
+
         if (count($mismatchedSkills) > 0) {
             $suggestions[] = [
                 'type' => 'skills_mismatch',
@@ -618,11 +619,12 @@ class JobController extends Controller
     public function smartRecommendations(Job $job)
     {
         $this->authorize('view', $job);
-        
+
         $graduates = $job->getMatchingGraduates(50);
-        
-        $recommendations = $graduates->map(function($graduate) use ($job) {
+
+        $recommendations = $graduates->map(function ($graduate) use ($job) {
             $matchData = $job->calculateMatchScore($graduate);
+
             return [
                 'graduate' => $graduate,
                 'match_score' => $matchData['score'],
@@ -706,7 +708,7 @@ class JobController extends Controller
     private function getJobRecommendations($user, $limit = 10)
     {
         $graduate = $user->graduate;
-        if (!$graduate) {
+        if (! $graduate) {
             return collect();
         }
 
@@ -716,7 +718,7 @@ class JobController extends Controller
             ->where('application_deadline', '>=', now())
             ->where(function ($query) use ($graduate) {
                 $query->where('course_id', $graduate->course_id)
-                      ->orWhere('experience_level', $graduate->experience_level ?? 'entry');
+                    ->orWhere('experience_level', $graduate->experience_level ?? 'entry');
             })
             ->whereDoesntHave('applications', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -730,7 +732,7 @@ class JobController extends Controller
     private function getJobMatchingInsights($user)
     {
         $graduate = $user->graduate;
-        if (!$graduate) {
+        if (! $graduate) {
             return [];
         }
 
@@ -742,7 +744,7 @@ class JobController extends Controller
             $insights[] = [
                 'type' => 'profile',
                 'title' => 'Complete Your Profile',
-                'message' => 'Complete your profile to get better job matches. Currently ' . $profileCompletion . '% complete.',
+                'message' => 'Complete your profile to get better job matches. Currently '.$profileCompletion.'% complete.',
                 'action' => 'Update Profile',
             ];
         }

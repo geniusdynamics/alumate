@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\Graduate;
 use App\Models\Job;
 use App\Traits\Exportable;
 use Illuminate\Http\Request;
@@ -29,32 +28,32 @@ class CourseController extends Controller
         // Start with courses query and handle potential database errors gracefully
         try {
             $query = Course::with(['graduates']);
-            
+
             // If user has institution_id, filter by institution or show all for super-admin
-            if ($user->institution_id && !$user->hasRole('super-admin')) {
+            if ($user->institution_id && ! $user->hasRole('super-admin')) {
                 $query->where('institution_id', $user->institution_id);
             }
         } catch (\Exception $e) {
             // Log the error and return empty result with error message
-            \Log::error('Course index query failed: ' . $e->getMessage());
-            
+            \Log::error('Course index query failed: '.$e->getMessage());
+
             return Inertia::render('Courses/Index', [
                 'courses' => new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15),
                 'levels' => ['certificate', 'diploma', 'advanced_diploma', 'degree', 'other'],
                 'studyModes' => ['full_time', 'part_time', 'online', 'hybrid'],
                 'departments' => [],
                 'filters' => [],
-                'error' => 'Unable to load courses. Please contact your administrator.'
+                'error' => 'Unable to load courses. Please contact your administrator.',
             ]);
         }
 
         // Apply filters
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('code', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%')
-                  ->orWhere('department', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('code', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%')
+                    ->orWhere('department', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -101,9 +100,9 @@ class CourseController extends Controller
         if ($request->filled('skills')) {
             $skills = is_array($request->skills) ? $request->skills : explode(',', $request->skills);
             foreach ($skills as $skill) {
-                $query->where(function($q) use ($skill) {
+                $query->where(function ($q) use ($skill) {
                     $q->whereJsonContains('skills_gained', trim($skill))
-                      ->orWhereJsonContains('required_skills', trim($skill));
+                        ->orWhereJsonContains('required_skills', trim($skill));
                 });
             }
         }
@@ -111,7 +110,7 @@ class CourseController extends Controller
         // Sorting
         $sortBy = $request->get('sort_by', 'name');
         $sortOrder = $request->get('sort_order', 'asc');
-        
+
         $allowedSorts = ['name', 'code', 'level', 'duration_months', 'employment_rate', 'total_graduated', 'created_at'];
         if (in_array($sortBy, $allowedSorts)) {
             $query->orderBy($sortBy, $sortOrder);
@@ -132,7 +131,7 @@ class CourseController extends Controller
             'filters' => $request->only([
                 'search', 'level', 'study_mode', 'department', 'is_active', 'is_featured',
                 'employment_rate_min', 'duration_min', 'duration_max', 'skills',
-                'sort_by', 'sort_order'
+                'sort_by', 'sort_order',
             ]),
         ]);
     }
@@ -170,7 +169,7 @@ class CourseController extends Controller
     public function show(Course $course)
     {
         $course->load(['graduates.applications.job']);
-        
+
         // Get course analytics
         $analytics = [
             'employment_trends' => $course->getEmploymentTrends(),
@@ -196,7 +195,7 @@ class CourseController extends Controller
     {
         $data = $request->validate([
             'name' => 'required|string|max:255',
-            'code' => 'required|string|max:50|unique:courses,code,' . $course->id,
+            'code' => 'required|string|max:50|unique:courses,code,'.$course->id,
             'description' => 'nullable|string',
             'level' => 'required|in:certificate,diploma,advanced_diploma,degree,other',
             'duration_months' => 'required|integer|min:1|max:120',
@@ -222,7 +221,7 @@ class CourseController extends Controller
         // Check if course has graduates
         if ($course->graduates()->count() > 0) {
             return back()->withErrors([
-                'course' => 'Cannot delete course with existing graduates. Please transfer graduates to another course first.'
+                'course' => 'Cannot delete course with existing graduates. Please transfer graduates to another course first.',
             ]);
         }
 
@@ -264,7 +263,7 @@ class CourseController extends Controller
     public function updateStatistics(Course $course)
     {
         $statistics = $course->updateStatistics();
-        
+
         return response()->json([
             'message' => 'Course statistics updated successfully',
             'statistics' => $statistics,
@@ -277,10 +276,10 @@ class CourseController extends Controller
 
         // Apply same filters as index method
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('code', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('code', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -306,23 +305,23 @@ class CourseController extends Controller
             'id', 'name', 'code', 'description', 'level', 'duration_months',
             'study_mode', 'department', 'total_enrolled', 'total_graduated',
             'completion_rate', 'employment_rate', 'average_salary',
-            'is_active', 'is_featured', 'created_at', 'updated_at'
+            'is_active', 'is_featured', 'created_at', 'updated_at',
         ];
 
         $format = $request->get('format', 'csv');
-        $filename = 'courses_export_' . date('Y-m-d_H-i-s');
+        $filename = 'courses_export_'.date('Y-m-d_H-i-s');
 
         if ($format === 'json') {
-            return $this->exportToJson($query, $filename . '.json');
+            return $this->exportToJson($query, $filename.'.json');
         }
 
-        return $this->exportToCsv($query, $columns, $filename . '.csv');
+        return $this->exportToCsv($query, $columns, $filename.'.csv');
     }
 
     private function getSalaryRanges(Course $course)
     {
         $salaries = $course->graduates()->employed()->whereNotNull('current_salary')->pluck('current_salary');
-        
+
         if ($salaries->isEmpty()) {
             return [];
         }
@@ -356,13 +355,13 @@ class CourseController extends Controller
     {
         $skillsGained = collect($course->skills_gained ?? []);
         $graduateSkills = $course->graduates()->pluck('skills')->flatten();
-        
+
         $skillsComparison = [];
-        
+
         foreach ($skillsGained as $skill) {
             $skillsComparison[$skill] = [
                 'taught' => true,
-                'graduates_with_skill' => $graduateSkills->filter(function($graduateSkill) use ($skill) {
+                'graduates_with_skill' => $graduateSkills->filter(function ($graduateSkill) use ($skill) {
                     return stripos($graduateSkill, $skill) !== false;
                 })->count(),
             ];

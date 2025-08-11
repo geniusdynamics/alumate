@@ -2,12 +2,12 @@
 
 namespace App\Notifications;
 
-use App\Models\User;
 use App\Models\Connection;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class ConnectionAcceptedNotification extends Notification implements ShouldQueue
@@ -15,6 +15,7 @@ class ConnectionAcceptedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected User $accepter;
+
     protected Connection $connection;
 
     public function __construct(User $accepter, Connection $connection)
@@ -46,7 +47,7 @@ class ConnectionAcceptedNotification extends Notification implements ShouldQueue
             'accepter_title' => $this->accepter->current_job_title,
             'accepter_company' => $this->accepter->current_company,
             'connected_at' => $this->connection->connected_at?->toISOString(),
-            'created_at' => now()->toISOString()
+            'created_at' => now()->toISOString(),
         ];
     }
 
@@ -84,7 +85,7 @@ class ConnectionAcceptedNotification extends Notification implements ShouldQueue
             if ($this->accepter->current_company) {
                 $jobInfo[] = $this->accepter->current_company;
             }
-            $mailMessage->line('Currently: ' . implode(' at ', $jobInfo));
+            $mailMessage->line('Currently: '.implode(' at ', $jobInfo));
         }
 
         return $mailMessage

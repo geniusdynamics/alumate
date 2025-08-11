@@ -2,28 +2,29 @@
 
 namespace Tests\Integration;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Graduate;
 use App\Models\Course;
+use App\Models\Employer;
+use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Employer;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class GraduateManagementIntegrationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $institutionAdmin;
+
     protected Course $course;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->institutionAdmin = $this->createUserWithRole('institution-admin');
         $this->course = Course::factory()->create();
     }
@@ -40,12 +41,12 @@ class GraduateManagementIntegrationTest extends TestCase
             'student_id' => 'STU001',
             'course_id' => $this->course->id,
             'graduation_year' => 2024,
-            'gpa' => 3.5
+            'gpa' => 3.5,
         ];
 
         $response = $this->post(route('graduates.store'), $graduateData);
         $response->assertRedirect(route('graduates.index'));
-        
+
         $graduate = Graduate::where('email', 'john@example.com')->first();
         $this->assertNotNull($graduate);
 
@@ -55,10 +56,10 @@ class GraduateManagementIntegrationTest extends TestCase
                 'status' => 'employed',
                 'job_title' => 'Software Developer',
                 'company' => 'Tech Corp',
-                'salary' => 75000
+                'salary' => 75000,
             ],
             'skills' => ['PHP', 'Laravel', 'JavaScript'],
-            'certifications' => ['Laravel Certified Developer']
+            'certifications' => ['Laravel Certified Developer'],
         ];
 
         $response = $this->put(route('graduates.update', $graduate), $updateData);
@@ -72,19 +73,18 @@ class GraduateManagementIntegrationTest extends TestCase
         $response = $this->get(route('graduates.index', [
             'search' => 'John',
             'employment_status' => 'employed',
-            'course_id' => $this->course->id
+            'course_id' => $this->course->id,
         ]));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Graduates/Index')
-                ->has('graduates.data', 1)
+        $response->assertInertia(fn ($page) => $page->component('Graduates/Index')
+            ->has('graduates.data', 1)
         );
 
         // 4. Export graduates
         $response = $this->post(route('graduates.export'), [
             'format' => 'excel',
-            'filters' => ['course_id' => $this->course->id]
+            'filters' => ['course_id' => $this->course->id],
         ]);
 
         $response->assertStatus(200);
@@ -102,7 +102,7 @@ class GraduateManagementIntegrationTest extends TestCase
 
         // 1. Upload import file
         $response = $this->post(route('graduates.import.upload'), [
-            'file' => $file
+            'file' => $file,
         ]);
 
         $response->assertRedirect();
@@ -116,7 +116,7 @@ class GraduateManagementIntegrationTest extends TestCase
         // 3. Process import
         $response = $this->post(route('graduates.import.process'), [
             'confirm' => true,
-            'skip_duplicates' => true
+            'skip_duplicates' => true,
         ]);
 
         $response->assertRedirect(route('graduates.import.history'));
@@ -132,7 +132,7 @@ class GraduateManagementIntegrationTest extends TestCase
             'phone' => null, // Missing phone
             'address' => null, // Missing address
             'skills' => null, // Missing skills
-            'employment_status' => null // Missing employment status
+            'employment_status' => null, // Missing employment status
         ]);
 
         $this->actingAs($this->institutionAdmin);
@@ -140,7 +140,7 @@ class GraduateManagementIntegrationTest extends TestCase
         // Check initial completion percentage
         $response = $this->get(route('graduates.show', $graduate));
         $response->assertStatus(200);
-        
+
         $graduate->refresh();
         $this->assertLessThan(100, $graduate->profile_completion_percentage);
 
@@ -149,7 +149,7 @@ class GraduateManagementIntegrationTest extends TestCase
             'phone' => '123-456-7890',
             'address' => '123 Main St',
             'skills' => ['PHP', 'JavaScript'],
-            'employment_status' => ['status' => 'unemployed']
+            'employment_status' => ['status' => 'unemployed'],
         ]);
 
         $graduate->refresh();
@@ -162,14 +162,14 @@ class GraduateManagementIntegrationTest extends TestCase
         $graduateUser = $this->createUserWithRole('graduate');
         $graduate = Graduate::factory()->create([
             'user_id' => $graduateUser->id,
-            'course_id' => $this->course->id
+            'course_id' => $this->course->id,
         ]);
 
         // Create employer and job
         $employer = Employer::factory()->verified()->create();
         $job = Job::factory()->active()->create([
             'employer_id' => $employer->id,
-            'course_id' => $this->course->id
+            'course_id' => $this->course->id,
         ]);
 
         $this->actingAs($graduateUser);
@@ -191,24 +191,23 @@ class GraduateManagementIntegrationTest extends TestCase
         $response = $this->post(route('job-applications.store'), [
             'job_id' => $job->id,
             'cover_letter' => 'I am interested in this position...',
-            'resume' => $resume
+            'resume' => $resume,
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
         $application = JobApplication::where('job_id', $job->id)
-                                   ->where('graduate_id', $graduate->id)
-                                   ->first();
+            ->where('graduate_id', $graduate->id)
+            ->first();
         $this->assertNotNull($application);
         $this->assertEquals('pending', $application->status);
 
         // 4. Track application status
         $response = $this->get(route('graduate.applications'));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Graduate/Applications')
-                ->has('applications', 1)
+        $response->assertInertia(fn ($page) => $page->component('Graduate/Applications')
+            ->has('applications', 1)
         );
     }
 
@@ -219,28 +218,26 @@ class GraduateManagementIntegrationTest extends TestCase
         // Create graduates with different statuses
         Graduate::factory()->count(5)->create([
             'course_id' => $this->course->id,
-            'employment_status' => ['status' => 'employed']
+            'employment_status' => ['status' => 'employed'],
         ]);
         Graduate::factory()->count(3)->create([
             'course_id' => $this->course->id,
-            'employment_status' => ['status' => 'unemployed']
+            'employment_status' => ['status' => 'unemployed'],
         ]);
 
         // View course analytics
         $response = $this->get(route('courses.analytics', $this->course));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Courses/Analytics')
-                ->has('analytics.employment_rate')
-                ->has('analytics.total_graduates')
+        $response->assertInertia(fn ($page) => $page->component('Courses/Analytics')
+            ->has('analytics.employment_rate')
+            ->has('analytics.total_graduates')
         );
 
         // View institution dashboard with analytics
         $response = $this->get(route('institution-admin.dashboard'));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('InstitutionAdmin/Dashboard')
-                ->has('analytics')
+        $response->assertInertia(fn ($page) => $page->component('InstitutionAdmin/Dashboard')
+            ->has('analytics')
         );
     }
 
@@ -253,8 +250,8 @@ class GraduateManagementIntegrationTest extends TestCase
             'privacy_settings' => [
                 'profile_visible' => true,
                 'allow_employer_contact' => true,
-                'show_employment_status' => true
-            ]
+                'show_employment_status' => true,
+            ],
         ]);
 
         $this->actingAs($graduateUser);
@@ -264,8 +261,8 @@ class GraduateManagementIntegrationTest extends TestCase
             'privacy_settings' => [
                 'profile_visible' => false,
                 'allow_employer_contact' => false,
-                'show_employment_status' => false
-            ]
+                'show_employment_status' => false,
+            ],
         ]);
 
         $response->assertRedirect();
@@ -280,15 +277,13 @@ class GraduateManagementIntegrationTest extends TestCase
         $this->actingAs($employerUser);
 
         $response = $this->get(route('search.graduates', [
-            'course_id' => $this->course->id
+            'course_id' => $this->course->id,
         ]));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Search/Index')
-                ->where('results', fn ($results) => 
-                    collect($results)->doesntContain('id', $graduate->id)
-                )
+        $response->assertInertia(fn ($page) => $page->component('Search/Index')
+            ->where('results', fn ($results) => collect($results)->doesntContain('id', $graduate->id)
+            )
         );
     }
 
@@ -299,7 +294,7 @@ class GraduateManagementIntegrationTest extends TestCase
         $graduate = Graduate::factory()->create([
             'course_id' => $this->course->id,
             'name' => 'John Doe',
-            'employment_status' => ['status' => 'unemployed']
+            'employment_status' => ['status' => 'unemployed'],
         ]);
 
         // Update graduate employment status
@@ -307,8 +302,8 @@ class GraduateManagementIntegrationTest extends TestCase
             'employment_status' => [
                 'status' => 'employed',
                 'job_title' => 'Developer',
-                'company' => 'Tech Corp'
-            ]
+                'company' => 'Tech Corp',
+            ],
         ]);
 
         $response->assertRedirect();
@@ -318,15 +313,14 @@ class GraduateManagementIntegrationTest extends TestCase
             'graduate_id' => $graduate->id,
             'user_id' => $this->institutionAdmin->id,
             'action' => 'employment_updated',
-            'field_name' => 'employment_status'
+            'field_name' => 'employment_status',
         ]);
 
         // View audit history
         $response = $this->get(route('graduates.audit', $graduate));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Graduates/AuditHistory')
-                ->has('auditLogs')
+        $response->assertInertia(fn ($page) => $page->component('Graduates/AuditHistory')
+            ->has('auditLogs')
         );
     }
 }

@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->timestamp('event_time');
             $table->timestamps();
-            
+
             $table->index(['landing_page_id', 'event_type']);
             $table->index(['event_time', 'event_type']);
             $table->index(['session_id', 'visitor_id']);

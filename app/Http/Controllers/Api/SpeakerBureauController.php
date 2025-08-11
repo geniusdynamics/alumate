@@ -3,12 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SpeakerProfile;
 use App\Models\SpeakerBookingRequest;
-use Illuminate\Http\Request;
+use App\Models\SpeakerProfile;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\Request;
 
 class SpeakerBureauController extends Controller
 {
@@ -25,14 +23,14 @@ class SpeakerBureauController extends Controller
             'event_type',
             'budget',
             'location',
-            'search'
+            'search',
         ]);
 
         $speakers = $this->getFilteredSpeakers($filters);
 
         return response()->json([
             'success' => true,
-            'data' => $speakers
+            'data' => $speakers,
         ]);
     }
 
@@ -50,7 +48,7 @@ class SpeakerBureauController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $speakers
+            'data' => $speakers,
         ]);
     }
 
@@ -63,7 +61,7 @@ class SpeakerBureauController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $speaker
+            'data' => $speaker,
         ]);
     }
 
@@ -75,9 +73,9 @@ class SpeakerBureauController extends Controller
         $user = $request->user();
 
         // Check if user is an alumni
-        if (!$user->hasRole('Graduate')) {
+        if (! $user->hasRole('Graduate')) {
             return response()->json([
-                'message' => 'Only alumni can create speaker profiles'
+                'message' => 'Only alumni can create speaker profiles',
             ], 403);
         }
 
@@ -111,7 +109,7 @@ class SpeakerBureauController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Speaker profile saved successfully',
-            'data' => $profile->load('user')
+            'data' => $profile->load('user'),
         ]);
     }
 
@@ -140,15 +138,15 @@ class SpeakerBureauController extends Controller
         ]);
 
         // Check if speaker is available for the requested format and type
-        if ($validated['event_type'] === 'virtual' && !$speaker->virtual_speaking) {
+        if ($validated['event_type'] === 'virtual' && ! $speaker->virtual_speaking) {
             return response()->json([
-                'message' => 'Speaker is not available for virtual events'
+                'message' => 'Speaker is not available for virtual events',
             ], 400);
         }
 
-        if (!in_array($validated['event_format'], $speaker->speaking_formats)) {
+        if (! in_array($validated['event_format'], $speaker->speaking_formats)) {
             return response()->json([
-                'message' => 'Speaker does not offer the requested format'
+                'message' => 'Speaker does not offer the requested format',
             ], 400);
         }
 
@@ -162,7 +160,7 @@ class SpeakerBureauController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Booking request sent successfully',
-            'data' => $booking->load(['speaker', 'requester'])
+            'data' => $booking->load(['speaker', 'requester']),
         ], 201);
     }
 
@@ -174,9 +172,9 @@ class SpeakerBureauController extends Controller
         $user = $request->user();
         $speakerProfile = $user->speakerProfile;
 
-        if (!$speakerProfile) {
+        if (! $speakerProfile) {
             return response()->json([
-                'message' => 'Speaker profile not found'
+                'message' => 'Speaker profile not found',
             ], 404);
         }
 
@@ -187,7 +185,7 @@ class SpeakerBureauController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $bookings
+            'data' => $bookings,
         ]);
     }
 
@@ -205,7 +203,7 @@ class SpeakerBureauController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $bookings
+            'data' => $bookings,
         ]);
     }
 
@@ -218,7 +216,7 @@ class SpeakerBureauController extends Controller
 
         if ($booking->speaker_id !== $user->id) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
 
@@ -249,7 +247,7 @@ class SpeakerBureauController extends Controller
         return response()->json([
             'success' => true,
             'message' => $message,
-            'data' => $booking->fresh(['speaker', 'requester'])
+            'data' => $booking->fresh(['speaker', 'requester']),
         ]);
     }
 
@@ -262,7 +260,7 @@ class SpeakerBureauController extends Controller
 
         if ($booking->requester_id !== $user->id) {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
 
@@ -283,7 +281,7 @@ class SpeakerBureauController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Booking completed and feedback submitted',
-            'data' => $booking->fresh(['speaker', 'requester'])
+            'data' => $booking->fresh(['speaker', 'requester']),
         ]);
     }
 
@@ -294,9 +292,9 @@ class SpeakerBureauController extends Controller
     {
         $topic = $request->get('topic');
 
-        if (!$topic) {
+        if (! $topic) {
             return response()->json([
-                'message' => 'Topic parameter required'
+                'message' => 'Topic parameter required',
             ], 400);
         }
 
@@ -309,7 +307,7 @@ class SpeakerBureauController extends Controller
         return response()->json([
             'success' => true,
             'data' => $speakers,
-            'topic' => $topic
+            'topic' => $topic,
         ]);
     }
 
@@ -321,23 +319,23 @@ class SpeakerBureauController extends Controller
         $query = SpeakerProfile::with(['user.graduate'])
             ->active();
 
-        if (!empty($filters['topic'])) {
+        if (! empty($filters['topic'])) {
             $query->byTopic($filters['topic']);
         }
 
-        if (!empty($filters['format'])) {
+        if (! empty($filters['format'])) {
             $query->byFormat($filters['format']);
         }
 
-        if (!empty($filters['audience'])) {
+        if (! empty($filters['audience'])) {
             $query->byAudience($filters['audience']);
         }
 
-        if (!empty($filters['industry'])) {
+        if (! empty($filters['industry'])) {
             $query->byIndustry($filters['industry']);
         }
 
-        if (!empty($filters['event_type'])) {
+        if (! empty($filters['event_type'])) {
             if ($filters['event_type'] === 'virtual') {
                 $query->virtualAvailable();
             } elseif ($filters['event_type'] === 'in_person') {
@@ -345,24 +343,24 @@ class SpeakerBureauController extends Controller
             }
         }
 
-        if (!empty($filters['budget'])) {
+        if (! empty($filters['budget'])) {
             $query->withinBudget($filters['budget']);
         }
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('bio', 'like', "%{$search}%")
-                  ->orWhere('speaker_title', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($userQuery) use ($search) {
-                      $userQuery->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('speaker_title', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         $query->orderBy('is_featured', 'desc')
-              ->orderBy('rating', 'desc')
-              ->orderBy('total_engagements', 'desc');
+            ->orderBy('rating', 'desc')
+            ->orderBy('total_engagements', 'desc');
 
         return $query->paginate(12);
     }

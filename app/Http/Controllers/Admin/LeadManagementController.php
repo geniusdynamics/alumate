@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\LeadManagementService;
+use App\Models\CrmIntegration;
 use App\Models\Lead;
 use App\Models\LeadScoringRule;
-use App\Models\CrmIntegration;
-use Illuminate\Http\Request;
+use App\Services\LeadManagementService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -26,9 +26,9 @@ class LeadManagementController extends Controller
         $leads = Lead::with(['assignedUser', 'activities' => function ($query) {
             $query->latest()->limit(3);
         }])
-        ->orderBy('priority', 'desc')
-        ->orderBy('score', 'desc')
-        ->paginate(20);
+            ->orderBy('priority', 'desc')
+            ->orderBy('score', 'desc')
+            ->paginate(20);
 
         $analytics = $this->leadService->getLeadAnalytics();
         $pipeline = $this->leadService->getLeadPipeline();
@@ -86,7 +86,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create lead: ' . $e->getMessage(),
+                'message' => 'Failed to create lead: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -99,7 +99,7 @@ class LeadManagementController extends Controller
         $validated = $request->validate([
             'first_name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:leads,email,' . $lead->id,
+            'email' => 'sometimes|email|unique:leads,email,'.$lead->id,
             'phone' => 'nullable|string|max:20',
             'company' => 'nullable|string|max:255',
             'job_title' => 'nullable|string|max:255',
@@ -134,7 +134,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update lead: ' . $e->getMessage(),
+                'message' => 'Failed to update lead: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -168,7 +168,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to qualify lead: ' . $e->getMessage(),
+                'message' => 'Failed to qualify lead: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -193,7 +193,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create follow-up sequence: ' . $e->getMessage(),
+                'message' => 'Failed to create follow-up sequence: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -236,7 +236,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add activity: ' . $e->getMessage(),
+                'message' => 'Failed to add activity: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -247,7 +247,7 @@ class LeadManagementController extends Controller
     public function analytics(Request $request): JsonResponse
     {
         $filters = $request->only(['date_from', 'date_to', 'lead_type', 'source']);
-        
+
         try {
             $report = $this->leadService->generateLeadReport($filters);
 
@@ -258,7 +258,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to generate analytics: ' . $e->getMessage(),
+                'message' => 'Failed to generate analytics: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -284,7 +284,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to sync leads: ' . $e->getMessage(),
+                'message' => 'Failed to sync leads: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -309,7 +309,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update behavioral data: ' . $e->getMessage(),
+                'message' => 'Failed to update behavioral data: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -353,7 +353,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create scoring rule: ' . $e->getMessage(),
+                'message' => 'Failed to create scoring rule: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -391,7 +391,7 @@ class LeadManagementController extends Controller
 
             // Test the connection
             $testResult = $integration->testConnection();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'CRM integration created successfully',
@@ -401,7 +401,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create CRM integration: ' . $e->getMessage(),
+                'message' => 'Failed to create CRM integration: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -421,7 +421,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to test connection: ' . $e->getMessage(),
+                'message' => 'Failed to test connection: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -432,7 +432,7 @@ class LeadManagementController extends Controller
     public function export(Request $request): JsonResponse
     {
         $filters = $request->only(['status', 'type', 'priority', 'date_from', 'date_to']);
-        
+
         try {
             $query = Lead::with(['assignedUser']);
 
@@ -440,19 +440,19 @@ class LeadManagementController extends Controller
             if (isset($filters['status'])) {
                 $query->where('status', $filters['status']);
             }
-            
+
             if (isset($filters['type'])) {
                 $query->where('lead_type', $filters['type']);
             }
-            
+
             if (isset($filters['priority'])) {
                 $query->where('priority', $filters['priority']);
             }
-            
+
             if (isset($filters['date_from'])) {
                 $query->where('created_at', '>=', $filters['date_from']);
             }
-            
+
             if (isset($filters['date_to'])) {
                 $query->where('created_at', '<=', $filters['date_to']);
             }
@@ -467,7 +467,7 @@ class LeadManagementController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to export leads: ' . $e->getMessage(),
+                'message' => 'Failed to export leads: '.$e->getMessage(),
             ], 500);
         }
     }

@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Course extends Model
 {
@@ -109,11 +109,11 @@ class Course extends Model
     public function scopeByDuration($query, $minMonths, $maxMonths = null)
     {
         $query->where('duration_months', '>=', $minMonths);
-        
+
         if ($maxMonths) {
             $query->where('duration_months', '<=', $maxMonths);
         }
-        
+
         return $query;
     }
 
@@ -122,9 +122,9 @@ class Course extends Model
     {
         $totalGraduates = $this->graduates()->count();
         $employedGraduates = $this->graduates()->employed()->count();
-        
+
         $employmentRate = $totalGraduates > 0 ? ($employedGraduates / $totalGraduates) * 100 : 0;
-        
+
         $averageSalary = $this->graduates()
             ->employed()
             ->whereNotNull('current_salary')
@@ -160,9 +160,9 @@ class Course extends Model
 
         $courseSkills = array_map('strtolower', $this->skills_gained);
         $requiredSkills = array_map('strtolower', $jobSkills);
-        
+
         $overlap = array_intersect($courseSkills, $requiredSkills);
-        
+
         return (count($overlap) / count($requiredSkills)) * 100;
     }
 
@@ -179,19 +179,19 @@ class Course extends Model
     {
         $trends = [];
         $currentYear = now()->year;
-        
+
         for ($i = 0; $i < $years; $i++) {
             $year = $currentYear - $i;
             $totalGrads = $this->graduates()->byGraduationYear($year)->count();
             $employedGrads = $this->graduates()->byGraduationYear($year)->employed()->count();
-            
+
             $trends[$year] = [
                 'total' => $totalGrads,
                 'employed' => $employedGrads,
                 'rate' => $totalGrads > 0 ? round(($employedGrads / $totalGrads) * 100, 2) : 0,
             ];
         }
-        
+
         return $trends;
     }
 }

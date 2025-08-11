@@ -45,17 +45,17 @@ return [
                                 'lowercase',
                                 'stop',
                                 'snowball',
-                                'synonym_filter'
-                            ]
+                                'synonym_filter',
+                            ],
                         ],
                         'autocomplete_analyzer' => [
                             'type' => 'custom',
                             'tokenizer' => 'keyword',
                             'filter' => [
                                 'lowercase',
-                                'edge_ngram_filter'
-                            ]
-                        ]
+                                'edge_ngram_filter',
+                            ],
+                        ],
                     ],
                     'filter' => [
                         'synonym_filter' => [
@@ -66,16 +66,16 @@ return [
                                 'software engineer,developer,programmer',
                                 'manager,supervisor,lead',
                                 'CEO,chief executive officer',
-                                'CTO,chief technology officer'
-                            ]
+                                'CTO,chief technology officer',
+                            ],
                         ],
                         'edge_ngram_filter' => [
                             'type' => 'edge_ngram',
                             'min_gram' => 2,
-                            'max_gram' => 20
-                        ]
-                    ]
-                ]
+                            'max_gram' => 20,
+                        ],
+                    ],
+                ],
             ],
             'mappings' => [
                 'properties' => [
@@ -87,27 +87,27 @@ return [
                             'keyword' => ['type' => 'keyword'],
                             'autocomplete' => [
                                 'type' => 'text',
-                                'analyzer' => 'autocomplete_analyzer'
-                            ]
-                        ]
+                                'analyzer' => 'autocomplete_analyzer',
+                            ],
+                        ],
                     ],
                     'email' => ['type' => 'keyword'],
                     'bio' => [
                         'type' => 'text',
-                        'analyzer' => 'alumni_analyzer'
+                        'analyzer' => 'alumni_analyzer',
                     ],
                     'skills' => [
                         'type' => 'text',
                         'analyzer' => 'alumni_analyzer',
                         'fields' => [
-                            'keyword' => ['type' => 'keyword']
-                        ]
+                            'keyword' => ['type' => 'keyword'],
+                        ],
                     ],
                     'location' => [
                         'type' => 'text',
                         'fields' => [
-                            'keyword' => ['type' => 'keyword']
-                        ]
+                            'keyword' => ['type' => 'keyword'],
+                        ],
                     ],
                     'location_coordinates' => ['type' => 'geo_point'],
                     'industry' => ['type' => 'keyword'],
@@ -118,24 +118,24 @@ return [
                             'keyword' => ['type' => 'keyword'],
                             'autocomplete' => [
                                 'type' => 'text',
-                                'analyzer' => 'autocomplete_analyzer'
-                            ]
-                        ]
+                                'analyzer' => 'autocomplete_analyzer',
+                            ],
+                        ],
                     ],
                     'title' => [
                         'type' => 'text',
                         'analyzer' => 'alumni_analyzer',
                         'fields' => [
-                            'keyword' => ['type' => 'keyword']
-                        ]
+                            'keyword' => ['type' => 'keyword'],
+                        ],
                     ],
                     'graduation_year' => ['type' => 'integer'],
                     'school' => [
                         'type' => 'text',
                         'analyzer' => 'alumni_analyzer',
                         'fields' => [
-                            'keyword' => ['type' => 'keyword']
-                        ]
+                            'keyword' => ['type' => 'keyword'],
+                        ],
                     ],
                     'education_history' => [
                         'type' => 'nested',
@@ -143,16 +143,16 @@ return [
                             'school_name' => [
                                 'type' => 'text',
                                 'analyzer' => 'alumni_analyzer',
-                                'fields' => ['keyword' => ['type' => 'keyword']]
+                                'fields' => ['keyword' => ['type' => 'keyword']],
                             ],
                             'degree' => ['type' => 'keyword'],
                             'field_of_study' => [
                                 'type' => 'text',
-                                'analyzer' => 'alumni_analyzer'
+                                'analyzer' => 'alumni_analyzer',
                             ],
                             'graduation_year' => ['type' => 'integer'],
-                            'gpa' => ['type' => 'float']
-                        ]
+                            'gpa' => ['type' => 'float'],
+                        ],
                     ],
                     'work_experience' => [
                         'type' => 'nested',
@@ -160,11 +160,11 @@ return [
                             'company' => [
                                 'type' => 'text',
                                 'analyzer' => 'alumni_analyzer',
-                                'fields' => ['keyword' => ['type' => 'keyword']]
+                                'fields' => ['keyword' => ['type' => 'keyword']],
                             ],
                             'title' => [
                                 'type' => 'text',
-                                'analyzer' => 'alumni_analyzer'
+                                'analyzer' => 'alumni_analyzer',
                             ],
                             'industry' => ['type' => 'keyword'],
                             'start_date' => ['type' => 'date'],
@@ -172,18 +172,18 @@ return [
                             'is_current' => ['type' => 'boolean'],
                             'description' => [
                                 'type' => 'text',
-                                'analyzer' => 'alumni_analyzer'
-                            ]
-                        ]
+                                'analyzer' => 'alumni_analyzer',
+                            ],
+                        ],
                     ],
                     'created_at' => ['type' => 'date'],
                     'updated_at' => ['type' => 'date'],
                     'last_active' => ['type' => 'date'],
                     'profile_completeness' => ['type' => 'integer'],
                     'connection_count' => ['type' => 'integer'],
-                    'post_count' => ['type' => 'integer']
-                ]
-            ]
-        ]
-    ]
+                    'post_count' => ['type' => 'integer'],
+                ],
+            ],
+        ],
+    ],
 ];

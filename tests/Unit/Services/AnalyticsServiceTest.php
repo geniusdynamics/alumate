@@ -2,16 +2,16 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use App\Services\AnalyticsService;
-use App\Models\Graduate;
+use App\Models\AnalyticsSnapshot;
 use App\Models\Course;
+use App\Models\Employer;
+use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Employer;
 use App\Models\KpiDefinition;
-use App\Models\AnalyticsSnapshot;
+use App\Services\AnalyticsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class AnalyticsServiceTest extends TestCase
 {
@@ -58,11 +58,11 @@ class AnalyticsServiceTest extends TestCase
         $course = Course::factory()->create();
         Graduate::factory()->count(5)->create([
             'course_id' => $course->id,
-            'employment_status' => ['status' => 'employed']
+            'employment_status' => ['status' => 'employed'],
         ]);
         Graduate::factory()->count(2)->create([
             'course_id' => $course->id,
-            'employment_status' => ['status' => 'unemployed']
+            'employment_status' => ['status' => 'unemployed'],
         ]);
 
         $analytics = $this->analyticsService->getEmploymentAnalytics();
@@ -102,13 +102,13 @@ class AnalyticsServiceTest extends TestCase
                 'numerator' => [
                     'model' => 'App\\Models\\Graduate',
                     'filters' => [
-                        ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed']
-                    ]
+                        ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed'],
+                    ],
                 ],
                 'denominator' => [
                     'model' => 'App\\Models\\Graduate',
-                    'filters' => []
-                ]
+                    'filters' => [],
+                ],
             ],
             'target_type' => 'minimum',
             'target_value' => 80.0,
@@ -182,16 +182,16 @@ class AnalyticsServiceTest extends TestCase
     public function test_can_calculate_placement_success_rate(): void
     {
         $course = Course::factory()->create();
-        
+
         // Create graduates with job applications
         $graduates = Graduate::factory()->count(10)->create(['course_id' => $course->id]);
         $job = Job::factory()->create();
-        
+
         // 6 successful placements
         JobApplication::factory()->count(6)->create([
             'job_id' => $job->id,
             'graduate_id' => $graduates->random()->id,
-            'status' => 'hired'
+            'status' => 'hired',
         ]);
 
         $successRate = $this->analyticsService->calculatePlacementSuccessRate($course->id);
@@ -204,14 +204,14 @@ class AnalyticsServiceTest extends TestCase
         Graduate::factory()->count(5)->create([
             'employment_status' => [
                 'status' => 'employed',
-                'salary' => 50000
-            ]
+                'salary' => 50000,
+            ],
         ]);
         Graduate::factory()->count(3)->create([
             'employment_status' => [
                 'status' => 'employed',
-                'salary' => 75000
-            ]
+                'salary' => 75000,
+            ],
         ]);
 
         $distribution = $this->analyticsService->getSalaryDistribution();

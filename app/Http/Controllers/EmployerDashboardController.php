@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
+use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Graduate;
-use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class EmployerDashboardController extends Controller
@@ -20,7 +19,7 @@ class EmployerDashboardController extends Controller
         // Get or create employer profile
         $employer = $user->employer;
 
-        if (!$employer) {
+        if (! $employer) {
             // Create a default employer profile if none exists
             $employer = \App\Models\Employer::create([
                 'user_id' => $user->id,
@@ -58,7 +57,7 @@ class EmployerDashboardController extends Controller
     public function jobManagement(Request $request)
     {
         $employer = Auth::user()->employer;
-        
+
         $query = Job::where('employer_id', $employer->id)
             ->with(['course', 'applications']);
 
@@ -68,9 +67,9 @@ class EmployerDashboardController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -79,7 +78,7 @@ class EmployerDashboardController extends Controller
         }
 
         $jobs = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+
         $courses = Course::active()->orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Employer/JobManagement', [
@@ -92,8 +91,8 @@ class EmployerDashboardController extends Controller
     public function applicationManagement(Request $request)
     {
         $employer = Auth::user()->employer;
-        
-        $query = JobApplication::whereHas('job', function($q) use ($employer) {
+
+        $query = JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         })->with(['job', 'graduate.user', 'graduate.course']);
 
@@ -107,16 +106,16 @@ class EmployerDashboardController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->whereHas('graduate', function($q) use ($request) {
-                $q->whereHas('user', function($userQuery) use ($request) {
-                    $userQuery->where('name', 'like', '%' . $request->search . '%')
-                             ->orWhere('email', 'like', '%' . $request->search . '%');
+            $query->whereHas('graduate', function ($q) use ($request) {
+                $q->whereHas('user', function ($userQuery) use ($request) {
+                    $userQuery->where('name', 'like', '%'.$request->search.'%')
+                        ->orWhere('email', 'like', '%'.$request->search.'%');
                 });
             });
         }
 
         $applications = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+
         $jobs = Job::where('employer_id', $employer->id)
             ->orderBy('title')
             ->get(['id', 'title']);
@@ -131,8 +130,8 @@ class EmployerDashboardController extends Controller
     public function graduateSearch(Request $request)
     {
         $employer = Auth::user()->employer;
-        
-        if (!$employer->can_search_graduates) {
+
+        if (! $employer->can_search_graduates) {
             return back()->with('error', 'Your account does not have permission to search graduates.');
         }
 
@@ -142,9 +141,9 @@ class EmployerDashboardController extends Controller
 
         // Apply advanced filters
         if ($request->filled('search')) {
-            $query->whereHas('user', function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('email', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -162,7 +161,7 @@ class EmployerDashboardController extends Controller
 
         if ($request->filled('skills')) {
             $skills = explode(',', $request->skills);
-            $query->where(function($q) use ($skills) {
+            $query->where(function ($q) use ($skills) {
                 foreach ($skills as $skill) {
                     $q->orWhereJsonContains('skills', trim($skill));
                 }
@@ -170,12 +169,12 @@ class EmployerDashboardController extends Controller
         }
 
         if ($request->filled('location')) {
-            $query->where('personal_information->address', 'like', '%' . $request->location . '%');
+            $query->where('personal_information->address', 'like', '%'.$request->location.'%');
         }
 
         $graduates = $query->orderBy('graduation_year', 'desc')
             ->paginate(20);
-        
+
         $courses = Course::active()->orderBy('name')->get(['id', 'name']);
         $graduationYears = Graduate::distinct()
             ->orderBy('graduation_year', 'desc')
@@ -187,8 +186,8 @@ class EmployerDashboardController extends Controller
             'courses' => $courses,
             'graduationYears' => $graduationYears,
             'filters' => $request->only([
-                'search', 'course_id', 'graduation_year', 
-                'employment_status', 'skills', 'location'
+                'search', 'course_id', 'graduation_year',
+                'employment_status', 'skills', 'location',
             ]),
         ]);
     }
@@ -196,7 +195,7 @@ class EmployerDashboardController extends Controller
     public function companyProfile()
     {
         $employer = Auth::user()->employer;
-        
+
         return Inertia::render('Employer/CompanyProfile', [
             'employer' => $employer,
         ]);
@@ -205,7 +204,7 @@ class EmployerDashboardController extends Controller
     public function analytics()
     {
         $employer = Auth::user()->employer;
-        
+
         $analytics = [
             'overview' => $this->getAnalyticsOverview($employer),
             'job_performance' => $this->getJobPerformanceAnalytics($employer),
@@ -226,13 +225,13 @@ class EmployerDashboardController extends Controller
         return [
             'total_jobs_posted' => $employer->total_jobs_posted ?? 0,
             'active_jobs' => $employer->active_jobs_count ?? 0,
-            'total_applications' => JobApplication::whereHas('job', function($q) use ($employer) {
+            'total_applications' => JobApplication::whereHas('job', function ($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })->count(),
-            'pending_applications' => JobApplication::whereHas('job', function($q) use ($employer) {
+            'pending_applications' => JobApplication::whereHas('job', function ($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })->where('status', 'pending')->count(),
-            'shortlisted_candidates' => JobApplication::whereHas('job', function($q) use ($employer) {
+            'shortlisted_candidates' => JobApplication::whereHas('job', function ($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })->where('status', 'shortlisted')->count(),
             'total_hires' => $employer->total_hires ?? 0,
@@ -245,13 +244,13 @@ class EmployerDashboardController extends Controller
 
     private function getRecentActivities($employer)
     {
-        $recentApplications = JobApplication::whereHas('job', function($q) use ($employer) {
+        $recentApplications = JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         })
-        ->with(['job', 'graduate.user'])
-        ->orderBy('created_at', 'desc')
-        ->limit(10)
-        ->get();
+            ->with(['job', 'graduate.user'])
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
 
         $recentJobs = Job::where('employer_id', $employer->id)
             ->orderBy('created_at', 'desc')
@@ -283,21 +282,21 @@ class EmployerDashboardController extends Controller
 
     private function getHiringAnalytics($employer)
     {
-        $totalApplications = JobApplication::whereHas('job', function($q) use ($employer) {
+        $totalApplications = JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         })->count();
 
-        $hiredCount = JobApplication::whereHas('job', function($q) use ($employer) {
+        $hiredCount = JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         })->where('status', 'hired')->count();
 
-        $averageTimeToHire = JobApplication::whereHas('job', function($q) use ($employer) {
+        $averageTimeToHire = JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         })
-        ->where('status', 'hired')
-        ->whereNotNull('hired_at')
-        ->selectRaw('AVG(EXTRACT(DAY FROM (hired_at - created_at))) as avg_days')
-        ->value('avg_days');
+            ->where('status', 'hired')
+            ->whereNotNull('hired_at')
+            ->selectRaw('AVG(EXTRACT(DAY FROM (hired_at - created_at))) as avg_days')
+            ->value('avg_days');
 
         return [
             'hire_rate' => $totalApplications > 0 ? ($hiredCount / $totalApplications) * 100 : 0,
@@ -309,19 +308,19 @@ class EmployerDashboardController extends Controller
     private function getAnalyticsOverview($employer)
     {
         $last30Days = now()->subDays(30);
-        
+
         return [
             'jobs_posted_last_30_days' => Job::where('employer_id', $employer->id)
                 ->where('created_at', '>=', $last30Days)
                 ->count(),
-            'applications_last_30_days' => JobApplication::whereHas('job', function($q) use ($employer) {
+            'applications_last_30_days' => JobApplication::whereHas('job', function ($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })->where('created_at', '>=', $last30Days)->count(),
-            'hires_last_30_days' => JobApplication::whereHas('job', function($q) use ($employer) {
+            'hires_last_30_days' => JobApplication::whereHas('job', function ($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })->where('status', 'hired')
-              ->where('hired_at', '>=', $last30Days)
-              ->count(),
+                ->where('hired_at', '>=', $last30Days)
+                ->count(),
         ];
     }
 
@@ -336,19 +335,19 @@ class EmployerDashboardController extends Controller
 
     private function getApplicationTrends($employer)
     {
-        return JobApplication::whereHas('job', function($q) use ($employer) {
+        return JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         })
-        ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
-        ->where('created_at', '>=', now()->subDays(30))
-        ->groupBy('date')
-        ->orderBy('date')
-        ->get();
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+            ->where('created_at', '>=', now()->subDays(30))
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get();
     }
 
     private function getHiringMetrics($employer)
     {
-        $applications = JobApplication::whereHas('job', function($q) use ($employer) {
+        $applications = JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         });
 
@@ -365,7 +364,7 @@ class EmployerDashboardController extends Controller
 
     private function getCandidateInsights($employer)
     {
-        $applications = JobApplication::whereHas('job', function($q) use ($employer) {
+        $applications = JobApplication::whereHas('job', function ($q) use ($employer) {
             $q->where('employer_id', $employer->id);
         })->with(['graduate.course']);
 
@@ -386,12 +385,12 @@ class EmployerDashboardController extends Controller
     public function communications(Request $request)
     {
         $employer = Auth::user()->employer;
-        
+
         // For now, return a placeholder implementation
         // In a real implementation, you would have a conversations/messages system
         $conversations = collect([]);
         $candidates = Graduate::with(['user', 'course'])
-            ->whereHas('applications.job', function($q) use ($employer) {
+            ->whereHas('applications.job', function ($q) use ($employer) {
                 $q->where('employer_id', $employer->id);
             })
             ->get();

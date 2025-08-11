@@ -20,7 +20,7 @@ class SkillsController extends Controller
     public function addSkill(Request $request)
     {
         $request->validate([
-            'skill' => 'required|string|max:100'
+            'skill' => 'required|string|max:100',
         ]);
 
         $user = Auth::user();
@@ -37,7 +37,7 @@ class SkillsController extends Controller
 
         if ($existingUserSkill) {
             throw ValidationException::withMessages([
-                'skill' => 'You already have this skill in your profile.'
+                'skill' => 'You already have this skill in your profile.',
             ]);
         }
 
@@ -46,15 +46,15 @@ class SkillsController extends Controller
             'proficiency_level' => 'beginner',
             'years_of_experience' => 0,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         return response()->json([
             'success' => true,
             'data' => [
                 'skill' => $skill,
-                'message' => 'Skill added to your profile successfully!'
-            ]
+                'message' => 'Skill added to your profile successfully!',
+            ],
         ]);
     }
 
@@ -63,7 +63,7 @@ class SkillsController extends Controller
         $request->validate([
             'skill_id' => 'required|exists:skills,id',
             'endorser_id' => 'required|exists:users,id',
-            'message' => 'nullable|string|max:500'
+            'message' => 'nullable|string|max:500',
         ]);
 
         $user = Auth::user();
@@ -72,9 +72,9 @@ class SkillsController extends Controller
 
         // Check if user has this skill
         $userSkill = $user->skills()->where('skill_id', $skill->id)->first();
-        if (!$userSkill) {
+        if (! $userSkill) {
             throw ValidationException::withMessages([
-                'skill_id' => 'You do not have this skill in your profile.'
+                'skill_id' => 'You do not have this skill in your profile.',
             ]);
         }
 
@@ -82,18 +82,18 @@ class SkillsController extends Controller
         $connection = DB::table('connections')
             ->where(function ($query) use ($user, $endorser) {
                 $query->where('user_id', $user->id)
-                      ->where('connected_user_id', $endorser->id);
+                    ->where('connected_user_id', $endorser->id);
             })
             ->orWhere(function ($query) use ($user, $endorser) {
                 $query->where('user_id', $endorser->id)
-                      ->where('connected_user_id', $user->id);
+                    ->where('connected_user_id', $user->id);
             })
             ->where('status', 'accepted')
             ->first();
 
-        if (!$connection) {
+        if (! $connection) {
             throw ValidationException::withMessages([
-                'endorser_id' => 'You must be connected to request an endorsement.'
+                'endorser_id' => 'You must be connected to request an endorsement.',
             ]);
         }
 
@@ -107,7 +107,7 @@ class SkillsController extends Controller
 
         if ($existingRequest) {
             throw ValidationException::withMessages([
-                'endorser_id' => 'You have already requested an endorsement from this person for this skill.'
+                'endorser_id' => 'You have already requested an endorsement from this person for this skill.',
             ]);
         }
 
@@ -119,18 +119,18 @@ class SkillsController extends Controller
             'message' => $request->message,
             'status' => 'pending',
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         // TODO: Send notification to endorser
 
         return response()->json([
             'success' => true,
-            'message' => 'Endorsement request sent successfully!'
+            'message' => 'Endorsement request sent successfully!',
         ]);
     }
 
-    public function getUserSkills(User $user = null)
+    public function getUserSkills(?User $user = null)
     {
         $targetUser = $user ?? Auth::user();
 
@@ -141,7 +141,7 @@ class SkillsController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => ['skills' => $skills]
+            'data' => ['skills' => $skills],
         ]);
     }
 
@@ -149,16 +149,16 @@ class SkillsController extends Controller
     {
         $request->validate([
             'proficiency_level' => 'required|in:beginner,intermediate,advanced,expert',
-            'years_of_experience' => 'required|integer|min:0|max:50'
+            'years_of_experience' => 'required|integer|min:0|max:50',
         ]);
 
         $user = Auth::user();
 
         // Check if user has this skill
         $userSkill = $user->skills()->where('skill_id', $skill->id)->first();
-        if (!$userSkill) {
+        if (! $userSkill) {
             throw ValidationException::withMessages([
-                'skill' => 'You do not have this skill in your profile.'
+                'skill' => 'You do not have this skill in your profile.',
             ]);
         }
 
@@ -166,12 +166,12 @@ class SkillsController extends Controller
         $user->skills()->updateExistingPivot($skill->id, [
             'proficiency_level' => $request->proficiency_level,
             'years_of_experience' => $request->years_of_experience,
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Skill updated successfully!'
+            'message' => 'Skill updated successfully!',
         ]);
     }
 
@@ -181,9 +181,9 @@ class SkillsController extends Controller
 
         // Check if user has this skill
         $userSkill = $user->skills()->where('skill_id', $skill->id)->first();
-        if (!$userSkill) {
+        if (! $userSkill) {
             throw ValidationException::withMessages([
-                'skill' => 'You do not have this skill in your profile.'
+                'skill' => 'You do not have this skill in your profile.',
             ]);
         }
 
@@ -192,7 +192,7 @@ class SkillsController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Skill removed from your profile.'
+            'message' => 'Skill removed from your profile.',
         ]);
     }
 
@@ -200,7 +200,7 @@ class SkillsController extends Controller
     {
         $request->validate([
             'endorsement_request_id' => 'required|exists:endorsement_requests,id',
-            'comment' => 'nullable|string|max:500'
+            'comment' => 'nullable|string|max:500',
         ]);
 
         $user = Auth::user();
@@ -213,9 +213,9 @@ class SkillsController extends Controller
             ->where('status', 'pending')
             ->first();
 
-        if (!$endorsementRequest) {
+        if (! $endorsementRequest) {
             throw ValidationException::withMessages([
-                'endorsement_request_id' => 'Invalid or already processed endorsement request.'
+                'endorsement_request_id' => 'Invalid or already processed endorsement request.',
             ]);
         }
 
@@ -226,7 +226,7 @@ class SkillsController extends Controller
             'endorser_id' => $user->id,
             'comment' => $request->comment,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         // Update the request status
@@ -234,12 +234,12 @@ class SkillsController extends Controller
             ->where('id', $requestId)
             ->update([
                 'status' => 'approved',
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Skill endorsed successfully!'
+            'message' => 'Skill endorsed successfully!',
         ]);
     }
 }

@@ -2,13 +2,13 @@
 
 namespace Tests\Security;
 
-use Tests\TestCase;
-use App\Models\User;
 use App\Models\FailedLoginAttempt;
 use App\Models\SecurityEvent;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Tests\TestCase;
 
 class AuthenticationSecurityTest extends TestCase
 {
@@ -18,16 +18,16 @@ class AuthenticationSecurityTest extends TestCase
     {
         $user = User::factory()->create([
             'email' => 'test@example.com',
-            'password' => Hash::make('correct-password')
+            'password' => Hash::make('correct-password'),
         ]);
 
         // Attempt multiple failed logins
         for ($i = 0; $i < 5; $i++) {
             $response = $this->post(route('login'), [
                 'email' => 'test@example.com',
-                'password' => 'wrong-password'
+                'password' => 'wrong-password',
             ]);
-            
+
             $response->assertSessionHasErrors('email');
         }
 
@@ -39,16 +39,16 @@ class AuthenticationSecurityTest extends TestCase
         // Verify that even correct password is rejected when blocked
         $response = $this->post(route('login'), [
             'email' => 'test@example.com',
-            'password' => 'correct-password'
+            'password' => 'correct-password',
         ]);
-        
+
         $response->assertSessionHasErrors();
         $this->assertGuest();
 
         // Verify security event was logged
         $this->assertDatabaseHas('security_events', [
             'event_type' => SecurityEvent::TYPE_FAILED_LOGIN,
-            'severity' => SecurityEvent::SEVERITY_MEDIUM
+            'severity' => SecurityEvent::SEVERITY_MEDIUM,
         ]);
     }
 
@@ -59,21 +59,21 @@ class AuthenticationSecurityTest extends TestCase
 
         $user = User::factory()->create([
             'email' => 'test@example.com',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         // Make rapid login attempts from same IP
         for ($i = 0; $i < 10; $i++) {
             $response = $this->post(route('login'), [
                 'email' => 'test@example.com',
-                'password' => 'wrong-password'
+                'password' => 'wrong-password',
             ]);
         }
 
         // Next attempt should be rate limited
         $response = $this->post(route('login'), [
             'email' => 'test@example.com',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(429); // Too Many Requests
@@ -90,7 +90,7 @@ class AuthenticationSecurityTest extends TestCase
         // Login user
         $response = $this->post(route('login'), [
             'email' => $user->email,
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         // Session ID should change after login
@@ -104,17 +104,17 @@ class AuthenticationSecurityTest extends TestCase
 
         // Attempt login without CSRF token
         $response = $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)
-                         ->post(route('login'), [
-                             'email' => $user->email,
-                             'password' => 'password'
-                         ]);
+            ->post(route('login'), [
+                'email' => $user->email,
+                'password' => 'password',
+            ]);
 
         // With CSRF middleware enabled, this should fail
         $this->withMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
-        
+
         $response = $this->post(route('login'), [
             'email' => $user->email,
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertStatus(419); // CSRF token mismatch
@@ -128,7 +128,7 @@ class AuthenticationSecurityTest extends TestCase
             'password',
             'qwerty',
             'abc123',
-            '12345678'
+            '12345678',
         ];
 
         foreach ($weakPasswords as $weakPassword) {
@@ -136,7 +136,7 @@ class AuthenticationSecurityTest extends TestCase
                 'name' => 'Test User',
                 'email' => 'test@example.com',
                 'password' => $weakPassword,
-                'password_confirmation' => $weakPassword
+                'password_confirmation' => $weakPassword,
             ]);
 
             $response->assertSessionHasErrors('password');
@@ -147,7 +147,7 @@ class AuthenticationSecurityTest extends TestCase
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'StrongP@ssw0rd123!',
-            'password_confirmation' => 'StrongP@ssw0rd123!'
+            'password_confirmation' => 'StrongP@ssw0rd123!',
         ]);
 
         $response->assertRedirect();
@@ -159,14 +159,14 @@ class AuthenticationSecurityTest extends TestCase
         // Create a user
         User::factory()->create([
             'email' => 'existing@example.com',
-            'password' => Hash::make('password')
+            'password' => Hash::make('password'),
         ]);
 
         // Measure time for existing user with wrong password
         $start = microtime(true);
         $this->post(route('login'), [
             'email' => 'existing@example.com',
-            'password' => 'wrong-password'
+            'password' => 'wrong-password',
         ]);
         $existingUserTime = microtime(true) - $start;
 
@@ -174,7 +174,7 @@ class AuthenticationSecurityTest extends TestCase
         $start = microtime(true);
         $this->post(route('login'), [
             'email' => 'nonexisting@example.com',
-            'password' => 'wrong-password'
+            'password' => 'wrong-password',
         ]);
         $nonExistingUserTime = microtime(true) - $start;
 
@@ -192,11 +192,11 @@ class AuthenticationSecurityTest extends TestCase
 
         foreach ($suspiciousIPs as $ip) {
             $this->app['request']->server->set('REMOTE_ADDR', $ip);
-            
+
             for ($i = 0; $i < 3; $i++) {
                 $this->post(route('login'), [
                     'email' => 'target@example.com',
-                    'password' => 'wrong-password'
+                    'password' => 'wrong-password',
                 ]);
             }
         }
@@ -204,7 +204,7 @@ class AuthenticationSecurityTest extends TestCase
         // Should log suspicious activity
         $this->assertDatabaseHas('security_events', [
             'event_type' => SecurityEvent::TYPE_SUSPICIOUS_ACTIVITY,
-            'severity' => SecurityEvent::SEVERITY_HIGH
+            'severity' => SecurityEvent::SEVERITY_HIGH,
         ]);
     }
 
@@ -215,13 +215,13 @@ class AuthenticationSecurityTest extends TestCase
         // Attempt multiple password reset requests
         for ($i = 0; $i < 10; $i++) {
             $response = $this->post(route('password.email'), [
-                'email' => 'test@example.com'
+                'email' => 'test@example.com',
             ]);
         }
 
         // Should be rate limited
         $response = $this->post(route('password.email'), [
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
         ]);
 
         $response->assertStatus(429);
@@ -236,19 +236,19 @@ class AuthenticationSecurityTest extends TestCase
             'token' => 'invalid-token',
             'email' => 'test@example.com',
             'password' => 'NewP@ssw0rd123!',
-            'password_confirmation' => 'NewP@ssw0rd123!'
+            'password_confirmation' => 'NewP@ssw0rd123!',
         ]);
 
         $response->assertSessionHasErrors('email');
 
         // Test with expired token (simulate)
         $expiredToken = 'expired-token-12345';
-        
+
         $response = $this->post(route('password.update'), [
             'token' => $expiredToken,
             'email' => 'test@example.com',
             'password' => 'NewP@ssw0rd123!',
-            'password_confirmation' => 'NewP@ssw0rd123!'
+            'password_confirmation' => 'NewP@ssw0rd123!',
         ]);
 
         $response->assertSessionHasErrors();
@@ -260,18 +260,18 @@ class AuthenticationSecurityTest extends TestCase
 
         $response = $this->post(route('login'), [
             'email' => $user->email,
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         // Check session cookie security settings
         $cookies = $response->headers->getCookies();
-        $sessionCookie = collect($cookies)->first(function($cookie) {
+        $sessionCookie = collect($cookies)->first(function ($cookie) {
             return $cookie->getName() === config('session.cookie');
         });
 
         if ($sessionCookie) {
             $this->assertTrue($sessionCookie->isHttpOnly(), 'Session cookie should be HTTP only');
-            $this->assertTrue($sessionCookie->isSecure() || !config('app.env') === 'production', 'Session cookie should be secure in production');
+            $this->assertTrue($sessionCookie->isSecure() || ! config('app.env') === 'production', 'Session cookie should be secure in production');
         }
     }
 
@@ -282,7 +282,7 @@ class AuthenticationSecurityTest extends TestCase
         // Login from first session
         $response1 = $this->post(route('login'), [
             'email' => $user->email,
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $this->assertAuthenticated();
@@ -293,13 +293,13 @@ class AuthenticationSecurityTest extends TestCase
 
         $response2 = $this->post(route('login'), [
             'email' => $user->email,
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         // Should log security event for concurrent sessions
         $this->assertDatabaseHas('security_events', [
             'user_id' => $user->id,
-            'event_type' => SecurityEvent::TYPE_CONCURRENT_SESSION
+            'event_type' => SecurityEvent::TYPE_CONCURRENT_SESSION,
         ]);
     }
 
@@ -310,18 +310,18 @@ class AuthenticationSecurityTest extends TestCase
 
         // Simulate credential stuffing attack (same password for multiple accounts)
         $commonPassword = 'password123';
-        
+
         foreach ($users as $user) {
             $this->post(route('login'), [
                 'email' => $user->email,
-                'password' => $commonPassword
+                'password' => $commonPassword,
             ]);
         }
 
         // Should detect and log credential stuffing attempt
         $this->assertDatabaseHas('security_events', [
             'event_type' => SecurityEvent::TYPE_CREDENTIAL_STUFFING,
-            'severity' => SecurityEvent::SEVERITY_CRITICAL
+            'severity' => SecurityEvent::SEVERITY_CRITICAL,
         ]);
     }
 
@@ -333,7 +333,7 @@ class AuthenticationSecurityTest extends TestCase
         for ($i = 0; $i < 6; $i++) {
             $this->post(route('login'), [
                 'email' => 'test@example.com',
-                'password' => 'wrong-password'
+                'password' => 'wrong-password',
             ]);
         }
 
@@ -347,7 +347,7 @@ class AuthenticationSecurityTest extends TestCase
         // Should be able to login again
         $response = $this->post(route('login'), [
             'email' => 'test@example.com',
-            'password' => 'password'
+            'password' => 'password',
         ]);
 
         $response->assertRedirect(route('dashboard'));
@@ -361,21 +361,21 @@ class AuthenticationSecurityTest extends TestCase
         // Test with invalid verification link
         $response = $this->get(route('verification.verify', [
             'id' => $user->id,
-            'hash' => 'invalid-hash'
+            'hash' => 'invalid-hash',
         ]));
 
         $response->assertStatus(403);
 
         // Test with valid verification link
         $validHash = sha1($user->getEmailForVerification());
-        
+
         $response = $this->get(route('verification.verify', [
             'id' => $user->id,
-            'hash' => $validHash
+            'hash' => $validHash,
         ]));
 
         $response->assertRedirect();
-        
+
         $user->refresh();
         $this->assertNotNull($user->email_verified_at);
     }

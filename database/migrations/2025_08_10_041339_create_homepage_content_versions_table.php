@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('change_notes')->nullable(); // Notes about what changed
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
-            
+
             $table->unique(['homepage_content_id', 'version_number']);
             $table->index(['homepage_content_id', 'created_at']);
         });

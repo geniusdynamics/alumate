@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use App\Services\HomepageService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class EnterpriseMetricsTest extends TestCase
 {
@@ -23,7 +23,7 @@ class EnterpriseMetricsTest extends TestCase
     {
         $params = [
             'timeframe' => '12_months',
-            'metrics' => ['engagement', 'financial']
+            'metrics' => ['engagement', 'financial'],
         ];
 
         $result = $this->homepageService->getEnterpriseMetrics($params);
@@ -31,14 +31,14 @@ class EnterpriseMetricsTest extends TestCase
         $this->assertArrayHasKey('metrics', $result);
         $this->assertArrayHasKey('roi_data', $result);
         $this->assertArrayHasKey('summary', $result);
-        
+
         // Check that metrics are filtered correctly
-        $engagementMetrics = array_filter($result['metrics'], fn($m) => $m['category'] === 'engagement');
-        $financialMetrics = array_filter($result['metrics'], fn($m) => $m['category'] === 'financial');
-        
+        $engagementMetrics = array_filter($result['metrics'], fn ($m) => $m['category'] === 'engagement');
+        $financialMetrics = array_filter($result['metrics'], fn ($m) => $m['category'] === 'financial');
+
         $this->assertNotEmpty($engagementMetrics);
         $this->assertNotEmpty($financialMetrics);
-        
+
         // Check ROI data structure
         $this->assertArrayHasKey('percentage', $result['roi_data']);
         $this->assertArrayHasKey('investment', $result['roi_data']);
@@ -50,7 +50,7 @@ class EnterpriseMetricsTest extends TestCase
     public function it_can_get_institutional_comparison_data()
     {
         $params = [
-            'institution_id' => 'stanford_university'
+            'institution_id' => 'stanford_university',
         ];
 
         $result = $this->homepageService->getInstitutionalComparison($params);
@@ -86,7 +86,7 @@ class EnterpriseMetricsTest extends TestCase
         $params = [
             'institution_type' => 'university',
             'alumni_count' => 50000,
-            'complexity' => 'standard'
+            'complexity' => 'standard',
         ];
 
         $result = $this->homepageService->getImplementationTimeline($params);
@@ -122,7 +122,7 @@ class EnterpriseMetricsTest extends TestCase
     {
         $params = [
             'institution_id' => 'test_institution',
-            'metrics' => ['alumni_engagement', 'event_attendance']
+            'metrics' => ['alumni_engagement', 'event_attendance'],
         ];
 
         $result = $this->homepageService->getSuccessMetricsTracking($params);
@@ -192,35 +192,35 @@ class EnterpriseMetricsTest extends TestCase
         $response = $this->getJson('/api/homepage/enterprise-metrics?timeframe=12_months&metrics[]=engagement&metrics[]=financial');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'metrics' => [
-                            '*' => [
-                                'id',
-                                'name',
-                                'category',
-                                'beforeValue',
-                                'afterValue',
-                                'improvementPercentage',
-                                'timeframe',
-                                'verified',
-                                'unit'
-                            ]
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'metrics' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'category',
+                            'beforeValue',
+                            'afterValue',
+                            'improvementPercentage',
+                            'timeframe',
+                            'verified',
+                            'unit',
                         ],
-                        'roi_data' => [
-                            'percentage',
-                            'investment',
-                            'return',
-                            'timeframe'
-                        ],
-                        'summary' => [
-                            'total_metrics',
-                            'verified_metrics',
-                            'average_improvement'
-                        ]
-                    ]
-                ]);
+                    ],
+                    'roi_data' => [
+                        'percentage',
+                        'investment',
+                        'return',
+                        'timeframe',
+                    ],
+                    'summary' => [
+                        'total_metrics',
+                        'verified_metrics',
+                        'average_improvement',
+                    ],
+                ],
+            ]);
     }
 
     /** @test */
@@ -229,19 +229,19 @@ class EnterpriseMetricsTest extends TestCase
         $response = $this->getJson('/api/homepage/institutional-comparison?institution_id=stanford_university');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'title',
-                        'institution_name',
-                        'before_metrics',
-                        'after_metrics',
-                        'before_challenges',
-                        'after_benefits',
-                        'timeframe',
-                        'impact_summary'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'title',
+                    'institution_name',
+                    'before_metrics',
+                    'after_metrics',
+                    'before_challenges',
+                    'after_benefits',
+                    'timeframe',
+                    'impact_summary',
+                ],
+            ]);
     }
 
     /** @test */
@@ -250,25 +250,25 @@ class EnterpriseMetricsTest extends TestCase
         $response = $this->getJson('/api/homepage/implementation-timeline?institution_type=university&complexity=standard');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'title',
-                        'total_duration',
-                        'phases' => [
-                            '*' => [
-                                'id',
-                                'name',
-                                'description',
-                                'duration',
-                                'deliverables',
-                                'dependencies',
-                                'milestones',
-                                'status'
-                            ]
-                        ]
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'title',
+                    'total_duration',
+                    'phases' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'description',
+                            'duration',
+                            'deliverables',
+                            'dependencies',
+                            'milestones',
+                            'status',
+                        ],
+                    ],
+                ],
+            ]);
     }
 
     /** @test */
@@ -277,37 +277,37 @@ class EnterpriseMetricsTest extends TestCase
         $response = $this->getJson('/api/homepage/success-metrics-tracking?institution_id=test_institution');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'title',
-                        'metrics' => [
-                            '*' => [
-                                'id',
-                                'name',
-                                'category',
-                                'current_value',
-                                'target_value',
-                                'unit',
-                                'trend',
-                                'verified'
-                            ]
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'title',
+                    'metrics' => [
+                        '*' => [
+                            'id',
+                            'name',
+                            'category',
+                            'current_value',
+                            'target_value',
+                            'unit',
+                            'trend',
+                            'verified',
                         ],
-                        'insights',
-                        'last_updated',
-                        'summary'
-                    ]
-                ]);
+                    ],
+                    'insights',
+                    'last_updated',
+                    'summary',
+                ],
+            ]);
     }
 
     /** @test */
     public function enterprise_metrics_calculates_improvement_percentages_correctly()
     {
         $result = $this->homepageService->getEnterpriseMetrics();
-        
+
         foreach ($result['metrics'] as $metric) {
             $expectedImprovement = round((($metric['afterValue'] - $metric['beforeValue']) / $metric['beforeValue']) * 100);
-            $this->assertEquals($expectedImprovement, $metric['improvementPercentage'], 
+            $this->assertEquals($expectedImprovement, $metric['improvementPercentage'],
                 "Improvement percentage calculation is incorrect for metric: {$metric['name']}");
         }
     }
@@ -316,7 +316,7 @@ class EnterpriseMetricsTest extends TestCase
     public function success_metrics_tracking_calculates_progress_correctly()
     {
         $result = $this->homepageService->getSuccessMetricsTracking();
-        
+
         foreach ($result['metrics'] as $metric) {
             $expectedProgress = min(100, ($metric['current_value'] / $metric['target_value']) * 100);
             $this->assertGreaterThanOrEqual(0, $expectedProgress);
@@ -326,8 +326,8 @@ class EnterpriseMetricsTest extends TestCase
         // Verify summary calculations
         $summary = $result['summary'];
         $totalMetrics = count($result['metrics']);
-        
-        $this->assertEquals($totalMetrics, 
+
+        $this->assertEquals($totalMetrics,
             $summary['metrics_on_track'] + $summary['metrics_exceeding'] + $summary['metrics_behind'],
             "Summary metrics count doesn't match total metrics");
     }

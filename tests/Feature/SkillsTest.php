@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Skill;
-use App\Models\UserSkill;
-use App\Models\SkillEndorsement;
 use App\Models\LearningResource;
+use App\Models\Skill;
+use App\Models\SkillEndorsement;
+use App\Models\User;
+use App\Models\UserSkill;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,13 +15,15 @@ class SkillsTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected User $endorser;
+
     protected Skill $skill;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->endorser = User::factory()->create();
         $this->skill = Skill::factory()->create([
@@ -48,8 +50,8 @@ class SkillsTest extends TestCase
                     'id',
                     'proficiency_level',
                     'years_experience',
-                    'skill' => ['name', 'category']
-                ]
+                    'skill' => ['name', 'category'],
+                ],
             ]);
 
         $this->assertDatabaseHas('skills', ['name' => 'React']);
@@ -81,11 +83,11 @@ class SkillsTest extends TestCase
                         'years_experience',
                         'endorsed_count',
                         'skill' => ['name', 'category'],
-                        'endorsements'
-                    ]
+                        'endorsements',
+                    ],
                 ],
                 'total_skills',
-                'total_endorsements'
+                'total_endorsements',
             ]);
     }
 
@@ -109,8 +111,8 @@ class SkillsTest extends TestCase
                     'id',
                     'message',
                     'user_skill' => ['skill' => ['name']],
-                    'endorser' => ['name']
-                ]
+                    'endorser' => ['name'],
+                ],
             ]);
 
         $this->assertDatabaseHas('skill_endorsements', [
@@ -137,7 +139,7 @@ class SkillsTest extends TestCase
 
         $response->assertStatus(400)
             ->assertJson([
-                'message' => 'Users cannot endorse their own skills'
+                'message' => 'Users cannot endorse their own skills',
             ]);
     }
 
@@ -153,9 +155,9 @@ class SkillsTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'skills' => [
-                    '*' => ['id', 'name', 'category', 'is_verified']
+                    '*' => ['id', 'name', 'category', 'is_verified'],
                 ],
-                'count'
+                'count',
             ]);
 
         $skills = $response->json('skills');
@@ -170,7 +172,7 @@ class SkillsTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'suggestions',
-                'count'
+                'count',
             ]);
     }
 
@@ -195,8 +197,8 @@ class SkillsTest extends TestCase
                     'type',
                     'url',
                     'creator' => ['name'],
-                    'skills'
-                ]
+                    'skills',
+                ],
             ]);
 
         $this->assertDatabaseHas('learning_resources', [
@@ -220,7 +222,7 @@ class SkillsTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonStructure([
                 'message',
-                'resource' => ['rating', 'rating_count']
+                'resource' => ['rating', 'rating_count'],
             ]);
 
         $resource->refresh();
@@ -249,7 +251,7 @@ class SkillsTest extends TestCase
                 'current_level',
                 'years_experience',
                 'total_endorsements',
-                'progression'
+                'progression',
             ]);
     }
 
@@ -278,10 +280,10 @@ class SkillsTest extends TestCase
                         'id',
                         'title',
                         'type',
-                        'rating'
-                    ]
+                        'rating',
+                    ],
                 ],
-                'count'
+                'count',
             ]);
     }
 
@@ -301,7 +303,7 @@ class SkillsTest extends TestCase
                 'current_skills',
                 'recommended_skills',
                 'skill_gaps',
-                'gap_count'
+                'gap_count',
             ]);
     }
 

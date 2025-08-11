@@ -19,26 +19,26 @@ class CareerCalculatorControllerTest extends TestCase
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase', 'promotion'],
             'location' => 'San Francisco, CA',
-            'educationLevel' => 'bachelor'
+            'educationLevel' => 'bachelor',
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'projectedSalaryIncrease',
-                        'networkingValue',
-                        'careerAdvancementTimeline',
-                        'personalizedRecommendations',
-                        'successProbability',
-                        'roiEstimate',
-                        'baseSalary',
-                        'calculationMetadata'
-                    ],
-                    'message'
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'projectedSalaryIncrease',
+                    'networkingValue',
+                    'careerAdvancementTimeline',
+                    'personalizedRecommendations',
+                    'successProbability',
+                    'roiEstimate',
+                    'baseSalary',
+                    'calculationMetadata',
+                ],
+                'message',
+            ]);
 
         $this->assertTrue($response->json('success'));
         $this->assertIsInt($response->json('data.projectedSalaryIncrease'));
@@ -49,19 +49,19 @@ class CareerCalculatorControllerTest extends TestCase
     {
         $response = $this->postJson('/api/homepage/calculator/calculate', [
             'industry' => 'technology',
-            'experienceYears' => 5
+            'experienceYears' => 5,
             // Missing currentRole and careerGoals
         ]);
 
         $response->assertStatus(422)
-                ->assertJsonStructure([
-                    'success',
-                    'message',
-                    'errors' => [
-                        'currentRole',
-                        'careerGoals'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'errors' => [
+                    'currentRole',
+                    'careerGoals',
+                ],
+            ]);
 
         $this->assertFalse($response->json('success'));
     }
@@ -72,13 +72,13 @@ class CareerCalculatorControllerTest extends TestCase
             'currentRole' => 'software_engineer',
             'industry' => 'technology',
             'experienceYears' => -1, // Invalid
-            'careerGoals' => ['salary_increase']
+            'careerGoals' => ['salary_increase'],
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['experienceYears']);
+            ->assertJsonValidationErrors(['experienceYears']);
     }
 
     public function test_calculate_endpoint_validates_career_goals_array()
@@ -87,13 +87,13 @@ class CareerCalculatorControllerTest extends TestCase
             'currentRole' => 'software_engineer',
             'industry' => 'technology',
             'experienceYears' => 5,
-            'careerGoals' => [] // Empty array
+            'careerGoals' => [], // Empty array
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['careerGoals']);
+            ->assertJsonValidationErrors(['careerGoals']);
     }
 
     public function test_calculate_endpoint_validates_networking_level_range()
@@ -103,13 +103,13 @@ class CareerCalculatorControllerTest extends TestCase
             'industry' => 'technology',
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
-            'networkingLevel' => 6 // Invalid (max is 5)
+            'networkingLevel' => 6, // Invalid (max is 5)
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['networkingLevel']);
+            ->assertJsonValidationErrors(['networkingLevel']);
     }
 
     public function test_calculate_endpoint_handles_service_exceptions()
@@ -117,23 +117,23 @@ class CareerCalculatorControllerTest extends TestCase
         // Mock the service to throw an exception
         $this->mock(CareerCalculatorService::class, function ($mock) {
             $mock->shouldReceive('calculateCareerValue')
-                 ->andThrow(new \InvalidArgumentException('Test error'));
+                ->andThrow(new \InvalidArgumentException('Test error'));
         });
 
         $requestData = [
             'currentRole' => 'software_engineer',
             'industry' => 'technology',
             'experienceYears' => 5,
-            'careerGoals' => ['salary_increase']
+            'careerGoals' => ['salary_increase'],
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(400)
-                ->assertJson([
-                    'success' => false,
-                    'message' => 'Test error'
-                ]);
+            ->assertJson([
+                'success' => false,
+                'message' => 'Test error',
+            ]);
     }
 
     public function test_email_report_endpoint_sends_email_successfully()
@@ -146,7 +146,7 @@ class CareerCalculatorControllerTest extends TestCase
                 'currentRole' => 'software_engineer',
                 'industry' => 'technology',
                 'experienceYears' => 5,
-                'careerGoals' => ['salary_increase']
+                'careerGoals' => ['salary_increase'],
             ],
             'result' => [
                 'projectedSalaryIncrease' => 25000,
@@ -154,17 +154,17 @@ class CareerCalculatorControllerTest extends TestCase
                 'careerAdvancementTimeline' => '12-18 months',
                 'personalizedRecommendations' => [],
                 'successProbability' => 85,
-                'roiEstimate' => 5.2
-            ]
+                'roiEstimate' => 5.2,
+            ],
         ];
 
         $response = $this->postJson('/api/homepage/calculator/email-report', $requestData);
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'success' => true,
-                    'message' => 'Email report sent successfully'
-                ]);
+            ->assertJson([
+                'success' => true,
+                'message' => 'Email report sent successfully',
+            ]);
     }
 
     public function test_email_report_endpoint_validates_email_format()
@@ -172,24 +172,24 @@ class CareerCalculatorControllerTest extends TestCase
         $requestData = [
             'email' => 'invalid-email',
             'formData' => [],
-            'result' => []
+            'result' => [],
         ];
 
         $response = $this->postJson('/api/homepage/calculator/email-report', $requestData);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['email']);
+            ->assertJsonValidationErrors(['email']);
     }
 
     public function test_email_report_endpoint_validates_required_fields()
     {
         $response = $this->postJson('/api/homepage/calculator/email-report', [
-            'email' => 'test@example.com'
+            'email' => 'test@example.com',
             // Missing formData and result
         ]);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['formData', 'result']);
+            ->assertJsonValidationErrors(['formData', 'result']);
     }
 
     public function test_email_report_endpoint_handles_service_failure()
@@ -202,16 +202,16 @@ class CareerCalculatorControllerTest extends TestCase
         $requestData = [
             'email' => 'test@example.com',
             'formData' => ['currentRole' => 'software_engineer'],
-            'result' => ['projectedSalaryIncrease' => 25000]
+            'result' => ['projectedSalaryIncrease' => 25000],
         ];
 
         $response = $this->postJson('/api/homepage/calculator/email-report', $requestData);
 
         $response->assertStatus(500)
-                ->assertJson([
-                    'success' => false,
-                    'message' => 'Failed to send email report'
-                ]);
+            ->assertJson([
+                'success' => false,
+                'message' => 'Failed to send email report',
+            ]);
     }
 
     public function test_benchmarks_endpoint_returns_industry_data()
@@ -219,17 +219,17 @@ class CareerCalculatorControllerTest extends TestCase
         $response = $this->getJson('/api/homepage/calculator/benchmarks?industry=technology&location=San Francisco, CA');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'averageSalary',
-                        'salaryGrowthRate',
-                        'networkingValue',
-                        'jobPlacementRate',
-                        'topSkills',
-                        'careerPaths'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'averageSalary',
+                    'salaryGrowthRate',
+                    'networkingValue',
+                    'jobPlacementRate',
+                    'topSkills',
+                    'careerPaths',
+                ],
+            ]);
 
         $this->assertTrue($response->json('success'));
         $this->assertIsInt($response->json('data.averageSalary'));
@@ -290,7 +290,7 @@ class CareerCalculatorControllerTest extends TestCase
         $response = $this->getJson('/api/homepage/calculator/benchmarks?industry=unknown_industry');
 
         $response->assertStatus(200);
-        
+
         // Should return default values
         $data = $response->json('data');
         $this->assertIsInt($data['averageSalary']);
@@ -317,13 +317,13 @@ class CareerCalculatorControllerTest extends TestCase
             'primaryChallenge' => 'finding_opportunities',
             'networkingLevel' => 3,
             'timeInvestment' => '6_hours',
-            'additionalInfo' => 'Looking to transition into AI/ML field'
+            'additionalInfo' => 'Looking to transition into AI/ML field',
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(200)
-                ->assertJson(['success' => true]);
+            ->assertJson(['success' => true]);
 
         $data = $response->json('data');
         $this->assertIsInt($data['projectedSalaryIncrease']);
@@ -339,13 +339,13 @@ class CareerCalculatorControllerTest extends TestCase
             'industry' => 'technology',
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
-            'additionalInfo' => str_repeat('a', 2001) // Exceeds 2000 character limit
+            'additionalInfo' => str_repeat('a', 2001), // Exceeds 2000 character limit
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['additionalInfo']);
+            ->assertJsonValidationErrors(['additionalInfo']);
     }
 
     public function test_calculate_endpoint_accepts_valid_current_salary()
@@ -355,13 +355,13 @@ class CareerCalculatorControllerTest extends TestCase
             'industry' => 'technology',
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
-            'currentSalary' => 85000
+            'currentSalary' => 85000,
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(200)
-                ->assertJson(['success' => true]);
+            ->assertJson(['success' => true]);
     }
 
     public function test_calculate_endpoint_rejects_negative_salary()
@@ -371,12 +371,12 @@ class CareerCalculatorControllerTest extends TestCase
             'industry' => 'technology',
             'experienceYears' => 5,
             'careerGoals' => ['salary_increase'],
-            'currentSalary' => -1000
+            'currentSalary' => -1000,
         ];
 
         $response = $this->postJson('/api/homepage/calculator/calculate', $requestData);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['currentSalary']);
+            ->assertJsonValidationErrors(['currentSalary']);
     }
 }

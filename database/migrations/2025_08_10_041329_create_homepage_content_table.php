@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->unique(['section', 'audience', 'key'], 'unique_content_key');
             $table->index(['section', 'audience', 'status']);
         });

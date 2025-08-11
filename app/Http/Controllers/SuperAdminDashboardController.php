@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tenant;
-use App\Models\User;
-use App\Models\Graduate;
-use App\Models\Job;
-use App\Models\Employer;
-use App\Models\Course;
-use App\Models\JobApplication;
-use App\Models\Post;
-use App\Models\NotificationLog;
-use App\Models\SuccessStory;
-use App\Models\Event;
+use App\Models\ActivityLog;
 use App\Models\Announcement;
 use App\Models\Comment;
 use App\Models\Connection;
+use App\Models\Course;
+use App\Models\Employer;
+use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\Graduate;
+use App\Models\Job;
+use App\Models\JobApplication;
 use App\Models\Message;
-use App\Models\ActivityLog;
+use App\Models\NotificationLog;
+use App\Models\Post;
+use App\Models\SuccessStory;
+use App\Models\Tenant;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Inertia\Inertia;
-use Carbon\Carbon;
 
 class SuperAdminDashboardController extends Controller
 {
@@ -94,7 +94,7 @@ class SuperAdminDashboardController extends Controller
         $query = User::with(['roles'])
             ->when($request->search, function ($q, $search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             })
             ->when($request->role, function ($q, $role) {
                 $q->whereHas('roles', function ($roleQuery) use ($role) {
@@ -179,7 +179,7 @@ class SuperAdminDashboardController extends Controller
         $timeframe = $request->get('timeframe');
         $format = $request->get('format');
 
-        $reportData = match($reportType) {
+        $reportData = match ($reportType) {
             'overview' => $this->generateOverviewReport($timeframe),
             'institutions' => $this->generateInstitutionReport($timeframe),
             'employment' => $this->generateEmploymentReport($timeframe),
@@ -194,7 +194,7 @@ class SuperAdminDashboardController extends Controller
         // Calculate total graduates across all tenants
         $totalGraduates = 0;
         $totalApplications = 0;
-        
+
         foreach (Tenant::all() as $tenant) {
             try {
                 $tenant->run(function () use (&$totalGraduates, &$totalApplications) {
@@ -210,7 +210,7 @@ class SuperAdminDashboardController extends Controller
                 continue;
             }
         }
-        
+
         return [
             'total_institutions' => Tenant::count(),
             'total_users' => User::count(),
@@ -230,7 +230,7 @@ class SuperAdminDashboardController extends Controller
             ->map(function ($tenant) {
                 $graduateCount = 0;
                 $employmentRate = 0;
-                
+
                 try {
                     // Switch to tenant context to get accurate counts
                     $tenant->run(function () use (&$graduateCount, &$employmentRate) {
@@ -360,9 +360,9 @@ class SuperAdminDashboardController extends Controller
     private function getUserGrowthData($startDate)
     {
         return User::select(
-                DB::raw('DATE(created_at) as date'),
-                DB::raw('COUNT(*) as count')
-            )
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as count')
+        )
             ->where('created_at', '>=', $startDate)
             ->groupBy('date')
             ->orderBy('date')
@@ -378,23 +378,23 @@ class SuperAdminDashboardController extends Controller
                 'active_jobs' => 0,
                 'total_applications' => 0,
             ];
-            
+
             try {
                 $tenant->run(function () use (&$performance) {
                     $totalGraduates = 0;
                     $employedGraduates = 0;
                     $activeJobs = 0;
                     $totalApplications = 0;
-                    
+
                     if (Schema::hasTable('graduates')) {
                         $totalGraduates = Graduate::count();
                         $employedGraduates = Graduate::whereIn('employment_status', ['employed', 'self_employed'])->count();
                     }
-                    
+
                     if (Schema::hasTable('jobs')) {
                         $activeJobs = Job::where('status', 'active')->count();
                     }
-                    
+
                     if (Schema::hasTable('job_applications')) {
                         $totalApplications = JobApplication::count();
                     }
@@ -444,14 +444,14 @@ class SuperAdminDashboardController extends Controller
                 ->limit(10)
                 ->get(),
             'salary_ranges' => Job::select(
-                    DB::raw("CASE
+                DB::raw("CASE
                         WHEN salary_min < 30000 THEN 'Under 30k'
                         WHEN salary_min < 50000 THEN '30k-50k'
                         WHEN salary_min < 80000 THEN '50k-80k'
                         ELSE '80k+'
                     END as range"),
-                    DB::raw('COUNT(*) as count')
-                )
+                DB::raw('COUNT(*) as count')
+            )
                 ->whereNotNull('salary_min')
                 ->where('created_at', '>=', $startDate)
                 ->groupBy('range')
@@ -463,17 +463,17 @@ class SuperAdminDashboardController extends Controller
     {
         return [
             'daily_logins' => User::select(
-                    DB::raw('DATE(last_login_at) as date'),
-                    DB::raw('COUNT(DISTINCT id) as count')
-                )
+                DB::raw('DATE(last_login_at) as date'),
+                DB::raw('COUNT(DISTINCT id) as count')
+            )
                 ->where('last_login_at', '>=', $startDate)
                 ->groupBy('date')
                 ->orderBy('date')
                 ->get(),
             'feature_usage' => [
-                'job_applications' => JobApplication::where('created_at', '>=', $startDate)->count(),
-                'profile_updates' => Graduate::where('last_profile_update', '>=', $startDate)->count(),
-                'job_posts' => Job::where('created_at', '>=', $startDate)->count(),
+            'job_applications' => JobApplication::where('created_at', '>=', $startDate)->count(),
+            'profile_updates' => Graduate::where('last_profile_update', '>=', $startDate)->count(),
+            'job_posts' => Job::where('created_at', '>=', $startDate)->count(),
             ],
         ];
     }
@@ -481,9 +481,9 @@ class SuperAdminDashboardController extends Controller
     private function generateOverviewReport($timeframe)
     {
         $startDate = Carbon::now()->subDays($timeframe);
-        
+
         return [
-            'period' => $timeframe . ' days',
+            'period' => $timeframe.' days',
             'total_users' => User::count(),
             'new_users' => User::where('created_at', '>=', $startDate)->count(),
             'total_jobs' => Job::count(),
@@ -499,24 +499,24 @@ class SuperAdminDashboardController extends Controller
         return Tenant::get()->map(function ($tenant) use ($timeframe) {
             $startDate = Carbon::now()->subDays($timeframe);
             $report = [];
-            
+
             try {
                 $tenant->run(function () use (&$report, $startDate) {
                     $totalGraduates = 0;
                     $newGraduates = 0;
                     $employedGraduates = 0;
                     $jobApplications = 0;
-                    
+
                     if (Schema::hasTable('graduates')) {
                         $totalGraduates = Graduate::count();
                         $newGraduates = Graduate::where('created_at', '>=', $startDate)->count();
                         $employedGraduates = Graduate::whereIn('employment_status', ['employed', 'self_employed'])->count();
                     }
-                    
+
                     if (Schema::hasTable('job_applications')) {
                         $jobApplications = JobApplication::where('created_at', '>=', $startDate)->count();
                     }
-                    
+
                     $coursePerformance = [];
                     if (Schema::hasTable('courses')) {
                         $coursePerformance = Course::get()->map(function ($course) {
@@ -527,7 +527,7 @@ class SuperAdminDashboardController extends Controller
                             ];
                         });
                     }
-                    
+
                     $report = [
                         'total_graduates' => $totalGraduates,
                         'new_graduates' => $newGraduates,
@@ -556,7 +556,7 @@ class SuperAdminDashboardController extends Controller
     private function generateEmploymentReport($timeframe)
     {
         $startDate = Carbon::now()->subDays($timeframe);
-        
+
         return [
             'overall_employment_rate' => 0, // Temporarily disabled
             'employment_by_status' => collect([ // Temporarily return empty data
@@ -565,19 +565,19 @@ class SuperAdminDashboardController extends Controller
             ])
                 ->groupBy('employment_status'),
             'recent_employment_changes' => collect([]), // Temporarily return empty data
-            'top_employers' => collect([]) // Temporarily return empty data
+            'top_employers' => collect([]), // Temporarily return empty data
         ];
     }
 
     private function generateJobReport($timeframe)
     {
         $startDate = Carbon::now()->subDays($timeframe);
-        
+
         return [
             'job_posting_trends' => Job::select(
-                    DB::raw('DATE(created_at) as date'),
-                    DB::raw('COUNT(*) as count')
-                )
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('COUNT(*) as count')
+            )
                 ->where('created_at', '>=', $startDate)
                 ->groupBy('date')
                 ->orderBy('date')
@@ -609,7 +609,7 @@ class SuperAdminDashboardController extends Controller
     {
         $totalGraduates = Graduate::count();
         $employedGraduates = Graduate::whereIn('employment_status', ['employed', 'self_employed'])->count();
-        
+
         return $totalGraduates > 0 ? round(($employedGraduates / $totalGraduates) * 100, 1) : 0;
     }
 
@@ -617,7 +617,7 @@ class SuperAdminDashboardController extends Controller
     {
         $totalApplications = JobApplication::count();
         $successfulApplications = JobApplication::where('status', 'hired')->count();
-        
+
         return $totalApplications > 0 ? round(($successfulApplications / $totalApplications) * 100, 1) : 0;
     }
 
@@ -626,9 +626,10 @@ class SuperAdminDashboardController extends Controller
         try {
             DB::connection()->getPdo();
             $responseTime = $this->measureDatabaseResponseTime();
+
             return [
                 'status' => 'healthy',
-                'response_time' => $responseTime . 'ms',
+                'response_time' => $responseTime.'ms',
             ];
         } catch (\Exception $e) {
             return [
@@ -642,13 +643,13 @@ class SuperAdminDashboardController extends Controller
     private function checkCacheHealth()
     {
         try {
-            $testKey = 'health_check_' . time();
+            $testKey = 'health_check_'.time();
             $testValue = 'test_value';
-            
+
             cache()->put($testKey, $testValue, 60);
             $retrieved = cache()->get($testKey);
             cache()->forget($testKey);
-            
+
             return [
                 'status' => $retrieved === $testValue ? 'healthy' : 'warning',
                 'hit_rate' => '95%', // This would be calculated from actual cache metrics
@@ -667,7 +668,7 @@ class SuperAdminDashboardController extends Controller
         try {
             $pendingJobs = DB::table('jobs')->count();
             $failedJobs = DB::table('failed_jobs')->count();
-            
+
             $status = 'healthy';
             if ($failedJobs > 10) {
                 $status = 'warning';
@@ -675,7 +676,7 @@ class SuperAdminDashboardController extends Controller
             if ($failedJobs > 50) {
                 $status = 'critical';
             }
-            
+
             return [
                 'status' => $status,
                 'pending_jobs' => $pendingJobs,
@@ -699,7 +700,7 @@ class SuperAdminDashboardController extends Controller
             $freeSpace = disk_free_space($storagePath);
             $usedSpace = $totalSpace - $freeSpace;
             $usagePercent = round(($usedSpace / $totalSpace) * 100, 1);
-            
+
             $status = 'healthy';
             if ($usagePercent > 80) {
                 $status = 'warning';
@@ -707,10 +708,10 @@ class SuperAdminDashboardController extends Controller
             if ($usagePercent > 95) {
                 $status = 'critical';
             }
-            
+
             return [
                 'status' => $status,
-                'usage' => $usagePercent . '%',
+                'usage' => $usagePercent.'%',
                 'free_space' => $this->formatBytes($freeSpace),
                 'total_space' => $this->formatBytes($totalSpace),
             ];
@@ -762,26 +763,26 @@ class SuperAdminDashboardController extends Controller
         $start = microtime(true);
         DB::select('SELECT 1');
         $end = microtime(true);
-        
+
         return round(($end - $start) * 1000, 2);
     }
 
     private function formatBytes($bytes, $precision = 2)
     {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-        
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
-        return round($bytes, $precision) . ' ' . $units[$i];
+
+        return round($bytes, $precision).' '.$units[$i];
     }
 
     private function generateReportFile($reportData, $reportType, $format)
     {
         // This would implement actual file generation
         // For now, return a simple response
-        $filename = "{$reportType}_report_" . date('Y-m-d') . ".{$format}";
+        $filename = "{$reportType}_report_".date('Y-m-d').".{$format}";
 
         return response()->json([
             'message' => 'Report generated successfully',

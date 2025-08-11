@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\EducationHistory;
 use App\Models\Graduate;
 use App\Models\GraduateProfile;
 use App\Models\Tenant;
@@ -15,8 +14,11 @@ class GraduateEnhancementsTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $graduateUser;
+
     protected $graduate;
+
     protected $profile;
 
     protected function setUp(): void

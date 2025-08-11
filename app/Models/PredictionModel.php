@@ -49,12 +49,12 @@ class PredictionModel extends Model
     // Helper methods
     public function needsRetraining()
     {
-        if (!$this->last_trained_at) {
+        if (! $this->last_trained_at) {
             return true;
         }
 
         $retrainingInterval = $this->model_config['retraining_interval'] ?? 30; // days
-        
+
         return $this->last_trained_at->addDays($retrainingInterval)->isPast();
     }
 
@@ -65,21 +65,21 @@ class PredictionModel extends Model
 
     public function getFormattedAccuracy()
     {
-        return number_format($this->getAccuracyPercentage(), 1) . '%';
+        return number_format($this->getAccuracyPercentage(), 1).'%';
     }
 
     public function predict($subject, $features = null)
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             throw new \Exception('Model is not active');
         }
 
         $features = $features ?? $this->extractFeatures($subject);
-        
+
         // This is a simplified prediction implementation
         // In a real system, you would integrate with ML libraries or services
         $score = $this->calculatePredictionScore($features);
-        
+
         return $this->predictions()->create([
             'subject_type' => get_class($subject),
             'subject_id' => $subject->id,
@@ -94,29 +94,29 @@ class PredictionModel extends Model
     public function batchPredict($subjects)
     {
         $predictions = [];
-        
+
         foreach ($subjects as $subject) {
             try {
                 $predictions[] = $this->predict($subject);
             } catch (\Exception $e) {
                 // Log error and continue with next subject
-                \Log::error("Prediction failed for {$subject->id}: " . $e->getMessage());
+                \Log::error("Prediction failed for {$subject->id}: ".$e->getMessage());
             }
         }
-        
+
         return collect($predictions);
     }
 
     public function train($trainingData = null)
     {
-        if (!$trainingData) {
+        if (! $trainingData) {
             $trainingData = $this->getTrainingData();
         }
 
         // This is a simplified training implementation
         // In a real system, you would implement actual ML training
         $accuracy = $this->performTraining($trainingData);
-        
+
         $this->update([
             'accuracy' => $accuracy,
             'last_trained_at' => now(),
@@ -128,18 +128,18 @@ class PredictionModel extends Model
     private function extractFeatures($subject)
     {
         $features = [];
-        
+
         foreach ($this->features as $feature) {
             $features[$feature] = $this->getFeatureValue($subject, $feature);
         }
-        
+
         return $features;
     }
 
     private function getFeatureValue($subject, $feature)
     {
         // Extract feature values based on the feature name and subject type
-        return match($feature) {
+        return match ($feature) {
             'graduation_year' => $subject->graduation_year ?? now()->year,
             'course_employment_rate' => $subject->course?->employment_rate ?? 0,
             'gpa' => $subject->gpa ?? 0,
@@ -156,17 +156,18 @@ class PredictionModel extends Model
     {
         // Simplified scoring algorithm
         // In a real system, this would use trained ML models
-        
+
         $weights = $this->model_config['feature_weights'] ?? [];
         $score = 0;
-        
+
         foreach ($features as $feature => $value) {
             $weight = $weights[$feature] ?? 1;
             $score += $value * $weight;
         }
-        
+
         // Normalize to 0-1 range
         $maxScore = $this->model_config['max_score'] ?? 100;
+
         return min(1.0, max(0.0, $score / $maxScore));
     }
 
@@ -184,11 +185,11 @@ class PredictionModel extends Model
     {
         $weights = $this->model_config['feature_weights'] ?? [];
         $factors = [];
-        
+
         foreach ($features as $feature => $value) {
             $weight = $weights[$feature] ?? 1;
             $impact = $value * $weight;
-            
+
             $factors[] = [
                 'feature' => $feature,
                 'value' => $value,
@@ -196,52 +197,53 @@ class PredictionModel extends Model
                 'importance' => $weight,
             ];
         }
-        
+
         // Sort by impact
-        usort($factors, fn($a, $b) => $b['impact'] <=> $a['impact']);
-        
+        usort($factors, fn ($a, $b) => $b['impact'] <=> $a['impact']);
+
         return array_slice($factors, 0, 5); // Top 5 factors
     }
 
     private function generateRecommendations($features, $score)
     {
         $recommendations = [];
-        
+
         if ($score < 0.5) {
             $recommendations[] = 'Consider additional skill development';
             $recommendations[] = 'Complete profile information';
             $recommendations[] = 'Apply to more positions';
         }
-        
+
         if (($features['profile_completion'] ?? 0) < 80) {
             $recommendations[] = 'Complete your profile to improve visibility';
         }
-        
+
         if (($features['skills_count'] ?? 0) < 5) {
             $recommendations[] = 'Add more relevant skills to your profile';
         }
-        
+
         return $recommendations;
     }
 
     private function identifyRiskFactors($features)
     {
         $risks = [];
-        
+
         if (($features['job_applications_count'] ?? 0) > 50 && ($features['interview_count'] ?? 0) < 5) {
             $risks[] = 'Low interview conversion rate';
         }
-        
+
         if (($features['course_employment_rate'] ?? 0) < 60) {
             $risks[] = 'Course has lower employment rate';
         }
-        
+
         return $risks;
     }
 
     private function calculateTargetDate()
     {
         $daysAhead = $this->model_config['prediction_horizon'] ?? 90;
+
         return now()->addDays($daysAhead)->toDateString();
     }
 
@@ -249,7 +251,7 @@ class PredictionModel extends Model
     {
         // Get historical data for training
         // This would depend on the model type
-        return match($this->type) {
+        return match ($this->type) {
             'job_placement' => $this->getJobPlacementTrainingData(),
             'employment_success' => $this->getEmploymentSuccessTrainingData(),
             'course_demand' => $this->getCourseDemandTrainingData(),
@@ -306,16 +308,16 @@ class PredictionModel extends Model
     {
         // Simplified training simulation
         // In a real system, this would use actual ML algorithms
-        
+
         if (empty($trainingData)) {
             return 0.5; // Default accuracy
         }
-        
+
         // Simulate training accuracy based on data quality
         $dataQuality = min(1.0, count($trainingData) / 1000); // More data = better quality
         $baseAccuracy = 0.6;
         $maxImprovement = 0.3;
-        
+
         return $baseAccuracy + ($dataQuality * $maxImprovement);
     }
 

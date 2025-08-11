@@ -58,60 +58,60 @@ class JobMatchScoreFactory extends Factory
             $connectionCount = max(1, intval($connectionScore / 20));
             $reasons[] = [
                 'type' => 'connections',
-                'reason' => "You have {$connectionCount} connection" . ($connectionCount > 1 ? 's' : '') . " at this company",
+                'reason' => "You have {$connectionCount} connection".($connectionCount > 1 ? 's' : '').' at this company',
                 'score' => $connectionScore,
                 'details' => $this->faker->randomElements([
                     'John Smith - Senior Developer',
                     'Sarah Johnson - Product Manager',
                     'Mike Chen - Engineering Manager',
                     'Lisa Rodriguez - UX Designer',
-                    'David Kim - Data Scientist'
-                ], min($connectionCount, 3))
+                    'David Kim - Data Scientist',
+                ], min($connectionCount, 3)),
             ];
         }
 
         if ($skillsScore > 50) {
             $matchingSkills = $this->faker->randomElements([
                 'PHP', 'Laravel', 'JavaScript', 'Vue.js', 'React',
-                'Python', 'SQL', 'AWS', 'Docker', 'Git'
+                'Python', 'SQL', 'AWS', 'Docker', 'Git',
             ], $this->faker->numberBetween(2, 5));
 
             $reasons[] = [
                 'type' => 'skills',
-                'reason' => "Your skills match " . count($matchingSkills) . " of the required skills",
+                'reason' => 'Your skills match '.count($matchingSkills).' of the required skills',
                 'score' => $skillsScore,
-                'details' => $matchingSkills
+                'details' => $matchingSkills,
             ];
         }
 
         if ($educationScore > 50) {
             $reasons[] = [
                 'type' => 'education',
-                'reason' => "Your educational background is relevant to this role",
+                'reason' => 'Your educational background is relevant to this role',
                 'score' => $educationScore,
                 'details' => $this->faker->randomElements([
                     'Bachelor of Computer Science',
                     'Master of Engineering',
-                    'Bachelor of Information Technology'
-                ], $this->faker->numberBetween(1, 2))
+                    'Bachelor of Information Technology',
+                ], $this->faker->numberBetween(1, 2)),
             ];
         }
 
         if ($circleScore > 0) {
             $reasons[] = [
                 'type' => 'circles',
-                'reason' => "You share alumni circles with employees at this company",
+                'reason' => 'You share alumni circles with employees at this company',
                 'score' => $circleScore,
                 'details' => $this->faker->randomElements([
                     'MIT Class of 2020',
                     'Stanford Engineering Alumni',
-                    'UC Berkeley Computer Science'
-                ], $this->faker->numberBetween(1, 2))
+                    'UC Berkeley Computer Science',
+                ], $this->faker->numberBetween(1, 2)),
             ];
         }
 
         // Sort by score descending
-        usort($reasons, fn($a, $b) => $b['score'] <=> $a['score']);
+        usort($reasons, fn ($a, $b) => $b['score'] <=> $a['score']);
 
         return $reasons;
     }

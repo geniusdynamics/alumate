@@ -61,6 +61,7 @@ class SearchAnalytics extends Model
     public function getKeywords()
     {
         $criteria = $this->search_criteria ?? [];
+
         return $criteria['keywords'] ?? null;
     }
 
@@ -74,20 +75,20 @@ class SearchAnalytics extends Model
         $criteria = $this->search_criteria ?? [];
         $summary = [];
 
-        if (!empty($criteria['keywords'])) {
+        if (! empty($criteria['keywords'])) {
             $summary[] = "Keywords: {$criteria['keywords']}";
         }
 
-        if (!empty($criteria['location'])) {
+        if (! empty($criteria['location'])) {
             $summary[] = "Location: {$criteria['location']}";
         }
 
-        if (!empty($criteria['course_id'])) {
+        if (! empty($criteria['course_id'])) {
             $summary[] = "Course ID: {$criteria['course_id']}";
         }
 
-        if (!empty($criteria['skills'])) {
-            $summary[] = "Skills: " . implode(', ', $criteria['skills']);
+        if (! empty($criteria['skills'])) {
+            $summary[] = 'Skills: '.implode(', ', $criteria['skills']);
         }
 
         return implode(' | ', $summary);

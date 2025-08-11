@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -43,9 +42,9 @@ class JobApplicationNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('A new application has been submitted for your job posting.')
-                    ->action('View Application', url('/jobs/'.$this->jobApplication->job->id.'/applications'))
-                    ->line('Thank you for using our application!');
+            ->line('A new application has been submitted for your job posting.')
+            ->action('View Application', url('/jobs/'.$this->jobApplication->job->id.'/applications'))
+            ->line('Thank you for using our application!');
     }
 
     /**

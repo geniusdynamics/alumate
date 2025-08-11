@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SuccessStory;
 use App\Models\Course;
 use App\Models\Institution;
+use App\Models\SuccessStory;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class SuccessStoryController extends Controller
 {
@@ -37,9 +37,9 @@ class SuccessStoryController extends Controller
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('content', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('key_achievements', 'like', '%' . $searchTerm . '%');
+                $q->where('title', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('content', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('key_achievements', 'like', '%'.$searchTerm.'%');
             });
         }
 
@@ -71,7 +71,7 @@ class SuccessStoryController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         $categories = ['career_advancement', 'entrepreneurship', 'community_impact', 'academic_achievement', 'personal_growth', 'innovation'];
 
         return Inertia::render('Stories/Create', [
@@ -82,7 +82,7 @@ class SuccessStoryController extends Controller
     public function myStories()
     {
         $user = Auth::user();
-        
+
         // Get user's success stories
         $myStories = SuccessStory::where('user_id', $user->id)
             ->latest()
@@ -110,7 +110,7 @@ class SuccessStoryController extends Controller
     public function show(SuccessStory $story)
     {
         $story->load(['user.graduate.course', 'user.graduate.institution']);
-        
+
         // Increment view count
         $story->increment('view_count');
 
@@ -125,7 +125,7 @@ class SuccessStoryController extends Controller
         $similarStories = SuccessStory::where('id', '!=', $story->id)
             ->whereHas('user.graduate', function ($query) use ($story) {
                 $query->where('course_id', $story->user->graduate->course_id)
-                      ->orWhere('institution_id', $story->user->graduate->institution_id);
+                    ->orWhere('institution_id', $story->user->graduate->institution_id);
             })
             ->where('status', 'published')
             ->limit(3)
@@ -141,7 +141,7 @@ class SuccessStoryController extends Controller
     private function getStoryPrompts($user)
     {
         $graduate = $user->graduate;
-        if (!$graduate) {
+        if (! $graduate) {
             return [];
         }
 

@@ -59,7 +59,7 @@ class CrmIntegration extends Model
         try {
             $client = $this->getApiClient();
             $result = $client->testConnection();
-            
+
             return [
                 'success' => true,
                 'message' => 'Connection successful',
@@ -79,7 +79,7 @@ class CrmIntegration extends Model
      */
     public function syncLead(Lead $lead): array
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return [
                 'success' => false,
                 'message' => 'Integration is not active',
@@ -89,7 +89,7 @@ class CrmIntegration extends Model
         try {
             $client = $this->getApiClient();
             $mappedData = $this->mapLeadData($lead);
-            
+
             if ($lead->crm_id) {
                 // Update existing lead
                 $result = $client->updateLead($lead->crm_id, $mappedData);
@@ -98,9 +98,9 @@ class CrmIntegration extends Model
                 $result = $client->createLead($mappedData);
                 $lead->update(['crm_id' => $result['id']]);
             }
-            
+
             $lead->update(['synced_at' => now()]);
-            
+
             return [
                 'success' => true,
                 'message' => 'Lead synced successfully',
@@ -121,14 +121,14 @@ class CrmIntegration extends Model
     private function mapLeadData(Lead $lead): array
     {
         $mappedData = [];
-        
+
         foreach ($this->field_mappings as $localField => $crmField) {
             $value = $this->getLeadFieldValue($lead, $localField);
             if ($value !== null) {
                 $mappedData[$crmField] = $value;
             }
         }
-        
+
         return $mappedData;
     }
 
@@ -167,11 +167,11 @@ class CrmIntegration extends Model
      */
     public function isSyncDue(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
-        if (!$this->last_sync_at) {
+        if (! $this->last_sync_at) {
             return true;
         }
 
@@ -200,9 +200,9 @@ class CrmIntegration extends Model
     public function scopeDueForSync($query)
     {
         return $query->where('is_active', true)
-                    ->where(function ($q) {
-                        $q->whereNull('last_sync_at')
-                          ->orWhereRaw('last_sync_at + INTERVAL sync_interval SECOND < NOW()');
-                    });
+            ->where(function ($q) {
+                $q->whereNull('last_sync_at')
+                    ->orWhereRaw('last_sync_at + INTERVAL sync_interval SECOND < NOW()');
+            });
     }
 }

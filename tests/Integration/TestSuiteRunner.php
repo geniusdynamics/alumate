@@ -23,10 +23,10 @@ class TestSuiteRunner extends TestCase
 
         // Validate system components
         $this->assertTrue($this->validateSystemComponents());
-        
+
         // Check performance benchmarks
         $this->assertTrue($this->validatePerformanceBenchmarks());
-        
+
         // Verify mobile responsiveness
         $this->assertTrue($this->validateMobileResponsiveness());
     }
@@ -35,13 +35,13 @@ class TestSuiteRunner extends TestCase
     {
         // Check database tables exist
         $requiredTables = [
-            'landing_pages', 'homepage_content', 'leads', 
+            'landing_pages', 'homepage_content', 'leads',
             'crm_integrations', 'landing_page_analytics',
-            'landing_page_submissions', 'ab_tests'
+            'landing_page_submissions', 'ab_tests',
         ];
 
         foreach ($requiredTables as $table) {
-            if (!$this->app['db']->getSchemaBuilder()->hasTable($table)) {
+            if (! $this->app['db']->getSchemaBuilder()->hasTable($table)) {
                 return false;
             }
         }
@@ -62,9 +62,9 @@ class TestSuiteRunner extends TestCase
     private function validateMobileResponsiveness(): bool
     {
         $mobileUserAgent = 'Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15';
-        
+
         $response = $this->withHeaders([
-            'User-Agent' => $mobileUserAgent
+            'User-Agent' => $mobileUserAgent,
         ])->get('/');
 
         return $response->status() === 200;

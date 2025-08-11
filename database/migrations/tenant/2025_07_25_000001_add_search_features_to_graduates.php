@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('search_appearances')->default(0)->after('profile_views');
             $table->decimal('avg_match_score', 5, 2)->nullable()->after('search_appearances');
             $table->json('search_keywords')->nullable()->after('avg_match_score');
-            
+
             $table->index('profile_views');
             $table->index('search_appearances');
             $table->index('avg_match_score');
@@ -52,7 +52,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('job_graduate_matches');
-        
+
         Schema::table('graduates', function (Blueprint $table) {
             $table->dropIndex(['profile_views']);
             $table->dropIndex(['search_appearances']);

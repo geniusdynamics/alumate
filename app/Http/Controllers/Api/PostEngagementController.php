@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Post;
 use App\Services\PostEngagementService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class PostEngagementController extends Controller
@@ -25,7 +25,7 @@ class PostEngagementController extends Controller
     public function react(Request $request, Post $post): JsonResponse
     {
         $request->validate([
-            'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful'])]
+            'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful'])],
         ]);
 
         try {
@@ -40,13 +40,13 @@ class PostEngagementController extends Controller
                 'message' => 'Reaction added successfully',
                 'engagement' => $engagement,
                 'stats' => $this->engagementService->getEngagementStats($post),
-                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user())
+                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user()),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add reaction',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -57,7 +57,7 @@ class PostEngagementController extends Controller
     public function unreact(Request $request, Post $post): JsonResponse
     {
         $request->validate([
-            'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful'])]
+            'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful'])],
         ]);
 
         try {
@@ -71,13 +71,13 @@ class PostEngagementController extends Controller
                 'success' => true,
                 'message' => $removed ? 'Reaction removed successfully' : 'Reaction not found',
                 'stats' => $this->engagementService->getEngagementStats($post),
-                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user())
+                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user()),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to remove reaction',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -89,7 +89,7 @@ class PostEngagementController extends Controller
     {
         $request->validate([
             'content' => 'required|string|max:2000',
-            'parent_id' => 'nullable|integer|exists:comments,id'
+            'parent_id' => 'nullable|integer|exists:comments,id',
         ]);
 
         try {
@@ -104,13 +104,13 @@ class PostEngagementController extends Controller
                 'success' => true,
                 'message' => 'Comment added successfully',
                 'comment' => $comment->load(['user:id,name,username,avatar_url', 'replies.user:id,name,username,avatar_url']),
-                'stats' => $this->engagementService->getEngagementStats($post)
+                'stats' => $this->engagementService->getEngagementStats($post),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add comment',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -121,7 +121,7 @@ class PostEngagementController extends Controller
     public function share(Request $request, Post $post): JsonResponse
     {
         $request->validate([
-            'commentary' => 'nullable|string|max:1000'
+            'commentary' => 'nullable|string|max:1000',
         ]);
 
         try {
@@ -136,13 +136,13 @@ class PostEngagementController extends Controller
                 'message' => 'Post shared successfully',
                 'shared_post' => $sharedPost->load('user:id,name,username,avatar_url'),
                 'stats' => $this->engagementService->getEngagementStats($post),
-                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user())
+                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user()),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to share post',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -172,13 +172,13 @@ class PostEngagementController extends Controller
                 'success' => true,
                 'message' => $message,
                 'bookmarked' => $bookmarked,
-                'stats' => $this->engagementService->getEngagementStats($post)
+                'stats' => $this->engagementService->getEngagementStats($post),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to toggle bookmark',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -195,13 +195,13 @@ class PostEngagementController extends Controller
             return response()->json([
                 'success' => true,
                 'stats' => $stats,
-                'user_engagement' => $userEngagement
+                'user_engagement' => $userEngagement,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to get engagement stats',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -213,7 +213,7 @@ class PostEngagementController extends Controller
     {
         $request->validate([
             'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful', 'share'])],
-            'limit' => 'nullable|integer|min:1|max:50'
+            'limit' => 'nullable|integer|min:1|max:50',
         ]);
 
         try {
@@ -226,13 +226,13 @@ class PostEngagementController extends Controller
             return response()->json([
                 'success' => true,
                 'users' => $users,
-                'type' => $request->type
+                'type' => $request->type,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to get reaction users',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -244,7 +244,7 @@ class PostEngagementController extends Controller
     {
         $request->validate([
             'page' => 'nullable|integer|min:1',
-            'per_page' => 'nullable|integer|min:1|max:50'
+            'per_page' => 'nullable|integer|min:1|max:50',
         ]);
 
         try {
@@ -252,20 +252,20 @@ class PostEngagementController extends Controller
                 ->whereNull('parent_id') // Only top-level comments
                 ->with([
                     'user:id,name,username,avatar_url',
-                    'allReplies.user:id,name,username,avatar_url'
+                    'allReplies.user:id,name,username,avatar_url',
                 ])
                 ->latest()
                 ->paginate($request->get('per_page', 10));
 
             return response()->json([
                 'success' => true,
-                'comments' => $comments
+                'comments' => $comments,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to get comments',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -277,7 +277,7 @@ class PostEngagementController extends Controller
     {
         $request->validate([
             'query' => 'required|string|min:1|max:50',
-            'limit' => 'nullable|integer|min:1|max:20'
+            'limit' => 'nullable|integer|min:1|max:20',
         ]);
 
         try {
@@ -288,13 +288,13 @@ class PostEngagementController extends Controller
 
             return response()->json([
                 'success' => true,
-                'users' => $users
+                'users' => $users,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to search users',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

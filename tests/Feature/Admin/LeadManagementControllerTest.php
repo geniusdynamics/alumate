@@ -15,8 +15,7 @@ test('can view lead management dashboard', function () {
     $response = $this->get('/admin/lead-management');
 
     $response->assertStatus(200);
-    $response->assertInertia(fn ($page) => 
-        $page->component('Admin/LeadManagement/Index')
+    $response->assertInertia(fn ($page) => $page->component('Admin/LeadManagement/Index')
     );
 });
 

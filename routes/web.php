@@ -14,7 +14,7 @@ Route::get('/health-check/homepage', [\App\Http\Controllers\HealthCheckControlle
 // Monitoring Dashboard Routes (Admin only)
 Route::middleware(['auth', 'role:super-admin'])->prefix('monitoring')->name('monitoring.')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\MonitoringDashboardController::class, 'index'])->name('dashboard');
-    
+
     // API endpoints for monitoring dashboard
     Route::prefix('api')->name('api.')->group(function () {
         Route::get('data', [\App\Http\Controllers\MonitoringDashboardController::class, 'data'])->name('data');
@@ -47,12 +47,12 @@ Route::prefix('api/homepage')->name('api.homepage.')->group(function () {
     Route::get('features', [\App\Http\Controllers\Api\HomepageController::class, 'getFeatures'])->name('features');
     Route::get('branded-apps', [\App\Http\Controllers\Api\HomepageController::class, 'getBrandedAppsData'])->name('branded-apps');
     Route::post('calculator', [\App\Http\Controllers\Api\HomepageController::class, 'calculateValue'])->name('calculator');
-    
+
     // Career Calculator Routes
     Route::post('calculator/calculate', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'calculate'])->name('calculator.calculate');
     Route::post('calculator/email-report', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'emailReport'])->name('calculator.email-report');
     Route::get('calculator/benchmarks', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'benchmarks'])->name('calculator.benchmarks');
-    
+
     // Pricing Routes
     Route::get('pricing/plans', [\App\Http\Controllers\Api\PricingController::class, 'getPlans'])->name('pricing.plans');
     Route::get('pricing/feature-comparison', [\App\Http\Controllers\Api\PricingController::class, 'getFeatureComparison'])->name('pricing.feature-comparison');
@@ -61,29 +61,29 @@ Route::prefix('api/homepage')->name('api.homepage.')->group(function () {
     Route::post('demo-request', [\App\Http\Controllers\Api\HomepageController::class, 'requestDemo'])->name('demo-request');
     Route::post('trial-signup', [\App\Http\Controllers\Api\HomepageController::class, 'trialSignup'])->name('trial-signup');
     Route::post('lead-capture', [\App\Http\Controllers\Api\HomepageController::class, 'captureLeads'])->name('lead-capture');
-    
+
     // Lead capture statistics
     Route::get('lead-statistics', [\App\Http\Controllers\Api\HomepageController::class, 'getLeadStatistics'])->name('lead-statistics');
-    
+
     // Audience Detection and Personalization Routes
     Route::get('detect-audience', [\App\Http\Controllers\Api\HomepageController::class, 'detectAudience'])->name('detect-audience');
     Route::get('personalized-content', [\App\Http\Controllers\Api\HomepageController::class, 'getPersonalizedContent'])->name('personalized-content');
     Route::post('audience-preference', [\App\Http\Controllers\Api\HomepageController::class, 'storeAudiencePreference'])->name('store-audience-preference');
     Route::get('audience-preference', [\App\Http\Controllers\Api\HomepageController::class, 'getAudiencePreference'])->name('get-audience-preference');
-    
+
     // A/B Testing Routes
     Route::get('content-variations', [\App\Http\Controllers\Api\HomepageController::class, 'getContentVariations'])->name('content-variations');
     Route::get('ab-test-variant', [\App\Http\Controllers\Api\HomepageController::class, 'getABTestVariant'])->name('ab-test-variant');
     Route::post('ab-test-conversion', [\App\Http\Controllers\Api\HomepageController::class, 'trackABTestConversion'])->name('ab-test-conversion');
     Route::get('active-ab-tests', [\App\Http\Controllers\Api\HomepageController::class, 'getActiveABTests'])->name('active-ab-tests');
     Route::get('ab-test-results/{testId}', [\App\Http\Controllers\Api\HomepageController::class, 'getABTestResults'])->name('ab-test-results');
-    
+
     // Enterprise Metrics and ROI Routes
     Route::get('enterprise-metrics', [\App\Http\Controllers\Api\HomepageController::class, 'getEnterpriseMetrics'])->name('enterprise-metrics');
     Route::get('institutional-comparison', [\App\Http\Controllers\Api\HomepageController::class, 'getInstitutionalComparison'])->name('institutional-comparison');
     Route::get('implementation-timeline', [\App\Http\Controllers\Api\HomepageController::class, 'getImplementationTimeline'])->name('implementation-timeline');
     Route::get('success-metrics-tracking', [\App\Http\Controllers\Api\HomepageController::class, 'getSuccessMetricsTracking'])->name('success-metrics-tracking');
-    
+
     // Content Management Routes
     Route::get('content-config', [\App\Http\Controllers\Api\HomepageController::class, 'getContentManagementConfig'])->name('content-config');
     Route::get('analytics', [\App\Http\Controllers\Api\HomepageController::class, 'getPersonalizationAnalytics'])->name('analytics');
@@ -133,7 +133,7 @@ Route::middleware(['auth', 'role:super-admin'])->prefix('security')->name('secur
 Route::prefix('auth')->name('social.')->group(function () {
     Route::get('{provider}', [\App\Http\Controllers\SocialAuthController::class, 'redirectToProvider'])->name('redirect');
     Route::get('{provider}/callback', [\App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback'])->name('callback');
-    
+
     Route::middleware('auth')->group(function () {
         Route::get('link/{provider}', [\App\Http\Controllers\SocialAuthController::class, 'linkProfile'])->name('link');
         Route::delete('unlink/{profileId}', [\App\Http\Controllers\SocialAuthController::class, 'unlinkProfile'])->name('unlink');
@@ -160,7 +160,7 @@ Route::middleware('auth')->group(function () {
     Route::get('courses/{course}/analytics', [\App\Http\Controllers\CourseController::class, 'analytics'])->name('courses.analytics');
     Route::post('courses/{course}/statistics', [\App\Http\Controllers\CourseController::class, 'updateStatistics'])->name('courses.statistics.update');
     Route::get('courses/export', [\App\Http\Controllers\CourseController::class, 'export'])->name('courses.export');
-    
+
     // Course Import/Export System
     Route::get('courses/import', [\App\Http\Controllers\CourseImportController::class, 'create'])->name('courses.import.create');
     Route::post('courses/import', [\App\Http\Controllers\CourseImportController::class, 'store'])->name('courses.import.store');
@@ -171,7 +171,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('graduates/{graduate}/privacy', [\App\Http\Controllers\GraduateController::class, 'updatePrivacySettings'])->name('graduates.privacy.update');
     Route::get('graduates/export', [\App\Http\Controllers\GraduateController::class, 'export'])->name('graduates.export');
     Route::get('graduates/export-fields', [\App\Http\Controllers\GraduateController::class, 'exportFields'])->name('graduates.export.fields');
-    
+
     // Graduate Import/Export System
     Route::get('graduates/import/history', [\App\Http\Controllers\GraduateImportController::class, 'index'])->name('graduates.import.history');
     Route::get('graduates/import/template', [\App\Http\Controllers\GraduateImportController::class, 'template'])->name('graduates.import.template');
@@ -217,7 +217,7 @@ Route::middleware('auth')->group(function () {
         Route::get('staff', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'staffManagement'])->name('staff');
         Route::get('import-export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'importExportCenter'])->name('import-export');
         Route::post('reports/export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'exportReport'])->name('reports.export');
-        
+
         // Graduate Management for Institution Admin
         Route::get('graduates', [\App\Http\Controllers\GraduateController::class, 'index'])->name('graduates.index');
         Route::get('graduates/create', [\App\Http\Controllers\GraduateController::class, 'create'])->name('graduates.create');
@@ -226,7 +226,7 @@ Route::middleware('auth')->group(function () {
         Route::get('graduates/{graduate}/edit', [\App\Http\Controllers\GraduateController::class, 'edit'])->name('graduates.edit');
         Route::put('graduates/{graduate}', [\App\Http\Controllers\GraduateController::class, 'update'])->name('graduates.update');
         Route::delete('graduates/{graduate}', [\App\Http\Controllers\GraduateController::class, 'destroy'])->name('graduates.destroy');
-        
+
         // Course Management for Institution Admin
         Route::get('courses', [\App\Http\Controllers\CourseController::class, 'index'])->name('courses.index');
         Route::get('courses/create', [\App\Http\Controllers\CourseController::class, 'create'])->name('courses.create');
@@ -273,7 +273,7 @@ Route::middleware('auth')->group(function () {
         Route::post('{notification}/mark-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-read');
         Route::post('mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
         Route::get('unread', [\App\Http\Controllers\NotificationController::class, 'getUnread'])->name('unread');
-        
+
         // Test route for development
         Route::post('test', [\App\Http\Controllers\NotificationController::class, 'testNotification'])->name('test');
     });
@@ -347,7 +347,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('whats-new', function () {
         return Inertia::render('WhatsNew');
     })->name('whats-new');
-    
+
     Route::get('help', function () {
         return Inertia::render('Help');
     })->name('help');
@@ -450,27 +450,29 @@ Route::middleware(['auth'])->prefix('api')->name('api.')->group(function () {
     });
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/testing.php';
-require __DIR__ . '/user-flows.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/testing.php';
+require __DIR__.'/user-flows.php';
+require __DIR__.'/auth.php';
 // Fundraising Campaign Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/campaigns', function () {
         return Inertia::render('Fundraising/CampaignIndex');
     })->name('campaigns.index');
-    
+
     Route::get('/campaigns/{campaign}', function (\App\Models\FundraisingCampaign $campaign) {
         $campaign->load(['creator', 'institution', 'donations', 'updates', 'peerFundraisers']);
+
         return Inertia::render('Fundraising/CampaignShow', [
-            'campaign' => $campaign
+            'campaign' => $campaign,
         ]);
     })->name('campaigns.show');
-    
+
     Route::get('/peer-fundraisers/{peerFundraiser}', function (\App\Models\PeerFundraiser $peerFundraiser) {
         $peerFundraiser->load(['campaign', 'user', 'donations']);
+
         return Inertia::render('Fundraising/PeerFundraiserShow', [
-            'peerFundraiser' => $peerFundraiser
+            'peerFundraiser' => $peerFundraiser,
         ]);
     })->name('peer-fundraiser.show');
 });
@@ -483,14 +485,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/scholarships/{scholarship}', function (\App\Models\Scholarship $scholarship) {
         $scholarship->load(['institution', 'applications', 'recipients']);
+
         return Inertia::render('Scholarships/Show', [
-            'scholarship' => $scholarship
+            'scholarship' => $scholarship,
         ]);
     })->name('scholarships.show');
 
     Route::get('/scholarships/{scholarship}/apply', function (\App\Models\Scholarship $scholarship) {
         return Inertia::render('Scholarships/Apply', [
-            'scholarship' => $scholarship
+            'scholarship' => $scholarship,
         ]);
     })->name('scholarships.apply');
 });
@@ -503,8 +506,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/achievements/{achievement}', function (\App\Models\Achievement $achievement) {
         $achievement->load(['user', 'institution', 'recognitions']);
+
         return Inertia::render('Achievements/Show', [
-            'achievement' => $achievement
+            'achievement' => $achievement,
         ]);
     })->name('achievements.show');
 
@@ -526,21 +530,21 @@ Route::middleware(['auth'])->group(function () {
 
         // Search Alumni
         $alumni = \App\Models\User::where('role', 'alumni')
-            ->where(function($q) use ($query) {
+            ->where(function ($q) use ($query) {
                 $q->where('name', 'LIKE', "%{$query}%")
-                  ->orWhere('email', 'LIKE', "%{$query}%")
-                  ->orWhere('company', 'LIKE', "%{$query}%")
-                  ->orWhere('job_title', 'LIKE', "%{$query}%");
+                    ->orWhere('email', 'LIKE', "%{$query}%")
+                    ->orWhere('company', 'LIKE', "%{$query}%")
+                    ->orWhere('job_title', 'LIKE', "%{$query}%");
             })
             ->limit(5)
             ->get()
-            ->map(function($user) {
+            ->map(function ($user) {
                 return [
                     'id' => $user->id,
                     'type' => 'alumni',
                     'title' => $user->name,
-                    'subtitle' => $user->job_title . ' at ' . $user->company,
-                    'url' => "/alumni/profile/{$user->id}"
+                    'subtitle' => $user->job_title.' at '.$user->company,
+                    'url' => "/alumni/profile/{$user->id}",
                 ];
             });
 
@@ -550,13 +554,13 @@ Route::middleware(['auth'])->group(function () {
             ->orWhere('description', 'LIKE', "%{$query}%")
             ->limit(5)
             ->get()
-            ->map(function($job) {
+            ->map(function ($job) {
                 return [
                     'id' => $job->id,
                     'type' => 'job',
                     'title' => $job->title,
-                    'subtitle' => $job->company . ' • ' . $job->location,
-                    'url' => "/jobs/{$job->id}"
+                    'subtitle' => $job->company.' • '.$job->location,
+                    'url' => "/jobs/{$job->id}",
                 ];
             });
 
@@ -566,13 +570,13 @@ Route::middleware(['auth'])->group(function () {
             ->orWhere('location', 'LIKE', "%{$query}%")
             ->limit(5)
             ->get()
-            ->map(function($event) {
+            ->map(function ($event) {
                 return [
                     'id' => $event->id,
                     'type' => 'event',
                     'title' => $event->title,
-                    'subtitle' => $event->location . ' • ' . $event->start_date->format('M j, Y'),
-                    'url' => "/events/{$event->id}"
+                    'subtitle' => $event->location.' • '.$event->start_date->format('M j, Y'),
+                    'url' => "/events/{$event->id}",
                 ];
             });
 
@@ -581,13 +585,13 @@ Route::middleware(['auth'])->group(function () {
             ->orWhere('content', 'LIKE', "%{$query}%")
             ->limit(5)
             ->get()
-            ->map(function($story) {
+            ->map(function ($story) {
                 return [
                     'id' => $story->id,
                     'type' => 'story',
                     'title' => $story->title,
-                    'subtitle' => 'By ' . $story->user->name,
-                    'url' => "/stories/{$story->id}"
+                    'subtitle' => 'By '.$story->user->name,
+                    'url' => "/stories/{$story->id}",
                 ];
             });
 
@@ -602,7 +606,7 @@ Route::middleware(['auth'])->group(function () {
         return response()->json([
             'success' => true,
             'results' => $results,
-            'total' => $results->count()
+            'total' => $results->count(),
         ]);
     });
 
@@ -659,11 +663,11 @@ Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin
         Route::get('/analytics/data', [\App\Http\Controllers\Admin\LeadManagementController::class, 'analytics'])->name('analytics');
         Route::post('/bulk-sync', [\App\Http\Controllers\Admin\LeadManagementController::class, 'bulkSync'])->name('bulk-sync');
         Route::get('/export', [\App\Http\Controllers\Admin\LeadManagementController::class, 'export'])->name('export');
-        
+
         // Lead scoring rules
         Route::get('/scoring-rules', [\App\Http\Controllers\Admin\LeadManagementController::class, 'getScoringRules'])->name('scoring-rules');
         Route::post('/scoring-rules', [\App\Http\Controllers\Admin\LeadManagementController::class, 'storeScoringRule'])->name('scoring-rules.store');
-        
+
         // CRM integrations
         Route::get('/crm-integrations', [\App\Http\Controllers\Admin\LeadManagementController::class, 'getCrmIntegrations'])->name('crm-integrations');
         Route::post('/crm-integrations', [\App\Http\Controllers\Admin\LeadManagementController::class, 'storeCrmIntegration'])->name('crm-integrations.store');
@@ -685,7 +689,7 @@ Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin
         Route::post('/{landingPage}/duplicate', [\App\Http\Controllers\Admin\LandingPageController::class, 'duplicate'])->name('duplicate');
         Route::delete('/{landingPage}', [\App\Http\Controllers\Admin\LandingPageController::class, 'destroy'])->name('destroy');
         Route::get('/{landingPage}/analytics', [\App\Http\Controllers\Admin\LandingPageController::class, 'analytics'])->name('analytics');
-        
+
         // API endpoints for builder
         Route::get('/api/templates', [\App\Http\Controllers\Admin\LandingPageController::class, 'getTemplates'])->name('api.templates');
         Route::get('/api/components', [\App\Http\Controllers\Admin\LandingPageController::class, 'getComponents'])->name('api.components');

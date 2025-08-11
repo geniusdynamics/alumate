@@ -17,12 +17,12 @@ class SavedSearch extends Model
         'query',
         'filters',
         'result_count',
-        'last_executed_at'
+        'last_executed_at',
     ];
 
     protected $casts = [
         'filters' => 'array',
-        'last_executed_at' => 'datetime'
+        'last_executed_at' => 'datetime',
     ];
 
     /**
@@ -56,7 +56,7 @@ class SavedSearch extends Model
     {
         $this->update([
             'result_count' => $count,
-            'last_executed_at' => now()
+            'last_executed_at' => now(),
         ]);
     }
 
@@ -66,37 +66,37 @@ class SavedSearch extends Model
     public function getFilterDescriptionAttribute(): string
     {
         $descriptions = [];
-        
-        if (!empty($this->filters['location'])) {
+
+        if (! empty($this->filters['location'])) {
             $descriptions[] = "Location: {$this->filters['location']}";
         }
-        
-        if (!empty($this->filters['industry'])) {
-            $industry = is_array($this->filters['industry']) 
-                ? implode(', ', $this->filters['industry']) 
+
+        if (! empty($this->filters['industry'])) {
+            $industry = is_array($this->filters['industry'])
+                ? implode(', ', $this->filters['industry'])
                 : $this->filters['industry'];
             $descriptions[] = "Industry: $industry";
         }
-        
-        if (!empty($this->filters['graduation_year'])) {
+
+        if (! empty($this->filters['graduation_year'])) {
             if (is_array($this->filters['graduation_year'])) {
                 $descriptions[] = "Graduated: {$this->filters['graduation_year']['min']}-{$this->filters['graduation_year']['max']}";
             } else {
                 $descriptions[] = "Graduated: {$this->filters['graduation_year']}";
             }
         }
-        
-        if (!empty($this->filters['company'])) {
+
+        if (! empty($this->filters['company'])) {
             $descriptions[] = "Company: {$this->filters['company']}";
         }
-        
-        if (!empty($this->filters['skills'])) {
-            $skills = is_array($this->filters['skills']) 
-                ? implode(', ', $this->filters['skills']) 
+
+        if (! empty($this->filters['skills'])) {
+            $skills = is_array($this->filters['skills'])
+                ? implode(', ', $this->filters['skills'])
                 : $this->filters['skills'];
             $descriptions[] = "Skills: $skills";
         }
-        
+
         return implode(' • ', $descriptions);
     }
 }

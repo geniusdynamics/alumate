@@ -2,25 +2,25 @@
 
 namespace Tests\UserAcceptance;
 
-use App\Models\User;
-use App\Models\Tenant;
+use App\Models\Announcement;
+use App\Models\Course;
 use App\Models\Domain;
+use App\Models\Employer;
 use App\Models\Graduate;
 use App\Models\GraduateProfile;
-use App\Models\Course;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Employer;
-use App\Models\Announcement;
 use App\Models\Notification;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 /**
  * Test Data Sets for User Acceptance Testing
- * 
+ *
  * This class provides comprehensive test data sets for all user roles
  * and scenarios in the Graduate Tracking System.
  */
@@ -32,40 +32,40 @@ class TestDataSets
     public static function createAllTestData()
     {
         DB::beginTransaction();
-        
+
         try {
             // Create roles and permissions first
             self::createRolesAndPermissions();
-            
+
             // Create test institutions (tenants)
             $institutions = self::createTestInstitutions();
-            
+
             // Create test users for each role
             $users = self::createTestUsers($institutions);
-            
+
             // Create test courses
             $courses = self::createTestCourses($institutions);
-            
+
             // Create test graduates
             $graduates = self::createTestGraduates($institutions, $courses);
-            
+
             // Create test employers
             $employers = self::createTestEmployers();
-            
+
             // Create test jobs
             $jobs = self::createTestJobs($employers, $courses);
-            
+
             // Create test job applications
             $applications = self::createTestJobApplications($graduates, $jobs);
-            
+
             // Create test announcements
             $announcements = self::createTestAnnouncements($institutions, $users);
-            
+
             // Create test notifications
             $notifications = self::createTestNotifications($users);
-            
+
             DB::commit();
-            
+
             return [
                 'institutions' => $institutions,
                 'users' => $users,
@@ -77,7 +77,7 @@ class TestDataSets
                 'announcements' => $announcements,
                 'notifications' => $notifications,
             ];
-            
+
         } catch (\Exception $e) {
             DB::rollback();
             throw $e;
@@ -218,7 +218,7 @@ class TestDataSets
         // Institution Admins
         foreach ($institutions as $key => $institution) {
             $admin = User::create([
-                'name' => ucwords(str_replace('_', ' ', $key)) . ' Admin',
+                'name' => ucwords(str_replace('_', ' ', $key)).' Admin',
                 'email' => "admin@{$key}.edu",
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
@@ -288,7 +288,7 @@ class TestDataSets
                 'tenant_id' => $data['tenant'],
             ]);
             $graduate->assignRole('Graduate');
-            $users["graduate_" . ($index + 1)] = $graduate;
+            $users['graduate_'.($index + 1)] = $graduate;
         }
 
         return $users;
@@ -473,7 +473,7 @@ class TestDataSets
                 'languages' => json_encode(['English']),
                 'interests' => json_encode(['Technology', 'Innovation']),
                 'linkedin_url' => "https://linkedin.com/in/{$data['first_name']}.{$data['last_name']}",
-                'github_url' => $course->name === 'Computer Science' || $course->name === 'Web Development' 
+                'github_url' => $course->name === 'Computer Science' || $course->name === 'Web Development'
                     ? "https://github.com/{$data['first_name']}{$data['last_name']}" : null,
                 'portfolio_url' => "https://{$data['first_name']}{$data['last_name']}.com",
                 'availability_status' => $data['employment_status'] === 'seeking' ? 'available' : 'not_available',
@@ -810,23 +810,23 @@ class TestDataSets
     public static function createPerformanceTestData($count = 1000)
     {
         DB::beginTransaction();
-        
+
         try {
             $institutions = self::createTestInstitutions();
             $courses = self::createTestCourses($institutions);
-            
+
             // Create large number of graduates
             $graduates = [];
             for ($i = 1; $i <= $count; $i++) {
                 $tenant = array_rand($institutions);
                 $course = $courses[$tenant][array_rand($courses[$tenant])];
-                
+
                 $graduate = Graduate::create([
                     'student_id' => "PERF{$i}",
                     'first_name' => "TestGrad{$i}",
                     'last_name' => "LastName{$i}",
                     'email' => "testgrad{$i}@test.edu",
-                    'phone' => "+1-555-" . str_pad($i, 4, '0', STR_PAD_LEFT),
+                    'phone' => '+1-555-'.str_pad($i, 4, '0', STR_PAD_LEFT),
                     'date_of_birth' => now()->subYears(rand(22, 30))->format('Y-m-d'),
                     'gender' => ['male', 'female'][rand(0, 1)],
                     'course_id' => $course->id,
@@ -834,13 +834,14 @@ class TestDataSets
                     'employment_status' => ['employed', 'seeking', 'self_employed'][rand(0, 2)],
                     'tenant_id' => $institutions[$tenant]->id,
                 ]);
-                
+
                 $graduates[] = $graduate;
             }
-            
+
             DB::commit();
+
             return $graduates;
-            
+
         } catch (\Exception $e) {
             DB::rollback();
             throw $e;
@@ -853,19 +854,19 @@ class TestDataSets
     public static function cleanupTestData()
     {
         DB::beginTransaction();
-        
+
         try {
             // Delete in reverse order of creation to respect foreign key constraints
             Notification::where('title', 'LIKE', '%Test%')->delete();
             Announcement::where('title', 'LIKE', '%Test%')->delete();
-            JobApplication::whereHas('graduate', function($query) {
+            JobApplication::whereHas('graduate', function ($query) {
                 $query->where('email', 'LIKE', '%test%');
             })->delete();
-            Job::whereHas('employer', function($query) {
+            Job::whereHas('employer', function ($query) {
                 $query->where('company_name', 'LIKE', '%Test%');
             })->delete();
             Employer::where('company_name', 'LIKE', '%Test%')->delete();
-            GraduateProfile::whereHas('graduate', function($query) {
+            GraduateProfile::whereHas('graduate', function ($query) {
                 $query->where('email', 'LIKE', '%test%');
             })->delete();
             Graduate::where('email', 'LIKE', '%test%')->delete();
@@ -873,9 +874,9 @@ class TestDataSets
             User::where('email', 'LIKE', '%test%')->delete();
             Domain::where('domain', 'LIKE', '%.localhost')->delete();
             Tenant::where('name', 'LIKE', '%Test%')->delete();
-            
+
             DB::commit();
-            
+
         } catch (\Exception $e) {
             DB::rollback();
             throw $e;

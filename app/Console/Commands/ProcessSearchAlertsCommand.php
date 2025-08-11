@@ -30,11 +30,13 @@ class ProcessSearchAlertsCommand extends Command
 
         try {
             ProcessSearchAlertsJob::dispatch();
-            
+
             $this->info('✅ Search alerts processing job dispatched successfully!');
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error("❌ Failed to dispatch search alerts job: {$e->getMessage()}");
+
             return Command::FAILURE;
         }
     }

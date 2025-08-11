@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Services\AnalyticsService;
 use App\Models\KpiDefinition;
-use Illuminate\Console\Command;
+use App\Services\AnalyticsService;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class CalculateKpis extends Command
 {
@@ -39,10 +39,12 @@ class CalculateKpis extends Command
                 $this->calculateAllKpis($date, $force);
             }
 
-            $this->info("KPI calculations completed successfully!");
+            $this->info('KPI calculations completed successfully!');
+
             return 0;
         } catch (\Exception $e) {
-            $this->error("Failed to calculate KPIs: " . $e->getMessage());
+            $this->error('Failed to calculate KPIs: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -50,22 +52,24 @@ class CalculateKpis extends Command
     private function calculateSpecificKpi($kpiKey, $date, $force)
     {
         $kpi = KpiDefinition::where('key', $kpiKey)->active()->first();
-        
-        if (!$kpi) {
+
+        if (! $kpi) {
             $this->error("KPI not found: {$kpiKey}");
+
             return;
         }
 
         // Check if value already exists
-        if (!$force && $kpi->getValueForDate($date)) {
+        if (! $force && $kpi->getValueForDate($date)) {
             $this->warn("KPI value already exists for {$kpiKey} on {$date}. Use --force to recalculate.");
+
             return;
         }
 
         $this->info("Calculating KPI: {$kpi->name}");
-        
+
         $value = $kpi->calculateValue($date);
-        
+
         \App\Models\KpiValue::updateOrCreate(
             ['kpi_definition_id' => $kpi->id, 'measurement_date' => $date],
             [
@@ -81,9 +85,10 @@ class CalculateKpis extends Command
     private function calculateAllKpis($date, $force)
     {
         $kpis = KpiDefinition::active()->get();
-        
+
         if ($kpis->isEmpty()) {
-            $this->warn("No active KPIs found.");
+            $this->warn('No active KPIs found.');
+
             return;
         }
 
@@ -96,13 +101,14 @@ class CalculateKpis extends Command
         foreach ($kpis as $kpi) {
             try {
                 // Check if value already exists
-                if (!$force && $kpi->getValueForDate($date)) {
+                if (! $force && $kpi->getValueForDate($date)) {
                     $bar->advance();
+
                     continue;
                 }
 
                 $value = $kpi->calculateValue($date);
-                
+
                 \App\Models\KpiValue::updateOrCreate(
                     ['kpi_definition_id' => $kpi->id, 'measurement_date' => $date],
                     [
@@ -115,7 +121,7 @@ class CalculateKpis extends Command
                 $results[$kpi->key] = $value;
             } catch (\Exception $e) {
                 $errors[$kpi->key] = $e->getMessage();
-                \Log::error("Failed to calculate KPI {$kpi->key}: " . $e->getMessage());
+                \Log::error("Failed to calculate KPI {$kpi->key}: ".$e->getMessage());
             }
 
             $bar->advance();
@@ -125,15 +131,15 @@ class CalculateKpis extends Command
         $this->newLine();
 
         // Display results
-        if (!empty($results)) {
-            $this->info("Successfully calculated KPIs:");
+        if (! empty($results)) {
+            $this->info('Successfully calculated KPIs:');
             foreach ($results as $key => $value) {
                 $this->line("  ✓ {$key}: {$value}");
             }
         }
 
-        if (!empty($errors)) {
-            $this->error("Failed to calculate KPIs:");
+        if (! empty($errors)) {
+            $this->error('Failed to calculate KPIs:');
             foreach ($errors as $key => $error) {
                 $this->line("  ✗ {$key}: {$error}");
             }
@@ -143,7 +149,7 @@ class CalculateKpis extends Command
     private function getKpiBreakdown($kpi, $date)
     {
         // Generate detailed breakdown for KPI value
-        return match($kpi->key) {
+        return match ($kpi->key) {
             'employment_rate' => $this->getEmploymentRateBreakdown($date),
             'job_placement_rate' => $this->getJobPlacementRateBreakdown($date),
             'avg_time_to_employment' => $this->getTimeToEmploymentBreakdown($date),
@@ -160,7 +166,7 @@ class CalculateKpis extends Command
             ->map(function ($graduates) {
                 $total = $graduates->count();
                 $employed = $graduates->where('employment_status.status', 'employed')->count();
-                
+
                 return [
                     'total' => $total,
                     'employed' => $employed,
@@ -178,7 +184,7 @@ class CalculateKpis extends Command
             ->map(function ($applications) {
                 $total = $applications->count();
                 $hired = $applications->where('status', 'hired')->count();
-                
+
                 return [
                     'total' => $total,
                     'hired' => $hired,
@@ -201,7 +207,7 @@ class CalculateKpis extends Command
                     // Approximate graduation date as end of graduation year
                     $graduationDate = Carbon::createFromDate($graduate->graduation_year, 12, 31);
                     $employmentDate = Carbon::parse($graduate->employment_start_date);
-                    
+
                     return $graduationDate->diffInDays($employmentDate);
                 });
 

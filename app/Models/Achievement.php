@@ -4,23 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Achievement extends Model
 {
     use HasFactory;
 
     const CATEGORY_CAREER = 'career';
+
     const CATEGORY_EDUCATION = 'education';
+
     const CATEGORY_COMMUNITY = 'community';
+
     const CATEGORY_MILESTONE = 'milestone';
+
     const CATEGORY_SPECIAL = 'special';
 
     const RARITY_COMMON = 'common';
+
     const RARITY_UNCOMMON = 'uncommon';
+
     const RARITY_RARE = 'rare';
+
     const RARITY_EPIC = 'epic';
+
     const RARITY_LEGENDARY = 'legendary';
 
     protected $fillable = [
@@ -34,13 +42,13 @@ class Achievement extends Model
         'criteria',
         'points',
         'is_active',
-        'is_auto_awarded'
+        'is_auto_awarded',
     ];
 
     protected $casts = [
         'criteria' => 'array',
         'is_active' => 'boolean',
-        'is_auto_awarded' => 'boolean'
+        'is_auto_awarded' => 'boolean',
     ];
 
     /**
@@ -49,8 +57,8 @@ class Achievement extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_achievements')
-                    ->withPivot(['earned_at', 'metadata', 'is_featured', 'is_notified'])
-                    ->withTimestamps();
+            ->withPivot(['earned_at', 'metadata', 'is_featured', 'is_notified'])
+            ->withTimestamps();
     }
 
     /**
@@ -71,7 +79,7 @@ class Achievement extends Model
             self::CATEGORY_EDUCATION => 'Education',
             self::CATEGORY_COMMUNITY => 'Community',
             self::CATEGORY_MILESTONE => 'Milestone',
-            self::CATEGORY_SPECIAL => 'Special'
+            self::CATEGORY_SPECIAL => 'Special',
         ];
     }
 
@@ -85,7 +93,7 @@ class Achievement extends Model
             self::RARITY_UNCOMMON => 'Uncommon',
             self::RARITY_RARE => 'Rare',
             self::RARITY_EPIC => 'Epic',
-            self::RARITY_LEGENDARY => 'Legendary'
+            self::RARITY_LEGENDARY => 'Legendary',
         ];
     }
 
@@ -94,7 +102,7 @@ class Achievement extends Model
      */
     public function getRarityColorAttribute(): string
     {
-        return match($this->rarity) {
+        return match ($this->rarity) {
             self::RARITY_COMMON => 'gray',
             self::RARITY_UNCOMMON => 'green',
             self::RARITY_RARE => 'blue',
@@ -109,7 +117,7 @@ class Achievement extends Model
      */
     public function getCategoryIconAttribute(): string
     {
-        return match($this->category) {
+        return match ($this->category) {
             self::CATEGORY_CAREER => 'briefcase',
             self::CATEGORY_EDUCATION => 'academic-cap',
             self::CATEGORY_COMMUNITY => 'users',
@@ -156,12 +164,12 @@ class Achievement extends Model
      */
     public function checkCriteria(User $user): bool
     {
-        if (!$this->is_active || !$this->is_auto_awarded) {
+        if (! $this->is_active || ! $this->is_auto_awarded) {
             return false;
         }
 
         $criteria = $this->criteria;
-        
+
         // Handle different types of criteria
         switch ($criteria['type'] ?? null) {
             case 'milestone_count':
@@ -188,13 +196,13 @@ class Achievement extends Model
     {
         $count = $user->careerMilestones()->count();
         $required = $criteria['count'] ?? 1;
-        
+
         if (isset($criteria['milestone_type'])) {
             $count = $user->careerMilestones()
-                         ->where('type', $criteria['milestone_type'])
-                         ->count();
+                ->where('type', $criteria['milestone_type'])
+                ->count();
         }
-        
+
         return $count >= $required;
     }
 
@@ -205,7 +213,7 @@ class Achievement extends Model
     {
         $count = $user->connections()->where('status', 'accepted')->count();
         $required = $criteria['count'] ?? 1;
-        
+
         return $count >= $required;
     }
 
@@ -215,15 +223,15 @@ class Achievement extends Model
     private function checkPostEngagement(User $user, array $criteria): bool
     {
         $posts = $user->posts();
-        
+
         if (isset($criteria['min_likes'])) {
             $posts = $posts->where('like_count', '>=', $criteria['min_likes']);
         }
-        
+
         if (isset($criteria['min_posts'])) {
             return $posts->count() >= $criteria['min_posts'];
         }
-        
+
         return $posts->exists();
     }
 
@@ -233,10 +241,11 @@ class Achievement extends Model
     private function checkCareerProgression(User $user, array $criteria): bool
     {
         $promotions = $user->careerMilestones()
-                          ->where('type', 'promotion')
-                          ->count();
-        
+            ->where('type', 'promotion')
+            ->count();
+
         $required = $criteria['promotions'] ?? 1;
+
         return $promotions >= $required;
     }
 
@@ -247,22 +256,39 @@ class Achievement extends Model
     {
         $completionScore = 0;
         $maxScore = 100;
-        
+
         // Basic profile info
-        if ($user->name) $completionScore += 10;
-        if ($user->email) $completionScore += 10;
-        if ($user->bio) $completionScore += 15;
-        if ($user->avatar_url) $completionScore += 10;
-        if ($user->location) $completionScore += 10;
-        
+        if ($user->name) {
+            $completionScore += 10;
+        }
+        if ($user->email) {
+            $completionScore += 10;
+        }
+        if ($user->bio) {
+            $completionScore += 15;
+        }
+        if ($user->avatar_url) {
+            $completionScore += 10;
+        }
+        if ($user->location) {
+            $completionScore += 10;
+        }
+
         // Career info
-        if ($user->careerTimelines()->exists()) $completionScore += 20;
-        if ($user->careerMilestones()->exists()) $completionScore += 15;
-        
+        if ($user->careerTimelines()->exists()) {
+            $completionScore += 20;
+        }
+        if ($user->careerMilestones()->exists()) {
+            $completionScore += 15;
+        }
+
         // Social connections
-        if ($user->connections()->where('status', 'accepted')->exists()) $completionScore += 10;
-        
+        if ($user->connections()->where('status', 'accepted')->exists()) {
+            $completionScore += 10;
+        }
+
         $requiredScore = $criteria['completion_percentage'] ?? 80;
+
         return $completionScore >= $requiredScore;
     }
 
@@ -273,10 +299,10 @@ class Achievement extends Model
     {
         $posts = $user->posts()->count();
         $comments = $user->postEngagements()->where('type', 'comment')->count();
-        
+
         $totalActivity = $posts + $comments;
         $required = $criteria['activity_count'] ?? 5;
-        
+
         return $totalActivity >= $required;
     }
 }

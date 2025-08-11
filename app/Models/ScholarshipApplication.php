@@ -74,7 +74,7 @@ class ScholarshipApplication extends Model
 
     public function isSubmitted(): bool
     {
-        return !is_null($this->submitted_at);
+        return ! is_null($this->submitted_at);
     }
 
     public function canBeEdited(): bool
@@ -88,7 +88,7 @@ class ScholarshipApplication extends Model
         if ($reviews->isEmpty()) {
             return null;
         }
-        
+
         return $reviews->avg('score');
     }
 }

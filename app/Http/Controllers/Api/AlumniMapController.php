@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AlumniMapService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AlumniMapController extends Controller
 {
@@ -110,7 +110,7 @@ class AlumniMapController extends Controller
             'latitude' => $request->input('latitude'),
             'longitude' => $request->input('longitude'),
             'radius' => $request->input('radius', 50),
-            'city' => $region
+            'city' => $region,
         ];
 
         $suggestions = $this->alumniMapService->suggestRegionalGroups($location);
@@ -125,10 +125,10 @@ class AlumniMapController extends Controller
     {
         // This would typically query the database for available options
         // For now, return static data
-        
+
         $currentYear = now()->year;
         $graduationYears = range($currentYear - 50, $currentYear);
-        
+
         $industries = [
             'Technology',
             'Healthcare',
@@ -144,7 +144,7 @@ class AlumniMapController extends Controller
             'Media',
             'Non-profit',
             'Government',
-            'Retail'
+            'Retail',
         ];
 
         $countries = [
@@ -162,7 +162,7 @@ class AlumniMapController extends Controller
             'Netherlands',
             'Sweden',
             'Switzerland',
-            'South Korea'
+            'South Korea',
         ];
 
         $states = [
@@ -180,14 +180,14 @@ class AlumniMapController extends Controller
             'Virginia',
             'Washington',
             'Arizona',
-            'Massachusetts'
+            'Massachusetts',
         ];
 
         return response()->json([
             'graduation_years' => $graduationYears,
             'industries' => $industries,
             'countries' => $countries,
-            'states' => $states
+            'states' => $states,
         ]);
     }
 
@@ -206,7 +206,7 @@ class AlumniMapController extends Controller
         ]);
 
         $user = auth()->user();
-        
+
         $user->update([
             'latitude' => $request->input('latitude'),
             'longitude' => $request->input('longitude'),
@@ -224,7 +224,7 @@ class AlumniMapController extends Controller
                 'city' => $user->city,
                 'state' => $user->state,
                 'country' => $user->country,
-            ]
+            ],
         ]);
     }
 
@@ -247,13 +247,13 @@ class AlumniMapController extends Controller
 
         // Get alumni data for heatmap
         $alumni = $this->alumniMapService->getAlumniByLocation($bounds, $filters);
-        
+
         // Convert to heatmap format
         $heatmapData = $alumni->map(function ($alumnus) {
             return [
                 'lat' => (float) $alumnus->latitude,
                 'lng' => (float) $alumnus->longitude,
-                'intensity' => 1 // Could be weighted by various factors
+                'intensity' => 1, // Could be weighted by various factors
             ];
         });
 
@@ -275,20 +275,20 @@ class AlumniMapController extends Controller
 
         // This would implement a more sophisticated search
         // For now, return basic location-based results
-        
+
         if ($request->has(['latitude', 'longitude'])) {
             $userId = auth()->id();
             $radius = $request->input('radius', 50);
             $nearbyAlumni = $this->alumniMapService->findNearbyAlumni($userId, $radius);
-            
+
             // Filter by search query
             $query = strtolower($request->input('query'));
             $filtered = $nearbyAlumni->filter(function ($alumnus) use ($query) {
-                return str_contains(strtolower($alumnus->first_name . ' ' . $alumnus->last_name), $query) ||
+                return str_contains(strtolower($alumnus->first_name.' '.$alumnus->last_name), $query) ||
                        str_contains(strtolower($alumnus->current_company ?? ''), $query) ||
                        str_contains(strtolower($alumnus->current_position ?? ''), $query);
             });
-            
+
             return response()->json($filtered->values());
         }
 

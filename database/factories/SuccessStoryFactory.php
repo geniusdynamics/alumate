@@ -18,17 +18,17 @@ class SuccessStoryFactory extends Factory
     {
         $industries = [
             'Technology', 'Healthcare', 'Finance', 'Education', 'Marketing',
-            'Engineering', 'Consulting', 'Non-profit', 'Government', 'Media'
+            'Engineering', 'Consulting', 'Non-profit', 'Government', 'Media',
         ];
 
         $achievementTypes = [
             'promotion', 'award', 'startup', 'publication', 'patent',
-            'leadership', 'community_service', 'innovation', 'research', 'entrepreneurship'
+            'leadership', 'community_service', 'innovation', 'research', 'entrepreneurship',
         ];
 
         $tags = [
             'leadership', 'innovation', 'technology', 'social_impact', 'entrepreneurship',
-            'research', 'community', 'diversity', 'mentorship', 'global'
+            'research', 'community', 'diversity', 'mentorship', 'global',
         ];
 
         $demographics = [
@@ -43,11 +43,11 @@ class SuccessStoryFactory extends Factory
             'title' => fake()->sentence(6),
             'summary' => fake()->paragraph(2),
             'content' => fake()->paragraphs(5, true),
-            'featured_image' => 'success-stories/featured/' . fake()->uuid() . '.jpg',
+            'featured_image' => 'success-stories/featured/'.fake()->uuid().'.jpg',
             'media_urls' => fake()->randomElements([
-                'success-stories/media/' . fake()->uuid() . '.jpg',
-                'success-stories/media/' . fake()->uuid() . '.mp4',
-                'success-stories/media/' . fake()->uuid() . '.pdf',
+                'success-stories/media/'.fake()->uuid().'.jpg',
+                'success-stories/media/'.fake()->uuid().'.mp4',
+                'success-stories/media/'.fake()->uuid().'.pdf',
             ], fake()->numberBetween(0, 3)),
             'industry' => fake()->randomElement($industries),
             'achievement_type' => fake()->randomElement($achievementTypes),
@@ -56,7 +56,7 @@ class SuccessStoryFactory extends Factory
             'graduation_year' => fake()->year($max = 'now'),
             'degree_program' => fake()->randomElement([
                 'Computer Science', 'Business Administration', 'Engineering',
-                'Medicine', 'Law', 'Education', 'Psychology', 'Marketing'
+                'Medicine', 'Law', 'Education', 'Psychology', 'Marketing',
             ]),
             'tags' => fake()->randomElements($tags, fake()->numberBetween(2, 5)),
             'demographics' => $demographics,

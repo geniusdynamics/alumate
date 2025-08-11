@@ -27,7 +27,7 @@ return new class extends Migration
             $table->boolean('in_app_enabled')->default(true);
             $table->boolean('push_enabled')->default(true);
             $table->timestamps();
-            
+
             $table->unique(['user_id', 'notification_type']);
         });
 
@@ -50,7 +50,7 @@ return new class extends Migration
             $table->text('error_message')->nullable();
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('notification_id')->references('id')->on('notifications')->onDelete('cascade');
         });
     }

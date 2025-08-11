@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\Job;
-use App\Models\Employer;
 use App\Models\Course;
-use App\Models\User;
+use App\Models\Employer;
+use App\Models\Job;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class JobFactory extends Factory
@@ -18,7 +17,7 @@ class JobFactory extends Factory
             'Software Developer', 'Web Developer', 'Mobile App Developer', 'Data Analyst',
             'Cybersecurity Specialist', 'Digital Marketing Specialist', 'Graphic Designer',
             'Project Manager', 'Business Analyst', 'Network Administrator', 'Database Administrator',
-            'UI/UX Designer', 'DevOps Engineer', 'Quality Assurance Tester', 'Technical Support Specialist'
+            'UI/UX Designer', 'DevOps Engineer', 'Quality Assurance Tester', 'Technical Support Specialist',
         ];
 
         $title = $this->faker->randomElement($jobTitles);
@@ -28,7 +27,7 @@ class JobFactory extends Factory
             'course_id' => Course::factory(),
             'title' => $title,
             'description' => $this->faker->paragraphs(3, true),
-            'location' => $this->faker->city() . ', ' . $this->faker->state(),
+            'location' => $this->faker->city().', '.$this->faker->state(),
             'required_skills' => $this->getSkillsForJob($title),
             'preferred_qualifications' => $this->faker->sentences(3),
             'experience_level' => $this->faker->randomElement(['entry', 'junior', 'mid', 'senior', 'executive']),
@@ -64,7 +63,7 @@ class JobFactory extends Factory
                 'Health Insurance', 'Dental Insurance', 'Vision Insurance',
                 'Retirement Plan', 'Flexible Hours', 'Remote Work Options',
                 'Professional Development', 'Paid Time Off', 'Performance Bonuses',
-                'Stock Options', 'Gym Membership', 'Free Meals'
+                'Stock Options', 'Gym Membership', 'Free Meals',
             ], $this->faker->numberBetween(3, 8)),
             'company_culture' => $this->faker->paragraph(2),
         ];

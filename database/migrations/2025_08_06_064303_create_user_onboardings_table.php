@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamp('completed_at')->nullable();
             $table->timestamp('skipped_at')->nullable();
             $table->timestamps();
-            
+
             $table->unique('user_id');
             $table->index(['user_id', 'has_completed_onboarding']);
             $table->index(['user_id', 'is_new_user']);

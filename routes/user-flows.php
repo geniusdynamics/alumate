@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 
 // User Flow Integration API Routes
 Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->group(function () {
-    
+
     // Social Flow Endpoints
     Route::prefix('social')->name('social.')->group(function () {
         Route::post('posts', [\App\Http\Controllers\Api\PostController::class, 'store'])->name('posts.store');
@@ -17,7 +17,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::post('posts/media', [\App\Http\Controllers\Api\PostController::class, 'uploadMedia'])->name('posts.media');
         Route::post('posts/drafts', [\App\Http\Controllers\Api\PostController::class, 'saveDraft'])->name('posts.drafts');
     });
-    
+
     // Alumni Networking Flow Endpoints
     Route::prefix('alumni')->name('alumni.')->group(function () {
         Route::post('connections/request', [\App\Http\Controllers\Api\ConnectionController::class, 'request'])->name('connections.request');
@@ -28,7 +28,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::get('search', [\App\Http\Controllers\Api\SearchController::class, 'alumni'])->name('search');
         Route::get('{alumni}/profile', [\App\Http\Controllers\Api\AlumniDirectoryController::class, 'profile'])->name('profile');
     });
-    
+
     // Career Services Flow Endpoints
     Route::prefix('career')->name('career.')->group(function () {
         Route::post('timeline', [\App\Http\Controllers\Api\CareerTimelineController::class, 'store'])->name('timeline.store');
@@ -40,7 +40,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::delete('goals/{goal}', [\App\Http\Controllers\Api\CareerController::class, 'destroyGoal'])->name('goals.destroy');
         Route::post('goals/{goal}/complete', [\App\Http\Controllers\Api\CareerController::class, 'completeGoal'])->name('goals.complete');
     });
-    
+
     // Job Matching Flow Endpoints
     Route::prefix('jobs')->name('jobs.')->group(function () {
         Route::get('recommendations', [\App\Http\Controllers\Api\JobMatchingController::class, 'recommendations'])->name('recommendations');
@@ -51,7 +51,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::get('{job}/connections', [\App\Http\Controllers\Api\JobMatchingController::class, 'connections'])->name('connections');
         Route::post('introductions/request', [\App\Http\Controllers\Api\JobMatchingController::class, 'requestIntroduction'])->name('introductions.request');
     });
-    
+
     // Events Flow Endpoints
     Route::prefix('events')->name('events.')->group(function () {
         Route::post('{event}/register', [\App\Http\Controllers\Api\EventController::class, 'register'])->name('register');
@@ -62,7 +62,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::get('{event}/connections', [\App\Http\Controllers\Api\EventFollowUpController::class, 'getConnections'])->name('connections');
         Route::post('{event}/networking', [\App\Http\Controllers\Api\EventFollowUpController::class, 'requestNetworking'])->name('networking');
     });
-    
+
     // Mentorship Flow Endpoints
     Route::prefix('mentorship')->name('mentorship.')->group(function () {
         Route::post('become-mentor', [\App\Http\Controllers\Api\MentorshipController::class, 'becomeMentor'])->name('become-mentor');
@@ -72,7 +72,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::post('sessions', [\App\Http\Controllers\Api\MentorshipController::class, 'scheduleSession'])->name('schedule-session');
         Route::get('recommendations', [\App\Http\Controllers\Api\MentorshipController::class, 'getMentorRecommendations'])->name('recommendations');
     });
-    
+
     // Reunion Flow Endpoints
     Route::prefix('reunions')->name('reunions.')->group(function () {
         Route::post('{reunion}/rsvp', [\App\Http\Controllers\Api\ReunionController::class, 'rsvp'])->name('rsvp');
@@ -81,7 +81,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::post('{reunion}/memories', [\App\Http\Controllers\Api\ReunionController::class, 'addMemory'])->name('memories.add');
         Route::get('{reunion}/photos', [\App\Http\Controllers\Api\ReunionController::class, 'getPhotos'])->name('photos');
     });
-    
+
     // Skills Development Flow Endpoints
     Route::prefix('skills')->name('skills.')->group(function () {
         Route::post('endorse', [\App\Http\Controllers\Api\SkillsController::class, 'endorse'])->name('endorse');
@@ -91,7 +91,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::get('assessment', [\App\Http\Controllers\Api\SkillsController::class, 'getAssessment'])->name('assessment');
         Route::post('assessment', [\App\Http\Controllers\Api\SkillsController::class, 'submitAssessment'])->name('assessment.submit');
     });
-    
+
     // Success Stories Flow Endpoints
     Route::prefix('stories')->name('stories.')->group(function () {
         Route::post('/', [\App\Http\Controllers\Api\SuccessStoryController::class, 'store'])->name('store');
@@ -100,7 +100,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::post('{story}/feature', [\App\Http\Controllers\Api\SuccessStoryController::class, 'feature'])->name('feature');
         Route::post('{story}/share', [\App\Http\Controllers\Api\SuccessStoryController::class, 'share'])->name('share');
     });
-    
+
     // Achievement Flow Endpoints
     Route::prefix('achievements')->name('achievements.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\AchievementController::class, 'index'])->name('index');
@@ -108,7 +108,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::get('milestones', [\App\Http\Controllers\Api\AchievementController::class, 'getMilestones'])->name('milestones');
         Route::post('milestones/detect', [\App\Http\Controllers\Api\AchievementController::class, 'detectMilestones'])->name('milestones.detect');
     });
-    
+
     // Notification Flow Endpoints
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\NotificationController::class, 'index'])->name('index');
@@ -117,7 +117,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::get('unread-count', [\App\Http\Controllers\Api\NotificationController::class, 'getUnreadCount'])->name('unread-count');
         Route::put('preferences', [\App\Http\Controllers\Api\NotificationController::class, 'updatePreferences'])->name('preferences.update');
     });
-    
+
     // Dashboard Integration Endpoints
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
         Route::get('feed', [\App\Http\Controllers\Api\DashboardController::class, 'getFeed'])->name('feed');
@@ -126,7 +126,7 @@ Route::middleware(['auth'])->prefix('api/user-flows')->name('api.user-flows.')->
         Route::get('insights', [\App\Http\Controllers\Api\DashboardController::class, 'getInsights'])->name('insights');
         Route::post('quick-actions', [\App\Http\Controllers\Api\DashboardController::class, 'executeQuickAction'])->name('quick-actions');
     });
-    
+
     // Search Integration Endpoints
     Route::prefix('search')->name('search.')->group(function () {
         Route::get('global', [\App\Http\Controllers\Api\SearchController::class, 'globalSearch'])->name('global');

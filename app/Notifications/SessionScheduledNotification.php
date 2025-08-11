@@ -23,17 +23,17 @@ class SessionScheduledNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable): MailMessage
     {
-        $otherUser = $notifiable->id === $this->session->mentorship->mentor_id 
-            ? $this->session->mentorship->mentee 
+        $otherUser = $notifiable->id === $this->session->mentorship->mentor_id
+            ? $this->session->mentorship->mentee
             : $this->session->mentorship->mentor;
 
         return (new MailMessage)
             ->subject('Mentorship Session Scheduled')
-            ->greeting('Hello ' . $notifiable->name . '!')
-            ->line('A mentorship session has been scheduled with ' . $otherUser->name . '.')
-            ->line('Date & Time: ' . $this->session->scheduled_at->format('F j, Y \a\t g:i A'))
-            ->line('Duration: ' . $this->session->duration . ' minutes')
-            ->action('View Session', url('/mentorship/sessions/' . $this->session->id))
+            ->greeting('Hello '.$notifiable->name.'!')
+            ->line('A mentorship session has been scheduled with '.$otherUser->name.'.')
+            ->line('Date & Time: '.$this->session->scheduled_at->format('F j, Y \a\t g:i A'))
+            ->line('Duration: '.$this->session->duration.' minutes')
+            ->action('View Session', url('/mentorship/sessions/'.$this->session->id))
             ->line('Please make sure to attend on time!');
     }
 
@@ -45,8 +45,8 @@ class SessionScheduledNotification extends Notification implements ShouldQueue
             'mentorship_id' => $this->session->mentorship_id,
             'scheduled_at' => $this->session->scheduled_at,
             'duration' => $this->session->duration,
-            'other_user_name' => $notifiable->id === $this->session->mentorship->mentor_id 
-                ? $this->session->mentorship->mentee->name 
+            'other_user_name' => $notifiable->id === $this->session->mentorship->mentor_id
+                ? $this->session->mentorship->mentee->name
                 : $this->session->mentorship->mentor->name,
         ];
     }

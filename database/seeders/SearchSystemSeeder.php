@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\SavedSearch;
 use App\Models\SearchAnalytics;
+use App\Models\User;
 use App\Services\MatchingService;
 use Illuminate\Database\Seeder;
 
@@ -75,7 +75,7 @@ class SearchSystemSeeder extends Seeder
     private function seedSearchAnalytics()
     {
         $users = User::limit(10)->get();
-        
+
         foreach ($users as $user) {
             // Create some search analytics data
             for ($i = 0; $i < rand(3, 8); $i++) {
@@ -96,11 +96,11 @@ class SearchSystemSeeder extends Seeder
     private function calculateJobMatches()
     {
         $matchingService = app(MatchingService::class);
-        
+
         // This would normally be run as a background job
         // For seeding purposes, we'll just calculate a few matches
         $jobs = \App\Models\Job::active()->limit(5)->get();
-        
+
         foreach ($jobs as $job) {
             $matchingService->batchCalculateMatches($job);
         }

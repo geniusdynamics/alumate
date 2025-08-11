@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Job extends Model
 {
@@ -109,13 +109,13 @@ class Job extends Model
     {
         return Attribute::make(
             get: function () {
-                if (!$this->salary_min && !$this->salary_max) {
+                if (! $this->salary_min && ! $this->salary_max) {
                     return 'Negotiable';
                 }
-                
+
                 $min = $this->salary_min ? number_format($this->salary_min, 0) : '';
                 $max = $this->salary_max ? number_format($this->salary_max, 0) : '';
-                
+
                 if ($min && $max) {
                     return "$min - $max";
                 } elseif ($min) {
@@ -123,7 +123,7 @@ class Job extends Model
                 } elseif ($max) {
                     return "Up to $max";
                 }
-                
+
                 return 'Negotiable';
             }
         );
@@ -176,7 +176,7 @@ class Job extends Model
     {
         return $query->where(function ($q) {
             $q->whereNull('application_deadline')
-              ->orWhere('application_deadline', '>=', now()->toDateString());
+                ->orWhere('application_deadline', '>=', now()->toDateString());
         });
     }
 
@@ -254,7 +254,7 @@ class Job extends Model
             ->where('allow_employer_contact', true);
 
         // Add skill matching if job has required skills
-        if (!empty($this->required_skills)) {
+        if (! empty($this->required_skills)) {
             $query->where(function ($q) {
                 foreach ($this->required_skills as $skill) {
                     $q->orWhereJsonContains('skills', $skill);
@@ -286,7 +286,7 @@ class Job extends Model
         }
 
         // Skills match (30% weight)
-        if (!empty($this->required_skills) && !empty($graduate->skills)) {
+        if (! empty($this->required_skills) && ! empty($graduate->skills)) {
             $matchingSkills = array_intersect(
                 array_map('strtolower', $this->required_skills),
                 array_map('strtolower', $graduate->skills)
@@ -308,17 +308,17 @@ class Job extends Model
 
         return [
             'score' => round($score, 2),
-            'factors' => $factors
+            'factors' => $factors,
         ];
     }
 
     public function sendToGraduates()
     {
         $matchingGraduates = $this->getMatchingGraduates();
-        
+
         foreach ($matchingGraduates as $graduate) {
             $matchData = $this->calculateMatchScore($graduate);
-            
+
             // Create job notification for graduate
             $graduate->user->notifications()->create([
                 'type' => 'job_match',
@@ -332,23 +332,23 @@ class Job extends Model
                 'read_at' => null,
             ]);
         }
-        
+
         return $matchingGraduates->count();
     }
 
     public function canBeAppliedTo()
     {
-        return $this->status === 'active' 
-            && (!$this->application_deadline || now()->isBefore($this->application_deadline))
-            && (!$this->employer_verified_required || $this->employer->verification_status === 'verified');
+        return $this->status === 'active'
+            && (! $this->application_deadline || now()->isBefore($this->application_deadline))
+            && (! $this->employer_verified_required || $this->employer->verification_status === 'verified');
     }
 
     public function getDaysUntilDeadline()
     {
-        if (!$this->application_deadline) {
+        if (! $this->application_deadline) {
             return null;
         }
-        
+
         return now()->diffInDays($this->application_deadline, false);
     }
 
@@ -356,15 +356,17 @@ class Job extends Model
     {
         if ($this->application_deadline && now()->isAfter($this->application_deadline) && $this->status === 'active') {
             $this->update(['status' => 'expired']);
+
             return true;
         }
+
         return false;
     }
 
     public function renewJob($newDeadline = null)
     {
         $deadline = $newDeadline ?: now()->addDays(30);
-        
+
         $this->update([
             'application_deadline' => $deadline,
             'status' => 'active',
@@ -372,14 +374,14 @@ class Job extends Model
 
         // Send to matching graduates again
         $this->sendToGraduates();
-        
+
         return $this;
     }
 
     public function getJobPerformanceMetrics()
     {
         $daysActive = max(1, $this->created_at->diffInDays(now()));
-        
+
         return [
             'views' => $this->view_count,
             'applications' => $this->total_applications,
@@ -389,8 +391,8 @@ class Job extends Model
             'days_active' => $daysActive,
             'days_until_deadline' => $this->getDaysUntilDeadline(),
             'avg_applications_per_day' => round($this->total_applications / $daysActive, 2),
-            'conversion_rate' => $this->total_applications > 0 
-                ? round(($this->shortlisted_applications / $this->total_applications) * 100, 2) 
+            'conversion_rate' => $this->total_applications > 0
+                ? round(($this->shortlisted_applications / $this->total_applications) * 100, 2)
                 : 0,
             'engagement_score' => $this->calculateEngagementScore(),
             'quality_score' => $this->calculateQualityScore(),
@@ -402,16 +404,16 @@ class Job extends Model
         $viewsWeight = 0.3;
         $applicationsWeight = 0.5;
         $conversionWeight = 0.2;
-        
+
         $normalizedViews = min(100, ($this->view_count / 100) * 100);
         $normalizedApplications = min(100, ($this->total_applications / 20) * 100);
-        $conversionRate = $this->total_applications > 0 
-            ? ($this->shortlisted_applications / $this->total_applications) * 100 
+        $conversionRate = $this->total_applications > 0
+            ? ($this->shortlisted_applications / $this->total_applications) * 100
             : 0;
-        
+
         return round(
-            ($normalizedViews * $viewsWeight) + 
-            ($normalizedApplications * $applicationsWeight) + 
+            ($normalizedViews * $viewsWeight) +
+            ($normalizedApplications * $applicationsWeight) +
             ($conversionRate * $conversionWeight)
         );
     }
@@ -419,32 +421,50 @@ class Job extends Model
     public function calculateQualityScore()
     {
         $score = 0;
-        
+
         // Description quality (length and detail)
-        if (strlen($this->description) > 500) $score += 20;
-        elseif (strlen($this->description) > 200) $score += 10;
-        
+        if (strlen($this->description) > 500) {
+            $score += 20;
+        } elseif (strlen($this->description) > 200) {
+            $score += 10;
+        }
+
         // Salary transparency
-        if ($this->salary_min && $this->salary_max) $score += 20;
-        elseif ($this->salary_min || $this->salary_max) $score += 10;
-        
+        if ($this->salary_min && $this->salary_max) {
+            $score += 20;
+        } elseif ($this->salary_min || $this->salary_max) {
+            $score += 10;
+        }
+
         // Skills specification
-        if (!empty($this->required_skills) && count($this->required_skills) >= 3) $score += 15;
-        elseif (!empty($this->required_skills)) $score += 10;
-        
+        if (! empty($this->required_skills) && count($this->required_skills) >= 3) {
+            $score += 15;
+        } elseif (! empty($this->required_skills)) {
+            $score += 10;
+        }
+
         // Benefits listed
-        if (!empty($this->benefits) && count($this->benefits) >= 3) $score += 15;
-        elseif (!empty($this->benefits)) $score += 10;
-        
+        if (! empty($this->benefits) && count($this->benefits) >= 3) {
+            $score += 15;
+        } elseif (! empty($this->benefits)) {
+            $score += 10;
+        }
+
         // Company culture description
-        if ($this->company_culture && strlen($this->company_culture) > 100) $score += 10;
-        
+        if ($this->company_culture && strlen($this->company_culture) > 100) {
+            $score += 10;
+        }
+
         // Contact information
-        if ($this->contact_email || $this->contact_phone) $score += 10;
-        
+        if ($this->contact_email || $this->contact_phone) {
+            $score += 10;
+        }
+
         // Application deadline set
-        if ($this->application_deadline) $score += 10;
-        
+        if ($this->application_deadline) {
+            $score += 10;
+        }
+
         return min(100, $score);
     }
 
@@ -467,26 +487,26 @@ class Job extends Model
         } else {
             $newDeadline = now()->addDays($days);
         }
-        
+
         $this->update([
             'application_deadline' => $newDeadline,
             'status' => 'active',
         ]);
-        
+
         return $this->sendToGraduates();
     }
 
     public function getApplicationInsights()
     {
         $applications = $this->applications()->with('graduate')->get();
-        
+
         return [
             'total_applications' => $applications->count(),
             'applications_by_status' => $applications->groupBy('status')->map->count(),
             'applications_by_course' => $applications->groupBy('graduate.course.name')->map->count(),
             'average_gpa' => $applications->avg('graduate.gpa'),
             'skills_coverage' => $this->getSkillsCoverage($applications),
-            'application_timeline' => $applications->groupBy(function($app) {
+            'application_timeline' => $applications->groupBy(function ($app) {
                 return $app->created_at->format('Y-m-d');
             })->map->count(),
         ];
@@ -497,21 +517,21 @@ class Job extends Model
         if (empty($this->required_skills)) {
             return [];
         }
-        
+
         $coverage = [];
         foreach ($this->required_skills as $skill) {
-            $matchingApplicants = $applications->filter(function($app) use ($skill) {
+            $matchingApplicants = $applications->filter(function ($app) use ($skill) {
                 return in_array($skill, $app->graduate->skills ?? []);
             })->count();
-            
+
             $coverage[$skill] = [
                 'applicants_with_skill' => $matchingApplicants,
-                'coverage_percentage' => $applications->count() > 0 
-                    ? round(($matchingApplicants / $applications->count()) * 100, 1) 
+                'coverage_percentage' => $applications->count() > 0
+                    ? round(($matchingApplicants / $applications->count()) * 100, 1)
                     : 0,
             ];
         }
-        
+
         return $coverage;
     }
 
@@ -534,19 +554,19 @@ class Job extends Model
     {
         $recommendations = [];
         $metrics = $this->getJobPerformanceMetrics();
-        
+
         if ($metrics['application_rate'] < 5) {
             $recommendations[] = 'Consider improving job visibility or adjusting requirements';
         }
-        
+
         if ($metrics['conversion_rate'] < 20) {
             $recommendations[] = 'Review application screening process or job requirements';
         }
-        
+
         if ($metrics['quality_score'] < 70) {
             $recommendations[] = 'Enhance job description with more details and benefits';
         }
-        
+
         return $recommendations;
     }
 }

@@ -29,6 +29,7 @@ class ScholarshipService
     public function updateScholarship(Scholarship $scholarship, array $data): Scholarship
     {
         $scholarship->update($data);
+
         return $scholarship->fresh();
     }
 
@@ -58,7 +59,7 @@ class ScholarshipService
 
     public function submitApplication(Scholarship $scholarship, User $applicant, array $data): ScholarshipApplication
     {
-        if (!$scholarship->isOpenForApplications()) {
+        if (! $scholarship->isOpenForApplications()) {
             throw new \Exception('Scholarship is not open for applications');
         }
 
@@ -150,13 +151,14 @@ class ScholarshipService
     public function updateRecipientProgress(ScholarshipRecipient $recipient, array $data): ScholarshipRecipient
     {
         $recipient->update($data);
+
         return $recipient->fresh();
     }
 
     public function getScholarshipImpactReport(Scholarship $scholarship): array
     {
         $recipients = $this->getRecipients($scholarship);
-        
+
         return [
             'total_awarded' => $scholarship->awarded_amount,
             'recipients_count' => $recipients->count(),
@@ -179,10 +181,10 @@ class ScholarshipService
             ->get();
 
         $updates = [];
-        
+
         foreach ($scholarships as $scholarship) {
             foreach ($scholarship->recipients as $recipient) {
-                if (!empty($recipient->updates)) {
+                if (! empty($recipient->updates)) {
                     $updates[] = [
                         'scholarship_name' => $scholarship->name,
                         'recipient_name' => $recipient->recipient->name,

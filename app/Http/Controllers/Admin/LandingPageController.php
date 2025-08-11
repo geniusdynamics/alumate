@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\LandingPageService;
 use App\Models\LandingPage;
-use App\Models\LandingPageTemplate;
 use App\Models\LandingPageComponent;
-use Illuminate\Http\Request;
+use App\Models\LandingPageTemplate;
+use App\Services\LandingPageService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -92,7 +92,7 @@ class LandingPageController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create landing page: ' . $e->getMessage(),
+                'message' => 'Failed to create landing page: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -165,7 +165,7 @@ class LandingPageController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update landing page: ' . $e->getMessage(),
+                'message' => 'Failed to update landing page: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -186,7 +186,7 @@ class LandingPageController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to publish landing page: ' . $e->getMessage(),
+                'message' => 'Failed to publish landing page: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -207,7 +207,7 @@ class LandingPageController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to unpublish landing page: ' . $e->getMessage(),
+                'message' => 'Failed to unpublish landing page: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -235,7 +235,7 @@ class LandingPageController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to duplicate landing page: ' . $e->getMessage(),
+                'message' => 'Failed to duplicate landing page: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -255,7 +255,7 @@ class LandingPageController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete landing page: ' . $e->getMessage(),
+                'message' => 'Failed to delete landing page: '.$e->getMessage(),
             ], 500);
         }
     }

@@ -14,8 +14,8 @@ class JobApplicationFactory extends Factory
     public function definition(): array
     {
         $status = $this->faker->randomElement([
-            'pending', 'reviewing', 'interviewing', 'offered', 
-            'accepted', 'rejected', 'withdrawn'
+            'pending', 'reviewing', 'interviewing', 'offered',
+            'accepted', 'rejected', 'withdrawn',
         ]);
 
         return [

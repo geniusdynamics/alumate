@@ -55,6 +55,7 @@ class LeadScoringRuleFactory extends Factory
         ];
 
         $triggerType = $this->faker->randomElement(array_keys($conditionTypes));
+
         return $conditionTypes[$triggerType];
     }
 
@@ -63,7 +64,7 @@ class LeadScoringRuleFactory extends Factory
      */
     public function active(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_active' => true,
         ]);
     }
@@ -73,7 +74,7 @@ class LeadScoringRuleFactory extends Factory
      */
     public function highPriority(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'priority' => $this->faker->numberBetween(8, 10),
         ]);
     }

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
@@ -16,8 +16,8 @@ class DashboardController extends Controller
         return response()->json([
             'success' => true,
             'data' => [
-                'message' => 'Dashboard API endpoint'
-            ]
+                'message' => 'Dashboard API endpoint',
+            ],
         ]);
     }
 }

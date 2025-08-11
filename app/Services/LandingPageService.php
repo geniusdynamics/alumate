@@ -4,13 +4,9 @@ namespace App\Services;
 
 use App\Models\LandingPage;
 use App\Models\LandingPageSubmission;
-use App\Models\LandingPageAnalytics;
 use App\Models\Lead;
-use App\Services\LeadManagementService;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LandingPageService
 {
@@ -64,7 +60,7 @@ class LandingPageService
 
             // Create lead in CRM
             $lead = $this->createLeadFromSubmission($submission, $landingPage);
-            
+
             if ($lead) {
                 $submission->update(['lead_id' => $lead->id]);
                 $submission->markAsProcessed();
@@ -80,7 +76,7 @@ class LandingPageService
     private function createLeadFromSubmission(LandingPageSubmission $submission, LandingPage $landingPage): ?Lead
     {
         $formData = $submission->form_data;
-        
+
         $leadData = [
             'first_name' => $formData['first_name'] ?? $formData['name'] ?? '',
             'last_name' => $formData['last_name'] ?? '',
@@ -110,6 +106,7 @@ class LandingPageService
                 'submission_id' => $submission->id,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }

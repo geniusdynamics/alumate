@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Employer;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class FixEmployerProfiles extends Seeder
 {
@@ -20,12 +19,12 @@ class FixEmployerProfiles extends Seeder
         foreach ($employerUsers as $user) {
             $employer = Employer::where('user_id', $user->id)->first();
 
-            if (!$employer) {
+            if (! $employer) {
                 $this->command->info("Creating employer profile for: {$user->email}");
 
                 Employer::create([
                     'user_id' => $user->id,
-                    'company_name' => $user->name . ' Company',
+                    'company_name' => $user->name.' Company',
                     'company_address' => '123 Business Street, City, State 12345',
                     'company_phone' => '+1-555-0123',
                     'industry' => 'Technology',

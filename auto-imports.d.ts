@@ -357,6 +357,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core')['useAsyncQueue']
   const useAsyncState: typeof import('@vueuse/core')['useAsyncState']
   const useAttrs: typeof import('vue')['useAttrs']
+  const useAudienceDetection: typeof import('./resources/js/composables/useAudienceDetection')['useAudienceDetection']
   const useBase64: typeof import('@vueuse/core')['useBase64']
   const useBattery: typeof import('@vueuse/core')['useBattery']
   const useBluetooth: typeof import('@vueuse/core')['useBluetooth']
@@ -591,9 +592,6 @@ declare global {
   // @ts-ignore
   export type { UploadedFile, UploadResponse, UploadProgress } from './resources/js/services/fileUploadService'
   import('./resources/js/services/fileUploadService')
-  // @ts-ignore
-  export type { AnalyticsOptions } from './resources/js/composables/useAnalytics'
-  import('./resources/js/composables/useAnalytics')
   // @ts-ignore
   export type { LazyLoadOptions } from './resources/js/composables/useLazyLoading'
   import('./resources/js/composables/useLazyLoading')
@@ -957,6 +955,7 @@ declare module 'vue' {
     readonly useAsyncQueue: UnwrapRef<typeof import('@vueuse/core')['useAsyncQueue']>
     readonly useAsyncState: UnwrapRef<typeof import('@vueuse/core')['useAsyncState']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useAudienceDetection: UnwrapRef<typeof import('./resources/js/composables/useAudienceDetection')['useAudienceDetection']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>
     readonly useBluetooth: UnwrapRef<typeof import('@vueuse/core')['useBluetooth']>

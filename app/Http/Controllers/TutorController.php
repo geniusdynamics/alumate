@@ -12,12 +12,14 @@ class TutorController extends Controller
     {
         $this->authorize('viewAny', Tutor::class);
         $tutors = Tutor::all();
+
         return Inertia::render('Tutors/Index', ['tutors' => $tutors]);
     }
 
     public function create()
     {
         $this->authorize('create', Tutor::class);
+
         return Inertia::render('Tutors/Create');
     }
 
@@ -38,6 +40,7 @@ class TutorController extends Controller
     public function edit(Tutor $tutor)
     {
         $this->authorize('update', $tutor);
+
         return Inertia::render('Tutors/Edit', ['tutor' => $tutor]);
     }
 

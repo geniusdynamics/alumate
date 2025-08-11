@@ -2,10 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Lead;
-use App\Models\LeadActivity;
-use App\Models\LeadScoringRule;
 use App\Models\CrmIntegration;
+use App\Models\Lead;
+use App\Models\LeadScoringRule;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -76,7 +75,7 @@ class LeadManagementService
         if ($totalPoints !== 0) {
             $lead->updateScore(
                 $totalPoints,
-                'Applied rules: ' . implode(', ', $appliedRules)
+                'Applied rules: '.implode(', ', $appliedRules)
             );
 
             // Update priority based on score
@@ -90,7 +89,7 @@ class LeadManagementService
     private function updateLeadPriority(Lead $lead): void
     {
         $oldPriority = $lead->priority;
-        
+
         if ($lead->score >= 80) {
             $newPriority = 'urgent';
         } elseif ($lead->score >= 60) {
@@ -103,7 +102,7 @@ class LeadManagementService
 
         if ($oldPriority !== $newPriority) {
             $lead->update(['priority' => $newPriority]);
-            
+
             $lead->addActivity(
                 'note',
                 'Priority updated',
@@ -126,7 +125,7 @@ class LeadManagementService
         if ($availableUsers->isNotEmpty()) {
             $assignedUser = $availableUsers->random();
             $lead->update(['assigned_to' => $assignedUser->id]);
-            
+
             $lead->addActivity(
                 'note',
                 'Lead assigned',
@@ -141,9 +140,9 @@ class LeadManagementService
     public function qualifyLead(int $leadId, array $qualificationData): Lead
     {
         $lead = Lead::findOrFail($leadId);
-        
+
         $lead->updateStatus('qualified', 'Lead qualified based on criteria');
-        
+
         // Update lead with qualification data
         $lead->update([
             'form_data' => array_merge($lead->form_data ?? [], $qualificationData),
@@ -164,7 +163,7 @@ class LeadManagementService
     public function createFollowUpSequence(Lead $lead, string $sequenceType = 'standard'): Collection
     {
         $activities = collect();
-        
+
         $sequences = [
             'standard' => [
                 ['type' => 'email', 'delay' => 0, 'subject' => 'Welcome and next steps'],
@@ -183,10 +182,10 @@ class LeadManagementService
         ];
 
         $sequence = $sequences[$sequenceType] ?? $sequences['standard'];
-        
+
         foreach ($sequence as $step) {
             $scheduledAt = now()->addDays($step['delay']);
-            
+
             $activity = $lead->activities()->create([
                 'type' => $step['type'],
                 'subject' => $step['subject'],
@@ -199,14 +198,14 @@ class LeadManagementService
                 ],
                 'created_by' => $lead->assigned_to ?? auth()->id() ?? 1,
             ]);
-            
+
             $activities->push($activity);
         }
 
         $lead->addActivity(
             'note',
             'Follow-up sequence created',
-            "Created {$sequenceType} follow-up sequence with " . count($activities) . " activities"
+            "Created {$sequenceType} follow-up sequence with ".count($activities).' activities'
         );
 
         return $activities;
@@ -223,7 +222,7 @@ class LeadManagementService
         if (isset($filters['date_from'])) {
             $query->where('created_at', '>=', $filters['date_from']);
         }
-        
+
         if (isset($filters['date_to'])) {
             $query->where('created_at', '<=', $filters['date_to']);
         }
@@ -278,14 +277,14 @@ class LeadManagementService
     public function syncLeadToCRM(Lead $lead): array
     {
         $results = [];
-        
+
         $integrations = CrmIntegration::active()->get();
-        
+
         foreach ($integrations as $integration) {
             try {
                 $result = $integration->syncLead($lead);
                 $results[$integration->name] = $result;
-                
+
                 if ($result['success']) {
                     Log::info("Lead {$lead->id} synced to {$integration->name}");
                 } else {
@@ -296,7 +295,7 @@ class LeadManagementService
                     'success' => false,
                     'message' => $e->getMessage(),
                 ];
-                
+
                 Log::error("Exception syncing lead {$lead->id} to {$integration->name}: {$e->getMessage()}");
             }
         }
@@ -307,17 +306,17 @@ class LeadManagementService
     /**
      * Bulk sync leads to CRM
      */
-    public function bulkSyncToCRM(array $leadIds = null): array
+    public function bulkSyncToCRM(?array $leadIds = null): array
     {
         $query = Lead::query();
-        
+
         if ($leadIds) {
             $query->whereIn('id', $leadIds);
         } else {
             // Sync leads that haven't been synced or need re-sync
             $query->where(function ($q) {
                 $q->whereNull('synced_at')
-                  ->orWhere('updated_at', '>', DB::raw('synced_at'));
+                    ->orWhere('updated_at', '>', DB::raw('synced_at'));
             });
         }
 
@@ -341,21 +340,21 @@ class LeadManagementService
     {
         return Lead::where(function ($query) {
             $query->whereNull('assigned_to') // Unassigned leads
-                  ->orWhere(function ($q) {
-                      $q->where('priority', 'urgent')
+                ->orWhere(function ($q) {
+                    $q->where('priority', 'urgent')
                         ->whereNull('last_contacted_at');
-                  })
-                  ->orWhere(function ($q) {
-                      $q->where('last_contacted_at', '<', now()->subDays(7))
+                })
+                ->orWhere(function ($q) {
+                    $q->where('last_contacted_at', '<', now()->subDays(7))
                         ->whereNotIn('status', ['closed_won', 'closed_lost']);
-                  });
+                });
         })
-        ->with(['assignedUser', 'activities' => function ($query) {
-            $query->latest()->limit(3);
-        }])
-        ->orderBy('priority', 'desc')
-        ->orderBy('score', 'desc')
-        ->get();
+            ->with(['assignedUser', 'activities' => function ($query) {
+                $query->latest()->limit(3);
+            }])
+            ->orderBy('priority', 'desc')
+            ->orderBy('score', 'desc')
+            ->get();
     }
 
     /**
@@ -365,7 +364,7 @@ class LeadManagementService
     {
         $currentData = $lead->behavioral_data ?? [];
         $updatedData = array_merge($currentData, $behaviorData);
-        
+
         $lead->update(['behavioral_data' => $updatedData]);
 
         // Apply scoring based on behavior

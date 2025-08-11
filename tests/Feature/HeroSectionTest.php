@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use App\Services\HomepageService;
 use App\Services\ABTestingService;
+use App\Services\HomepageService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class HeroSectionTest extends TestCase
 {
@@ -14,28 +14,26 @@ class HeroSectionTest extends TestCase
     public function test_homepage_loads_with_individual_audience()
     {
         $response = $this->get('/homepage');
-        
+
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Homepage/Index')
-                ->has('audience')
-                ->where('audience', 'individual')
-                ->has('content')
-                ->has('meta')
+        $response->assertInertia(fn ($page) => $page->component('Homepage/Index')
+            ->has('audience')
+            ->where('audience', 'individual')
+            ->has('content')
+            ->has('meta')
         );
     }
 
     public function test_homepage_loads_with_institutional_audience()
     {
         $response = $this->get('/homepage/institutional');
-        
+
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Homepage/Index')
-                ->has('audience')
-                ->where('audience', 'institutional')
-                ->has('content')
-                ->has('meta')
+        $response->assertInertia(fn ($page) => $page->component('Homepage/Index')
+            ->has('audience')
+            ->where('audience', 'institutional')
+            ->has('content')
+            ->has('meta')
         );
     }
 
@@ -47,14 +45,14 @@ class HeroSectionTest extends TestCase
             'audience' => 'individual',
             'additional_data' => [
                 'text' => 'Start Free Trial',
-                'variant' => 'primary'
-            ]
+                'variant' => 'primary',
+            ],
         ]);
 
         $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
-            'message' => 'CTA click tracked successfully'
+            'message' => 'CTA click tracked successfully',
         ]);
     }
 
@@ -67,27 +65,27 @@ class HeroSectionTest extends TestCase
             'audience' => 'individual',
             'additional_data' => [
                 'action' => 'trial',
-                'section' => 'hero'
-            ]
+                'section' => 'hero',
+            ],
         ]);
 
         $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
-            'message' => 'Conversion tracked successfully'
+            'message' => 'Conversion tracked successfully',
         ]);
     }
 
     public function test_homepage_service_provides_dual_audience_content()
     {
         $homepageService = app(HomepageService::class);
-        
+
         // Test individual content
         $individualContent = $homepageService->getPersonalizedContent('individual');
         $this->assertArrayHasKey('hero', $individualContent);
         $this->assertArrayHasKey('cta', $individualContent);
         $this->assertStringContains('Career', $individualContent['hero']['headline']);
-        
+
         // Test institutional content
         $institutionalContent = $homepageService->getPersonalizedContent('institutional');
         $this->assertArrayHasKey('hero', $institutionalContent);
@@ -98,13 +96,13 @@ class HeroSectionTest extends TestCase
     public function test_ab_testing_service_provides_variants()
     {
         $abTestingService = app(ABTestingService::class);
-        
+
         $variant = $abTestingService->getVariant(
             'hero_message_dual_audience',
             'test_user_123',
             'individual'
         );
-        
+
         $this->assertArrayHasKey('id', $variant);
         $this->assertArrayHasKey('name', $variant);
         $this->assertArrayHasKey('component_overrides', $variant);
@@ -114,7 +112,7 @@ class HeroSectionTest extends TestCase
     {
         $homepageService = app(HomepageService::class);
         $statistics = $homepageService->getPlatformStatistics('individual');
-        
+
         $this->assertArrayHasKey('total_alumni', $statistics);
         $this->assertArrayHasKey('average_salary_increase', $statistics);
         $this->assertArrayHasKey('job_placements', $statistics);
@@ -127,7 +125,7 @@ class HeroSectionTest extends TestCase
     {
         $homepageService = app(HomepageService::class);
         $testimonials = $homepageService->getTestimonials('individual');
-        
+
         $this->assertNotEmpty($testimonials);
         $testimonial = $testimonials->first();
         $this->assertArrayHasKey('quote', $testimonial);

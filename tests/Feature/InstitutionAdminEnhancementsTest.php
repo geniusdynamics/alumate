@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Course;
 use App\Models\Tenant;
 use App\Models\Tutor;
 use App\Models\User;
@@ -16,6 +15,7 @@ class InstitutionAdminEnhancementsTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $institutionAdmin;
 
     protected function setUp(): void

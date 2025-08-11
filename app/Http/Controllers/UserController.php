@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -25,8 +25,8 @@ class UserController extends Controller
             ->when($request->search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
                 });
             })
             ->when($request->role, function ($query, $role) {
@@ -46,18 +46,18 @@ class UserController extends Controller
             });
 
         // Apply institution filter for non-super-admins
-        if (!auth()->user()->hasRole('super-admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $query->where('institution_id', auth()->user()->institution_id);
         }
 
         $users = $query->orderBy($request->sort ?? 'created_at', $request->direction ?? 'desc')
-                      ->paginate(15)
-                      ->withQueryString();
+            ->paginate(15)
+            ->withQueryString();
 
         $statistics = $this->getUserStatistics();
         $roles = Role::all();
-        $institutions = auth()->user()->hasRole('super-admin') 
-            ? Tenant::where('status', 'active')->get() 
+        $institutions = auth()->user()->hasRole('super-admin')
+            ? Tenant::where('status', 'active')->get()
             : collect([auth()->user()->institution]);
 
         return Inertia::render('Users/Index', [
@@ -72,8 +72,8 @@ class UserController extends Controller
     public function create()
     {
         $roles = Role::all();
-        $institutions = auth()->user()->hasRole('super-admin') 
-            ? Tenant::where('status', 'active')->get() 
+        $institutions = auth()->user()->hasRole('super-admin')
+            ? Tenant::where('status', 'active')->get()
             : collect([auth()->user()->institution]);
 
         return Inertia::render('Users/Create', [
@@ -94,7 +94,7 @@ class UserController extends Controller
                 'nullable',
                 Rule::exists('tenants', 'id'),
                 function ($attribute, $value, $fail) {
-                    if (!auth()->user()->hasRole('super-admin') && $value !== auth()->user()->institution_id) {
+                    if (! auth()->user()->hasRole('super-admin') && $value !== auth()->user()->institution_id) {
                         $fail('You can only create users for your own institution.');
                     }
                 },
@@ -112,7 +112,7 @@ class UserController extends Controller
         }
 
         // Set default institution for non-super-admins
-        if (!auth()->user()->hasRole('super-admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $validated['institution_id'] = auth()->user()->institution_id;
         }
 
@@ -166,8 +166,8 @@ class UserController extends Controller
         $this->authorize('update', $user);
 
         $roles = Role::all();
-        $institutions = auth()->user()->hasRole('super-admin') 
-            ? Tenant::where('status', 'active')->get() 
+        $institutions = auth()->user()->hasRole('super-admin')
+            ? Tenant::where('status', 'active')->get()
             : collect([auth()->user()->institution]);
 
         $user->load('roles');
@@ -192,8 +192,8 @@ class UserController extends Controller
             'institution_id' => [
                 'nullable',
                 Rule::exists('tenants', 'id'),
-                function ($attribute, $value, $fail) use ($user) {
-                    if (!auth()->user()->hasRole('super-admin') && $value !== auth()->user()->institution_id) {
+                function ($attribute, $value, $fail) {
+                    if (! auth()->user()->hasRole('super-admin') && $value !== auth()->user()->institution_id) {
                         $fail('You can only assign users to your own institution.');
                     }
                 },
@@ -216,14 +216,14 @@ class UserController extends Controller
         }
 
         // Update password if provided
-        if (!empty($validated['password'])) {
+        if (! empty($validated['password'])) {
             $validated['password'] = Hash::make($validated['password']);
         } else {
             unset($validated['password']);
         }
 
         // Set default institution for non-super-admins
-        if (!auth()->user()->hasRole('super-admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $validated['institution_id'] = auth()->user()->institution_id;
         }
 
@@ -334,7 +334,7 @@ class UserController extends Controller
             }
         }
 
-        $actionText = match($validated['action']) {
+        $actionText = match ($validated['action']) {
             'suspend' => 'suspended',
             'unsuspend' => 'unsuspended',
             'delete' => 'deleted',
@@ -353,8 +353,8 @@ class UserController extends Controller
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('email', 'like', "%{$request->search}%")
-                  ->orWhere('phone', 'like', "%{$request->search}%");
+                    ->orWhere('email', 'like', "%{$request->search}%")
+                    ->orWhere('phone', 'like', "%{$request->search}%");
             });
         }
 
@@ -373,13 +373,13 @@ class UserController extends Controller
         }
 
         // Apply institution filter for non-super-admins
-        if (!auth()->user()->hasRole('super-admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $query->where('institution_id', auth()->user()->institution_id);
         }
 
         $users = $query->get();
 
-        $filename = 'users_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $filename = 'users_export_'.now()->format('Y-m-d_H-i-s').'.csv';
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
@@ -387,11 +387,11 @@ class UserController extends Controller
 
         $callback = function () use ($users) {
             $file = fopen('php://output', 'w');
-            
+
             // CSV headers
             fputcsv($file, [
-                'ID', 'Name', 'Email', 'Phone', 'Role', 'Institution', 
-                'Status', 'Suspended', 'Last Login', 'Created At'
+                'ID', 'Name', 'Email', 'Phone', 'Role', 'Institution',
+                'Status', 'Suspended', 'Last Login', 'Created At',
             ]);
 
             foreach ($users as $user) {
@@ -420,7 +420,7 @@ class UserController extends Controller
         $baseQuery = User::query();
 
         // Apply institution filter for non-super-admins
-        if (!auth()->user()->hasRole('super-admin')) {
+        if (! auth()->user()->hasRole('super-admin')) {
             $baseQuery->where('institution_id', auth()->user()->institution_id);
         }
 
@@ -431,11 +431,11 @@ class UserController extends Controller
             'inactive' => $baseQuery->where('status', 'inactive')->count(),
             'recent_logins' => $baseQuery->where('last_login_at', '>=', now()->subDays(7))->count(),
             'by_role' => $baseQuery->join('model_has_roles', 'users.id', '=', 'model_has_roles.model_id')
-                                  ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
-                                  ->selectRaw('roles.name, COUNT(*) as count')
-                                  ->groupBy('roles.name')
-                                  ->pluck('count', 'name')
-                                  ->toArray(),
+                ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+                ->selectRaw('roles.name, COUNT(*) as count')
+                ->groupBy('roles.name')
+                ->pluck('count', 'name')
+                ->toArray(),
         ];
     }
 }

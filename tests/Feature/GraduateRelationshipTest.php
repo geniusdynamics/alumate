@@ -13,8 +13,11 @@ class GraduateRelationshipTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant1;
+
     protected $tenant2;
+
     protected $graduateUser;
+
     protected $graduate;
 
     protected function setUp(): void
@@ -27,7 +30,6 @@ class GraduateRelationshipTest extends TestCase
 
         $this->tenant2 = Tenant::create(['id' => 'test2', 'name' => 'Test Tenant 2']);
         $this->tenant2->domains()->create(['domain' => 'test2.localhost']);
-
 
         // Switch to the tenant's context
         tenancy()->initialize($this->tenant1);

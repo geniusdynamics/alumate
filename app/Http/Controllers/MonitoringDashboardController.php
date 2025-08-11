@@ -38,9 +38,9 @@ class MonitoringDashboardController extends Controller
     public function uptime(): JsonResponse
     {
         $results = $this->monitoring->checkUptime();
-        
+
         return response()->json([
-            'status' => collect($results)->every(fn($result) => $result['status'] === 'up') ? 'up' : 'down',
+            'status' => collect($results)->every(fn ($result) => $result['status'] === 'up') ? 'up' : 'down',
             'endpoints' => $results,
             'checked_at' => now()->toISOString(),
         ]);
@@ -52,7 +52,7 @@ class MonitoringDashboardController extends Controller
     public function conversionMetrics(Request $request): JsonResponse
     {
         $timeframe = $request->get('timeframe', '7d');
-        
+
         return response()->json($this->monitoring->getConversionMetrics());
     }
 
@@ -63,7 +63,7 @@ class MonitoringDashboardController extends Controller
     {
         $metricType = $request->get('type', 'page_load');
         $timeframe = $request->get('timeframe', '24h');
-        
+
         // Convert timeframe to hours
         $hours = match ($timeframe) {
             '1h' => 1,
@@ -73,7 +73,7 @@ class MonitoringDashboardController extends Controller
             '30d' => 720,
             default => 24,
         };
-        
+
         $metrics = \DB::table('homepage_performance_metrics')
             ->where('metric_type', $metricType)
             ->where('recorded_at', '>=', now()->subHours($hours))
@@ -87,7 +87,7 @@ class MonitoringDashboardController extends Controller
             ->groupBy('hour')
             ->orderBy('hour')
             ->get();
-        
+
         return response()->json([
             'metric_type' => $metricType,
             'timeframe' => $timeframe,
@@ -101,27 +101,27 @@ class MonitoringDashboardController extends Controller
     public function errorLogs(Request $request): JsonResponse
     {
         $limit = $request->get('limit', 50);
-        
+
         try {
             $logPath = storage_path('logs/homepage-errors.log');
-            
-            if (!file_exists($logPath)) {
+
+            if (! file_exists($logPath)) {
                 return response()->json([
                     'errors' => [],
                     'message' => 'No error log file found',
                 ]);
             }
-            
+
             $lines = array_slice(file($logPath), -$limit);
             $errors = [];
-            
+
             foreach ($lines as $line) {
                 if (preg_match('/\[(.*?)\].*?(ERROR|CRITICAL|ALERT).*?:(.*?)(\{.*\})?$/', $line, $matches)) {
                     $contextData = null;
                     if (isset($matches[4])) {
                         $contextData = json_decode($matches[4], true);
                     }
-                    
+
                     $errors[] = [
                         'timestamp' => $matches[1],
                         'level' => $matches[2],
@@ -130,16 +130,16 @@ class MonitoringDashboardController extends Controller
                     ];
                 }
             }
-            
+
             return response()->json([
                 'errors' => array_reverse($errors), // Most recent first
                 'total' => count($errors),
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'errors' => [],
-                'error' => 'Failed to read error logs: ' . $e->getMessage(),
+                'error' => 'Failed to read error logs: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -157,11 +157,11 @@ class MonitoringDashboardController extends Controller
             'memory' => $this->getMemoryUsage(),
             'disk' => $this->getDiskUsage(),
         ];
-        
+
         $overallStatus = collect($health)
-            ->filter(fn($check) => isset($check['status']))
-            ->every(fn($check) => $check['status'] === 'healthy') ? 'healthy' : 'unhealthy';
-        
+            ->filter(fn ($check) => isset($check['status']))
+            ->every(fn ($check) => $check['status'] === 'healthy') ? 'healthy' : 'unhealthy';
+
         return response()->json([
             'overall_status' => $overallStatus,
             'checks' => $health,
@@ -181,7 +181,7 @@ class MonitoringDashboardController extends Controller
             'unit' => 'required|string|max:20',
             'additional_data' => 'sometimes|array',
         ]);
-        
+
         $this->monitoring->recordPerformanceMetric(
             $request->metric_type,
             $request->metric_name,
@@ -189,7 +189,7 @@ class MonitoringDashboardController extends Controller
             $request->unit,
             $request->additional_data ?? []
         );
-        
+
         return response()->json([
             'message' => 'Metric recorded successfully',
             'recorded_at' => now()->toISOString(),
@@ -205,11 +205,11 @@ class MonitoringDashboardController extends Controller
             'type' => 'required|in:uptime,performance,error,conversion,security,test',
             'severity' => 'required|in:info,warning,error,critical',
         ]);
-        
+
         // Use the AlertingService directly for testing
         $alertingService = app(\App\Services\Homepage\AlertingService::class);
         $alertingService->testAlert($request->type, $request->severity);
-        
+
         return response()->json([
             'message' => 'Test alert sent successfully',
             'type' => $request->type,
@@ -217,7 +217,7 @@ class MonitoringDashboardController extends Controller
             'channels' => $this->getConfiguredAlertChannels(),
         ]);
     }
-    
+
     /**
      * Get configured alert channels.
      */
@@ -225,27 +225,27 @@ class MonitoringDashboardController extends Controller
     {
         $config = config('services.monitoring', []);
         $channels = [];
-        
-        if (!empty($config['alert_email'])) {
+
+        if (! empty($config['alert_email'])) {
             $channels[] = 'email';
         }
-        
-        if (!empty($config['slack_webhook'])) {
+
+        if (! empty($config['slack_webhook'])) {
             $channels[] = 'slack';
         }
-        
-        if (!empty($config['pagerduty_key'])) {
+
+        if (! empty($config['pagerduty_key'])) {
             $channels[] = 'pagerduty';
         }
-        
+
         if (app()->bound('sentry')) {
             $channels[] = 'sentry';
         }
-        
-        if (!empty($config['datadog_api_key'])) {
+
+        if (! empty($config['datadog_api_key'])) {
             $channels[] = 'datadog';
         }
-        
+
         return $channels;
     }
 
@@ -258,7 +258,7 @@ class MonitoringDashboardController extends Controller
             $start = microtime(true);
             \DB::select('SELECT 1');
             $responseTime = round((microtime(true) - $start) * 1000, 2);
-            
+
             return [
                 'status' => 'healthy',
                 'response_time' => $responseTime,
@@ -278,11 +278,11 @@ class MonitoringDashboardController extends Controller
     private function checkCacheHealth(): array
     {
         try {
-            $testKey = 'health_check_' . time();
+            $testKey = 'health_check_'.time();
             \Cache::put($testKey, 'test', 60);
             $value = \Cache::get($testKey);
             \Cache::forget($testKey);
-            
+
             return [
                 'status' => $value === 'test' ? 'healthy' : 'unhealthy',
                 'driver' => config('cache.default'),
@@ -301,11 +301,11 @@ class MonitoringDashboardController extends Controller
     private function checkStorageHealth(): array
     {
         try {
-            $testFile = 'health_check_' . time() . '.txt';
+            $testFile = 'health_check_'.time().'.txt';
             \Storage::put($testFile, 'test');
             $content = \Storage::get($testFile);
             \Storage::delete($testFile);
-            
+
             return [
                 'status' => $content === 'test' ? 'healthy' : 'unhealthy',
                 'driver' => config('filesystems.default'),
@@ -326,7 +326,7 @@ class MonitoringDashboardController extends Controller
         try {
             // Check if queue workers are running
             $queueSize = \Queue::size();
-            
+
             return [
                 'status' => 'healthy',
                 'queue_size' => $queueSize,
@@ -348,7 +348,7 @@ class MonitoringDashboardController extends Controller
         $current = memory_get_usage(true);
         $peak = memory_get_peak_usage(true);
         $limit = $this->parseMemoryLimit(ini_get('memory_limit'));
-        
+
         return [
             'current' => $current,
             'current_mb' => round($current / 1024 / 1024, 2),
@@ -368,7 +368,7 @@ class MonitoringDashboardController extends Controller
         $path = base_path();
         $free = disk_free_space($path);
         $total = disk_total_space($path);
-        
+
         return [
             'free' => $free,
             'free_gb' => round($free / 1024 / 1024 / 1024, 2),
@@ -388,10 +388,10 @@ class MonitoringDashboardController extends Controller
         if ($limit === '-1') {
             return null; // Unlimited
         }
-        
+
         $unit = strtolower(substr($limit, -1));
         $value = (int) substr($limit, 0, -1);
-        
+
         return match ($unit) {
             'g' => $value * 1024 * 1024 * 1024,
             'm' => $value * 1024 * 1024,

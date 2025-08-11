@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 class FrappeCrmClient implements CrmClientInterface
 {
     private array $config;
+
     private string $baseUrl;
 
     public function __construct(array $config)
@@ -19,7 +20,7 @@ class FrappeCrmClient implements CrmClientInterface
     {
         try {
             $response = $this->makeRequest('GET', '/api/resource/Lead', [
-                'limit_page_length' => 1
+                'limit_page_length' => 1,
             ]);
 
             return [
@@ -50,7 +51,7 @@ class FrappeCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to create lead in Frappe CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to create lead in Frappe CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function updateLead(string $crmId, array $data): array
@@ -67,7 +68,7 @@ class FrappeCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to update lead in Frappe CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to update lead in Frappe CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function getLead(string $crmId): array
@@ -78,7 +79,7 @@ class FrappeCrmClient implements CrmClientInterface
             return $response['data']['data'];
         }
 
-        throw new \Exception('Failed to get lead from Frappe CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to get lead from Frappe CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function deleteLead(string $crmId): bool
@@ -99,7 +100,7 @@ class FrappeCrmClient implements CrmClientInterface
 
         $response = $this->makeRequest('GET', '/api/resource/Lead', [
             'filters' => json_encode($filters),
-            'fields' => json_encode(['name', 'lead_name', 'email_id', 'company_name', 'status'])
+            'fields' => json_encode(['name', 'lead_name', 'email_id', 'company_name', 'status']),
         ]);
 
         if ($response['status'] === 200) {
@@ -115,7 +116,7 @@ class FrappeCrmClient implements CrmClientInterface
 
         if ($response['status'] === 200) {
             $doctype = $response['data']['data'];
-            
+
             return array_map(function ($field) {
                 return [
                     'name' => $field['fieldname'],
@@ -138,15 +139,15 @@ class FrappeCrmClient implements CrmClientInterface
 
             // Frappe uses API key and secret for authentication
             if (isset($this->config['api_key']) && isset($this->config['api_secret'])) {
-                $headers['Authorization'] = 'token ' . $this->config['api_key'] . ':' . $this->config['api_secret'];
+                $headers['Authorization'] = 'token '.$this->config['api_key'].':'.$this->config['api_secret'];
             }
 
             $request = Http::withHeaders($headers);
 
-            if ($method === 'GET' && !empty($data)) {
-                $response = $request->get($this->baseUrl . $endpoint, $data);
+            if ($method === 'GET' && ! empty($data)) {
+                $response = $request->get($this->baseUrl.$endpoint, $data);
             } else {
-                $response = $request->$method($this->baseUrl . $endpoint, $data);
+                $response = $request->$method($this->baseUrl.$endpoint, $data);
             }
 
             return [
@@ -192,8 +193,8 @@ class FrappeCrmClient implements CrmClientInterface
         }
 
         // Set lead_name if not provided
-        if (!isset($mapped['lead_name']) && (isset($mapped['first_name']) || isset($mapped['last_name']))) {
-            $mapped['lead_name'] = trim(($mapped['first_name'] ?? '') . ' ' . ($mapped['last_name'] ?? ''));
+        if (! isset($mapped['lead_name']) && (isset($mapped['first_name']) || isset($mapped['last_name']))) {
+            $mapped['lead_name'] = trim(($mapped['first_name'] ?? '').' '.($mapped['last_name'] ?? ''));
         }
 
         return $mapped;
@@ -205,7 +206,7 @@ class FrappeCrmClient implements CrmClientInterface
     public function convertToCustomer(string $leadId, array $customerData = []): array
     {
         $lead = $this->getLead($leadId);
-        
+
         $customerData = array_merge([
             'customer_name' => $lead['lead_name'],
             'customer_type' => 'Individual',
@@ -218,7 +219,7 @@ class FrappeCrmClient implements CrmClientInterface
         if ($response['status'] === 200) {
             // Update lead status to converted
             $this->updateLead($leadId, ['status' => 'Converted']);
-            
+
             return [
                 'id' => $response['data']['data']['name'],
                 'success' => true,
@@ -226,7 +227,7 @@ class FrappeCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to convert lead to customer in Frappe CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to convert lead to customer in Frappe CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     /**
@@ -235,7 +236,7 @@ class FrappeCrmClient implements CrmClientInterface
     public function createOpportunity(string $leadId, array $opportunityData): array
     {
         $lead = $this->getLead($leadId);
-        
+
         $opportunityData = array_merge([
             'opportunity_from' => 'Lead',
             'party_name' => $leadId,
@@ -254,7 +255,7 @@ class FrappeCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to create opportunity in Frappe CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to create opportunity in Frappe CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     /**
@@ -280,7 +281,7 @@ class FrappeCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to add note in Frappe CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to add note in Frappe CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     /**
@@ -291,9 +292,9 @@ class FrappeCrmClient implements CrmClientInterface
         $response = $this->makeRequest('GET', '/api/resource/Communication', [
             'filters' => json_encode([
                 ['reference_doctype', '=', 'Lead'],
-                ['reference_name', '=', $leadId]
+                ['reference_name', '=', $leadId],
             ]),
-            'fields' => json_encode(['name', 'subject', 'content', 'communication_type', 'creation'])
+            'fields' => json_encode(['name', 'subject', 'content', 'communication_type', 'creation']),
         ]);
 
         if ($response['status'] === 200) {
@@ -309,7 +310,7 @@ class FrappeCrmClient implements CrmClientInterface
     public function createQuotation(string $leadId, array $quotationData): array
     {
         $lead = $this->getLead($leadId);
-        
+
         $quotationData = array_merge([
             'quotation_to' => 'Lead',
             'party_name' => $leadId,
@@ -326,6 +327,6 @@ class FrappeCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to create quotation in Frappe CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to create quotation in Frappe CRM: '.($response['error'] ?? 'Unknown error'));
     }
 }

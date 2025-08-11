@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Post;
 use App\Models\Circle;
 use App\Models\Group;
+use App\Models\Post;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Services\TimelineService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Redis;
@@ -17,17 +17,19 @@ class TimelineTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Tenant $tenant;
+
     private TimelineService $timelineService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->tenant = Tenant::factory()->create();
         $this->user = User::factory()->create(['tenant_id' => $this->tenant->id]);
         $this->timelineService = app(TimelineService::class);
-        
+
         // Clear Redis cache
         Redis::flushall();
     }
@@ -40,15 +42,15 @@ class TimelineTest extends TestCase
         $response = $this->getJson('/api/timeline');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'posts',
-                        'next_cursor',
-                        'has_more',
-                        'generated_at'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'posts',
+                    'next_cursor',
+                    'has_more',
+                    'generated_at',
+                ],
+            ]);
     }
 
     /** @test */
@@ -67,16 +69,16 @@ class TimelineTest extends TestCase
         $response = $this->postJson('/api/timeline/refresh');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'posts',
-                        'next_cursor',
-                        'has_more',
-                        'generated_at'
-                    ],
-                    'refreshed_at'
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'posts',
+                    'next_cursor',
+                    'has_more',
+                    'generated_at',
+                ],
+                'refreshed_at',
+            ]);
     }
 
     /** @test */
@@ -87,10 +89,10 @@ class TimelineTest extends TestCase
         // Create some posts first
         $circle = Circle::factory()->create(['tenant_id' => $this->tenant->id]);
         $this->user->circles()->attach($circle);
-        
+
         Post::factory()->count(5)->create([
             'tenant_id' => $this->tenant->id,
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
 
         // Get initial timeline
@@ -101,14 +103,14 @@ class TimelineTest extends TestCase
         $response = $this->getJson("/api/timeline/load-more?cursor={$cursor}&limit=2");
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'posts',
-                        'next_cursor',
-                        'has_more'
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'posts',
+                    'next_cursor',
+                    'has_more',
+                ],
+            ]);
     }
 
     /** @test */
@@ -131,19 +133,19 @@ class TimelineTest extends TestCase
         // Create circles and groups for user
         $circle = Circle::factory()->create(['tenant_id' => $this->tenant->id]);
         $group = Group::factory()->create(['tenant_id' => $this->tenant->id]);
-        
+
         $this->user->circles()->attach($circle);
         $this->user->groups()->attach($group);
 
         // Create posts in circle and group
         $circlePosts = Post::factory()->count(3)->create([
             'tenant_id' => $this->tenant->id,
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
-        
+
         $groupPosts = Post::factory()->count(2)->create([
             'tenant_id' => $this->tenant->id,
-            'group_ids' => [$group->id]
+            'group_ids' => [$group->id],
         ]);
 
         $timeline = $this->timelineService->generateTimelineForUser($this->user);
@@ -163,7 +165,7 @@ class TimelineTest extends TestCase
 
         $posts = Post::factory()->count(3)->create([
             'tenant_id' => $this->tenant->id,
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
 
         $circlePosts = $this->timelineService->getCirclePosts($this->user);
@@ -180,7 +182,7 @@ class TimelineTest extends TestCase
 
         $posts = Post::factory()->count(2)->create([
             'tenant_id' => $this->tenant->id,
-            'group_ids' => [$group->id]
+            'group_ids' => [$group->id],
         ]);
 
         $groupPosts = $this->timelineService->getGroupPosts($this->user);
@@ -195,7 +197,7 @@ class TimelineTest extends TestCase
         $otherUser = User::factory()->create(['tenant_id' => $this->tenant->id]);
         $post = Post::factory()->create([
             'tenant_id' => $this->tenant->id,
-            'user_id' => $otherUser->id
+            'user_id' => $otherUser->id,
         ]);
 
         $score = $this->timelineService->scorePost($post, $this->user);
@@ -211,7 +213,7 @@ class TimelineTest extends TestCase
             'posts' => [],
             'next_cursor' => null,
             'has_more' => false,
-            'generated_at' => now()->toISOString()
+            'generated_at' => now()->toISOString(),
         ];
 
         $this->timelineService->cacheTimeline($this->user, $timeline);
@@ -219,7 +221,7 @@ class TimelineTest extends TestCase
         // Check if timeline is cached
         $cacheKey = "timeline:user:{$this->user->id}";
         $cached = Redis::get($cacheKey);
-        
+
         $this->assertNotNull($cached);
         $this->assertEquals($timeline, json_decode($cached, true));
     }
@@ -232,9 +234,9 @@ class TimelineTest extends TestCase
             'posts' => [],
             'next_cursor' => null,
             'has_more' => false,
-            'generated_at' => now()->toISOString()
+            'generated_at' => now()->toISOString(),
         ];
-        
+
         $this->timelineService->cacheTimeline($this->user, $timeline);
 
         // Verify it's cached
@@ -260,7 +262,7 @@ class TimelineTest extends TestCase
             $posts->push(Post::factory()->create([
                 'tenant_id' => $this->tenant->id,
                 'circle_ids' => [$circle->id],
-                'created_at' => now()->subMinutes($i)
+                'created_at' => now()->subMinutes($i),
             ]));
         }
 
@@ -272,13 +274,13 @@ class TimelineTest extends TestCase
 
         // Get second page with cursor
         $secondPage = $this->timelineService->generateTimelineForUser(
-            $this->user, 
-            2, 
+            $this->user,
+            2,
             $firstPage['next_cursor']
         );
-        
+
         $this->assertCount(2, $secondPage['posts']);
-        
+
         // Ensure no duplicate posts
         $firstPageIds = collect($firstPage['posts'])->pluck('id');
         $secondPageIds = collect($secondPage['posts'])->pluck('id');
@@ -304,13 +306,13 @@ class TimelineTest extends TestCase
 
         $post = Post::factory()->create([
             'tenant_id' => $this->tenant->id,
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
 
         // Add some engagements
         $post->engagements()->create([
             'user_id' => $this->user->id,
-            'type' => 'like'
+            'type' => 'like',
         ]);
 
         $timeline = $this->timelineService->generateTimelineForUser($this->user);

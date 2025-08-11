@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class ProcessSearchAlerts extends Command
 {
     protected $signature = 'search:process-alerts';
+
     protected $description = 'Process and send search alerts to users';
 
     protected $searchService;

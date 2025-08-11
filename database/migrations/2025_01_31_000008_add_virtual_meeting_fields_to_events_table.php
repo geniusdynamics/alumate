@@ -16,11 +16,11 @@ return new class extends Migration
             $table->string('jitsi_room_id')->nullable()->after('virtual_instructions');
             $table->text('meeting_url')->nullable()->after('jitsi_room_id');
             $table->enum('meeting_platform', ['jitsi', 'zoom', 'teams', 'google_meet', 'webex', 'other'])
-                  ->default('jitsi')->after('meeting_url');
+                ->default('jitsi')->after('meeting_url');
             $table->text('meeting_password')->nullable()->after('meeting_platform');
             $table->boolean('meeting_embed_allowed')->default(true)->after('meeting_password');
             $table->boolean('recording_enabled')->default(false)->after('meeting_embed_allowed');
-            
+
             // Additional virtual event fields
             $table->json('jitsi_config')->nullable()->after('recording_enabled');
             $table->json('meeting_metadata')->nullable()->after('jitsi_config');
@@ -28,7 +28,7 @@ return new class extends Migration
             $table->boolean('chat_enabled')->default(true)->after('waiting_room_enabled');
             $table->boolean('screen_sharing_enabled')->default(true)->after('chat_enabled');
             $table->text('meeting_instructions')->nullable()->after('screen_sharing_enabled');
-            
+
             // Add indexes for performance
             $table->index('jitsi_room_id');
             $table->index('meeting_platform');
@@ -43,7 +43,7 @@ return new class extends Migration
         Schema::table('events', function (Blueprint $table) {
             $table->dropIndex(['jitsi_room_id']);
             $table->dropIndex(['meeting_platform']);
-            
+
             $table->dropColumn([
                 'jitsi_room_id',
                 'meeting_url',
@@ -56,7 +56,7 @@ return new class extends Migration
                 'waiting_room_enabled',
                 'chat_enabled',
                 'screen_sharing_enabled',
-                'meeting_instructions'
+                'meeting_instructions',
             ]);
         });
     }

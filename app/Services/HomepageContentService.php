@@ -5,27 +5,27 @@ namespace App\Services;
 use App\Models\HomepageContent;
 use App\Models\HomepageContentApproval;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class HomepageContentService
 {
     /**
      * Get all content for a specific audience and section
      */
-    public function getContent(string $audience = 'both', string $section = null): Collection
+    public function getContent(string $audience = 'both', ?string $section = null): Collection
     {
         $cacheKey = "homepage_content_{$audience}_{$section}";
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($audience, $section) {
             $query = HomepageContent::published()
                 ->forAudience($audience)
                 ->with(['creator', 'approver']);
-            
+
             if ($section) {
                 $query->forSection($section);
             }
-            
+
             return $query->get();
         });
     }
@@ -37,22 +37,22 @@ class HomepageContentService
     {
         $content = $this->getContent($audience);
         $formatted = [];
-        
+
         foreach ($content as $item) {
             $section = $item->section;
             $key = $item->key;
-            
-            if (!isset($formatted[$section])) {
+
+            if (! isset($formatted[$section])) {
                 $formatted[$section] = [];
             }
-            
+
             $formatted[$section][$key] = [
                 'value' => $item->value,
                 'metadata' => $item->metadata,
                 'updated_at' => $item->updated_at,
             ];
         }
-        
+
         return $formatted;
     }
 
@@ -64,19 +64,19 @@ class HomepageContentService
         string $key,
         string $value,
         string $audience = 'both',
-        array $metadata = null,
-        string $changeNotes = null
+        ?array $metadata = null,
+        ?string $changeNotes = null
     ): HomepageContent {
         return DB::transaction(function () use ($section, $key, $value, $audience, $metadata, $changeNotes) {
             $content = HomepageContent::where('section', $section)
                 ->where('key', $key)
                 ->where('audience', $audience)
                 ->first();
-            
+
             if ($content) {
                 // Create version before updating
                 $content->createVersion($changeNotes);
-                
+
                 $content->update([
                     'value' => $value,
                     'metadata' => $metadata,
@@ -92,14 +92,14 @@ class HomepageContentService
                     'status' => 'draft',
                     'created_by' => auth()->id(),
                 ]);
-                
+
                 // Create initial version
                 $content->createVersion('Initial version');
             }
-            
+
             // Clear cache
             $this->clearContentCache($audience, $section);
-            
+
             return $content;
         });
     }
@@ -110,7 +110,7 @@ class HomepageContentService
     public function bulkUpdateContent(array $updates): array
     {
         $results = [];
-        
+
         DB::transaction(function () use ($updates, &$results) {
             foreach ($updates as $update) {
                 $results[] = $this->updateContent(
@@ -123,36 +123,36 @@ class HomepageContentService
                 );
             }
         });
-        
+
         return $results;
     }
 
     /**
      * Request approval for content
      */
-    public function requestApproval(int $contentId, string $notes = null): HomepageContentApproval
+    public function requestApproval(int $contentId, ?string $notes = null): HomepageContentApproval
     {
         $content = HomepageContent::findOrFail($contentId);
-        
+
         // Update status to pending
         $content->update(['status' => 'pending']);
-        
+
         $approval = $content->requestApproval($notes);
-        
+
         // Clear cache
         $this->clearContentCache($content->audience, $content->section);
-        
+
         return $approval;
     }
 
     /**
      * Approve content
      */
-    public function approveContent(int $contentId, string $notes = null): void
+    public function approveContent(int $contentId, ?string $notes = null): void
     {
         $content = HomepageContent::findOrFail($contentId);
         $content->approve(auth()->id(), $notes);
-        
+
         // Clear cache
         $this->clearContentCache($content->audience, $content->section);
     }
@@ -160,19 +160,19 @@ class HomepageContentService
     /**
      * Reject content approval
      */
-    public function rejectContent(int $contentId, string $notes = null): void
+    public function rejectContent(int $contentId, ?string $notes = null): void
     {
         $content = HomepageContent::findOrFail($contentId);
-        
+
         $content->update(['status' => 'draft']);
-        
+
         $content->latestApproval()->update([
             'status' => 'rejected',
             'reviewer_id' => auth()->id(),
             'review_notes' => $notes,
             'reviewed_at' => now(),
         ]);
-        
+
         // Clear cache
         $this->clearContentCache($content->audience, $content->section);
     }
@@ -183,13 +183,13 @@ class HomepageContentService
     public function publishContent(int $contentId): void
     {
         $content = HomepageContent::findOrFail($contentId);
-        
+
         if ($content->status !== 'approved') {
             throw new \Exception('Content must be approved before publishing');
         }
-        
+
         $content->publish();
-        
+
         // Clear cache
         $this->clearContentCache($content->audience, $content->section);
     }
@@ -211,7 +211,7 @@ class HomepageContentService
     public function getContentHistory(int $contentId): Collection
     {
         $content = HomepageContent::findOrFail($contentId);
-        
+
         return $content->versions()
             ->with('creator')
             ->orderBy('version_number', 'desc')
@@ -228,20 +228,20 @@ class HomepageContentService
             $version = $content->versions()
                 ->where('version_number', $versionNumber)
                 ->firstOrFail();
-            
+
             // Create new version with current content before reverting
             $content->createVersion("Reverted to version {$versionNumber}");
-            
+
             // Update content with version data
             $content->update([
                 'value' => $version->value,
                 'metadata' => $version->metadata,
                 'status' => 'draft',
             ]);
-            
+
             // Clear cache
             $this->clearContentCache($content->audience, $content->section);
-            
+
             return $content;
         });
     }
@@ -249,14 +249,14 @@ class HomepageContentService
     /**
      * Export content for backup/migration
      */
-    public function exportContent(string $audience = null): array
+    public function exportContent(?string $audience = null): array
     {
         $query = HomepageContent::with(['versions', 'creator']);
-        
+
         if ($audience) {
             $query->forAudience($audience);
         }
-        
+
         return $query->get()->toArray();
     }
 
@@ -266,7 +266,7 @@ class HomepageContentService
     public function importContent(array $contentData): array
     {
         $results = [];
-        
+
         DB::transaction(function () use ($contentData, &$results) {
             foreach ($contentData as $data) {
                 $content = HomepageContent::updateOrCreate(
@@ -282,14 +282,14 @@ class HomepageContentService
                         'created_by' => auth()->id(),
                     ]
                 );
-                
+
                 $results[] = $content;
             }
         });
-        
+
         // Clear all cache
         $this->clearAllContentCache();
-        
+
         return $results;
     }
 
@@ -299,18 +299,18 @@ class HomepageContentService
     public function previewContent(array $changes, string $audience = 'both'): array
     {
         $currentContent = $this->getFormattedContent($audience);
-        
+
         // Apply changes to preview
         foreach ($changes as $change) {
             $section = $change['section'];
             $key = $change['key'];
             $value = $change['value'];
             $metadata = $change['metadata'] ?? null;
-            
-            if (!isset($currentContent[$section])) {
+
+            if (! isset($currentContent[$section])) {
                 $currentContent[$section] = [];
             }
-            
+
             $currentContent[$section][$key] = [
                 'value' => $value,
                 'metadata' => $metadata,
@@ -318,27 +318,27 @@ class HomepageContentService
                 'preview' => true,
             ];
         }
-        
+
         return $currentContent;
     }
 
     /**
      * Clear content cache
      */
-    private function clearContentCache(string $audience, string $section = null): void
+    private function clearContentCache(string $audience, ?string $section = null): void
     {
         $patterns = [
             "homepage_content_{$audience}_",
-            "homepage_content_both_",
+            'homepage_content_both_',
         ];
-        
+
         if ($section) {
             $patterns = [
                 "homepage_content_{$audience}_{$section}",
                 "homepage_content_both_{$section}",
             ];
         }
-        
+
         foreach ($patterns as $pattern) {
             Cache::forget($pattern);
         }
@@ -351,7 +351,7 @@ class HomepageContentService
     {
         $audiences = ['individual', 'institutional', 'both'];
         $sections = ['hero', 'social_proof', 'features', 'success_stories', 'pricing', 'trust'];
-        
+
         foreach ($audiences as $audience) {
             foreach ($sections as $section) {
                 Cache::forget("homepage_content_{$audience}_{$section}");

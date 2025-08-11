@@ -158,7 +158,7 @@ class LandingPage extends Model
     {
         $views = $this->analytics()->where('event_type', 'page_view')->count();
         $conversions = $this->submissions()->count();
-        
+
         return $views > 0 ? ($conversions / $views) * 100 : 0;
     }
 
@@ -241,13 +241,13 @@ class LandingPage extends Model
     /**
      * Clone the landing page
      */
-    public function duplicate(string $newName = null): self
+    public function duplicate(?string $newName = null): self
     {
-        $newName = $newName ?: $this->name . ' (Copy)';
-        
+        $newName = $newName ?: $this->name.' (Copy)';
+
         return self::create([
             'name' => $newName,
-            'title' => $this->title . ' (Copy)',
+            'title' => $this->title.' (Copy)',
             'description' => $this->description,
             'target_audience' => $this->target_audience,
             'campaign_type' => $this->campaign_type,

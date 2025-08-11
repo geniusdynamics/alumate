@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -60,14 +60,14 @@ class TestUsersSeeder extends Seeder
         foreach ($users as $userData) {
             $role = $userData['role'];
             unset($userData['role']);
-            
+
             $user = User::create($userData);
-            
+
             // Assign role if it exists
             if (Role::where('name', $role)->exists()) {
                 $user->assignRole($role);
             }
-            
+
             $this->command->info("Created user: {$user->email} with role: {$role}");
         }
     }

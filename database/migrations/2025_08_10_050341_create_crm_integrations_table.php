@@ -23,7 +23,7 @@ return new class extends Migration
             $table->json('last_sync_result')->nullable(); // Success/error details
             $table->json('field_mappings')->nullable(); // Map local fields to CRM fields
             $table->timestamps();
-            
+
             $table->index(['provider', 'is_active']);
             $table->index(['last_sync_at']);
         });

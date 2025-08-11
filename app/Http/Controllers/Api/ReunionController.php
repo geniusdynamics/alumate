@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\ReunionPhoto;
 use App\Models\ReunionMemory;
+use App\Models\ReunionPhoto;
 use App\Services\ReunionService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ReunionController extends Controller
@@ -20,16 +20,16 @@ class ReunionController extends Controller
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
-        
+
         $query = Event::reunions()
             ->published()
             ->where(function ($q) use ($user) {
                 $q->where('visibility', 'public')
-                  ->orWhere('visibility', 'alumni_only')
-                  ->orWhere(function ($subQ) use ($user) {
-                      $subQ->where('visibility', 'institution_only')
-                           ->where('institution_id', $user->institution_id);
-                  });
+                    ->orWhere('visibility', 'alumni_only')
+                    ->orWhere(function ($subQ) use ($user) {
+                        $subQ->where('visibility', 'institution_only')
+                            ->where('institution_id', $user->institution_id);
+                    });
             })
             ->with(['organizer', 'institution']);
 
@@ -62,11 +62,11 @@ class ReunionController extends Controller
 
     public function show(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion()) {
+        if (! $event->isReunion()) {
             return response()->json(['message' => 'Event is not a reunion'], 404);
         }
 
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -79,7 +79,7 @@ class ReunionController extends Controller
             },
             'reunionMemories' => function ($query) {
                 $query->approved()->featured()->limit(3);
-            }
+            },
         ]);
 
         $statistics = $this->reunionService->generateReunionStatistics($event);
@@ -95,7 +95,7 @@ class ReunionController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'graduation_year' => 'required|integer|min:1900|max:' . (now()->year + 10),
+            'graduation_year' => 'required|integer|min:1900|max:'.(now()->year + 10),
             'class_identifier' => 'nullable|string|max:255',
             'reunion_theme' => 'nullable|string|max:500',
             'start_date' => 'required|date|after:now',
@@ -125,18 +125,18 @@ class ReunionController extends Controller
 
     public function update(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion()) {
+        if (! $event->isReunion()) {
             return response()->json(['message' => 'Event is not a reunion'], 404);
         }
 
-        if (!$event->canUserEdit($request->user())) {
+        if (! $event->canUserEdit($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $validator = Validator::make($request->all(), [
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'graduation_year' => 'sometimes|integer|min:1900|max:' . (now()->year + 10),
+            'graduation_year' => 'sometimes|integer|min:1900|max:'.(now()->year + 10),
             'class_identifier' => 'nullable|string|max:255',
             'reunion_theme' => 'nullable|string|max:500',
             'start_date' => 'sometimes|date',
@@ -160,11 +160,11 @@ class ReunionController extends Controller
 
     public function photos(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion() || !$event->hasPhotoSharing()) {
+        if (! $event->isReunion() || ! $event->hasPhotoSharing()) {
             return response()->json(['message' => 'Photo sharing not available'], 404);
         }
 
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -176,11 +176,11 @@ class ReunionController extends Controller
 
     public function uploadPhoto(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion() || !$event->hasPhotoSharing()) {
+        if (! $event->isReunion() || ! $event->hasPhotoSharing()) {
             return response()->json(['message' => 'Photo sharing not available'], 404);
         }
 
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -214,11 +214,11 @@ class ReunionController extends Controller
 
     public function memories(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion() || !$event->hasMemoryWall()) {
+        if (! $event->isReunion() || ! $event->hasMemoryWall()) {
             return response()->json(['message' => 'Memory wall not available'], 404);
         }
 
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -230,11 +230,11 @@ class ReunionController extends Controller
 
     public function createMemory(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion() || !$event->hasMemoryWall()) {
+        if (! $event->isReunion() || ! $event->hasMemoryWall()) {
             return response()->json(['message' => 'Memory wall not available'], 404);
         }
 
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -269,7 +269,7 @@ class ReunionController extends Controller
 
     public function likePhoto(ReunionPhoto $photo, Request $request): JsonResponse
     {
-        if (!$photo->canBeViewedBy($request->user())) {
+        if (! $photo->canBeViewedBy($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -283,7 +283,7 @@ class ReunionController extends Controller
 
     public function unlikePhoto(ReunionPhoto $photo, Request $request): JsonResponse
     {
-        if (!$photo->canBeViewedBy($request->user())) {
+        if (! $photo->canBeViewedBy($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -297,7 +297,7 @@ class ReunionController extends Controller
 
     public function likeMemory(ReunionMemory $memory, Request $request): JsonResponse
     {
-        if (!$memory->canBeViewedBy($request->user())) {
+        if (! $memory->canBeViewedBy($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -311,7 +311,7 @@ class ReunionController extends Controller
 
     public function unlikeMemory(ReunionMemory $memory, Request $request): JsonResponse
     {
-        if (!$memory->canBeViewedBy($request->user())) {
+        if (! $memory->canBeViewedBy($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -325,7 +325,7 @@ class ReunionController extends Controller
 
     public function commentOnPhoto(ReunionPhoto $photo, Request $request): JsonResponse
     {
-        if (!$photo->canBeViewedBy($request->user())) {
+        if (! $photo->canBeViewedBy($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -348,7 +348,7 @@ class ReunionController extends Controller
 
     public function commentOnMemory(ReunionMemory $memory, Request $request): JsonResponse
     {
-        if (!$memory->canBeViewedBy($request->user())) {
+        if (! $memory->canBeViewedBy($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -385,11 +385,11 @@ class ReunionController extends Controller
 
     public function statistics(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion()) {
+        if (! $event->isReunion()) {
             return response()->json(['message' => 'Event is not a reunion'], 404);
         }
 
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -400,21 +400,22 @@ class ReunionController extends Controller
 
     public function committeeMembers(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion()) {
+        if (! $event->isReunion()) {
             return response()->json(['message' => 'Event is not a reunion'], 404);
         }
 
-        if (!$event->canUserView($request->user())) {
+        if (! $event->canUserView($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
         $committees = $event->getCommitteeMembers();
         $userIds = collect($committees)->pluck('user_id');
-        
+
         $users = \App\Models\User::whereIn('id', $userIds)->get()->keyBy('id');
-        
+
         $committeesWithUsers = collect($committees)->map(function ($committee) use ($users) {
             $committee['user'] = $users->get($committee['user_id']);
+
             return $committee;
         });
 
@@ -423,11 +424,11 @@ class ReunionController extends Controller
 
     public function addCommitteeMember(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion()) {
+        if (! $event->isReunion()) {
             return response()->json(['message' => 'Event is not a reunion'], 404);
         }
 
-        if (!$event->canUserManageReunion($request->user())) {
+        if (! $event->canUserManageReunion($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -448,11 +449,11 @@ class ReunionController extends Controller
 
     public function removeCommitteeMember(Event $event, Request $request): JsonResponse
     {
-        if (!$event->isReunion()) {
+        if (! $event->isReunion()) {
             return response()->json(['message' => 'Event is not a reunion'], 404);
         }
 
-        if (!$event->canUserManageReunion($request->user())) {
+        if (! $event->canUserManageReunion($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

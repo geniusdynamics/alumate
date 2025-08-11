@@ -18,7 +18,7 @@ class ScholarshipReviewFactory extends Factory
     {
         $score = fake()->randomFloat(2, 60, 100);
         $recommendation = $score >= 80 ? 'approve' : ($score >= 70 ? 'needs_more_info' : 'reject');
-        
+
         return [
             'application_id' => \App\Models\ScholarshipApplication::factory(),
             'reviewer_id' => \App\Models\User::factory(),

@@ -6,8 +6,8 @@ use App\Models\MentorProfile;
 use App\Models\MentorshipRequest;
 use App\Models\MentorshipSession;
 use App\Models\User;
-use App\Notifications\MentorshipRequestNotification;
 use App\Notifications\MentorshipAcceptedNotification;
+use App\Notifications\MentorshipRequestNotification;
 use App\Notifications\SessionScheduledNotification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ class MentorshipService
             });
 
         // Apply filters if provided
-        if (!empty($criteria['expertise_areas'])) {
+        if (! empty($criteria['expertise_areas'])) {
             $query->where(function ($q) use ($criteria) {
                 foreach ($criteria['expertise_areas'] as $area) {
                     $q->orWhereJsonContains('expertise_areas', $area);
@@ -32,7 +32,7 @@ class MentorshipService
             });
         }
 
-        if (!empty($criteria['availability'])) {
+        if (! empty($criteria['availability'])) {
             $query->where('availability', $criteria['availability']);
         }
 
@@ -42,6 +42,7 @@ class MentorshipService
         $scoredMentors = $mentors->map(function ($mentorProfile) use ($mentee) {
             $score = $this->calculateMentorScore($mentorProfile, $mentee);
             $mentorProfile->match_score = $score;
+
             return $mentorProfile;
         });
 
@@ -82,6 +83,7 @@ class MentorshipService
         }
 
         $commonIndustries = $mentorIndustries->intersect($menteeIndustries);
+
         return $commonIndustries->count() / max($mentorIndustries->count(), $menteeIndustries->count());
     }
 
@@ -90,12 +92,14 @@ class MentorshipService
         $mentorExperience = $mentor->careerTimelines->sum(function ($timeline) {
             $start = $timeline->start_date;
             $end = $timeline->end_date ?? now();
+
             return $start->diffInYears($end);
         });
 
         $menteeExperience = $mentee->careerTimelines->sum(function ($timeline) {
             $start = $timeline->start_date;
             $end = $timeline->end_date ?? now();
+
             return $start->diffInYears($end);
         });
 
@@ -115,7 +119,7 @@ class MentorshipService
 
     private function calculateLocationScore(User $mentor, User $mentee): float
     {
-        if (!$mentor->location || !$mentee->location) {
+        if (! $mentor->location || ! $mentee->location) {
             return 0.5; // Neutral if no location data
         }
 
@@ -188,7 +192,7 @@ class MentorshipService
 
         // Check if mentor still has available slots
         $mentorProfile = MentorProfile::where('user_id', $request->mentor_id)->first();
-        if (!$mentorProfile || !$mentorProfile->hasAvailableSlots()) {
+        if (! $mentorProfile || ! $mentorProfile->hasAvailableSlots()) {
             throw new \Exception('Mentor no longer has available slots.');
         }
 
@@ -227,8 +231,8 @@ class MentorshipService
     public function getMentorshipAnalytics(int $mentorId): array
     {
         $mentorProfile = MentorProfile::where('user_id', $mentorId)->first();
-        
-        if (!$mentorProfile) {
+
+        if (! $mentorProfile) {
             return [];
         }
 
@@ -251,12 +255,12 @@ class MentorshipService
         $averageSessionRating = MentorshipSession::whereHas('mentorship', function ($q) use ($mentorId) {
             $q->where('mentor_id', $mentorId);
         })
-        ->where('status', 'completed')
-        ->whereNotNull('feedback')
-        ->get()
-        ->avg(function ($session) {
-            return $session->feedback['rating'] ?? 0;
-        });
+            ->where('status', 'completed')
+            ->whereNotNull('feedback')
+            ->get()
+            ->avg(function ($session) {
+                return $session->feedback['rating'] ?? 0;
+            });
 
         return [
             'total_mentorships' => $totalMentorships,
@@ -285,6 +289,7 @@ class MentorshipService
     public function updateMentorProfile(MentorProfile $profile, array $data): MentorProfile
     {
         $profile->update($data);
+
         return $profile->fresh();
     }
 
@@ -292,11 +297,11 @@ class MentorshipService
     {
         return MentorshipSession::whereHas('mentorship', function ($q) use ($user) {
             $q->where('mentor_id', $user->id)
-              ->orWhere('mentee_id', $user->id);
+                ->orWhere('mentee_id', $user->id);
         })
-        ->upcoming()
-        ->with(['mentorship.mentor', 'mentorship.mentee'])
-        ->orderBy('scheduled_at')
-        ->get();
+            ->upcoming()
+            ->with(['mentorship.mentor', 'mentorship.mentee'])
+            ->orderBy('scheduled_at')
+            ->get();
     }
 }

@@ -32,9 +32,9 @@ class CompanyFactory extends Factory
                 'Consulting',
                 'Media',
                 'Real Estate',
-                'Non-profit'
+                'Non-profit',
             ]),
-            'location' => $this->faker->city() . ', ' . $this->faker->stateAbbr(),
+            'location' => $this->faker->city().', '.$this->faker->stateAbbr(),
             'founded_year' => $this->faker->numberBetween(1950, 2020),
             'is_verified' => $this->faker->boolean(70), // 70% chance of being verified
         ];
@@ -76,8 +76,8 @@ class CompanyFactory extends Factory
                 'DevSolutions',
                 'CodeCraft',
                 'ByteWorks',
-                'PixelForge'
-            ]) . ' ' . $this->faker->randomElement(['Inc.', 'LLC', 'Corp', 'Technologies']),
+                'PixelForge',
+            ]).' '.$this->faker->randomElement(['Inc.', 'LLC', 'Corp', 'Technologies']),
         ]);
     }
 }

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 class AnalyticsController extends Controller
 {
@@ -26,13 +26,13 @@ class AnalyticsController extends Controller
             'events.*.value' => 'nullable|numeric',
             'events.*.customData' => 'nullable|array',
             'events.*.timestamp' => 'required|date',
-            'sessionId' => 'required|string|max:100'
+            'sessionId' => 'required|string|max:100',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -44,7 +44,7 @@ class AnalyticsController extends Controller
 
             // Process events in chunks for better performance
             $chunks = array_chunk($events, 50);
-            
+
             foreach ($chunks as $chunk) {
                 $this->processEventChunk($chunk, $sessionId, $userAgent, $ipAddress);
             }
@@ -54,19 +54,19 @@ class AnalyticsController extends Controller
 
             return response()->json([
                 'success' => true,
-                'processed' => count($events)
+                'processed' => count($events),
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to store analytics events', [
                 'error' => $e->getMessage(),
                 'session_id' => $request->input('sessionId'),
-                'events_count' => count($request->input('events', []))
+                'events_count' => count($request->input('events', [])),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to process events'
+                'error' => 'Failed to process events',
             ], 500);
         }
     }
@@ -85,13 +85,13 @@ class AnalyticsController extends Controller
             'audience' => 'required|in:individual,institutional',
             'sessionId' => 'required|string|max:100',
             'userId' => 'nullable|string|max:100',
-            'timestamp' => 'required|date'
+            'timestamp' => 'required|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -113,25 +113,25 @@ class AnalyticsController extends Controller
                     'goal_id' => $conversionData['goalId'],
                     'value' => $conversionData['value'],
                     'audience' => $conversionData['audience'],
-                    'session_id' => $conversionData['sessionId']
+                    'session_id' => $conversionData['sessionId'],
                 ]);
             }
 
             return response()->json([
                 'success' => true,
-                'conversion_id' => DB::getPdo()->lastInsertId()
+                'conversion_id' => DB::getPdo()->lastInsertId(),
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to store conversion', [
                 'error' => $e->getMessage(),
                 'goal_id' => $request->input('goalId'),
-                'session_id' => $request->input('sessionId')
+                'session_id' => $request->input('sessionId'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to process conversion'
+                'error' => 'Failed to process conversion',
             ], 500);
         }
     }
@@ -145,13 +145,13 @@ class AnalyticsController extends Controller
             'errorType' => 'required|string|max:100',
             'errorData' => 'required|array',
             'sessionId' => 'required|string|max:100',
-            'timestamp' => 'required|date'
+            'timestamp' => 'required|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -163,7 +163,7 @@ class AnalyticsController extends Controller
                 'ip_address' => $request->ip(),
                 'user_agent' => $request->header('User-Agent'),
                 'timestamp' => $request->input('timestamp'),
-                'created_at' => now()
+                'created_at' => now(),
             ];
 
             // Store error in database
@@ -174,7 +174,7 @@ class AnalyticsController extends Controller
                 Log::error('Frontend error tracked', [
                     'error_type' => $request->input('errorType'),
                     'error_data' => $request->input('errorData'),
-                    'session_id' => $request->input('sessionId')
+                    'session_id' => $request->input('sessionId'),
                 ]);
             }
 
@@ -183,12 +183,12 @@ class AnalyticsController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to store error event', [
                 'error' => $e->getMessage(),
-                'session_id' => $request->input('sessionId')
+                'session_id' => $request->input('sessionId'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to process error'
+                'error' => 'Failed to process error',
             ], 500);
         }
     }
@@ -201,26 +201,26 @@ class AnalyticsController extends Controller
         $validator = Validator::make($request->all(), [
             'audience' => 'required|in:individual,institutional',
             'timeRange.start' => 'nullable|date',
-            'timeRange.end' => 'nullable|date'
+            'timeRange.end' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $audience = $request->input('audience');
             $timeRange = $request->input('timeRange');
-            
+
             $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
             $endDate = $timeRange['end'] ?? Carbon::now();
 
             // Get cached metrics or calculate fresh
-            $cacheKey = "analytics_metrics_{$audience}_" . md5($startDate . $endDate);
-            
+            $cacheKey = "analytics_metrics_{$audience}_".md5($startDate.$endDate);
+
             $metrics = Cache::remember($cacheKey, 300, function () use ($audience, $startDate, $endDate) {
                 return $this->calculateMetrics($audience, $startDate, $endDate);
             });
@@ -230,12 +230,12 @@ class AnalyticsController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to get analytics metrics', [
                 'error' => $e->getMessage(),
-                'audience' => $request->input('audience')
+                'audience' => $request->input('audience'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to retrieve metrics'
+                'error' => 'Failed to retrieve metrics',
             ], 500);
         }
     }
@@ -248,20 +248,20 @@ class AnalyticsController extends Controller
         $validator = Validator::make($request->all(), [
             'audience' => 'required|in:individual,institutional',
             'timeRange.start' => 'nullable|date',
-            'timeRange.end' => 'nullable|date'
+            'timeRange.end' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $audience = $request->input('audience');
             $timeRange = $request->input('timeRange');
-            
+
             $report = match ($reportType) {
                 'conversion' => $this->generateConversionReport($audience, $timeRange),
                 'engagement' => $this->generateEngagementReport($audience, $timeRange),
@@ -276,12 +276,12 @@ class AnalyticsController extends Controller
             Log::error('Failed to generate report', [
                 'error' => $e->getMessage(),
                 'report_type' => $reportType,
-                'audience' => $request->input('audience')
+                'audience' => $request->input('audience'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to generate report'
+                'error' => 'Failed to generate report',
             ], 500);
         }
     }
@@ -294,13 +294,13 @@ class AnalyticsController extends Controller
         $validator = Validator::make($request->all(), [
             'format' => 'required|in:json,csv',
             'audience' => 'required|in:individual,institutional',
-            'filters' => 'nullable|array'
+            'filters' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -321,12 +321,12 @@ class AnalyticsController extends Controller
             Log::error('Failed to export data', [
                 'error' => $e->getMessage(),
                 'format' => $request->input('format'),
-                'audience' => $request->input('audience')
+                'audience' => $request->input('audience'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to export data'
+                'error' => 'Failed to export data',
             ], 500);
         }
     }
@@ -339,20 +339,20 @@ class AnalyticsController extends Controller
         $validator = Validator::make($request->all(), [
             'audience' => 'required|in:individual,institutional',
             'timeRange.start' => 'nullable|date',
-            'timeRange.end' => 'nullable|date'
+            'timeRange.end' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $audience = $request->input('audience');
             $timeRange = $request->input('timeRange');
-            
+
             $report = $this->generateConversionReport($audience, $timeRange);
 
             return response()->json($report);
@@ -360,12 +360,12 @@ class AnalyticsController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to get conversion report', [
                 'error' => $e->getMessage(),
-                'audience' => $request->input('audience')
+                'audience' => $request->input('audience'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Failed to generate conversion report'
+                'error' => 'Failed to generate conversion report',
             ], 500);
         }
     }
@@ -376,7 +376,7 @@ class AnalyticsController extends Controller
     private function processEventChunk(array $events, string $sessionId, ?string $userAgent, string $ipAddress): void
     {
         $insertData = [];
-        
+
         foreach ($events as $event) {
             $insertData[] = [
                 'event_name' => $event['eventName'],
@@ -389,7 +389,7 @@ class AnalyticsController extends Controller
                 'user_agent' => $userAgent,
                 'ip_address' => $ipAddress,
                 'timestamp' => $event['timestamp'],
-                'created_at' => now()
+                'created_at' => now(),
             ];
         }
 
@@ -406,9 +406,9 @@ class AnalyticsController extends Controller
     private function updateSessionStats(string $sessionId, int $eventCount): void
     {
         $cacheKey = "session_stats_{$sessionId}";
-        
-        Cache::increment($cacheKey . '_events', $eventCount);
-        Cache::put($cacheKey . '_last_activity', now(), 3600);
+
+        Cache::increment($cacheKey.'_events', $eventCount);
+        Cache::put($cacheKey.'_last_activity', now(), 3600);
     }
 
     /**
@@ -418,12 +418,12 @@ class AnalyticsController extends Controller
     {
         $audience = $conversionData['audience'];
         $goalId = $conversionData['goalId'];
-        
+
         // Update daily conversion counts
         $dateKey = Carbon::parse($conversionData['timestamp'])->format('Y-m-d');
         Cache::increment("conversions_{$audience}_{$dateKey}", 1);
         Cache::increment("conversions_{$audience}_{$goalId}_{$dateKey}", 1);
-        
+
         // Update total conversion value
         Cache::increment("conversion_value_{$audience}_{$dateKey}", $conversionData['value']);
     }
@@ -437,16 +437,16 @@ class AnalyticsController extends Controller
             $audience = $event['audience'];
             $eventName = $event['eventName'];
             $dateKey = Carbon::parse($event['timestamp'])->format('Y-m-d');
-            
+
             // Update event counts
             Cache::increment("events_{$audience}_{$eventName}_{$dateKey}", 1);
-            
+
             // Update page view counts
             if ($eventName === 'page_view') {
                 $page = $event['customData']['page'] ?? 'unknown';
                 Cache::increment("page_views_{$audience}_{$page}_{$dateKey}", 1);
             }
-            
+
             // Update CTA click counts
             if ($eventName === 'cta_click') {
                 $action = $event['action'];
@@ -514,7 +514,7 @@ class AnalyticsController extends Controller
             ->map(function ($item) {
                 return [
                     'page' => trim($item->page, '"'),
-                    'views' => $item->views
+                    'views' => $item->views,
                 ];
             })
             ->toArray();
@@ -532,7 +532,7 @@ class AnalyticsController extends Controller
             ->map(function ($item) {
                 return [
                     'cta' => $item->action,
-                    'clicks' => $item->clicks
+                    'clicks' => $item->clicks,
                 ];
             })
             ->toArray();
@@ -553,7 +553,7 @@ class AnalyticsController extends Controller
             'conversionRate' => round($conversionRate, 3),
             'topPages' => $topPages,
             'topCTAs' => $topCTAs,
-            'audienceBreakdown' => $audienceBreakdown
+            'audienceBreakdown' => $audienceBreakdown,
         ];
     }
 
@@ -602,8 +602,8 @@ class AnalyticsController extends Controller
             'dailyConversions' => $dailyConversions,
             'timeRange' => [
                 'start' => $startDate,
-                'end' => $endDate
-            ]
+                'end' => $endDate,
+            ],
         ];
     }
 
@@ -642,8 +642,8 @@ class AnalyticsController extends Controller
             'scrollDepth' => $scrollDepth,
             'timeRange' => [
                 'start' => $startDate,
-                'end' => $endDate
-            ]
+                'end' => $endDate,
+            ],
         ];
     }
 
@@ -685,8 +685,8 @@ class AnalyticsController extends Controller
             'errorAnalysis' => $errorAnalysis,
             'timeRange' => [
                 'start' => $startDate,
-                'end' => $endDate
-            ]
+                'end' => $endDate,
+            ],
         ];
     }
 
@@ -719,14 +719,14 @@ class AnalyticsController extends Controller
 
         foreach ($funnelData as $step) {
             $dropoffRate = $previousCount ? 1 - ($step->unique_sessions / $previousCount) : 0;
-            
+
             $funnelWithDropoff[] = [
                 'stepName' => trim($step->step_name, '"'),
                 'stepOrder' => $step->step_order,
                 'uniqueSessions' => $step->unique_sessions,
-                'dropoffRate' => round($dropoffRate, 3)
+                'dropoffRate' => round($dropoffRate, 3),
             ];
-            
+
             $previousCount = $step->unique_sessions;
         }
 
@@ -734,8 +734,8 @@ class AnalyticsController extends Controller
             'funnelSteps' => $funnelWithDropoff,
             'timeRange' => [
                 'start' => $startDate,
-                'end' => $endDate
-            ]
+                'end' => $endDate,
+            ],
         ];
     }
 
@@ -751,15 +751,15 @@ class AnalyticsController extends Controller
         if (isset($filters['startDate'])) {
             $query->where('timestamp', '>=', $filters['startDate']);
         }
-        
+
         if (isset($filters['endDate'])) {
             $query->where('timestamp', '<=', $filters['endDate']);
         }
-        
+
         if (isset($filters['eventName'])) {
             $query->where('event_name', $filters['eventName']);
         }
-        
+
         if (isset($filters['section'])) {
             $query->where('section', $filters['section']);
         }
@@ -777,22 +777,22 @@ class AnalyticsController extends Controller
     {
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="analytics-export-' . date('Y-m-d-H-i-s') . '.csv"',
+            'Content-Disposition' => 'attachment; filename="analytics-export-'.date('Y-m-d-H-i-s').'.csv"',
         ];
 
         return response()->stream(function () use ($data) {
             $handle = fopen('php://output', 'w');
-            
+
             // Write CSV headers
-            if (!empty($data)) {
+            if (! empty($data)) {
                 fputcsv($handle, array_keys((array) $data[0]));
-                
+
                 // Write data rows
                 foreach ($data as $row) {
                     fputcsv($handle, (array) $row);
                 }
             }
-            
+
             fclose($handle);
         }, 200, $headers);
     }

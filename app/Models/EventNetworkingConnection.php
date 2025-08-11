@@ -65,15 +65,15 @@ class EventNetworkingConnection extends Model
     {
         return $query->where(function ($q) use ($user) {
             $q->where('user_id', $user->id)
-              ->orWhere('connected_user_id', $user->id);
+                ->orWhere('connected_user_id', $user->id);
         });
     }
 
     // Helper methods
     public function getOtherUser(User $currentUser): User
     {
-        return $currentUser->id === $this->user_id 
-            ? $this->connectedUser 
+        return $currentUser->id === $this->user_id
+            ? $this->connectedUser
             : $this->user;
     }
 
@@ -98,7 +98,7 @@ class EventNetworkingConnection extends Model
     public function addSharedInterest(string $interest): void
     {
         $interests = $this->shared_interests ?? [];
-        if (!in_array($interest, $interests)) {
+        if (! in_array($interest, $interests)) {
             $interests[] = $interest;
             $this->update(['shared_interests' => $interests]);
         }
@@ -107,13 +107,13 @@ class EventNetworkingConnection extends Model
     public function removeSharedInterest(string $interest): void
     {
         $interests = $this->shared_interests ?? [];
-        $interests = array_filter($interests, fn($i) => $i !== $interest);
+        $interests = array_filter($interests, fn ($i) => $i !== $interest);
         $this->update(['shared_interests' => array_values($interests)]);
     }
 
     public function getConnectionTypeLabel(): string
     {
-        return match($this->connection_type) {
+        return match ($this->connection_type) {
             'met_at_event' => 'Met at Event',
             'mutual_interest' => 'Mutual Interest',
             'follow_up' => 'Follow-up Connection',
@@ -144,6 +144,7 @@ class EventNetworkingConnection extends Model
         }
 
         $daysSinceLastInteraction = $this->getDaysSinceLastInteraction();
+
         return $daysSinceLastInteraction === null || $daysSinceLastInteraction >= $days;
     }
 }

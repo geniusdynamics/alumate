@@ -18,7 +18,7 @@ class FundraisingCampaignFactory extends Factory
     {
         $startDate = fake()->dateTimeBetween('now', '+1 month');
         $endDate = fake()->dateTimeBetween($startDate, '+6 months');
-        
+
         return [
             'title' => fake()->sentence(4),
             'description' => fake()->paragraph(3),

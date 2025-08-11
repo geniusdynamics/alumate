@@ -64,7 +64,7 @@ class Lead extends Model
      */
     public function getFullNameAttribute(): string
     {
-        return trim($this->first_name . ' ' . $this->last_name);
+        return trim($this->first_name.' '.$this->last_name);
     }
 
     /**
@@ -72,7 +72,7 @@ class Lead extends Model
      */
     public function isQualified(): bool
     {
-        return !is_null($this->qualified_at);
+        return ! is_null($this->qualified_at);
     }
 
     /**
@@ -86,7 +86,7 @@ class Lead extends Model
     /**
      * Update lead score
      */
-    public function updateScore(int $points, string $reason = null): void
+    public function updateScore(int $points, ?string $reason = null): void
     {
         $oldScore = $this->score;
         $this->score = max(0, min(100, $this->score + $points));
@@ -96,7 +96,7 @@ class Lead extends Model
         $this->activities()->create([
             'type' => 'score_change',
             'subject' => 'Score updated',
-            'description' => "Score changed from {$oldScore} to {$this->score}" . ($reason ? " - {$reason}" : ''),
+            'description' => "Score changed from {$oldScore} to {$this->score}".($reason ? " - {$reason}" : ''),
             'metadata' => [
                 'old_score' => $oldScore,
                 'new_score' => $this->score,
@@ -110,22 +110,22 @@ class Lead extends Model
     /**
      * Update lead status
      */
-    public function updateStatus(string $newStatus, string $reason = null): void
+    public function updateStatus(string $newStatus, ?string $reason = null): void
     {
         $oldStatus = $this->status;
         $this->status = $newStatus;
-        
-        if ($newStatus === 'qualified' && !$this->qualified_at) {
+
+        if ($newStatus === 'qualified' && ! $this->qualified_at) {
             $this->qualified_at = now();
         }
-        
+
         $this->save();
 
         // Log the status change
         $this->activities()->create([
             'type' => 'status_change',
             'subject' => 'Status updated',
-            'description' => "Status changed from {$oldStatus} to {$newStatus}" . ($reason ? " - {$reason}" : ''),
+            'description' => "Status changed from {$oldStatus} to {$newStatus}".($reason ? " - {$reason}" : ''),
             'metadata' => [
                 'old_status' => $oldStatus,
                 'new_status' => $newStatus,
@@ -138,7 +138,7 @@ class Lead extends Model
     /**
      * Add activity to lead
      */
-    public function addActivity(string $type, string $subject, string $description = null, array $metadata = []): LeadActivity
+    public function addActivity(string $type, string $subject, ?string $description = null, array $metadata = []): LeadActivity
     {
         return $this->activities()->create([
             'type' => $type,
@@ -212,7 +212,7 @@ class Lead extends Model
     {
         return $query->where(function ($q) {
             $q->whereNull('last_contacted_at')
-              ->orWhere('last_contacted_at', '<', now()->subDays(7));
+                ->orWhere('last_contacted_at', '<', now()->subDays(7));
         })->whereNotIn('status', ['closed_won', 'closed_lost']);
     }
 }

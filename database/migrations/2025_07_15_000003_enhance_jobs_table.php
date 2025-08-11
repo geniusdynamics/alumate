@@ -17,58 +17,58 @@ return new class extends Migration
             $table->json('preferred_qualifications')->nullable()->after('required_skills');
             $table->enum('experience_level', ['entry', 'junior', 'mid', 'senior', 'executive'])->default('entry')->after('preferred_qualifications');
             $table->integer('min_experience_years')->default(0)->after('experience_level');
-            
+
             // Add salary range instead of single salary
             $table->decimal('salary_min', 10, 2)->nullable()->after('min_experience_years');
             $table->decimal('salary_max', 10, 2)->nullable()->after('salary_min');
             $table->enum('salary_type', ['hourly', 'monthly', 'annually'])->default('monthly')->after('salary_max');
-            
+
             // Add job type and work arrangement
             $table->enum('job_type', ['full_time', 'part_time', 'contract', 'internship', 'temporary'])->default('full_time')->after('salary_type');
             $table->enum('work_arrangement', ['on_site', 'remote', 'hybrid'])->default('on_site')->after('job_type');
-            
+
             // Add application tracking
             $table->integer('total_applications')->default(0)->after('work_arrangement');
             $table->integer('viewed_applications')->default(0)->after('total_applications');
             $table->integer('shortlisted_applications')->default(0)->after('viewed_applications');
-            
+
             // Add job status and workflow
             $table->enum('status', ['draft', 'pending_approval', 'active', 'paused', 'filled', 'expired', 'cancelled'])
-                  ->default('draft')->after('shortlisted_applications');
+                ->default('draft')->after('shortlisted_applications');
             $table->boolean('requires_approval')->default(false)->after('status');
             $table->timestamp('approved_at')->nullable()->after('requires_approval');
             $table->unsignedBigInteger('approved_by')->nullable()->after('approved_at');
-            
+
             // Add application deadline and job duration
             $table->date('application_deadline')->nullable()->after('approved_by');
             $table->date('job_start_date')->nullable()->after('application_deadline');
             $table->date('job_end_date')->nullable()->after('job_start_date');
-            
+
             // Add employer verification requirements
             $table->boolean('employer_verified_required')->default(true)->after('job_end_date');
-            
+
             // Add job matching and recommendation fields
             $table->json('matching_criteria')->nullable()->after('employer_verified_required');
             $table->integer('view_count')->default(0)->after('matching_criteria');
             $table->decimal('match_score', 5, 2)->nullable()->after('view_count');
-            
+
             // Add contact information
             $table->string('contact_email')->nullable()->after('match_score');
             $table->string('contact_phone')->nullable()->after('contact_email');
             $table->string('contact_person')->nullable()->after('contact_phone');
-            
+
             // Add benefits and perks
             $table->json('benefits')->nullable()->after('contact_person');
             $table->text('company_culture')->nullable()->after('benefits');
-            
+
             // Add approval/rejection fields
             $table->text('approval_notes')->nullable()->after('company_culture');
             $table->text('rejection_reason')->nullable()->after('approval_notes');
-            
+
             // Add foreign key for approver
             $table->foreign('approved_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('set null');
         });
-        
+
         // Drop the old salary column if it exists
         if (Schema::hasColumn('jobs', 'salary')) {
             Schema::table('jobs', function (Blueprint $table) {
@@ -114,9 +114,9 @@ return new class extends Migration
                 'benefits',
                 'company_culture',
                 'approval_notes',
-                'rejection_reason'
+                'rejection_reason',
             ]);
-            
+
             // Add back the old salary column
             $table->string('salary')->nullable();
         });

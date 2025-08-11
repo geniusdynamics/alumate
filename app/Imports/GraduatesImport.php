@@ -2,29 +2,33 @@
 
 namespace App\Imports;
 
-use App\Models\Graduate;
 use App\Models\Course;
+use App\Models\Graduate;
 use App\Models\ImportHistory;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use Maatwebsite\Excel\Concerns\SkipsFailures;
+use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnFailure;
-use Maatwebsite\Excel\Concerns\SkipsFailures;
-use Maatwebsite\Excel\Validators\Failure;
 
-class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, SkipsOnFailure
+class GraduatesImport implements SkipsOnFailure, ToCollection, WithHeadingRow, WithValidation
 {
     use SkipsFailures;
 
     protected $importHistory;
+
     protected $options;
+
     protected $validRows = [];
+
     protected $invalidRows = [];
+
     protected $duplicates = [];
+
     protected $conflicts = [];
+
     protected $statistics = [
         'processed_rows' => 0,
         'created_count' => 0,
@@ -37,7 +41,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         if ($importHistoryId) {
             $this->importHistory = ImportHistory::find($importHistoryId);
         }
-        
+
         $this->options = array_merge([
             'skip_duplicates' => true,
             'update_existing' => false,
@@ -49,27 +53,30 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
     {
         foreach ($rows as $index => $row) {
             $this->statistics['processed_rows']++;
-            
+
             // Validate row data
             $validatedData = $this->validateRow($row->toArray(), $index);
-            
-            if (!$validatedData) {
+
+            if (! $validatedData) {
                 $this->statistics['skipped_count']++;
+
                 continue;
             }
 
             // Check for duplicates
             $duplicate = $this->checkForDuplicates($validatedData);
-            
+
             if ($duplicate) {
                 $conflictResolution = $this->resolveConflict($validatedData, $duplicate, $index);
-                
+
                 if ($conflictResolution['action'] === 'skip') {
                     $this->statistics['skipped_count']++;
+
                     continue;
                 } elseif ($conflictResolution['action'] === 'update') {
                     $this->updateExistingGraduate($duplicate, $validatedData, $index);
                     $this->statistics['updated_count']++;
+
                     continue;
                 }
             }
@@ -82,18 +89,18 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
                 $graduate = Graduate::create($validatedData);
                 $graduate->updateProfileCompletion();
                 $this->statistics['created_count']++;
-                
+
                 $this->validRows[] = [
                     'row' => $index + 2,
                     'data' => $validatedData,
                     'graduate_id' => $graduate->id,
-                    'action' => 'created'
+                    'action' => 'created',
                 ];
             } catch (\Exception $e) {
                 $this->invalidRows[] = [
                     'row' => $index + 2,
                     'data' => $validatedData,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
                 $this->statistics['skipped_count']++;
             }
@@ -103,10 +110,11 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
     protected function resolveConflict(array $newData, Graduate $existing, int $index): array
     {
         $rowNumber = $index + 2;
-        
+
         // Check if there's a specific resolution for this row
         if (isset($this->options['resolve_conflicts'][$rowNumber])) {
             $resolution = $this->options['resolve_conflicts'][$rowNumber];
+
             return ['action' => $resolution];
         }
 
@@ -123,6 +131,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
                 'conflict_type' => $this->determineConflictType($newData, $existing),
                 'similarity_score' => $this->calculateSimilarity($newData, $existing->toArray()),
             ];
+
             return ['action' => 'skip'];
         }
 
@@ -133,14 +142,14 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
     {
         // Only update fields that have new data
         $updateData = [];
-        
+
         foreach ($newData as $key => $value) {
-            if (!empty($value) && $existing->$key !== $value) {
+            if (! empty($value) && $value !== $existing->$key) {
                 $updateData[$key] = $value;
             }
         }
 
-        if (!empty($updateData)) {
+        if (! empty($updateData)) {
             $existing->update($updateData);
             $existing->updateProfileCompletion();
         }
@@ -149,7 +158,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
             'row' => $index + 2,
             'data' => $newData,
             'graduate_id' => $existing->id,
-            'action' => 'updated'
+            'action' => 'updated',
         ];
     }
 
@@ -158,11 +167,11 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         if ($newData['email'] === $existing->email) {
             return 'duplicate_email';
         }
-        
-        if (!empty($newData['student_id']) && $newData['student_id'] === $existing->student_id) {
+
+        if (! empty($newData['student_id']) && $newData['student_id'] === $existing->student_id) {
             return 'duplicate_student_id';
         }
-        
+
         return 'similar_record';
     }
 
@@ -186,7 +195,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
             'email' => 'required|email|max:255',
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
-            'graduation_year' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'graduation_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y') + 1),
             'course_name' => 'required|string|exists:courses,name',
             'student_id' => 'nullable|string|max:255',
             'gpa' => 'nullable|numeric|min:0|max:4',
@@ -208,8 +217,9 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
             $this->invalidRows[] = [
                 'row' => $index + 2,
                 'data' => $row,
-                'errors' => $validator->errors()->toArray()
+                'errors' => $validator->errors()->toArray(),
             ];
+
             return null;
         }
 
@@ -234,7 +244,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         }
 
         // Check for duplicate student_id if provided
-        if (!empty($data['student_id'])) {
+        if (! empty($data['student_id'])) {
             $existingByStudentId = Graduate::where('student_id', $data['student_id'])->first();
             if ($existingByStudentId) {
                 return $existingByStudentId;
@@ -242,7 +252,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         }
 
         // Check for potential duplicates by name and graduation year
-        $potentialDuplicates = Graduate::where('name', 'LIKE', '%' . $data['name'] . '%')
+        $potentialDuplicates = Graduate::where('name', 'LIKE', '%'.$data['name'].'%')
             ->where('graduation_year', $data['graduation_year'])
             ->get();
 
@@ -284,7 +294,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         }
 
         // Compare phone if available
-        if (!empty($newData['phone']) && !empty($existingData['phone'])) {
+        if (! empty($newData['phone']) && ! empty($existingData['phone'])) {
             $phoneScore = $this->stringSimilarity($newData['phone'], $existingData['phone']);
             $score += $phoneScore;
             $totalFields += 1;
@@ -297,21 +307,26 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
     {
         $str1 = strtolower(trim($str1));
         $str2 = strtolower(trim($str2));
-        
-        if ($str1 === $str2) return 1.0;
-        
+
+        if ($str1 === $str2) {
+            return 1.0;
+        }
+
         // Use Levenshtein distance for similarity
         $maxLen = max(strlen($str1), strlen($str2));
-        if ($maxLen === 0) return 1.0;
-        
+        if ($maxLen === 0) {
+            return 1.0;
+        }
+
         $distance = levenshtein($str1, $str2);
+
         return 1 - ($distance / $maxLen);
     }
 
     protected function processComplexFields(array $data): array
     {
         // Process skills
-        if (!empty($data['skills'])) {
+        if (! empty($data['skills'])) {
             $skills = array_map('trim', explode(',', $data['skills']));
             $data['skills'] = array_filter($skills);
         } else {
@@ -319,23 +334,23 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         }
 
         // Process certifications
-        if (!empty($data['certifications'])) {
+        if (! empty($data['certifications'])) {
             $certifications = array_map('trim', explode(';', $data['certifications']));
             $processedCertifications = [];
-            
+
             foreach ($certifications as $cert) {
                 if (strpos($cert, '|') !== false) {
                     $parts = explode('|', $cert);
                     $processedCertifications[] = [
                         'name' => trim($parts[0]),
                         'issuer' => isset($parts[1]) ? trim($parts[1]) : '',
-                        'date_obtained' => isset($parts[2]) ? trim($parts[2]) : ''
+                        'date_obtained' => isset($parts[2]) ? trim($parts[2]) : '',
                     ];
                 } else {
                     $processedCertifications[] = [
                         'name' => trim($cert),
                         'issuer' => '',
-                        'date_obtained' => ''
+                        'date_obtained' => '',
                     ];
                 }
             }
@@ -363,7 +378,7 @@ class GraduatesImport implements ToCollection, WithHeadingRow, WithValidation, S
         return [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'graduation_year' => 'required|digits:4|integer|min:1900|max:' . (date('Y') + 1),
+            'graduation_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y') + 1),
             'course_name' => 'required|string',
             'employment_status' => 'required|in:unemployed,employed,self_employed,further_studies,other',
         ];

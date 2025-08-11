@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
+use App\Jobs\ProcessAchievementCelebrationJob;
 use App\Models\Achievement;
-use App\Models\User;
-use App\Models\UserAchievement;
 use App\Models\AchievementCelebration;
 use App\Models\Post;
-use App\Jobs\ProcessAchievementCelebrationJob;
+use App\Models\User;
+use App\Models\UserAchievement;
 use App\Notifications\AchievementEarnedNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -20,10 +20,10 @@ class AchievementService
     public function checkAndAwardAchievements(User $user): array
     {
         $newAchievements = [];
-        
+
         $achievements = Achievement::active()
-                                 ->autoAwarded()
-                                 ->get();
+            ->autoAwarded()
+            ->get();
 
         foreach ($achievements as $achievement) {
             if ($this->shouldAwardAchievement($user, $achievement)) {
@@ -65,10 +65,10 @@ class AchievementService
                 'achievement_id' => $achievement->id,
                 'earned_at' => now(),
                 'metadata' => $metadata,
-                'is_featured' => $achievement->rarity === Achievement::RARITY_RARE || 
-                               $achievement->rarity === Achievement::RARITY_EPIC || 
+                'is_featured' => $achievement->rarity === Achievement::RARITY_RARE ||
+                               $achievement->rarity === Achievement::RARITY_EPIC ||
                                $achievement->rarity === Achievement::RARITY_LEGENDARY,
-                'is_notified' => false
+                'is_notified' => false,
             ]);
 
             // Create automatic celebration
@@ -85,7 +85,7 @@ class AchievementService
             Log::info('Achievement awarded', [
                 'user_id' => $user->id,
                 'achievement_id' => $achievement->id,
-                'achievement_name' => $achievement->name
+                'achievement_name' => $achievement->name,
             ]);
 
             return $userAchievement;
@@ -95,8 +95,9 @@ class AchievementService
             Log::error('Failed to award achievement', [
                 'user_id' => $user->id,
                 'achievement_id' => $achievement->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -111,7 +112,7 @@ class AchievementService
         return $userAchievement->createCelebration($type, $message, [
             'achievement_rarity' => $userAchievement->achievement->rarity,
             'achievement_category' => $userAchievement->achievement->category,
-            'points_awarded' => $userAchievement->achievement->points
+            'points_awarded' => $userAchievement->achievement->points,
         ]);
     }
 
@@ -127,31 +128,32 @@ class AchievementService
             'career' => [
                 "🎉 {$user->name} just unlocked the '{$achievement->name}' achievement! Their career journey continues to inspire us all.",
                 "👏 Congratulations to {$user->name} for earning the '{$achievement->name}' badge! Another milestone in their professional growth.",
-                "🌟 {$user->name} has achieved '{$achievement->name}'! Their dedication to career excellence is truly remarkable."
+                "🌟 {$user->name} has achieved '{$achievement->name}'! Their dedication to career excellence is truly remarkable.",
             ],
             'education' => [
                 "📚 {$user->name} just earned the '{$achievement->name}' achievement! Continuous learning at its finest.",
                 "🎓 Kudos to {$user->name} for unlocking '{$achievement->name}'! Education never stops paying dividends.",
-                "💡 {$user->name} has achieved '{$achievement->name}'! Their commitment to learning is inspiring."
+                "💡 {$user->name} has achieved '{$achievement->name}'! Their commitment to learning is inspiring.",
             ],
             'community' => [
                 "🤝 {$user->name} just earned the '{$achievement->name}' achievement! Thank you for being such an active community member.",
                 "🌍 Congratulations to {$user->name} for achieving '{$achievement->name}'! Community engagement at its best.",
-                "💪 {$user->name} has unlocked '{$achievement->name}'! Their contributions make our community stronger."
+                "💪 {$user->name} has unlocked '{$achievement->name}'! Their contributions make our community stronger.",
             ],
             'milestone' => [
                 "🏆 {$user->name} just reached a major milestone with the '{$achievement->name}' achievement!",
                 "🎯 Congratulations to {$user->name} for earning '{$achievement->name}'! Another significant milestone achieved.",
-                "⭐ {$user->name} has achieved '{$achievement->name}'! Celebrating this important milestone with them."
+                "⭐ {$user->name} has achieved '{$achievement->name}'! Celebrating this important milestone with them.",
             ],
             'special' => [
                 "✨ {$user->name} just unlocked the rare '{$achievement->name}' achievement! This is something truly special.",
                 "🎊 Congratulations to {$user->name} for earning the exclusive '{$achievement->name}' badge!",
-                "🌟 {$user->name} has achieved the coveted '{$achievement->name}'! This is a remarkable accomplishment."
-            ]
+                "🌟 {$user->name} has achieved the coveted '{$achievement->name}'! This is a remarkable accomplishment.",
+            ],
         ];
 
         $categoryMessages = $messages[$achievement->category] ?? $messages['milestone'];
+
         return $categoryMessages[array_rand($categoryMessages)];
     }
 
@@ -164,20 +166,20 @@ class AchievementService
         $achievement = $celebration->achievement;
 
         $content = $celebration->message;
-        
+
         // Add achievement details
         $content .= "\n\n🏆 Achievement: {$achievement->name}";
         $content .= "\n📝 {$achievement->description}";
-        
+
         if ($achievement->rarity !== Achievement::RARITY_COMMON) {
-            $rarityEmoji = match($achievement->rarity) {
+            $rarityEmoji = match ($achievement->rarity) {
                 Achievement::RARITY_UNCOMMON => '🥉',
                 Achievement::RARITY_RARE => '🥈',
                 Achievement::RARITY_EPIC => '🥇',
                 Achievement::RARITY_LEGENDARY => '💎',
                 default => '🏅'
             };
-            $content .= "\n{$rarityEmoji} Rarity: " . ucfirst($achievement->rarity);
+            $content .= "\n{$rarityEmoji} Rarity: ".ucfirst($achievement->rarity);
         }
 
         $post = Post::create([
@@ -189,8 +191,8 @@ class AchievementService
                 'achievement_id' => $achievement->id,
                 'user_achievement_id' => $celebration->user_achievement_id,
                 'celebration_id' => $celebration->id,
-                'is_achievement_post' => true
-            ]
+                'is_achievement_post' => true,
+            ],
         ]);
 
         // Update celebration with post reference
@@ -205,33 +207,33 @@ class AchievementService
     public function getUserAchievementStats(User $user): array
     {
         $achievements = $user->userAchievements()->with('achievement')->get();
-        
+
         $stats = [
             'total_achievements' => $achievements->count(),
-            'total_points' => $achievements->sum(fn($ua) => $ua->achievement->points),
+            'total_points' => $achievements->sum(fn ($ua) => $ua->achievement->points),
             'by_category' => [],
             'by_rarity' => [],
             'recent_achievements' => $achievements->sortByDesc('earned_at')->take(5)->values(),
-            'featured_achievements' => $achievements->where('is_featured', true)->values()
+            'featured_achievements' => $achievements->where('is_featured', true)->values(),
         ];
 
         // Group by category
         foreach (Achievement::getCategories() as $key => $label) {
-            $categoryAchievements = $achievements->filter(fn($ua) => $ua->achievement->category === $key);
+            $categoryAchievements = $achievements->filter(fn ($ua) => $ua->achievement->category === $key);
             $stats['by_category'][$key] = [
                 'label' => $label,
                 'count' => $categoryAchievements->count(),
-                'points' => $categoryAchievements->sum(fn($ua) => $ua->achievement->points)
+                'points' => $categoryAchievements->sum(fn ($ua) => $ua->achievement->points),
             ];
         }
 
         // Group by rarity
         foreach (Achievement::getRarities() as $key => $label) {
-            $rarityAchievements = $achievements->filter(fn($ua) => $ua->achievement->rarity === $key);
+            $rarityAchievements = $achievements->filter(fn ($ua) => $ua->achievement->rarity === $key);
             $stats['by_rarity'][$key] = [
                 'label' => $label,
                 'count' => $rarityAchievements->count(),
-                'points' => $rarityAchievements->sum(fn($ua) => $ua->achievement->points)
+                'points' => $rarityAchievements->sum(fn ($ua) => $ua->achievement->points),
             ];
         }
 
@@ -244,15 +246,15 @@ class AchievementService
     public function getAchievementLeaderboard(int $limit = 10): array
     {
         $topUsers = User::select('users.*')
-                       ->selectRaw('COUNT(user_achievements.id) as achievement_count')
-                       ->selectRaw('SUM(achievements.points) as total_points')
-                       ->leftJoin('user_achievements', 'users.id', '=', 'user_achievements.user_id')
-                       ->leftJoin('achievements', 'user_achievements.achievement_id', '=', 'achievements.id')
-                       ->groupBy('users.id')
-                       ->orderByDesc('total_points')
-                       ->orderByDesc('achievement_count')
-                       ->limit($limit)
-                       ->get();
+            ->selectRaw('COUNT(user_achievements.id) as achievement_count')
+            ->selectRaw('SUM(achievements.points) as total_points')
+            ->leftJoin('user_achievements', 'users.id', '=', 'user_achievements.user_id')
+            ->leftJoin('achievements', 'user_achievements.achievement_id', '=', 'achievements.id')
+            ->groupBy('users.id')
+            ->orderByDesc('total_points')
+            ->orderByDesc('achievement_count')
+            ->limit($limit)
+            ->get();
 
         return $topUsers->map(function ($user) {
             return [
@@ -260,10 +262,10 @@ class AchievementService
                 'achievement_count' => $user->achievement_count ?? 0,
                 'total_points' => $user->total_points ?? 0,
                 'recent_achievements' => $user->userAchievements()
-                                            ->with('achievement')
-                                            ->latest('earned_at')
-                                            ->limit(3)
-                                            ->get()
+                    ->with('achievement')
+                    ->latest('earned_at')
+                    ->limit(3)
+                    ->get(),
             ];
         })->toArray();
     }
@@ -293,10 +295,10 @@ class AchievementService
             DB::beginTransaction();
 
             $userAchievement = $user->userAchievements()
-                                  ->where('achievement_id', $achievement->id)
-                                  ->first();
+                ->where('achievement_id', $achievement->id)
+                ->first();
 
-            if (!$userAchievement) {
+            if (! $userAchievement) {
                 return false;
             }
 
@@ -314,7 +316,7 @@ class AchievementService
             Log::info('Achievement revoked', [
                 'user_id' => $user->id,
                 'achievement_id' => $achievement->id,
-                'achievement_name' => $achievement->name
+                'achievement_name' => $achievement->name,
             ]);
 
             return true;
@@ -324,8 +326,9 @@ class AchievementService
             Log::error('Failed to revoke achievement', [
                 'user_id' => $user->id,
                 'achievement_id' => $achievement->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }

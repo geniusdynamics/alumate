@@ -14,6 +14,7 @@ class GroupJoinRequestNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected Group $group;
+
     protected User $requester;
 
     /**

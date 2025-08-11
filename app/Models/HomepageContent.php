@@ -73,7 +73,7 @@ class HomepageContent extends Model
     /**
      * Create a new version when content is updated
      */
-    public function createVersion(string $changeNotes = null): HomepageContentVersion
+    public function createVersion(?string $changeNotes = null): HomepageContentVersion
     {
         $latestVersion = $this->versions()->first();
         $versionNumber = $latestVersion ? $latestVersion->version_number + 1 : 1;
@@ -90,7 +90,7 @@ class HomepageContent extends Model
     /**
      * Request approval for this content
      */
-    public function requestApproval(string $notes = null): HomepageContentApproval
+    public function requestApproval(?string $notes = null): HomepageContentApproval
     {
         return $this->approvals()->create([
             'requested_by' => auth()->id(),
@@ -103,7 +103,7 @@ class HomepageContent extends Model
     /**
      * Approve this content
      */
-    public function approve(int $reviewerId, string $notes = null): void
+    public function approve(int $reviewerId, ?string $notes = null): void
     {
         $this->update([
             'status' => 'approved',
@@ -145,7 +145,7 @@ class HomepageContent extends Model
     {
         return $query->where(function ($q) use ($audience) {
             $q->where('audience', $audience)
-              ->orWhere('audience', 'both');
+                ->orWhere('audience', 'both');
         });
     }
 

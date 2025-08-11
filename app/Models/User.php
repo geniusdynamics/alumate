@@ -3,17 +3,16 @@
 namespace App\Models;
 
 use App\Traits\HasDataTable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, HasDataTable, SoftDeletes;
+    use HasDataTable, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -38,7 +37,7 @@ class User extends Authenticatable
         'timezone',
         'language',
         'status',
-        'user_type'
+        'user_type',
     ];
 
     /**
@@ -149,22 +148,22 @@ class User extends Authenticatable
     public function circles()
     {
         return $this->belongsToMany(Circle::class, 'circle_memberships')
-                    ->withPivot('joined_at', 'status')
-                    ->withTimestamps();
+            ->withPivot('joined_at', 'status')
+            ->withTimestamps();
     }
 
     public function groups()
     {
         return $this->belongsToMany(Group::class, 'group_memberships')
-                    ->withPivot('role', 'joined_at', 'status')
-                    ->withTimestamps();
+            ->withPivot('role', 'joined_at', 'status')
+            ->withTimestamps();
     }
 
     public function connections()
     {
         return $this->belongsToMany(User::class, 'connections', 'user_id', 'connected_user_id')
-                    ->withPivot('status', 'message', 'connected_at')
-                    ->withTimestamps();
+            ->withPivot('status', 'message', 'connected_at')
+            ->withTimestamps();
     }
 
     public function sentConnectionRequests()
@@ -205,8 +204,8 @@ class User extends Authenticatable
     public function achievements()
     {
         return $this->belongsToMany(Achievement::class, 'user_achievements')
-                    ->withPivot(['earned_at', 'metadata', 'is_featured', 'is_notified'])
-                    ->withTimestamps();
+            ->withPivot(['earned_at', 'metadata', 'is_featured', 'is_notified'])
+            ->withTimestamps();
     }
 
     public function userAchievements()
@@ -228,7 +227,7 @@ class User extends Authenticatable
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active')
-                    ->where('is_suspended', false);
+            ->where('is_suspended', false);
     }
 
     public function scopeSuspended(Builder $query): Builder
@@ -266,11 +265,22 @@ class User extends Authenticatable
 
     public function getUserType(): string
     {
-        if ($this->isStudent()) return 'student';
-        if ($this->isAlumni()) return 'alumni';
-        if ($this->isEmployer()) return 'employer';
-        if ($this->hasRole('Institution Admin')) return 'admin';
-        if ($this->hasRole('Super Admin')) return 'super_admin';
+        if ($this->isStudent()) {
+            return 'student';
+        }
+        if ($this->isAlumni()) {
+            return 'alumni';
+        }
+        if ($this->isEmployer()) {
+            return 'employer';
+        }
+        if ($this->hasRole('Institution Admin')) {
+            return 'admin';
+        }
+        if ($this->hasRole('Super Admin')) {
+            return 'super_admin';
+        }
+
         return 'user';
     }
 
@@ -287,7 +297,7 @@ class User extends Authenticatable
     // Accessors & Mutators
     public function getIsActiveAttribute(): bool
     {
-        return $this->status === 'active' && !$this->is_suspended;
+        return $this->status === 'active' && ! $this->is_suspended;
     }
 
     public function getFullNameAttribute(): string
@@ -298,15 +308,15 @@ class User extends Authenticatable
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
+            return asset('storage/'.$this->avatar);
         }
-        
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=7F9CF5&background=EBF4FF';
     }
 
     public function getLastSeenAttribute(): string
     {
-        if (!$this->last_activity_at) {
+        if (! $this->last_activity_at) {
             return 'Never';
         }
 
@@ -319,7 +329,7 @@ class User extends Authenticatable
             return ['text' => 'Suspended', 'color' => 'red'];
         }
 
-        return match($this->status) {
+        return match ($this->status) {
             'active' => ['text' => 'Active', 'color' => 'green'],
             'inactive' => ['text' => 'Inactive', 'color' => 'gray'],
             'pending' => ['text' => 'Pending', 'color' => 'yellow'],
@@ -328,7 +338,7 @@ class User extends Authenticatable
     }
 
     // Methods
-    public function suspend(string $reason = null, $suspendedBy = null): void
+    public function suspend(?string $reason = null, $suspendedBy = null): void
     {
         $this->update([
             'is_suspended' => true,
@@ -385,6 +395,7 @@ class User extends Authenticatable
     public function getPrimaryRole(): ?string
     {
         $role = $this->roles()->first();
+
         return $role ? $role->name : null;
     }
 
@@ -401,7 +412,7 @@ class User extends Authenticatable
 
     public function getPermissionsForInstitution($institutionId): array
     {
-        if (!$this->canAccessInstitution($institutionId)) {
+        if (! $this->canAccessInstitution($institutionId)) {
             return [];
         }
 
@@ -411,8 +422,8 @@ class User extends Authenticatable
     public function getDashboardRoute(): string
     {
         $role = $this->getPrimaryRole();
-        
-        return match($role) {
+
+        return match ($role) {
             'super-admin' => route('super-admin.dashboard'),
             'institution-admin' => route('institution-admin.dashboard'),
             'employer' => route('employer.dashboard'),
@@ -427,16 +438,16 @@ class User extends Authenticatable
         $completedFields = 0;
 
         foreach ($requiredFields as $field) {
-            if (!empty($this->$field)) {
+            if (! empty($this->$field)) {
                 $completedFields++;
             }
         }
 
         // Check profile data
-        if (!empty($this->profile_data)) {
+        if (! empty($this->profile_data)) {
             $profileFields = ['bio', 'location', 'website'];
             foreach ($profileFields as $field) {
-                if (!empty($this->profile_data[$field] ?? null)) {
+                if (! empty($this->profile_data[$field] ?? null)) {
                     $completedFields++;
                 }
             }
@@ -459,7 +470,7 @@ class User extends Authenticatable
     public function getActivitySummary(int $days = 30): array
     {
         $startDate = now()->subDays($days);
-        
+
         return [
             'total_logins' => $this->activityLogs()
                 ->where('action', 'user_login')
@@ -486,16 +497,16 @@ class User extends Authenticatable
         }
 
         $connection = $this->sentConnectionRequests()
-                          ->where('connected_user_id', $otherUser->id)
-                          ->first();
+            ->where('connected_user_id', $otherUser->id)
+            ->first();
 
         if ($connection) {
             return $connection->status;
         }
 
         $receivedConnection = $this->receivedConnectionRequests()
-                                  ->where('user_id', $otherUser->id)
-                                  ->first();
+            ->where('user_id', $otherUser->id)
+            ->first();
 
         if ($receivedConnection) {
             return $receivedConnection->status === 'pending' ? 'received_request' : $receivedConnection->status;
@@ -504,7 +515,7 @@ class User extends Authenticatable
         return 'none';
     }
 
-    public function sendConnectionRequest(User $otherUser, string $message = null): Connection
+    public function sendConnectionRequest(User $otherUser, ?string $message = null): Connection
     {
         return Connection::create([
             'user_id' => $this->id,
@@ -517,9 +528,9 @@ class User extends Authenticatable
     public function acceptConnectionRequest(int $connectionId): bool
     {
         $connection = $this->receivedConnectionRequests()
-                          ->where('id', $connectionId)
-                          ->where('status', 'pending')
-                          ->first();
+            ->where('id', $connectionId)
+            ->where('status', 'pending')
+            ->first();
 
         return $connection ? $connection->accept() : false;
     }
@@ -548,9 +559,9 @@ class User extends Authenticatable
     {
         $myCircleIds = $this->circles()->pluck('circles.id');
         $theirCircleIds = $otherUser->circles()->pluck('circles.id');
-        
+
         $sharedCircleIds = $myCircleIds->intersect($theirCircleIds);
-        
+
         return Circle::whereIn('id', $sharedCircleIds)->get();
     }
 
@@ -558,9 +569,9 @@ class User extends Authenticatable
     {
         $myGroupIds = $this->groups()->pluck('groups.id');
         $theirGroupIds = $otherUser->groups()->pluck('groups.id');
-        
+
         $sharedGroupIds = $myGroupIds->intersect($theirGroupIds);
-        
+
         return Group::whereIn('id', $sharedGroupIds)->get();
     }
 
@@ -600,7 +611,7 @@ class User extends Authenticatable
         // Basic criteria for becoming a mentor
         $hasExperience = $this->careerTimeline()->count() > 0;
         $hasEducation = $this->educations()->count() > 0;
-        
+
         return $hasExperience && $hasEducation;
     }
 }

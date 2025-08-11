@@ -19,7 +19,7 @@ class MonitoringTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->monitoring = new MonitoringService();
+        $this->monitoring = new MonitoringService;
     }
 
     /** @test */
@@ -47,7 +47,7 @@ class MonitoringTest extends TestCase
         Log::shouldReceive('channel')
             ->with('homepage-errors')
             ->andReturnSelf();
-        
+
         Log::shouldReceive('error')
             ->once();
 
@@ -66,10 +66,10 @@ class MonitoringTest extends TestCase
     public function it_can_check_uptime()
     {
         Http::fake([
-            config('app.url') . '/' => Http::response('Homepage content', 200),
-            config('app.url') . '/health-check/homepage' => Http::response(['status' => 'healthy'], 200),
-            config('app.url') . '/api/homepage/statistics' => Http::response(['totalAlumni' => 1000], 200),
-            config('app.url') . '/api/homepage/testimonials' => Http::response([], 200),
+            config('app.url').'/' => Http::response('Homepage content', 200),
+            config('app.url').'/health-check/homepage' => Http::response(['status' => 'healthy'], 200),
+            config('app.url').'/api/homepage/statistics' => Http::response(['totalAlumni' => 1000], 200),
+            config('app.url').'/api/homepage/testimonials' => Http::response([], 200),
         ]);
 
         $results = $this->monitoring->checkUptime();
@@ -92,15 +92,15 @@ class MonitoringTest extends TestCase
     public function it_handles_uptime_check_failures()
     {
         Http::fake([
-            config('app.url') . '/' => Http::response('Server Error', 500),
-            config('app.url') . '/health-check/homepage' => Http::response('Not Found', 404),
+            config('app.url').'/' => Http::response('Server Error', 500),
+            config('app.url').'/health-check/homepage' => Http::response('Not Found', 404),
         ]);
 
         $results = $this->monitoring->checkUptime();
 
         $this->assertEquals('down', $results['homepage']['status']);
         $this->assertEquals(500, $results['homepage']['status_code']);
-        
+
         $this->assertEquals('down', $results['health_check']['status']);
         $this->assertEquals(404, $results['health_check']['status_code']);
     }
@@ -169,7 +169,7 @@ class MonitoringTest extends TestCase
     public function monitoring_dashboard_requires_authentication()
     {
         $response = $this->get('/monitoring/dashboard');
-        
+
         // Should redirect to login or return 401/403
         $this->assertTrue(in_array($response->status(), [302, 401, 403]));
     }
@@ -216,10 +216,10 @@ class MonitoringTest extends TestCase
     public function uptime_check_command_works()
     {
         Http::fake([
-            config('app.url') . '/' => Http::response('Homepage content', 200),
-            config('app.url') . '/health-check/homepage' => Http::response(['status' => 'healthy'], 200),
-            config('app.url') . '/api/homepage/statistics' => Http::response(['totalAlumni' => 1000], 200),
-            config('app.url') . '/api/homepage/testimonials' => Http::response([], 200),
+            config('app.url').'/' => Http::response('Homepage content', 200),
+            config('app.url').'/health-check/homepage' => Http::response(['status' => 'healthy'], 200),
+            config('app.url').'/api/homepage/statistics' => Http::response(['totalAlumni' => 1000], 200),
+            config('app.url').'/api/homepage/testimonials' => Http::response([], 200),
         ]);
 
         $this->artisan('homepage:uptime-check')
@@ -232,10 +232,10 @@ class MonitoringTest extends TestCase
     public function uptime_check_command_detects_failures()
     {
         Http::fake([
-            config('app.url') . '/' => Http::response('Server Error', 500),
-            config('app.url') . '/health-check/homepage' => Http::response('Not Found', 404),
-            config('app.url') . '/api/homepage/statistics' => Http::response([], 200),
-            config('app.url') . '/api/homepage/testimonials' => Http::response([], 200),
+            config('app.url').'/' => Http::response('Server Error', 500),
+            config('app.url').'/health-check/homepage' => Http::response('Not Found', 404),
+            config('app.url').'/api/homepage/statistics' => Http::response([], 200),
+            config('app.url').'/api/homepage/testimonials' => Http::response([], 200),
         ]);
 
         $this->artisan('homepage:uptime-check')
@@ -259,12 +259,12 @@ class MonitoringTest extends TestCase
 
         // Query should be fast due to indexes
         $startTime = microtime(true);
-        
+
         $metrics = DB::table('homepage_performance_metrics')
             ->where('metric_type', 'page_load')
             ->where('recorded_at', '>=', now()->subHour())
             ->get();
-            
+
         $queryTime = microtime(true) - $startTime;
 
         $this->assertCount(10, $metrics);
@@ -278,7 +278,7 @@ class MonitoringTest extends TestCase
         $this->actingAs($user);
 
         $response = $this->get('/monitoring/api/error-logs');
-        
+
         // Should return JSON response
         if ($response->status() === 200) {
             $data = $response->json();

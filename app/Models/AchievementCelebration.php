@@ -12,7 +12,9 @@ class AchievementCelebration extends Model
     use HasFactory;
 
     const TYPE_AUTOMATIC = 'automatic';
+
     const TYPE_MANUAL = 'manual';
+
     const TYPE_MILESTONE = 'milestone';
 
     protected $fillable = [
@@ -22,12 +24,12 @@ class AchievementCelebration extends Model
         'message',
         'celebration_data',
         'is_public',
-        'congratulations_count'
+        'congratulations_count',
     ];
 
     protected $casts = [
         'celebration_data' => 'array',
-        'is_public' => 'boolean'
+        'is_public' => 'boolean',
     ];
 
     /**
@@ -108,8 +110,8 @@ class AchievementCelebration extends Model
     public function hasUserCongratulated(User $user): bool
     {
         return $this->congratulations()
-                   ->where('user_id', $user->id)
-                   ->exists();
+            ->where('user_id', $user->id)
+            ->exists();
     }
 
     /**
@@ -123,7 +125,7 @@ class AchievementCelebration extends Model
 
         $congratulation = $this->congratulations()->create([
             'user_id' => $user->id,
-            'message' => $message
+            'message' => $message,
         ]);
 
         $this->incrementCongratulations();
@@ -137,12 +139,13 @@ class AchievementCelebration extends Model
     public function removeCongratulation(User $user): bool
     {
         $congratulation = $this->congratulations()
-                              ->where('user_id', $user->id)
-                              ->first();
+            ->where('user_id', $user->id)
+            ->first();
 
         if ($congratulation) {
             $congratulation->delete();
             $this->decrementCongratulations();
+
             return true;
         }
 

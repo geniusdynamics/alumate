@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('donor_count')->default(0);
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['campaign_id', 'status']);
             $table->index(['user_id']);
             $table->unique(['campaign_id', 'user_id']);

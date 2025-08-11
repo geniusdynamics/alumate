@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
 
 class PersonalizationService
 {
@@ -32,10 +32,18 @@ class PersonalizationService
                     'type' => 'url_param',
                     'value' => $audienceParam,
                     'weight' => 0.8,
-                    'contribution' => 0.8
+                    'contribution' => 0.8,
                 ];
                 $institutionalScore += 0.8;
                 $totalWeight += 0.8;
+            } elseif (! empty($audienceParam) && ! in_array($audienceParam, ['individual', 'institutional', 'admin'])) {
+                // Log malformed audience parameter as warning
+                logger()->warning('Invalid audience parameter in request', [
+                    'audience_param' => $audienceParam,
+                    'user_agent' => $request->userAgent(),
+                    'referrer' => $request->header('referer'),
+                    'ip' => $request->ip(),
+                ]);
             }
         }
 
@@ -43,13 +51,26 @@ class PersonalizationService
         $referrer = $request->header('referer');
         if ($referrer) {
             $referrerHost = parse_url($referrer, PHP_URL_HOST);
+
+            // Validate parsed referrer host
+            if ($referrerHost === false || $referrerHost === null) {
+                logger()->warning('Malformed referrer URL in audience detection', [
+                    'referrer' => $referrer,
+                    'user_agent' => $request->userAgent(),
+                    'ip' => $request->ip(),
+                ]);
+                $referrerHost = ''; // Set to empty to avoid further processing
+            }
+
             $institutionalDomains = ['.edu', '.ac.', 'university', 'college', 'admin'];
-            
+
             $isInstitutional = false;
-            foreach ($institutionalDomains as $domain) {
-                if (str_contains($referrerHost, $domain)) {
-                    $isInstitutional = true;
-                    break;
+            if (! empty($referrerHost)) {
+                foreach ($institutionalDomains as $domain) {
+                    if (str_contains($referrerHost, $domain)) {
+                        $isInstitutional = true;
+                        break;
+                    }
                 }
             }
 
@@ -58,7 +79,7 @@ class PersonalizationService
                     'type' => 'referrer',
                     'value' => $referrerHost,
                     'weight' => 0.6,
-                    'contribution' => 0.6
+                    'contribution' => 0.6,
                 ];
                 $institutionalScore += 0.6;
                 $totalWeight += 0.6;
@@ -74,7 +95,7 @@ class PersonalizationService
                     'type' => 'user_agent',
                     'value' => $indicator,
                     'weight' => 0.3,
-                    'contribution' => 0.3
+                    'contribution' => 0.3,
                 ];
                 $institutionalScore += 0.3;
                 $totalWeight += 0.3;
@@ -86,13 +107,13 @@ class PersonalizationService
         if ($request->has('utm_source')) {
             $utmSource = $request->get('utm_source');
             $institutionalSources = ['university', 'college', 'institution', 'admin', 'conference'];
-            
+
             if (in_array($utmSource, $institutionalSources)) {
                 $factors[] = [
                     'type' => 'utm_source',
                     'value' => $utmSource,
                     'weight' => 0.5,
-                    'contribution' => 0.5
+                    'contribution' => 0.5,
                 ];
                 $institutionalScore += 0.5;
                 $totalWeight += 0.5;
@@ -107,7 +128,7 @@ class PersonalizationService
             'detected_audience' => $detectedAudience,
             'confidence' => $confidence,
             'factors' => $factors,
-            'fallback' => 'individual'
+            'fallback' => 'individual',
         ];
     }
 
@@ -116,18 +137,39 @@ class PersonalizationService
      */
     public function getPersonalizedContent(string $audience, Request $request): array
     {
+        // Validate audience parameter
+        if (! in_array($audience, ['individual', 'institutional'])) {
+            logger()->warning('Invalid audience type in personalization request', [
+                'audience' => $audience,
+                'user_agent' => $request->userAgent(),
+                'ip' => $request->ip(),
+            ]);
+            $audience = 'individual'; // Default to individual for invalid audience
+        }
+
         $context = $this->buildContext($request);
         $cacheKey = $this->generateCacheKey($audience, $context);
 
         return Cache::remember($cacheKey, 1800, function () use ($audience, $context) {
-            $content = $this->homepageService->getPersonalizedContent($audience, $context);
-            
-            // Apply additional personalization layers
-            $content = $this->applyGeographicPersonalization($content, $context);
-            $content = $this->applyTimeBasedPersonalization($content, $context);
-            $content = $this->applyBehavioralPersonalization($content, $context);
+            try {
+                $content = $this->homepageService->getPersonalizedContent($audience, $context);
 
-            return $content;
+                // Apply additional personalization layers
+                $content = $this->applyGeographicPersonalization($content, $context);
+                $content = $this->applyTimeBasedPersonalization($content, $context);
+                $content = $this->applyBehavioralPersonalization($content, $context);
+
+                return $content;
+            } catch (\Exception $e) {
+                logger()->error('Personalized content service call failed', [
+                    'error' => $e->getMessage(),
+                    'audience' => $audience,
+                    'trace' => $e->getTraceAsString(),
+                ]);
+
+                // Return default content structure for graceful degradation
+                return $this->getDefaultContent($audience);
+            }
         });
     }
 
@@ -140,7 +182,7 @@ class PersonalizationService
             'type' => $audience,
             'timestamp' => now()->toISOString(),
             'source' => $source,
-            'session_id' => session()->getId()
+            'session_id' => session()->getId(),
         ];
 
         session(['homepage_audience_preference' => $preference]);
@@ -148,7 +190,7 @@ class PersonalizationService
         // Track the preference change
         $this->homepageService->trackPersonalizationEvent($audience, 'audience_preference_stored', [
             'source' => $source,
-            'session_id' => session()->getId()
+            'session_id' => session()->getId(),
         ]);
 
         return $preference;
@@ -179,7 +221,7 @@ class PersonalizationService
             'timestamp' => now()->toISOString(),
             'session_id' => session()->getId(),
             'locale' => app()->getLocale(),
-            'timezone' => $request->header('X-Timezone', 'UTC')
+            'timezone' => $request->header('X-Timezone', 'UTC'),
         ];
     }
 
@@ -195,7 +237,7 @@ class PersonalizationService
             'hour' => now()->hour, // Cache varies by hour for time-based personalization
         ];
 
-        return 'homepage_personalized_' . md5(serialize($keyData));
+        return 'homepage_personalized_'.md5(serialize($keyData));
     }
 
     /**
@@ -205,9 +247,9 @@ class PersonalizationService
     {
         // This would integrate with a geolocation service
         // For now, we'll use a simple IP-based approach
-        
+
         $timezone = $context['timezone'] ?? 'UTC';
-        
+
         // Adjust content based on timezone/region
         if (str_contains($timezone, 'America')) {
             // North American specific content adjustments
@@ -238,7 +280,7 @@ class PersonalizationService
     private function applyTimeBasedPersonalization(array $content, array $context): array
     {
         $hour = now()->hour;
-        
+
         // Adjust messaging based on time of day
         if ($hour >= 9 && $hour <= 17) {
             // Business hours - professional focus
@@ -269,10 +311,10 @@ class PersonalizationService
     private function applyBehavioralPersonalization(array $content, array $context): array
     {
         $sessionData = session()->all();
-        
+
         // Check if user has visited specific pages before
         $visitedPages = $sessionData['visited_pages'] ?? [];
-        
+
         if (in_array('/jobs', $visitedPages)) {
             // User is interested in jobs - emphasize job-related features
             if (isset($content['features']['items'])) {
@@ -298,16 +340,16 @@ class PersonalizationService
     /**
      * Get A/B test variant for user
      */
-    public function getABTestVariant(string $testId, string $userId = null): ?array
+    public function getABTestVariant(string $testId, ?string $userId = null): ?array
     {
-        if (!$userId) {
+        if (! $userId) {
             $userId = session()->getId();
         }
 
         // Simple hash-based assignment for consistent variants
-        $hash = crc32($testId . $userId);
+        $hash = crc32($testId.$userId);
         $variants = $this->homepageService->getContentVariations('individual', $testId);
-        
+
         if (empty($variants)) {
             return null;
         }
@@ -320,7 +362,7 @@ class PersonalizationService
             'test_id' => $testId,
             'variant_id' => $selectedVariant,
             'variant_data' => $variants[$selectedVariant],
-            'user_id' => $userId
+            'user_id' => $userId,
         ];
     }
 
@@ -333,14 +375,14 @@ class PersonalizationService
             'test_id' => $testId,
             'variant_id' => $variantId,
             'goal' => $goal,
-            'user_id' => session()->getId()
+            'user_id' => session()->getId(),
         ]);
     }
 
     /**
      * Clear personalization cache
      */
-    public function clearPersonalizationCache(string $audience = null): void
+    public function clearPersonalizationCache(?string $audience = null): void
     {
         if ($audience) {
             Cache::forget("homepage_content_{$audience}_*");
@@ -359,26 +401,50 @@ class PersonalizationService
         return [
             'audience_distribution' => [
                 'individual' => 75,
-                'institutional' => 25
+                'institutional' => 25,
             ],
             'detection_accuracy' => 89,
             'conversion_rates' => [
                 'individual' => [
                     'trial_signup' => 12.5,
-                    'waitlist_join' => 8.3
+                    'waitlist_join' => 8.3,
                 ],
                 'institutional' => [
                     'demo_request' => 18.7,
-                    'case_study_download' => 24.1
-                ]
+                    'case_study_download' => 24.1,
+                ],
             ],
             'ab_test_results' => [
                 'hero_message_test' => [
                     'control' => ['conversion_rate' => 10.2, 'sample_size' => 1000],
                     'variant_a' => ['conversion_rate' => 12.8, 'sample_size' => 1000],
-                    'variant_b' => ['conversion_rate' => 11.5, 'sample_size' => 1000]
-                ]
-            ]
+                    'variant_b' => ['conversion_rate' => 11.5, 'sample_size' => 1000],
+                ],
+            ],
         ];
+    }
+
+    /**
+     * Get default content structure for graceful degradation
+     */
+    private function getDefaultContent(string $audience): array
+    {
+        $baseContent = [
+            'hero' => [
+                'title' => $audience === 'institutional' ? 'Alumni Engagement Platform' : 'Connect with Alumni',
+                'subtitle' => $audience === 'institutional' ? 'Build stronger alumni communities' : 'Advance your career through networking',
+                'cta' => $audience === 'institutional' ? 'Request Demo' : 'Join Network',
+            ],
+            'features' => [],
+            'testimonials' => [],
+            'pricing' => [],
+            'meta' => [
+                'audience' => $audience,
+                'fallback' => true,
+                'generated_at' => now()->toISOString(),
+            ],
+        ];
+
+        return $baseContent;
     }
 }

@@ -7,9 +7,8 @@ use App\Models\MentorProfile;
 use App\Models\MentorshipRequest;
 use App\Models\User;
 use App\Services\MentorshipService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class StudentMentorshipController extends Controller
 {
@@ -25,9 +24,9 @@ class StudentMentorshipController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required to access mentors'
+                'message' => 'Student profile required to access mentors',
             ], 403);
         }
 
@@ -36,7 +35,7 @@ class StudentMentorshipController extends Controller
             'availability',
             'industry',
             'course_id',
-            'graduation_year_range'
+            'graduation_year_range',
         ]);
 
         $mentors = $this->getStudentTailoredMentors($studentProfile, $filters);
@@ -48,7 +47,7 @@ class StudentMentorshipController extends Controller
                 'career_interests' => $studentProfile->career_interests,
                 'course' => $studentProfile->course->name ?? null,
                 'seeking_mentorship' => $studentProfile->seeking_mentorship,
-            ]
+            ],
         ]);
     }
 
@@ -60,15 +59,15 @@ class StudentMentorshipController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
         $criteria = [
             'expertise_areas' => $studentProfile->career_interests ?? [],
-            'availability' => 'medium'
+            'availability' => 'medium',
         ];
 
         $mentors = $this->mentorshipService->matchMentorToMentee($user, $criteria);
@@ -81,7 +80,7 @@ class StudentMentorshipController extends Controller
         return response()->json([
             'success' => true,
             'data' => $alumniMentors->values(),
-            'recommendation_basis' => $criteria
+            'recommendation_basis' => $criteria,
         ]);
     }
 
@@ -93,9 +92,9 @@ class StudentMentorshipController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile || !$studentProfile->canRequestMentorship()) {
+        if (! $studentProfile || ! $studentProfile->canRequestMentorship()) {
             return response()->json([
-                'message' => 'Not authorized to request mentorship'
+                'message' => 'Not authorized to request mentorship',
             ], 403);
         }
 
@@ -106,14 +105,14 @@ class StudentMentorshipController extends Controller
             'duration_months' => 'required|integer|min:1|max:24',
             'preferred_meeting_frequency' => 'required|in:weekly,biweekly,monthly',
             'specific_areas' => 'nullable|array',
-            'specific_areas.*' => 'string|max:100'
+            'specific_areas.*' => 'string|max:100',
         ]);
 
         // Verify the mentor is an alumni
         $mentor = User::findOrFail($validated['mentor_id']);
-        if (!$mentor->hasRole('Graduate')) {
+        if (! $mentor->hasRole('Graduate')) {
             return response()->json([
-                'message' => 'Selected mentor must be an alumni'
+                'message' => 'Selected mentor must be an alumni',
             ], 400);
         }
 
@@ -126,8 +125,8 @@ class StudentMentorshipController extends Controller
                     'expected_graduation' => $studentProfile->expected_graduation_year,
                     'career_interests' => $studentProfile->career_interests,
                     'preferred_meeting_frequency' => $validated['preferred_meeting_frequency'],
-                    'specific_areas' => $validated['specific_areas'] ?? []
-                ]
+                    'specific_areas' => $validated['specific_areas'] ?? [],
+                ],
             ]);
 
             $mentorshipRequest = $this->mentorshipService->createMentorshipRequest(
@@ -139,13 +138,13 @@ class StudentMentorshipController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Mentorship request sent successfully',
-                'request' => $mentorshipRequest->load(['mentor.graduate', 'mentee.studentProfile'])
+                'request' => $mentorshipRequest->load(['mentor.graduate', 'mentee.studentProfile']),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to send mentorship request',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 400);
         }
     }
@@ -158,9 +157,9 @@ class StudentMentorshipController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -183,7 +182,7 @@ class StudentMentorshipController extends Controller
                 'total_requests' => $mentorships->count(),
                 'active_mentorships' => $grouped->get('accepted', collect())->count(),
                 'completed_mentorships' => $grouped->get('completed', collect())->count(),
-            ]
+            ],
         ]);
     }
 
@@ -195,9 +194,9 @@ class StudentMentorshipController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -214,7 +213,7 @@ class StudentMentorshipController extends Controller
         return response()->json([
             'success' => true,
             'data' => $mentors,
-            'course' => $studentProfile->course->name ?? null
+            'course' => $studentProfile->course->name ?? null,
         ]);
     }
 
@@ -226,17 +225,17 @@ class StudentMentorshipController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
         $careerInterest = $request->get('career_interest');
 
-        if (!$careerInterest) {
+        if (! $careerInterest) {
             return response()->json([
-                'message' => 'Career interest parameter required'
+                'message' => 'Career interest parameter required',
             ], 400);
         }
 
@@ -244,10 +243,10 @@ class StudentMentorshipController extends Controller
             ->available()
             ->where(function ($query) use ($careerInterest) {
                 $query->whereJsonContains('expertise_areas', $careerInterest)
-                      ->orWhereHas('user.graduate', function ($q) use ($careerInterest) {
-                          $q->where('current_position', 'like', "%{$careerInterest}%")
+                    ->orWhereHas('user.graduate', function ($q) use ($careerInterest) {
+                        $q->where('current_position', 'like', "%{$careerInterest}%")
                             ->orWhere('industry', 'like', "%{$careerInterest}%");
-                      });
+                    });
             })
             ->whereHas('user', function ($query) {
                 $query->role('Graduate');
@@ -257,7 +256,7 @@ class StudentMentorshipController extends Controller
         return response()->json([
             'success' => true,
             'data' => $mentors,
-            'career_interest' => $careerInterest
+            'career_interest' => $careerInterest,
         ]);
     }
 
@@ -273,7 +272,7 @@ class StudentMentorshipController extends Controller
             });
 
         // Apply filters
-        if (!empty($filters['expertise_areas'])) {
+        if (! empty($filters['expertise_areas'])) {
             $query->where(function ($q) use ($filters) {
                 foreach ($filters['expertise_areas'] as $area) {
                     $q->orWhereJsonContains('expertise_areas', $area);
@@ -281,17 +280,17 @@ class StudentMentorshipController extends Controller
             });
         }
 
-        if (!empty($filters['availability'])) {
+        if (! empty($filters['availability'])) {
             $query->where('availability', $filters['availability']);
         }
 
-        if (!empty($filters['course_id'])) {
+        if (! empty($filters['course_id'])) {
             $query->whereHas('user.graduate', function ($q) use ($filters) {
                 $q->where('course_id', $filters['course_id']);
             });
         }
 
-        if (!empty($filters['industry'])) {
+        if (! empty($filters['industry'])) {
             $query->whereHas('user.graduate', function ($q) use ($filters) {
                 $q->where('industry', 'like', "%{$filters['industry']}%");
             });
@@ -307,7 +306,7 @@ class StudentMentorshipController extends Controller
         }
 
         $query->orderBy('is_active', 'desc')
-              ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc');
 
         return $query->paginate(12);
     }

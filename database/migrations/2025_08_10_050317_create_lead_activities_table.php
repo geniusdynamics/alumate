@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('completed_at')->nullable();
             $table->foreignId('created_by')->constrained('users');
             $table->timestamps();
-            
+
             $table->index(['lead_id', 'type']);
             $table->index(['created_by', 'created_at']);
             $table->index(['scheduled_at']);

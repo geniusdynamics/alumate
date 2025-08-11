@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class BrandedAppsApiTest extends TestCase
 {
@@ -15,97 +15,97 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'featured_apps' => [
-                            '*' => [
-                                'id',
-                                'institution_name',
-                                'institution_type',
-                                'logo',
-                                'app_icon',
-                                'app_store_url',
-                                'play_store_url',
-                                'screenshots' => [
-                                    '*' => [
-                                        'id',
-                                        'url',
-                                        'title',
-                                        'description',
-                                        'device',
-                                        'category'
-                                    ]
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'featured_apps' => [
+                        '*' => [
+                            'id',
+                            'institution_name',
+                            'institution_type',
+                            'logo',
+                            'app_icon',
+                            'app_store_url',
+                            'play_store_url',
+                            'screenshots' => [
+                                '*' => [
+                                    'id',
+                                    'url',
+                                    'title',
+                                    'description',
+                                    'device',
+                                    'category',
                                 ],
-                                'customizations' => [
-                                    '*' => [
-                                        'category',
-                                        'name',
-                                        'description',
-                                        'implemented',
-                                        'complexity'
-                                    ]
+                            ],
+                            'customizations' => [
+                                '*' => [
+                                    'category',
+                                    'name',
+                                    'description',
+                                    'implemented',
+                                    'complexity',
                                 ],
-                                'user_count',
-                                'engagement_stats' => [
-                                    '*' => [
-                                        'metric',
-                                        'value',
-                                        'unit',
-                                        'trend',
-                                        'period'
-                                    ]
+                            ],
+                            'user_count',
+                            'engagement_stats' => [
+                                '*' => [
+                                    'metric',
+                                    'value',
+                                    'unit',
+                                    'trend',
+                                    'period',
                                 ],
-                                'launch_date',
-                                'featured'
-                            ]
+                            ],
+                            'launch_date',
+                            'featured',
                         ],
-                        'customization_options' => [
-                            '*' => [
-                                'id',
-                                'category',
-                                'name',
-                                'description',
-                                'options' => [
-                                    '*' => [
-                                        'id',
-                                        'name',
-                                        'description',
-                                        'type',
-                                        'required'
-                                    ]
-                                ],
-                                'examples',
-                                'level'
-                            ]
-                        ],
-                        'app_store_integration',
-                        'development_timeline' => [
-                            'phases' => [
+                    ],
+                    'customization_options' => [
+                        '*' => [
+                            'id',
+                            'category',
+                            'name',
+                            'description',
+                            'options' => [
                                 '*' => [
                                     'id',
                                     'name',
                                     'description',
-                                    'duration',
-                                    'deliverables',
-                                    'dependencies',
-                                    'milestones' => [
-                                        '*' => [
-                                            'id',
-                                            'name',
-                                            'description',
-                                            'due_date',
-                                            'status'
-                                        ]
-                                    ]
-                                ]
+                                    'type',
+                                    'required',
+                                ],
                             ],
-                            'total_duration',
-                            'estimated_cost',
-                            'maintenance_cost'
-                        ]
-                    ]
-                ]);
+                            'examples',
+                            'level',
+                        ],
+                    ],
+                    'app_store_integration',
+                    'development_timeline' => [
+                        'phases' => [
+                            '*' => [
+                                'id',
+                                'name',
+                                'description',
+                                'duration',
+                                'deliverables',
+                                'dependencies',
+                                'milestones' => [
+                                    '*' => [
+                                        'id',
+                                        'name',
+                                        'description',
+                                        'due_date',
+                                        'status',
+                                    ],
+                                ],
+                            ],
+                        ],
+                        'total_duration',
+                        'estimated_cost',
+                        'maintenance_cost',
+                    ],
+                ],
+            ]);
 
         $this->assertTrue($response->json('success'));
     }
@@ -116,7 +116,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $featuredApps = $data['featured_apps'];
 
@@ -147,7 +147,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $customizationOptions = $data['customization_options'];
 
@@ -171,7 +171,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $appStoreIntegration = $data['app_store_integration'];
 
@@ -184,7 +184,7 @@ class BrandedAppsApiTest extends TestCase
             'white_label',
             'institution_branding',
             'review_management',
-            'analytics_integration'
+            'analytics_integration',
         ];
 
         foreach ($expectedKeys as $key) {
@@ -199,7 +199,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $developmentTimeline = $data['development_timeline'];
 
@@ -235,7 +235,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $featuredApps = $data['featured_apps'];
 
@@ -263,7 +263,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $featuredApps = $data['featured_apps'];
 
@@ -290,7 +290,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $featuredApps = $data['featured_apps'];
 
@@ -317,16 +317,16 @@ class BrandedAppsApiTest extends TestCase
         // Mock a service that throws an exception
         $this->mock(\App\Services\HomepageService::class, function ($mock) {
             $mock->shouldReceive('getBrandedAppsData')
-                 ->andThrow(new \Exception('Service unavailable'));
+                ->andThrow(new \Exception('Service unavailable'));
         });
 
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(500)
-                ->assertJson([
-                    'success' => false,
-                    'message' => 'Failed to fetch branded apps data'
-                ]);
+            ->assertJson([
+                'success' => false,
+                'message' => 'Failed to fetch branded apps data',
+            ]);
     }
 
     /** @test */
@@ -353,7 +353,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $featuredApps = $data['featured_apps'];
 
@@ -361,12 +361,12 @@ class BrandedAppsApiTest extends TestCase
         $hasPlayStoreUrl = false;
 
         foreach ($featuredApps as $app) {
-            if (isset($app['app_store_url']) && !empty($app['app_store_url'])) {
+            if (isset($app['app_store_url']) && ! empty($app['app_store_url'])) {
                 $hasAppStoreUrl = true;
                 $this->assertStringContainsString('apps.apple.com', $app['app_store_url']);
             }
-            
-            if (isset($app['play_store_url']) && !empty($app['play_store_url'])) {
+
+            if (isset($app['play_store_url']) && ! empty($app['play_store_url'])) {
                 $hasPlayStoreUrl = true;
                 $this->assertStringContainsString('play.google.com', $app['play_store_url']);
             }
@@ -382,7 +382,7 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $featuredApps = $data['featured_apps'];
 
@@ -400,22 +400,22 @@ class BrandedAppsApiTest extends TestCase
         $response = $this->getJson('/api/homepage/branded-apps');
 
         $response->assertStatus(200);
-        
+
         $data = $response->json('data');
         $featuredApps = $data['featured_apps'];
 
         foreach ($featuredApps as $app) {
             $this->assertArrayHasKey('launch_date', $app);
             $this->assertIsString($app['launch_date']);
-            
+
             // Validate date format
             $date = \DateTime::createFromFormat('Y-m-d', $app['launch_date']);
             $this->assertInstanceOf(\DateTime::class, $date);
-            
+
             // Should be a reasonable launch date (not in the future, not too old)
-            $now = new \DateTime();
+            $now = new \DateTime;
             $twoYearsAgo = (clone $now)->modify('-2 years');
-            
+
             $this->assertLessThanOrEqual($now, $date, 'Launch date should not be in the future');
             $this->assertGreaterThanOrEqual($twoYearsAgo, $date, 'Launch date should be within reasonable timeframe');
         }

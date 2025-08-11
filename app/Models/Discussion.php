@@ -130,6 +130,6 @@ class Discussion extends Model
 
     public function canReply()
     {
-        return !$this->is_locked;
+        return ! $this->is_locked;
     }
 }

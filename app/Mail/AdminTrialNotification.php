@@ -19,10 +19,10 @@ class AdminTrialNotification extends Mailable
 
     public function build()
     {
-        return $this->subject('New Trial Signup - ' . $this->trialData['name'])
+        return $this->subject('New Trial Signup - '.$this->trialData['name'])
             ->view('emails.admin-trial-notification')
             ->with([
-                'trialData' => $this->trialData
+                'trialData' => $this->trialData,
             ]);
     }
 }

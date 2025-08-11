@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="homepage-layout">
     <!-- Enhanced SEO Head -->
     <Head>
@@ -40,25 +40,21 @@
       <script type="application/ld+json" v-html="websiteSchema"></script>
       <script type="application/ld+json" v-html="breadcrumbSchema"></script>
     </Head>
-
     <!-- Accessibility enhancements -->
     <div id="skip-links" class="skip-links" aria-label="Skip navigation links">
       <a href="#main-content" class="skip-link">Skip to main content</a>
       <a href="#navigation" class="skip-link">Skip to navigation</a>
       <a href="#footer" class="skip-link">Skip to footer</a>
     </div>
-
     <!-- ARIA live regions for screen reader announcements -->
     <div id="sr-polite" aria-live="polite" aria-atomic="false" class="sr-only"></div>
     <div id="sr-assertive" aria-live="assertive" aria-atomic="false" class="sr-only"></div>
     <div id="sr-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
-
     <!-- Main content with proper semantic structure -->
     <main id="main-content" class="homepage-main" role="main" tabindex="-1">
       <h1 class="sr-only">{{ pageTitle }}</h1>
       <slot />
     </main>
-
     <!-- Enhanced footer with proper navigation -->
     <footer id="footer" class="homepage-footer" role="contentinfo">
       <div class="homepage-container-inner">
@@ -80,27 +76,22 @@
     </footer>
   </div>
 </template>
-
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import { accessibilityService } from '@/services/AccessibilityService'
 import { seoService } from '@/services/SEOService'
-
 interface Props {
   title?: string
   description?: string
   keywords?: string
 }
-
 const props = withDefaults(defineProps<Props>(), {
   title: 'Connect with Your Alumni Network - Professional Networking Platform',
   description: 'Join thousands of alumni advancing their careers through meaningful connections, mentorship, and professional opportunities.',
   keywords: 'alumni network, professional networking, career advancement, mentorship'
 })
-
 const currentYear = computed(() => new Date().getFullYear())
-
 // SEO computed properties
 const pageTitle = computed(() => props.title)
 const pageDescription = computed(() => props.description)
@@ -111,10 +102,8 @@ const canonicalUrl = computed(() => {
   }
   return 'https://alumniplatform.com'
 })
-
 const ogImage = computed(() => 'https://alumniplatform.com/images/og-homepage.jpg')
 const twitterImage = computed(() => 'https://alumniplatform.com/images/twitter-homepage.jpg')
-
 // Structured Data
 const organizationSchema = computed(() => JSON.stringify({
   '@context': 'https://schema.org',
@@ -135,7 +124,6 @@ const organizationSchema = computed(() => JSON.stringify({
     email: 'support@alumniplatform.com'
   }
 }, null, 2))
-
 const websiteSchema = computed(() => JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
@@ -151,7 +139,6 @@ const websiteSchema = computed(() => JSON.stringify({
     'query-input': 'required name=search_term_string'
   }
 }, null, 2))
-
 const breadcrumbSchema = computed(() => JSON.stringify({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -164,7 +151,6 @@ const breadcrumbSchema = computed(() => JSON.stringify({
     }
   ]
 }, null, 2))
-
 onMounted(() => {
   // Initialize accessibility features
   accessibilityService.announce('Alumni Platform homepage loaded', 'polite')
@@ -200,53 +186,39 @@ onMounted(() => {
     }
   }, 1000)
 })
-
 onUnmounted(() => {
   // Cleanup accessibility features
   accessibilityService.cleanup()
   seoService.clearStructuredData()
 })
-
-const pageTitle = computed(() => props.title)
-const pageDescription = computed(() => props.description)
-const pageKeywords = computed(() => props.keywords)
 </script>
-
 <style scoped>
 .homepage-layout {
   @apply min-h-screen flex flex-col;
 }
-
 .skip-link {
   @apply absolute -top-10 left-4 bg-blue-600 text-white px-4 py-2 rounded;
   @apply focus:top-4 transition-all duration-200 z-50;
 }
-
 .homepage-main {
   @apply flex-1;
 }
-
 .homepage-footer {
   @apply bg-gray-900 text-white py-8;
 }
-
 .footer-content {
   @apply flex flex-col md:flex-row justify-between items-center gap-4;
 }
-
 .footer-links {
   @apply flex gap-6;
 }
-
 .footer-link {
   @apply text-gray-300 hover:text-white transition-colors duration-200;
   @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900;
 }
-
 .footer-copyright {
   @apply text-gray-400 text-sm;
 }
-
 /* Mobile optimizations */
 @media (max-width: 767px) {
   .footer-content {
@@ -257,9 +229,7 @@ const pageKeywords = computed(() => props.keywords)
     @apply flex-wrap justify-center gap-4;
   }
 }
-</style></scri
-pt>
-
+</style>
 <style scoped>
 /* Accessibility styles */
 .sr-only {
@@ -273,14 +243,12 @@ pt>
   white-space: nowrap !important;
   border: 0 !important;
 }
-
 .skip-links {
   position: absolute;
   top: -40px;
   left: 6px;
   z-index: 1000;
 }
-
 .skip-link {
   position: absolute;
   left: -10000px;
@@ -297,7 +265,6 @@ pt>
   font-size: 14px;
   transition: all 0.2s ease;
 }
-
 .skip-link:focus {
   position: absolute;
   left: 6px;
@@ -309,23 +276,19 @@ pt>
   outline: 2px solid #4f46e5;
   outline-offset: 2px;
 }
-
 /* Layout styles */
 .homepage-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-
 .homepage-main {
   flex: 1;
   outline: none;
 }
-
 .homepage-main:focus {
   outline: none;
 }
-
 /* Footer styles */
 .homepage-footer {
   background-color: #f8fafc;
@@ -333,59 +296,49 @@ pt>
   padding: 2rem 0;
   margin-top: auto;
 }
-
 .homepage-container-inner {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
 }
-
 .footer-content {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   text-align: center;
 }
-
 .footer-navigation {
   margin-bottom: 1rem;
 }
-
 .footer-links {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 2rem;
 }
-
 .footer-link {
   color: #64748b;
   text-decoration: none;
   font-size: 0.875rem;
   transition: color 0.2s ease;
 }
-
 .footer-link:hover,
 .footer-link:focus {
   color: #4f46e5;
   text-decoration: underline;
 }
-
 .footer-link:focus {
   outline: 2px solid #4f46e5;
   outline-offset: 2px;
   border-radius: 2px;
 }
-
 .footer-copyright {
   color: #64748b;
   font-size: 0.875rem;
 }
-
 .footer-copyright p {
   margin: 0;
 }
-
 /* Responsive design */
 @media (min-width: 768px) {
   .footer-content {
@@ -403,7 +356,6 @@ pt>
     justify-content: flex-start;
   }
 }
-
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   .skip-link {
@@ -422,7 +374,6 @@ pt>
     background: #fff;
   }
 }
-
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .skip-link,
@@ -430,14 +381,12 @@ pt>
     transition: none;
   }
 }
-
 /* Focus visible support */
 .skip-link:focus-visible,
 .footer-link:focus-visible {
   outline: 2px solid #4f46e5;
   outline-offset: 2px;
 }
-
 /* Print styles */
 @media print {
   .skip-links,

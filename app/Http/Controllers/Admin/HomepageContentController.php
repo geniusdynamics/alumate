@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\HomepageContentService;
 use App\Models\HomepageContent;
-use Illuminate\Http\Request;
+use App\Services\HomepageContentService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -84,7 +84,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update content: ' . $e->getMessage(),
+                'message' => 'Failed to update content: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -116,7 +116,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update content: ' . $e->getMessage(),
+                'message' => 'Failed to update content: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -144,7 +144,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to request approval: ' . $e->getMessage(),
+                'message' => 'Failed to request approval: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -171,7 +171,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to approve content: ' . $e->getMessage(),
+                'message' => 'Failed to approve content: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -198,7 +198,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to reject content: ' . $e->getMessage(),
+                'message' => 'Failed to reject content: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -218,7 +218,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to publish content: ' . $e->getMessage(),
+                'message' => 'Failed to publish content: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -238,7 +238,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get content history: ' . $e->getMessage(),
+                'message' => 'Failed to get content history: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -266,7 +266,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to revert content: ' . $e->getMessage(),
+                'message' => 'Failed to revert content: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -298,7 +298,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to generate preview: ' . $e->getMessage(),
+                'message' => 'Failed to generate preview: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -321,7 +321,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to export content: ' . $e->getMessage(),
+                'message' => 'Failed to export content: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -351,7 +351,7 @@ class HomepageContentController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to import content: ' . $e->getMessage(),
+                'message' => 'Failed to import content: '.$e->getMessage(),
             ], 500);
         }
     }

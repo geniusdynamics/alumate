@@ -3,14 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
+use App\Models\Graduate;
 use App\Models\User;
 use App\Models\UserOnboarding;
-use App\Models\FeatureUpdate;
-use App\Models\Graduate;
-use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OnboardingController extends Controller
 {
@@ -20,7 +17,7 @@ class OnboardingController extends Controller
     public function getOnboardingState()
     {
         $user = Auth::user();
-        
+
         $onboarding = UserOnboarding::firstOrCreate(
             ['user_id' => $user->id],
             [
@@ -29,16 +26,16 @@ class OnboardingController extends Controller
                 'progress' => [
                     'current_step' => 0,
                     'completed_steps' => [],
-                    'skipped_steps' => []
+                    'skipped_steps' => [],
                 ],
                 'preferences' => [
                     'show_feature_spotlights' => true,
                     'show_profile_completion' => true,
                     'show_whats_new' => true,
-                    'tour_speed' => 'normal'
+                    'tour_speed' => 'normal',
                 ],
                 'explored_features' => [],
-                'dismissed_prompts' => []
+                'dismissed_prompts' => [],
             ]
         );
 
@@ -50,8 +47,8 @@ class OnboardingController extends Controller
                 'progress' => $onboarding->progress,
                 'preferences' => $onboarding->preferences,
                 'explored_features' => $onboarding->explored_features,
-                'dismissed_prompts' => $onboarding->dismissed_prompts
-            ]
+                'dismissed_prompts' => $onboarding->dismissed_prompts,
+            ],
         ]);
     }
 
@@ -62,9 +59,9 @@ class OnboardingController extends Controller
     {
         $user = Auth::user();
         $onboarding = UserOnboarding::where('user_id', $user->id)->first();
-        
+
         $lastViewedAt = $onboarding?->feature_discovery_viewed_at ?? $user->created_at;
-        
+
         $newFeatures = [
             [
                 'id' => 'alumni-map',
@@ -77,16 +74,16 @@ class OnboardingController extends Controller
                 'benefits' => [
                     'Find alumni in your city or travel destinations',
                     'Discover regional alumni groups and events',
-                    'Visualize the global reach of your network'
+                    'Visualize the global reach of your network',
                 ],
                 'howToUse' => [
                     'Navigate to Alumni Directory',
                     'Click on the Map View tab',
                     'Use filters to find specific alumni',
-                    'Click on markers to view profiles'
+                    'Click on markers to view profiles',
                 ],
                 'route' => '/alumni/directory?view=map',
-                'actionText' => 'Explore Map'
+                'actionText' => 'Explore Map',
             ],
             [
                 'id' => 'achievement-celebrations',
@@ -99,16 +96,16 @@ class OnboardingController extends Controller
                 'benefits' => [
                     'Get recognized for your achievements',
                     'Celebrate fellow alumni successes',
-                    'Build stronger community connections'
+                    'Build stronger community connections',
                 ],
                 'howToUse' => [
                     'Update your career timeline',
                     'Share achievements in posts',
                     'Engage with others\' celebrations',
-                    'Set achievement goals'
+                    'Set achievement goals',
                 ],
                 'route' => '/career/timeline',
-                'actionText' => 'View Achievements'
+                'actionText' => 'View Achievements',
             ],
             [
                 'id' => 'smart-job-matching',
@@ -121,16 +118,16 @@ class OnboardingController extends Controller
                 'benefits' => [
                     'Discover hidden job opportunities',
                     'Leverage your alumni network for referrals',
-                    'Get matched with roles that fit your goals'
+                    'Get matched with roles that fit your goals',
                 ],
                 'howToUse' => [
                     'Complete your profile and skills',
                     'Set your job preferences',
                     'Review daily recommendations',
-                    'Request introductions through connections'
+                    'Request introductions through connections',
                 ],
                 'route' => '/jobs/dashboard',
-                'actionText' => 'See Recommendations'
+                'actionText' => 'See Recommendations',
             ],
             [
                 'id' => 'mentorship-hub',
@@ -143,32 +140,39 @@ class OnboardingController extends Controller
                 'benefits' => [
                     'Get guidance from experienced alumni',
                     'Give back by mentoring others',
-                    'Track your mentorship progress'
+                    'Track your mentorship progress',
                 ],
                 'howToUse' => [
                     'Browse available mentors',
                     'Send mentorship requests',
                     'Schedule regular sessions',
-                    'Set learning goals together'
+                    'Set learning goals together',
                 ],
                 'route' => '/career/mentorship-hub',
-                'actionText' => 'Find Mentors'
-            ]
+                'actionText' => 'Find Mentors',
+            ],
         ];
 
         // Filter features based on user's role and preferences
         $userRole = $user->roles->first()?->name ?? 'graduate';
         $filteredFeatures = collect($newFeatures)->filter(function ($feature) use ($userRole) {
             // Show all features to graduates, filter for other roles
-            if ($userRole === 'graduate') return true;
-            if ($userRole === 'employer' && in_array($feature['id'], ['smart-job-matching'])) return true;
-            if ($userRole === 'student' && in_array($feature['id'], ['mentorship-hub', 'achievement-celebrations'])) return true;
+            if ($userRole === 'graduate') {
+                return true;
+            }
+            if ($userRole === 'employer' && in_array($feature['id'], ['smart-job-matching'])) {
+                return true;
+            }
+            if ($userRole === 'student' && in_array($feature['id'], ['mentorship-hub', 'achievement-celebrations'])) {
+                return true;
+            }
+
             return false;
         });
 
         return response()->json([
             'success' => true,
-            'features' => $filteredFeatures->values()
+            'features' => $filteredFeatures->values(),
         ]);
     }
 
@@ -179,12 +183,12 @@ class OnboardingController extends Controller
     {
         $user = Auth::user();
         $graduate = Graduate::where('user_id', $user->id)->first();
-        
+
         $completionData = $this->calculateProfileCompletion($user, $graduate);
-        
+
         return response()->json([
             'success' => true,
-            'completion_data' => $completionData
+            'completion_data' => $completionData,
         ]);
     }
 
@@ -195,9 +199,9 @@ class OnboardingController extends Controller
     {
         $user = Auth::user();
         $onboarding = UserOnboarding::where('user_id', $user->id)->first();
-        
+
         $lastViewedAt = $onboarding?->whats_new_viewed_at ?? $user->created_at;
-        
+
         $updates = [
             [
                 'id' => 'platform-update-2025-01',
@@ -210,15 +214,15 @@ class OnboardingController extends Controller
                     'Real-time post updates and notifications',
                     'Improved reaction system with more options',
                     'Better comment threading and mentions',
-                    'Enhanced post sharing capabilities'
+                    'Enhanced post sharing capabilities',
                 ],
                 'actions' => [
                     [
                         'label' => 'Try It Now',
                         'type' => 'navigate',
-                        'url' => '/social/timeline'
-                    ]
-                ]
+                        'url' => '/social/timeline',
+                    ],
+                ],
             ],
             [
                 'id' => 'platform-update-2025-02',
@@ -231,15 +235,15 @@ class OnboardingController extends Controller
                     'Visual career timeline with milestones',
                     'Goal setting and progress tracking',
                     'Skills assessment and development',
-                    'Mentorship matching improvements'
+                    'Mentorship matching improvements',
                 ],
                 'actions' => [
                     [
                         'label' => 'Update Career',
                         'type' => 'navigate',
-                        'url' => '/career/timeline'
-                    ]
-                ]
+                        'url' => '/career/timeline',
+                    ],
+                ],
             ],
             [
                 'id' => 'security-update-2025-01',
@@ -252,14 +256,14 @@ class OnboardingController extends Controller
                     'Enhanced two-factor authentication',
                     'Improved password security requirements',
                     'Better privacy controls',
-                    'Audit logging for account activities'
-                ]
-            ]
+                    'Audit logging for account activities',
+                ],
+            ],
         ];
 
         return response()->json([
             'success' => true,
-            'updates' => $updates
+            'updates' => $updates,
         ]);
     }
 
@@ -269,7 +273,7 @@ class OnboardingController extends Controller
     public function completeOnboarding(Request $request)
     {
         $user = Auth::user();
-        
+
         UserOnboarding::updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -278,7 +282,7 @@ class OnboardingController extends Controller
                 'progress' => array_merge(
                     UserOnboarding::where('user_id', $user->id)->value('progress') ?? [],
                     ['completed_steps' => $request->input('completed_steps', [])]
-                )
+                ),
             ]
         );
 
@@ -291,12 +295,12 @@ class OnboardingController extends Controller
     public function skipOnboarding()
     {
         $user = Auth::user();
-        
+
         UserOnboarding::updateOrCreate(
             ['user_id' => $user->id],
             [
                 'has_completed_onboarding' => true,
-                'skipped_at' => now()
+                'skipped_at' => now(),
             ]
         );
 
@@ -310,11 +314,11 @@ class OnboardingController extends Controller
     {
         $user = Auth::user();
         $featureId = $request->input('feature_id');
-        
+
         $onboarding = UserOnboarding::where('user_id', $user->id)->first();
         if ($onboarding) {
             $exploredFeatures = $onboarding->explored_features ?? [];
-            if (!in_array($featureId, $exploredFeatures)) {
+            if (! in_array($featureId, $exploredFeatures)) {
                 $exploredFeatures[] = $featureId;
                 $onboarding->update(['explored_features' => $exploredFeatures]);
             }
@@ -329,7 +333,7 @@ class OnboardingController extends Controller
     public function markFeatureDiscoveryViewed()
     {
         $user = Auth::user();
-        
+
         UserOnboarding::updateOrCreate(
             ['user_id' => $user->id],
             ['feature_discovery_viewed_at' => now()]
@@ -345,11 +349,11 @@ class OnboardingController extends Controller
     {
         $user = Auth::user();
         $prompt = $request->input('prompt');
-        
+
         $onboarding = UserOnboarding::where('user_id', $user->id)->first();
         if ($onboarding) {
             $dismissedPrompts = $onboarding->dismissed_prompts ?? [];
-            if (!in_array($prompt, $dismissedPrompts)) {
+            if (! in_array($prompt, $dismissedPrompts)) {
                 $dismissedPrompts[] = $prompt;
                 $onboarding->update(['dismissed_prompts' => $dismissedPrompts]);
             }
@@ -364,7 +368,7 @@ class OnboardingController extends Controller
     public function markWhatsNewViewed()
     {
         $user = Auth::user();
-        
+
         UserOnboarding::updateOrCreate(
             ['user_id' => $user->id],
             ['whats_new_viewed_at' => now()]
@@ -379,7 +383,7 @@ class OnboardingController extends Controller
     public function updatePreferences(Request $request)
     {
         $user = Auth::user();
-        
+
         $onboarding = UserOnboarding::updateOrCreate(
             ['user_id' => $user->id],
             ['preferences' => $request->all()]
@@ -399,50 +403,50 @@ class OnboardingController extends Controller
                 'description' => 'Name, email, and contact details',
                 'icon' => 'contact',
                 'weight' => 15,
-                'completed' => !empty($user->name) && !empty($user->email)
+                'completed' => ! empty($user->name) && ! empty($user->email),
             ],
             'photo' => [
                 'title' => 'Profile Photo',
                 'description' => 'Add a professional photo',
                 'icon' => 'photo',
                 'weight' => 10,
-                'completed' => !empty($user->avatar_url)
+                'completed' => ! empty($user->avatar_url),
             ],
             'bio' => [
                 'title' => 'Professional Bio',
                 'description' => 'Tell others about yourself',
                 'icon' => 'bio',
                 'weight' => 15,
-                'completed' => !empty($graduate?->bio) && strlen($graduate?->bio) > 50
+                'completed' => ! empty($graduate?->bio) && strlen($graduate?->bio) > 50,
             ],
             'education' => [
                 'title' => 'Education History',
                 'description' => 'Add your educational background',
                 'icon' => 'education',
                 'weight' => 20,
-                'completed' => $graduate && $graduate->educations()->count() > 0
+                'completed' => $graduate && $graduate->educations()->count() > 0,
             ],
             'work_experience' => [
                 'title' => 'Work Experience',
                 'description' => 'Add your career history',
                 'icon' => 'work',
                 'weight' => 25,
-                'completed' => $graduate && $graduate->careerTimeline()->count() > 0
+                'completed' => $graduate && $graduate->careerTimeline()->count() > 0,
             ],
             'skills' => [
                 'title' => 'Skills & Expertise',
                 'description' => 'Showcase your abilities',
                 'icon' => 'skills',
                 'weight' => 10,
-                'completed' => $graduate && $graduate->skills()->count() >= 3
+                'completed' => $graduate && $graduate->skills()->count() >= 3,
             ],
             'location' => [
                 'title' => 'Location',
                 'description' => 'Where are you based?',
                 'icon' => 'location',
                 'weight' => 5,
-                'completed' => !empty($graduate?->location)
-            ]
+                'completed' => ! empty($graduate?->location),
+            ],
         ];
 
         $totalWeight = array_sum(array_column($sections, 'weight'));
@@ -451,9 +455,9 @@ class OnboardingController extends Controller
         }, $sections));
 
         $completionPercentage = round(($completedWeight / $totalWeight) * 100);
-        
+
         $missingSections = array_filter($sections, function ($section) {
-            return !$section['completed'];
+            return ! $section['completed'];
         });
 
         return [
@@ -463,7 +467,7 @@ class OnboardingController extends Controller
             }),
             'missing_sections' => array_map(function ($key, $section) {
                 return array_merge($section, ['key' => $key]);
-            }, array_keys($missingSections), $missingSections)
+            }, array_keys($missingSections), $missingSections),
         ];
     }
 }

@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         // Enhanced activity logs table (create only if it doesn't exist)
-        if (!Schema::hasTable('activity_logs')) {
+        if (! Schema::hasTable('activity_logs')) {
             Schema::create('activity_logs', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
@@ -23,7 +23,7 @@ return new class extends Migration
                 $table->string('session_id')->nullable();
                 $table->string('tenant_id')->nullable();
                 $table->timestamps();
-                
+
                 $table->index(['user_id', 'created_at']);
                 $table->index(['action', 'created_at']);
                 $table->index(['model_type', 'model_id']);
@@ -32,10 +32,10 @@ return new class extends Migration
         } else {
             // If table exists, add any missing columns
             Schema::table('activity_logs', function (Blueprint $table) {
-                if (!Schema::hasColumn('activity_logs', 'session_id')) {
+                if (! Schema::hasColumn('activity_logs', 'session_id')) {
                     $table->string('session_id')->nullable()->after('model_id');
                 }
-                if (!Schema::hasColumn('activity_logs', 'tenant_id')) {
+                if (! Schema::hasColumn('activity_logs', 'tenant_id')) {
                     $table->string('tenant_id')->nullable()->after('session_id');
                 }
             });
@@ -55,7 +55,7 @@ return new class extends Migration
             $table->foreignId('resolved_by')->nullable()->constrained('users')->onDelete('set null');
             $table->text('resolution_notes')->nullable();
             $table->timestamps();
-            
+
             $table->index(['event_type', 'created_at']);
             $table->index(['severity', 'resolved']);
             $table->index(['ip_address', 'created_at']);
@@ -74,7 +74,7 @@ return new class extends Migration
             $table->boolean('authorized')->default(true);
             $table->string('authorization_method')->nullable(); // role, permission, policy
             $table->timestamps();
-            
+
             $table->index(['user_id', 'created_at']);
             $table->index(['resource_type', 'resource_id']);
             $table->index(['access_type', 'created_at']);
@@ -91,7 +91,7 @@ return new class extends Migration
             $table->timestamp('last_attempt_at');
             $table->timestamp('blocked_until')->nullable();
             $table->timestamps();
-            
+
             $table->index(['email', 'ip_address']);
             $table->index(['ip_address', 'last_attempt_at']);
         });
@@ -108,7 +108,7 @@ return new class extends Migration
             $table->json('security_flags')->nullable(); // location_change, device_change, etc.
             $table->timestamp('expires_at');
             $table->timestamps();
-            
+
             $table->index(['user_id', 'last_activity']);
             $table->index(['is_suspicious', 'last_activity']);
         });
@@ -124,7 +124,7 @@ return new class extends Migration
             $table->string('backup_method')->nullable(); // email, sms
             $table->string('backup_contact')->nullable();
             $table->timestamps();
-            
+
             $table->unique('user_id');
         });
 
@@ -140,7 +140,7 @@ return new class extends Migration
             $table->text('error_message')->nullable();
             $table->json('metadata')->nullable();
             $table->timestamps();
-            
+
             $table->index(['backup_type', 'status']);
             $table->index(['started_at', 'status']);
         });
@@ -154,7 +154,7 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->timestamp('checked_at');
             $table->timestamps();
-            
+
             $table->index(['component', 'status']);
             $table->index(['checked_at', 'status']);
         });

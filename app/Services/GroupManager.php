@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Models\Group;
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
+use App\Notifications\GroupInvitationNotification;
+use App\Notifications\GroupJoinRequestNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\GroupInvitationNotification;
-use App\Notifications\GroupJoinRequestNotification;
 
 class GroupManager
 {
@@ -53,7 +53,7 @@ class GroupManager
             }
 
             // Check if inviter has permission to invite
-            if (!$this->canInviteToGroup($group, $inviter)) {
+            if (! $this->canInviteToGroup($group, $inviter)) {
                 return false;
             }
 
@@ -72,8 +72,9 @@ class GroupManager
                 'group_id' => $group->id,
                 'user_id' => $user->id,
                 'inviter_id' => $inviter->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -84,7 +85,7 @@ class GroupManager
     public function autoJoinSchoolGroups(User $user): int
     {
         $joinedCount = 0;
-        
+
         // Get user's institution names
         $institutionNames = $user->educations()
             ->pluck('institution_name')
@@ -119,22 +120,23 @@ class GroupManager
     /**
      * Send group invitation to a user.
      */
-    public function sendInvitation(Group $group, User $user, User $inviter, string $message = null): bool
+    public function sendInvitation(Group $group, User $user, User $inviter, ?string $message = null): bool
     {
         try {
             // Create invitation record (you might want to create an Invitation model)
             // For now, we'll send the notification directly
-            
+
             $user->notify(new GroupInvitationNotification($group, $inviter, $message));
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to send group invitation', [
                 'group_id' => $group->id,
                 'user_id' => $user->id,
                 'inviter_id' => $inviter->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -146,7 +148,7 @@ class GroupManager
     {
         try {
             // Check if user can join
-            if (!$group->canUserJoin($user) && $group->privacy !== 'private') {
+            if (! $group->canUserJoin($user) && $group->privacy !== 'private') {
                 return false;
             }
 
@@ -173,8 +175,9 @@ class GroupManager
             Log::error('Failed to process join request', [
                 'group_id' => $group->id,
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -184,7 +187,7 @@ class GroupManager
      */
     public function approveMember(Group $group, User $user, User $approver): bool
     {
-        if (!$group->isAdmin($approver) && !$group->isModerator($approver)) {
+        if (! $group->isAdmin($approver) && ! $group->isModerator($approver)) {
             return false;
         }
 
@@ -196,7 +199,7 @@ class GroupManager
      */
     public function rejectMember(Group $group, User $user, User $rejector): bool
     {
-        if (!$group->isAdmin($rejector) && !$group->isModerator($rejector)) {
+        if (! $group->isAdmin($rejector) && ! $group->isModerator($rejector)) {
             return false;
         }
 
@@ -209,7 +212,7 @@ class GroupManager
     public function removeMember(Group $group, User $user, User $remover): bool
     {
         // Check permissions
-        if (!$this->canRemoveMember($group, $user, $remover)) {
+        if (! $this->canRemoveMember($group, $user, $remover)) {
             return false;
         }
 
@@ -222,7 +225,7 @@ class GroupManager
     public function updateMemberRole(Group $group, User $user, string $newRole, User $updater): bool
     {
         // Check permissions
-        if (!$group->isAdmin($updater)) {
+        if (! $group->isAdmin($updater)) {
             return false;
         }
 
@@ -242,8 +245,9 @@ class GroupManager
                 'group_id' => $group->id,
                 'user_id' => $user->id,
                 'new_role' => $newRole,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -255,7 +259,7 @@ class GroupManager
     {
         // Get the institution name from the tenant
         $tenant = Tenant::find($institutionId);
-        if (!$tenant) {
+        if (! $tenant) {
             return false;
         }
 
@@ -274,7 +278,7 @@ class GroupManager
             ->wherePivot('status', 'active')
             ->first();
 
-        if (!$membership) {
+        if (! $membership) {
             return false;
         }
 
@@ -305,7 +309,7 @@ class GroupManager
         }
 
         // Only admins and moderators can remove others
-        if (!$group->isModerator($remover)) {
+        if (! $group->isModerator($remover)) {
             return false;
         }
 
@@ -319,7 +323,7 @@ class GroupManager
             ->where('user_id', $memberToRemove->id)
             ->first()?->pivot?->role;
 
-        if ($memberRole === 'admin' && !$group->isAdmin($remover)) {
+        if ($memberRole === 'admin' && ! $group->isAdmin($remover)) {
             return false;
         }
 
@@ -363,12 +367,12 @@ class GroupManager
         }
 
         return Group::public()
-            ->where(function ($query) use ($userInstitutionIds, $user) {
+            ->where(function ($query) use ($userInstitutionIds) {
                 // School groups from user's institutions
                 if ($userInstitutionIds->isNotEmpty()) {
                     $query->where(function ($q) use ($userInstitutionIds) {
                         $q->where('type', 'school')
-                          ->whereIn('institution_id', $userInstitutionIds);
+                            ->whereIn('institution_id', $userInstitutionIds);
                     });
                 }
                 // Or interest/professional groups
@@ -376,9 +380,9 @@ class GroupManager
             })
             ->whereNotExists(function ($query) use ($user) {
                 $query->select(DB::raw(1))
-                      ->from('group_memberships')
-                      ->whereColumn('group_memberships.group_id', 'groups.id')
-                      ->where('group_memberships.user_id', $user->id);
+                    ->from('group_memberships')
+                    ->whereColumn('group_memberships.group_id', 'groups.id')
+                    ->where('group_memberships.user_id', $user->id);
             })
             ->orderBy('member_count', 'desc')
             ->limit($limit)

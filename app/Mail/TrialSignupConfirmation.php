@@ -27,7 +27,7 @@ class TrialSignupConfirmation extends Mailable
                 'planName' => ucfirst($this->trialData['plan_id']),
                 'trialEndDate' => $this->trialData['trial_end_date'],
                 'loginUrl' => route('login'),
-                'supportEmail' => 'support@example.com'
+                'supportEmail' => 'support@example.com',
             ]);
     }
 }

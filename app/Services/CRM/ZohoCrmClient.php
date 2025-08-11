@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Http;
 class ZohoCrmClient implements CrmClientInterface
 {
     private array $config;
+
     private string $baseUrl;
+
     private ?string $accessToken = null;
 
     public function __construct(array $config)
@@ -20,7 +22,7 @@ class ZohoCrmClient implements CrmClientInterface
     {
         try {
             $this->authenticate();
-            
+
             $response = $this->makeRequest('GET', '/crm/v2/settings/modules');
 
             return [
@@ -43,15 +45,15 @@ class ZohoCrmClient implements CrmClientInterface
 
         $zohoData = [
             'data' => [
-                $this->mapToZohoFields($data)
-            ]
+                $this->mapToZohoFields($data),
+            ],
         ];
 
         $response = $this->makeRequest('POST', '/crm/v2/Leads', $zohoData);
 
         if ($response['status'] === 201 && isset($response['data']['data'][0])) {
             $leadData = $response['data']['data'][0];
-            
+
             return [
                 'id' => $leadData['details']['id'],
                 'success' => true,
@@ -59,7 +61,7 @@ class ZohoCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to create lead in Zoho CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to create lead in Zoho CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function updateLead(string $crmId, array $data): array
@@ -68,8 +70,8 @@ class ZohoCrmClient implements CrmClientInterface
 
         $zohoData = [
             'data' => [
-                array_merge(['id' => $crmId], $this->mapToZohoFields($data))
-            ]
+                array_merge(['id' => $crmId], $this->mapToZohoFields($data)),
+            ],
         ];
 
         $response = $this->makeRequest('PUT', '/crm/v2/Leads', $zohoData);
@@ -82,7 +84,7 @@ class ZohoCrmClient implements CrmClientInterface
             ];
         }
 
-        throw new \Exception('Failed to update lead in Zoho CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to update lead in Zoho CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function getLead(string $crmId): array
@@ -95,7 +97,7 @@ class ZohoCrmClient implements CrmClientInterface
             return $response['data']['data'][0];
         }
 
-        throw new \Exception('Failed to get lead from Zoho CRM: ' . ($response['error'] ?? 'Unknown error'));
+        throw new \Exception('Failed to get lead from Zoho CRM: '.($response['error'] ?? 'Unknown error'));
     }
 
     public function deleteLead(string $crmId): bool
@@ -121,7 +123,7 @@ class ZohoCrmClient implements CrmClientInterface
         $criteriaString = implode(' and ', $searchCriteria);
 
         $response = $this->makeRequest('GET', '/crm/v2/Leads/search', [
-            'criteria' => $criteriaString
+            'criteria' => $criteriaString,
         ]);
 
         if ($response['status'] === 200) {
@@ -178,7 +180,7 @@ class ZohoCrmClient implements CrmClientInterface
             $data = $response->json();
             $this->accessToken = $data['access_token'];
         } else {
-            throw new \Exception('Failed to refresh Zoho CRM access token: ' . $response->body());
+            throw new \Exception('Failed to refresh Zoho CRM access token: '.$response->body());
         }
     }
 
@@ -186,14 +188,14 @@ class ZohoCrmClient implements CrmClientInterface
     {
         try {
             $request = Http::withHeaders([
-                'Authorization' => 'Zoho-oauthtoken ' . $this->accessToken,
+                'Authorization' => 'Zoho-oauthtoken '.$this->accessToken,
                 'Content-Type' => 'application/json',
             ]);
 
-            if ($method === 'GET' && !empty($data)) {
-                $response = $request->get($this->baseUrl . $endpoint, $data);
+            if ($method === 'GET' && ! empty($data)) {
+                $response = $request->get($this->baseUrl.$endpoint, $data);
             } else {
-                $response = $request->$method($this->baseUrl . $endpoint, $data);
+                $response = $request->$method($this->baseUrl.$endpoint, $data);
             }
 
             return [
@@ -237,4 +239,3 @@ class ZohoCrmClient implements CrmClientInterface
         return $mapped;
     }
 }
-

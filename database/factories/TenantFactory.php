@@ -13,10 +13,10 @@ class TenantFactory extends Factory
     {
         $institutionTypes = ['University', 'College', 'Institute', 'Academy'];
         $institutionType = $this->faker->randomElement($institutionTypes);
-        
+
         return [
             'id' => $this->faker->unique()->slug(),
-            'name' => $this->faker->company . ' ' . $institutionType,
+            'name' => $this->faker->company.' '.$institutionType,
             'address' => $this->faker->address,
             'contact_information' => [
                 'email' => $this->faker->companyEmail,
@@ -36,7 +36,7 @@ class TenantFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'name' => $this->faker->company . ' University',
+                'name' => $this->faker->company.' University',
                 'data' => array_merge($attributes['data'] ?? [], [
                     'type' => 'university',
                 ]),
@@ -48,7 +48,7 @@ class TenantFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'name' => $this->faker->company . ' College',
+                'name' => $this->faker->company.' College',
                 'data' => array_merge($attributes['data'] ?? [], [
                     'type' => 'college',
                 ]),

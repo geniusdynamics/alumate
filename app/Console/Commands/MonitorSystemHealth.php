@@ -2,19 +2,20 @@
 
 namespace App\Console\Commands;
 
-use App\Models\SystemHealthLog;
 use App\Models\SecurityEvent;
+use App\Models\SystemHealthLog;
 use App\Services\SecurityService;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 
 class MonitorSystemHealth extends Command
 {
     protected $signature = 'system:health-check {--alert : Send alerts for critical issues}';
+
     protected $description = 'Monitor system health and log status';
 
     protected $securityService;
@@ -42,10 +43,10 @@ class MonitorSystemHealth extends Command
 
         foreach ($components as $component => $checker) {
             $this->info("Checking {$component}...");
-            
+
             try {
                 $result = call_user_func($checker);
-                
+
                 SystemHealthLog::create([
                     'component' => $component,
                     'status' => $result['status'],
@@ -63,7 +64,7 @@ class MonitorSystemHealth extends Command
             } catch (\Exception $e) {
                 $result = [
                     'status' => 'critical',
-                    'message' => "Health check failed: " . $e->getMessage(),
+                    'message' => 'Health check failed: '.$e->getMessage(),
                     'metrics' => [],
                 ];
 
@@ -81,42 +82,45 @@ class MonitorSystemHealth extends Command
         }
 
         // Send alerts for critical issues
-        if (!empty($criticalIssues) && $this->option('alert')) {
+        if (! empty($criticalIssues) && $this->option('alert')) {
             $this->sendCriticalAlerts($criticalIssues);
         }
 
         $this->info('Health check completed.');
-        
+
         return empty($criticalIssues) ? 0 : 1;
     }
 
     private function checkDatabase()
     {
         $startTime = microtime(true);
-        
+
         try {
             // Test connection
             DB::connection()->getPdo();
-            
+
             // Test query performance
             $queryStart = microtime(true);
             DB::select('SELECT 1');
             $queryTime = (microtime(true) - $queryStart) * 1000;
-            
+
             // Get database size
-            $config = config('database.connections.' . config('database.default'));
+            $config = config('database.connections.'.config('database.default'));
             $dbSize = 0;
-            
+
             if ($config['driver'] === 'mysql') {
                 $result = DB::select("SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS 'size_mb' FROM information_schema.tables WHERE table_schema = ?", [$config['database']]);
                 $dbSize = $result[0]->size_mb ?? 0;
             }
 
             $responseTime = (microtime(true) - $startTime) * 1000;
-            
+
             $status = 'healthy';
-            if ($queryTime > 1000) $status = 'critical';
-            elseif ($queryTime > 500) $status = 'warning';
+            if ($queryTime > 1000) {
+                $status = 'critical';
+            } elseif ($queryTime > 500) {
+                $status = 'warning';
+            }
 
             return [
                 'status' => $status,
@@ -131,7 +135,7 @@ class MonitorSystemHealth extends Command
         } catch (\Exception $e) {
             return [
                 'status' => 'critical',
-                'message' => 'Database connection failed: ' . $e->getMessage(),
+                'message' => 'Database connection failed: '.$e->getMessage(),
                 'metrics' => [],
             ];
         }
@@ -140,22 +144,22 @@ class MonitorSystemHealth extends Command
     private function checkCache()
     {
         $startTime = microtime(true);
-        
+
         try {
-            $testKey = 'health_check_' . time();
-            $testValue = 'test_value_' . rand(1000, 9999);
-            
+            $testKey = 'health_check_'.time();
+            $testValue = 'test_value_'.rand(1000, 9999);
+
             // Test write
             Cache::put($testKey, $testValue, 60);
-            
+
             // Test read
             $retrievedValue = Cache::get($testKey);
-            
+
             // Test delete
             Cache::forget($testKey);
-            
+
             $responseTime = (microtime(true) - $startTime) * 1000;
-            
+
             if ($retrievedValue !== $testValue) {
                 return [
                     'status' => 'critical',
@@ -165,8 +169,12 @@ class MonitorSystemHealth extends Command
             }
 
             $status = 'healthy';
-            if ($responseTime > 500) $status = 'warning';
-            if ($responseTime > 1000) $status = 'critical';
+            if ($responseTime > 500) {
+                $status = 'warning';
+            }
+            if ($responseTime > 1000) {
+                $status = 'critical';
+            }
 
             return [
                 'status' => $status,
@@ -177,7 +185,7 @@ class MonitorSystemHealth extends Command
         } catch (\Exception $e) {
             return [
                 'status' => 'critical',
-                'message' => 'Cache error: ' . $e->getMessage(),
+                'message' => 'Cache error: '.$e->getMessage(),
                 'metrics' => [],
             ];
         }
@@ -186,22 +194,22 @@ class MonitorSystemHealth extends Command
     private function checkStorage()
     {
         $startTime = microtime(true);
-        
+
         try {
-            $testFile = 'health_check_' . time() . '.txt';
+            $testFile = 'health_check_'.time().'.txt';
             $testContent = 'Health check test content';
-            
+
             // Test write
             Storage::put($testFile, $testContent);
-            
+
             // Test read
             $retrievedContent = Storage::get($testFile);
-            
+
             // Test delete
             Storage::delete($testFile);
-            
+
             $responseTime = (microtime(true) - $startTime) * 1000;
-            
+
             if ($retrievedContent !== $testContent) {
                 return [
                     'status' => 'critical',
@@ -211,8 +219,12 @@ class MonitorSystemHealth extends Command
             }
 
             $status = 'healthy';
-            if ($responseTime > 1000) $status = 'warning';
-            if ($responseTime > 2000) $status = 'critical';
+            if ($responseTime > 1000) {
+                $status = 'warning';
+            }
+            if ($responseTime > 2000) {
+                $status = 'critical';
+            }
 
             return [
                 'status' => $status,
@@ -223,7 +235,7 @@ class MonitorSystemHealth extends Command
         } catch (\Exception $e) {
             return [
                 'status' => 'critical',
-                'message' => 'Storage error: ' . $e->getMessage(),
+                'message' => 'Storage error: '.$e->getMessage(),
                 'metrics' => [],
             ];
         }
@@ -234,10 +246,14 @@ class MonitorSystemHealth extends Command
         try {
             $queueSize = Queue::size();
             $failedJobs = DB::table('failed_jobs')->count();
-            
+
             $status = 'healthy';
-            if ($queueSize > 1000) $status = 'warning';
-            if ($queueSize > 5000 || $failedJobs > 100) $status = 'critical';
+            if ($queueSize > 1000) {
+                $status = 'warning';
+            }
+            if ($queueSize > 5000 || $failedJobs > 100) {
+                $status = 'critical';
+            }
 
             return [
                 'status' => $status,
@@ -251,7 +267,7 @@ class MonitorSystemHealth extends Command
         } catch (\Exception $e) {
             return [
                 'status' => 'warning',
-                'message' => 'Queue monitoring unavailable: ' . $e->getMessage(),
+                'message' => 'Queue monitoring unavailable: '.$e->getMessage(),
                 'metrics' => [],
             ];
         }
@@ -264,8 +280,12 @@ class MonitorSystemHealth extends Command
         $memoryPercent = ($memoryUsage / $memoryLimit) * 100;
 
         $status = 'healthy';
-        if ($memoryPercent > 80) $status = 'warning';
-        if ($memoryPercent > 90) $status = 'critical';
+        if ($memoryPercent > 80) {
+            $status = 'warning';
+        }
+        if ($memoryPercent > 90) {
+            $status = 'critical';
+        }
 
         return [
             'status' => $status,
@@ -292,8 +312,12 @@ class MonitorSystemHealth extends Command
         $usedPercent = ($usedBytes / $totalBytes) * 100;
 
         $status = 'healthy';
-        if ($usedPercent > 80) $status = 'warning';
-        if ($usedPercent > 90) $status = 'critical';
+        if ($usedPercent > 80) {
+            $status = 'warning';
+        }
+        if ($usedPercent > 90) {
+            $status = 'critical';
+        }
 
         return [
             'status' => $status,
@@ -334,7 +358,7 @@ class MonitorSystemHealth extends Command
         $this->securityService->logSecurityEvent(
             'system_health_critical',
             SecurityEvent::SEVERITY_CRITICAL,
-            'Critical system health issues detected: ' . implode(', ', $criticalIssues),
+            'Critical system health issues detected: '.implode(', ', $criticalIssues),
             [
                 'components' => $criticalIssues,
                 'timestamp' => now()->toISOString(),
@@ -370,12 +394,12 @@ class MonitorSystemHealth extends Command
 
     private function formatBytes($bytes, $precision = 2)
     {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
 
-        return round($bytes, $precision) . ' ' . $units[$i];
+        return round($bytes, $precision).' '.$units[$i];
     }
 }

@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\User;
 use App\Services\CircleManager;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class GenerateCirclesCommand extends Command
 {
@@ -43,7 +42,7 @@ class GenerateCirclesCommand extends Command
         $dryRun = $this->option('dry-run');
 
         $this->info('Starting circle generation for all users...');
-        
+
         if ($dryRun) {
             $this->warn('DRY RUN MODE - No changes will be made');
         }
@@ -54,6 +53,7 @@ class GenerateCirclesCommand extends Command
 
         if ($totalUsers === 0) {
             $this->warn('No users found. Nothing to process.');
+
             return self::SUCCESS;
         }
 
@@ -70,7 +70,7 @@ class GenerateCirclesCommand extends Command
             ->chunk($batchSize, function ($users) use (&$processedCount, &$circlesCreated, &$errors, $force, $dryRun, $progressBar) {
                 foreach ($users as $user) {
                     try {
-                        if (!$dryRun) {
+                        if (! $dryRun) {
                             if ($force) {
                                 // Remove existing circles and regenerate
                                 $this->circleManager->updateCirclesForUser($user);
@@ -91,7 +91,7 @@ class GenerateCirclesCommand extends Command
                         $processedCount++;
                     } catch (\Exception $e) {
                         $errors++;
-                        $this->error("Error processing user {$user->id}: " . $e->getMessage());
+                        $this->error("Error processing user {$user->id}: ".$e->getMessage());
                     }
 
                     $progressBar->advance();
@@ -113,11 +113,11 @@ class GenerateCirclesCommand extends Command
         );
 
         // Show circle statistics
-        if (!$dryRun) {
+        if (! $dryRun) {
             $this->newLine();
             $this->info('Current circle statistics:');
             $stats = $this->circleManager->getCircleStatistics();
-            
+
             $this->table(
                 ['Statistic', 'Value'],
                 [
@@ -133,7 +133,7 @@ class GenerateCirclesCommand extends Command
         }
 
         // Cleanup empty circles if not in dry run mode
-        if (!$dryRun && !$force) {
+        if (! $dryRun && ! $force) {
             $this->info('Cleaning up empty circles...');
             $deletedCount = $this->circleManager->cleanupEmptyCircles();
             $this->info("Deleted {$deletedCount} empty circles.");
@@ -141,10 +141,12 @@ class GenerateCirclesCommand extends Command
 
         if ($errors > 0) {
             $this->warn("Completed with {$errors} errors. Check the logs for details.");
+
             return self::FAILURE;
         }
 
         $this->info('All done!');
+
         return self::SUCCESS;
     }
 }

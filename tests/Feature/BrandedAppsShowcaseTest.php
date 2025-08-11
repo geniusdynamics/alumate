@@ -2,9 +2,9 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Services\HomepageService;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class BrandedAppsShowcaseTest extends TestCase
 {
@@ -192,10 +192,10 @@ class BrandedAppsShowcaseTest extends TestCase
         $hasPlayStore = false;
 
         foreach ($featuredApps as $app) {
-            if (!empty($app['app_store_url'])) {
+            if (! empty($app['app_store_url'])) {
                 $hasAppStore = true;
             }
-            if (!empty($app['play_store_url'])) {
+            if (! empty($app['play_store_url'])) {
                 $hasPlayStore = true;
             }
         }
@@ -215,7 +215,7 @@ class BrandedAppsShowcaseTest extends TestCase
 
         $expectedCategories = ['branding', 'features', 'integrations', 'analytics'];
         foreach ($expectedCategories as $expectedCategory) {
-            $this->assertContains($expectedCategory, $uniqueCategories, 
+            $this->assertContains($expectedCategory, $uniqueCategories,
                 "Should include {$expectedCategory} customization category");
         }
     }
@@ -265,7 +265,7 @@ class BrandedAppsShowcaseTest extends TestCase
             $this->assertArrayHasKey('milestones', $phase);
             $milestones = $phase['milestones'];
 
-            if (!empty($milestones)) {
+            if (! empty($milestones)) {
                 $firstMilestone = $milestones[0];
                 $this->assertArrayHasKey('id', $firstMilestone);
                 $this->assertArrayHasKey('name', $firstMilestone);

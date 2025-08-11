@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Cache;
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
-    $this->service = new HomepageContentService();
+    $this->service = new HomepageContentService;
 });
 
 test('can get content for audience', function () {
@@ -181,7 +181,7 @@ test('cannot publish unapproved content', function () {
         'status' => 'draft',
     ]);
 
-    expect(fn() => $this->service->publishContent($content->id))
+    expect(fn () => $this->service->publishContent($content->id))
         ->toThrow(Exception::class, 'Content must be approved before publishing');
 });
 
@@ -196,7 +196,7 @@ test('can revert to version', function () {
 
     // Create a version
     $content->createVersion('Initial version');
-    
+
     // Update content
     $content->update(['value' => 'Updated value']);
     $content->createVersion('Updated version');
@@ -247,12 +247,12 @@ test('content caching works', function () {
 
     // First call should cache the result
     $content1 = $this->service->getContent('individual');
-    
+
     // Second call should use cache
     $content2 = $this->service->getContent('individual');
-    
+
     expect($content1->count())->toBe($content2->count());
-    
+
     // Verify cache key exists
     expect(Cache::has('homepage_content_individual_'))->toBeTrue();
 });

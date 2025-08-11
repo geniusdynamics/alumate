@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section class="security-privacy py-16 bg-gray-50">
     <div class="container mx-auto px-4">
       <!-- Section Header -->
@@ -308,7 +308,7 @@
 import { ref } from 'vue'
 import type { SecurityPrivacyProps, SecurityCertification } from '@/types/homepage'
 
-interface Props extends SecurityPrivacyProps {}
+interface Props extends /* @vue-ignore */ SecurityPrivacyProps {}
 
 const props = defineProps<Props>()
 

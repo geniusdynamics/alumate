@@ -3,9 +3,9 @@
 use App\Models\CrmIntegration;
 use App\Models\Lead;
 use App\Models\User;
-use App\Services\CRM\ZohoCrmClient;
 use App\Services\CRM\FrappeCrmClient;
 use App\Services\CRM\TwentyCrmClient;
+use App\Services\CRM\ZohoCrmClient;
 
 uses(Tests\TestCase::class);
 
@@ -20,11 +20,11 @@ test('can create CRM integration for different providers', function () {
     foreach ($providers as $provider) {
         $integration = CrmIntegration::factory()->create([
             'provider' => $provider,
-            'name' => ucfirst($provider) . ' Integration',
+            'name' => ucfirst($provider).' Integration',
         ]);
 
         expect($integration->provider)->toBe($provider);
-        expect($integration->name)->toBe(ucfirst($provider) . ' Integration');
+        expect($integration->name)->toBe(ucfirst($provider).' Integration');
     }
 });
 
@@ -55,7 +55,7 @@ test('throws exception for unsupported provider', function () {
         'provider' => 'unsupported_crm',
     ]);
 
-    expect(fn() => $integration->getApiClient())
+    expect(fn () => $integration->getApiClient())
         ->toThrow(\Exception::class, 'Unsupported CRM provider: unsupported_crm');
 });
 

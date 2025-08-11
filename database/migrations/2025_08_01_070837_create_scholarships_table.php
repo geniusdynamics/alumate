@@ -30,7 +30,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['status', 'application_deadline']);
             $table->index(['creator_id', 'status']);
             $table->index(['institution_id', 'status']);

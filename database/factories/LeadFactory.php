@@ -90,7 +90,7 @@ class LeadFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'lead_type' => 'enterprise',
-            'company' => $this->faker->company() . ' Corp',
+            'company' => $this->faker->company().' Corp',
             'form_data' => array_merge($attributes['form_data'] ?? [], [
                 'company_size' => $this->faker->randomElement(['201-1000', '1000+']),
                 'budget' => $this->faker->randomElement(['50k_100k', '100k_500k', 'over_500k']),

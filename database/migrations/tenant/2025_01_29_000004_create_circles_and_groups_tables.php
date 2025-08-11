@@ -43,15 +43,15 @@ return new class extends Migration
             // Foreign key constraints - only if institutions table exists
             if (Schema::hasTable('institutions')) {
                 $table->foreign('institution_id')
-                      ->references('id')
-                      ->on('institutions')
-                      ->onDelete('cascade');
+                    ->references('id')
+                    ->on('institutions')
+                    ->onDelete('cascade');
             }
-            
+
             $table->foreign('creator_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
 
             // Indexes for performance
             $table->index(['type', 'privacy']);
@@ -72,14 +72,14 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('circle_id')
-                  ->references('id')
-                  ->on('circles')
-                  ->onDelete('cascade');
-            
+                ->references('id')
+                ->on('circles')
+                ->onDelete('cascade');
+
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
 
             // Unique constraint to prevent duplicate memberships
             $table->unique(['circle_id', 'user_id']);
@@ -102,14 +102,14 @@ return new class extends Migration
 
             // Foreign key constraints
             $table->foreign('group_id')
-                  ->references('id')
-                  ->on('groups')
-                  ->onDelete('cascade');
-            
+                ->references('id')
+                ->on('groups')
+                ->onDelete('cascade');
+
             $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
 
             // Unique constraint to prevent duplicate memberships
             $table->unique(['group_id', 'user_id']);

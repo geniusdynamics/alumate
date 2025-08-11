@@ -20,7 +20,7 @@ class TrainPredictionModels extends Command
         $modelType = $this->option('type');
         $force = $this->option('force');
 
-        $this->info("Training predictive analytics models...");
+        $this->info('Training predictive analytics models...');
 
         try {
             if ($modelId) {
@@ -31,10 +31,12 @@ class TrainPredictionModels extends Command
                 $this->trainAllModels($force);
             }
 
-            $this->info("Model training completed successfully!");
+            $this->info('Model training completed successfully!');
+
             return 0;
         } catch (\Exception $e) {
-            $this->error("Failed to train models: " . $e->getMessage());
+            $this->error('Failed to train models: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -42,14 +44,16 @@ class TrainPredictionModels extends Command
     private function trainSpecificModel($modelId, $force)
     {
         $model = PredictionModel::find($modelId);
-        
-        if (!$model) {
+
+        if (! $model) {
             $this->error("Model not found: {$modelId}");
+
             return;
         }
 
-        if (!$force && !$model->needsRetraining()) {
+        if (! $force && ! $model->needsRetraining()) {
             $this->warn("Model {$model->name} does not need retraining. Use --force to retrain anyway.");
+
             return;
         }
 
@@ -59,15 +63,17 @@ class TrainPredictionModels extends Command
     private function trainModelsByType($modelType, $force)
     {
         $models = PredictionModel::where('type', $modelType)->active()->get();
-        
+
         if ($models->isEmpty()) {
             $this->warn("No active models found for type: {$modelType}");
+
             return;
         }
 
         foreach ($models as $model) {
-            if (!$force && !$model->needsRetraining()) {
+            if (! $force && ! $model->needsRetraining()) {
                 $this->line("Skipping {$model->name} - does not need retraining");
+
                 continue;
             }
 
@@ -78,9 +84,10 @@ class TrainPredictionModels extends Command
     private function trainAllModels($force)
     {
         $models = PredictionModel::active()->get();
-        
+
         if ($models->isEmpty()) {
-            $this->warn("No active prediction models found.");
+            $this->warn('No active prediction models found.');
+
             return;
         }
 
@@ -89,7 +96,8 @@ class TrainPredictionModels extends Command
         });
 
         if ($modelsToTrain->isEmpty()) {
-            $this->info("All models are up to date. Use --force to retrain anyway.");
+            $this->info('All models are up to date. Use --force to retrain anyway.');
+
             return;
         }
 
@@ -105,8 +113,8 @@ class TrainPredictionModels extends Command
                 $trained++;
             } catch (\Exception $e) {
                 $failed++;
-                $this->error("Failed to train model {$model->name}: " . $e->getMessage());
-                \Log::error("Model training failed", [
+                $this->error("Failed to train model {$model->name}: ".$e->getMessage());
+                \Log::error('Model training failed', [
                     'model_id' => $model->id,
                     'model_name' => $model->name,
                     'error' => $e->getMessage(),
@@ -119,7 +127,7 @@ class TrainPredictionModels extends Command
         $bar->finish();
         $this->newLine();
 
-        $this->info("Training summary:");
+        $this->info('Training summary:');
         $this->line("  ✓ Trained: {$trained}");
         if ($failed > 0) {
             $this->line("  ✗ Failed: {$failed}");
@@ -134,25 +142,25 @@ class TrainPredictionModels extends Command
 
         // Get training data
         $trainingData = $this->getTrainingData($model);
-        
+
         if (empty($trainingData)) {
             throw new \Exception("No training data available for model {$model->name}");
         }
 
         $minTrainingData = config('analytics.predictions.min_training_data', 100);
         if (count($trainingData) < $minTrainingData) {
-            throw new \Exception("Insufficient training data. Need at least {$minTrainingData} records, got " . count($trainingData));
+            throw new \Exception("Insufficient training data. Need at least {$minTrainingData} records, got ".count($trainingData));
         }
 
         if ($showProgress) {
-            $this->line("  Training data records: " . count($trainingData));
+            $this->line('  Training data records: '.count($trainingData));
         }
 
         // Train the model
         $accuracy = $model->train($trainingData);
 
         if ($showProgress) {
-            $this->info("  ✓ Training completed. Accuracy: " . number_format($accuracy * 100, 2) . "%");
+            $this->info('  ✓ Training completed. Accuracy: '.number_format($accuracy * 100, 2).'%');
         }
 
         // Generate some sample predictions to validate the model
@@ -161,7 +169,7 @@ class TrainPredictionModels extends Command
 
     private function getTrainingData(PredictionModel $model)
     {
-        return match($model->type) {
+        return match ($model->type) {
             'job_placement' => $this->getJobPlacementTrainingData(),
             'employment_success' => $this->getEmploymentSuccessTrainingData(),
             'course_demand' => $this->getCourseDemandTrainingData(),
@@ -178,7 +186,7 @@ class TrainPredictionModels extends Command
             ->map(function ($graduate) {
                 $features = $this->extractGraduateFeatures($graduate);
                 $outcome = $graduate->employment_status['status'] === 'employed' ? 1 : 0;
-                
+
                 return [
                     'features' => $features,
                     'outcome' => $outcome,
@@ -197,7 +205,7 @@ class TrainPredictionModels extends Command
             ->map(function ($application) {
                 $features = $this->extractApplicationFeatures($application);
                 $outcome = $application->status === 'hired' ? 1 : 0;
-                
+
                 return [
                     'features' => $features,
                     'outcome' => $outcome,
@@ -215,7 +223,7 @@ class TrainPredictionModels extends Command
             ->map(function ($course) {
                 $features = $this->extractCourseFeatures($course);
                 $outcome = $course->jobs_count; // Number of job postings as demand indicator
-                
+
                 return [
                     'features' => $features,
                     'outcome' => $outcome,
@@ -241,7 +249,7 @@ class TrainPredictionModels extends Command
     private function extractApplicationFeatures($application)
     {
         $graduate = $application->graduate;
-        
+
         return [
             'job_applications_count' => $graduate->applications->count(),
             'interview_count' => $graduate->applications->where('status', 'interviewed')->count(),
@@ -282,13 +290,13 @@ class TrainPredictionModels extends Command
     {
         $graduateSkills = collect($graduate->skills ?? []);
         $requiredSkills = collect($job->required_skills ?? []);
-        
+
         if ($requiredSkills->isEmpty()) {
             return 50; // Neutral score if no requirements
         }
 
         $matchingSkills = $graduateSkills->intersect($requiredSkills);
-        
+
         return ($matchingSkills->count() / $requiredSkills->count()) * 100;
     }
 
@@ -296,9 +304,9 @@ class TrainPredictionModels extends Command
     {
         $jobPostedAt = $application->job->created_at;
         $appliedAt = $application->created_at;
-        
+
         $daysSincePosted = $jobPostedAt->diffInDays($appliedAt);
-        
+
         // Earlier applications get higher scores
         return max(0, 100 - ($daysSincePosted * 5));
     }
@@ -308,11 +316,11 @@ class TrainPredictionModels extends Command
         $currentMonth = \App\Models\Job::where('course_id', $course->id)
             ->where('created_at', '>=', now()->startOfMonth())
             ->count();
-            
+
         $lastMonth = \App\Models\Job::where('course_id', $course->id)
             ->whereBetween('created_at', [
                 now()->subMonth()->startOfMonth(),
-                now()->subMonth()->endOfMonth()
+                now()->subMonth()->endOfMonth(),
             ])
             ->count();
 
@@ -343,7 +351,7 @@ class TrainPredictionModels extends Command
     private function getSkillsDemand($course)
     {
         $courseSkills = collect($course->skills ?? []);
-        
+
         if ($courseSkills->isEmpty()) {
             return 0;
         }
@@ -353,7 +361,7 @@ class TrainPredictionModels extends Command
             $jobsRequiringSkill = \App\Models\Job::whereJsonContains('required_skills', $skill)
                 ->where('status', 'active')
                 ->count();
-            
+
             $demandScore += $jobsRequiringSkill;
         }
 
@@ -380,11 +388,12 @@ class TrainPredictionModels extends Command
         try {
             // Get a sample of subjects to test predictions
             $subjects = $this->getSampleSubjects($model->type, 5);
-            
+
             if ($subjects->isEmpty()) {
                 if ($showProgress) {
-                    $this->warn("  No subjects available for validation");
+                    $this->warn('  No subjects available for validation');
                 }
+
                 return;
             }
 
@@ -405,18 +414,18 @@ class TrainPredictionModels extends Command
             }
 
             if ($validPredictions === 0) {
-                throw new \Exception("Model validation failed - no valid predictions generated");
+                throw new \Exception('Model validation failed - no valid predictions generated');
             }
         } catch (\Exception $e) {
             if ($showProgress) {
-                $this->warn("  Validation warning: " . $e->getMessage());
+                $this->warn('  Validation warning: '.$e->getMessage());
             }
         }
     }
 
     private function getSampleSubjects($modelType, $limit = 5)
     {
-        return match($modelType) {
+        return match ($modelType) {
             'job_placement' => \App\Models\Graduate::inRandomOrder()->limit($limit)->get(),
             'employment_success' => \App\Models\Graduate::has('applications')->inRandomOrder()->limit($limit)->get(),
             'course_demand' => \App\Models\Course::inRandomOrder()->limit($limit)->get(),

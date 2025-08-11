@@ -31,7 +31,7 @@ class EmployerCanPostJobsAttributeTest extends TestCase
 
         // Convert to JSON and assert can_post_jobs is present and true
         $jsonData = $employer->toArray();
-        
+
         $this->assertArrayHasKey('can_post_jobs', $jsonData);
         $this->assertTrue($jsonData['can_post_jobs']);
     }
@@ -53,7 +53,7 @@ class EmployerCanPostJobsAttributeTest extends TestCase
 
         // Convert to JSON and assert can_post_jobs is present but false
         $jsonData = $employer->toArray();
-        
+
         $this->assertArrayHasKey('can_post_jobs', $jsonData);
         $this->assertFalse($jsonData['can_post_jobs']);
     }
@@ -75,7 +75,7 @@ class EmployerCanPostJobsAttributeTest extends TestCase
 
         // Convert to JSON and assert can_post_jobs is present but false
         $jsonData = $employer->toArray();
-        
+
         $this->assertArrayHasKey('can_post_jobs', $jsonData);
         $this->assertFalse($jsonData['can_post_jobs']);
     }
@@ -97,7 +97,7 @@ class EmployerCanPostJobsAttributeTest extends TestCase
 
         // Convert to JSON and assert can_post_jobs is present and false
         $jsonData = $employer->toArray();
-        
+
         $this->assertArrayHasKey('can_post_jobs', $jsonData);
         $this->assertFalse($jsonData['can_post_jobs']);
     }
@@ -127,7 +127,7 @@ class EmployerCanPostJobsAttributeTest extends TestCase
         // Update to premium plan - should now be able to post
         $employer->update(['subscription_plan' => 'premium']);
         $employer->refresh();
-        
+
         $jsonData = $employer->toArray();
         $this->assertTrue($jsonData['can_post_jobs']);
     }

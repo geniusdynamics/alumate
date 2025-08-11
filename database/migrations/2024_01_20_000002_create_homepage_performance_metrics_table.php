@@ -23,7 +23,7 @@ return new class extends Migration
             $table->json('additional_data')->nullable();
             $table->timestamp('recorded_at');
             $table->timestamps();
-            
+
             $table->index(['metric_type', 'metric_name', 'recorded_at']);
             $table->index(['environment', 'recorded_at']);
         });

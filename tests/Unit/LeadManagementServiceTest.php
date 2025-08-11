@@ -8,7 +8,7 @@ use App\Services\LeadManagementService;
 uses(Tests\TestCase::class);
 
 beforeEach(function () {
-    $this->service = new LeadManagementService();
+    $this->service = new LeadManagementService;
 });
 
 test('can create lead from form submission', function () {
@@ -154,7 +154,7 @@ test('can get lead pipeline data', function () {
 
     expect($pipeline)->toBeArray();
     expect($pipeline)->toHaveCount(3);
-    
+
     $newStage = collect($pipeline)->firstWhere('status', 'new');
     expect($newStage['count'])->toBe(1);
     expect($newStage['avg_score'])->toBe(50.0);
@@ -226,7 +226,7 @@ test('can generate comprehensive lead report', function () {
     expect($report)->toHaveKey('needs_attention');
     expect($report)->toHaveKey('top_sources');
     expect($report)->toHaveKey('performance_metrics');
-    
+
     expect($report['top_sources'])->toHaveCount(2);
     expect($report['performance_metrics'])->toHaveKey('total_leads');
     expect($report['performance_metrics'])->toHaveKey('qualification_rate');
@@ -247,7 +247,7 @@ test('can sync lead to CRM systems', function () {
     // This would normally test actual CRM sync
     // For now, we'll just verify the method exists and can be called
     $results = $this->service->syncLeadToCRM($lead);
-    
+
     expect($results)->toBeArray();
 });
 
@@ -262,7 +262,7 @@ test('lead model can update score with activity logging', function () {
 
     expect($lead->score)->toBe(70);
     expect($lead->activities())->toHaveCount($initialActivityCount + 1);
-    
+
     $scoreActivity = $lead->activities()->latest()->first();
     expect($scoreActivity->type)->toBe('score_change');
     expect($scoreActivity->description)->toContain('50 to 70');
@@ -280,7 +280,7 @@ test('lead model can update status with activity logging', function () {
     expect($lead->status)->toBe('qualified');
     expect($lead->qualified_at)->not->toBeNull();
     expect($lead->activities())->toHaveCount($initialActivityCount + 1);
-    
+
     $statusActivity = $lead->activities()->latest()->first();
     expect($statusActivity->type)->toBe('status_change');
     expect($statusActivity->description)->toContain('new to qualified');

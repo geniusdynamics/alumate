@@ -1,7 +1,7 @@
 <?php
 
 return [
-    
+
     /*
     |--------------------------------------------------------------------------
     | Homepage Deployment Configuration
@@ -10,9 +10,9 @@ return [
     | Configuration for homepage deployment monitoring and alerting.
     |
     */
-    
+
     'homepage' => [
-        
+
         /*
         |--------------------------------------------------------------------------
         | Monitoring Configuration
@@ -21,7 +21,7 @@ return [
         | Enable/disable various monitoring features for the homepage.
         |
         */
-        
+
         'monitoring' => [
             'enabled' => env('HOMEPAGE_MONITORING_ENABLED', true),
             'performance_monitoring' => env('HOMEPAGE_PERFORMANCE_MONITORING', true),
@@ -30,7 +30,7 @@ return [
             'security_monitoring' => env('HOMEPAGE_SECURITY_MONITORING', true),
             'conversion_monitoring' => env('HOMEPAGE_CONVERSION_MONITORING', true),
         ],
-        
+
         /*
         |--------------------------------------------------------------------------
         | Performance Thresholds
@@ -39,7 +39,7 @@ return [
         | Define performance thresholds for alerting.
         |
         */
-        
+
         'performance_thresholds' => [
             'page_load' => [
                 'warning' => env('HOMEPAGE_PAGE_LOAD_WARNING', 2000), // milliseconds
@@ -54,7 +54,7 @@ return [
                 'critical' => env('HOMEPAGE_DB_CRITICAL', 2000),
             ],
         ],
-        
+
         /*
         |--------------------------------------------------------------------------
         | Conversion Thresholds
@@ -63,7 +63,7 @@ return [
         | Define conversion rate thresholds for alerting.
         |
         */
-        
+
         'conversion_thresholds' => [
             'conversion_rate' => [
                 'min' => env('HOMEPAGE_CONVERSION_MIN', 2.0), // percentage
@@ -77,7 +77,7 @@ return [
                 'max' => env('HOMEPAGE_BOUNCE_RATE_MAX', 70.0),
             ],
         ],
-        
+
         /*
         |--------------------------------------------------------------------------
         | Security Configuration
@@ -86,7 +86,7 @@ return [
         | Security monitoring and threat detection settings.
         |
         */
-        
+
         'security' => [
             'rate_limits' => [
                 'api_requests_per_minute' => env('HOMEPAGE_API_RATE_LIMIT', 30),
@@ -108,7 +108,7 @@ return [
                 'zap',
             ],
         ],
-        
+
         /*
         |--------------------------------------------------------------------------
         | Alert Configuration
@@ -117,7 +117,7 @@ return [
         | Configure alert rate limiting and escalation.
         |
         */
-        
+
         'alerts' => [
             'rate_limits' => [
                 'critical' => env('HOMEPAGE_ALERT_CRITICAL_LIMIT', 300), // seconds
@@ -131,7 +131,7 @@ return [
                 'escalation_email' => env('HOMEPAGE_ALERT_ESCALATION_EMAIL'),
             ],
         ],
-        
+
         /*
         |--------------------------------------------------------------------------
         | Health Check Configuration
@@ -140,7 +140,7 @@ return [
         | Configure health check endpoints and intervals.
         |
         */
-        
+
         'health_checks' => [
             'enabled' => env('HOMEPAGE_HEALTH_CHECKS', true),
             'interval' => env('HOMEPAGE_HEALTH_CHECK_INTERVAL', 300), // seconds
@@ -152,7 +152,7 @@ return [
                 'api_testimonials' => '/api/homepage/testimonials',
             ],
         ],
-        
+
         /*
         |--------------------------------------------------------------------------
         | Data Retention
@@ -161,15 +161,41 @@ return [
         | Configure how long to keep monitoring data.
         |
         */
-        
+
         'data_retention' => [
             'performance_metrics' => env('HOMEPAGE_PERFORMANCE_RETENTION', 30), // days
             'error_logs' => env('HOMEPAGE_ERROR_RETENTION', 90),
             'analytics_events' => env('HOMEPAGE_ANALYTICS_RETENTION', 365),
             'alert_logs' => env('HOMEPAGE_ALERT_RETENTION', 180),
         ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Security Headers Configuration
+        |--------------------------------------------------------------------------
+        |
+        | Configure HTTP security headers for the homepage.
+        |
+        */
+
+        'security_headers' => [
+            'hsts' => [
+                'enabled' => env('HOMEPAGE_HSTS_ENABLED', true),
+                'max_age' => env('HOMEPAGE_HSTS_MAX_AGE', 31536000), // 1 year
+                'include_subdomains' => env('HOMEPAGE_HSTS_SUBDOMAINS', true),
+                'preload' => env('HOMEPAGE_HSTS_PRELOAD', false),
+            ],
+            'csp' => [
+                'enabled' => env('HOMEPAGE_CSP_ENABLED', true),
+                'policy' => env('HOMEPAGE_CSP_POLICY', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self';"),
+            ],
+            'x_frame_options' => env('HOMEPAGE_X_FRAME_OPTIONS', 'SAMEORIGIN'),
+            'x_content_type_options' => env('HOMEPAGE_X_CONTENT_TYPE_OPTIONS', 'nosniff'),
+            'x_xss_protection' => env('HOMEPAGE_X_XSS_PROTECTION', '1; mode=block'),
+            'referrer_policy' => env('HOMEPAGE_REFERRER_POLICY', 'strict-origin-when-cross-origin'),
+        ],
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | External Services
@@ -178,7 +204,7 @@ return [
     | Configuration for external monitoring and alerting services.
     |
     */
-    
+
     'external_services' => [
         'sentry' => [
             'enabled' => env('SENTRY_ENABLED', false),

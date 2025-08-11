@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('requested_at');
             $table->timestamp('reviewed_at')->nullable();
             $table->timestamps();
-            
+
             $table->index(['homepage_content_id', 'status']);
             $table->index(['reviewer_id', 'status']);
         });

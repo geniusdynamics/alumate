@@ -2,14 +2,14 @@
 
 namespace App\Providers;
 
-use App\Events\InstitutionAdminCreated;
 use App\Events\CareerMilestoneCreated;
-use App\Events\UserProfileUpdated;
 use App\Events\ConnectionAccepted;
+use App\Events\InstitutionAdminCreated;
 use App\Events\PostCreated;
+use App\Events\UserProfileUpdated;
+use App\Listeners\CheckAchievementsListener;
 use App\Listeners\LogUserActivity;
 use App\Listeners\SendInstitutionAdminCreationNotification;
-use App\Listeners\CheckAchievementsListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;

@@ -21,9 +21,9 @@ class CrmIntegrationFactory extends Factory
     {
         $providers = ['salesforce', 'hubspot', 'pipedrive', 'zoho', 'twenty', 'frappe'];
         $provider = $this->faker->randomElement($providers);
-        
+
         return [
-            'name' => $this->faker->company() . ' ' . ucfirst($provider) . ' Integration',
+            'name' => $this->faker->company().' '.ucfirst($provider).' Integration',
             'provider' => $provider,
             'config' => $this->generateConfig($provider),
             'is_active' => $this->faker->boolean(80),
@@ -48,16 +48,16 @@ class CrmIntegrationFactory extends Factory
                 return [
                     'client_id' => $this->faker->uuid(),
                     'client_secret' => $this->faker->sha256(),
-                    'instance_url' => 'https://' . $this->faker->domainWord() . '.salesforce.com',
+                    'instance_url' => 'https://'.$this->faker->domainWord().'.salesforce.com',
                 ];
-                
+
             case 'hubspot':
                 return [
                     'access_token' => $this->faker->sha256(),
                     'refresh_token' => $this->faker->sha256(),
                     'portal_id' => $this->faker->numberBetween(1000000, 9999999),
                 ];
-                
+
             case 'zoho':
                 return [
                     'client_id' => $this->faker->uuid(),
@@ -65,23 +65,23 @@ class CrmIntegrationFactory extends Factory
                     'refresh_token' => $this->faker->sha256(),
                     'api_domain' => 'https://www.zohoapis.com',
                 ];
-                
+
             case 'twenty':
                 return [
                     'api_key' => $this->faker->sha256(),
-                    'instance_url' => 'https://' . $this->faker->domainWord() . '.twenty.com',
+                    'instance_url' => 'https://'.$this->faker->domainWord().'.twenty.com',
                 ];
-                
+
             case 'frappe':
                 return [
                     'api_key' => $this->faker->sha256(),
                     'api_secret' => $this->faker->sha256(),
-                    'instance_url' => 'https://' . $this->faker->domainWord() . '.frappe.cloud',
+                    'instance_url' => 'https://'.$this->faker->domainWord().'.frappe.cloud',
                 ];
-                
+
             default:
                 return [
-                    'api_url' => 'https://api.' . $this->faker->domainName(),
+                    'api_url' => 'https://api.'.$this->faker->domainName(),
                     'api_key' => $this->faker->sha256(),
                 ];
         }
@@ -113,7 +113,7 @@ class CrmIntegrationFactory extends Factory
                     'job_title' => 'Title',
                     'source' => 'LeadSource',
                 ]);
-                
+
             case 'hubspot':
                 return array_merge($baseMappings, [
                     'first_name' => 'firstname',
@@ -123,7 +123,7 @@ class CrmIntegrationFactory extends Factory
                     'company' => 'company',
                     'job_title' => 'jobtitle',
                 ]);
-                
+
             case 'zoho':
                 return array_merge($baseMappings, [
                     'first_name' => 'First_Name',
@@ -134,7 +134,7 @@ class CrmIntegrationFactory extends Factory
                     'job_title' => 'Designation',
                     'source' => 'Lead_Source',
                 ]);
-                
+
             case 'twenty':
                 return array_merge($baseMappings, [
                     'first_name' => 'firstName',
@@ -145,7 +145,7 @@ class CrmIntegrationFactory extends Factory
                     'job_title' => 'jobTitle',
                     'source' => 'source',
                 ]);
-                
+
             case 'frappe':
                 return array_merge($baseMappings, [
                     'first_name' => 'first_name',
@@ -156,7 +156,7 @@ class CrmIntegrationFactory extends Factory
                     'job_title' => 'designation',
                     'source' => 'source',
                 ]);
-                
+
             default:
                 return $baseMappings;
         }
