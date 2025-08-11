@@ -29,7 +29,7 @@ php artisan serve --host=127.0.0.1 --port=8080
 ### 2. Access the Application
 
 - **Main Application**: <http://127.0.0.1:8080>
-- **Vite Dev Server**: <http://localhost:5173> (for assets only)
+- **Vite Dev Server**: <http://localhost:5100> (for assets only)
 
 ⚠️ **Important**: Always use <http://127.0.0.1:8080> for the Laravel application, not the Vite server URL.
 
@@ -115,7 +115,7 @@ This happens when accessing tenant-specific routes from the central domain. Make
 
 If you see the Vite development server page, you're accessing the wrong URL:
 
-- ❌ Wrong: <http://localhost:5173>
+- ❌ Wrong: <http://localhost:5100>
 - ✅ Correct: <http://127.0.0.1:8080>
 
 ### PHP Command Not Found

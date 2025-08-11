@@ -77,9 +77,9 @@ if %errorlevel% equ 0 (
     echo ✗ Laravel server is not running
 )
 
-netstat -an | findstr ":5173" >nul
+netstat -an | findstr ":5100" >nul
 if %errorlevel% equ 0 (
-    echo ✓ Vite server is running on port 5173
+    echo ✓ Vite server is running on port 5100
 ) else (
     echo ✗ Vite server is not running
 )

@@ -12,6 +12,8 @@ export default defineConfig({
             input: ['resources/js/app.ts'],
             ssr: 'resources/js/ssr.ts',
             refresh: true,
+            detectTls: false,
+            valetTls: false,
         }),
 
         vue({
@@ -25,7 +27,6 @@ export default defineConfig({
         AutoImport({
             imports: ['vue', '@vueuse/core'],
             dirs: [
-                './resources/js/components/**',
                 './resources/js/services/**',
                 './resources/js/utils/**',
                 './resources/js/layouts/**',
@@ -38,6 +39,12 @@ export default defineConfig({
             dirsScanOptions: {
                 types: true,
             },
+            // Exclude problematic auto-form index exports to prevent duplicates
+            exclude: [
+                /\/auto-form\/index\.ts$/,
+                /\/form\/index\.ts$/,
+                /\/sidebar\/index\.ts$/
+            ]
         }),
         Components({
             dts: true,
@@ -132,8 +139,21 @@ export default defineConfig({
     },
     // Server configuration for development
     server: {
+        host: '127.0.0.1', // Use 127.0.0.1 to match Laravel
+        port: 5100,
+        strictPort: true,
         hmr: {
-            overlay: false
+            overlay: false,
+            port: 5100,
+            host: '127.0.0.1'
+        },
+        cors: {
+            origin: ['http://127.0.0.1:8080', 'http://localhost:8080'],
+            credentials: true
+        },
+        origin: 'http://127.0.0.1:5100',
+        watch: {
+            usePolling: true
         }
     }
 });
