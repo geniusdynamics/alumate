@@ -13,6 +13,7 @@ declare global {
   const ConversionTrackingService: typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']
   const EffectScope: typeof import('vue')['EffectScope']
   const HeatMapService: typeof import('./resources/js/services/HeatMapService')['HeatMapService']
+  const LoadingPresets: typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']
   const PerformanceService: typeof import('./resources/js/services/PerformanceService')['default']
   const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
   const SEOService: typeof import('./resources/js/services/SEOService')['default']
@@ -232,6 +233,7 @@ declare global {
   const useLazyComponent: typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']
   const useLazyImage: typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']
   const useLazyLoading: typeof import('./resources/js/composables/useLazyLoading')['useLazyLoading']
+  const useLoadingStates: typeof import('./resources/js/composables/useLoadingStates')['useLoadingStates']
   const useLocalStorage: typeof import('@vueuse/core')['useLocalStorage']
   const useMagicKeys: typeof import('@vueuse/core')['useMagicKeys']
   const useManualRefHistory: typeof import('@vueuse/core')['useManualRefHistory']
@@ -285,6 +287,7 @@ declare global {
   const useShare: typeof import('@vueuse/core')['useShare']
   const useSlots: typeof import('vue')['useSlots']
   const useSorted: typeof import('@vueuse/core')['useSorted']
+  const useSpecificLoading: typeof import('./resources/js/composables/useLoadingStates')['useSpecificLoading']
   const useSpeechRecognition: typeof import('@vueuse/core')['useSpeechRecognition']
   const useSpeechSynthesis: typeof import('@vueuse/core')['useSpeechSynthesis']
   const useStepper: typeof import('@vueuse/core')['useStepper']
@@ -387,6 +390,9 @@ declare global {
   export type { LazyLoadOptions } from './resources/js/composables/useLazyLoading'
   import('./resources/js/composables/useLazyLoading')
   // @ts-ignore
+  export type { LoadingState, LoadingConfig } from './resources/js/composables/useLoadingStates'
+  import('./resources/js/composables/useLoadingStates')
+  // @ts-ignore
   export type { Toast } from './resources/js/composables/useToast'
   import('./resources/js/composables/useToast')
 }
@@ -403,6 +409,7 @@ declare module 'vue' {
     readonly ConversionTrackingService: UnwrapRef<typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly HeatMapService: UnwrapRef<typeof import('./resources/js/services/HeatMapService')['HeatMapService']>
+    readonly LoadingPresets: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']>
     readonly PerformanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['default']>
     readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
     readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>
@@ -622,6 +629,7 @@ declare module 'vue' {
     readonly useLazyComponent: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']>
     readonly useLazyImage: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']>
     readonly useLazyLoading: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyLoading']>
+    readonly useLoadingStates: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['useLoadingStates']>
     readonly useLocalStorage: UnwrapRef<typeof import('@vueuse/core')['useLocalStorage']>
     readonly useMagicKeys: UnwrapRef<typeof import('@vueuse/core')['useMagicKeys']>
     readonly useManualRefHistory: UnwrapRef<typeof import('@vueuse/core')['useManualRefHistory']>
@@ -675,6 +683,7 @@ declare module 'vue' {
     readonly useShare: UnwrapRef<typeof import('@vueuse/core')['useShare']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useSorted: UnwrapRef<typeof import('@vueuse/core')['useSorted']>
+    readonly useSpecificLoading: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['useSpecificLoading']>
     readonly useSpeechRecognition: UnwrapRef<typeof import('@vueuse/core')['useSpeechRecognition']>
     readonly useSpeechSynthesis: UnwrapRef<typeof import('@vueuse/core')['useSpeechSynthesis']>
     readonly useStepper: UnwrapRef<typeof import('@vueuse/core')['useStepper']>

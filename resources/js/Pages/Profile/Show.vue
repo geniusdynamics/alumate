@@ -5,6 +5,9 @@ import { ref, computed } from 'vue';
 import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
 import PullToRefresh from '@/components/PullToRefresh.vue';
 import ThemeToggle from '@/components/ThemeToggle.vue';
+import SmartLoader from '@/components/ui/SmartLoader.vue';
+import SkeletonCard from '@/components/ui/SkeletonCard.vue';
+import { useSpecificLoading, LoadingPresets } from '@/composables/useLoadingStates';
 import {
     UserIcon,
     AcademicCapIcon,
@@ -30,6 +33,10 @@ const showProjectModal = ref(false);
 const selectedProject = ref(null);
 const activeTab = ref('overview');
 
+// Loading states
+const profileLoading = useSpecificLoading('profile', 'fetchingProfile');
+const projectsLoading = useSpecificLoading('projects');
+
 const tabs = [
     { id: 'overview', label: 'Overview', icon: UserIcon },
     { id: 'education', label: 'Education', icon: AcademicCapIcon },
@@ -38,9 +45,11 @@ const tabs = [
 ];
 
 const refreshProfile = async () => {
-    // Simulate refresh delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    window.location.reload();
+    await profileLoading.withLoading(async () => {
+        // Simulate refresh delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        window.location.reload();
+    }, LoadingPresets.fetchingProfile);
 };
 
 const openProjectModal = (project) => {

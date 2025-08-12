@@ -94,17 +94,40 @@
                             </div>
                         </div>
                         <div class="lg:p-6">
-                            <div v-if="recommendations.length === 0" class="text-center py-8">
+                            <!-- Loading State -->
+                            <SmartLoader 
+                                v-if="recommendationsLoading.isLoading.value"
+                                :loading="true"
+                                context="jobs"
+                                skeleton-variant="list"
+                                list-variant="detailed"
+                                :skeleton-count="3"
+                                :show-actions="true"
+                                :action-count="2"
+                                :show-secondary="true"
+                                :show-tertiary="false"
+                            />
+                            
+                            <!-- Empty State -->
+                            <div v-else-if="recommendations.length === 0" class="text-center py-8">
                                 <BriefcaseIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
                                 <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No recommendations yet</h3>
                                 <p class="text-gray-500 dark:text-gray-400">Complete your profile to get personalized job recommendations</p>
                             </div>
+                            
+                            <!-- Job Recommendations -->
                             <div v-else class="space-y-4">
                                 <div v-for="job in jobRecommendations" :key="job.id" class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
                                     <h3 class="font-medium text-gray-900 dark:text-white">{{ job.title }}</h3>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">{{ job.company }}</p>
                                     <div class="mt-2 flex space-x-2">
-                                        <button @click="startApplication(job)" class="btn-mobile-primary text-sm">Apply</button>
+                                        <button 
+                                            @click="startApplication(job)" 
+                                            class="btn-mobile-primary text-sm"
+                                            :disabled="applicationLoading.isLoading.value"
+                                        >
+                                            {{ applicationLoading.isLoading.value ? 'Applying...' : 'Apply' }}
+                                        </button>
                                         <button @click="handleJobSaved(job.id)" class="btn-mobile-secondary text-sm">Save</button>
                                     </div>
                                 </div>
@@ -142,7 +165,10 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
 import UserFlowIntegration from '@/components/UserFlowIntegration.vue'
 import RealTimeUpdates from '@/components/RealTimeUpdates.vue'
 import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue'
+import SmartLoader from '@/components/ui/SmartLoader.vue'
+import SkeletonCard from '@/components/ui/SkeletonCard.vue'
 import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates'
+import { useSpecificLoading, LoadingPresets } from '@/composables/useLoadingStates'
 import userFlowIntegration from '@/services/UserFlowIntegration'
 import { formatDistanceToNow } from 'date-fns'
 import {
@@ -173,16 +199,23 @@ const jobRecommendations = reactive([...props.recommendations])
 const userApplications = reactive([...props.applications])
 const userSavedJobs = reactive([...props.savedJobs])
 
+// Loading states
+const dashboardLoading = useSpecificLoading('dashboard', 'fetchingJobs')
+const recommendationsLoading = useSpecificLoading('recommendations', 'fetchingJobs')
+const applicationLoading = useSpecificLoading('application')
+
 // Real-time updates
 const realTimeUpdates = useRealTimeUpdates()
 
 // Refresh dashboard data
 const refreshDashboard = async () => {
-    // Simulate refresh delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    // In a real app, you would reload data here
-    window.location.reload()
+    await dashboardLoading.withLoading(async () => {
+        // Simulate refresh delay
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        
+        // In a real app, you would reload data here
+        window.location.reload()
+    }, LoadingPresets.fetchingJobs)
 }
 
 onMounted(() => {
@@ -235,13 +268,15 @@ const handleJobClicked = (job) => {
 }
 
 const handleJobApplied = async (job, applicationData) => {
-    try {
+    await applicationLoading.withLoading(async () => {
         await userFlowIntegration.applyToJobAndTrack(job.id, applicationData)
         showApplicationModal.value = false
         selectedJob.value = null
-    } catch (error) {
-        console.error('Failed to apply to job:', error)
-    }
+    }, {
+        type: 'contextual',
+        context: 'submitting',
+        message: 'Submitting your job application...'
+    })
 }
 
 const handleJobSaved = async (jobId) => {

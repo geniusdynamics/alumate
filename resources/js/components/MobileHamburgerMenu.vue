@@ -227,30 +227,18 @@ const mainNavItems = computed(() => [
         href: '/dashboard',
         icon: HomeIcon,
         active: page.url === '/dashboard'
-    },
-    {
-        name: 'Search',
-        href: '/search',
-        icon: MagnifyingGlassIcon,
-        active: page.url.startsWith('/search')
-    },
-    {
-        name: 'Analytics',
-        href: '/analytics',
-        icon: ChartBarIcon,
-        active: page.url.startsWith('/analytics')
     }
 ])
 
 const socialNavItems = computed(() => [
     {
-        name: 'Timeline',
+        name: 'Social Timeline',
         href: '/social/timeline',
         icon: ChatBubbleLeftRightIcon,
         active: page.url.startsWith('/social')
     },
     {
-        name: 'Alumni Network',
+        name: 'Alumni Directory',
         href: '/alumni/directory',
         icon: UsersIcon,
         active: page.url.startsWith('/alumni')
@@ -277,22 +265,16 @@ const careerNavItems = computed(() => [
         active: page.url.startsWith('/jobs')
     },
     {
-        name: 'Career Timeline',
+        name: 'Career Center',
         href: '/career/timeline',
         icon: AcademicCapIcon,
         active: page.url.startsWith('/career')
     },
     {
-        name: 'Mentorship',
-        href: '/career/mentorship',
+        name: 'Mentorship Hub',
+        href: '/career/mentorship-hub',
         icon: HeartIcon,
         active: page.url.includes('/mentorship')
-    },
-    {
-        name: 'Learning',
-        href: '/learning',
-        icon: BookOpenIcon,
-        active: page.url.startsWith('/learning')
     }
 ])
 
