@@ -8,6 +8,11 @@ use Inertia\Inertia;
 
 Route::get('/', [\App\Http\Controllers\HomepageController::class, 'index'])->name('home');
 
+// PWA Offline Route
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+
 // Health Check Routes
 Route::get('/health-check/homepage', [\App\Http\Controllers\HealthCheckController::class, 'homepage'])->name('health-check.homepage');
 

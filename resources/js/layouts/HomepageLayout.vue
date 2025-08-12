@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="homepage-layout">
     <!-- Enhanced SEO Head -->
     <Head>
@@ -40,16 +40,22 @@
       <script type="application/ld+json" v-html="websiteSchema"></script>
       <script type="application/ld+json" v-html="breadcrumbSchema"></script>
     </Head>
+    
     <!-- Accessibility enhancements -->
     <div id="skip-links" class="skip-links" aria-label="Skip navigation links">
       <a href="#main-content" class="skip-link">Skip to main content</a>
       <a href="#navigation" class="skip-link">Skip to navigation</a>
       <a href="#footer" class="skip-link">Skip to footer</a>
     </div>
+    
     <!-- ARIA live regions for screen reader announcements -->
     <div id="sr-polite" aria-live="polite" aria-atomic="false" class="sr-only"></div>
     <div id="sr-assertive" aria-live="assertive" aria-atomic="false" class="sr-only"></div>
     <div id="sr-status" aria-live="polite" aria-atomic="true" class="sr-only"></div>
+    
+    <!-- Navigation Header -->
+    <HomepageNavigation id="navigation" />
+    
     <!-- Main content with proper semantic structure -->
     <main id="main-content" class="homepage-main" role="main" tabindex="-1">
       <h1 class="sr-only">{{ pageTitle }}</h1>
@@ -81,6 +87,7 @@ import { computed, onMounted, onUnmounted } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import { accessibilityService } from '@/services/AccessibilityService'
 import { seoService } from '@/services/SEOService'
+import HomepageNavigation from '@/components/navigation/HomepageNavigation.vue'
 interface Props {
   title?: string
   description?: string

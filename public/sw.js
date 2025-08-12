@@ -1,12 +1,12 @@
-const CACHE_NAME = 'alumni-platform-v1.0.0';
-const STATIC_CACHE = 'alumni-static-v1.0.0';
-const DYNAMIC_CACHE = 'alumni-dynamic-v1.0.0';
+const CACHE_NAME = 'alumni-platform-v1';
+const STATIC_CACHE = 'alumni-static-v1';
+const DYNAMIC_CACHE = 'alumni-dynamic-v1';
 
-// Assets to cache on install
+// Static assets to cache
 const STATIC_ASSETS = [
   '/',
-  '/dashboard',
   '/offline',
+  '/favicon.ico',
   '/manifest.json',
   // Add critical CSS and JS files here
   // These will be populated by the build process

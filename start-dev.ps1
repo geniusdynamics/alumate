@@ -60,64 +60,74 @@ try {
     Write-Host "⚠️  Warning: Could not clear some caches" -ForegroundColor Yellow
 }
 
-# Start Vite development server
-Write-Host "[4/5] Starting Vite development server..." -ForegroundColor Yellow
-$viteJob = Start-Job -ScriptBlock {
-    Set-Location 'D:\DevCenter\abuilds\alumate'
-    npm run dev
-} -Name 'ViteServer'
+# Start Vite and Laravel in separate persistent windows
+Write-Host "[4/4] Starting development servers..." -ForegroundColor Green
 
-Write-Host "✓ Vite server starting..." -ForegroundColor Green
-Start-Sleep -Seconds 10
+# Start Vite dev server in separate window
+Write-Host "Starting Vite development server in separate window..." -ForegroundColor Green
+Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "title Vite Dev Server - Alumni Platform && echo Starting Vite Dev Server... && npm run dev" -WindowStyle Normal
+Write-Host "✓ Vite server starting in separate window..." -ForegroundColor Green
 
-# Start Laravel server
-Write-Host "[5/5] Starting Laravel server..." -ForegroundColor Yellow
-$laravelJob = Start-Job -ScriptBlock {
-    Set-Location 'D:\DevCenter\abuilds\alumate'
-    & 'D:\DevCenter\xampp\php-8.3.23\php.exe' artisan serve --host=127.0.0.1 --port=8080
-} -Name 'LaravelServer'
+# Wait for Vite to initialize with better error handling
+Write-Host "Waiting for Vite to initialize on http://127.0.0.1:5100 ..." -ForegroundColor Yellow
+$waited = 0
+$timeout = 60
+$viteReady = $false
 
-Write-Host "✓ Laravel server starting..." -ForegroundColor Green
-Start-Sleep -Seconds 8
-
-# Check server status
-Write-Host ""
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "   🔍 CHECKING SERVER STATUS" -ForegroundColor Green
-Write-Host "========================================" -ForegroundColor Green
-
-$viteRunning = $false
-$laravelRunning = $false
-
-# Check Vite
-try {
-    $viteResponse = Invoke-WebRequest -Uri "http://localhost:5100" -TimeoutSec 5 -ErrorAction Stop
-    $viteRunning = $true
-    Write-Host "✅ Vite Dev Server: http://localhost:5100" -ForegroundColor Green
-} catch {
-    Write-Host "⚠️  Vite Dev Server: Starting..." -ForegroundColor Yellow
-}
-
-# Check Laravel
-$attempts = 0
-while (-not $laravelRunning -and $attempts -lt 5) {
+do {
     try {
-        $laravelResponse = Invoke-WebRequest -Uri "http://127.0.0.1:8080" -TimeoutSec 10 -ErrorAction Stop
-        $laravelRunning = $true
-        Write-Host "✅ Laravel Application: http://127.0.0.1:8080" -ForegroundColor Green
+        $response = Invoke-WebRequest -Uri "http://127.0.0.1:5100/@vite/client" -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+        if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) {
+            Write-Host "✓ Vite is ready after $waited seconds" -ForegroundColor Green
+            $viteReady = $true
+            break
+        }
     } catch {
-        $attempts++
-        Write-Host "⏳ Attempt $attempts/5: Laravel starting..." -ForegroundColor Yellow
-        Start-Sleep -Seconds 3
+        # Vite not ready yet, continue waiting
     }
-}
+    
+    if ($waited -ge $timeout) {
+        Write-Host "⚠ Vite did not become ready within $timeout seconds" -ForegroundColor Yellow
+        Write-Host "⚠ Check the Vite window for errors" -ForegroundColor Yellow
+        Write-Host "⚠ Continuing with Laravel anyway..." -ForegroundColor Yellow
+        break
+    }
+    
+    $waited += 3
+    Write-Host "   ... waiting ($waited/$timeout seconds)" -ForegroundColor Gray
+    Start-Sleep -Seconds 3
+} while ($true)
+
+# Start Laravel server in separate window
+Write-Host "`n========================================" -ForegroundColor Cyan
+Write-Host "   STARTING LARAVEL SERVER" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "✓ Vite Dev Server: http://127.0.0.1:5100" -ForegroundColor Green
+Write-Host "✓ Laravel Server: http://127.0.0.1:8080 (starting...)" -ForegroundColor Green
+Write-Host "`nBoth servers will run independently." -ForegroundColor White
+Write-Host "Close individual server windows to stop them." -ForegroundColor White
+
+Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "title Laravel Server - Alumni Platform && echo Starting Laravel Server... && D:\DevCenter\xampp\php-8.3.23\php.exe artisan serve --host=127.0.0.1 --port=8080" -WindowStyle Normal
+
+# Give Laravel a moment to start
+Start-Sleep -Seconds 3
+
+# Show status
+Write-Host "`n========================================" -ForegroundColor Cyan
+Write-Host "   DEVELOPMENT SERVERS RUNNING" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "✅ Vite Dev Server: http://127.0.0.1:5100" -ForegroundColor Green
+Write-Host "✅ Laravel Server: http://127.0.0.1:8080" -ForegroundColor Green
+Write-Host "`nBoth servers are running in separate windows." -ForegroundColor White
+Write-Host "`n🔍 MONITORING:" -ForegroundColor Cyan
+Write-Host "- Check Vite window for frontend compilation" -ForegroundColor Gray
+Write-Host "- Check Laravel window for backend logs" -ForegroundColor Gray
+Write-Host "- Both servers will auto-reload on file changes" -ForegroundColor Gray
+Write-Host "`n🛑 TO STOP:" -ForegroundColor Cyan
+Write-Host "- Close individual server windows, OR" -ForegroundColor Gray
+Write-Host "- Press Ctrl+C in this window to stop monitoring" -ForegroundColor Gray
 
 Write-Host ""
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "   🎉 SYSTEM READY!" -ForegroundColor Green
-Write-Host "========================================" -ForegroundColor Green
-Write-Host ""
-
 Write-Host "🔑 DEMO ACCOUNTS:" -ForegroundColor Cyan
 Write-Host "  Super Admin:" -ForegroundColor Yellow
 Write-Host "    📧 admin@system.com" -ForegroundColor White
@@ -138,35 +148,26 @@ Write-Host "  • Login: http://127.0.0.1:8080/login" -ForegroundColor White
 Write-Host "  • Register: http://127.0.0.1:8080/register" -ForegroundColor White
 Write-Host ""
 
-if ($laravelRunning) {
-    Write-Host "🚀 Opening application..." -ForegroundColor Yellow
-    Start-Process "http://127.0.0.1:8080"
-}
+# Open both URLs in browser
+Write-Host "🚀 Opening URLs in browser..." -ForegroundColor Yellow
+Start-Process "http://127.0.0.1:8080"
+Start-Process "http://127.0.0.1:5100"
+Write-Host "✓ URLs opened in browser" -ForegroundColor Green
 
-Write-Host "Press Ctrl+C to stop servers..." -ForegroundColor Yellow
-Write-Host ""
+Write-Host "`nThis monitoring window will stay open." -ForegroundColor White
+Write-Host "Close it when you're done developing." -ForegroundColor White
 
-# Monitor servers
+# Monitor the servers
+Write-Host "`nPress Ctrl+C to stop monitoring..." -ForegroundColor Yellow
+
 try {
     while ($true) {
-        $viteStatus = Get-Job -Name 'ViteServer' -ErrorAction SilentlyContinue
-        $laravelStatus = Get-Job -Name 'LaravelServer' -ErrorAction SilentlyContinue
-        
-        if ($viteStatus.State -eq "Failed" -or $laravelStatus.State -eq "Failed") {
-            Write-Host "⚠️  Server stopped. Exiting..." -ForegroundColor Red
-            break
-        }
-        
-        Start-Sleep -Seconds 10
+        $timestamp = Get-Date -Format "HH:mm:ss"
+        Write-Host "[$timestamp] Monitoring servers... (Press Ctrl+C to stop)" -ForegroundColor Gray
+        Start-Sleep -Seconds 30
     }
 } catch {
-    Write-Host "🛑 Stopping servers..." -ForegroundColor Yellow
-} finally {
-    Stop-Job -Name 'ViteServer' -ErrorAction SilentlyContinue
-    Remove-Job -Name 'ViteServer' -ErrorAction SilentlyContinue
-    Stop-Job -Name 'LaravelServer' -ErrorAction SilentlyContinue
-    Remove-Job -Name 'LaravelServer' -ErrorAction SilentlyContinue
-    taskkill /F /IM php.exe 2>$null | Out-Null
-    taskkill /F /IM node.exe 2>$null | Out-Null
-    Write-Host "✅ All servers stopped!" -ForegroundColor Green
+    Write-Host "`nMonitoring stopped." -ForegroundColor Yellow
+    Write-Host "Server windows will continue running independently." -ForegroundColor White
+    Write-Host "Close them manually when done developing." -ForegroundColor White
 }

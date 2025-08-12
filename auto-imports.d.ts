@@ -17,6 +17,8 @@ declare global {
   const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
   const SEOService: typeof import('./resources/js/services/SEOService')['default']
   const UserFlowIntegration: typeof import('./resources/js/services/UserFlowIntegration.js')['default']
+  const Z_INDEX: typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']
+  const accessibilityHelpers: typeof import('./resources/js/utils/accessibility-performance-setup.js')['accessibilityHelpers']
   const accessibilityService: typeof import('./resources/js/services/AccessibilityService')['accessibilityService']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
@@ -51,19 +53,26 @@ declare global {
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
   const getInitials: typeof import('./resources/js/composables/useInitials')['getInitials']
+  const getZIndex: typeof import('./resources/js/utils/zIndex.js')['getZIndex']
+  const getZIndexClass: typeof import('./resources/js/utils/zIndex.js')['getZIndexClass']
   const h: typeof import('vue')['h']
   const httpService: typeof import('./resources/js/services/httpService')['default']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
-  const initializeTheme: typeof import('./resources/js/composables/useAppearance')['initializeTheme']
+  const initializeAccessibilityAndPerformance: typeof import('./resources/js/utils/accessibility-performance-setup.js')['initializeAccessibilityAndPerformance']
+  const initializeTheme: typeof import('./resources/js/composables/useTheme.js')['initializeTheme']
   const inject: typeof import('vue')['inject']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
+  const isAbove: typeof import('./resources/js/utils/zIndex.js')['isAbove']
   const isDefined: typeof import('@vueuse/core')['isDefined']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
+  const isTouchDevice: typeof import('./resources/js/composables/useSwipeGestures.js')['isTouchDevice']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
+  const markPerformance: typeof import('./resources/js/utils/performance-monitor.js')['markPerformance']
   const markRaw: typeof import('vue')['markRaw']
+  const measurePerformance: typeof import('./resources/js/utils/performance-monitor.js')['measurePerformance']
   const nextTick: typeof import('vue')['nextTick']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
@@ -85,8 +94,11 @@ declare global {
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
+  const performanceHelpers: typeof import('./resources/js/utils/accessibility-performance-setup.js')['performanceHelpers']
+  const performanceMonitor: typeof import('./resources/js/utils/performance-monitor.js')['default']
   const performanceService: typeof import('./resources/js/services/PerformanceService')['performanceService']
   const preloadService: typeof import('./resources/js/services/PreloadService')['preloadService']
+  const preventTouchDefault: typeof import('./resources/js/composables/useSwipeGestures.js')['preventTouchDefault']
   const provide: typeof import('vue')['provide']
   const provideLocal: typeof import('@vueuse/core')['provideLocal']
   const reactify: typeof import('@vueuse/core')['reactify']
@@ -96,6 +108,7 @@ declare global {
   const reactiveOmit: typeof import('@vueuse/core')['reactiveOmit']
   const reactivePick: typeof import('@vueuse/core')['reactivePick']
   const readonly: typeof import('vue')['readonly']
+  const recordCustomMetric: typeof import('./resources/js/utils/performance-monitor.js')['recordCustomMetric']
   const ref: typeof import('vue')['ref']
   const refAutoReset: typeof import('@vueuse/core')['refAutoReset']
   const refDebounced: typeof import('@vueuse/core')['refDebounced']
@@ -160,6 +173,7 @@ declare global {
   const useClipboardItems: typeof import('@vueuse/core')['useClipboardItems']
   const useCloned: typeof import('@vueuse/core')['useCloned']
   const useColorMode: typeof import('@vueuse/core')['useColorMode']
+  const useComponentPerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['useComponentPerformance']
   const useConfirmDialog: typeof import('@vueuse/core')['useConfirmDialog']
   const useConversionTracking: typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']
   const useCountdown: typeof import('@vueuse/core')['useCountdown']
@@ -172,9 +186,11 @@ declare global {
   const useDark: typeof import('@vueuse/core')['useDark']
   const useDataTable: typeof import('./resources/js/composables/useDataTable')['useDataTable']
   const useDateFormat: typeof import('@vueuse/core')['useDateFormat']
-  const useDebounce: typeof import('@vueuse/core')['useDebounce']
+  const useDebounce: typeof import('./resources/js/composables/useDebounce.js')['useDebounce']
   const useDebounceFn: typeof import('@vueuse/core')['useDebounceFn']
+  const useDebouncedRef: typeof import('./resources/js/composables/useDebounce.js')['useDebouncedRef']
   const useDebouncedRefHistory: typeof import('@vueuse/core')['useDebouncedRefHistory']
+  const useDebouncedWatch: typeof import('./resources/js/composables/useDebounce.js')['useDebouncedWatch']
   const useDeviceMotion: typeof import('@vueuse/core')['useDeviceMotion']
   const useDeviceOrientation: typeof import('@vueuse/core')['useDeviceOrientation']
   const useDevicePixelRatio: typeof import('@vueuse/core')['useDevicePixelRatio']
@@ -223,6 +239,7 @@ declare global {
   const useMediaQuery: typeof import('@vueuse/core')['useMediaQuery']
   const useMemoize: typeof import('@vueuse/core')['useMemoize']
   const useMemory: typeof import('@vueuse/core')['useMemory']
+  const useModal: typeof import('./resources/js/composables/useModal.js')['default']
   const useModel: typeof import('vue')['useModel']
   const useMounted: typeof import('@vueuse/core')['useMounted']
   const useMouse: typeof import('@vueuse/core')['useMouse']
@@ -236,8 +253,10 @@ declare global {
   const useOffsetPagination: typeof import('@vueuse/core')['useOffsetPagination']
   const useOnline: typeof import('@vueuse/core')['useOnline']
   const usePageLeave: typeof import('@vueuse/core')['usePageLeave']
+  const usePagePerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePagePerformance']
   const useParallax: typeof import('@vueuse/core')['useParallax']
   const useParentElement: typeof import('@vueuse/core')['useParentElement']
+  const usePerformanceMonitoring: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePerformanceMonitoring']
   const usePerformanceObserver: typeof import('@vueuse/core')['usePerformanceObserver']
   const usePermission: typeof import('@vueuse/core')['usePermission']
   const usePointer: typeof import('@vueuse/core')['usePointer']
@@ -250,6 +269,7 @@ declare global {
   const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
   const usePreferredReducedTransparency: typeof import('@vueuse/core')['usePreferredReducedTransparency']
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
+  const usePullToRefresh: typeof import('./resources/js/composables/useSwipeGestures.js')['usePullToRefresh']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
   const useRealTimeUpdates: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useRealTimeUpdates']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
@@ -273,11 +293,14 @@ declare global {
   const useStyleTag: typeof import('@vueuse/core')['useStyleTag']
   const useSupported: typeof import('@vueuse/core')['useSupported']
   const useSwipe: typeof import('@vueuse/core')['useSwipe']
+  const useSwipeGestures: typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeGestures']
+  const useSwipeableTabs: typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeableTabs']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
   const useTemplateRefsList: typeof import('@vueuse/core')['useTemplateRefsList']
   const useTextDirection: typeof import('@vueuse/core')['useTextDirection']
   const useTextSelection: typeof import('@vueuse/core')['useTextSelection']
   const useTextareaAutosize: typeof import('@vueuse/core')['useTextareaAutosize']
+  const useTheme: typeof import('./resources/js/composables/useTheme.js')['useTheme']
   const useThrottle: typeof import('@vueuse/core')['useThrottle']
   const useThrottleFn: typeof import('@vueuse/core')['useThrottleFn']
   const useThrottledRefHistory: typeof import('@vueuse/core')['useThrottledRefHistory']
@@ -323,6 +346,7 @@ declare global {
   const watchTriggerable: typeof import('@vueuse/core')['watchTriggerable']
   const watchWithFilter: typeof import('@vueuse/core')['watchWithFilter']
   const whenever: typeof import('@vueuse/core')['whenever']
+  const zIndex: typeof import('./resources/js/utils/zIndex.js')['default']
 }
 // for type re-export
 declare global {
@@ -383,6 +407,8 @@ declare module 'vue' {
     readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
     readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>
     readonly UserFlowIntegration: UnwrapRef<typeof import('./resources/js/services/UserFlowIntegration.js')['default']>
+    readonly Z_INDEX: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']>
+    readonly accessibilityHelpers: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['accessibilityHelpers']>
     readonly accessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['accessibilityService']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
@@ -417,19 +443,26 @@ declare module 'vue' {
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
     readonly getInitials: UnwrapRef<typeof import('./resources/js/composables/useInitials')['getInitials']>
+    readonly getZIndex: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['getZIndex']>
+    readonly getZIndexClass: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['getZIndexClass']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly httpService: UnwrapRef<typeof import('./resources/js/services/httpService')['default']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
-    readonly initializeTheme: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['initializeTheme']>
+    readonly initializeAccessibilityAndPerformance: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['initializeAccessibilityAndPerformance']>
+    readonly initializeTheme: UnwrapRef<typeof import('./resources/js/composables/useTheme.js')['initializeTheme']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
+    readonly isAbove: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['isAbove']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
+    readonly isTouchDevice: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['isTouchDevice']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
+    readonly markPerformance: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['markPerformance']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
+    readonly measurePerformance: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['measurePerformance']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
@@ -451,8 +484,11 @@ declare module 'vue' {
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
+    readonly performanceHelpers: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['performanceHelpers']>
+    readonly performanceMonitor: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['default']>
     readonly performanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['performanceService']>
     readonly preloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['preloadService']>
+    readonly preventTouchDefault: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['preventTouchDefault']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
@@ -462,6 +498,7 @@ declare module 'vue' {
     readonly reactiveOmit: UnwrapRef<typeof import('@vueuse/core')['reactiveOmit']>
     readonly reactivePick: UnwrapRef<typeof import('@vueuse/core')['reactivePick']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
+    readonly recordCustomMetric: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['recordCustomMetric']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly refAutoReset: UnwrapRef<typeof import('@vueuse/core')['refAutoReset']>
     readonly refDebounced: UnwrapRef<typeof import('@vueuse/core')['refDebounced']>
@@ -526,6 +563,7 @@ declare module 'vue' {
     readonly useClipboardItems: UnwrapRef<typeof import('@vueuse/core')['useClipboardItems']>
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
     readonly useColorMode: UnwrapRef<typeof import('@vueuse/core')['useColorMode']>
+    readonly useComponentPerformance: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring.js')['useComponentPerformance']>
     readonly useConfirmDialog: UnwrapRef<typeof import('@vueuse/core')['useConfirmDialog']>
     readonly useConversionTracking: UnwrapRef<typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']>
     readonly useCountdown: UnwrapRef<typeof import('@vueuse/core')['useCountdown']>
@@ -538,9 +576,11 @@ declare module 'vue' {
     readonly useDark: UnwrapRef<typeof import('@vueuse/core')['useDark']>
     readonly useDataTable: UnwrapRef<typeof import('./resources/js/composables/useDataTable')['useDataTable']>
     readonly useDateFormat: UnwrapRef<typeof import('@vueuse/core')['useDateFormat']>
-    readonly useDebounce: UnwrapRef<typeof import('@vueuse/core')['useDebounce']>
+    readonly useDebounce: UnwrapRef<typeof import('./resources/js/composables/useDebounce.js')['useDebounce']>
     readonly useDebounceFn: UnwrapRef<typeof import('@vueuse/core')['useDebounceFn']>
+    readonly useDebouncedRef: UnwrapRef<typeof import('./resources/js/composables/useDebounce.js')['useDebouncedRef']>
     readonly useDebouncedRefHistory: UnwrapRef<typeof import('@vueuse/core')['useDebouncedRefHistory']>
+    readonly useDebouncedWatch: UnwrapRef<typeof import('./resources/js/composables/useDebounce.js')['useDebouncedWatch']>
     readonly useDeviceMotion: UnwrapRef<typeof import('@vueuse/core')['useDeviceMotion']>
     readonly useDeviceOrientation: UnwrapRef<typeof import('@vueuse/core')['useDeviceOrientation']>
     readonly useDevicePixelRatio: UnwrapRef<typeof import('@vueuse/core')['useDevicePixelRatio']>
@@ -589,6 +629,7 @@ declare module 'vue' {
     readonly useMediaQuery: UnwrapRef<typeof import('@vueuse/core')['useMediaQuery']>
     readonly useMemoize: UnwrapRef<typeof import('@vueuse/core')['useMemoize']>
     readonly useMemory: UnwrapRef<typeof import('@vueuse/core')['useMemory']>
+    readonly useModal: UnwrapRef<typeof import('./resources/js/composables/useModal.js')['default']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
     readonly useMounted: UnwrapRef<typeof import('@vueuse/core')['useMounted']>
     readonly useMouse: UnwrapRef<typeof import('@vueuse/core')['useMouse']>
@@ -602,8 +643,10 @@ declare module 'vue' {
     readonly useOffsetPagination: UnwrapRef<typeof import('@vueuse/core')['useOffsetPagination']>
     readonly useOnline: UnwrapRef<typeof import('@vueuse/core')['useOnline']>
     readonly usePageLeave: UnwrapRef<typeof import('@vueuse/core')['usePageLeave']>
+    readonly usePagePerformance: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePagePerformance']>
     readonly useParallax: UnwrapRef<typeof import('@vueuse/core')['useParallax']>
     readonly useParentElement: UnwrapRef<typeof import('@vueuse/core')['useParentElement']>
+    readonly usePerformanceMonitoring: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePerformanceMonitoring']>
     readonly usePerformanceObserver: UnwrapRef<typeof import('@vueuse/core')['usePerformanceObserver']>
     readonly usePermission: UnwrapRef<typeof import('@vueuse/core')['usePermission']>
     readonly usePointer: UnwrapRef<typeof import('@vueuse/core')['usePointer']>
@@ -616,6 +659,7 @@ declare module 'vue' {
     readonly usePreferredReducedMotion: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedMotion']>
     readonly usePreferredReducedTransparency: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedTransparency']>
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
+    readonly usePullToRefresh: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['usePullToRefresh']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
     readonly useRealTimeUpdates: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['useRealTimeUpdates']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
@@ -639,11 +683,14 @@ declare module 'vue' {
     readonly useStyleTag: UnwrapRef<typeof import('@vueuse/core')['useStyleTag']>
     readonly useSupported: UnwrapRef<typeof import('@vueuse/core')['useSupported']>
     readonly useSwipe: UnwrapRef<typeof import('@vueuse/core')['useSwipe']>
+    readonly useSwipeGestures: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeGestures']>
+    readonly useSwipeableTabs: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeableTabs']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
     readonly useTemplateRefsList: UnwrapRef<typeof import('@vueuse/core')['useTemplateRefsList']>
     readonly useTextDirection: UnwrapRef<typeof import('@vueuse/core')['useTextDirection']>
     readonly useTextSelection: UnwrapRef<typeof import('@vueuse/core')['useTextSelection']>
     readonly useTextareaAutosize: UnwrapRef<typeof import('@vueuse/core')['useTextareaAutosize']>
+    readonly useTheme: UnwrapRef<typeof import('./resources/js/composables/useTheme.js')['useTheme']>
     readonly useThrottle: UnwrapRef<typeof import('@vueuse/core')['useThrottle']>
     readonly useThrottleFn: UnwrapRef<typeof import('@vueuse/core')['useThrottleFn']>
     readonly useThrottledRefHistory: UnwrapRef<typeof import('@vueuse/core')['useThrottledRefHistory']>
@@ -689,5 +736,6 @@ declare module 'vue' {
     readonly watchTriggerable: UnwrapRef<typeof import('@vueuse/core')['watchTriggerable']>
     readonly watchWithFilter: UnwrapRef<typeof import('@vueuse/core')['watchWithFilter']>
     readonly whenever: UnwrapRef<typeof import('@vueuse/core')['whenever']>
+    readonly zIndex: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['default']>
   }
 }

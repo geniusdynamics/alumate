@@ -1,158 +1,258 @@
 <template>
-    <div class="min-h-screen bg-gray-100">
+    <AppLayout title="Dashboard">
         <Head title="Dashboard" />
         
-        <!-- Navigation -->
-        <nav class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
-                    <div class="flex items-center">
-                        <h1 class="text-xl font-semibold text-gray-900">
-                            {{ $page.props.app?.name || 'Laravel' }}
+        <!-- Mobile Hamburger Menu -->
+        <MobileHamburgerMenu class="lg:hidden" />
+        
+        <!-- Pull to Refresh -->
+        <PullToRefresh @refresh="refreshDashboard" class="min-h-screen theme-bg-secondary">
+            <!-- Mobile Header -->
+            <div class="lg:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 safe-area-top">
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="h-8 w-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold text-sm">
+                                {{ getAppInitials($page.props.app?.name) }}
+                            </span>
+                        </div>
+                        <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            {{ $page.props.app?.name || 'Alumni Platform' }}
                         </h1>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-gray-700">{{ $page.props.auth.user.name }}</span>
-                        <Link
-                            :href="route('logout')"
-                            method="post"
-                            as="button"
-                            class="inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                        >
-                            Log Out
-                        </Link>
+                    <div class="flex items-center space-x-2">
+                        <ThemeToggle variant="simple" />
+                        <button class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 touch-target">
+                            <BellIcon class="h-6 w-6" />
+                        </button>
                     </div>
                 </div>
             </div>
-        </nav>
 
-        <!-- Main Content -->
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <h2 class="text-2xl font-bold mb-4">
-                            Welcome to your Dashboard!
-                        </h2>
-                        
-                        <div class="mb-6">
-                            <p class="text-lg text-gray-600 mb-2">
-                                Hello, {{ $page.props.auth.user.name }}!
-                            </p>
-                            <p class="text-gray-500">
-                                Email: {{ $page.props.auth.user.email }}
-                            </p>
-                        </div>
-
-                        <!-- Role-based content -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Super Admin Features -->
-                            <div v-if="hasRole('super-admin')" class="bg-blue-50 p-6 rounded-lg">
-                                <h3 class="text-lg font-semibold text-blue-900 mb-3">Super Admin Actions</h3>
-                                <div class="space-y-3">
-                                    <Link
-                                        :href="route('institutions.index')"
-                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                                    >
-                                        Manage Institutions
-                                    </Link>
-                                    <Link
-                                        :href="route('users.index')"
-                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                                    >
-                                        Manage Users
-                                    </Link>
-                                    <Link
-                                        href="/analytics"
-                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                                    >
-                                        View Analytics
-                                    </Link>
-                                    <Link
-                                        href="/companies"
-                                        class="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                                    >
-                                        Approve Employers
-                                    </Link>
+            <!-- Main Content -->
+            <div class="mobile-container lg:py-12">
+                <div class="max-w-7xl mx-auto lg:px-6">
+                    <div class="card-mobile lg:bg-white lg:shadow-sm lg:rounded-lg">
+                        <div class="lg:p-6">
+                            <!-- Welcome Section -->
+                            <div class="mb-6">
+                                <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                                    Welcome back!
+                                </h2>
+                                <div class="flex items-center space-x-3 mb-4">
+                                    <div class="h-12 w-12 bg-blue-600 rounded-full flex items-center justify-center">
+                                        <span class="text-white font-medium">
+                                            {{ getUserInitials($page.props.auth.user.name) }}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <p class="text-lg font-medium text-gray-900 dark:text-white">
+                                            {{ $page.props.auth.user.name }}
+                                        </p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            {{ $page.props.auth.user.email }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Institution Admin Features -->
-                            <div v-if="hasRole('institution-admin')" class="bg-green-50 p-6 rounded-lg">
-                                <h3 class="text-lg font-semibold text-green-900 mb-3">Institution Admin</h3>
-                                <div class="space-y-3">
-                                    <Link
-                                        :href="route('graduates.index')"
-                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                                    >
-                                        Manage Graduates
-                                    </Link>
-                                    <Link
-                                        :href="route('courses.index')"
-                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                                    >
-                                        Manage Courses
-                                    </Link>
-                                    <Link
-                                        :href="route('institution-admin.import-export')"
-                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                                    >
-                                        Import/Export Data
-                                    </Link>
-                                    <Link
-                                        :href="route('institution-admin.analytics')"
-                                        class="block w-full text-left px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                                    >
-                                        View Analytics
-                                    </Link>
+                            <!-- Role-based content -->
+                            <div class="mobile-grid lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
+                                <!-- Super Admin Features -->
+                                <div v-if="hasRole('super-admin')" class="card-mobile bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                                    <div class="card-mobile-header">
+                                        <h3 class="card-mobile-title text-blue-900 dark:text-blue-100">Super Admin Actions</h3>
+                                        <BuildingOfficeIcon class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <div class="space-y-3">
+                                        <Link
+                                            :href="route('institutions.index')"
+                                            class="btn-mobile-primary w-full text-center"
+                                        >
+                                            Manage Institutions
+                                        </Link>
+                                        <Link
+                                            :href="route('users.index')"
+                                            class="btn-mobile-primary w-full text-center"
+                                        >
+                                            Manage Users
+                                        </Link>
+                                        <Link
+                                            href="/analytics"
+                                            class="btn-mobile-primary w-full text-center"
+                                        >
+                                            View Analytics
+                                        </Link>
+                                        <Link
+                                            href="/companies"
+                                            class="btn-mobile-primary w-full text-center"
+                                        >
+                                            Approve Employers
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <!-- Institution Admin Features -->
+                                <div v-if="hasRole('institution-admin')" class="card-mobile bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+                                    <div class="card-mobile-header">
+                                        <h3 class="card-mobile-title text-green-900 dark:text-green-100">Institution Admin</h3>
+                                        <AcademicCapIcon class="h-6 w-6 text-green-600 dark:text-green-400" />
+                                    </div>
+                                    <div class="space-y-3">
+                                        <Link
+                                            :href="route('graduates.index')"
+                                            class="btn-mobile w-full text-center bg-green-600 hover:bg-green-700 text-white"
+                                        >
+                                            Manage Graduates
+                                        </Link>
+                                        <Link
+                                            :href="route('courses.index')"
+                                            class="btn-mobile w-full text-center bg-green-600 hover:bg-green-700 text-white"
+                                        >
+                                            Manage Courses
+                                        </Link>
+                                        <Link
+                                            :href="route('institution-admin.import-export')"
+                                            class="btn-mobile w-full text-center bg-green-600 hover:bg-green-700 text-white"
+                                        >
+                                            Import/Export Data
+                                        </Link>
+                                        <Link
+                                            :href="route('institution-admin.analytics')"
+                                            class="btn-mobile w-full text-center bg-green-600 hover:bg-green-700 text-white"
+                                        >
+                                            View Analytics
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <!-- Employer Features -->
+                                <div v-if="hasRole('employer')" class="card-mobile bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800">
+                                    <div class="card-mobile-header">
+                                        <h3 class="card-mobile-title text-purple-900 dark:text-purple-100">Employer</h3>
+                                        <BriefcaseIcon class="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <PlusIcon class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">Post Job Openings</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <DocumentTextIcon class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">View Applications</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <MagnifyingGlassIcon class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">Search Graduates</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <BuildingOfficeIcon class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">Manage Company Profile</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Graduate Features -->
+                                <div v-if="hasRole('graduate')" class="card-mobile bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800">
+                                    <div class="card-mobile-header">
+                                        <h3 class="card-mobile-title text-orange-900 dark:text-orange-100">Graduate</h3>
+                                        <UserIcon class="h-6 w-6 text-orange-600 dark:text-orange-400" />
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <BriefcaseIcon class="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">Browse Job Openings</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <DocumentCheckIcon class="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">Apply for Jobs</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <UserCircleIcon class="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">Update Profile</span>
+                                        </div>
+                                        <div class="flex items-center space-x-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+                                            <UsersIcon class="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                            <span class="text-sm text-gray-900 dark:text-white">View Classmates</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Employer Features -->
-                            <div v-if="hasRole('employer')" class="bg-purple-50 p-6 rounded-lg">
-                                <h3 class="text-lg font-semibold text-purple-900 mb-3">Employer</h3>
-                                <ul class="space-y-2 text-purple-700">
-                                    <li>• Post Job Openings</li>
-                                    <li>• View Applications</li>
-                                    <li>• Search Graduates</li>
-                                    <li>• Manage Company Profile</li>
-                                </ul>
+                            <!-- Success Message -->
+                            <div class="mt-8 card-mobile bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+                                <div class="flex items-start space-x-3">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-8 w-8 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center">
+                                            <span class="text-lg">🎉</span>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h4 class="text-sm font-medium text-green-900 dark:text-green-100 mb-1">
+                                            Congratulations!
+                                        </h4>
+                                        <p class="text-sm text-green-700 dark:text-green-300">
+                                            Your Alumni Platform is running successfully with modern social features, mobile optimization, and comprehensive user management.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-
-                            <!-- Graduate Features -->
-                            <div v-if="hasRole('graduate')" class="bg-orange-50 p-6 rounded-lg">
-                                <h3 class="text-lg font-semibold text-orange-900 mb-3">Graduate</h3>
-                                <ul class="space-y-2 text-orange-700">
-                                    <li>• Browse Job Openings</li>
-                                    <li>• Apply for Jobs</li>
-                                    <li>• Update Profile</li>
-                                    <li>• View Classmates</li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="mt-8 p-4 bg-gray-50 rounded-lg">
-                            <p class="text-gray-600">
-                                🎉 <strong>Congratulations!</strong> Your Laravel + Vue.js application is now running successfully with multi-tenancy, role-based authentication, and a complete user management system.
-                            </p>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </PullToRefresh>
+    </AppLayout>
 </template>
 
 <script setup>
-import { Head, Link } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { Head, Link } from '@inertiajs/vue3'
+import { computed, ref } from 'vue'
+import AppLayout from '@/layouts/AppLayout.vue'
+import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue'
+import PullToRefresh from '@/components/PullToRefresh.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
+import {
+    BellIcon,
+    BuildingOfficeIcon,
+    AcademicCapIcon,
+    BriefcaseIcon,
+    UserIcon,
+    PlusIcon,
+    DocumentTextIcon,
+    MagnifyingGlassIcon,
+    DocumentCheckIcon,
+    UserCircleIcon,
+    UsersIcon
+} from '@heroicons/vue/24/outline'
 
 const props = defineProps({
     auth: Object,
-});
+})
 
 // Helper function to check user roles
 const hasRole = (role) => {
-    return props.auth?.user?.roles?.some(userRole => userRole.name === role) || false;
-};
+    return props.auth?.user?.roles?.some(userRole => userRole.name === role) || false
+}
+
+// Helper function to get user initials
+const getUserInitials = (name) => {
+    if (!name) return 'U'
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+// Helper function to get app initials
+const getAppInitials = (name) => {
+    if (!name) return 'AP'
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+}
+
+// Refresh dashboard data
+const refreshDashboard = async () => {
+    // Simulate refresh delay
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    // In a real app, you would reload data here
+    window.location.reload()
+}
 </script>

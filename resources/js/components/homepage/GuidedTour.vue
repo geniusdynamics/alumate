@@ -2,14 +2,17 @@
   <div class="guided-tour" v-if="isActive">
     <!-- Tour Overlay -->
     <div 
-      class="fixed inset-0 z-50 bg-black bg-opacity-50 transition-opacity"
+      class="fixed inset-0 z-[100] bg-black/50 transition-opacity backdrop-blur-sm"
       @click="handleOverlayClick"
+      role="dialog"
+      aria-modal="true"
     >
       <!-- Tour Tooltip -->
       <div
         v-if="currentStep"
-        class="absolute z-60 pointer-events-auto bg-white rounded-lg shadow-xl max-w-sm p-6"
+        class="absolute z-[110] pointer-events-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm p-6"
         :style="tooltipStyle"
+        role="tooltip"
       >
         <!-- Step Counter -->
         <div class="flex items-center justify-between mb-4">
@@ -33,10 +36,10 @@
 
         <!-- Step Content -->
         <div class="mb-6">
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             {{ currentStep.title }}
           </h3>
-          <p class="text-gray-600 leading-relaxed">
+          <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
             {{ currentStep.description }}
           </p>
         </div>
@@ -75,11 +78,11 @@
     <!-- Tour Controls -->
     <div
       v-if="!currentStep && showControls"
-      class="fixed bottom-6 right-6 z-50"
+      class="fixed bottom-6 right-6 z-[100]"
     >
-      <div class="bg-white rounded-lg shadow-lg p-4 max-w-sm">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 max-w-sm border border-gray-200 dark:border-gray-700">
         <div class="flex items-center justify-between mb-3">
-          <h4 class="font-semibold text-gray-900">Platform Tour</h4>
+          <h4 class="font-semibold text-gray-900 dark:text-white">Platform Tour</h4>
           <button
             @click="closeTour"
             class="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
@@ -89,7 +92,7 @@
           </button>
         </div>
         
-        <p class="text-sm text-gray-600 mb-4">
+        <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
           Discover key features and learn how to make the most of the platform.
         </p>
         

@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+  <div class="fixed inset-0 bg-black/50 overflow-y-auto h-full w-full z-[50] backdrop-blur-sm" role="dialog" aria-modal="true">
     <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white">
       <div class="mt-3">
         <!-- Header -->

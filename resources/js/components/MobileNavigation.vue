@@ -1,7 +1,7 @@
 <template>
     <div class="mobile-navigation lg:hidden">
         <!-- Mobile Bottom Navigation -->
-        <div class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom">
+        <div class="fixed bottom-0 left-0 right-0 z-[50] bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 safe-area-bottom">
             <div class="grid grid-cols-5 h-16">
                 <Link
                     v-for="item in bottomNavItems"
@@ -26,7 +26,7 @@
         <!-- Mobile Pull-to-Refresh -->
         <div
             v-if="showPullToRefresh"
-            class="fixed top-0 left-0 right-0 z-40 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 transition-all duration-300"
+            class="fixed top-0 left-0 right-0 z-[40] bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 transition-all duration-300"
             :style="{ transform: `translateY(${pullDistance}px)` }"
         >
             <div class="flex items-center justify-center py-4">
@@ -44,7 +44,7 @@
         <!-- Mobile Search Overlay -->
         <div
             v-if="showMobileSearch"
-            class="fixed inset-0 z-50 bg-white dark:bg-gray-900"
+            class="fixed inset-0 z-[50] bg-white dark:bg-gray-900"
         >
             <div class="flex flex-col h-full">
                 <!-- Search Header -->
@@ -106,7 +106,7 @@
         <!-- Mobile Notification Panel -->
         <div
             v-if="showMobileNotifications"
-            class="fixed inset-0 z-50 bg-white dark:bg-gray-900"
+            class="fixed inset-0 z-[50] bg-white dark:bg-gray-900"
         >
             <div class="flex flex-col h-full">
                 <!-- Notifications Header -->
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Floating Action Button -->
-        <div class="fixed bottom-20 right-4 z-40">
+        <div class="fixed bottom-20 right-4 z-[40]">
             <button
                 @click="showQuickActions = !showQuickActions"
                 class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
@@ -157,7 +157,7 @@
         <!-- Backdrop for overlays -->
         <div
             v-if="showQuickActions"
-            class="fixed inset-0 z-30"
+            class="fixed inset-0 z-[30]"
             @click="showQuickActions = false"
         ></div>
     </div>

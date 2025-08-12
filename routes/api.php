@@ -25,6 +25,27 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// PWA Push Notification routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('push/vapid-key', function () {
+        return response()->json([
+            'publicKey' => config('services.vapid.public_key', 'demo-key-for-development')
+        ]);
+    });
+    
+    Route::post('push/subscribe', function (Request $request) {
+        // In a real implementation, you'd save the subscription to the database
+        // For now, just return success
+        return response()->json(['success' => true]);
+    });
+    
+    Route::post('push/unsubscribe', function (Request $request) {
+        // In a real implementation, you'd remove the subscription from the database
+        // For now, just return success
+        return response()->json(['success' => true]);
+    });
+});
+
 // Post routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class);
@@ -476,4 +497,12 @@ Route::prefix('ab-tests')->group(function () {
     Route::post('/', [App\Http\Controllers\ABTestController::class, 'createTest']);
     Route::patch('{testId}', [App\Http\Controllers\ABTestController::class, 'updateTest']);
     Route::delete('{testId}', [App\Http\Controllers\ABTestController::class, 'deleteTest']);
+});
+
+// Performance monitoring routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('performance/metrics', [App\Http\Controllers\Api\PerformanceController::class, 'storeMetrics']);
+    Route::get('performance/analytics', [App\Http\Controllers\Api\PerformanceController::class, 'getAnalytics']);
+    Route::get('performance/realtime', [App\Http\Controllers\Api\PerformanceController::class, 'getRealTimeMetrics']);
+    Route::get('performance/core-web-vitals', [App\Http\Controllers\Api\PerformanceController::class, 'getCoreWebVitals']);
 });

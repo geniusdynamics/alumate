@@ -8,6 +8,7 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { performanceService } from './services/PerformanceService';
 import { preloadService } from './services/PreloadService';
+import './pwa.js';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
