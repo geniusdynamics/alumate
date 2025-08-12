@@ -4,200 +4,55 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\EventFavorite;
-use App\Models\EventRegistration;
+use App\Models\EventAttendee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class EventController extends Controller
 {
-    public function register(Event $event)
-    {
-        $user = Auth::user();
-
-        // Check if event is still accepting registrations
-        if ($event->status !== 'published') {
-            throw ValidationException::withMessages([
-                'event' => 'This event is not available for registration.',
-            ]);
-        }
-
-        if ($event->registration_deadline && $event->registration_deadline < now()) {
-            throw ValidationException::withMessages([
-                'event' => 'Registration deadline has passed.',
-            ]);
-        }
-
-        if ($event->max_attendees && $event->registrations()->count() >= $event->max_attendees) {
-            throw ValidationException::withMessages([
-                'event' => 'This event is fully booked.',
-            ]);
-        }
-
-        // Check if user is already registered
-        $existingRegistration = EventRegistration::where('event_id', $event->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if ($existingRegistration) {
-            throw ValidationException::withMessages([
-                'event' => 'You are already registered for this event.',
-            ]);
-        }
-
-        // Create registration
-        $registration = EventRegistration::create([
-            'event_id' => $event->id,
-            'user_id' => $user->id,
-            'status' => 'confirmed',
-            'registered_at' => now(),
-        ]);
-
-        // TODO: Send confirmation email/notification
-
-        return response()->json([
-            'message' => 'Successfully registered for the event.',
-            'registration' => $registration,
-        ]);
-    }
-
-    public function unregister(Event $event)
-    {
-        $user = Auth::user();
-
-        // Find the registration
-        $registration = EventRegistration::where('event_id', $event->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (! $registration) {
-            throw ValidationException::withMessages([
-                'event' => 'You are not registered for this event.',
-            ]);
-        }
-
-        // Check if cancellation is allowed
-        if ($event->cancellation_deadline && $event->cancellation_deadline < now()) {
-            throw ValidationException::withMessages([
-                'event' => 'Cancellation deadline has passed.',
-            ]);
-        }
-
-        // Remove registration
-        $registration->delete();
-
-        return response()->json([
-            'message' => 'Successfully unregistered from the event.',
-        ]);
-    }
-
-    public function favorite(Event $event)
-    {
-        $user = Auth::user();
-
-        // Check if already favorited
-        $existingFavorite = EventFavorite::where('event_id', $event->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if ($existingFavorite) {
-            throw ValidationException::withMessages([
-                'event' => 'Event is already in your favorites.',
-            ]);
-        }
-
-        // Add to favorites
-        EventFavorite::create([
-            'event_id' => $event->id,
-            'user_id' => $user->id,
-        ]);
-
-        return response()->json([
-            'message' => 'Event added to favorites.',
-        ]);
-    }
-
-    public function unfavorite(Event $event)
-    {
-        $user = Auth::user();
-
-        // Find the favorite
-        $favorite = EventFavorite::where('event_id', $event->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if (! $favorite) {
-            throw ValidationException::withMessages([
-                'event' => 'Event is not in your favorites.',
-            ]);
-        }
-
-        // Remove from favorites
-        $favorite->delete();
-
-        return response()->json([
-            'message' => 'Event removed from favorites.',
-        ]);
-    }
-
-    public function submitFeedback(Request $request, Event $event)
+    /**
+     * RSVP to an event
+     */
+    public function rsvp(Request $request, Event $event)
     {
         $request->validate([
-            'rating' => 'required|integer|min:1|max:5',
-            'feedback' => 'nullable|string|max:2000',
-            'would_recommend' => 'required|boolean',
-            'suggestions' => 'nullable|string|max:1000',
+            'status' => ['required', Rule::in(['attending', 'maybe', 'not_attending'])]
         ]);
 
         $user = Auth::user();
 
-        // Check if user attended the event
-        $registration = EventRegistration::where('event_id', $event->id)
-            ->where('user_id', $user->id)
-            ->where('status', 'confirmed')
-            ->first();
-
-        if (! $registration) {
-            throw ValidationException::withMessages([
-                'event' => 'You must have attended this event to provide feedback.',
-            ]);
-        }
-
-        // Check if feedback already exists
-        $existingFeedback = \DB::table('event_feedback')
-            ->where('event_id', $event->id)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if ($existingFeedback) {
-            // Update existing feedback
-            \DB::table('event_feedback')
-                ->where('id', $existingFeedback->id)
-                ->update([
-                    'rating' => $request->rating,
-                    'feedback' => $request->feedback,
-                    'would_recommend' => $request->would_recommend,
-                    'suggestions' => $request->suggestions,
-                    'updated_at' => now(),
-                ]);
-        } else {
-            // Create new feedback
-            \DB::table('event_feedback')->insert([
+        $attendee = EventAttendee::updateOrCreate(
+            [
                 'event_id' => $event->id,
-                'user_id' => $user->id,
-                'rating' => $request->rating,
-                'feedback' => $request->feedback,
-                'would_recommend' => $request->would_recommend,
-                'suggestions' => $request->suggestions,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+                'user_id' => $user->id
+            ],
+            [
+                'status' => $request->status,
+                'rsvp_date' => now()
+            ]
+        );
 
         return response()->json([
-            'success' => true,
-            'message' => 'Thank you for your feedback!',
+            'message' => 'RSVP updated successfully',
+            'status' => $request->status,
+            'attendee' => $attendee
+        ]);
+    }
+
+    /**
+     * Cancel RSVP to an event
+     */
+    public function cancelRsvp(Event $event)
+    {
+        $user = Auth::user();
+
+        EventAttendee::where('event_id', $event->id)
+                    ->where('user_id', $user->id)
+                    ->delete();
+
+        return response()->json([
+            'message' => 'RSVP cancelled successfully'
         ]);
     }
 }

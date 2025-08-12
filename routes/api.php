@@ -506,3 +506,33 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('performance/realtime', [App\Http\Controllers\Api\PerformanceController::class, 'getRealTimeMetrics']);
     Route::get('performance/core-web-vitals', [App\Http\Controllers\Api\PerformanceController::class, 'getCoreWebVitals']);
 });
+
+// Dashboard Widget routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('dashboard/social-activity', [App\Http\Controllers\Api\DashboardController::class, 'socialActivity']);
+    Route::get('dashboard/alumni-suggestions', [App\Http\Controllers\Api\DashboardController::class, 'alumniSuggestions']);
+    Route::get('dashboard/job-recommendations', [App\Http\Controllers\Api\DashboardController::class, 'jobRecommendations']);
+    Route::get('dashboard/upcoming-events', [App\Http\Controllers\Api\DashboardController::class, 'upcomingEvents']);
+});
+
+// Connection routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('connections/request', [App\Http\Controllers\Api\ConnectionController::class, 'sendRequest']);
+    Route::post('connections/{connection}/accept', [App\Http\Controllers\Api\ConnectionController::class, 'acceptRequest']);
+    Route::post('connections/{connection}/decline', [App\Http\Controllers\Api\ConnectionController::class, 'declineRequest']);
+    Route::get('connections', [App\Http\Controllers\Api\ConnectionController::class, 'index']);
+    Route::get('connections/requests', [App\Http\Controllers\Api\ConnectionController::class, 'requests']);
+});
+
+// Job routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('jobs/{job}/save', [App\Http\Controllers\Api\JobController::class, 'save']);
+    Route::delete('jobs/{job}/save', [App\Http\Controllers\Api\JobController::class, 'unsave']);
+    Route::get('jobs/{job}', [App\Http\Controllers\Api\JobController::class, 'show']);
+});
+
+// Event RSVP routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('events/{event}/rsvp', [App\Http\Controllers\Api\EventController::class, 'rsvp']);
+    Route::delete('events/{event}/rsvp', [App\Http\Controllers\Api\EventController::class, 'cancelRsvp']);
+});

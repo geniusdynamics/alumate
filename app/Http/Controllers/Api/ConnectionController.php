@@ -7,191 +7,133 @@ use App\Models\Connection;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class ConnectionController extends Controller
 {
-    public function request(Request $request)
+    /**
+     * Send a connection request
+     */
+    public function sendRequest(Request $request)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'message' => 'nullable|string|max:500',
+            'message' => 'nullable|string|max:500'
         ]);
 
         $user = Auth::user();
         $targetUserId = $request->user_id;
 
-        // Check if user is trying to connect to themselves
-        if ($user->id === $targetUserId) {
-            throw ValidationException::withMessages([
-                'user_id' => 'You cannot connect to yourself.',
-            ]);
-        }
-
         // Check if connection already exists
         $existingConnection = Connection::where(function ($query) use ($user, $targetUserId) {
-            $query->where('user_id', $user->id)
-                ->where('connected_user_id', $targetUserId);
+            $query->where('requester_id', $user->id)
+                  ->where('recipient_id', $targetUserId);
         })->orWhere(function ($query) use ($user, $targetUserId) {
-            $query->where('user_id', $targetUserId)
-                ->where('connected_user_id', $user->id);
+            $query->where('requester_id', $targetUserId)
+                  ->where('recipient_id', $user->id);
         })->first();
 
         if ($existingConnection) {
-            throw ValidationException::withMessages([
-                'user_id' => 'Connection already exists or is pending.',
-            ]);
+            return response()->json([
+                'message' => 'Connection already exists or request already sent'
+            ], 422);
         }
 
-        // Create connection request
         $connection = Connection::create([
-            'user_id' => $user->id,
-            'connected_user_id' => $targetUserId,
+            'requester_id' => $user->id,
+            'recipient_id' => $targetUserId,
             'status' => 'pending',
-            'message' => $request->message,
+            'message' => $request->message
         ]);
 
-        // TODO: Send notification to target user
-
         return response()->json([
-            'message' => 'Connection request sent successfully.',
-            'connection' => $connection,
+            'message' => 'Connection request sent successfully',
+            'connection' => $connection
         ]);
     }
 
-    public function accept(Connection $connection)
+    /**
+     * Accept a connection request
+     */
+    public function acceptRequest(Connection $connection)
     {
         $user = Auth::user();
 
-        // Check if user is the recipient of the connection request
-        if ($connection->connected_user_id !== $user->id) {
-            abort(403, 'You can only accept connection requests sent to you.');
+        if ($connection->recipient_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Check if connection is still pending
-        if ($connection->status !== 'pending') {
-            throw ValidationException::withMessages([
-                'connection' => 'This connection request is no longer pending.',
-            ]);
-        }
-
-        // Accept the connection
         $connection->update([
             'status' => 'accepted',
-            'accepted_at' => now(),
-        ]);
-
-        // TODO: Send notification to requester
-
-        return response()->json([
-            'message' => 'Connection request accepted.',
-            'connection' => $connection->load(['user', 'connectedUser']),
-        ]);
-    }
-
-    public function decline(Connection $connection)
-    {
-        $user = Auth::user();
-
-        // Check if user is the recipient of the connection request
-        if ($connection->connected_user_id !== $user->id) {
-            abort(403, 'You can only decline connection requests sent to you.');
-        }
-
-        // Check if connection is still pending
-        if ($connection->status !== 'pending') {
-            throw ValidationException::withMessages([
-                'connection' => 'This connection request is no longer pending.',
-            ]);
-        }
-
-        // Decline the connection
-        $connection->update([
-            'status' => 'declined',
-            'declined_at' => now(),
+            'connected_at' => now()
         ]);
 
         return response()->json([
-            'message' => 'Connection request declined.',
+            'message' => 'Connection request accepted',
+            'connection' => $connection
         ]);
     }
 
-    public function remove(Connection $connection)
+    /**
+     * Decline a connection request
+     */
+    public function declineRequest(Connection $connection)
     {
         $user = Auth::user();
 
-        // Check if user is part of this connection
-        if ($connection->user_id !== $user->id && $connection->connected_user_id !== $user->id) {
-            abort(403, 'You can only remove your own connections.');
+        if ($connection->recipient_id !== $user->id) {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        // Check if connection is accepted
-        if ($connection->status !== 'accepted') {
-            throw ValidationException::withMessages([
-                'connection' => 'You can only remove accepted connections.',
-            ]);
-        }
-
-        // Remove the connection
-        $connection->delete();
+        $connection->update(['status' => 'declined']);
 
         return response()->json([
-            'message' => 'Connection removed successfully.',
+            'message' => 'Connection request declined'
         ]);
     }
 
-    public function startConversation(Request $request)
+    /**
+     * Get user's connections
+     */
+    public function index()
     {
-        $request->validate([
-            'participant_id' => 'required|exists:users,id',
-            'context' => 'nullable|string',
-            'context_id' => 'nullable|integer',
-            'initial_message' => 'nullable|string|max:1000',
-        ]);
-
         $user = Auth::user();
-        $participantId = $request->participant_id;
 
-        // Check if conversation already exists
-        $existingConversation = \DB::table('conversations')
-            ->where(function ($query) use ($user, $participantId) {
-                $query->whereJsonContains('participants', [$user->id, $participantId])
-                    ->orWhereJsonContains('participants', [$participantId, $user->id]);
+        $connections = Connection::with(['requester', 'recipient'])
+            ->where(function ($query) use ($user) {
+                $query->where('requester_id', $user->id)
+                      ->orWhere('recipient_id', $user->id);
             })
-            ->first();
+            ->where('status', 'accepted')
+            ->get()
+            ->map(function ($connection) use ($user) {
+                $connectedUser = $connection->requester_id === $user->id 
+                    ? $connection->recipient 
+                    : $connection->requester;
+                
+                return [
+                    'id' => $connection->id,
+                    'user' => $connectedUser,
+                    'connected_at' => $connection->connected_at
+                ];
+            });
 
-        if ($existingConversation) {
-            return response()->json([
-                'success' => true,
-                'data' => ['conversation_id' => $existingConversation->id],
-                'message' => 'Conversation already exists.',
-            ]);
-        }
+        return response()->json(['connections' => $connections]);
+    }
 
-        // Create new conversation
-        $conversationId = \DB::table('conversations')->insertGetId([
-            'participants' => json_encode([$user->id, $participantId]),
-            'context' => $request->context,
-            'context_id' => $request->context_id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+    /**
+     * Get pending connection requests
+     */
+    public function requests()
+    {
+        $user = Auth::user();
 
-        // Send initial message if provided
-        if ($request->initial_message) {
-            \DB::table('messages')->insert([
-                'conversation_id' => $conversationId,
-                'sender_id' => $user->id,
-                'content' => $request->initial_message,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        $requests = Connection::with(['requester'])
+            ->where('recipient_id', $user->id)
+            ->where('status', 'pending')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return response()->json([
-            'success' => true,
-            'data' => ['conversation_id' => $conversationId],
-            'message' => 'Conversation started successfully.',
-        ]);
+        return response()->json(['requests' => $requests]);
     }
 }

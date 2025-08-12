@@ -56,6 +56,24 @@
                                 </div>
                             </div>
 
+                            <!-- Dashboard Widgets -->
+                            <div class="mobile-grid lg:grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-6 mb-8">
+                                <!-- Quick Actions - Always visible -->
+                                <QuickActionsWidget />
+                                
+                                <!-- Social Activity Widget -->
+                                <SocialActivityWidget :limit="5" />
+                                
+                                <!-- Alumni Suggestions Widget -->
+                                <AlumniSuggestionsWidget :limit="3" />
+                                
+                                <!-- Job Recommendations Widget -->
+                                <JobRecommendationsWidget :limit="3" />
+                                
+                                <!-- Events Widget -->
+                                <EventsWidget :limit="3" />
+                            </div>
+
                             <!-- Role-based content -->
                             <div class="mobile-grid lg:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6">
                                 <!-- Super Admin Features -->
@@ -212,6 +230,11 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
 import ThemeToggle from '@/components/ThemeToggle.vue'
+import QuickActionsWidget from '@/Components/DashboardWidgets/QuickActionsWidget.vue'
+import SocialActivityWidget from '@/Components/DashboardWidgets/SocialActivityWidget.vue'
+import AlumniSuggestionsWidget from '@/Components/DashboardWidgets/AlumniSuggestionsWidget.vue'
+import JobRecommendationsWidget from '@/Components/DashboardWidgets/JobRecommendationsWidget.vue'
+import EventsWidget from '@/Components/DashboardWidgets/EventsWidget.vue'
 import {
     BellIcon,
     BuildingOfficeIcon,
