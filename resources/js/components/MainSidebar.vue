@@ -19,6 +19,7 @@ import {
     Heart
 } from 'lucide-vue-next';
 import SidebarLogo from './SidebarLogo.vue';
+import HelpButton from './onboarding/HelpButton.vue';
 
 const page = usePage();
 const user = page.props.auth?.user;
@@ -108,7 +109,7 @@ const footerNavItems: NavItem[] = [
 </script>
 
 <template>
-    <Sidebar>
+    <Sidebar data-tour="main-navigation">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>
@@ -125,7 +126,10 @@ const footerNavItems: NavItem[] = [
         </SidebarContent>
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
-            <NavUser />
+            <div class="flex items-center justify-between px-2 py-2">
+                <NavUser data-tour="profile" />
+                <HelpButton />
+            </div>
         </SidebarFooter>
     </Sidebar>
 </template>

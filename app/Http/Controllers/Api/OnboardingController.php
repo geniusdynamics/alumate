@@ -3,308 +3,375 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Graduate;
-use App\Models\User;
-use App\Models\UserOnboarding;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use App\Models\User;
+use App\Models\UserOnboardingState;
+use App\Models\OnboardingEvent;
 
 class OnboardingController extends Controller
 {
     /**
      * Get user's onboarding state
      */
-    public function getOnboardingState()
+    public function getOnboardingState(Request $request)
     {
         $user = Auth::user();
-
-        $onboarding = UserOnboarding::firstOrCreate(
+        
+        $state = UserOnboardingState::firstOrCreate(
             ['user_id' => $user->id],
             [
-                'is_new_user' => $user->created_at->diffInDays(now()) <= 7,
                 'has_completed_onboarding' => false,
-                'progress' => [
-                    'current_step' => 0,
-                    'completed_steps' => [],
-                    'skipped_steps' => [],
-                ],
-                'preferences' => [
-                    'show_feature_spotlights' => true,
-                    'show_profile_completion' => true,
-                    'show_whats_new' => true,
-                    'tour_speed' => 'normal',
-                ],
+                'has_skipped_onboarding' => false,
+                'completed_steps' => [],
+                'last_active_step' => 0,
+                'profile_completion_dismissed' => false,
+                'feature_discovery_viewed' => false,
                 'explored_features' => [],
-                'dismissed_prompts' => [],
+                'whats_new_viewed' => [],
+                'preferences' => [
+                    'show_tips' => true,
+                    'auto_show_updates' => true,
+                    'tour_speed' => 'normal'
+                ]
             ]
         );
 
         return response()->json([
             'success' => true,
-            'state' => [
-                'is_new_user' => $onboarding->is_new_user,
-                'has_completed_onboarding' => $onboarding->has_completed_onboarding,
-                'progress' => $onboarding->progress,
-                'preferences' => $onboarding->preferences,
-                'explored_features' => $onboarding->explored_features,
-                'dismissed_prompts' => $onboarding->dismissed_prompts,
-            ],
+            'state' => $state
         ]);
     }
 
     /**
-     * Get new features for discovery
+     * Update user's onboarding state
      */
-    public function getNewFeatures()
+    public function updateOnboardingState(Request $request)
     {
         $user = Auth::user();
-        $onboarding = UserOnboarding::where('user_id', $user->id)->first();
+        
+        $request->validate([
+            'has_completed_onboarding' => 'sometimes|boolean',
+            'has_skipped_onboarding' => 'sometimes|boolean',
+            'completed_steps' => 'sometimes|array',
+            'last_active_step' => 'sometimes|integer',
+            'profile_completion_dismissed' => 'sometimes|boolean',
+            'feature_discovery_viewed' => 'sometimes|boolean',
+            'explored_features' => 'sometimes|array',
+            'whats_new_viewed' => 'sometimes|array',
+            'preferences' => 'sometimes|array'
+        ]);
 
-        $lastViewedAt = $onboarding?->feature_discovery_viewed_at ?? $user->created_at;
-
-        $newFeatures = [
-            [
-                'id' => 'alumni-map',
-                'title' => 'Alumni Map Visualization',
-                'subtitle' => 'Discover alumni around the world',
-                'description' => 'Explore where your fellow alumni are located with our interactive world map. Find networking opportunities in your area or when traveling.',
-                'icon' => 'map',
-                'status' => 'new',
-                'tags' => ['Networking', 'Discovery', 'Geographic'],
-                'benefits' => [
-                    'Find alumni in your city or travel destinations',
-                    'Discover regional alumni groups and events',
-                    'Visualize the global reach of your network',
-                ],
-                'howToUse' => [
-                    'Navigate to Alumni Directory',
-                    'Click on the Map View tab',
-                    'Use filters to find specific alumni',
-                    'Click on markers to view profiles',
-                ],
-                'route' => '/alumni/directory?view=map',
-                'actionText' => 'Explore Map',
-            ],
-            [
-                'id' => 'achievement-celebrations',
-                'title' => 'Achievement Celebrations',
-                'subtitle' => 'Celebrate your milestones',
-                'description' => 'Automatically detect and celebrate career milestones, achievements, and special moments with your alumni network.',
-                'icon' => 'trophy',
-                'status' => 'new',
-                'tags' => ['Recognition', 'Social', 'Milestones'],
-                'benefits' => [
-                    'Get recognized for your achievements',
-                    'Celebrate fellow alumni successes',
-                    'Build stronger community connections',
-                ],
-                'howToUse' => [
-                    'Update your career timeline',
-                    'Share achievements in posts',
-                    'Engage with others\' celebrations',
-                    'Set achievement goals',
-                ],
-                'route' => '/career/timeline',
-                'actionText' => 'View Achievements',
-            ],
-            [
-                'id' => 'smart-job-matching',
-                'title' => 'Smart Job Matching',
-                'subtitle' => 'AI-powered career opportunities',
-                'description' => 'Get personalized job recommendations based on your network connections, skills, and career goals using advanced AI matching.',
-                'icon' => 'briefcase',
-                'status' => 'updated',
-                'tags' => ['AI', 'Jobs', 'Networking'],
-                'benefits' => [
-                    'Discover hidden job opportunities',
-                    'Leverage your alumni network for referrals',
-                    'Get matched with roles that fit your goals',
-                ],
-                'howToUse' => [
-                    'Complete your profile and skills',
-                    'Set your job preferences',
-                    'Review daily recommendations',
-                    'Request introductions through connections',
-                ],
-                'route' => '/jobs/dashboard',
-                'actionText' => 'See Recommendations',
-            ],
-            [
-                'id' => 'mentorship-hub',
-                'title' => 'Enhanced Mentorship Hub',
-                'subtitle' => 'Connect with mentors and mentees',
-                'description' => 'Find mentors in your field or become a mentor yourself with our improved matching system and session management tools.',
-                'icon' => 'academic',
-                'status' => 'updated',
-                'tags' => ['Mentorship', 'Learning', 'Growth'],
-                'benefits' => [
-                    'Get guidance from experienced alumni',
-                    'Give back by mentoring others',
-                    'Track your mentorship progress',
-                ],
-                'howToUse' => [
-                    'Browse available mentors',
-                    'Send mentorship requests',
-                    'Schedule regular sessions',
-                    'Set learning goals together',
-                ],
-                'route' => '/career/mentorship-hub',
-                'actionText' => 'Find Mentors',
-            ],
-        ];
-
-        // Filter features based on user's role and preferences
-        $userRole = $user->roles->first()?->name ?? 'graduate';
-        $filteredFeatures = collect($newFeatures)->filter(function ($feature) use ($userRole) {
-            // Show all features to graduates, filter for other roles
-            if ($userRole === 'graduate') {
-                return true;
-            }
-            if ($userRole === 'employer' && in_array($feature['id'], ['smart-job-matching'])) {
-                return true;
-            }
-            if ($userRole === 'student' && in_array($feature['id'], ['mentorship-hub', 'achievement-celebrations'])) {
-                return true;
-            }
-
-            return false;
-        });
+        $state = UserOnboardingState::updateOrCreate(
+            ['user_id' => $user->id],
+            $request->only([
+                'has_completed_onboarding',
+                'has_skipped_onboarding', 
+                'completed_steps',
+                'last_active_step',
+                'profile_completion_dismissed',
+                'feature_discovery_viewed',
+                'explored_features',
+                'whats_new_viewed',
+                'preferences'
+            ])
+        );
 
         return response()->json([
             'success' => true,
-            'features' => $filteredFeatures->values(),
+            'state' => $state
+        ]);
+    }
+
+    /**
+     * Get new features for feature discovery
+     */
+    public function getNewFeatures(Request $request)
+    {
+        $user = Auth::user();
+        
+        // Get features released since user's last login or registration
+        $lastLoginDate = $user->last_login_at ?? $user->created_at;
+        
+        $newFeatures = [
+            [
+                'id' => 'alumni-map',
+                'title' => 'Alumni Map',
+                'description' => 'Discover alumni around the world with our interactive map visualization.',
+                'category' => 'networking',
+                'icon' => 'map',
+                'status' => 'new',
+                'tags' => ['networking', 'visualization', 'global'],
+                'benefits' => [
+                    'Find alumni in your city or travel destinations',
+                    'Discover regional alumni clusters and communities',
+                    'Plan networking events based on geographic data'
+                ],
+                'howItWorks' => [
+                    'View the interactive world map',
+                    'Filter by graduation year, industry, or interests',
+                    'Click on markers to see alumni profiles',
+                    'Connect with nearby alumni'
+                ],
+                'tips' => [
+                    'Enable location sharing for better recommendations',
+                    'Use the cluster view for dense metropolitan areas',
+                    'Set up location alerts for travel networking'
+                ],
+                'route' => '/alumni/map',
+                'actionText' => 'Explore Map'
+            ],
+            [
+                'id' => 'job-matching-graph',
+                'title' => 'Smart Job Matching',
+                'description' => 'Get job recommendations based on your alumni network connections.',
+                'category' => 'career',
+                'icon' => 'briefcase',
+                'status' => 'updated',
+                'tags' => ['career', 'networking', 'ai'],
+                'benefits' => [
+                    'Jobs ranked by your network strength',
+                    'See mutual connections at companies',
+                    'Request warm introductions'
+                ],
+                'howItWorks' => [
+                    'Browse personalized job recommendations',
+                    'View connection insights for each role',
+                    'Request introductions through mutual contacts',
+                    'Track application progress'
+                ],
+                'tips' => [
+                    'Complete your profile for better matches',
+                    'Connect with more alumni to improve rankings',
+                    'Set up job alerts for specific criteria'
+                ],
+                'route' => '/career/jobs',
+                'actionText' => 'Find Jobs'
+            ],
+            [
+                'id' => 'real-time-updates',
+                'title' => 'Real-time Updates',
+                'description' => 'Get instant notifications and live updates across the platform.',
+                'category' => 'social',
+                'icon' => 'sparkles',
+                'status' => 'new',
+                'tags' => ['real-time', 'notifications', 'engagement'],
+                'benefits' => [
+                    'Instant notifications for likes and comments',
+                    'Live updates on posts and events',
+                    'Real-time connection status'
+                ],
+                'howItWorks' => [
+                    'Enable push notifications in your browser',
+                    'Customize notification preferences',
+                    'See live activity indicators',
+                    'Get instant updates on mobile'
+                ],
+                'tips' => [
+                    'Customize notification frequency to avoid overwhelm',
+                    'Use quiet hours for focused work time',
+                    'Enable location-based event notifications'
+                ],
+                'route' => '/settings/notifications',
+                'actionText' => 'Configure Notifications'
+            ]
+        ];
+
+        // Filter features based on user's role and interests
+        $filteredFeatures = $this->filterFeaturesByUserProfile($newFeatures, $user);
+
+        return response()->json([
+            'success' => true,
+            'features' => $filteredFeatures
         ]);
     }
 
     /**
      * Get profile completion data
      */
-    public function getProfileCompletion()
+    public function getProfileCompletion(Request $request)
     {
         $user = Auth::user();
-        $graduate = Graduate::where('user_id', $user->id)->first();
-
-        $completionData = $this->calculateProfileCompletion($user, $graduate);
+        
+        $completionData = $this->calculateProfileCompletion($user);
 
         return response()->json([
             'success' => true,
-            'completion_data' => $completionData,
+            'completion_data' => $completionData
         ]);
     }
 
     /**
      * Get what's new updates
      */
-    public function getWhatsNewUpdates()
+    public function getWhatsNew(Request $request)
     {
         $user = Auth::user();
-        $onboarding = UserOnboarding::where('user_id', $user->id)->first();
-
-        $lastViewedAt = $onboarding?->whats_new_viewed_at ?? $user->created_at;
-
+        
         $updates = [
             [
-                'id' => 'platform-update-2025-01',
-                'title' => 'Enhanced Social Features',
-                'description' => 'We\'ve improved the social timeline with better engagement tools and real-time updates.',
+                'id' => 'platform-update-2024-08',
+                'title' => 'Enhanced Alumni Directory',
+                'description' => 'New search filters and connection insights make it easier to find and connect with alumni.',
                 'type' => 'feature',
-                'created_at' => '2025-01-15T00:00:00Z',
-                'read' => $lastViewedAt > '2025-01-15',
+                'created_at' => '2024-08-01T00:00:00Z',
                 'features' => [
-                    'Real-time post updates and notifications',
-                    'Improved reaction system with more options',
-                    'Better comment threading and mentions',
-                    'Enhanced post sharing capabilities',
+                    'Advanced search with natural language queries',
+                    'Connection strength indicators',
+                    'Mutual connection insights',
+                    'Industry and location clustering'
                 ],
                 'actions' => [
                     [
-                        'label' => 'Try It Now',
+                        'label' => 'Try New Search',
                         'type' => 'navigate',
-                        'url' => '/social/timeline',
-                    ],
+                        'url' => '/alumni/directory'
+                    ]
                 ],
+                'read' => false
             ],
             [
-                'id' => 'platform-update-2025-02',
-                'title' => 'Career Development Tools',
-                'description' => 'New tools to help you track and advance your career with alumni support.',
-                'type' => 'feature',
-                'created_at' => '2025-01-20T00:00:00Z',
-                'read' => $lastViewedAt > '2025-01-20',
+                'id' => 'mobile-improvements-2024-08',
+                'title' => 'Mobile Experience Improvements',
+                'description' => 'Better mobile navigation, touch interactions, and offline support.',
+                'type' => 'improvement',
+                'created_at' => '2024-08-05T00:00:00Z',
                 'features' => [
-                    'Visual career timeline with milestones',
-                    'Goal setting and progress tracking',
-                    'Skills assessment and development',
-                    'Mentorship matching improvements',
+                    'Improved mobile navigation',
+                    'Better touch target sizes',
+                    'Offline content caching',
+                    'Pull-to-refresh on key pages'
                 ],
                 'actions' => [
                     [
-                        'label' => 'Update Career',
-                        'type' => 'navigate',
-                        'url' => '/career/timeline',
-                    ],
+                        'label' => 'Install App',
+                        'type' => 'feature-spotlight',
+                        'feature' => [
+                            'id' => 'pwa-install',
+                            'title' => 'Install Alumni App',
+                            'description' => 'Add the alumni platform to your home screen for a native app experience.'
+                        ]
+                    ]
                 ],
-            ],
-            [
-                'id' => 'security-update-2025-01',
-                'title' => 'Security Enhancements',
-                'description' => 'We\'ve implemented additional security measures to protect your data.',
-                'type' => 'security',
-                'created_at' => '2025-01-10T00:00:00Z',
-                'read' => $lastViewedAt > '2025-01-10',
-                'features' => [
-                    'Enhanced two-factor authentication',
-                    'Improved password security requirements',
-                    'Better privacy controls',
-                    'Audit logging for account activities',
-                ],
-            ],
+                'read' => false
+            ]
         ];
 
         return response()->json([
             'success' => true,
-            'updates' => $updates,
+            'updates' => $updates
         ]);
     }
 
     /**
-     * Mark onboarding as completed
+     * Record onboarding events for analytics
+     */
+    public function recordEvent(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'event_type' => 'required|string',
+            'data' => 'sometimes|array',
+            'timestamp' => 'sometimes|date'
+        ]);
+
+        OnboardingEvent::create([
+            'user_id' => $user->id,
+            'event_type' => $request->event_type,
+            'data' => $request->data ?? [],
+            'timestamp' => $request->timestamp ?? now()
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    /**
+     * Save user interests from onboarding
+     */
+    public function saveUserInterests(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'interests' => 'required|array',
+            'interests.*' => 'string'
+        ]);
+
+        // Update user's interests
+        $user->update([
+            'interests' => $request->interests
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    /**
+     * Complete onboarding
      */
     public function completeOnboarding(Request $request)
     {
         $user = Auth::user();
+        
+        $request->validate([
+            'completed_steps' => 'sometimes|array'
+        ]);
 
-        UserOnboarding::updateOrCreate(
+        UserOnboardingState::updateOrCreate(
             ['user_id' => $user->id],
             [
                 'has_completed_onboarding' => true,
-                'completed_at' => now(),
-                'progress' => array_merge(
-                    UserOnboarding::where('user_id', $user->id)->value('progress') ?? [],
-                    ['completed_steps' => $request->input('completed_steps', [])]
-                ),
+                'completed_steps' => $request->completed_steps ?? [],
+                'last_active_step' => 0
             ]
         );
 
-        return response()->json(['success' => true]);
+        // Record completion event
+        OnboardingEvent::create([
+            'user_id' => $user->id,
+            'event_type' => 'onboarding_completed',
+            'data' => ['completed_steps' => $request->completed_steps ?? []],
+            'timestamp' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Onboarding completed successfully'
+        ]);
     }
 
     /**
-     * Mark onboarding as skipped
+     * Skip onboarding
      */
-    public function skipOnboarding()
+    public function skipOnboarding(Request $request)
     {
         $user = Auth::user();
 
-        UserOnboarding::updateOrCreate(
+        UserOnboardingState::updateOrCreate(
             ['user_id' => $user->id],
             [
-                'has_completed_onboarding' => true,
-                'skipped_at' => now(),
+                'has_skipped_onboarding' => true,
+                'has_completed_onboarding' => true
             ]
         );
 
-        return response()->json(['success' => true]);
+        // Record skip event
+        OnboardingEvent::create([
+            'user_id' => $user->id,
+            'event_type' => 'onboarding_skipped',
+            'data' => [],
+            'timestamp' => now()
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Onboarding skipped'
+        ]);
     }
 
     /**
@@ -313,33 +380,39 @@ class OnboardingController extends Controller
     public function markFeatureExplored(Request $request)
     {
         $user = Auth::user();
-        $featureId = $request->input('feature_id');
+        
+        $request->validate([
+            'feature_id' => 'required|string'
+        ]);
 
-        $onboarding = UserOnboarding::where('user_id', $user->id)->first();
-        if ($onboarding) {
-            $exploredFeatures = $onboarding->explored_features ?? [];
-            if (! in_array($featureId, $exploredFeatures)) {
-                $exploredFeatures[] = $featureId;
-                $onboarding->update(['explored_features' => $exploredFeatures]);
-            }
+        $state = UserOnboardingState::firstOrCreate(['user_id' => $user->id]);
+        $exploredFeatures = $state->explored_features ?? [];
+        
+        if (!in_array($request->feature_id, $exploredFeatures)) {
+            $exploredFeatures[] = $request->feature_id;
+            $state->update(['explored_features' => $exploredFeatures]);
         }
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**
      * Mark feature discovery as viewed
      */
-    public function markFeatureDiscoveryViewed()
+    public function markFeatureDiscoveryViewed(Request $request)
     {
         $user = Auth::user();
 
-        UserOnboarding::updateOrCreate(
+        UserOnboardingState::updateOrCreate(
             ['user_id' => $user->id],
-            ['feature_discovery_viewed_at' => now()]
+            ['feature_discovery_viewed' => true]
         );
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**
@@ -348,33 +421,42 @@ class OnboardingController extends Controller
     public function dismissPrompt(Request $request)
     {
         $user = Auth::user();
-        $prompt = $request->input('prompt');
+        
+        $request->validate([
+            'prompt' => 'required|string'
+        ]);
 
-        $onboarding = UserOnboarding::where('user_id', $user->id)->first();
-        if ($onboarding) {
-            $dismissedPrompts = $onboarding->dismissed_prompts ?? [];
-            if (! in_array($prompt, $dismissedPrompts)) {
-                $dismissedPrompts[] = $prompt;
-                $onboarding->update(['dismissed_prompts' => $dismissedPrompts]);
-            }
+        if ($request->prompt === 'profile-completion') {
+            UserOnboardingState::updateOrCreate(
+                ['user_id' => $user->id],
+                ['profile_completion_dismissed' => true]
+            );
         }
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**
      * Mark what's new as viewed
      */
-    public function markWhatsNewViewed()
+    public function markWhatsNewViewed(Request $request)
     {
         $user = Auth::user();
 
-        UserOnboarding::updateOrCreate(
-            ['user_id' => $user->id],
-            ['whats_new_viewed_at' => now()]
-        );
+        $state = UserOnboardingState::firstOrCreate(['user_id' => $user->id]);
+        $whatsNewViewed = $state->whats_new_viewed ?? [];
+        
+        // Mark all current updates as viewed
+        $currentUpdates = ['platform-update-2024-08', 'mobile-improvements-2024-08'];
+        $whatsNewViewed = array_unique(array_merge($whatsNewViewed, $currentUpdates));
+        
+        $state->update(['whats_new_viewed' => $whatsNewViewed]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true
+        ]);
     }
 
     /**
@@ -383,91 +465,188 @@ class OnboardingController extends Controller
     public function updatePreferences(Request $request)
     {
         $user = Auth::user();
+        
+        $request->validate([
+            'show_tips' => 'sometimes|boolean',
+            'auto_show_updates' => 'sometimes|boolean',
+            'tour_speed' => 'sometimes|string|in:slow,normal,fast'
+        ]);
 
-        $onboarding = UserOnboarding::updateOrCreate(
-            ['user_id' => $user->id],
-            ['preferences' => $request->all()]
-        );
+        $state = UserOnboardingState::firstOrCreate(['user_id' => $user->id]);
+        $preferences = $state->preferences ?? [];
+        
+        $preferences = array_merge($preferences, $request->only([
+            'show_tips', 'auto_show_updates', 'tour_speed'
+        ]));
+        
+        $state->update(['preferences' => $preferences]);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success' => true,
+            'preferences' => $preferences
+        ]);
+    }
+
+    /**
+     * Get contextual help content
+     */
+    public function getContextualHelp(Request $request, $elementId)
+    {
+        $helpContent = $this->getHelpContentForElement($elementId);
+        
+        if (!$helpContent) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Help content not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'content' => $helpContent
+        ]);
     }
 
     /**
      * Calculate profile completion percentage and missing sections
      */
-    private function calculateProfileCompletion($user, $graduate)
+    private function calculateProfileCompletion(User $user)
     {
         $sections = [
             'basic_info' => [
                 'title' => 'Basic Information',
-                'description' => 'Name, email, and contact details',
-                'icon' => 'contact',
-                'weight' => 15,
-                'completed' => ! empty($user->name) && ! empty($user->email),
-            ],
-            'photo' => [
-                'title' => 'Profile Photo',
-                'description' => 'Add a professional photo',
+                'description' => 'Name, email, and profile photo',
                 'icon' => 'photo',
-                'weight' => 10,
-                'completed' => ! empty($user->avatar_url),
+                'weight' => 15,
+                'completed' => !empty($user->name) && !empty($user->email) && !empty($user->avatar_url)
             ],
             'bio' => [
                 'title' => 'Professional Bio',
-                'description' => 'Tell others about yourself',
+                'description' => 'Tell your story and highlight your expertise',
                 'icon' => 'bio',
-                'weight' => 15,
-                'completed' => ! empty($graduate?->bio) && strlen($graduate?->bio) > 50,
+                'weight' => 10,
+                'completed' => !empty($user->bio) && strlen($user->bio) > 50
             ],
             'education' => [
                 'title' => 'Education History',
-                'description' => 'Add your educational background',
+                'description' => 'Add your degrees and certifications',
                 'icon' => 'education',
                 'weight' => 20,
-                'completed' => $graduate && $graduate->educations()->count() > 0,
+                'completed' => $user->educations()->count() > 0
             ],
             'work_experience' => [
                 'title' => 'Work Experience',
-                'description' => 'Add your career history',
+                'description' => 'Share your career journey',
                 'icon' => 'work',
                 'weight' => 25,
-                'completed' => $graduate && $graduate->careerTimeline()->count() > 0,
-            ],
-            'skills' => [
-                'title' => 'Skills & Expertise',
-                'description' => 'Showcase your abilities',
-                'icon' => 'skills',
-                'weight' => 10,
-                'completed' => $graduate && $graduate->skills()->count() >= 3,
+                'completed' => $user->careerEntries()->count() > 0
             ],
             'location' => [
                 'title' => 'Location',
-                'description' => 'Where are you based?',
+                'description' => 'Help alumni find you locally',
                 'icon' => 'location',
-                'weight' => 5,
-                'completed' => ! empty($graduate?->location),
+                'weight' => 10,
+                'completed' => !empty($user->location)
             ],
+            'skills' => [
+                'title' => 'Skills & Expertise',
+                'description' => 'Showcase your professional skills',
+                'icon' => 'academic',
+                'weight' => 15,
+                'completed' => $user->skills()->count() >= 3
+            ],
+            'social_profiles' => [
+                'title' => 'Social Profiles',
+                'description' => 'Connect your LinkedIn, GitHub, etc.',
+                'icon' => 'social',
+                'weight' => 5,
+                'completed' => $user->socialProfiles()->count() > 0
+            ]
         ];
 
         $totalWeight = array_sum(array_column($sections, 'weight'));
-        $completedWeight = array_sum(array_map(function ($section) {
-            return $section['completed'] ? $section['weight'] : 0;
-        }, $sections));
+        $completedWeight = 0;
+        $missingSections = [];
+
+        foreach ($sections as $key => $section) {
+            if ($section['completed']) {
+                $completedWeight += $section['weight'];
+            } else {
+                $missingSections[] = [
+                    'key' => $key,
+                    'title' => $section['title'],
+                    'description' => $section['description'],
+                    'icon' => $section['icon']
+                ];
+            }
+        }
 
         $completionPercentage = round(($completedWeight / $totalWeight) * 100);
 
-        $missingSections = array_filter($sections, function ($section) {
-            return ! $section['completed'];
-        });
-
         return [
             'completion_percentage' => $completionPercentage,
-            'completed_sections' => array_filter($sections, function ($section) {
-                return $section['completed'];
-            }),
-            'missing_sections' => array_map(function ($key, $section) {
-                return array_merge($section, ['key' => $key]);
-            }, array_keys($missingSections), $missingSections),
+            'missing_sections' => $missingSections,
+            'total_sections' => count($sections),
+            'completed_sections' => count($sections) - count($missingSections)
         ];
+    }
+
+    /**
+     * Filter features based on user profile and role
+     */
+    private function filterFeaturesByUserProfile(array $features, User $user)
+    {
+        // For now, return all features
+        // In the future, filter based on user role, interests, etc.
+        return $features;
+    }
+
+    /**
+     * Get help content for specific UI elements
+     */
+    private function getHelpContentForElement($elementId)
+    {
+        $helpContent = [
+            'post-creator' => [
+                'title' => 'Create a Post',
+                'description' => 'Share updates, achievements, or insights with your alumni network.',
+                'steps' => [
+                    'Click in the text area to start writing',
+                    'Add images, videos, or links to enrich your post',
+                    'Choose your audience (circles, groups, or public)',
+                    'Click "Post" to share with your network'
+                ],
+                'tips' => [
+                    'Posts with images get 3x more engagement',
+                    'Use @mentions to notify specific alumni',
+                    'Add relevant hashtags to increase discoverability'
+                ],
+                'actions' => [
+                    [
+                        'label' => 'Try It Now',
+                        'type' => 'event',
+                        'event' => 'focus-post-creator'
+                    ]
+                ]
+            ],
+            'alumni-search' => [
+                'title' => 'Search Alumni',
+                'description' => 'Find and connect with alumni using our powerful search tools.',
+                'steps' => [
+                    'Enter a name, company, or skill in the search box',
+                    'Use filters to narrow down results',
+                    'Click on profiles to learn more',
+                    'Send connection requests with personal messages'
+                ],
+                'tips' => [
+                    'Search by graduation year to find classmates',
+                    'Filter by location to find local alumni',
+                    'Look for mutual connections for warm introductions'
+                ],
+                'learnMoreUrl' => '/help/alumni-search'
+            ]
+        ];
+
+        return $helpContent[$elementId] ?? null;
     }
 }

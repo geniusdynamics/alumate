@@ -23,6 +23,11 @@ class User extends Authenticatable
         'password',
         'phone',
         'avatar',
+        'avatar_url',
+        'bio',
+        'location',
+        'website',
+        'interests',
         'institution_id',
         'profile_data',
         'preferences',
@@ -78,6 +83,7 @@ class User extends Authenticatable
             'profile_data' => 'array',
             'preferences' => 'array',
             'notification_preferences' => 'array',
+            'interests' => 'array',
             'two_factor_enabled' => 'boolean',
             'is_suspended' => 'boolean',
         ];
@@ -132,6 +138,33 @@ class User extends Authenticatable
     public function sessionSecurity()
     {
         return $this->hasMany(SessionSecurity::class);
+    }
+
+    // Onboarding relationships
+    public function onboardingState()
+    {
+        return $this->hasOne(UserOnboardingState::class);
+    }
+
+    public function onboardingEvents()
+    {
+        return $this->hasMany(OnboardingEvent::class);
+    }
+
+    // Career relationships
+    public function careerEntries()
+    {
+        return $this->hasMany(CareerTimeline::class);
+    }
+
+    public function educations()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    public function skills()
+    {
+        return $this->belongsToMany(Skill::class, 'user_skills');
     }
 
     // Social relationships

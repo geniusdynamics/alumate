@@ -14,6 +14,7 @@ declare global {
   const EffectScope: typeof import('vue')['EffectScope']
   const HeatMapService: typeof import('./resources/js/services/HeatMapService')['HeatMapService']
   const LoadingPresets: typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']
+  const OnboardingService: typeof import('./resources/js/services/OnboardingService.js')['default']
   const PerformanceService: typeof import('./resources/js/services/PerformanceService')['default']
   const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
   const SEOService: typeof import('./resources/js/services/SEOService')['default']
@@ -410,6 +411,7 @@ declare module 'vue' {
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly HeatMapService: UnwrapRef<typeof import('./resources/js/services/HeatMapService')['HeatMapService']>
     readonly LoadingPresets: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']>
+    readonly OnboardingService: UnwrapRef<typeof import('./resources/js/services/OnboardingService.js')['default']>
     readonly PerformanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['default']>
     readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
     readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>

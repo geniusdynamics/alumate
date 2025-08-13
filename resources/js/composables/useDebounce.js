@@ -13,8 +13,8 @@ export function useDebouncedRef(source, delay = 300) {
     const debounced = ref(source.value)
     
     watch(source, (newValue) => {
-        clearTimeout(debounced._timeoutId)
-        debounced._timeoutId = setTimeout(() => {
+        clearTimeout(debounced.value._timeoutId)
+        debounced.value._timeoutId = setTimeout(() => {
             debounced.value = newValue
         }, delay)
     })

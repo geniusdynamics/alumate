@@ -30,7 +30,7 @@
             </div>
 
             <!-- Main Content -->
-            <div class="mobile-container lg:py-12">
+            <div class="mobile-container lg:py-12" data-tour="dashboard">
                 <div class="max-w-7xl mx-auto lg:px-6">
                     <div class="card-mobile lg:bg-white lg:shadow-sm lg:rounded-lg">
                         <div class="lg:p-6">

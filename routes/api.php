@@ -449,6 +449,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/career/timeline-examples', [StudentCareerGuidanceController::class, 'getCareerTimelineExamples']);
 });
 
+// Onboarding routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('onboarding/state', [App\Http\Controllers\Api\OnboardingController::class, 'getOnboardingState']);
+    Route::post('onboarding/state', [App\Http\Controllers\Api\OnboardingController::class, 'updateOnboardingState']);
+    Route::get('onboarding/new-features', [App\Http\Controllers\Api\OnboardingController::class, 'getNewFeatures']);
+    Route::get('onboarding/profile-completion', [App\Http\Controllers\Api\OnboardingController::class, 'getProfileCompletion']);
+    Route::get('onboarding/whats-new', [App\Http\Controllers\Api\OnboardingController::class, 'getWhatsNew']);
+    Route::post('onboarding/events', [App\Http\Controllers\Api\OnboardingController::class, 'recordEvent']);
+    Route::post('user/interests', [App\Http\Controllers\Api\OnboardingController::class, 'saveUserInterests']);
+    Route::get('onboarding/help/{elementId}', [App\Http\Controllers\Api\OnboardingController::class, 'getContextualHelp']);
+});
+
 // Alumni Map routes
 Route::middleware('auth:sanctum')->group(function () {
     // Map data endpoints

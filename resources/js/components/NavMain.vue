@@ -64,6 +64,20 @@ const isActiveRoute = (href: string) => {
     // Exact match or starts with the href (for nested routes)
     return currentPath === href || (href !== '/dashboard' && currentPath.startsWith(href));
 };
+
+// Get tour attribute for navigation items
+const getTourAttribute = (title: string) => {
+    const tourMap: Record<string, string> = {
+        'Social Timeline': 'social-timeline',
+        'Alumni Directory': 'alumni-directory',
+        'Career Center': 'career-center',
+        'Job Dashboard': 'job-dashboard',
+        'Events': 'events',
+        'Success Stories': 'success-stories',
+        'Dashboard': 'dashboard'
+    };
+    return tourMap[title] || null;
+};
 </script>
 
 <template>
@@ -86,6 +100,7 @@ const isActiveRoute = (href: string) => {
                         <Link 
                             :href="item.href"
                             :aria-current="isActiveRoute(item.href) ? 'page' : undefined"
+                            :data-tour="getTourAttribute(item.title)"
                             class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:outline-none"
                         >
                             <component 
