@@ -25,6 +25,15 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// PWA Health Check
+Route::get('/ping', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toISOString(),
+        'message' => 'Alumni Platform API is online'
+    ]);
+});
+
 // PWA Push Notification routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('push/vapid-key', function () {
@@ -110,6 +119,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('alumni/{userId}/connect', [AlumniDirectoryController::class, 'connect']);
 });
 
+// Alumni Map routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('alumni/map-data', [\App\Http\Controllers\Api\AlumniMapController::class, 'getMapData']);
+    Route::post('alumni/map-clusters', [\App\Http\Controllers\Api\AlumniMapController::class, 'getClusters']);
+    Route::get('alumni/map-stats', [\App\Http\Controllers\Api\AlumniMapController::class, 'getStats']);
+    Route::post('alumni/nearby', [\App\Http\Controllers\Api\AlumniMapController::class, 'getNearby']);
+    Route::post('user/location-privacy', [\App\Http\Controllers\Api\AlumniMapController::class, 'updateLocationPrivacy']);
+    Route::post('user/location', [\App\Http\Controllers\Api\AlumniMapController::class, 'updateLocation']);
+    Route::get('geocode/reverse', [\App\Http\Controllers\Api\AlumniMapController::class, 'reverseGeocode']);
+});
+
 // Alumni Recommendations routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('recommendations', [\App\Http\Controllers\Api\RecommendationController::class, 'index']);
@@ -120,12 +140,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Advanced Search routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('search', [SearchController::class, 'search']);
+    Route::post('search', [SearchController::class, 'search']);
     Route::get('search/suggestions', [SearchController::class, 'suggestions']);
-    Route::post('search/save', [SearchController::class, 'saveSearch']);
-    Route::get('search/saved', [SearchController::class, 'getSavedSearches']);
-    Route::delete('search/saved/{searchId}', [SearchController::class, 'deleteSavedSearch']);
-    Route::put('search/alerts/{alertId}', [SearchController::class, 'updateSearchAlert']);
+    Route::post('saved-searches', [SearchController::class, 'saveSearch']);
+    Route::get('saved-searches', [SearchController::class, 'getSavedSearches']);
+    Route::put('saved-searches/{savedSearch}', [SearchController::class, 'updateSavedSearch']);
+    Route::delete('saved-searches/{savedSearch}', [SearchController::class, 'deleteSavedSearch']);
+    Route::post('saved-searches/{savedSearch}/run', [SearchController::class, 'runSavedSearch']);
+    Route::get('search/analytics', [SearchController::class, 'getSearchAnalytics']);
 });
 
 // Career Timeline routes

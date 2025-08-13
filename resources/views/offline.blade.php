@@ -3,16 +3,15 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Offline - {{ config('app.name', 'Alumni Platform') }}</title>
+    <title>Offline - Alumni Platform</title>
     
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     
-    <!-- Theme colors -->
+    <!-- Theme -->
     <meta name="theme-color" content="#3b82f6">
-    <meta name="msapplication-TileColor" content="#3b82f6">
     
     <style>
         * {
@@ -22,7 +21,7 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
@@ -47,222 +46,328 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 48px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
         
-        .offline-title {
+        .offline-icon svg {
+            width: 60px;
+            height: 60px;
+            opacity: 0.8;
+        }
+        
+        h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        .offline-message {
+        .subtitle {
             font-size: 1.2rem;
-            line-height: 1.6;
-            margin-bottom: 30px;
             opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.6;
         }
         
-        .offline-actions {
+        .features {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .features h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+        
+        .feature-list {
+            list-style: none;
+            text-align: left;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
             display: flex;
-            flex-direction: column;
-            gap: 15px;
             align-items: center;
+            opacity: 0.8;
         }
         
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
+        .feature-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+        
+        .retry-button {
             background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            text-decoration: none;
-            border-radius: 8px;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
             font-weight: 600;
+            cursor: pointer;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
         }
         
-        .btn:hover {
+        .retry-button:hover {
             background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
-        .btn-primary {
-            background: rgba(59, 130, 246, 0.8);
-            border-color: rgba(59, 130, 246, 0.5);
-        }
-        
-        .btn-primary:hover {
-            background: rgba(59, 130, 246, 1);
+        .retry-button:active {
+            transform: translateY(0);
         }
         
         .network-status {
             margin-top: 30px;
             padding: 15px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            font-size: 0.9rem;
+            background: rgba(239, 68, 68, 0.2);
+            border-radius: 10px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
         
-        .status-indicator {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
+        .network-status.online {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
         }
         
-        .status-offline {
-            background: #ef4444;
-        }
-        
-        .status-online {
-            background: #10b981;
-        }
-        
-        .cached-content {
+        .tips {
             margin-top: 30px;
             text-align: left;
+            opacity: 0.8;
         }
         
-        .cached-content h3 {
+        .tips h4 {
             margin-bottom: 15px;
-            font-size: 1.1rem;
+            text-align: center;
         }
         
-        .cached-links {
+        .tips ul {
             list-style: none;
         }
         
-        .cached-links li {
-            margin-bottom: 8px;
+        .tips li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
         }
         
-        .cached-links a {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 0.9rem;
+        .tips li::before {
+            content: '💡';
+            position: absolute;
+            left: 0;
         }
         
-        .cached-links a:hover {
-            color: white;
-            text-decoration: underline;
-        }
-        
-        @media (max-width: 480px) {
-            .offline-title {
+        @media (max-width: 600px) {
+            h1 {
                 font-size: 2rem;
             }
             
-            .offline-message {
+            .subtitle {
                 font-size: 1rem;
             }
             
-            .offline-icon {
-                width: 80px;
-                height: 80px;
-                font-size: 32px;
+            .features {
+                padding: 20px;
+            }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
             }
         }
     </style>
 </head>
 <body>
     <div class="offline-container">
-        <div class="offline-icon">
-            📡
+        <div class="offline-icon pulse">
+            <svg fill="currentColor" viewBox="0 0 24 24">
+                <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.07 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+            </svg>
         </div>
         
-        <h1 class="offline-title">You're Offline</h1>
-        
-        <p class="offline-message">
-            It looks like you've lost your internet connection. Don't worry - you can still access some features of the Alumni Platform while offline.
+        <h1>You're Offline</h1>
+        <p class="subtitle">
+            Don't worry! You can still browse cached content and your actions will sync when you're back online.
         </p>
         
-        <div class="offline-actions">
-            <button onclick="window.location.reload()" class="btn btn-primary">
-                🔄 Try Again
-            </button>
-            
-            <a href="/" class="btn">
-                🏠 Go to Homepage
-            </a>
+        <div class="features">
+            <h3>Available Offline</h3>
+            <ul class="feature-list">
+                <li>View your cached timeline posts</li>
+                <li>Browse saved alumni profiles</li>
+                <li>Access your connections</li>
+                <li>View cached job listings</li>
+                <li>Read saved messages</li>
+            </ul>
         </div>
         
-        <div class="network-status">
-            <span class="status-indicator status-offline" id="status-indicator"></span>
-            <span id="status-text">No internet connection</span>
+        <div class="network-status" id="networkStatus">
+            <strong>🔴 No Internet Connection</strong>
+            <p>Checking connection status...</p>
         </div>
         
-        <div class="cached-content">
-            <h3>Available Offline:</h3>
-            <ul class="cached-links">
-                <li><a href="/">Homepage</a></li>
-                <li><a href="/dashboard">Dashboard (cached)</a></li>
-                <li><a href="/profile">Your Profile (cached)</a></li>
-                <li><a href="/alumni/directory">Alumni Directory (cached)</a></li>
+        <button class="retry-button" onclick="checkConnection()">
+            Check Connection
+        </button>
+        
+        <a href="/" class="retry-button">
+            Go to Dashboard
+        </a>
+        
+        <div class="tips">
+            <h4>Tips for Offline Use</h4>
+            <ul>
+                <li>Your posts and actions are saved and will sync automatically</li>
+                <li>Cached content is available for up to 7 days</li>
+                <li>Enable notifications to know when you're back online</li>
+                <li>The app works best when installed on your device</li>
             </ul>
         </div>
     </div>
-
+    
     <script>
-        // Network status detection
+        let isOnline = navigator.onLine;
+        let retryCount = 0;
+        const maxRetries = 3;
+        
         function updateNetworkStatus() {
-            const indicator = document.getElementById('status-indicator');
-            const statusText = document.getElementById('status-text');
+            const statusElement = document.getElementById('networkStatus');
             
             if (navigator.onLine) {
-                indicator.className = 'status-indicator status-online';
-                statusText.textContent = 'Connection restored! You can refresh the page.';
+                statusElement.className = 'network-status online';
+                statusElement.innerHTML = `
+                    <strong>🟢 Connection Restored</strong>
+                    <p>You're back online! Redirecting to the app...</p>
+                `;
                 
-                // Show refresh button more prominently
-                const refreshBtn = document.querySelector('.btn-primary');
-                refreshBtn.style.animation = 'pulse 1s infinite';
-                refreshBtn.innerHTML = '🔄 Refresh Now - You\'re Back Online!';
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
             } else {
-                indicator.className = 'status-indicator status-offline';
-                statusText.textContent = 'No internet connection';
+                statusElement.className = 'network-status';
+                statusElement.innerHTML = `
+                    <strong>🔴 No Internet Connection</strong>
+                    <p>Please check your network settings and try again.</p>
+                `;
             }
         }
         
-        // Listen for network status changes
+        async function checkConnection() {
+            const button = document.querySelector('.retry-button');
+            const originalText = button.textContent;
+            
+            button.textContent = 'Checking...';
+            button.disabled = true;
+            
+            try {
+                // Try to fetch a small resource
+                const response = await fetch('/api/ping', {
+                    method: 'GET',
+                    cache: 'no-cache',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                if (response.ok) {
+                    updateNetworkStatus();
+                    return;
+                }
+            } catch (error) {
+                console.log('Connection check failed:', error);
+            }
+            
+            retryCount++;
+            
+            if (retryCount < maxRetries) {
+                button.textContent = `Retry (${retryCount}/${maxRetries})`;
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                }, 2000);
+            } else {
+                button.textContent = 'Connection Failed';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                    retryCount = 0;
+                }, 5000);
+            }
+        }
+        
+        // Listen for online/offline events
         window.addEventListener('online', updateNetworkStatus);
         window.addEventListener('offline', updateNetworkStatus);
         
         // Initial status check
         updateNetworkStatus();
         
-        // Add pulse animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.05); }
-                100% { transform: scale(1); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Auto-refresh when connection is restored
-        let wasOffline = !navigator.onLine;
-        
-        window.addEventListener('online', () => {
-            if (wasOffline) {
-                setTimeout(() => {
-                    if (confirm('Your connection has been restored. Would you like to refresh the page?')) {
-                        window.location.reload();
+        // Periodic connection check
+        setInterval(() => {
+            if (!navigator.onLine) {
+                fetch('/api/ping', { 
+                    method: 'GET', 
+                    cache: 'no-cache',
+                    signal: AbortSignal.timeout(5000)
+                })
+                .then(response => {
+                    if (response.ok && !navigator.onLine) {
+                        // Connection is actually available
+                        navigator.onLine = true;
+                        updateNetworkStatus();
                     }
-                }, 1000);
+                })
+                .catch(() => {
+                    // Still offline
+                });
             }
-            wasOffline = false;
-        });
+        }, 30000); // Check every 30 seconds
         
-        window.addEventListener('offline', () => {
-            wasOffline = true;
-        });
+        // Service worker registration check
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(registration => {
+                if (registration) {
+                    console.log('Service Worker is active');
+                    
+                    // Listen for service worker messages
+                    navigator.serviceWorker.addEventListener('message', event => {
+                        if (event.data.type === 'NETWORK_STATUS_CHANGED') {
+                            updateNetworkStatus();
+                        }
+                    });
+                }
+            });
+        }
     </script>
 </body>
 </html>

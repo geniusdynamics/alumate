@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SavedSearch;
-use App\Models\SearchAlert;
 use App\Services\ElasticsearchService;
-use Illuminate\Http\JsonResponse;
+use App\Models\User;
+use App\Models\Post;
+use App\Models\Job;
+use App\Models\Event;
+use App\Models\SavedSearch;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class SearchController extends Controller
 {
-    protected ElasticsearchService $elasticsearchService;
+    private ElasticsearchService $elasticsearchService;
 
     public function __construct(ElasticsearchService $elasticsearchService)
     {
@@ -20,177 +25,168 @@ class SearchController extends Controller
     }
 
     /**
-     * Perform alumni search
+     * Perform advanced search across multiple content types
      */
     public function search(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'query' => 'nullable|string|max:255',
-            'filters' => 'nullable|array',
-            'filters.graduation_year' => 'nullable|array',
-            'filters.graduation_year.min' => 'nullable|integer|min:1900|max:'.date('Y'),
-            'filters.graduation_year.max' => 'nullable|integer|min:1900|max:'.date('Y'),
-            'filters.location' => 'nullable|string|max:255',
-            'filters.industry' => 'nullable|array',
-            'filters.industry.*' => 'string|max:255',
-            'filters.company' => 'nullable|string|max:255',
-            'filters.school' => 'nullable|string|max:255',
-            'filters.skills' => 'nullable|array',
-            'filters.skills.*' => 'string|max:255',
-            'filters.location_radius' => 'nullable|string',
-            'filters.location_center' => 'nullable|array',
-            'filters.location_center.lat' => 'nullable|numeric',
-            'filters.location_center.lon' => 'nullable|numeric',
-            'page' => 'nullable|integer|min:1',
-            'size' => 'nullable|integer|min:1|max:100',
+            'query' => 'required|string|max:255',
+            'filters' => 'array',
+            'filters.types' => 'array',
+            'filters.types.*' => 'in:user,post,job,event',
+            'filters.location' => 'string|max:100',
+            'filters.graduation_year' => 'integer|min:1900|max:' . (date('Y') + 10),
+            'filters.industry' => 'array',
+            'filters.skills' => 'array',
+            'filters.date_range' => 'array',
+            'filters.date_range.from' => 'date',
+            'filters.date_range.to' => 'date|after_or_equal:filters.date_range.from',
+            'filters.sort' => 'in:relevance,date,name,engagement',
+            'size' => 'integer|min:1|max:100',
+            'from' => 'integer|min:0'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
+                'error' => 'Invalid search parameters',
+                'details' => $validator->errors()
+            ], 400);
         }
 
-        $query = $request->input('query', '');
+        $query = $request->input('query');
         $filters = $request->input('filters', []);
-        $page = $request->input('page', 1);
         $size = $request->input('size', 20);
-
-        $pagination = [
-            'size' => $size,
-            'from' => ($page - 1) * $size,
-        ];
+        $from = $request->input('from', 0);
 
         try {
-            $results = $this->elasticsearchService->searchUsers($query, $filters, $pagination);
+            // Log search query for analytics
+            $this->logSearchQuery($query, $filters);
+
+            // Perform Elasticsearch search
+            $results = $this->elasticsearchService->search($query, $filters, $size, $from);
+
+            // Track search analytics
+            $this->trackSearchAnalytics($query, $filters, $results['total']);
 
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'users' => $results['users'],
+                'query' => $query,
+                'filters' => $filters,
+                'hits' => $results['hits'],
+                'total' => $results['total'],
+                'aggregations' => $results['aggregations'],
+                'took' => $results['took'],
+                'pagination' => [
+                    'current_page' => floor($from / $size) + 1,
+                    'per_page' => $size,
                     'total' => $results['total'],
-                    'aggregations' => $results['aggregations'],
-                    'page' => $page,
-                    'size' => $size,
-                    'total_pages' => ceil($results['total'] / $size),
-                ],
+                    'total_pages' => ceil($results['total'] / $size)
+                ]
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search failed',
+            Log::error('Search failed', [
+                'query' => $query,
+                'filters' => $filters,
                 'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'error' => 'Search temporarily unavailable. Please try again.',
+                'fallback' => $this->getFallbackResults($query, $filters, $size, $from)
             ], 500);
         }
     }
 
     /**
-     * Get search suggestions
+     * Get search suggestions based on partial query
      */
     public function suggestions(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'query' => 'required|string|min:2|max:255',
+            'q' => 'required|string|min:2|max:100',
+            'size' => 'integer|min:1|max:10'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
+                'error' => 'Invalid suggestion parameters',
+                'details' => $validator->errors()
+            ], 400);
         }
 
-        $query = $request->input('query');
+        $query = $request->input('q');
+        $size = $request->input('size', 5);
 
         try {
-            $suggestions = $this->elasticsearchService->suggestUsers($query);
+            $suggestions = $this->elasticsearchService->getSuggestions($query, $size);
 
             return response()->json([
                 'success' => true,
-                'data' => $suggestions,
+                'query' => $query,
+                'suggestions' => $suggestions
             ]);
         } catch (\Exception $e) {
+            Log::error('Suggestions failed', [
+                'query' => $query,
+                'error' => $e->getMessage()
+            ]);
+
+            // Fallback to database suggestions
+            $fallbackSuggestions = $this->getFallbackSuggestions($query, $size);
+
             return response()->json([
-                'success' => false,
-                'message' => 'Suggestions failed',
-                'error' => $e->getMessage(),
-            ], 500);
+                'success' => true,
+                'query' => $query,
+                'suggestions' => $fallbackSuggestions,
+                'fallback' => true
+            ]);
         }
     }
 
     /**
-     * Save a search
+     * Save a search for later use and alerts
      */
     public function saveSearch(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'nullable|string|max:255',
+            'name' => 'required|string|max:255',
             'query' => 'required|string|max:255',
-            'filters' => 'nullable|array',
-            'create_alert' => 'nullable|boolean',
-            'alert_frequency' => 'nullable|in:daily,weekly,monthly',
+            'filters' => 'array',
+            'email_alerts' => 'boolean',
+            'alert_frequency' => 'in:immediate,daily,weekly'
         ]);
 
         if ($validator->fails()) {
             return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
+                'error' => 'Invalid search data',
+                'details' => $validator->errors()
+            ], 400);
         }
 
         try {
-            $user = $request->user();
-            $query = $request->input('query');
-            $filters = $request->input('filters', []);
-            $name = $request->input('name');
-
-            // Generate name if not provided
-            if (! $name) {
-                $name = $this->generateSearchName($query, $filters);
-            }
-
-            // Check if user already has a saved search with this name
-            $existingSearch = SavedSearch::where('user_id', $user->id)
-                ->where('name', $name)
-                ->first();
-
-            if ($existingSearch) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'You already have a saved search with this name',
-                ], 409);
-            }
-
-            $savedSearch = $this->elasticsearchService->saveSearch($user, $query, $filters);
-
-            // Update the name if provided
-            if ($request->has('name')) {
-                $savedSearch->update(['name' => $name]);
-            }
-
-            // Create alert if requested
-            if ($request->input('create_alert', false)) {
-                $alert = $this->elasticsearchService->createSearchAlert($user, $savedSearch->id);
-
-                if ($request->has('alert_frequency')) {
-                    $alert->update(['frequency' => $request->input('alert_frequency')]);
-                }
-            }
+            $savedSearch = SavedSearch::create([
+                'user_id' => Auth::id(),
+                'name' => $request->input('name'),
+                'query' => $request->input('query'),
+                'filters' => $request->input('filters', []),
+                'email_alerts' => $request->input('email_alerts', false),
+                'alert_frequency' => $request->input('alert_frequency', 'daily')
+            ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Search saved successfully',
-                'data' => $savedSearch->load('alerts'),
+                'search' => $savedSearch
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to save search',
+            Log::error('Failed to save search', [
                 'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to save search. Please try again.'
             ], 500);
         }
     }
@@ -198,25 +194,73 @@ class SearchController extends Controller
     /**
      * Get user's saved searches
      */
-    public function getSavedSearches(Request $request): JsonResponse
+    public function getSavedSearches(): JsonResponse
     {
         try {
-            $user = $request->user();
-
-            $savedSearches = SavedSearch::where('user_id', $user->id)
-                ->with('alerts')
+            $savedSearches = SavedSearch::where('user_id', Auth::id())
                 ->orderBy('created_at', 'desc')
                 ->get();
 
             return response()->json([
                 'success' => true,
-                'data' => $savedSearches,
+                'searches' => $savedSearches
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to retrieve saved searches',
+            Log::error('Failed to get saved searches', [
                 'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to load saved searches'
+            ], 500);
+        }
+    }
+
+    /**
+     * Update a saved search
+     */
+    public function updateSavedSearch(Request $request, SavedSearch $savedSearch): JsonResponse
+    {
+        // Ensure user owns the search
+        if ($savedSearch->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'query' => 'string|max:255',
+            'filters' => 'array',
+            'email_alerts' => 'boolean',
+            'alert_frequency' => 'in:immediate,daily,weekly'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'error' => 'Invalid search data',
+                'details' => $validator->errors()
+            ], 400);
+        }
+
+        try {
+            $savedSearch->update($request->only([
+                'name', 'query', 'filters', 'email_alerts', 'alert_frequency'
+            ]));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Search updated successfully',
+                'search' => $savedSearch->fresh()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to update saved search', [
+                'search_id' => $savedSearch->id,
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to update search. Please try again.'
             ], 500);
         }
     }
@@ -224,118 +268,213 @@ class SearchController extends Controller
     /**
      * Delete a saved search
      */
-    public function deleteSavedSearch(Request $request, int $searchId): JsonResponse
+    public function deleteSavedSearch(SavedSearch $savedSearch): JsonResponse
     {
+        // Ensure user owns the search
+        if ($savedSearch->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         try {
-            $user = $request->user();
-
-            $savedSearch = SavedSearch::where('user_id', $user->id)
-                ->where('id', $searchId)
-                ->first();
-
-            if (! $savedSearch) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Saved search not found',
-                ], 404);
-            }
-
             $savedSearch->delete();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Saved search deleted successfully',
+                'message' => 'Search deleted successfully'
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to delete saved search',
+            Log::error('Failed to delete saved search', [
+                'search_id' => $savedSearch->id,
                 'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to delete search. Please try again.'
             ], 500);
         }
     }
 
     /**
-     * Update search alert
+     * Run a saved search and update its last run time
      */
-    public function updateSearchAlert(Request $request, int $alertId): JsonResponse
+    public function runSavedSearch(SavedSearch $savedSearch): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'frequency' => 'nullable|in:daily,weekly,monthly',
-            'is_active' => 'nullable|boolean',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 422);
+        // Ensure user owns the search
+        if ($savedSearch->user_id !== Auth::id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
         }
 
         try {
-            $user = $request->user();
+            // Perform the search
+            $results = $this->elasticsearchService->search(
+                $savedSearch->query,
+                $savedSearch->filters,
+                20,
+                0
+            );
 
-            $alert = SearchAlert::where('user_id', $user->id)
-                ->where('id', $alertId)
-                ->first();
-
-            if (! $alert) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Search alert not found',
-                ], 404);
-            }
-
-            $alert->update($request->only(['frequency', 'is_active']));
-
-            // Recalculate next send time if frequency changed
-            if ($request->has('frequency')) {
-                $alert->calculateNextSendTime();
-            }
+            // Update last run time and result count
+            $savedSearch->update([
+                'last_run_at' => now(),
+                'last_result_count' => $results['total']
+            ]);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Search alert updated successfully',
-                'data' => $alert,
+                'search' => $savedSearch->fresh(),
+                'results' => $results
             ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to update search alert',
+            Log::error('Failed to run saved search', [
+                'search_id' => $savedSearch->id,
                 'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to run search. Please try again.'
             ], 500);
         }
     }
 
     /**
-     * Generate a descriptive name for saved search
+     * Get search analytics for the current user
      */
-    protected function generateSearchName(string $query, array $filters): string
+    public function getSearchAnalytics(): JsonResponse
     {
-        $parts = [];
+        try {
+            // This would typically query a search analytics table
+            // For now, return mock data
+            $analytics = [
+                'total_searches' => 150,
+                'popular_queries' => [
+                    'software engineer',
+                    'product manager',
+                    'data scientist',
+                    'marketing',
+                    'startup'
+                ],
+                'search_trends' => [
+                    ['date' => '2024-01-01', 'count' => 12],
+                    ['date' => '2024-01-02', 'count' => 18],
+                    ['date' => '2024-01-03', 'count' => 15],
+                ],
+                'popular_filters' => [
+                    'location' => ['San Francisco', 'New York', 'Remote'],
+                    'industry' => ['Technology', 'Finance', 'Healthcare'],
+                    'graduation_year' => ['2020', '2019', '2021']
+                ]
+            ];
 
-        if (! empty($query)) {
-            $parts[] = "\"$query\"";
+            return response()->json([
+                'success' => true,
+                'analytics' => $analytics
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to get search analytics', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id()
+            ]);
+
+            return response()->json([
+                'error' => 'Failed to load analytics'
+            ], 500);
         }
+    }
 
-        if (! empty($filters['location'])) {
-            $parts[] = "in {$filters['location']}";
+    /**
+     * Log search query for analytics
+     */
+    private function logSearchQuery(string $query, array $filters): void
+    {
+        try {
+            // This would typically insert into a search_logs table
+            Log::info('Search performed', [
+                'query' => $query,
+                'filters' => $filters,
+                'user_id' => Auth::id(),
+                'timestamp' => now()
+            ]);
+        } catch (\Exception $e) {
+            // Don't fail the search if logging fails
+            Log::error('Failed to log search query', ['error' => $e->getMessage()]);
         }
+    }
 
-        if (! empty($filters['industry'])) {
-            $industry = is_array($filters['industry']) ? implode(', ', $filters['industry']) : $filters['industry'];
-            $parts[] = "in $industry";
+    /**
+     * Track search analytics
+     */
+    private function trackSearchAnalytics(string $query, array $filters, int $resultCount): void
+    {
+        try {
+            // This would typically update search analytics tables
+            // For now, just log the data
+            Log::info('Search analytics', [
+                'query' => $query,
+                'filters' => $filters,
+                'result_count' => $resultCount,
+                'user_id' => Auth::id()
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to track search analytics', ['error' => $e->getMessage()]);
         }
+    }
 
-        if (! empty($filters['graduation_year'])) {
-            if (is_array($filters['graduation_year'])) {
-                $parts[] = "graduated {$filters['graduation_year']['min']}-{$filters['graduation_year']['max']}";
-            } else {
-                $parts[] = "graduated {$filters['graduation_year']}";
+    /**
+     * Get fallback results when Elasticsearch is unavailable
+     */
+    private function getFallbackResults(string $query, array $filters, int $size, int $from): array
+    {
+        $results = [];
+
+        // Fallback user search
+        if (empty($filters['types']) || in_array('user', $filters['types'])) {
+            $users = User::where('name', 'LIKE', "%{$query}%")
+                ->orWhere('bio', 'LIKE', "%{$query}%")
+                ->limit($size)
+                ->offset($from)
+                ->get();
+
+            foreach ($users as $user) {
+                $results[] = [
+                    'id' => $user->id,
+                    'type' => 'user',
+                    'score' => 1.0,
+                    'source' => $user->toArray(),
+                    'highlight' => []
+                ];
             }
         }
 
-        return implode(' ', $parts) ?: 'All Alumni';
+        return [
+            'hits' => $results,
+            'total' => count($results),
+            'aggregations' => [],
+            'took' => 0
+        ];
+    }
+
+    /**
+     * Get fallback suggestions when Elasticsearch is unavailable
+     */
+    private function getFallbackSuggestions(string $query, int $size): array
+    {
+        $suggestions = [];
+
+        // Get user name suggestions
+        $users = User::where('name', 'LIKE', "%{$query}%")
+            ->limit($size)
+            ->pluck('name');
+
+        foreach ($users as $name) {
+            $suggestions[] = [
+                'text' => $name,
+                'score' => 1.0,
+                'type' => 'name'
+            ];
+        }
+
+        return $suggestions;
     }
 }

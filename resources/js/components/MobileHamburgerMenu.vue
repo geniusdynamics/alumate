@@ -5,7 +5,10 @@
             @click="toggleMenu"
             class="fixed top-4 left-4 z-[60] p-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 touch-target"
             :class="{ 'bg-gray-100 dark:bg-gray-700': isOpen }"
-            aria-label="Toggle navigation menu"
+            :aria-label="isOpen ? 'Close navigation menu' : 'Open navigation menu'"
+            :aria-expanded="isOpen"
+            aria-controls="mobile-menu-panel"
+            type="button"
         >
             <div class="w-6 h-6 flex flex-col justify-center items-center">
                 <span
@@ -28,15 +31,20 @@
             v-if="isOpen"
             class="fixed inset-0 z-[50] bg-black bg-opacity-50 backdrop-blur-sm"
             @click="closeMenu"
+            aria-hidden="true"
         ></div>
 
         <!-- Mobile Menu Panel -->
-        <div
+        <nav
+            id="mobile-menu-panel"
             class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-gray-800 shadow-xl z-[55] transform transition-transform duration-300 ease-in-out"
             :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
+            role="navigation"
+            :aria-hidden="!isOpen"
+            aria-label="Mobile navigation menu"
         >
             <!-- Menu Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                 <div class="flex items-center space-x-3">
                     <img
                         :src="$page.props.app?.logo || '/images/logo.png'"
@@ -49,17 +57,24 @@
                 </div>
                 <button
                     @click="closeMenu"
-                    class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 touch-target"
+                    aria-label="Close navigation menu"
+                    type="button"
                 >
-                    <XMarkIcon class="h-6 w-6" />
+                    <XMarkIcon class="h-6 w-6" aria-hidden="true" />
                 </button>
-            </div>
+            </header>
 
             <!-- User Profile Section -->
-            <div class="p-4 border-b border-gray-200 dark:border-gray-700">
+            <section class="p-4 border-b border-gray-200 dark:border-gray-700" aria-labelledby="user-profile-heading">
+                <h3 id="user-profile-heading" class="sr-only">User Profile</h3>
                 <div class="flex items-center space-x-3">
-                    <div class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center">
-                        <span class="text-white font-medium text-sm">
+                    <div 
+                        class="h-10 w-10 bg-blue-600 rounded-full flex items-center justify-center"
+                        role="img"
+                        :aria-label="`Profile picture for ${$page.props.auth?.user?.name}`"
+                    >
+                        <span class="text-white font-medium text-sm" aria-hidden="true">
                             {{ getUserInitials($page.props.auth?.user?.name) }}
                         </span>
                     </div>
@@ -72,106 +87,131 @@
                         </p>
                     </div>
                 </div>
-            </div>
+            </section>
 
             <!-- Navigation Menu -->
-            <nav class="flex-1 overflow-y-auto py-4">
+            <div class="flex-1 overflow-y-auto py-4" role="none">
                 <div class="space-y-1 px-2">
                     <!-- Main Navigation Items -->
-                    <div class="mb-6">
-                        <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    <section class="mb-6" aria-labelledby="main-nav-heading">
+                        <h3 id="main-nav-heading" class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                             Main
                         </h3>
-                        <Link
-                            v-for="item in mainNavItems"
-                            :key="item.name"
-                            :href="item.href"
-                            @click="closeMenu"
-                            class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
-                            :class="item.active 
-                                ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
-                        >
-                            <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" />
-                            {{ item.name }}
-                            <span v-if="item.badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5">
-                                {{ item.badge }}
-                            </span>
-                        </Link>
-                    </div>
+                        <ul role="list" class="space-y-1">
+                            <li v-for="item in mainNavItems" :key="item.name">
+                                <Link
+                                    :href="item.href"
+                                    @click="closeMenu"
+                                    class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
+                                    :class="item.active 
+                                        ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                                    :aria-current="item.active ? 'page' : undefined"
+                                >
+                                    <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                                    {{ item.name }}
+                                    <span v-if="item.badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5" :aria-label="`${item.badge} notifications`">
+                                        {{ item.badge }}
+                                    </span>
+                                </Link>
+                            </li>
+                        </ul>
+                    </section>
 
                     <!-- Social Features -->
-                    <div class="mb-6">
-                        <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    <section class="mb-6" aria-labelledby="social-nav-heading">
+                        <h3 id="social-nav-heading" class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                             Social
                         </h3>
-                        <Link
-                            v-for="item in socialNavItems"
-                            :key="item.name"
-                            :href="item.href"
-                            @click="closeMenu"
-                            class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
-                            :class="item.active 
-                                ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
-                        >
-                            <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" />
-                            {{ item.name }}
-                        </Link>
-                    </div>
+                        <ul role="list" class="space-y-1">
+                            <li v-for="item in socialNavItems" :key="item.name">
+                                <Link
+                                    :href="item.href"
+                                    @click="closeMenu"
+                                    class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
+                                    :class="item.active 
+                                        ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                                    :aria-current="item.active ? 'page' : undefined"
+                                >
+                                    <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                                    {{ item.name }}
+                                </Link>
+                            </li>
+                        </ul>
+                    </section>
 
                     <!-- Career Features -->
-                    <div class="mb-6">
-                        <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    <section class="mb-6" aria-labelledby="career-nav-heading">
+                        <h3 id="career-nav-heading" class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                             Career
                         </h3>
-                        <Link
-                            v-for="item in careerNavItems"
-                            :key="item.name"
-                            :href="item.href"
-                            @click="closeMenu"
-                            class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
-                            :class="item.active 
-                                ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
-                        >
-                            <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" />
-                            {{ item.name }}
-                        </Link>
-                    </div>
+                        <ul role="list" class="space-y-1">
+                            <li v-for="item in careerNavItems" :key="item.name">
+                                <Link
+                                    :href="item.href"
+                                    @click="closeMenu"
+                                    class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
+                                    :class="item.active 
+                                        ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                                    :aria-current="item.active ? 'page' : undefined"
+                                >
+                                    <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                                    {{ item.name }}
+                                </Link>
+                            </li>
+                        </ul>
+                    </section>
 
                     <!-- Settings & Account -->
-                    <div class="mb-6">
-                        <h3 class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
+                    <section class="mb-6" aria-labelledby="account-nav-heading">
+                        <h3 id="account-nav-heading" class="px-3 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
                             Account
                         </h3>
-                        <Link
-                            v-for="item in accountNavItems"
-                            :key="item.name"
-                            :href="item.href"
-                            @click="closeMenu"
-                            class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
-                            :class="item.active 
-                                ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
-                        >
-                            <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" />
-                            {{ item.name }}
-                        </Link>
-                    </div>
+                        <ul role="list" class="space-y-1">
+                            <li v-for="item in accountNavItems" :key="item.name">
+                                <Link
+                                    :href="item.href"
+                                    @click="closeMenu"
+                                    class="group flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors touch-target"
+                                    :class="item.active 
+                                        ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300' 
+                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                                    :aria-current="item.active ? 'page' : undefined"
+                                >
+                                    <component :is="item.icon" class="mr-3 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                                    {{ item.name }}
+                                    <span v-if="item.badge" class="ml-auto bg-red-500 text-white text-xs rounded-full px-2 py-0.5" :aria-label="`${item.badge} notifications`">
+                                        {{ item.badge }}
+                                    </span>
+                                </Link>
+                            </li>
+                        </ul>
+                    </section>
                 </div>
-            </nav>
+            </div>
 
             <!-- Menu Footer -->
-            <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+            <footer class="border-t border-gray-200 dark:border-gray-700 p-4">
                 <div class="flex items-center justify-between">
                     <!-- Theme Toggle -->
                     <button
                         @click="toggleTheme"
-                        class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors touch-target"
+                        class="theme-toggle flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors touch-target"
+                        :aria-label="`Switch to ${isDarkMode ? 'light' : 'dark'} mode`"
+                        type="button"
                     >
-                        <SunIcon v-if="isDarkMode" class="h-5 w-5" />
-                        <MoonIcon v-else class="h-5 w-5" />
+                        <div class="relative w-5 h-5" aria-hidden="true">
+                            <SunIcon 
+                                class="theme-toggle-icon theme-toggle-sun absolute inset-0" 
+                                :class="{ 'rotate-90 scale-0': isDarkMode, 'rotate-0 scale-100': !isDarkMode }"
+                            />
+                            <MoonIcon 
+                                class="theme-toggle-icon theme-toggle-moon absolute inset-0" 
+                                :class="{ 'rotate-0 scale-100': isDarkMode, 'rotate-90 scale-0': !isDarkMode }"
+                            />
+                        </div>
                         <span>{{ isDarkMode ? 'Light' : 'Dark' }} Mode</span>
                     </button>
 
@@ -182,13 +222,14 @@
                         as="button"
                         @click="closeMenu"
                         class="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors touch-target"
+                        aria-label="Sign out of your account"
                     >
-                        <ArrowRightOnRectangleIcon class="h-5 w-5" />
+                        <ArrowRightOnRectangleIcon class="h-5 w-5" aria-hidden="true" />
                         <span>Logout</span>
                     </Link>
                 </div>
-            </div>
-        </div>
+            </footer>
+        </nav>
     </div>
 </template>
 

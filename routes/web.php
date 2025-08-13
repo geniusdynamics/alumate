@@ -312,9 +312,7 @@ Route::middleware(['auth'])->prefix('alumni')->name('alumni.')->group(function (
     Route::get('directory', [\App\Http\Controllers\AlumniController::class, 'directory'])->name('directory');
     Route::get('recommendations', [\App\Http\Controllers\AlumniController::class, 'recommendations'])->name('recommendations');
     Route::get('connections', [\App\Http\Controllers\AlumniController::class, 'connections'])->name('connections');
-    Route::get('map', function () {
-        return Inertia::render('Alumni/Map');
-    })->name('map');
+    Route::get('map', [\App\Http\Controllers\AlumniController::class, 'map'])->name('map');
 });
 
 // Career Services Routes

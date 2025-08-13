@@ -2,300 +2,203 @@
 
 namespace App\Services;
 
-use App\Models\Graduate;
-use Illuminate\Support\Collection;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class AlumniMapService
 {
     /**
-     * Get alumni within specified map bounds
+     * Get alumni with location data for map visualization
      */
-    public function getAlumniByLocation(array $bounds, array $filters = []): Collection
+    public function getAlumniWithLocations(array $filters = []): Collection
     {
-        $query = Graduate::query()
-            ->select([
-                'id', 'first_name', 'last_name', 'graduation_year',
-                'current_position', 'current_company', 'industry',
-                'latitude', 'longitude', 'city', 'state', 'country',
-                'profile_photo_path', 'profile_visibility',
-            ])
-            ->where('profile_visibility', '!=', 'private')
+        $query = User::query()
             ->whereNotNull('latitude')
-            ->whereNotNull('longitude');
-
-        // Apply geographic bounds
-        if (isset($bounds['north'], $bounds['south'], $bounds['east'], $bounds['west'])) {
-            $query->whereBetween('latitude', [$bounds['south'], $bounds['north']])
-                ->whereBetween('longitude', [$bounds['west'], $bounds['east']]);
-        }
+            ->whereNotNull('longitude')
+            ->where('location_privacy', '!=', 'private')
+            ->with(['educations.school', 'currentEmployment.company']);
 
         // Apply filters
-        if (! empty($filters['graduation_year'])) {
-            $query->whereIn('graduation_year', (array) $filters['graduation_year']);
-        }
-
-        if (! empty($filters['industry'])) {
-            $query->whereIn('industry', (array) $filters['industry']);
-        }
-
-        if (! empty($filters['country'])) {
-            $query->whereIn('country', (array) $filters['country']);
-        }
-
-        if (! empty($filters['state'])) {
-            $query->whereIn('state', (array) $filters['state']);
-        }
-
-        return $query->limit(1000)->get();
-    }
-
-    /**
-     * Get location clusters based on zoom level
-     */
-    public function getLocationClusters(int $zoomLevel, array $bounds = []): Collection
-    {
-        $precision = $this->getClusterPrecision($zoomLevel);
-
-        $query = Graduate::query()
-            ->select([
-                DB::raw("ROUND(latitude, {$precision}) as cluster_lat"),
-                DB::raw("ROUND(longitude, {$precision}) as cluster_lng"),
-                DB::raw('COUNT(*) as alumni_count'),
-                DB::raw('GROUP_CONCAT(DISTINCT industry) as industries'),
-                DB::raw('MIN(graduation_year) as earliest_year'),
-                DB::raw('MAX(graduation_year) as latest_year'),
-                DB::raw('GROUP_CONCAT(DISTINCT country) as countries'),
-            ])
-            ->where('profile_visibility', '!=', 'private')
-            ->whereNotNull('latitude')
-            ->whereNotNull('longitude');
-
-        // Apply bounds if provided
-        if (! empty($bounds)) {
-            $query->whereBetween('latitude', [$bounds['south'], $bounds['north']])
-                ->whereBetween('longitude', [$bounds['west'], $bounds['east']]);
-        }
-
-        return $query->groupBy('cluster_lat', 'cluster_lng')
-            ->having('alumni_count', '>', 0)
-            ->get()
-            ->map(function ($cluster) {
-                return [
-                    'latitude' => (float) $cluster->cluster_lat,
-                    'longitude' => (float) $cluster->cluster_lng,
-                    'count' => (int) $cluster->alumni_count,
-                    'industries' => array_filter(explode(',', $cluster->industries ?? '')),
-                    'year_range' => [
-                        'min' => (int) $cluster->earliest_year,
-                        'max' => (int) $cluster->latest_year,
-                    ],
-                    'countries' => array_unique(array_filter(explode(',', $cluster->countries ?? ''))),
-                ];
+        if (!empty($filters['graduation_year'])) {
+            $query->whereHas('educations', function ($q) use ($filters) {
+                $q->where('graduation_year', $filters['graduation_year']);
             });
+        }
+
+        if (!empty($filters['school_id'])) {
+            $query->whereHas('educations', function ($q) use ($filters) {
+                $q->where('school_id', $filters['school_id']);
+            });
+        }
+
+        if (!empty($filters['industry'])) {
+            $query->whereHas('currentEmployment', function ($q) use ($filters) {
+                $q->where('industry', $filters['industry']);
+            });
+        }
+
+        if (!empty($filters['country'])) {
+            $query->where('country', $filters['country']);
+        }
+
+        if (!empty($filters['region'])) {
+            $query->where('region', $filters['region']);
+        }
+
+        return $query->get();
     }
 
     /**
-     * Get alumni statistics for a specific region
+     * Get clustered alumni data for performance
      */
-    public function getRegionalStats(string $region, string $regionType = 'country'): array
+    public function getClusteredAlumni(float $bounds_north, float $bounds_south, float $bounds_east, float $bounds_west, int $zoom_level = 10): array
     {
-        $column = match ($regionType) {
-            'country' => 'country',
-            'state' => 'state',
-            'city' => 'city',
-            default => 'country'
-        };
+        // Determine cluster size based on zoom level
+        $cluster_size = $this->getClusterSize($zoom_level);
 
-        $alumni = Graduate::query()
-            ->where($column, $region)
-            ->where('profile_visibility', '!=', 'private')
-            ->get();
+        $alumni = DB::select("
+            SELECT 
+                ROUND(latitude / ?) * ? as cluster_lat,
+                ROUND(longitude / ?) * ? as cluster_lng,
+                COUNT(*) as count,
+                JSON_AGG(
+                    JSON_BUILD_OBJECT(
+                        'id', id,
+                        'name', name,
+                        'avatar_url', avatar_url,
+                        'current_title', current_title,
+                        'current_company', current_company,
+                        'latitude', latitude,
+                        'longitude', longitude
+                    )
+                ) as alumni
+            FROM users 
+            WHERE latitude BETWEEN ? AND ?
+            AND longitude BETWEEN ? AND ?
+            AND latitude IS NOT NULL 
+            AND longitude IS NOT NULL
+            AND location_privacy != 'private'
+            GROUP BY cluster_lat, cluster_lng
+            HAVING COUNT(*) > 0
+        ", [
+            $cluster_size, $cluster_size,
+            $cluster_size, $cluster_size,
+            $bounds_south, $bounds_north,
+            $bounds_west, $bounds_east
+        ]);
 
-        $totalAlumni = $alumni->count();
+        return array_map(function ($cluster) {
+            $cluster->alumni = json_decode($cluster->alumni, true);
+            return $cluster;
+        }, $alumni);
+    }
 
-        if ($totalAlumni === 0) {
-            return [
-                'total_alumni' => 0,
-                'industries' => [],
-                'graduation_years' => [],
-                'top_companies' => [],
-                'average_experience' => 0,
-            ];
-        }
-
-        $industries = $alumni->groupBy('industry')
-            ->map->count()
-            ->sortDesc()
-            ->take(10);
-
-        $graduationYears = $alumni->groupBy('graduation_year')
-            ->map->count()
-            ->sortKeys();
-
-        $topCompanies = $alumni->whereNotNull('current_company')
-            ->groupBy('current_company')
-            ->map->count()
-            ->sortDesc()
-            ->take(10);
-
-        $currentYear = now()->year;
-        $averageExperience = $alumni->avg(function ($graduate) use ($currentYear) {
-            return $currentYear - $graduate->graduation_year;
-        });
-
+    /**
+     * Get regional statistics
+     */
+    public function getRegionalStats(): array
+    {
         return [
-            'total_alumni' => $totalAlumni,
-            'industries' => $industries->toArray(),
-            'graduation_years' => $graduationYears->toArray(),
-            'top_companies' => $topCompanies->toArray(),
-            'average_experience' => round($averageExperience, 1),
+            'by_country' => $this->getStatsByCountry(),
+            'by_region' => $this->getStatsByRegion(),
+            'by_industry' => $this->getStatsByIndustry(),
+            'total_alumni' => $this->getTotalAlumniWithLocation()
         ];
     }
 
     /**
-     * Suggest regional groups based on location
+     * Get alumni statistics by country
      */
-    public function suggestRegionalGroups(array $location): Collection
+    private function getStatsByCountry(): array
     {
-        $latitude = $location['latitude'];
-        $longitude = $location['longitude'];
-        $radius = $location['radius'] ?? 50; // km
-
-        // Find nearby alumni using Haversine formula
-        $nearbyAlumni = Graduate::query()
-            ->select([
-                'id', 'first_name', 'last_name', 'city', 'state', 'country',
-                'industry', 'graduation_year', 'latitude', 'longitude',
-                DB::raw('
-                    (6371 * acos(
-                        cos(radians(?)) * cos(radians(latitude)) * 
-                        cos(radians(longitude) - radians(?)) + 
-                        sin(radians(?)) * sin(radians(latitude))
-                    )) AS distance
-                '),
-            ])
-            ->where('profile_visibility', '!=', 'private')
-            ->whereNotNull('latitude')
+        return User::whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->having('distance', '<=', $radius)
-            ->orderBy('distance')
-            ->setBindings([$latitude, $longitude, $latitude])
-            ->get();
-
-        // Group suggestions by different criteria
-        $suggestions = collect();
-
-        // City-based groups
-        $cityGroups = $nearbyAlumni->groupBy('city')
-            ->filter(fn ($group) => $group->count() >= 3)
-            ->map(function ($group, $city) {
-                return [
-                    'type' => 'city',
-                    'name' => "{$city} Alumni Network",
-                    'location' => $city,
-                    'member_count' => $group->count(),
-                    'industries' => $group->pluck('industry')->unique()->values(),
-                    'year_range' => [
-                        'min' => $group->min('graduation_year'),
-                        'max' => $group->max('graduation_year'),
-                    ],
-                ];
-            });
-
-        // Industry-based groups in the region
-        $industryGroups = $nearbyAlumni->groupBy('industry')
-            ->filter(fn ($group) => $group->count() >= 5)
-            ->map(function ($group, $industry) use ($location) {
-                return [
-                    'type' => 'industry',
-                    'name' => "{$industry} Professionals",
-                    'location' => $location['city'] ?? 'Regional',
-                    'member_count' => $group->count(),
-                    'cities' => $group->pluck('city')->unique()->values(),
-                    'year_range' => [
-                        'min' => $group->min('graduation_year'),
-                        'max' => $group->max('graduation_year'),
-                    ],
-                ];
-            });
-
-        return $suggestions->merge($cityGroups->values())
-            ->merge($industryGroups->values())
-            ->sortByDesc('member_count')
-            ->take(10);
+            ->where('location_privacy', '!=', 'private')
+            ->select('country', DB::raw('COUNT(*) as count'))
+            ->groupBy('country')
+            ->orderByDesc('count')
+            ->get()
+            ->toArray();
     }
 
     /**
-     * Find nearby alumni for a given user
+     * Get alumni statistics by region
      */
-    public function findNearbyAlumni(int $userId, int $radiusKm = 25): Collection
+    private function getStatsByRegion(): array
     {
-        $user = Graduate::findOrFail($userId);
-
-        if (! $user->latitude || ! $user->longitude) {
-            return collect();
-        }
-
-        return Graduate::query()
-            ->select([
-                'id', 'first_name', 'last_name', 'current_position',
-                'current_company', 'industry', 'city', 'state',
-                'profile_photo_path', 'latitude', 'longitude',
-                DB::raw('
-                    (6371 * acos(
-                        cos(radians(?)) * cos(radians(latitude)) * 
-                        cos(radians(longitude) - radians(?)) + 
-                        sin(radians(?)) * sin(radians(latitude))
-                    )) AS distance
-                '),
-            ])
-            ->where('id', '!=', $userId)
-            ->where('profile_visibility', '!=', 'private')
-            ->whereNotNull('latitude')
+        return User::whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->having('distance', '<=', $radiusKm)
-            ->orderBy('distance')
-            ->setBindings([$user->latitude, $user->longitude, $user->latitude])
-            ->limit(50)
-            ->get();
+            ->where('location_privacy', '!=', 'private')
+            ->select('region', DB::raw('COUNT(*) as count'))
+            ->groupBy('region')
+            ->orderByDesc('count')
+            ->get()
+            ->toArray();
     }
 
     /**
-     * Calculate distance between two coordinates
+     * Get alumni statistics by industry
      */
-    public function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
+    private function getStatsByIndustry(): array
     {
-        $earthRadius = 6371; // km
-
-        $dLat = deg2rad($lat2 - $lat1);
-        $dLon = deg2rad($lon2 - $lon1);
-
-        $a = sin($dLat / 2) * sin($dLat / 2) +
-             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-             sin($dLon / 2) * sin($dLon / 2);
-
-        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
-
-        return $earthRadius * $c;
+        return User::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->where('location_privacy', '!=', 'private')
+            ->whereHas('currentEmployment')
+            ->join('employments', function ($join) {
+                $join->on('users.id', '=', 'employments.user_id')
+                     ->where('employments.is_current', true);
+            })
+            ->select('employments.industry', DB::raw('COUNT(*) as count'))
+            ->groupBy('employments.industry')
+            ->orderByDesc('count')
+            ->get()
+            ->toArray();
     }
 
     /**
-     * Get cluster precision based on zoom level
+     * Get total count of alumni with location data
      */
-    private function getClusterPrecision(int $zoomLevel): int
+    private function getTotalAlumniWithLocation(): int
     {
+        return User::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->where('location_privacy', '!=', 'private')
+            ->count();
+    }
+
+    /**
+     * Determine cluster size based on zoom level
+     */
+    private function getClusterSize(int $zoom_level): float
+    {
+        // Smaller cluster size for higher zoom levels (more detailed view)
         return match (true) {
-            $zoomLevel <= 3 => 0,  // Country level
-            $zoomLevel <= 6 => 1,  // State/Province level
-            $zoomLevel <= 9 => 2,  // City level
-            $zoomLevel <= 12 => 3, // District level
-            default => 4           // Street level
+            $zoom_level >= 15 => 0.001,  // Very detailed
+            $zoom_level >= 12 => 0.01,   // Detailed
+            $zoom_level >= 9 => 0.1,     // Medium
+            $zoom_level >= 6 => 0.5,     // Broad
+            default => 1.0               // Very broad
         };
     }
 
     /**
-     * Geocode an address to coordinates
+     * Update user location privacy settings
+     */
+    public function updateLocationPrivacy(User $user, string $privacy_level): bool
+    {
+        $allowed_levels = ['public', 'alumni_only', 'private'];
+        
+        if (!in_array($privacy_level, $allowed_levels)) {
+            return false;
+        }
+
+        return $user->update(['location_privacy' => $privacy_level]);
+    }
+
+    /**
+     * Geocode address to coordinates
      */
     public function geocodeAddress(string $address): ?array
     {
@@ -305,12 +208,27 @@ class AlumniMapService
     }
 
     /**
-     * Reverse geocode coordinates to address
+     * Get nearby alumni within specified radius
      */
-    public function reverseGeocode(float $latitude, float $longitude): ?array
+    public function getNearbyAlumni(float $latitude, float $longitude, int $radius_km = 50): Collection
     {
-        // This would integrate with a reverse geocoding service
-        // For now, return null - implement based on chosen service
-        return null;
+        // Using Haversine formula for distance calculation
+        return User::select('*')
+            ->selectRaw("
+                (6371 * acos(
+                    cos(radians(?)) * 
+                    cos(radians(latitude)) * 
+                    cos(radians(longitude) - radians(?)) + 
+                    sin(radians(?)) * 
+                    sin(radians(latitude))
+                )) AS distance
+            ", [$latitude, $longitude, $latitude])
+            ->whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->where('location_privacy', '!=', 'private')
+            ->having('distance', '<', $radius_km)
+            ->orderBy('distance')
+            ->with(['educations.school', 'currentEmployment.company'])
+            ->get();
     }
 }

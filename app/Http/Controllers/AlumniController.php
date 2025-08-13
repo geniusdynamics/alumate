@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Graduate;
 use App\Models\Institution;
 use App\Models\User;
+use App\Services\AlumniMapService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -205,6 +206,65 @@ class AlumniController extends Controller
             'connections' => $connections,
             'pendingRequests' => $pendingRequests,
             'sentRequests' => $sentRequests,
+        ]);
+    }
+
+    public function map()
+    {
+        $user = Auth::user();
+
+        // Get alumni with location data (respecting privacy settings)
+        $alumni = User::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->where('location_privacy', '!=', 'private')
+            ->with(['educations.school', 'currentEmployment.company'])
+            ->get()
+            ->map(function ($alumnus) {
+                return [
+                    'id' => $alumnus->id,
+                    'name' => $alumnus->name,
+                    'avatar_url' => $alumnus->avatar_url,
+                    'current_title' => $alumnus->current_title,
+                    'current_company' => $alumnus->current_company,
+                    'location' => $alumnus->location,
+                    'latitude' => (float) $alumnus->latitude,
+                    'longitude' => (float) $alumnus->longitude,
+                    'location_privacy' => $alumnus->location_privacy ?? 'alumni_only'
+                ];
+            });
+
+        // Get regional statistics
+        $stats = [
+            'total_alumni' => $alumni->count(),
+            'by_country' => $alumni->groupBy('country')->map->count()->sortDesc()->take(10),
+            'by_region' => $alumni->groupBy('region')->map->count()->sortDesc()->take(10),
+            'by_industry' => $alumni->whereNotNull('current_industry')->groupBy('current_industry')->map->count()->sortDesc()->take(10)
+        ];
+
+        // Get filter options
+        $schools = Institution::all(['id', 'name']);
+        $industries = User::whereNotNull('current_industry')->distinct()->pluck('current_industry')->filter()->sort()->values();
+        $countries = User::whereNotNull('country')->distinct()->pluck('country')->filter()->sort()->values();
+        $graduationYears = range(date('Y') - 50, date('Y') + 5);
+
+        // Get user's location if available
+        $userLocation = null;
+        if ($user->latitude && $user->longitude) {
+            $userLocation = [
+                'latitude' => (float) $user->latitude,
+                'longitude' => (float) $user->longitude,
+                'privacy' => $user->location_privacy ?? 'alumni_only'
+            ];
+        }
+
+        return Inertia::render('Alumni/Map', [
+            'alumni' => $alumni,
+            'stats' => $stats,
+            'schools' => $schools,
+            'industries' => $industries,
+            'countries' => $countries,
+            'graduationYears' => $graduationYears,
+            'userLocation' => $userLocation
         ]);
     }
 

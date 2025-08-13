@@ -26,6 +26,12 @@ class User extends Authenticatable
         'avatar_url',
         'bio',
         'location',
+        'latitude',
+        'longitude',
+        'country',
+        'region',
+        'location_privacy',
+        'location_updated_at',
         'website',
         'interests',
         'institution_id',
@@ -43,6 +49,25 @@ class User extends Authenticatable
         'language',
         'status',
         'user_type',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'last_activity_at' => 'datetime',
+        'suspended_at' => 'datetime',
+        'location_updated_at' => 'datetime',
+        'profile_data' => 'array',
+        'preferences' => 'array',
+        'notification_preferences' => 'array',
+        'interests' => 'array',
+        'two_factor_enabled' => 'boolean',
+        'is_suspended' => 'boolean',
+        'latitude' => 'decimal:8',
+        'longitude' => 'decimal:8',
     ];
 
     /**
@@ -157,10 +182,7 @@ class User extends Authenticatable
         return $this->hasMany(CareerTimeline::class);
     }
 
-    public function educations()
-    {
-        return $this->hasMany(Education::class);
-    }
+
 
     public function skills()
     {

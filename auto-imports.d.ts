@@ -17,6 +17,7 @@ declare global {
   const OnboardingService: typeof import('./resources/js/services/OnboardingService.js')['default']
   const PerformanceService: typeof import('./resources/js/services/PerformanceService')['default']
   const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
+  const PushNotificationService: typeof import('./resources/js/services/PushNotificationService.js')['default']
   const SEOService: typeof import('./resources/js/services/SEOService')['default']
   const UserFlowIntegration: typeof import('./resources/js/services/UserFlowIntegration.js')['default']
   const Z_INDEX: typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']
@@ -414,6 +415,7 @@ declare module 'vue' {
     readonly OnboardingService: UnwrapRef<typeof import('./resources/js/services/OnboardingService.js')['default']>
     readonly PerformanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['default']>
     readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
+    readonly PushNotificationService: UnwrapRef<typeof import('./resources/js/services/PushNotificationService.js')['default']>
     readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>
     readonly UserFlowIntegration: UnwrapRef<typeof import('./resources/js/services/UserFlowIntegration.js')['default']>
     readonly Z_INDEX: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']>

@@ -1,13 +1,24 @@
-const CACHE_NAME = 'alumni-platform-v1';
-const STATIC_CACHE = 'alumni-static-v1';
-const DYNAMIC_CACHE = 'alumni-dynamic-v1';
+const CACHE_NAME = 'alumni-platform-v2';
+const STATIC_CACHE = 'alumni-static-v2';
+const DYNAMIC_CACHE = 'alumni-dynamic-v2';
+const IMAGE_CACHE = 'alumni-images-v2';
+const API_CACHE = 'alumni-api-v2';
 
 // Static assets to cache
 const STATIC_ASSETS = [
   '/',
   '/offline',
   '/favicon.ico',
+  '/favicon.svg',
   '/manifest.json',
+  '/apple-touch-icon.png',
+  '/android-chrome-192x192.png',
+  '/android-chrome-512x512.png',
+  // Critical pages for offline access
+  '/dashboard',
+  '/social/timeline',
+  '/alumni/directory',
+  '/profile',
   // Add critical CSS and JS files here
   // These will be populated by the build process
 ];
@@ -19,8 +30,29 @@ const CACHEABLE_APIS = [
   '/api/alumni/directory',
   '/api/jobs/dashboard',
   '/api/events',
-  '/api/search/global'
+  '/api/search/global',
+  '/api/social/timeline',
+  '/api/connections',
+  '/api/groups',
+  '/api/circles'
 ];
+
+// API endpoints that should never be cached
+const NON_CACHEABLE_APIS = [
+  '/api/auth/',
+  '/api/logout',
+  '/api/csrf-token',
+  '/api/push/',
+  '/sanctum/csrf-cookie'
+];
+
+// Cache expiration times (in milliseconds)
+const CACHE_EXPIRATION = {
+  static: 7 * 24 * 60 * 60 * 1000, // 7 days
+  dynamic: 24 * 60 * 60 * 1000, // 24 hours
+  api: 5 * 60 * 1000, // 5 minutes
+  images: 30 * 24 * 60 * 60 * 1000 // 30 days
+};
 
 // Install event - cache static assets
 self.addEventListener('install', event => {
@@ -47,21 +79,26 @@ self.addEventListener('activate', event => {
   console.log('Service Worker: Activating...');
   
   event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
+    Promise.all([
+      // Clean up old caches
+      caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
+            if (![STATIC_CACHE, DYNAMIC_CACHE, IMAGE_CACHE, API_CACHE].includes(cacheName)) {
               console.log('Service Worker: Deleting old cache', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
-      })
-      .then(() => {
-        console.log('Service Worker: Activated');
-        return self.clients.claim();
-      })
+      }),
+      // Initialize IndexedDB for offline actions
+      initializeOfflineStorage(),
+      // Clean up expired cache entries
+      cleanupExpiredCaches()
+    ]).then(() => {
+      console.log('Service Worker: Activated');
+      return self.clients.claim();
+    })
   );
 });
 
@@ -70,8 +107,11 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
   
-  // Skip non-GET requests
+  // Skip non-GET requests for caching (but handle POST for offline queueing)
   if (request.method !== 'GET') {
+    if (request.method === 'POST' || request.method === 'PUT' || request.method === 'DELETE') {
+      event.respondWith(handleMutationRequest(request));
+    }
     return;
   }
   
@@ -83,8 +123,14 @@ self.addEventListener('fetch', event => {
   // Handle different types of requests
   if (isStaticAsset(request)) {
     event.respondWith(cacheFirstStrategy(request, STATIC_CACHE));
+  } else if (isImageRequest(request)) {
+    event.respondWith(cacheFirstStrategy(request, IMAGE_CACHE));
   } else if (isAPIRequest(request)) {
-    event.respondWith(networkFirstStrategy(request, DYNAMIC_CACHE));
+    if (isCacheableAPI(request)) {
+      event.respondWith(networkFirstWithTTL(request, API_CACHE, CACHE_EXPIRATION.api));
+    } else {
+      event.respondWith(networkOnlyStrategy(request));
+    }
   } else if (isNavigationRequest(request)) {
     event.respondWith(navigationStrategy(request));
   } else {
@@ -192,13 +238,29 @@ async function staleWhileRevalidateStrategy(request, cacheName) {
 // Helper functions
 function isStaticAsset(request) {
   const url = new URL(request.url);
-  return url.pathname.match(/\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|ico)$/);
+  return url.pathname.match(/\.(css|js|woff|woff2|ttf|eot|ico)$/);
+}
+
+function isImageRequest(request) {
+  const url = new URL(request.url);
+  return url.pathname.match(/\.(png|jpg|jpeg|gif|svg|webp|avif)$/);
 }
 
 function isAPIRequest(request) {
   const url = new URL(request.url);
-  return url.pathname.startsWith('/api/') || 
-         CACHEABLE_APIS.some(api => url.pathname.startsWith(api));
+  return url.pathname.startsWith('/api/');
+}
+
+function isCacheableAPI(request) {
+  const url = new URL(request.url);
+  
+  // Check if it's in the non-cacheable list
+  if (NON_CACHEABLE_APIS.some(api => url.pathname.startsWith(api))) {
+    return false;
+  }
+  
+  // Check if it's in the cacheable list
+  return CACHEABLE_APIS.some(api => url.pathname.startsWith(api));
 }
 
 function isNavigationRequest(request) {
@@ -246,6 +308,255 @@ async function processOfflineAction(action) {
 async function removeOfflineAction(actionId) {
   // This would remove the processed action from IndexedDB
   console.log('Removing offline action:', actionId);
+}
+
+// Enhanced caching strategies
+async function networkFirstWithTTL(request, cacheName, ttl) {
+  try {
+    const networkResponse = await fetch(request);
+    
+    if (networkResponse.ok) {
+      const cache = await caches.open(cacheName);
+      const responseToCache = networkResponse.clone();
+      
+      // Add timestamp for TTL
+      const headers = new Headers(responseToCache.headers);
+      headers.set('sw-cache-timestamp', Date.now().toString());
+      
+      const modifiedResponse = new Response(responseToCache.body, {
+        status: responseToCache.status,
+        statusText: responseToCache.statusText,
+        headers: headers
+      });
+      
+      cache.put(request, modifiedResponse);
+    }
+    
+    return networkResponse;
+  } catch (error) {
+    console.log('Network failed, trying cache:', error);
+    
+    const cache = await caches.open(cacheName);
+    const cachedResponse = await cache.match(request);
+    
+    if (cachedResponse) {
+      // Check if cache is still valid
+      const cacheTimestamp = cachedResponse.headers.get('sw-cache-timestamp');
+      if (cacheTimestamp && (Date.now() - parseInt(cacheTimestamp)) < ttl) {
+        return cachedResponse;
+      } else {
+        // Cache expired, remove it
+        cache.delete(request);
+      }
+    }
+    
+    // Return offline response for API requests
+    return new Response(JSON.stringify({
+      error: 'Offline',
+      message: 'This content is not available offline',
+      cached: false
+    }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+async function networkOnlyStrategy(request) {
+  try {
+    return await fetch(request);
+  } catch (error) {
+    return new Response(JSON.stringify({
+      error: 'Network Error',
+      message: 'Unable to complete request while offline'
+    }), {
+      status: 503,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+async function handleMutationRequest(request) {
+  try {
+    // Try network first
+    const response = await fetch(request);
+    
+    if (response.ok) {
+      // Notify clients of successful action
+      notifyClients({
+        type: 'MUTATION_SUCCESS',
+        url: request.url,
+        method: request.method
+      });
+    }
+    
+    return response;
+  } catch (error) {
+    console.log('Mutation request failed, queueing for later:', error);
+    
+    // Queue the action for later
+    await queueOfflineAction(request);
+    
+    // Return a response indicating the action was queued
+    return new Response(JSON.stringify({
+      success: true,
+      queued: true,
+      message: 'Action queued for when you\'re back online'
+    }), {
+      status: 202,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+// Offline storage management
+async function initializeOfflineStorage() {
+  // Initialize IndexedDB for offline actions
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('AlumniPlatformOffline', 1);
+    
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => resolve(request.result);
+    
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      
+      // Create object store for offline actions
+      if (!db.objectStoreNames.contains('offlineActions')) {
+        const store = db.createObjectStore('offlineActions', { keyPath: 'id', autoIncrement: true });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+        store.createIndex('type', 'type', { unique: false });
+      }
+      
+      // Create object store for cached data
+      if (!db.objectStoreNames.contains('cachedData')) {
+        const store = db.createObjectStore('cachedData', { keyPath: 'key' });
+        store.createIndex('timestamp', 'timestamp', { unique: false });
+      }
+    };
+  });
+}
+
+async function queueOfflineAction(request) {
+  try {
+    const db = await initializeOfflineStorage();
+    const transaction = db.transaction(['offlineActions'], 'readwrite');
+    const store = transaction.objectStore('offlineActions');
+    
+    const action = {
+      url: request.url,
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      body: request.method !== 'GET' ? await request.text() : null,
+      timestamp: Date.now(),
+      type: 'api_request'
+    };
+    
+    await store.add(action);
+    
+    // Notify clients
+    notifyClients({
+      type: 'OFFLINE_ACTION_QUEUED',
+      action: action
+    });
+    
+    console.log('Offline action queued:', action);
+  } catch (error) {
+    console.error('Failed to queue offline action:', error);
+  }
+}
+
+async function getOfflineActions() {
+  try {
+    const db = await initializeOfflineStorage();
+    const transaction = db.transaction(['offlineActions'], 'readonly');
+    const store = transaction.objectStore('offlineActions');
+    
+    return new Promise((resolve, reject) => {
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  } catch (error) {
+    console.error('Failed to get offline actions:', error);
+    return [];
+  }
+}
+
+async function processOfflineAction(action) {
+  try {
+    const request = new Request(action.url, {
+      method: action.method,
+      headers: action.headers,
+      body: action.body
+    });
+    
+    const response = await fetch(request);
+    
+    if (response.ok) {
+      console.log('Offline action processed successfully:', action);
+      return true;
+    } else {
+      console.error('Offline action failed:', response.status, response.statusText);
+      return false;
+    }
+  } catch (error) {
+    console.error('Failed to process offline action:', error);
+    return false;
+  }
+}
+
+async function removeOfflineAction(actionId) {
+  try {
+    const db = await initializeOfflineStorage();
+    const transaction = db.transaction(['offlineActions'], 'readwrite');
+    const store = transaction.objectStore('offlineActions');
+    
+    await store.delete(actionId);
+    console.log('Offline action removed:', actionId);
+  } catch (error) {
+    console.error('Failed to remove offline action:', error);
+  }
+}
+
+async function cleanupExpiredCaches() {
+  try {
+    const cacheNames = [API_CACHE, DYNAMIC_CACHE, IMAGE_CACHE];
+    
+    for (const cacheName of cacheNames) {
+      const cache = await caches.open(cacheName);
+      const requests = await cache.keys();
+      
+      for (const request of requests) {
+        const response = await cache.match(request);
+        if (response) {
+          const cacheTimestamp = response.headers.get('sw-cache-timestamp');
+          if (cacheTimestamp) {
+            const age = Date.now() - parseInt(cacheTimestamp);
+            let maxAge = CACHE_EXPIRATION.dynamic;
+            
+            if (cacheName === API_CACHE) maxAge = CACHE_EXPIRATION.api;
+            else if (cacheName === IMAGE_CACHE) maxAge = CACHE_EXPIRATION.images;
+            
+            if (age > maxAge) {
+              await cache.delete(request);
+              console.log('Expired cache entry removed:', request.url);
+            }
+          }
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Cache cleanup failed:', error);
+  }
+}
+
+function notifyClients(message) {
+  self.clients.matchAll().then(clients => {
+    clients.forEach(client => {
+      client.postMessage(message);
+    });
+  });
 }
 
 // Push notification handling

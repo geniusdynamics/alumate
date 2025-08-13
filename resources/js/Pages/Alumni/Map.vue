@@ -1,198 +1,431 @@
 <template>
+  <Head title="Alumni Map - Geographic Distribution" />
+  
   <DefaultLayout>
     <div class="alumni-map-page">
+      <!-- Page Header -->
       <div class="page-header">
-        <div class="container-fluid">
-          <div class="row align-items-center">
-            <div class="col">
-              <h1 class="page-title">
-                <i class="fas fa-map-marked-alt"></i>
-                Alumni Network Map
-              </h1>
-              <p class="page-description">
-                Discover and connect with alumni around the world
-              </p>
+        <div class="header-content">
+          <div class="header-text">
+            <h1 class="page-title">Alumni Map</h1>
+            <p class="page-description">
+              Discover where our alumni are located around the world and connect with fellow graduates in your area.
+            </p>
+          </div>
+          
+          <div class="header-actions">
+            <button 
+              @click="showPrivacySettings = true"
+              class="btn-secondary"
+              aria-label="Manage location privacy settings"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              Privacy Settings
+            </button>
+            
+            <button 
+              @click="showLocationUpdate = true"
+              class="btn-primary"
+              aria-label="Update your location"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Update Location
+            </button>
+          </div>
+        </div>
+        
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
             </div>
-            <div class="col-auto">
-              <div class="page-actions">
-                <button 
-                  class="btn btn-outline-primary"
-                  @click="showLocationSettings = true"
-                >
-                  <i class="fas fa-cog"></i>
-                  Location Settings
-                </button>
-                <button 
-                  class="btn btn-primary"
-                  @click="findMyLocation"
-                >
-                  <i class="fas fa-location-arrow"></i>
-                  Find Me
-                </button>
+            <div class="stat-content">
+              <div class="stat-number">{{ stats.total_alumni }}</div>
+              <div class="stat-label">Total Alumni</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ stats.by_country?.length || 0 }}</div>
+              <div class="stat-label">Countries</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ stats.by_industry?.length || 0 }}</div>
+              <div class="stat-label">Industries</div>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div class="stat-content">
+              <div class="stat-number">{{ nearbyCount }}</div>
+              <div class="stat-label">Nearby Alumni</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Map Component -->
+      <div class="map-section">
+        <AlumniMap
+          :initial-alumni="alumni"
+          :schools="schools"
+          :industries="industries"
+          :countries="countries"
+          :graduation-years="graduationYears"
+          @alumni-selected="handleAlumniSelected"
+          @message-alumni="handleMessageAlumni"
+        />
+      </div>
+
+      <!-- Regional Insights Panel -->
+      <div class="insights-panel" v-if="showInsights">
+        <div class="panel-header">
+          <h2 class="panel-title">Regional Insights</h2>
+          <button 
+            @click="showInsights = false"
+            class="close-btn"
+            aria-label="Close insights panel"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="insights-content">
+          <!-- Top Countries -->
+          <div class="insight-section">
+            <h3 class="insight-title">Top Countries</h3>
+            <div class="insight-list">
+              <div 
+                v-for="country in stats.by_country?.slice(0, 5)" 
+                :key="country.country"
+                class="insight-item"
+              >
+                <span class="insight-name">{{ country.country }}</span>
+                <span class="insight-count">{{ country.count }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Top Industries -->
+          <div class="insight-section">
+            <h3 class="insight-title">Top Industries</h3>
+            <div class="insight-list">
+              <div 
+                v-for="industry in stats.by_industry?.slice(0, 5)" 
+                :key="industry.industry"
+                class="insight-item"
+              >
+                <span class="insight-name">{{ industry.industry }}</span>
+                <span class="insight-count">{{ industry.count }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Regional Distribution -->
+          <div class="insight-section">
+            <h3 class="insight-title">Regional Distribution</h3>
+            <div class="insight-list">
+              <div 
+                v-for="region in stats.by_region?.slice(0, 5)" 
+                :key="region.region"
+                class="insight-item"
+              >
+                <span class="insight-name">{{ region.region }}</span>
+                <span class="insight-count">{{ region.count }}</span>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="map-container">
-        <AlumniMap 
-          :initial-center="mapCenter"
-          :initial-zoom="mapZoom"
-          height="calc(100vh - 200px)"
-        />
-      </div>
-
-      <!-- Location Settings Modal -->
-      <div 
-        v-if="showLocationSettings" 
-        class="modal fade show d-block"
-        tabindex="-1"
-        style="background-color: rgba(0,0,0,0.5)"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Location Settings</h5>
-              <button 
-                type="button" 
-                class="btn-close"
-                @click="showLocationSettings = false"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <form @submit.prevent="updateLocationSettings">
-                <div class="mb-3">
-                  <label class="form-label">Location Privacy</label>
-                  <select v-model="locationSettings.privacy" class="form-select">
-                    <option value="public">Public - Visible to everyone</option>
-                    <option value="alumni_only">Alumni Only - Visible to other alumni</option>
-                    <option value="private">Private - Not visible on map</option>
-                  </select>
-                  <div class="form-text">
-                    Control who can see your location on the alumni map
+      <!-- Privacy Settings Modal -->
+      <div v-if="showPrivacySettings" class="modal-overlay" @click="showPrivacySettings = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-header">
+            <h2 class="modal-title">Location Privacy Settings</h2>
+            <button 
+              @click="showPrivacySettings = false"
+              class="close-btn"
+              aria-label="Close privacy settings"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <p class="privacy-description">
+              Control who can see your location on the alumni map. Your privacy is important to us.
+            </p>
+            
+            <div class="privacy-options">
+              <label class="privacy-option">
+                <input 
+                  type="radio" 
+                  v-model="privacySettings.location_privacy" 
+                  value="public"
+                  name="location_privacy"
+                />
+                <div class="option-content">
+                  <div class="option-title">Public</div>
+                  <div class="option-description">
+                    Your location is visible to everyone, including prospective students and employers.
                   </div>
                 </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Current Location</label>
-                  <div class="row">
-                    <div class="col-md-6">
-                      <input 
-                        v-model="locationSettings.city"
-                        type="text" 
-                        class="form-control" 
-                        placeholder="City"
-                      />
-                    </div>
-                    <div class="col-md-6">
-                      <input 
-                        v-model="locationSettings.state"
-                        type="text" 
-                        class="form-control" 
-                        placeholder="State/Province"
-                      />
-                    </div>
-                  </div>
-                  <div class="mt-2">
-                    <input 
-                      v-model="locationSettings.country"
-                      type="text" 
-                      class="form-control" 
-                      placeholder="Country"
-                    />
+              </label>
+              
+              <label class="privacy-option">
+                <input 
+                  type="radio" 
+                  v-model="privacySettings.location_privacy" 
+                  value="alumni_only"
+                  name="location_privacy"
+                />
+                <div class="option-content">
+                  <div class="option-title">Alumni Only</div>
+                  <div class="option-description">
+                    Only verified alumni from your institution can see your location.
                   </div>
                 </div>
-
-                <div class="mb-3">
-                  <button 
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    @click="getCurrentLocation"
-                    :disabled="gettingLocation"
-                  >
-                    <i class="fas fa-crosshairs"></i>
-                    {{ gettingLocation ? 'Getting Location...' : 'Use Current Location' }}
-                  </button>
+              </label>
+              
+              <label class="privacy-option">
+                <input 
+                  type="radio" 
+                  v-model="privacySettings.location_privacy" 
+                  value="private"
+                  name="location_privacy"
+                />
+                <div class="option-content">
+                  <div class="option-title">Private</div>
+                  <div class="option-description">
+                    Your location is not shown on the map to anyone.
+                  </div>
                 </div>
-              </form>
+              </label>
             </div>
-            <div class="modal-footer">
-              <button 
-                type="button" 
-                class="btn btn-secondary"
-                @click="showLocationSettings = false"
-              >
-                Cancel
-              </button>
-              <button 
-                type="button" 
-                class="btn btn-primary"
-                @click="updateLocationSettings"
-                :disabled="updatingLocation"
-              >
-                {{ updatingLocation ? 'Updating...' : 'Save Changes' }}
-              </button>
-            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button @click="showPrivacySettings = false" class="btn-secondary">
+              Cancel
+            </button>
+            <button @click="savePrivacySettings" class="btn-primary">
+              Save Settings
+            </button>
           </div>
         </div>
       </div>
+
+      <!-- Location Update Modal -->
+      <div v-if="showLocationUpdate" class="modal-overlay" @click="showLocationUpdate = false">
+        <div class="modal-content" @click.stop>
+          <div class="modal-header">
+            <h2 class="modal-title">Update Your Location</h2>
+            <button 
+              @click="showLocationUpdate = false"
+              class="close-btn"
+              aria-label="Close location update"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <form @submit.prevent="updateLocation">
+              <div class="form-group">
+                <label for="location-input" class="form-label">
+                  Current Location
+                </label>
+                <input 
+                  id="location-input"
+                  type="text" 
+                  v-model="locationForm.address"
+                  class="form-input"
+                  placeholder="Enter your city, state/province, country"
+                  required
+                />
+                <p class="form-help">
+                  Enter your current location to help fellow alumni find you.
+                </p>
+              </div>
+              
+              <div class="form-actions">
+                <button 
+                  type="button" 
+                  @click="getCurrentLocation"
+                  class="btn-secondary"
+                  :disabled="gettingLocation"
+                >
+                  <svg v-if="!gettingLocation" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <div v-else class="loading-spinner-sm"></div>
+                  {{ gettingLocation ? 'Getting Location...' : 'Use Current Location' }}
+                </button>
+              </div>
+            </form>
+          </div>
+          
+          <div class="modal-footer">
+            <button @click="showLocationUpdate = false" class="btn-secondary">
+              Cancel
+            </button>
+            <button @click="updateLocation" class="btn-primary" :disabled="!locationForm.address">
+              Update Location
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Insights Toggle Button -->
+      <button 
+        @click="showInsights = !showInsights"
+        class="insights-toggle"
+        :class="{ active: showInsights }"
+        aria-label="Toggle regional insights panel"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        Insights
+      </button>
     </div>
   </DefaultLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { router } from '@inertiajs/vue3'
-import DefaultLayout from '@/Layouts/DefaultLayout.vue'
+import { ref, computed, onMounted } from 'vue'
+import { Head, router } from '@inertiajs/vue3'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import AlumniMap from '@/Components/AlumniMap.vue'
 
-interface LocationSettings {
-  privacy: string
-  city: string
-  state: string
-  country: string
-  latitude?: number
-  longitude?: number
+interface Alumni {
+  id: number
+  name: string
+  avatar_url?: string
+  current_title?: string
+  current_company?: string
+  location?: string
+  latitude: number
+  longitude: number
+  location_privacy: string
 }
 
-// Reactive data
-const showLocationSettings = ref(false)
+interface Stats {
+  total_alumni: number
+  by_country: Array<{ country: string; count: number }>
+  by_region: Array<{ region: string; count: number }>
+  by_industry: Array<{ industry: string; count: number }>
+}
+
+interface Props {
+  alumni: Alumni[]
+  stats: Stats
+  schools: Array<{ id: number; name: string }>
+  industries: string[]
+  countries: string[]
+  graduationYears: number[]
+  userLocation?: {
+    latitude: number
+    longitude: number
+    privacy: string
+  }
+}
+
+const props = defineProps<Props>()
+
+// Reactive state
+const showInsights = ref(false)
+const showPrivacySettings = ref(false)
+const showLocationUpdate = ref(false)
 const gettingLocation = ref(false)
-const updatingLocation = ref(false)
 
-const mapCenter = ref<[number, number]>([39.8283, -98.5795]) // Center of USA
-const mapZoom = ref(4)
+const privacySettings = ref({
+  location_privacy: props.userLocation?.privacy || 'alumni_only'
+})
 
-const locationSettings = ref<LocationSettings>({
-  privacy: 'alumni_only',
-  city: '',
-  state: '',
-  country: ''
+const locationForm = ref({
+  address: ''
+})
+
+// Computed properties
+const nearbyCount = computed(() => {
+  if (!props.userLocation) return 0
+  
+  // Calculate nearby alumni within 50km
+  return props.alumni.filter(alumnus => {
+    if (!props.userLocation) return false
+    
+    const distance = calculateDistance(
+      props.userLocation.latitude,
+      props.userLocation.longitude,
+      alumnus.latitude,
+      alumnus.longitude
+    )
+    
+    return distance <= 50 // 50km radius
+  }).length
 })
 
 // Methods
-const findMyLocation = () => {
-  if (!navigator.geolocation) {
-    alert('Geolocation is not supported by this browser.')
-    return
+const handleAlumniSelected = (alumni: Alumni) => {
+  // Handle alumni selection from map
+  console.log('Alumni selected:', alumni)
+}
+
+const handleMessageAlumni = (alumni: Alumni) => {
+  router.visit(`/messages/new?recipient=${alumni.id}`)
+}
+
+const savePrivacySettings = async () => {
+  try {
+    await router.post('/api/user/location-privacy', {
+      location_privacy: privacySettings.value.location_privacy
+    })
+    
+    showPrivacySettings.value = false
+    
+    // Refresh the page to update the map
+    router.reload()
+    
+  } catch (error) {
+    console.error('Failed to save privacy settings:', error)
   }
-
-  gettingLocation.value = true
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords
-      mapCenter.value = [latitude, longitude]
-      mapZoom.value = 12
-      gettingLocation.value = false
-    },
-    (error) => {
-      console.error('Error getting location:', error)
-      gettingLocation.value = false
-      alert('Unable to retrieve your location.')
-    }
-  )
 }
 
 const getCurrentLocation = () => {
@@ -205,69 +438,66 @@ const getCurrentLocation = () => {
 
   navigator.geolocation.getCurrentPosition(
     async (position) => {
-      const { latitude, longitude } = position.coords
-      
-      locationSettings.value.latitude = latitude
-      locationSettings.value.longitude = longitude
-
-      // Try to reverse geocode to get address
       try {
-        // This would typically use a geocoding service
-        // For now, just set the coordinates
-        console.log('Got coordinates:', latitude, longitude)
+        // Reverse geocode the coordinates to get address
+        const response = await fetch(`/api/geocode/reverse?lat=${position.coords.latitude}&lng=${position.coords.longitude}`)
+        const data = await response.json()
+        
+        if (data.address) {
+          locationForm.value.address = data.address
+        }
       } catch (error) {
-        console.error('Error reverse geocoding:', error)
+        console.error('Failed to reverse geocode:', error)
+        locationForm.value.address = `${position.coords.latitude}, ${position.coords.longitude}`
+      } finally {
+        gettingLocation.value = false
       }
-
-      gettingLocation.value = false
     },
     (error) => {
-      console.error('Error getting location:', error)
+      console.error('Geolocation error:', error)
       gettingLocation.value = false
-      alert('Unable to retrieve your location.')
+      alert('Unable to get your current location. Please enter it manually.')
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 300000 // 5 minutes
     }
   )
 }
 
-const updateLocationSettings = async () => {
-  updatingLocation.value = true
+const updateLocation = async () => {
+  if (!locationForm.value.address) return
 
   try {
-    const response = await fetch('/api/alumni/location', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-      },
-      body: JSON.stringify({
-        latitude: locationSettings.value.latitude,
-        longitude: locationSettings.value.longitude,
-        city: locationSettings.value.city,
-        state: locationSettings.value.state,
-        country: locationSettings.value.country,
-        privacy_level: locationSettings.value.privacy
-      })
+    await router.post('/api/user/location', {
+      address: locationForm.value.address
     })
-
-    if (response.ok) {
-      showLocationSettings.value = false
-      // Show success message
-      alert('Location settings updated successfully!')
-    } else {
-      throw new Error('Failed to update location settings')
-    }
+    
+    showLocationUpdate.value = false
+    
+    // Refresh the page to update the map
+    router.reload()
+    
   } catch (error) {
-    console.error('Error updating location:', error)
-    alert('Failed to update location settings. Please try again.')
-  } finally {
-    updatingLocation.value = false
+    console.error('Failed to update location:', error)
   }
 }
 
-// Initialize
+const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
+  const R = 6371 // Radius of the Earth in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180
+  const dLon = (lon2 - lon1) * Math.PI / 180
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  return R * c
+}
+
 onMounted(() => {
-  // Load user's current location settings if available
-  // This would typically come from props or API call
+  // Any initialization logic
 })
 </script>
 
@@ -276,93 +506,514 @@ onMounted(() => {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #f9fafb;
 }
 
 .page-header {
   background: white;
-  border-bottom: 1px solid #dee2e6;
-  padding: 1rem 0;
-  flex-shrink: 0;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 24px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.header-text {
+  flex: 1;
 }
 
 .page-title {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #495057;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.page-title i {
-  color: #007bff;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
 }
 
 .page-description {
-  margin: 0.25rem 0 0 0;
-  color: #6c757d;
-  font-size: 0.9rem;
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+  max-width: 600px;
 }
 
-.page-actions {
+.header-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 12px;
+  align-items: center;
 }
 
-.map-container {
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 8px;
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-number {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.map-section {
   flex: 1;
   position: relative;
-  overflow: hidden;
 }
 
-/* Modal styles */
-.modal.show {
-  display: block !important;
+.insights-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background: white;
+  border-left: 1px solid #e5e7eb;
+  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow-y: auto;
 }
 
-.modal-dialog {
-  margin-top: 5vh;
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.insights-content {
+  padding: 20px;
+}
+
+.insight-section {
+  margin-bottom: 24px;
+}
+
+.insight-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 12px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.insight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.insight-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+}
+
+.insight-name {
+  font-size: 13px;
+  color: #374151;
+  flex: 1;
+}
+
+.insight-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  background: #e5e7eb;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.insights-toggle {
+  position: fixed;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 999;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.insights-toggle:hover {
+  background: #f9fafb;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.insights-toggle.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 16px;
 }
 
 .modal-content {
-  border: none;
+  background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header {
-  border-bottom: 1px solid #e9ecef;
-  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-title {
+  font-size: 18px;
   font-weight: 600;
-  color: #495057;
+  color: #1f2937;
+  margin: 0;
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 20px;
 }
 
 .modal-footer {
-  border-top: 1px solid #e9ecef;
-  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #e5e7eb;
 }
 
-/* Responsive adjustments */
+.privacy-description {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+.privacy-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.privacy-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.privacy-option:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.privacy-option:has(input:checked) {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+
+.privacy-option input[type="radio"] {
+  margin-top: 2px;
+}
+
+.option-content {
+  flex: 1;
+}
+
+.option-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px 0;
+}
+
+.option-description {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-help {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 4px 0 0 0;
+}
+
+.form-actions {
+  margin-top: 16px;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+/* Button Styles */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.loading-spinner-sm {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .insights-panel {
+    width: 280px;
+  }
+  
+  .insights-toggle {
+    right: 12px;
+  }
+}
+
 @media (max-width: 768px) {
-  .page-header .row {
+  .page-header {
+    padding: 16px;
+  }
+  
+  .header-content {
     flex-direction: column;
-    gap: 1rem;
+    gap: 16px;
+    align-items: stretch;
   }
   
-  .page-actions {
-    justify-content: center;
+  .header-actions {
+    justify-content: flex-end;
   }
   
-  .modal-dialog {
-    margin: 1rem;
+  .quick-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .insights-panel {
+    width: 100%;
+    height: 100vh;
+  }
+  
+  .insights-toggle {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    top: auto;
+    transform: none;
+  }
+  
+  .modal-content {
+    margin: 0;
+    border-radius: 0;
+    height: 100vh;
+    max-height: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-card {
+    padding: 12px;
+  }
+  
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .stat-number {
+    font-size: 20px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .stat-card,
+  .insight-item,
+  .privacy-option {
+    border-width: 2px;
   }
 }
 </style>

@@ -666,8 +666,170 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Enhanced offline action management
+class OfflineActionManager {
+    constructor() {
+        this.queue = [];
+        this.isProcessing = false;
+        this.dbName = 'AlumniPlatformOffline';
+        this.dbVersion = 1;
+        this.db = null;
+        
+        this.initDB();
+    }
+    
+    async initDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.dbName, this.dbVersion);
+            
+            request.onerror = () => reject(request.error);
+            request.onsuccess = () => {
+                this.db = request.result;
+                resolve(this.db);
+            };
+            
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                
+                if (!db.objectStoreNames.contains('offlineActions')) {
+                    const store = db.createObjectStore('offlineActions', { keyPath: 'id', autoIncrement: true });
+                    store.createIndex('timestamp', 'timestamp', { unique: false });
+                }
+            };
+        });
+    }
+    
+    async queueAction(action) {
+        if (!this.db) await this.initDB();
+        
+        const transaction = this.db.transaction(['offlineActions'], 'readwrite');
+        const store = transaction.objectStore('offlineActions');
+        
+        const actionWithTimestamp = {
+            ...action,
+            timestamp: Date.now(),
+            id: Date.now() + Math.random()
+        };
+        
+        await store.add(actionWithTimestamp);
+        this.queue.push(actionWithTimestamp);
+        
+        // Update localStorage for service worker access
+        localStorage.setItem('offline-actions-queue', JSON.stringify(this.queue));
+        
+        return actionWithTimestamp;
+    }
+    
+    async getQueuedActions() {
+        if (!this.db) await this.initDB();
+        
+        const transaction = this.db.transaction(['offlineActions'], 'readonly');
+        const store = transaction.objectStore('offlineActions');
+        
+        return new Promise((resolve, reject) => {
+            const request = store.getAll();
+            request.onsuccess = () => {
+                this.queue = request.result;
+                resolve(this.queue);
+            };
+            request.onerror = () => reject(request.error);
+        });
+    }
+    
+    async processQueue() {
+        if (this.isProcessing || this.queue.length === 0) return;
+        
+        this.isProcessing = true;
+        const processedActions = [];
+        
+        for (const action of this.queue) {
+            try {
+                const success = await this.processAction(action);
+                if (success) {
+                    processedActions.push(action);
+                }
+            } catch (error) {
+                console.error('Failed to process queued action:', error);
+            }
+        }
+        
+        // Remove processed actions
+        for (const action of processedActions) {
+            await this.removeAction(action.id);
+        }
+        
+        this.isProcessing = false;
+        
+        // Update localStorage
+        localStorage.setItem('offline-actions-queue', JSON.stringify(this.queue));
+        
+        return processedActions.length;
+    }
+    
+    async processAction(action) {
+        const response = await fetch(action.url, {
+            method: action.method,
+            headers: action.headers,
+            body: action.body
+        });
+        
+        return response.ok;
+    }
+    
+    async removeAction(actionId) {
+        if (!this.db) await this.initDB();
+        
+        const transaction = this.db.transaction(['offlineActions'], 'readwrite');
+        const store = transaction.objectStore('offlineActions');
+        
+        await store.delete(actionId);
+        this.queue = this.queue.filter(action => action.id !== actionId);
+    }
+    
+    getQueueLength() {
+        return this.queue.length;
+    }
+}
+
+// Enhanced PWA Manager with offline action support
+PWAManager.prototype.initOfflineActions = function() {
+    this.offlineActionManager = new OfflineActionManager();
+    
+    // Listen for service worker messages about offline actions
+    navigator.serviceWorker.addEventListener('message', (event) => {
+        if (event.data.type === 'OFFLINE_ACTION_QUEUED') {
+            this.offlineActionManager.queue.push(event.data.action);
+            this.showOfflineActionQueuedNotification();
+        } else if (event.data.type === 'BACKGROUND_SYNC_SUCCESS') {
+            this.offlineActionManager.queue = [];
+            this.showBackgroundSyncSuccessNotification();
+        }
+    });
+};
+
+PWAManager.prototype.queueOfflineAction = async function(url, method, data) {
+    const action = {
+        url,
+        method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+        },
+        body: data ? JSON.stringify(data) : null
+    };
+    
+    return await this.offlineActionManager.queueAction(action);
+};
+
+PWAManager.prototype.getQueuedActionsCount = function() {
+    return this.offlineActionManager ? this.offlineActionManager.getQueueLength() : 0;
+};
+
 // Initialize PWA Manager
 const pwaManager = new PWAManager();
+
+// Initialize offline actions
+pwaManager.initOfflineActions();
 
 // Export for global access
 window.pwaManager = pwaManager;

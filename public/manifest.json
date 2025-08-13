@@ -1,7 +1,7 @@
 {
   "name": "Modern Alumni Platform",
   "short_name": "Alumni",
-  "description": "Connect, network, and grow with your alumni community",
+  "description": "Connect, network, and grow with your alumni community. Stay connected with fellow alumni, discover career opportunities, and engage with your alma mater.",
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
@@ -9,7 +9,37 @@
   "background_color": "#ffffff",
   "scope": "/",
   "lang": "en",
-  "categories": ["social", "networking", "education"],
+  "categories": ["social", "networking", "education", "business", "productivity"],
+  "dir": "ltr",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+alumni",
+      "url": "/handle?url=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["image/*", "video/*", ".pdf", ".doc", ".docx"]
+        }
+      ]
+    }
+  },
   "icons": [
     {
       "src": "/favicon.ico",
@@ -43,36 +73,65 @@
     {
       "name": "Timeline",
       "short_name": "Timeline",
-      "description": "View your social timeline",
+      "description": "View your social timeline and latest updates",
       "url": "/social/timeline",
       "icons": [
         {
-          "src": "/favicon.svg",
-          "sizes": "96x96"
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     },
     {
       "name": "Alumni Directory",
       "short_name": "Directory",
-      "description": "Browse alumni network",
+      "description": "Browse and connect with alumni",
       "url": "/alumni/directory",
       "icons": [
         {
-          "src": "/favicon.svg",
-          "sizes": "96x96"
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Job Dashboard",
+      "short_name": "Jobs",
+      "description": "Discover career opportunities",
+      "url": "/jobs/dashboard",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     },
     {
       "name": "Events",
       "short_name": "Events",
-      "description": "Discover upcoming events",
+      "description": "Upcoming alumni events and reunions",
       "url": "/events",
       "icons": [
         {
-          "src": "/favicon.svg",
-          "sizes": "96x96"
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "description": "Chat with your alumni network",
+      "url": "/messages",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
         }
       ]
     }

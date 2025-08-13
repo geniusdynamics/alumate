@@ -1,66 +1,37 @@
 <template>
-  <div 
-    class="map-marker"
-    :class="markerClass"
-    @click="handleClick"
-    @mouseenter="handleMouseEnter"
-    @mouseleave="handleMouseLeave"
-  >
-    <div class="marker-content">
-      <img 
-        v-if="alumni.profile_photo_path" 
-        :src="alumni.profile_photo_path" 
-        :alt="`${alumni.first_name} ${alumni.last_name}`"
-        class="marker-photo"
-        @error="handleImageError"
-      />
-      <div v-else class="marker-initials">
-        {{ getInitials(alumni.first_name, alumni.last_name) }}
+  <div class="map-marker" :class="markerClass">
+    <div class="marker-content" @click="handleClick">
+      <div class="marker-avatar">
+        <img 
+          :src="alumni.avatar_url || '/images/default-avatar.png'" 
+          :alt="alumni.name"
+          class="avatar-image"
+        />
       </div>
-    </div>
-    
-    <!-- Status indicator -->
-    <div 
-      v-if="alumni.online_status" 
-      class="status-indicator"
-      :class="alumni.online_status"
-    ></div>
-    
-    <!-- Hover tooltip -->
-    <div v-if="showTooltip" class="marker-tooltip">
-      <div class="tooltip-header">
-        <strong>{{ alumni.first_name }} {{ alumni.last_name }}</strong>
-        <span class="graduation-year">{{ alumni.graduation_year }}</span>
-      </div>
-      <div class="tooltip-body">
-        <p v-if="alumni.current_position" class="position">
-          {{ alumni.current_position }}
+      <div class="marker-info" v-if="showInfo">
+        <h4 class="alumni-name">{{ alumni.name }}</h4>
+        <p class="alumni-title" v-if="alumni.current_title">
+          {{ alumni.current_title }}
         </p>
-        <p v-if="alumni.current_company" class="company">
-          {{ alumni.current_company }}
+        <p class="alumni-company" v-if="alumni.current_company">
+          at {{ alumni.current_company }}
         </p>
-        <p v-if="alumni.industry" class="industry">
-          <i class="fas fa-industry"></i> {{ alumni.industry }}
-        </p>
-        <p class="location">
-          <i class="fas fa-map-marker-alt"></i> 
-          {{ formatLocation(alumni) }}
-        </p>
-      </div>
-      <div class="tooltip-actions">
-        <button 
-          class="btn btn-sm btn-primary"
-          @click.stop="viewProfile"
-        >
-          View Profile
-        </button>
-        <button 
-          v-if="canConnect"
-          class="btn btn-sm btn-outline-primary"
-          @click.stop="sendConnection"
-        >
-          Connect
-        </button>
+        <div class="marker-actions">
+          <button 
+            @click.stop="viewProfile" 
+            class="btn-primary btn-sm"
+            :aria-label="`View ${alumni.name}'s profile`"
+          >
+            View Profile
+          </button>
+          <button 
+            @click.stop="sendMessage" 
+            class="btn-secondary btn-sm"
+            :aria-label="`Send message to ${alumni.name}`"
+          >
+            Message
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -72,94 +43,48 @@ import { router } from '@inertiajs/vue3'
 
 interface Alumni {
   id: number
-  first_name: string
-  last_name: string
-  graduation_year: number
-  current_position?: string
+  name: string
+  avatar_url?: string
+  current_title?: string
   current_company?: string
-  industry?: string
-  city?: string
-  state?: string
-  country?: string
-  profile_photo_path?: string
-  online_status?: 'online' | 'away' | 'offline'
   latitude: number
   longitude: number
-  profile_visibility: string
 }
 
-interface MapMarkerProps {
+interface Props {
   alumni: Alumni
-  selected?: boolean
+  isSelected?: boolean
+  showInfo?: boolean
   size?: 'small' | 'medium' | 'large'
-  interactive?: boolean
 }
 
-const props = withDefaults(defineProps<MapMarkerProps>(), {
-  selected: false,
-  size: 'medium',
-  interactive: true
+const props = withDefaults(defineProps<Props>(), {
+  isSelected: false,
+  showInfo: false,
+  size: 'medium'
 })
 
 const emit = defineEmits<{
-  click: [alumni: Alumni]
-  hover: [alumni: Alumni]
-  connect: [alumni: Alumni]
+  select: [alumni: Alumni]
+  message: [alumni: Alumni]
 }>()
 
-const showTooltip = ref(false)
-const imageError = ref(false)
-
 const markerClass = computed(() => ({
-  'marker-selected': props.selected,
-  'marker-small': props.size === 'small',
-  'marker-medium': props.size === 'medium',
-  'marker-large': props.size === 'large',
-  'marker-interactive': props.interactive
+  'marker-selected': props.isSelected,
+  'marker-with-info': props.showInfo,
+  [`marker-${props.size}`]: true
 }))
 
-const canConnect = computed(() => {
-  // Logic to determine if current user can connect with this alumni
-  // This would check if they're already connected, if connection is pending, etc.
-  return true // Simplified for now
-})
-
-const getInitials = (firstName: string, lastName: string): string => {
-  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
-}
-
-const formatLocation = (alumni: Alumni): string => {
-  const parts = [alumni.city, alumni.state, alumni.country].filter(Boolean)
-  return parts.join(', ')
-}
-
 const handleClick = () => {
-  if (props.interactive) {
-    emit('click', props.alumni)
-  }
-}
-
-const handleMouseEnter = () => {
-  if (props.interactive) {
-    showTooltip.value = true
-    emit('hover', props.alumni)
-  }
-}
-
-const handleMouseLeave = () => {
-  showTooltip.value = false
-}
-
-const handleImageError = () => {
-  imageError.value = true
+  emit('select', props.alumni)
 }
 
 const viewProfile = () => {
   router.visit(`/alumni/${props.alumni.id}`)
 }
 
-const sendConnection = () => {
-  emit('connect', props.alumni)
+const sendMessage = () => {
+  emit('message', props.alumni)
 }
 </script>
 
@@ -167,170 +92,143 @@ const sendConnection = () => {
 .map-marker {
   position: relative;
   cursor: pointer;
-  transition: all 0.2s ease;
+  z-index: 1000;
 }
 
 .marker-content {
-  border-radius: 50%;
-  border: 3px solid white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
-  background: #f8f9fa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
+  transition: all 0.2s ease;
 }
 
-.marker-small .marker-content {
-  width: 30px;
-  height: 30px;
+.marker-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background: #f3f4f6;
+  transition: all 0.2s ease;
+}
+
+.marker-small .marker-avatar {
+  width: 32px;
+  height: 32px;
   border-width: 2px;
 }
 
-.marker-medium .marker-content {
-  width: 40px;
-  height: 40px;
-  border-width: 3px;
+.marker-large .marker-avatar {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
 }
 
-.marker-large .marker-content {
-  width: 50px;
-  height: 50px;
-  border-width: 3px;
-}
-
-.marker-photo {
+.avatar-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.marker-initials {
-  font-weight: bold;
-  color: #495057;
-  font-size: 0.8em;
-}
-
-.marker-small .marker-initials {
-  font-size: 0.6em;
-}
-
-.marker-large .marker-initials {
-  font-size: 1em;
-}
-
-.status-indicator {
-  position: absolute;
-  bottom: 2px;
-  right: 2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  border: 2px solid white;
-}
-
-.status-indicator.online {
-  background-color: #28a745;
-}
-
-.status-indicator.away {
-  background-color: #ffc107;
-}
-
-.status-indicator.offline {
-  background-color: #6c757d;
-}
-
-.marker-interactive:hover .marker-content {
+.marker-selected .marker-avatar {
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
   transform: scale(1.1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.marker-selected .marker-content {
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3);
-}
-
-.marker-tooltip {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  padding: 12px;
-  min-width: 250px;
-  z-index: 1000;
-  margin-bottom: 8px;
-}
-
-.marker-tooltip::after {
-  content: '';
+.marker-info {
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 6px solid transparent;
-  border-top-color: white;
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  max-width: 250px;
+  margin-top: 8px;
+  z-index: 1001;
 }
 
-.tooltip-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid #e9ecef;
+.marker-info::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid white;
 }
 
-.graduation-year {
-  color: #6c757d;
-  font-size: 0.9em;
-}
-
-.tooltip-body p {
-  margin: 4px 0;
-  font-size: 0.9em;
-}
-
-.position {
+.alumni-name {
+  font-size: 14px;
   font-weight: 600;
-  color: #495057;
+  color: #1f2937;
+  margin: 0 0 4px 0;
 }
 
-.company {
-  color: #6c757d;
+.alumni-title {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 2px 0;
 }
 
-.industry,
-.location {
-  color: #6c757d;
+.alumni-company {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+}
+
+.marker-actions {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
-.industry i,
-.location i {
-  width: 12px;
-  font-size: 0.8em;
-}
-
-.tooltip-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px solid #e9ecef;
-}
-
-.tooltip-actions .btn {
-  flex: 1;
-  font-size: 0.8em;
+.btn-sm {
   padding: 4px 8px;
+  font-size: 11px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+/* Hover effects */
+.map-marker:hover .marker-avatar {
+  transform: scale(1.05);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.marker-selected:hover .marker-avatar {
+  transform: scale(1.15);
+}
+
+/* Accessibility */
+.map-marker:focus-within .marker-avatar {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
 }
 
 /* Animation for marker appearance */
@@ -351,17 +249,24 @@ const sendConnection = () => {
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .marker-tooltip {
-    min-width: 200px;
-    font-size: 0.9em;
+  .marker-info {
+    min-width: 180px;
+    max-width: 200px;
+    padding: 10px;
   }
   
-  .tooltip-actions {
-    flex-direction: column;
+  .alumni-name {
+    font-size: 13px;
   }
   
-  .tooltip-actions .btn {
-    flex: none;
+  .alumni-title,
+  .alumni-company {
+    font-size: 11px;
+  }
+  
+  .btn-sm {
+    padding: 3px 6px;
+    font-size: 10px;
   }
 }
 </style>
