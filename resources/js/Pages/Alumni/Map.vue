@@ -333,6 +333,8 @@ import { ref, computed, onMounted } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import AlumniMap from '@/Components/AlumniMap.vue'
+import LoadingOptimizer from '@/Components/Performance/LoadingOptimizer.vue'
+import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring'
 
 interface Alumni {
   id: number
@@ -368,6 +370,15 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+// Performance monitoring
+const { 
+  isLoading, 
+  trackInteraction, 
+  trackApiCall, 
+  startLoading, 
+  endLoading 
+} = usePerformanceMonitoring('AlumniMap')
 
 // Reactive state
 const showInsights = ref(false)

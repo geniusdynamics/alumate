@@ -16,6 +16,7 @@
         "laravel/socialite": "^5.23",
         "laravel/tinker": "^2.10.1",
         "maatwebsite/excel": "^3.1",
+        "pusher/pusher-php-server": "^7.2",
         "spatie/laravel-permission": "^6.19",
         "stancl/tenancy": "^3.7",
         "tightenco/ziggy": "^2.4"

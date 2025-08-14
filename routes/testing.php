@@ -25,4 +25,19 @@ Route::prefix('testing')->group(function () {
     Route::get('/feedback/report', [TestingController::class, 'generateFeedbackReport'])->name('testing.feedback.report');
     Route::get('/feedback/export', [TestingController::class, 'exportFeedbackCsv'])->name('testing.feedback.export');
 
+    // Real-time features demo
+    Route::get('/real-time-demo', function () {
+        return \Inertia\Inertia::render('Test/RealTimeDemo');
+    })->name('testing.real-time-demo');
+
+    // Performance monitoring demo
+    Route::get('/performance-demo', function () {
+        return \Inertia\Inertia::render('Test/PerformanceDemo');
+    })->name('testing.performance-demo');
+
+    // Performance optimization demo
+    Route::get('/performance-optimization', function () {
+        return \Inertia\Inertia::render('Test/PerformanceOptimization');
+    })->name('testing.performance-optimization');
+
 });

@@ -167,7 +167,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates'
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates'
 import userFlowIntegration from '@/services/UserFlowIntegration'
 import { formatDistanceToNow } from 'date-fns'
 import {

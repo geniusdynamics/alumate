@@ -11,9 +11,11 @@ import OnboardingSystem from '@/components/onboarding/OnboardingSystem.vue';
 import MobileNavigation from '@/components/MobileNavigation.vue';
 import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
 import PWAIntegration from '@/Components/PWA/PWAIntegration.vue';
+import RealTimeStatus from '@/Components/RealTimeStatus.vue';
 import { initializeTheme } from '@/composables/useTheme';
 import { MagnifyingGlassIcon, BellIcon } from '@heroicons/vue/24/outline';
 import type { BreadcrumbItemType } from '@/types';
+import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
 
 interface Props {
     title?: string;
@@ -29,6 +31,9 @@ const page = usePage();
 const flash = computed(() => page.props.flash);
 const mobileNavigationRef = ref(null);
 
+// Performance monitoring for layout
+const { trackInteraction, trackNavigation } = usePerformanceMonitoring('DefaultLayout');
+
 // Initialize theme system
 onMounted(() => {
     initializeTheme();
@@ -36,12 +41,14 @@ onMounted(() => {
 
 // Mobile navigation methods
 const openMobileSearch = () => {
+    trackInteraction('mobile-search-open');
     if (mobileNavigationRef.value) {
         mobileNavigationRef.value.openSearch();
     }
 };
 
 const openMobileNotifications = () => {
+    trackInteraction('mobile-notifications-open');
     if (mobileNavigationRef.value) {
         mobileNavigationRef.value.openNotifications();
     }
@@ -160,6 +167,13 @@ const handleOnlineMode = (event: any) => {
             @push-subscribed="handlePushSubscribed"
             @offline-mode="handleOfflineMode"
             @online-mode="handleOnlineMode"
+        />
+        
+        <!-- Real-time Connection Status -->
+        <RealTimeStatus 
+            :position="'bottom-right'"
+            :show-details="false"
+            class="fixed"
         />
     </div>
 </template>

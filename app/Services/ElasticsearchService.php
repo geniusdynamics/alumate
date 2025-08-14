@@ -14,14 +14,23 @@ use Carbon\Carbon;
 
 class ElasticsearchService
 {
-    private Client $client;
+    private ?Client $client;
     private string $indexPrefix;
 
     public function __construct()
     {
-        $this->client = ClientBuilder::create()
-            ->setHosts([config('elasticsearch.host', 'localhost:9200')])
-            ->build();
+        try {
+            if (class_exists(\Elasticsearch\ClientBuilder::class)) {
+                $this->client = ClientBuilder::create()
+                    ->setHosts([config('elasticsearch.host', 'localhost:9200')])
+                    ->build();
+            } else {
+                $this->client = null;
+            }
+        } catch (\Exception $e) {
+            $this->client = null;
+            \Log::warning('Elasticsearch client could not be initialized: ' . $e->getMessage());
+        }
         
         $this->indexPrefix = config('elasticsearch.index_prefix', 'alumni_platform');
     }

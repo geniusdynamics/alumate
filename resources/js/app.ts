@@ -8,6 +8,9 @@ import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
 import { performanceService } from './services/PerformanceService';
 import { preloadService } from './services/PreloadService';
+import { performanceOptimizer } from './utils/performance-optimizer';
+import { bundleAnalyzer } from './utils/bundle-analyzer';
+import { preloadCriticalResources } from './utils/lazy-loading';
 import './pwa.js';
 
 // Extend ImportMeta interface for Vite...
@@ -28,6 +31,12 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 // Start performance monitoring
 performanceService.markStart('app-initialization')
+
+// Initialize performance optimization
+performanceOptimizer.optimizePage()
+
+// Preload critical resources
+preloadCriticalResources()
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
@@ -77,5 +86,10 @@ window.addEventListener('load', () => {
     // Wait a bit for all resources to finish loading
     setTimeout(() => {
         performanceService.reportMetrics()
+        
+        // Generate bundle analysis report in development
+        if (import.meta.env.DEV) {
+            console.log('Bundle Analysis:', bundleAnalyzer.generateReport())
+        }
     }, 1000)
 });

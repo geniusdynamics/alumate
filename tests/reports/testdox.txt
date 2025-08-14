@@ -1,5 +1,7 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\HomepageControllerTest.php
- [ ] index handles null service responses gracefully
- [ ] institutional handles malformed ab tests safely
- [ ] getMetaData falls back to hero and defaults
+D:\DevCenter\abuilds\alumate\tests\Feature\ForumTest.php
+ [ ] user can view forums list
+ [ ] user can create a forum topic
+ [ ] user can reply to a forum topic
+ [ ] user can like a forum post
+ [ ] user can search forum topics
 

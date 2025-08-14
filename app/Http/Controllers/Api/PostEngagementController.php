@@ -3,110 +3,128 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Comment;
 use App\Models\Post;
-use App\Services\PostEngagementService;
-use Illuminate\Http\JsonResponse;
+use App\Models\PostEngagement;
+use App\Events\PostEngagement as PostEngagementEvent;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PostEngagementController extends Controller
 {
-    protected PostEngagementService $engagementService;
-
-    public function __construct(PostEngagementService $engagementService)
-    {
-        $this->engagementService = $engagementService;
-    }
-
     /**
-     * Add or update a reaction to a post.
+     * Like or unlike a post
      */
-    public function react(Request $request, Post $post): JsonResponse
+    public function like(Request $request, Post $post): JsonResponse
     {
-        $request->validate([
-            'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful'])],
-        ]);
-
+        $user = Auth::user();
+        
         try {
-            $engagement = $this->engagementService->addReaction(
-                $post,
-                $request->user(),
-                $request->type
-            );
-
+            DB::beginTransaction();
+            
+            // Check if user already liked the post
+            $existingLike = PostEngagement::where([
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+                'type' => 'like'
+            ])->first();
+            
+            if ($existingLike) {
+                // Unlike the post
+                $existingLike->delete();
+                $action = 'unliked';
+            } else {
+                // Like the post
+                PostEngagement::create([
+                    'post_id' => $post->id,
+                    'user_id' => $user->id,
+                    'type' => 'like',
+                    'data' => null,
+                ]);
+                $action = 'liked';
+            }
+            
+            // Broadcast the engagement event
+            broadcast(new PostEngagementEvent($post, $user, 'like', ['action' => $action]));
+            
+            DB::commit();
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Reaction added successfully',
-                'engagement' => $engagement,
-                'stats' => $this->engagementService->getEngagementStats($post),
-                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user()),
+                'action' => $action,
+                'message' => $action === 'liked' ? 'Post liked successfully' : 'Post unliked successfully',
             ]);
+            
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to add reaction',
+                'message' => 'Failed to process like action',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
-
+    
     /**
-     * Remove a reaction from a post.
-     */
-    public function unreact(Request $request, Post $post): JsonResponse
-    {
-        $request->validate([
-            'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful'])],
-        ]);
-
-        try {
-            $removed = $this->engagementService->removeReaction(
-                $post,
-                $request->user(),
-                $request->type
-            );
-
-            return response()->json([
-                'success' => true,
-                'message' => $removed ? 'Reaction removed successfully' : 'Reaction not found',
-                'stats' => $this->engagementService->getEngagementStats($post),
-                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user()),
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to remove reaction',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Add a comment to a post.
+     * Add a comment to a post
      */
     public function comment(Request $request, Post $post): JsonResponse
     {
         $request->validate([
-            'content' => 'required|string|max:2000',
-            'parent_id' => 'nullable|integer|exists:comments,id',
+            'content' => 'required|string|max:1000',
+            'parent_id' => 'nullable|exists:post_engagements,id',
         ]);
-
+        
+        $user = Auth::user();
+        
         try {
-            $comment = $this->engagementService->addComment(
-                $post,
-                $request->user(),
-                $request->content,
-                $request->parent_id
-            );
-
+            DB::beginTransaction();
+            
+            $comment = PostEngagement::create([
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+                'type' => 'comment',
+                'data' => [
+                    'content' => $request->content,
+                    'parent_id' => $request->parent_id,
+                ],
+            ]);
+            
+            // Load the comment with user relationship
+            $comment->load('user');
+            
+            // Broadcast the engagement event
+            broadcast(new PostEngagementEvent($post, $user, 'comment', [
+                'id' => $comment->id,
+                'content' => $request->content,
+                'parent_id' => $request->parent_id,
+                'created_at' => $comment->created_at,
+            ]));
+            
+            DB::commit();
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Comment added successfully',
-                'comment' => $comment->load(['user:id,name,username,avatar_url', 'replies.user:id,name,username,avatar_url']),
-                'stats' => $this->engagementService->getEngagementStats($post),
-            ], 201);
+                'comment' => [
+                    'id' => $comment->id,
+                    'content' => $request->content,
+                    'parent_id' => $request->parent_id,
+                    'user' => [
+                        'id' => $user->id,
+                        'name' => $user->name,
+                        'username' => $user->username,
+                        'avatar_url' => $user->avatar_url,
+                    ],
+                    'created_at' => $comment->created_at,
+                ],
+            ]);
+            
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add comment',
@@ -114,31 +132,85 @@ class PostEngagementController extends Controller
             ], 500);
         }
     }
-
+    
     /**
-     * Share a post.
+     * Share a post
      */
     public function share(Request $request, Post $post): JsonResponse
     {
         $request->validate([
-            'commentary' => 'nullable|string|max:1000',
+            'message' => 'nullable|string|max:500',
+            'visibility' => 'in:public,connections,circles,private',
+            'circle_ids' => 'nullable|array',
+            'circle_ids.*' => 'exists:circles,id',
         ]);
-
+        
+        $user = Auth::user();
+        
         try {
-            $sharedPost = $this->engagementService->sharePost(
-                $post,
-                $request->user(),
-                $request->commentary
-            );
-
+            DB::beginTransaction();
+            
+            // Check if user already shared this post
+            $existingShare = PostEngagement::where([
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+                'type' => 'share'
+            ])->first();
+            
+            if ($existingShare) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You have already shared this post',
+                ], 400);
+            }
+            
+            // Create share engagement
+            $share = PostEngagement::create([
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+                'type' => 'share',
+                'data' => [
+                    'message' => $request->message,
+                    'visibility' => $request->visibility ?? 'connections',
+                    'circle_ids' => $request->circle_ids ?? [],
+                ],
+            ]);
+            
+            // Create a new post for the share (if user added a message)
+            if ($request->message) {
+                $sharedPost = Post::create([
+                    'user_id' => $user->id,
+                    'content' => $request->message,
+                    'post_type' => 'share',
+                    'visibility' => $request->visibility ?? 'connections',
+                    'circle_ids' => $request->circle_ids ?? [],
+                    'shared_post_id' => $post->id,
+                ]);
+            }
+            
+            // Broadcast the engagement event
+            broadcast(new PostEngagementEvent($post, $user, 'share', [
+                'message' => $request->message,
+                'visibility' => $request->visibility ?? 'connections',
+                'shared_post_id' => $sharedPost->id ?? null,
+            ]));
+            
+            DB::commit();
+            
             return response()->json([
                 'success' => true,
                 'message' => 'Post shared successfully',
-                'shared_post' => $sharedPost->load('user:id,name,username,avatar_url'),
-                'stats' => $this->engagementService->getEngagementStats($post),
-                'user_engagement' => $this->engagementService->getUserEngagement($post, $request->user()),
-            ], 201);
+                'share' => [
+                    'id' => $share->id,
+                    'message' => $request->message,
+                    'shared_post_id' => $sharedPost->id ?? null,
+                    'created_at' => $share->created_at,
+                ],
+            ]);
+            
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to share post',
@@ -146,154 +218,105 @@ class PostEngagementController extends Controller
             ], 500);
         }
     }
-
+    
     /**
-     * Bookmark or unbookmark a post.
+     * Add a reaction to a post
      */
-    public function bookmark(Request $request, Post $post): JsonResponse
+    public function reaction(Request $request, Post $post): JsonResponse
     {
+        $request->validate([
+            'type' => 'required|in:like,love,celebrate,support,insightful,funny',
+        ]);
+        
+        $user = Auth::user();
+        
         try {
-            $user = $request->user();
-            $userEngagement = $this->engagementService->getUserEngagement($post, $user);
-
-            if ($userEngagement['bookmarked']) {
-                // Remove bookmark
-                $this->engagementService->removeBookmark($post, $user);
-                $message = 'Bookmark removed successfully';
-                $bookmarked = false;
-            } else {
-                // Add bookmark
-                $this->engagementService->bookmarkPost($post, $user);
-                $message = 'Post bookmarked successfully';
-                $bookmarked = true;
-            }
-
+            DB::beginTransaction();
+            
+            // Remove any existing reaction from this user
+            PostEngagement::where([
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+                'type' => 'reaction'
+            ])->delete();
+            
+            // Add the new reaction
+            $reaction = PostEngagement::create([
+                'post_id' => $post->id,
+                'user_id' => $user->id,
+                'type' => 'reaction',
+                'data' => [
+                    'reaction_type' => $request->type,
+                ],
+            ]);
+            
+            // Broadcast the engagement event
+            broadcast(new PostEngagementEvent($post, $user, 'reaction', [
+                'type' => $request->type,
+            ]));
+            
+            DB::commit();
+            
             return response()->json([
                 'success' => true,
-                'message' => $message,
-                'bookmarked' => $bookmarked,
-                'stats' => $this->engagementService->getEngagementStats($post),
+                'message' => 'Reaction added successfully',
+                'reaction' => [
+                    'id' => $reaction->id,
+                    'type' => $request->type,
+                    'created_at' => $reaction->created_at,
+                ],
             ]);
+            
         } catch (\Exception $e) {
+            DB::rollBack();
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to toggle bookmark',
+                'message' => 'Failed to add reaction',
                 'error' => $e->getMessage(),
             ], 500);
         }
     }
-
+    
     /**
-     * Get engagement statistics for a post.
+     * Get engagement statistics for a post
      */
-    public function stats(Request $request, Post $post): JsonResponse
+    public function stats(Post $post): JsonResponse
     {
         try {
-            $stats = $this->engagementService->getEngagementStats($post);
-            $userEngagement = $this->engagementService->getUserEngagement($post, $request->user());
-
+            $stats = [
+                'likes' => PostEngagement::where('post_id', $post->id)
+                    ->where('type', 'like')
+                    ->count(),
+                'comments' => PostEngagement::where('post_id', $post->id)
+                    ->where('type', 'comment')
+                    ->count(),
+                'shares' => PostEngagement::where('post_id', $post->id)
+                    ->where('type', 'share')
+                    ->count(),
+                'reactions' => PostEngagement::where('post_id', $post->id)
+                    ->where('type', 'reaction')
+                    ->count(),
+            ];
+            
+            // Get reaction breakdown
+            $reactionBreakdown = PostEngagement::where('post_id', $post->id)
+                ->where('type', 'reaction')
+                ->select(DB::raw('JSON_EXTRACT(data, "$.reaction_type") as reaction_type'), DB::raw('COUNT(*) as count'))
+                ->groupBy('reaction_type')
+                ->pluck('count', 'reaction_type')
+                ->toArray();
+            
             return response()->json([
                 'success' => true,
                 'stats' => $stats,
-                'user_engagement' => $userEngagement,
+                'reaction_breakdown' => $reactionBreakdown,
             ]);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to get engagement stats',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Get users who reacted with a specific reaction type.
-     */
-    public function reactionUsers(Request $request, Post $post): JsonResponse
-    {
-        $request->validate([
-            'type' => ['required', Rule::in(['like', 'love', 'celebrate', 'support', 'insightful', 'share'])],
-            'limit' => 'nullable|integer|min:1|max:50',
-        ]);
-
-        try {
-            $users = $this->engagementService->getReactionUsers(
-                $post,
-                $request->type,
-                $request->get('limit', 10)
-            );
-
-            return response()->json([
-                'success' => true,
-                'users' => $users,
-                'type' => $request->type,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get reaction users',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Get comments for a post.
-     */
-    public function getComments(Request $request, Post $post): JsonResponse
-    {
-        $request->validate([
-            'page' => 'nullable|integer|min:1',
-            'per_page' => 'nullable|integer|min:1|max:50',
-        ]);
-
-        try {
-            $comments = Comment::where('post_id', $post->id)
-                ->whereNull('parent_id') // Only top-level comments
-                ->with([
-                    'user:id,name,username,avatar_url',
-                    'allReplies.user:id,name,username,avatar_url',
-                ])
-                ->latest()
-                ->paginate($request->get('per_page', 10));
-
-            return response()->json([
-                'success' => true,
-                'comments' => $comments,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to get comments',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    /**
-     * Search users for mentions.
-     */
-    public function searchMentions(Request $request): JsonResponse
-    {
-        $request->validate([
-            'query' => 'required|string|min:1|max:50',
-            'limit' => 'nullable|integer|min:1|max:20',
-        ]);
-
-        try {
-            $users = $this->engagementService->searchUsersForMention(
-                $request->query,
-                $request->get('limit', 10)
-            );
-
-            return response()->json([
-                'success' => true,
-                'users' => $users,
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to search users',
                 'error' => $e->getMessage(),
             ], 500);
         }

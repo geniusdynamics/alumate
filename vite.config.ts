@@ -93,35 +93,55 @@ export default defineConfig({
                 return false;
             },
             output: {
-                manualChunks: {
+                manualChunks: (id) => {
                     // Vendor chunks
-                    'vendor-vue': ['vue', '@inertiajs/vue3'],
-                    'vendor-ui': ['@headlessui/vue', '@heroicons/vue', 'lucide-vue-next'],
-                    'vendor-utils': ['lodash-es', 'date-fns', 'clsx'],
-                    'vendor-charts': ['chart.js'],
-                    'vendor-maps': ['leaflet'],
+                    if (id.includes('node_modules')) {
+                        if (id.includes('vue') || id.includes('@inertiajs')) {
+                            return 'vendor-vue'
+                        }
+                        if (id.includes('@headlessui') || id.includes('@heroicons') || id.includes('lucide-vue-next')) {
+                            return 'vendor-ui'
+                        }
+                        if (id.includes('lodash') || id.includes('date-fns') || id.includes('clsx')) {
+                            return 'vendor-utils'
+                        }
+                        if (id.includes('chart.js')) {
+                            return 'vendor-charts'
+                        }
+                        if (id.includes('leaflet')) {
+                            return 'vendor-maps'
+                        }
+                        if (id.includes('elasticsearch') || id.includes('search')) {
+                            return 'vendor-search'
+                        }
+                        return 'vendor-misc'
+                    }
                     
-                    // Homepage chunks
-                    'homepage-core': [
-                        './resources/js/components/homepage/HeroSection.vue',
-                        './resources/js/components/homepage/AudienceSelector.vue',
-                        './resources/js/components/homepage/SocialProofSection.vue'
-                    ],
-                    'homepage-features': [
-                        './resources/js/components/homepage/FeaturesShowcase.vue',
-                        './resources/js/components/homepage/PlatformPreview.vue',
-                        './resources/js/components/homepage/ValueCalculator.vue'
-                    ],
-                    'homepage-institutional': [
-                        './resources/js/components/homepage/InstitutionalFeatures.vue',
-                        './resources/js/components/homepage/AdminDashboardPreview.vue',
-                        './resources/js/components/homepage/BrandedAppsShowcase.vue'
-                    ],
-                    'homepage-conversion': [
-                        './resources/js/components/homepage/ConversionCTAs.vue',
-                        './resources/js/components/homepage/PricingSection.vue',
-                        './resources/js/components/homepage/TrustIndicators.vue'
-                    ]
+                    // Feature-based chunks
+                    if (id.includes('homepage')) {
+                        return 'feature-homepage'
+                    }
+                    if (id.includes('Social') || id.includes('Timeline') || id.includes('Post')) {
+                        return 'feature-social'
+                    }
+                    if (id.includes('Alumni') || id.includes('Directory')) {
+                        return 'feature-alumni'
+                    }
+                    if (id.includes('Career') || id.includes('Job') || id.includes('Mentorship')) {
+                        return 'feature-career'
+                    }
+                    if (id.includes('Event') || id.includes('Calendar')) {
+                        return 'feature-events'
+                    }
+                    if (id.includes('Search') || id.includes('Filter')) {
+                        return 'feature-search'
+                    }
+                    if (id.includes('Performance') || id.includes('Analytics')) {
+                        return 'feature-analytics'
+                    }
+                    if (id.includes('Mobile') || id.includes('PWA')) {
+                        return 'feature-mobile'
+                    }
                 },
                 // Optimize chunk sizes
                 chunkFileNames: (chunkInfo) => {
@@ -170,8 +190,16 @@ export default defineConfig({
         ],
         exclude: [
             // Exclude large libraries that should be loaded on demand
-            'chart.js'
+            'chart.js',
+            'elasticsearch',
+            'pdf-lib'
         ]
+    },
+    // Tree shaking configuration
+    esbuild: {
+        treeShaking: true,
+        // Remove console.log in production
+        drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
     },
     // Server configuration for development
     server: {

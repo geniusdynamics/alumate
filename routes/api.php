@@ -75,26 +75,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Post Engagement routes
 Route::middleware('auth:sanctum')->group(function () {
-    // Reactions
-    Route::post('posts/{post}/react', [PostEngagementController::class, 'react']);
-    Route::post('posts/{post}/unreact', [PostEngagementController::class, 'unreact']);
+    // Likes
+    Route::post('posts/{post}/like', [PostEngagementController::class, 'like']);
 
     // Comments
     Route::post('posts/{post}/comment', [PostEngagementController::class, 'comment']);
-    Route::get('posts/{post}/comments', [PostEngagementController::class, 'getComments']);
 
     // Sharing
     Route::post('posts/{post}/share', [PostEngagementController::class, 'share']);
 
-    // Bookmarks
-    Route::post('posts/{post}/bookmark', [PostEngagementController::class, 'bookmark']);
+    // Reactions
+    Route::post('posts/{post}/reaction', [PostEngagementController::class, 'reaction']);
 
-    // Stats and users
+    // Stats
     Route::get('posts/{post}/stats', [PostEngagementController::class, 'stats']);
-    Route::get('posts/{post}/reactions/users', [PostEngagementController::class, 'reactionUsers']);
-
-    // Mentions
-    Route::get('posts/mentions/search', [PostEngagementController::class, 'searchMentions']);
 });
 
 // Notification routes
@@ -467,8 +461,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/career/salary-insights', [StudentCareerGuidanceController::class, 'getSalaryInsights']);
     Route::get('student/career/skill-gap-analysis', [StudentCareerGuidanceController::class, 'getSkillGapAnalysis']);
     Route::get('student/career/job-market-trends', [StudentCareerGuidanceController::class, 'getJobMarketTrends']);
-    Route::get('student/career/networking-recommendations', [StudentCareerGuidanceController::class, 'getNetworkingRecommendations']);
-    Route::get('student/career/timeline-examples', [StudentCareerGuidanceController::class, 'getCareerTimelineExamples']);
+});
+
+// Discussion Forums routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Forum management
+    Route::apiResource('forums', App\Http\Controllers\Api\ForumController::class);
+    
+    // Topic management
+    Route::apiResource('forums.topics', App\Http\Controllers\Api\ForumTopicController::class);
+    Route::post('forums/{forum}/topics/{topic}/subscribe', [App\Http\Controllers\Api\ForumTopicController::class, 'toggleSubscription']);
+    
+    // Post management
+    Route::apiResource('topics.posts', App\Http\Controllers\Api\ForumPostController::class)->except(['index']);
+    Route::post('posts/{post}/like', [App\Http\Controllers\Api\ForumPostController::class, 'toggleLike']);
+    Route::post('posts/{post}/solution', [App\Http\Controllers\Api\ForumPostController::class, 'markAsSolution']);
+    
+    // Forum search and discovery
+    Route::get('forums/search', [App\Http\Controllers\Api\ForumSearchController::class, 'search']);
+    Route::get('forums/tags', [App\Http\Controllers\Api\ForumSearchController::class, 'getTags']);
+    Route::get('forums/tags/{tag}/topics', [App\Http\Controllers\Api\ForumSearchController::class, 'getTopicsByTag']);
+    
+    // Forum moderation (admin/moderator only)
+    Route::post('forums/moderate/{type}/{id}', [App\Http\Controllers\Api\ForumModerationController::class, 'moderate']);
+    Route::get('forums/moderation/pending', [App\Http\Controllers\Api\ForumModerationController::class, 'getPending']);
+    Route::get('forums/analytics', [App\Http\Controllers\Api\ForumAnalyticsController::class, 'getStatistics']);
 });
 
 // Onboarding routes
@@ -481,6 +498,34 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('onboarding/events', [App\Http\Controllers\Api\OnboardingController::class, 'recordEvent']);
     Route::post('user/interests', [App\Http\Controllers\Api\OnboardingController::class, 'saveUserInterests']);
     Route::get('onboarding/help/{elementId}', [App\Http\Controllers\Api\OnboardingController::class, 'getContextualHelp']);
+});
+
+// Messaging System routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Conversations
+    Route::get('conversations', [App\Http\Controllers\Api\ConversationController::class, 'index']);
+    Route::get('conversations/{conversationId}', [App\Http\Controllers\Api\ConversationController::class, 'show']);
+    Route::post('conversations/direct', [App\Http\Controllers\Api\ConversationController::class, 'createDirect']);
+    Route::post('conversations/group', [App\Http\Controllers\Api\ConversationController::class, 'createGroup']);
+    Route::post('conversations/circle', [App\Http\Controllers\Api\ConversationController::class, 'createCircle']);
+    
+    // Conversation management
+    Route::post('conversations/{conversationId}/participants', [App\Http\Controllers\Api\ConversationController::class, 'addParticipant']);
+    Route::delete('conversations/{conversationId}/participants/{userId}', [App\Http\Controllers\Api\ConversationController::class, 'removeParticipant']);
+    Route::post('conversations/{conversationId}/leave', [App\Http\Controllers\Api\ConversationController::class, 'leave']);
+    Route::post('conversations/{conversationId}/archive', [App\Http\Controllers\Api\ConversationController::class, 'archive']);
+    Route::post('conversations/{conversationId}/mute', [App\Http\Controllers\Api\ConversationController::class, 'toggleMute']);
+    Route::post('conversations/{conversationId}/pin', [App\Http\Controllers\Api\ConversationController::class, 'togglePin']);
+    
+    // Messages
+    Route::post('messages', [App\Http\Controllers\Api\MessagingController::class, 'sendMessage']);
+    Route::post('messages/{messageId}/read', [App\Http\Controllers\Api\MessagingController::class, 'markAsRead']);
+    Route::post('conversations/{conversationId}/read', [App\Http\Controllers\Api\MessagingController::class, 'markConversationAsRead']);
+    Route::post('messages/typing', [App\Http\Controllers\Api\MessagingController::class, 'typing']);
+    Route::get('messages/search', [App\Http\Controllers\Api\MessagingController::class, 'search']);
+    Route::put('messages/{messageId}', [App\Http\Controllers\Api\MessagingController::class, 'editMessage']);
+    Route::delete('messages/{messageId}', [App\Http\Controllers\Api\MessagingController::class, 'deleteMessage']);
+    Route::get('messages/unread-count', [App\Http\Controllers\Api\MessagingController::class, 'getUnreadCount']);
 });
 
 // Alumni Map routes
@@ -536,9 +581,12 @@ Route::prefix('ab-tests')->group(function () {
 // Performance monitoring routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('performance/metrics', [App\Http\Controllers\Api\PerformanceController::class, 'storeMetrics']);
+    Route::post('performance/sessions', [App\Http\Controllers\Api\PerformanceController::class, 'storeSessions']);
     Route::get('performance/analytics', [App\Http\Controllers\Api\PerformanceController::class, 'getAnalytics']);
-    Route::get('performance/realtime', [App\Http\Controllers\Api\PerformanceController::class, 'getRealTimeMetrics']);
+    Route::get('performance/real-time', [App\Http\Controllers\Api\PerformanceController::class, 'getRealTimeMetrics']);
     Route::get('performance/core-web-vitals', [App\Http\Controllers\Api\PerformanceController::class, 'getCoreWebVitals']);
+    Route::get('performance/recommendations', [App\Http\Controllers\Api\PerformanceController::class, 'getRecommendations']);
+    Route::get('performance/page', [App\Http\Controllers\Api\PerformanceController::class, 'getPagePerformance']);
 });
 
 // Dashboard Widget routes

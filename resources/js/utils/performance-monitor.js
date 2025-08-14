@@ -414,6 +414,78 @@ class PerformanceMonitor {
         window.addEventListener('beforeunload', () => {
             this.reportMetrics(true)
         })
+
+        // Report on visibility change (when user switches tabs)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                this.reportMetrics(true)
+            }
+        })
+    }
+
+    /**
+     * Integrate with Vue Router for route change tracking
+     */
+    integrateWithRouter(router) {
+        if (!router) return
+
+        let routeStartTime = null
+
+        router.beforeEach((to, from, next) => {
+            routeStartTime = performance.now()
+            this.recordMetric('RouteChangeStart', 0, {
+                from: from.path,
+                to: to.path
+            })
+            next()
+        })
+
+        router.afterEach((to, from) => {
+            if (routeStartTime) {
+                const routeDuration = performance.now() - routeStartTime
+                this.recordMetric('RouteChange', routeDuration, {
+                    from: from.path,
+                    to: to.path
+                })
+                routeStartTime = null
+            }
+        })
+    }
+
+    /**
+     * Track component performance
+     */
+    trackComponent(componentName, operation = 'mount') {
+        const startTime = performance.now()
+        
+        return {
+            end: () => {
+                const duration = performance.now() - startTime
+                this.recordMetric('ComponentPerformance', duration, {
+                    component: componentName,
+                    operation
+                })
+            }
+        }
+    }
+
+    /**
+     * Track async operation performance
+     */
+    trackAsyncOperation(operationName, metadata = {}) {
+        const startTime = performance.now()
+        
+        return {
+            end: (success = true, error = null) => {
+                const duration = performance.now() - startTime
+                this.recordMetric('AsyncOperation', duration, {
+                    operation: operationName,
+                    success,
+                    error: error?.message,
+                    ...metadata
+                })
+            }
+        }
     }
 
     /**
