@@ -1,7 +1,0 @@
-##teamcity[testCount count='2' flowId='3744']
-##teamcity[testSuiteStarted name='Tests\Feature\SimpleCareerAnalyticsTest' locationHint='php_qn://D:\DevCenter\abuilds\alumate\tests\Feature\SimpleCareerAnalyticsTest.php::\Tests\Feature\SimpleCareerAnalyticsTest' flowId='3744']
-##teamcity[testStarted name='test_career_analytics_routes_are_accessible' locationHint='php_qn://D:\DevCenter\abuilds\alumate\tests\Feature\SimpleCareerAnalyticsTest.php::\Tests\Feature\SimpleCareerAnalyticsTest::test_career_analytics_routes_are_accessible' flowId='3744']
-##teamcity[testFinished name='test_career_analytics_routes_are_accessible' duration='1157' flowId='3744']
-##teamcity[testStarted name='test_career_analytics_requires_authentication' locationHint='php_qn://D:\DevCenter\abuilds\alumate\tests\Feature\SimpleCareerAnalyticsTest.php::\Tests\Feature\SimpleCareerAnalyticsTest::test_career_analytics_requires_authentication' flowId='3744']
-##teamcity[testFinished name='test_career_analytics_requires_authentication' duration='139' flowId='3744']
-##teamcity[testSuiteFinished name='Tests\Feature\SimpleCareerAnalyticsTest' flowId='3744']

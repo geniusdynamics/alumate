@@ -278,6 +278,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('fundraising-campaigns', App\Http\Controllers\Api\FundraisingCampaignController::class);
     Route::get('fundraising-campaigns/{campaign}/analytics', [App\Http\Controllers\Api\FundraisingCampaignController::class, 'analytics']);
     Route::get('fundraising-campaigns/{campaign}/share', [App\Http\Controllers\Api\FundraisingCampaignController::class, 'share']);
+    
+    // Comprehensive Fundraising Analytics
+    Route::prefix('fundraising-analytics')->group(function () {
+        Route::get('dashboard', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'dashboard']);
+        Route::get('giving-patterns', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'givingPatterns']);
+        Route::get('campaigns/{campaign}/performance', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'campaignPerformance']);
+        Route::get('donor-analytics', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'donorAnalytics']);
+        Route::get('predictive-analytics', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'predictiveAnalytics']);
+        Route::get('roi-metrics', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'roiMetrics']);
+        Route::get('donor-engagement', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'donorEngagement']);
+        Route::get('trends', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'trends']);
+        Route::post('export', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'export']);
+    });
 });
 
 // Campaign Donation routes
@@ -461,6 +474,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/career/salary-insights', [StudentCareerGuidanceController::class, 'getSalaryInsights']);
     Route::get('student/career/skill-gap-analysis', [StudentCareerGuidanceController::class, 'getSkillGapAnalysis']);
     Route::get('student/career/job-market-trends', [StudentCareerGuidanceController::class, 'getJobMarketTrends']);
+});
+
+// Email Marketing routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Email Campaigns
+    Route::apiResource('email-campaigns', App\Http\Controllers\Api\EmailCampaignController::class);
+    Route::post('email-campaigns/{campaign}/send', [App\Http\Controllers\Api\EmailCampaignController::class, 'send']);
+    Route::post('email-campaigns/{campaign}/schedule', [App\Http\Controllers\Api\EmailCampaignController::class, 'schedule']);
+    Route::post('email-campaigns/{campaign}/ab-test', [App\Http\Controllers\Api\EmailCampaignController::class, 'createAbTest']);
+    Route::post('email-campaigns/{campaign}/preview', [App\Http\Controllers\Api\EmailCampaignController::class, 'preview']);
+    Route::get('email-campaigns/{campaign}/recipients', [App\Http\Controllers\Api\EmailCampaignController::class, 'recipients']);
+    
+    // Email Templates
+    Route::get('email-templates', [App\Http\Controllers\Api\EmailCampaignController::class, 'templates']);
+    
+    // Email Automation
+    Route::get('email-automation-rules', [App\Http\Controllers\Api\EmailCampaignController::class, 'automationRules']);
+    Route::post('email-automation-rules', [App\Http\Controllers\Api\EmailCampaignController::class, 'createAutomationRule']);
+    
+    // Email Analytics
+    Route::get('email-campaigns/analytics', [App\Http\Controllers\Api\EmailCampaignController::class, 'analytics']);
 });
 
 // Career Outcome Analytics routes

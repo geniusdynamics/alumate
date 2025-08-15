@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuites>
-  <testsuite name="Tests\Feature\SimpleCareerAnalyticsTest" file="Simple Career Analytics (Tests\Feature\SimpleCareerAnalytics)" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="3.487164">
-    <testcase name="Career analytics routes are accessible" file="Simple Career Analytics (Tests\Feature\SimpleCareerAnalytics)::Career analytics routes are accessible" class="Tests\Feature\SimpleCareerAnalyticsTest" classname="Tests.Feature.SimpleCareerAnalyticsTest" assertions="1" time="3.089257"/>
-    <testcase name="Career analytics requires authentication" file="Simple Career Analytics (Tests\Feature\SimpleCareerAnalytics)::Career analytics requires authentication" class="Tests\Feature\SimpleCareerAnalyticsTest" classname="Tests.Feature.SimpleCareerAnalyticsTest" assertions="1" time="0.397907"/>
-  </testsuite>
-</testsuites>

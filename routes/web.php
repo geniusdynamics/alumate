@@ -99,6 +99,11 @@ Route::get('dashboard', \App\Http\Controllers\DashboardController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
+// Design System Showcase Route
+Route::get('design-system', function () {
+    return Inertia::render('DesignSystem/Showcase');
+})->name('design-system.showcase');
+
 // Super Admin Management (Central only - works on central domains)
 Route::resource('super-admins', \App\Http\Controllers\SuperAdminController::class)->except(['show', 'edit', 'update']);
 
