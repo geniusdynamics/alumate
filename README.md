@@ -24,18 +24,21 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 ## ✨ Key Features
 
 ### 🏢 **Multi-Tenant Architecture**
+
 - **Complete Data Isolation**: Each institution operates in its own secure environment
 - **Domain-Based Tenant Resolution**: Automatic tenant identification via domains
 - **Scalable Infrastructure**: Support for unlimited institutions
 - **Centralized Super Admin Management**: System-wide oversight and control
 
 ### 👥 **Role-Based Access Control**
+
 - **Super Admin**: System-wide management and analytics
 - **Institution Admin**: Graduate and course management within their institution
 - **Employer**: Job posting, candidate search, and application management
 - **Graduate**: Profile management, job applications, and career tracking
 
 ### 🎓 **Graduate Management**
+
 - **Comprehensive Profiles**: Academic records, skills, certifications, employment status
 - **Bulk Import/Export**: Excel-based data management with validation
 - **Employment Tracking**: Real-time career progress monitoring
@@ -43,6 +46,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - **Profile Completion Tracking**: Guided profile enhancement
 
 ### 💼 **Job Management & Placement**
+
 - **Smart Job Matching**: AI-powered candidate-job matching algorithms
 - **Application Tracking**: Complete hiring workflow management
 - **Employer Verification**: Comprehensive company validation process
@@ -50,6 +54,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - **Automated Notifications**: Real-time updates for all stakeholders
 
 ### 📊 **Advanced Analytics & Reporting**
+
 - **Employment Analytics**: Graduation-to-employment tracking
 - **Course Performance**: Program effectiveness analysis
 - **Predictive Analytics**: Job placement probability modeling
@@ -58,6 +63,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - **Trend Analysis**: Historical data insights and forecasting
 
 ### 🔍 **Search & Discovery**
+
 - **Advanced Graduate Search**: Multi-criteria candidate filtering
 - **Job Recommendation Engine**: Personalized job suggestions
 - **Skill-Based Matching**: Competency-driven connections
@@ -65,6 +71,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - **Smart Notifications**: Relevant opportunity alerts
 
 ### 💬 **Communication & Collaboration**
+
 - **Messaging System**: Direct communication between stakeholders
 - **Discussion Forums**: Graduate networking and peer support
 - **Announcement System**: Institution-wide communications
@@ -74,6 +81,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 ## 🏗️ Technical Architecture
 
 ### **Backend Stack**
+
 - **Framework**: Laravel 11 with PHP 8.3+
 - **Multi-Tenancy**: Stancl Tenancy package for complete isolation
 - **Database**: PostgreSQL with tenant-specific schemas
@@ -83,6 +91,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - **Caching**: Multi-layer caching strategy
 
 ### **Frontend Stack**
+
 - **Framework**: Vue.js 3 with Composition API
 - **Type Safety**: Full TypeScript implementation
 - **UI Framework**: Tailwind CSS with Shadcn/Vue components
@@ -91,6 +100,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - **Testing**: Vitest for unit and integration testing
 
 ### **Infrastructure**
+
 - **Containerization**: Docker support for consistent environments
 - **CI/CD**: Automated testing and deployment pipelines
 - **Monitoring**: Application performance and error tracking
@@ -100,6 +110,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - PHP 8.3+
 - Node.js 18+
 - Composer 2.x
@@ -109,6 +120,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 ### Installation
 
 1. **Clone and Setup**
+
    ```bash
    git clone <repository-url>
    cd graduate-tracking-system
@@ -117,12 +129,14 @@ To create a seamless ecosystem where TVET institutions can effectively track the
    ```
 
 2. **Environment Configuration**
+
    ```bash
    cp .env.example .env
    php artisan key:generate
    ```
 
 3. **Database Setup**
+
    ```bash
    # Configure your .env file with database credentials
    php artisan migrate
@@ -131,12 +145,14 @@ To create a seamless ecosystem where TVET institutions can effectively track the
    ```
 
 4. **Create Sample Data**
+
    ```bash
    php scripts/data/create_sample_data.php
    php scripts/data/create_tenant_sample_data.php
    ```
 
 5. **Start Development Servers**
+
    ```bash
    # Windows Batch script (simple)
    .\start-dev.bat
@@ -153,29 +169,31 @@ To create a seamless ecosystem where TVET institutions can effectively track the
    ```
 
 6. **Access the Application**
-   - **Main Application**: http://127.0.0.1:8080
-   - **Login Page**: http://127.0.0.1:8080/login
+   - **Main Application**: <http://127.0.0.1:8080>
+   - **Login Page**: <http://127.0.0.1:8080/login>
 
 ### 🔑 **Test Accounts** ✅ **ROLES FIXED**
 
 | Role | Email | Password | Dashboard URL |
 |------|-------|----------|---------------|
-| **Super Admin** | admin@system.com | password | http://127.0.0.1:8080/super-admin/dashboard |
-| **Institution Admin** | admin@tech-institute.edu | password | http://127.0.0.1:8080/institution-admin/dashboard |
-| **Graduate** | john.smith@student.edu | password | http://127.0.0.1:8080/graduate/dashboard |
-| **Employer** | techcorp@company.com | password | http://127.0.0.1:8080/employer/dashboard |
+| **Super Admin** | <admin@system.com> | password | <http://127.0.0.1:8080/super-admin/dashboard> |
+| **Institution Admin** | <admin@tech-institute.edu> | password | <http://127.0.0.1:8080/institution-admin/dashboard> |
+| **Graduate** | <john.smith@student.edu> | password | <http://127.0.0.1:8080/graduate/dashboard> |
+| **Employer** | <techcorp@company.com> | password | <http://127.0.0.1:8080/employer/dashboard> |
 
 > **✅ All accounts now have proper roles and permissions - 403 errors fixed!**
 
 ### 🌐 **Quick Access URLs**
-- **Main Application**: http://127.0.0.1:8080
-- **Login**: http://127.0.0.1:8080/login
-- **Register**: http://127.0.0.1:8080/register
-- **Testing Suite**: http://127.0.0.1:8080/testing
+
+- **Main Application**: <http://127.0.0.1:8080>
+- **Login**: <http://127.0.0.1:8080/login>
+- **Register**: <http://127.0.0.1:8080/register>
+- **Testing Suite**: <http://127.0.0.1:8080/testing>
 
 ## 👤 User Roles & Capabilities
 
 ### 🔧 **Super Admin**
+
 - System-wide institution management
 - User management across all tenants
 - Employer verification and approval
@@ -184,6 +202,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - System health monitoring
 
 ### 🏫 **Institution Admin**
+
 - Graduate profile management
 - Course and program administration
 - Bulk data import/export
@@ -192,6 +211,7 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - Graduate outcome tracking
 
 ### 💼 **Employer**
+
 - Company profile management
 - Job posting and management
 - Graduate search and filtering
@@ -206,17 +226,20 @@ This project is enhanced with **Laravel Boost**, providing AI-assisted developme
 ### 🛠️ **Available MCP Tools**
 
 #### **Database Operations**
+
 - `database_schema` - Inspect database structure and relationships
 - `database_query` - Execute queries for data analysis  
 - `database_connections` - Check connection configurations
 
 #### **Application Inspection**
+
 - `application_info` - Get PHP/Laravel versions, packages, and models
 - `list_routes` - Inspect all application routes
 - `get_config` - Read configuration values using dot notation
 - `list_artisan_commands` - See available Artisan commands
 
 #### **Development Tools**
+
 - `tinker` - Execute code in Laravel's context
 - `search_docs` - Query Laravel documentation for your specific versions
 - `read_log_entries` - Check application logs
@@ -232,6 +255,7 @@ This project uses a custom PHP path and development setup. The MCP configuration
 - **Custom Artisan**: Uses `artisan.ps1` for PowerShell compatibility
 
 #### **MCP Configuration** (`.kiro/settings/mcp.json`)
+
 ```json
 {
   "mcpServers": {
@@ -262,6 +286,7 @@ This project uses a custom PHP path and development setup. The MCP configuration
 ### 💡 **Using Laravel Boost with AI**
 
 #### **Example Prompts:**
+
 ```
 # Database Analysis
 "Use database_schema to show me the analytics tables, then suggest optimizations"
@@ -301,6 +326,7 @@ If MCP connection fails:
 5. **Batch File**: Use `boost-mcp.bat` for simplified execution
 
 ### 🎓 **Graduate**
+
 - Profile completion and maintenance
 - Job browsing and applications
 - Career progress tracking
@@ -311,6 +337,7 @@ If MCP connection fails:
 ## 📊 Analytics & Insights
 
 ### **Employment Analytics**
+
 - Graduate employment rates by course and year
 - Salary progression tracking
 - Industry placement analysis
@@ -318,6 +345,7 @@ If MCP connection fails:
 - Time-to-employment metrics
 
 ### **Institutional Performance**
+
 - Course effectiveness measurements
 - Graduate satisfaction scores
 - Employer feedback analysis
@@ -325,6 +353,7 @@ If MCP connection fails:
 - Alumni engagement metrics
 
 ### **Predictive Analytics**
+
 - Job placement probability modeling
 - Career path recommendations
 - Market demand forecasting
@@ -334,6 +363,7 @@ If MCP connection fails:
 ## 🛠️ Development
 
 ### **Development Scripts**
+
 ```bash
 # Interactive development helper
 scripts/development/dev-helper.bat
@@ -352,6 +382,7 @@ php scripts/debugging/diagnose_blank_screen.php
 ```
 
 ### **Testing**
+
 ```bash
 # Run comprehensive test suite
 scripts/testing/run-tests.bat
@@ -364,6 +395,7 @@ http://127.0.0.1:8080/testing
 ```
 
 ### **Code Quality**
+
 - **ESLint**: JavaScript/TypeScript linting
 - **PHP CS Fixer**: PHP code style enforcement
 - **PHPStan**: Static analysis for PHP
@@ -373,18 +405,21 @@ http://127.0.0.1:8080/testing
 ## 🔒 Security Features
 
 ### **Multi-Tenant Security**
+
 - Complete data isolation between tenants
 - Cross-tenant access prevention
 - Tenant-specific authentication
 - Audit logging for all data access
 
 ### **Authentication & Authorization**
+
 - Role-based access control (RBAC)
 - Multi-factor authentication support
 - Session management and security
 - Password policies and complexity requirements
 
 ### **Data Protection**
+
 - Encryption of sensitive data at rest
 - HTTPS enforcement for all communications
 - Input sanitization and XSS protection
@@ -394,6 +429,7 @@ http://127.0.0.1:8080/testing
 ## 📈 Performance & Scalability
 
 ### **Optimization Features**
+
 - Database query optimization with eager loading
 - Redis caching for frequently accessed data
 - CDN support for static assets
@@ -401,6 +437,7 @@ http://127.0.0.1:8080/testing
 - Lazy loading for improved page speeds
 
 ### **Scalability**
+
 - Horizontal scaling support
 - Load balancer compatibility
 - Database connection pooling
@@ -410,6 +447,7 @@ http://127.0.0.1:8080/testing
 ## 🌐 Multi-Tenant Architecture
 
 ### **Tenant Management**
+
 - Automatic tenant creation and setup
 - Domain-based tenant resolution
 - Tenant-specific database schemas
@@ -417,6 +455,7 @@ http://127.0.0.1:8080/testing
 - Tenant analytics and usage tracking
 
 ### **Data Isolation**
+
 - Complete database separation
 - Tenant-specific migrations
 - Isolated user authentication
@@ -426,12 +465,14 @@ http://127.0.0.1:8080/testing
 ## 📚 Documentation
 
 ### **User Guides**
+
 - [Development Guide](DEVELOPMENT.md) - Complete development setup
 - [Script Organization](scripts/README.md) - Development script documentation
 - [Port Configuration](PORTS.md) - Network configuration details
 - [Cleanup Summary](CLEANUP_SUMMARY.md) - Project organization details
 
 ### **API Documentation**
+
 - RESTful API endpoints
 - Authentication mechanisms
 - Request/response formats
@@ -441,6 +482,7 @@ http://127.0.0.1:8080/testing
 ## 🚀 Deployment
 
 ### **Production Deployment**
+
 ```bash
 # Use the deployment script
 ./deploy.sh
@@ -454,6 +496,7 @@ npm run build
 ```
 
 ### **Environment Configuration**
+
 - Production environment variables
 - Database optimization settings
 - Caching configuration
@@ -472,6 +515,7 @@ We welcome contributions to the Graduate Tracking System! Please follow these gu
 6. **Submit a pull request**
 
 ### **Development Standards**
+
 - Follow PSR-12 coding standards for PHP
 - Use TypeScript for all frontend code
 - Write unit tests for new features
@@ -494,6 +538,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📞 Support
 
 For support and questions:
+
 - **Documentation**: Check the comprehensive guides in the `/docs` directory
 - **Issues**: Report bugs and feature requests via GitHub Issues
 - **Development**: Use `scripts/development/dev-helper.bat` for development assistance
