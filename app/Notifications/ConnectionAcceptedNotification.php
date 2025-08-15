@@ -16,12 +16,12 @@ class ConnectionAcceptedNotification extends Notification implements ShouldQueue
 
     protected User $accepter;
 
-    protected Connection $connection;
+    protected Connection $connectionModel;
 
     public function __construct(User $accepter, Connection $connection)
     {
         $this->accepter = $accepter;
-        $this->connection = $connection;
+        $this->connectionModel = $connection;
     }
 
     /**
@@ -39,14 +39,14 @@ class ConnectionAcceptedNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'connection_accepted',
-            'connection_id' => $this->connection->id,
+            'connection_id' => $this->connectionModel->id,
             'accepter_id' => $this->accepter->id,
             'accepter_name' => $this->accepter->name,
             'accepter_username' => $this->accepter->username,
             'accepter_avatar' => $this->accepter->avatar_url,
             'accepter_title' => $this->accepter->current_job_title,
             'accepter_company' => $this->accepter->current_company,
-            'connected_at' => $this->connection->connected_at?->toISOString(),
+            'connected_at' => $this->connectionModel->connected_at?->toISOString(),
             'created_at' => now()->toISOString(),
         ];
     }

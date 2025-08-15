@@ -1,7 +1,8 @@
 # 🎓 Graduate Tracking System
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Laravel-11.x-red?logo=laravel" alt="Laravel">
+  <img src="https://img.shields.io/badge/Laravel-12.x-red?logo=laravel" alt="Laravel">
+  <img src="https://img.shields.io/badge/Laravel%20Boost-MCP%20Enabled-orange?logo=laravel" alt="Laravel Boost">
   <img src="https://img.shields.io/badge/Vue.js-3.x-green?logo=vue.js" alt="Vue.js">
   <img src="https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript" alt="TypeScript">
   <img src="https://img.shields.io/badge/Multi--Tenant-Enabled-purple" alt="Multi-Tenant">
@@ -197,6 +198,107 @@ To create a seamless ecosystem where TVET institutions can effectively track the
 - Application review and tracking
 - Hiring analytics and metrics
 - Communication with candidates
+
+## 🚀 Laravel Boost MCP Integration
+
+This project is enhanced with **Laravel Boost**, providing AI-assisted development through Model Context Protocol (MCP) integration. Laravel Boost offers 15+ specialized tools for Laravel development and comprehensive AI guidelines.
+
+### 🛠️ **Available MCP Tools**
+
+#### **Database Operations**
+- `database_schema` - Inspect database structure and relationships
+- `database_query` - Execute queries for data analysis  
+- `database_connections` - Check connection configurations
+
+#### **Application Inspection**
+- `application_info` - Get PHP/Laravel versions, packages, and models
+- `list_routes` - Inspect all application routes
+- `get_config` - Read configuration values using dot notation
+- `list_artisan_commands` - See available Artisan commands
+
+#### **Development Tools**
+- `tinker` - Execute code in Laravel's context
+- `search_docs` - Query Laravel documentation for your specific versions
+- `read_log_entries` - Check application logs
+- `last_error` - Get recent error information
+- `browser_logs` - Read frontend logs and errors
+
+### 🔧 **Environment-Specific Configuration**
+
+This project uses a custom PHP path and development setup. The MCP configuration is optimized for:
+
+- **PHP Path**: `D:\DevCenter\xampp\php-8.3.23\php.exe`
+- **Project Root**: `D:\DevCenter\abuilds\alumate`
+- **Custom Artisan**: Uses `artisan.ps1` for PowerShell compatibility
+
+#### **MCP Configuration** (`.kiro/settings/mcp.json`)
+```json
+{
+  "mcpServers": {
+    "laravel-boost": {
+      "command": "D:\\DevCenter\\xampp\\php-8.3.23\\php.exe",
+      "args": ["artisan", "boost:mcp"],
+      "cwd": "D:\\DevCenter\\abuilds\\alumate",
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "application_info",
+        "database_schema", 
+        "list_routes",
+        "get_config",
+        "search_docs",
+        "list_artisan_commands",
+        "tinker",
+        "read_log_entries",
+        "last_error"
+      ]
+    }
+  }
+}
+```
+
+### 💡 **Using Laravel Boost with AI**
+
+#### **Example Prompts:**
+```
+# Database Analysis
+"Use database_schema to show me the analytics tables, then suggest optimizations"
+
+# Route Inspection  
+"Use list_routes to show analytics endpoints, check for missing routes"
+
+# Configuration Check
+"Use get_config to check database settings, recommend performance improvements"
+
+# Documentation Search
+"Use search_docs to find Laravel 12 service class best practices"
+
+# Application Context
+"Use application_info to understand our setup, suggest beneficial packages"
+```
+
+### 🎯 **AI Guidelines**
+
+Custom AI guidelines are available in `.ai/guidelines/kiro-laravel-boost.blade.php` covering:
+
+- **Laravel 12 Best Practices**: Service classes, validation, caching
+- **Vue 3 + TypeScript Patterns**: Composition API, reactive data
+- **Multi-Tenant Architecture**: Tenant isolation, scoped queries
+- **Analytics Dashboard**: Chart components, data visualization
+- **Testing Approach**: Pest PHP, factories, feature tests
+- **Performance Optimization**: Eager loading, indexing, queuing
+
+### 🔄 **Troubleshooting MCP**
+
+If MCP connection fails:
+
+1. **Check PHP Path**: Ensure `D:\DevCenter\xampp\php-8.3.23\php.exe` exists
+2. **Verify Working Directory**: Confirm project is at `D:\DevCenter\abuilds\alumate`  
+3. **Test Manually**: Run `D:\DevCenter\xampp\php-8.3.23\php.exe artisan boost:mcp --version`
+4. **Alternative Config**: Use PowerShell wrapper in `.kiro/settings/mcp-alternative.json`
+5. **Batch File**: Use `boost-mcp.bat` for simplified execution
 
 ### 🎓 **Graduate**
 - Profile completion and maintenance

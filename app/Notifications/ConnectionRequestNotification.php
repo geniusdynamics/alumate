@@ -16,14 +16,14 @@ class ConnectionRequestNotification extends Notification implements ShouldQueue
 
     protected User $requester;
 
-    protected Connection $connection;
+    protected Connection $connectionModel;
 
     protected ?string $message;
 
     public function __construct(User $requester, Connection $connection, ?string $message = null)
     {
         $this->requester = $requester;
-        $this->connection = $connection;
+        $this->connectionModel = $connection;
         $this->message = $message;
     }
 
@@ -42,7 +42,7 @@ class ConnectionRequestNotification extends Notification implements ShouldQueue
     {
         return [
             'type' => 'connection_request',
-            'connection_id' => $this->connection->id,
+            'connection_id' => $this->connectionModel->id,
             'requester_id' => $this->requester->id,
             'requester_name' => $this->requester->name,
             'requester_username' => $this->requester->username,
@@ -96,7 +96,7 @@ class ConnectionRequestNotification extends Notification implements ShouldQueue
         }
 
         return $mailMessage
-            ->action('View Request', url("/connections/requests/{$this->connection->id}"))
+            ->action('View Request', url("/connections/requests/{$this->connectionModel->id}"))
             ->line('You can accept or decline this connection request from your dashboard.');
     }
 }
