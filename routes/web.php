@@ -705,3 +705,9 @@ Route::prefix('landing')->name('landing-page.')->group(function () {
     Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPagePublicController::class, 'submitForm'])->name('submit');
     Route::post('/{slug}/track', [\App\Http\Controllers\LandingPagePublicController::class, 'trackEvent'])->name('track');
 });
+// Analytics Dashboard Routes (Admin only)
+Route::middleware(['auth', 'role:admin|super_admin'])->prefix('analytics')->name('analytics.')->group(function () {
+    Route::get('dashboard', function () {
+        return Inertia::render('Analytics/Dashboard');
+    })->name('dashboard');
+});

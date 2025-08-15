@@ -637,3 +637,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('events/{event}/rsvp', [App\Http\Controllers\Api\EventController::class, 'rsvp']);
     Route::delete('events/{event}/rsvp', [App\Http\Controllers\Api\EventController::class, 'cancelRsvp']);
 });
+
+// Analytics routes
+Route::middleware(['auth:sanctum', 'role:admin|super_admin'])->prefix('analytics')->group(function () {
+    Route::get('dashboard', [App\Http\Controllers\Api\AnalyticsController::class, 'getDashboardData']);
+    Route::get('engagement-metrics', [App\Http\Controllers\Api\AnalyticsController::class, 'getEngagementMetrics']);
+    Route::get('alumni-activity', [App\Http\Controllers\Api\AnalyticsController::class, 'getAlumniActivity']);
+    Route::get('community-health', [App\Http\Controllers\Api\AnalyticsController::class, 'getCommunityHealth']);
+    Route::get('platform-usage', [App\Http\Controllers\Api\AnalyticsController::class, 'getPlatformUsage']);
+    Route::get('summary', [App\Http\Controllers\Api\AnalyticsController::class, 'getAnalyticsSummary']);
+    Route::post('custom-report', [App\Http\Controllers\Api\AnalyticsController::class, 'generateCustomReport']);
+    Route::get('export', [App\Http\Controllers\Api\AnalyticsController::class, 'exportData']);
+    Route::get('available-metrics', [App\Http\Controllers\Api\AnalyticsController::class, 'getAvailableMetrics']);
+});
