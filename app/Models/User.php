@@ -670,4 +670,81 @@ class User extends Authenticatable
 
         return $hasExperience && $hasEducation;
     }
+
+    // Video Calling relationships
+    public function hostedVideoCalls()
+    {
+        return $this->hasMany(VideoCall::class, 'host_user_id');
+    }
+
+    public function videoCallParticipations()
+    {
+        return $this->hasMany(VideoCallParticipant::class);
+    }
+
+    public function videoCalls()
+    {
+        return $this->belongsToMany(VideoCall::class, 'video_call_participants', 'user_id', 'call_id')
+            ->withPivot(['role', 'joined_at', 'left_at', 'connection_quality'])
+            ->withTimestamps();
+    }
+
+    public function coffeeChatRequestsAsRequester()
+    {
+        return $this->hasMany(CoffeeChatRequest::class, 'requester_id');
+    }
+
+    public function coffeeChatRequestsAsRecipient()
+    {
+        return $this->hasMany(CoffeeChatRequest::class, 'recipient_id');
+    }
+
+    public function screenSharingSessions()
+    {
+        return $this->hasMany(ScreenSharingSession::class, 'presenter_user_id');
+    }
+
+    // Video calling helper methods
+    public function getActiveVideoCall()
+    {
+        return $this->videoCalls()
+            ->where('status', 'active')
+            ->wherePivot('left_at', null)
+            ->first();
+    }
+
+    public function hasActiveVideoCall(): bool
+    {
+        return $this->getActiveVideoCall() !== null;
+    }
+
+    public function getUpcomingVideoCalls()
+    {
+        return $this->videoCalls()
+            ->where('status', 'scheduled')
+            ->where('scheduled_at', '>', now())
+            ->orderBy('scheduled_at')
+            ->get();
+    }
+
+    public function getPendingCoffeeChatRequests()
+    {
+        return $this->coffeeChatRequestsAsRecipient()
+            ->where('status', 'pending')
+            ->with('requester')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    public function getCompletedCoffeeChats()
+    {
+        return CoffeeChatRequest::where(function ($query) {
+            $query->where('requester_id', $this->id)
+                  ->orWhere('recipient_id', $this->id);
+        })
+        ->where('status', 'completed')
+        ->with(['requester', 'recipient'])
+        ->orderBy('updated_at', 'desc')
+        ->get();
+    }
 }

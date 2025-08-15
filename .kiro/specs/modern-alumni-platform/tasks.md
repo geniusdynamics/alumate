@@ -306,7 +306,7 @@
   - Add forum search and content discovery
   - _Requirements: 11.2_
 
-- [ ] 35. Video Calling Integration
+- [x] 35. Video Calling Integration
   - Integrate video calling capabilities for alumni networking
   - Build scheduling system for virtual coffee chats and meetings
   - Create group video calls for alumni gatherings
