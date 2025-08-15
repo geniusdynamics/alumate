@@ -31,12 +31,14 @@ abstract class TestCase extends BaseTestCase
 
     protected function setupDatabase(): void
     {
-        // Ensure we're using SQLite in memory for tests
-        config(['database.default' => 'sqlite']);
-        config(['database.connections.sqlite.database' => ':memory:']);
+        // Use PostgreSQL for tests since SQLite driver is not available
+        config(['database.default' => 'pgsql']);
+        config(['database.connections.pgsql.database' => 'laravel_test']);
 
-        // Run migrations
-        Artisan::call('migrate:fresh');
+        // Only run migrations if not already run
+        if (!Schema::hasTable('migrations')) {
+            Artisan::call('migrate:fresh');
+        }
     }
 
     protected function setupRolesAndPermissions(): void

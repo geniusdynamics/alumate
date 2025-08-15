@@ -463,6 +463,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/career/job-market-trends', [StudentCareerGuidanceController::class, 'getJobMarketTrends']);
 });
 
+// Career Outcome Analytics routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('career-analytics', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'index']);
+    Route::get('career-analytics/overview', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'overview']);
+    Route::get('career-analytics/program-effectiveness', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'programEffectiveness']);
+    Route::post('career-analytics/program-effectiveness/generate', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'generateProgramEffectiveness']);
+    Route::get('career-analytics/salary-analysis', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'salaryAnalysis']);
+    Route::get('career-analytics/industry-placement', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'industryPlacement']);
+    Route::post('career-analytics/industry-placement/generate', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'generateIndustryPlacement']);
+    Route::get('career-analytics/demographic-outcomes', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'demographicOutcomes']);
+    Route::get('career-analytics/career-path-analysis', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'careerPathAnalysis']);
+    Route::get('career-analytics/trend-analysis', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'trendAnalysis']);
+    Route::post('career-analytics/generate-snapshot', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'generateSnapshot']);
+    Route::get('career-analytics/snapshots', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'snapshots']);
+    Route::get('career-analytics/filter-options', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'filterOptions']);
+    Route::post('career-analytics/export', [App\Http\Controllers\Api\CareerOutcomeAnalyticsController::class, 'export']);
+});
+
 // Discussion Forums routes
 Route::middleware('auth:sanctum')->group(function () {
     // Forum management

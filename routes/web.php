@@ -710,4 +710,8 @@ Route::middleware(['auth', 'role:admin|super_admin'])->prefix('analytics')->name
     Route::get('dashboard', function () {
         return Inertia::render('Analytics/Dashboard');
     })->name('dashboard');
+    
+    Route::get('career-outcomes', function () {
+        return Inertia::render('Analytics/CareerOutcomes');
+    })->name('career-outcomes');
 });

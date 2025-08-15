@@ -1,7 +1,4 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\ForumTest.php
- [ ] user can view forums list
- [ ] user can create a forum topic
- [ ] user can reply to a forum topic
- [ ] user can like a forum post
- [ ] user can search forum topics
+Simple Career Analytics (Tests\Feature\SimpleCareerAnalytics)
+ [x] Career analytics routes are accessible
+ [x] Career analytics requires authentication
 
