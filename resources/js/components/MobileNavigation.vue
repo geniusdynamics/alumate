@@ -1,449 +1,121 @@
+<script setup>
+import { ref, computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { graduateMenuItems, employerMenuItems, institutionAdminMenuItems, superAdminMenuItems, personalMenuItems } from '@/lib/navigation'
+import { HomeIcon, UsersIcon, BriefcaseIcon, Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
+
+const page = usePage();
+const user = computed(() => page.props.auth?.user);
+const isMenuOpen = ref(false);
+
+// --- Role & Permission Helpers ---
+const userRoles = computed(() => user.value?.roles?.map((role) => role.name) || []);
+const userPermissions = computed(() => user.value?.permissions || []);
+
+const hasRole = (roleName) => userRoles.value.includes(roleName);
+const hasPermission = (permissionName) => userPermissions.value.includes(permissionName);
+
+const can = (item) => {
+    if (item.permission) return hasPermission(item.permission);
+    if (item.role) return hasRole(item.role);
+    return true;
+};
+
+const renderableMenu = (items) => items.filter(can);
+
+// --- Determine Current Menu based on Role ---
+const currentRoleMenu = computed(() => {
+    if (hasRole('super-admin')) return superAdminMenuItems;
+    if (hasRole('institution-admin')) return institutionAdminMenuItems;
+    if (hasRole('employer')) return employerMenuItems;
+    if (hasRole('graduate')) return graduateMenuItems;
+    return [];
+});
+
+// --- Dynamic Bottom Navigation ---
+const bottomNavItems = computed(() => {
+    const baseItems = [
+        { name: 'Home', href: route('dashboard'), icon: HomeIcon, active: route().current('dashboard') },
+    ];
+
+    if (hasRole('graduate')) {
+        baseItems.push({ name: 'Jobs', href: route('jobs.dashboard'), icon: BriefcaseIcon, active: page.url.startsWith('/jobs') });
+        baseItems.push({ name: 'Alumni', href: route('alumni.directory'), icon: UsersIcon, active: page.url.startsWith('/alumni') });
+    } else if (hasRole('employer')) {
+        baseItems.push({ name: 'Jobs', href: route('jobs.dashboard'), icon: BriefcaseIcon, active: page.url.startsWith('/jobs') });
+        baseItems.push({ name: 'Graduates', href: route('graduates.search'), icon: UsersIcon, active: page.url.startsWith('/graduates') });
+    } else if (hasRole('institution-admin')) {
+         baseItems.push({ name: 'Graduates', href: route('graduates.index'), icon: UsersIcon, active: page.url.startsWith('/graduates') });
+         baseItems.push({ name: 'Jobs', href: route('jobs.public.index'), icon: BriefcaseIcon, active: page.url.startsWith('/jobs') });
+    }
+
+    baseItems.push({ name: 'Menu', action: () => (isMenuOpen.value = true), icon: Bars3Icon, active: false });
+    
+    return baseItems.slice(0, 4);
+});
+
+const closeMenu = () => {
+    isMenuOpen.value = false;
+};
+</script>
+
 <template>
-    <div class="mobile-navigation lg:hidden">
-        <!-- Enhanced Mobile Bottom Navigation -->
-        <nav class="mobile-nav-enhanced" role="navigation" aria-label="Mobile bottom navigation">
-            <ul class="grid grid-cols-5 h-16" role="list">
-                <li v-for="item in bottomNavItems" :key="item.name">
-                    <Link
-                        :href="item.href"
-                        @click="handleNavItemClick(item)"
-                        :class="[
-                            'mobile-nav-item-enhanced relative',
-                            item.active 
-                                ? 'text-blue-600 dark:text-blue-400 active' 
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-                        ]"
-                        :aria-label="item.badge ? `${item.name} (${item.badge} notifications)` : item.name"
-                        :aria-current="item.active ? 'page' : undefined"
-                    >
-                        <component :is="item.icon" class="h-5 w-5" aria-hidden="true" />
-                        <span class="truncate">{{ item.name }}</span>
-                        <div v-if="item.badge" class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center" aria-hidden="true">
-                            <span class="text-xs text-white">{{ item.badge }}</span>
-                        </div>
+    <div class="lg:hidden">
+        <!-- Bottom Navigation Bar -->
+        <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 shadow-t-lg">
+            <div class="grid grid-cols-4 h-16" role="list">
+                <div v-for="item in bottomNavItems" :key="item.name" class="flex items-center justify-center">
+                    <button v-if="item.action" @click="item.action" class="flex flex-col items-center justify-center w-full h-full text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                        <component :is="item.icon" class="h-6 w-6" aria-hidden="true" />
+                        <span class="text-xs truncate">{{ item.name }}</span>
+                    </button>
+                    <Link v-else :href="item.href" class="flex flex-col items-center justify-center w-full h-full" :class="[item.active ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400']">
+                        <component :is="item.icon" class="h-6 w-6" aria-hidden="true" />
+                        <span class="text-xs truncate">{{ item.name }}</span>
                     </Link>
-                </li>
-            </ul>
+                </div>
+            </div>
         </nav>
 
-        <!-- Enhanced Mobile Pull-to-Refresh -->
-        <div
-            v-if="showPullToRefresh"
-            class="pull-to-refresh-enhanced"
-            :style="{ 
-                transform: `translateY(${Math.max(0, pullDistance - 60)}px)`,
-                opacity: Math.min(1, pullDistance / 80)
-            }"
-        >
-            <div class="pull-to-refresh-content">
-                <div v-if="isPulling" class="flex items-center space-x-3 text-blue-600 dark:text-blue-400">
-                    <div class="pull-to-refresh-spinner"></div>
-                    <span class="text-sm font-medium">Refreshing...</span>
-                </div>
-                <div v-else-if="pullDistance > 80" class="flex items-center space-x-3 text-blue-600 dark:text-blue-400">
-                    <ArrowUpIcon class="h-5 w-5" />
-                    <span class="text-sm font-medium">Release to refresh</span>
-                </div>
-                <div v-else class="flex items-center space-x-3 text-blue-600 dark:text-blue-400">
-                    <ArrowDownIcon class="h-5 w-5" />
-                    <span class="text-sm font-medium">Pull to refresh</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Search Overlay -->
-        <div
-            v-if="showMobileSearch"
-            class="fixed inset-0 z-[50] bg-white dark:bg-gray-900"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="mobile-search-title"
-        >
-            <div class="flex flex-col h-full">
-                <!-- Search Header -->
-                <header class="flex items-center p-4 border-b border-gray-200 dark:border-gray-700">
-                    <button
-                        @click="closeMobileSearch"
-                        class="mr-3 p-2 -ml-2 text-gray-500 dark:text-gray-400 touch-target"
-                        aria-label="Close search"
-                        type="button"
-                    >
-                        <XMarkIcon class="h-6 w-6" aria-hidden="true" />
-                    </button>
-                    <div class="flex-1">
-                        <h2 id="mobile-search-title" class="sr-only">Search</h2>
-                        <GlobalSearch 
-                            ref="mobileSearchRef"
-                            placeholder="Search everything..."
-                        />
+        <!-- Full Screen Menu Overlay -->
+        <Dialog :open="isMenuOpen" @update:open="isMenuOpen = $event">
+            <DialogContent class="sm:max-w-[425px] h-full flex flex-col p-0">
+                <DialogHeader class="p-6 pb-0">
+                    <DialogTitle class="flex justify-between items-center">
+                        <span>Menu</span>
+                         <button @click="closeMenu" class="p-2 -mr-2">
+                            <XMarkIcon class="h-6 w-6" />
+                        </button>
+                    </DialogTitle>
+                </DialogHeader>
+                <div class="flex-1 overflow-y-auto p-6 space-y-4">
+                     <!-- Role-specific Menu -->
+                    <div v-if="currentRoleMenu.length > 0" class="space-y-1">
+                         <h3 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">My Tools</h3>
+                        <Link v-for="item in renderableMenu(currentRoleMenu)" :key="item.title" :href="item.href" @click="closeMenu" class="flex items-center px-2 py-2 text-base font-medium rounded-md" :class="[item.active ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700']">
+                            <component :is="item.icon" class="mr-3 h-6 w-6" />
+                            {{ item.title }}
+                        </Link>
                     </div>
-                </header>
-
-                <!-- Search Content -->
-                <main class="flex-1 overflow-y-auto p-4">
-                    <!-- Recent Searches -->
-                    <section v-if="recentMobileSearches.length > 0" class="mb-6" aria-labelledby="recent-searches-heading">
-                        <h3 id="recent-searches-heading" class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Recent</h3>
-                        <ul class="space-y-2" role="list">
-                            <li v-for="search in recentMobileSearches" :key="search.id">
-                                <button
-                                    @click="executeSearch(search.query, search.type)"
-                                    class="w-full flex items-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-left touch-target"
-                                    :aria-label="`Search for ${search.query} in ${search.type}`"
-                                    type="button"
-                                >
-                                    <ClockIcon class="h-5 w-5 text-gray-400 mr-3" aria-hidden="true" />
-                                    <div class="flex-1">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ search.query }}</div>
-                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ search.type }}</div>
-                                    </div>
-                                </button>
-                            </li>
-                        </ul>
-                    </section>
-
-                    <!-- Quick Actions -->
-                    <section class="mb-6" aria-labelledby="quick-actions-heading">
-                        <h3 id="quick-actions-heading" class="text-lg font-semibold text-gray-900 dark:text-white mb-3">Quick Actions</h3>
-                        <div class="grid grid-cols-2 gap-3" role="group" aria-labelledby="quick-actions-heading">
-                            <button
-                                v-for="action in quickActions"
-                                :key="action.name"
-                                @click="executeQuickAction(action)"
-                                class="flex flex-col items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg touch-target"
-                                :aria-label="action.name"
-                                type="button"
-                            >
-                                <component :is="action.icon" class="h-8 w-8 text-blue-600 dark:text-blue-400 mb-2" aria-hidden="true" />
-                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ action.name }}</span>
-                            </button>
-                        </div>
-                    </section>
-                </main>
-            </div>
-        </div>
-
-        <!-- Mobile Notification Panel -->
-        <div
-            v-if="showMobileNotifications"
-            class="fixed inset-0 z-[50] bg-white dark:bg-gray-900"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="notifications-title"
-        >
-            <div class="flex flex-col h-full">
-                <!-- Notifications Header -->
-                <header class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h2 id="notifications-title" class="text-lg font-semibold text-gray-900 dark:text-white">Notifications</h2>
-                    <button
-                        @click="closeMobileNotifications"
-                        class="p-2 text-gray-500 dark:text-gray-400 touch-target"
-                        aria-label="Close notifications"
-                        type="button"
-                    >
-                        <XMarkIcon class="h-6 w-6" aria-hidden="true" />
-                    </button>
-                </header>
-
-                <!-- Notifications Content -->
-                <main class="flex-1 overflow-y-auto">
-                    <NotificationDropdown :mobile="true" />
-                </main>
-            </div>
-        </div>
-
-        <!-- Floating Action Button -->
-        <div class="fixed bottom-20 right-4 z-[40]">
-            <button
-                @click="showQuickActions = !showQuickActions"
-                class="w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200"
-                :class="{ 'rotate-45': showQuickActions }"
-                :aria-label="showQuickActions ? 'Close quick actions menu' : 'Open quick actions menu'"
-                :aria-expanded="showQuickActions"
-                aria-controls="quick-actions-menu"
-                type="button"
-            >
-                <PlusIcon class="h-6 w-6" aria-hidden="true" />
-            </button>
-
-            <!-- Quick Actions Menu -->
-            <div
-                v-if="showQuickActions"
-                id="quick-actions-menu"
-                class="absolute bottom-16 right-0 mb-2 space-y-2"
-                role="menu"
-                aria-labelledby="fab-button"
-            >
-                <button
-                    v-for="action in fabActions"
-                    :key="action.name"
-                    @click="executeFabAction(action)"
-                    class="flex items-center space-x-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 whitespace-nowrap touch-target"
-                    role="menuitem"
-                    :aria-label="action.name"
-                    type="button"
-                >
-                    <component :is="action.icon" class="h-5 w-5" aria-hidden="true" />
-                    <span class="text-sm font-medium">{{ action.name }}</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Backdrop for overlays -->
-        <div
-            v-if="showQuickActions"
-            class="fixed inset-0 z-[30]"
-            @click="showQuickActions = false"
-            aria-hidden="true"
-        ></div>
+                    <!-- Personal Menu -->
+                     <div class="space-y-1">
+                        <h3 class="px-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">Account</h3>
+                        <Link v-for="item in renderableMenu(personalMenuItems)" :key="item.title" :href="item.href" @click="closeMenu" class="flex items-center px-2 py-2 text-base font-medium rounded-md" :class="[item.active ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700']">
+                             <component :is="item.icon" class="mr-3 h-6 w-6" />
+                            {{ item.title }}
+                        </Link>
+                    </div>
+                     <!-- Logout -->
+                    <div class="space-y-1">
+                         <Link :href="route('logout')" method="post" as="button" @click="closeMenu" class="w-full flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                           Logout
+                        </Link>
+                    </div>
+                </div>
+            </DialogContent>
+        </Dialog>
     </div>
-</template>
-
-<script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Link, router, usePage } from '@inertiajs/vue3'
-import GlobalSearch from '@/components/GlobalSearch.vue'
-import NotificationDropdown from '@/components/NotificationDropdown.vue'
-import {
-    HomeIcon,
-    UsersIcon,
-    BriefcaseIcon,
-    CalendarIcon,
-    BellIcon,
-    MagnifyingGlassIcon,
-    PlusIcon,
-    XMarkIcon,
-    ClockIcon,
-    ArrowPathIcon,
-    ArrowDownIcon,
-    ArrowUpIcon,
-    PencilIcon,
-    CameraIcon,
-    UserPlusIcon
-} from '@heroicons/vue/24/outline'
-
-const page = usePage()
-const showMobileSearch = ref(false)
-const showMobileNotifications = ref(false)
-const showQuickActions = ref(false)
-const showPullToRefresh = ref(false)
-const isPulling = ref(false)
-const pullDistance = ref(0)
-const mobileSearchRef = ref(null)
-
-const bottomNavItems = computed(() => [
-    {
-        name: 'Home',
-        href: '/dashboard',
-        icon: HomeIcon,
-        active: page.url.startsWith('/dashboard')
-    },
-    {
-        name: 'Alumni',
-        href: '/alumni/directory',
-        icon: UsersIcon,
-        active: page.url.startsWith('/alumni')
-    },
-    {
-        name: 'Jobs',
-        href: '/jobs/dashboard',
-        icon: BriefcaseIcon,
-        active: page.url.startsWith('/jobs')
-    },
-    {
-        name: 'Events',
-        href: '/events',
-        icon: CalendarIcon,
-        active: page.url.startsWith('/events')
-    },
-    {
-        name: 'More',
-        href: '#',
-        icon: BellIcon,
-        active: false,
-        badge: page.props.auth?.unreadNotifications || null
-    }
-])
-
-const quickActions = [
-    { name: 'Find Alumni', icon: UsersIcon, action: 'search', type: 'alumni' },
-    { name: 'Browse Jobs', icon: BriefcaseIcon, action: 'navigate', url: '/jobs' },
-    { name: 'View Events', icon: CalendarIcon, action: 'navigate', url: '/events' },
-    { name: 'Notifications', icon: BellIcon, action: 'notifications' }
-]
-
-const fabActions = [
-    { name: 'Create Post', icon: PencilIcon, action: 'create-post' },
-    { name: 'Add Photo', icon: CameraIcon, action: 'add-photo' },
-    { name: 'Invite Alumni', icon: UserPlusIcon, action: 'invite-alumni' },
-    { name: 'Search', icon: MagnifyingGlassIcon, action: 'search' }
-]
-
-const recentMobileSearches = ref([])
-
-onMounted(() => {
-    loadRecentSearches()
-    setupPullToRefresh()
-})
-
-onUnmounted(() => {
-    removePullToRefresh()
-})
-
-const loadRecentSearches = () => {
-    const stored = localStorage.getItem('mobile_recent_searches')
-    if (stored) {
-        recentMobileSearches.value = JSON.parse(stored).slice(0, 5)
-    }
-}
-
-const executeSearch = (query, type) => {
-    closeMobileSearch()
-    // Add to recent searches
-    addToRecentSearches(query, type)
-    
-    const routes = {
-        alumni: '/alumni/directory',
-        jobs: '/jobs',
-        events: '/events'
-    }
-    
-    router.visit(routes[type] || '/search', {
-        data: { search: query }
-    })
-}
-
-const executeQuickAction = (action) => {
-    if (action.action === 'search') {
-        showMobileSearch.value = true
-    } else if (action.action === 'navigate') {
-        router.visit(action.url)
-    } else if (action.action === 'notifications') {
-        showMobileNotifications.value = true
-    }
-}
-
-const executeFabAction = (action) => {
-    showQuickActions.value = false
-    
-    if (action.action === 'search') {
-        showMobileSearch.value = true
-    } else if (action.action === 'create-post') {
-        // Trigger post creation modal
-        window.dispatchEvent(new CustomEvent('open-post-creator'))
-    } else if (action.action === 'add-photo') {
-        // Trigger photo upload
-        window.dispatchEvent(new CustomEvent('open-photo-upload'))
-    } else if (action.action === 'invite-alumni') {
-        router.visit('/alumni/invite')
-    }
-}
-
-const closeMobileSearch = () => {
-    showMobileSearch.value = false
-}
-
-const closeMobileNotifications = () => {
-    showMobileNotifications.value = false
-}
-
-const addToRecentSearches = (query, type) => {
-    const search = { id: Date.now(), query, type, timestamp: Date.now() }
-    
-    recentMobileSearches.value = recentMobileSearches.value.filter(s => 
-        !(s.query === query && s.type === type)
-    )
-    
-    recentMobileSearches.value.unshift(search)
-    recentMobileSearches.value = recentMobileSearches.value.slice(0, 5)
-    
-    localStorage.setItem('mobile_recent_searches', JSON.stringify(recentMobileSearches.value))
-}
-
-// Pull to refresh functionality
-let startY = 0
-let currentY = 0
-let isRefreshing = false
-
-const setupPullToRefresh = () => {
-    document.addEventListener('touchstart', handleTouchStart, { passive: true })
-    document.addEventListener('touchmove', handleTouchMove, { passive: false })
-    document.addEventListener('touchend', handleTouchEnd, { passive: true })
-}
-
-const removePullToRefresh = () => {
-    document.removeEventListener('touchstart', handleTouchStart)
-    document.removeEventListener('touchmove', handleTouchMove)
-    document.removeEventListener('touchend', handleTouchEnd)
-}
-
-const handleTouchStart = (e) => {
-    startY = e.touches[0].clientY
-}
-
-const handleTouchMove = (e) => {
-    if (isRefreshing) return
-    
-    currentY = e.touches[0].clientY
-    const diff = currentY - startY
-    
-    // Only trigger if at top of page and pulling down
-    if (window.scrollY === 0 && diff > 0) {
-        e.preventDefault()
-        
-        const maxPull = 100
-        const distance = Math.min(diff * 0.5, maxPull)
-        
-        if (distance > 10) {
-            showPullToRefresh.value = true
-            pullDistance.value = distance
-        }
-    }
-}
-
-const handleTouchEnd = () => {
-    if (pullDistance.value > 50 && !isRefreshing) {
-        triggerRefresh()
-    } else {
-        resetPullToRefresh()
-    }
-}
-
-const triggerRefresh = () => {
-    isRefreshing = true
-    isPulling.value = true
-    
-    // Simulate refresh
-    setTimeout(() => {
-        window.location.reload()
-    }, 1000)
-}
-
-const resetPullToRefresh = () => {
-    showPullToRefresh.value = false
-    pullDistance.value = 0
-    isPulling.value = false
-    isRefreshing = false
-}
-
-const handleNavItemClick = (item) => {
-    // Add haptic feedback if available
-    if (navigator.vibrate) {
-        navigator.vibrate(10)
-    }
-    
-    // Handle special navigation items
-    if (item.name === 'More') {
-        showMobileNotifications.value = true
-        return false
-    }
-}
-
-// Expose methods for parent components
-defineExpose({
-    openSearch: () => { showMobileSearch.value = true },
-    openNotifications: () => { showMobileNotifications.value = true }
-})
 </script>
 
 <style scoped>
