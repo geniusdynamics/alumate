@@ -32,6 +32,7 @@ class Institution extends Model
         'trial_ends_at',
         'is_active',
         'verified_at',
+        'status',
     ];
 
     protected $casts = [

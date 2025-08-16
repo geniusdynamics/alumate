@@ -35,21 +35,21 @@
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <div class="nav-dropdown">
-                  <Link :href="route('alumni.directory')" class="nav-dropdown-item">
+                  <Link :href="route('alumni.public.directory')" class="nav-dropdown-item">
                     <Users class="nav-dropdown-icon" />
                     <div>
                       <div class="nav-dropdown-title">Alumni Directory</div>
                       <div class="nav-dropdown-desc">Connect with fellow graduates</div>
                     </div>
                   </Link>
-                  <Link :href="route('alumni.map')" class="nav-dropdown-item">
+                  <Link :href="route('alumni.public.map')" class="nav-dropdown-item">
                     <MapPin class="nav-dropdown-icon" />
                     <div>
                       <div class="nav-dropdown-title">Alumni Map</div>
                       <div class="nav-dropdown-desc">Find alumni near you</div>
                     </div>
                   </Link>
-                  <Link :href="route('stories.index')" class="nav-dropdown-item">
+                  <Link :href="route('stories.public.index')" class="nav-dropdown-item">
                     <Star class="nav-dropdown-icon" />
                     <div>
                       <div class="nav-dropdown-title">Success Stories</div>
@@ -212,7 +212,7 @@
           </Link>
           
           <Link 
-            :href="route('alumni.directory')" 
+            :href="route('alumni.public.directory')" 
             class="mobile-nav-link"
             @click="closeMobileMenu"
             role="menuitem"
@@ -222,7 +222,7 @@
           </Link>
           
           <Link 
-            :href="route('alumni.map')" 
+            :href="route('alumni.public.map')" 
             class="mobile-nav-link"
             @click="closeMobileMenu"
             role="menuitem"
@@ -232,7 +232,7 @@
           </Link>
           
           <Link 
-            :href="route('stories.index')" 
+            :href="route('stories.public.index')" 
             class="mobile-nav-link"
             @click="closeMobileMenu"
             role="menuitem"
@@ -423,7 +423,7 @@ const navigateToJobs = () => {
 }
 
 const navigateToAlumni = () => {
-  router.visit('/alumni/directory')
+  router.visit('/alumni')
   closeSearch()
 }
 

@@ -73,6 +73,11 @@ class Graduate extends Model
         return $this->belongsTo(Tenant::class);
     }
 
+    public function institution()
+    {
+        return $this->belongsTo(Tenant::class, 'tenant_id');
+    }
+
     public function applications()
     {
         return $this->hasMany(JobApplication::class);

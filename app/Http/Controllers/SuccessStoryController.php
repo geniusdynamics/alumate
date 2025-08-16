@@ -138,6 +138,67 @@ class SuccessStoryController extends Controller
         ]);
     }
 
+    /**
+     * Public success stories index (accessible without authentication)
+     */
+    public function publicIndex(Request $request)
+    {
+        // Build query for success stories (only published)
+        $query = SuccessStory::with(['user.graduate.course', 'user.graduate.institution'])
+            ->where('status', 'published');
+
+        // Apply filters
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('course_id')) {
+            $query->whereHas('user.graduate', function ($q) use ($request) {
+                $q->where('course_id', $request->course_id);
+            });
+        }
+
+        if ($request->filled('institution_id')) {
+            $query->whereHas('user.graduate', function ($q) use ($request) {
+                $q->where('institution_id', $request->institution_id);
+            });
+        }
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('content', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('key_achievements', 'like', '%'.$searchTerm.'%');
+            });
+        }
+
+        $stories = $query->latest()->paginate(20);
+
+        // Get filter options
+        $courses = Course::all();
+        $institutions = Institution::all();
+        $categories = ['career_advancement', 'entrepreneurship', 'community_impact', 'academic_achievement', 'personal_growth', 'innovation'];
+
+        // Get featured stories
+        $featuredStories = SuccessStory::where('is_featured', true)
+            ->where('status', 'published')
+            ->with(['user.graduate.course'])
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        return Inertia::render('Stories/PublicIndex', [
+            'stories' => $stories,
+            'featuredStories' => $featuredStories,
+            'courses' => $courses,
+            'institutions' => $institutions,
+            'categories' => $categories,
+            'filters' => $request->only(['category', 'course_id', 'institution_id', 'search']),
+            'auth_required' => true, // Show login prompt for creating stories
+        ]);
+    }
+
     private function getStoryPrompts($user)
     {
         $graduate = $user->graduate;

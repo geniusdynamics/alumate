@@ -248,6 +248,44 @@ class JobListController extends Controller
         return array_slice($recommendations, 0, $limit);
     }
 
+    /**
+     * Public jobs listing (accessible without authentication)
+     */
+    public function publicIndex(Request $request)
+    {
+        return $this->index($request);
+    }
+
+    /**
+     * Public job details (accessible without authentication)
+     */
+    public function publicShow(Job $job)
+    {
+        if ($job->status !== 'active' || $job->is_expired) {
+            abort(404);
+        }
+
+        $job->load(['employer.user', 'course']);
+        $job->incrementViewCount();
+
+        // Get similar jobs
+        $similarJobs = Job::where('course_id', $job->course_id)
+            ->where('id', '!=', $job->id)
+            ->where('status', 'active')
+            ->notExpired()
+            ->with(['employer.user'])
+            ->limit(4)
+            ->get();
+
+        return Inertia::render('Jobs/PublicShow', [
+            'job' => $job,
+            'can_apply' => false, // Not authenticated
+            'has_applied' => false,
+            'similar_jobs' => $similarJobs,
+            'auth_required' => true, // Show login prompt for applications
+        ]);
+    }
+
     public function search(Request $request)
     {
         $request->validate([

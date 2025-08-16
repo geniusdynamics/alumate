@@ -49,6 +49,11 @@ class User extends Authenticatable
         'language',
         'status',
         'user_type',
+        'is_active',
+        'profile_visibility',
+        'current_title',
+        'current_company',
+        'current_industry',
     ];
 
     /**
@@ -66,6 +71,7 @@ class User extends Authenticatable
         'interests' => 'array',
         'two_factor_enabled' => 'boolean',
         'is_suspended' => 'boolean',
+        'is_active' => 'boolean',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
     ];
@@ -349,10 +355,6 @@ class User extends Authenticatable
     }
 
     // Accessors & Mutators
-    public function getIsActiveAttribute(): bool
-    {
-        return $this->status === 'active' && ! $this->is_suspended;
-    }
 
     public function getFullNameAttribute(): string
     {

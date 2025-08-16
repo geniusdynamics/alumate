@@ -345,6 +345,117 @@ class AlumniController extends Controller
         ];
     }
 
+    /**
+     * Public alumni directory (accessible without authentication)
+     */
+    public function publicDirectory(Request $request)
+    {
+        // Build query for public alumni directory (only show public profiles)
+        $query = Graduate::with(['user', 'course', 'institution'])
+            ->whereHas('user', function ($q) {
+                $q->where('is_active', true)
+                  ->where('profile_visibility', 'public');
+            });
+
+        // Apply filters
+        if ($request->filled('course_id')) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        if ($request->filled('institution_id')) {
+            $query->where('tenant_id', $request->institution_id);
+        }
+
+        if ($request->filled('graduation_year')) {
+            $query->where('graduation_year', $request->graduation_year);
+        }
+
+        if ($request->filled('location')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('location', 'like', '%'.$request->location.'%');
+            });
+        }
+
+        if ($request->filled('industry')) {
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('current_industry', 'like', '%'.$request->industry.'%');
+            });
+        }
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->whereHas('user', function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%'.$searchTerm.'%');
+            });
+        }
+
+        $alumni = $query->paginate(20);
+
+        // Get filter options
+        $courses = Course::all();
+        $institutions = Institution::all();
+        $graduationYears = Graduate::distinct()->pluck('graduation_year')->sort()->values();
+
+        return Inertia::render('Alumni/PublicDirectory', [
+            'alumni' => $alumni,
+            'courses' => $courses,
+            'institutions' => $institutions,
+            'graduationYears' => $graduationYears,
+            'filters' => $request->only(['course_id', 'institution_id', 'graduation_year', 'location', 'industry', 'search']),
+            'auth_required' => true, // Show login prompt for connections
+        ]);
+    }
+
+    /**
+     * Public alumni map (accessible without authentication)
+     */
+    public function publicMap()
+    {
+        // Get alumni with location data (only public profiles)
+        $alumni = User::whereNotNull('latitude')
+            ->whereNotNull('longitude')
+            ->where('location_privacy', 'public')
+            ->where('profile_visibility', 'public')
+            ->with(['educations.school', 'currentEmployment.company'])
+            ->get()
+            ->map(function ($alumnus) {
+                return [
+                    'id' => $alumnus->id,
+                    'name' => $alumnus->name,
+                    'avatar_url' => $alumnus->avatar_url,
+                    'current_title' => $alumnus->current_title,
+                    'current_company' => $alumnus->current_company,
+                    'location' => $alumnus->location,
+                    'latitude' => (float) $alumnus->latitude,
+                    'longitude' => (float) $alumnus->longitude,
+                ];
+            });
+
+        // Get regional statistics
+        $stats = [
+            'total_alumni' => $alumni->count(),
+            'by_country' => $alumni->groupBy('country')->map->count()->sortDesc()->take(10),
+            'by_region' => $alumni->groupBy('region')->map->count()->sortDesc()->take(10),
+            'by_industry' => $alumni->whereNotNull('current_industry')->groupBy('current_industry')->map->count()->sortDesc()->take(10)
+        ];
+
+        // Get filter options
+        $schools = Institution::all(['id', 'name']);
+        $industries = User::whereNotNull('current_industry')->distinct()->pluck('current_industry')->filter()->sort()->values();
+        $countries = User::whereNotNull('country')->distinct()->pluck('country')->filter()->sort()->values();
+        $graduationYears = range(date('Y') - 50, date('Y') + 5);
+
+        return Inertia::render('Alumni/PublicMap', [
+            'alumni' => $alumni,
+            'stats' => $stats,
+            'schools' => $schools,
+            'industries' => $industries,
+            'countries' => $countries,
+            'graduationYears' => $graduationYears,
+            'auth_required' => true, // Show login prompt for connections
+        ]);
+    }
+
     private function getConnectionInsights($user, $graduate)
     {
         $insights = collect();

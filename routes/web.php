@@ -309,6 +309,13 @@ Route::get('/announcements/{announcement}', [\App\Http\Controllers\AnnouncementC
 Route::get('/discussions', [\App\Http\Controllers\DiscussionController::class, 'index'])->name('discussions.index');
 Route::get('/discussions/{discussion}', [\App\Http\Controllers\DiscussionController::class, 'show'])->name('discussions.show');
 
+// Public Alumni & Stories routes (accessible without authentication)
+Route::get('/alumni', [\App\Http\Controllers\AlumniController::class, 'publicDirectory'])->name('alumni.public.directory');
+Route::get('/alumni/map', [\App\Http\Controllers\AlumniController::class, 'publicMap'])->name('alumni.public.map');
+Route::get('/stories', [\App\Http\Controllers\SuccessStoryController::class, 'publicIndex'])->name('stories.public.index');
+Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
+
 // Social Features Routes
 Route::middleware(['auth'])->prefix('social')->name('social.')->group(function () {
     Route::get('timeline', [\App\Http\Controllers\SocialController::class, 'timeline'])->name('timeline');
