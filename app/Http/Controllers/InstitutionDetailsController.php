@@ -10,6 +10,7 @@ class InstitutionDetailsController extends Controller
     public function edit()
     {
         $this->authorize('update', tenancy()->tenant);
+
         return Inertia::render('Institution/Edit', ['institution' => tenancy()->tenant]);
     }
 

@@ -83,16 +83,25 @@ class SecurityEvent extends Model
 
     // Event types constants
     const TYPE_FAILED_LOGIN = 'failed_login';
+
     const TYPE_SUSPICIOUS_ACTIVITY = 'suspicious_activity';
+
     const TYPE_RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded';
+
     const TYPE_UNAUTHORIZED_ACCESS = 'unauthorized_access';
+
     const TYPE_DATA_BREACH_ATTEMPT = 'data_breach_attempt';
+
     const TYPE_MALICIOUS_REQUEST = 'malicious_request';
+
     const TYPE_ACCOUNT_LOCKOUT = 'account_lockout';
 
     // Severity levels
     const SEVERITY_LOW = 'low';
+
     const SEVERITY_MEDIUM = 'medium';
+
     const SEVERITY_HIGH = 'high';
+
     const SEVERITY_CRITICAL = 'critical';
 }

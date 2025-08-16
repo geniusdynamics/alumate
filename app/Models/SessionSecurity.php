@@ -60,7 +60,7 @@ class SessionSecurity extends Model
     public static function trackSession($sessionId, $userId, $ip, $userAgent)
     {
         $existing = self::where('session_id', $sessionId)->first();
-        
+
         if ($existing) {
             // Check for suspicious activity
             $suspicious = false;
@@ -118,7 +118,7 @@ class SessionSecurity extends Model
     public function extend($minutes = null)
     {
         $minutes = $minutes ?? config('session.lifetime', 120);
-        
+
         $this->update([
             'expires_at' => now()->addMinutes($minutes),
             'last_activity' => now(),

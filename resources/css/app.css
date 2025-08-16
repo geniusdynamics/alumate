@@ -2,6 +2,15 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+/* Homepage specific styles */
+@import './homepage.css';
+
+/* Theme system */
+@import './theme.css';
+
+/* Mobile-specific styles */
+@import './mobile.css';
+
 @layer base {
     * {
         @apply border-border;

@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         // Only create if it doesn't exist
-        if (!Schema::hasTable('companies')) {
+        if (! Schema::hasTable('companies')) {
             Schema::create('companies', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');

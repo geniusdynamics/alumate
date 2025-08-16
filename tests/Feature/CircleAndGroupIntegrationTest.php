@@ -3,10 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Circle;
+use App\Models\EducationHistory;
 use App\Models\Group;
 use App\Models\User;
-use App\Models\EducationHistory;
-use App\Models\Tenant;
 use App\Services\CircleManager;
 use App\Services\GroupManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,8 +40,8 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_services_can_be_instantiated()
     {
-        $circleManager = new CircleManager();
-        $groupManager = new GroupManager();
+        $circleManager = new CircleManager;
+        $groupManager = new GroupManager;
 
         $this->assertInstanceOf(CircleManager::class, $circleManager);
         $this->assertInstanceOf(GroupManager::class, $groupManager);
@@ -50,9 +49,9 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_circle_criteria_casting()
     {
-        $circle = new Circle();
+        $circle = new Circle;
         $circle->criteria = ['institution_name' => 'Test University', 'graduation_year' => 2020];
-        
+
         $this->assertIsArray($circle->criteria);
         $this->assertEquals('Test University', $circle->criteria['institution_name']);
         $this->assertEquals(2020, $circle->criteria['graduation_year']);
@@ -60,9 +59,9 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_group_settings_casting()
     {
-        $group = new Group();
+        $group = new Group;
         $group->settings = ['posting_restriction' => 'all_members'];
-        
+
         $this->assertIsArray($group->settings);
         $this->assertEquals('all_members', $group->settings['posting_restriction']);
     }
@@ -81,8 +80,8 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_circle_name_generation()
     {
-        $circleManager = new CircleManager();
-        
+        $circleManager = new CircleManager;
+
         // Test school combinations generation
         $educations = collect([
             (object) ['institution_name' => 'University A'],
@@ -90,7 +89,7 @@ class CircleAndGroupIntegrationTest extends TestCase
         ]);
 
         $combinations = $circleManager->getSchoolCombinations($educations);
-        
+
         $this->assertIsArray($combinations);
         $this->assertCount(1, $combinations); // Only one combination of 2 schools
         $this->assertEquals(['University A', 'University B'], $combinations[0]);
@@ -98,8 +97,8 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_circle_manager_find_or_create_logic()
     {
-        $circleManager = new CircleManager();
-        
+        $circleManager = new CircleManager;
+
         // Test that the method exists and can be called
         $this->assertTrue(method_exists($circleManager, 'findOrCreateCircle'));
         $this->assertTrue(method_exists($circleManager, 'generateCirclesForUser'));
@@ -108,8 +107,8 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_group_manager_methods_exist()
     {
-        $groupManager = new GroupManager();
-        
+        $groupManager = new GroupManager;
+
         // Test that all required methods exist
         $this->assertTrue(method_exists($groupManager, 'createGroup'));
         $this->assertTrue(method_exists($groupManager, 'handleInvitation'));
@@ -120,8 +119,8 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_user_relationships_exist()
     {
-        $user = new User();
-        
+        $user = new User;
+
         // Test that relationship methods exist
         $this->assertTrue(method_exists($user, 'circles'));
         $this->assertTrue(method_exists($user, 'groups'));
@@ -130,8 +129,8 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_circle_model_methods_exist()
     {
-        $circle = new Circle();
-        
+        $circle = new Circle;
+
         // Test that all required methods exist
         $this->assertTrue(method_exists($circle, 'addMember'));
         $this->assertTrue(method_exists($circle, 'removeMember'));
@@ -142,8 +141,8 @@ class CircleAndGroupIntegrationTest extends TestCase
 
     public function test_group_model_methods_exist()
     {
-        $group = new Group();
-        
+        $group = new Group;
+
         // Test that all required methods exist
         $this->assertTrue(method_exists($group, 'addMember'));
         $this->assertTrue(method_exists($group, 'removeMember'));

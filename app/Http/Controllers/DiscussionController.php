@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Discussion;
 use App\Models\DiscussionReply;
-use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -30,9 +30,9 @@ class DiscussionController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
+                    ->orWhere('content', 'like', "%{$search}%");
             });
         }
 
@@ -63,10 +63,10 @@ class DiscussionController extends Controller
     public function show(Discussion $discussion)
     {
         $discussion->load([
-            'creator', 
+            'creator',
             'course',
             'topLevelReplies.user',
-            'topLevelReplies.children.user'
+            'topLevelReplies.children.user',
         ]);
 
         // Increment view count
@@ -161,7 +161,7 @@ class DiscussionController extends Controller
 
     public function reply(Request $request, Discussion $discussion)
     {
-        if (!$discussion->canReply()) {
+        if (! $discussion->canReply()) {
             abort(403, 'This discussion is locked.');
         }
 
@@ -194,7 +194,7 @@ class DiscussionController extends Controller
     public function markSolution(DiscussionReply $reply)
     {
         $discussion = $reply->discussion;
-        
+
         // Only discussion creator can mark solutions
         if ($discussion->created_by !== Auth::id()) {
             abort(403);
@@ -208,7 +208,7 @@ class DiscussionController extends Controller
     public function unmarkSolution(DiscussionReply $reply)
     {
         $discussion = $reply->discussion;
-        
+
         // Only discussion creator can unmark solutions
         if ($discussion->created_by !== Auth::id()) {
             abort(403);

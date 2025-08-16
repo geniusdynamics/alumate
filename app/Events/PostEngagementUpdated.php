@@ -5,8 +5,6 @@ namespace App\Events;
 use App\Models\Post;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -16,6 +14,7 @@ class PostEngagementUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Post $post;
+
     public array $stats;
 
     public function __construct(Post $post, array $stats)
@@ -43,7 +42,7 @@ class PostEngagementUpdated implements ShouldBroadcast
         return [
             'post_id' => $this->post->id,
             'stats' => $this->stats,
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ];
     }
 

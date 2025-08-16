@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
 use App\Models\FundraisingCampaign;
+use App\Models\User;
 
 test('can create fundraising campaign', function () {
     $user = User::factory()->create();
-    
+
     $campaignData = [
         'title' => 'Test Campaign',
         'description' => 'This is a test campaign',

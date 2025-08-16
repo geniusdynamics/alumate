@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Scholarship;
 use App\Models\ScholarshipApplication;
-use App\Models\ScholarshipReview;
 use App\Services\ScholarshipService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -72,7 +71,7 @@ class ScholarshipApplicationController extends Controller
             'scholarship',
             'applicant',
             'reviews.reviewer',
-            'recipient'
+            'recipient',
         ]);
 
         return response()->json([
@@ -83,7 +82,7 @@ class ScholarshipApplicationController extends Controller
 
     public function update(Request $request, Scholarship $scholarship, ScholarshipApplication $application): JsonResponse
     {
-        if (!$application->canBeEdited()) {
+        if (! $application->canBeEdited()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Application cannot be edited in its current status',
@@ -109,9 +108,9 @@ class ScholarshipApplicationController extends Controller
 
         try {
             $data = $validator->validated();
-            
+
             // Set submitted_at if status is being changed to submitted
-            if (isset($data['status']) && $data['status'] === 'submitted' && !$application->isSubmitted()) {
+            if (isset($data['status']) && $data['status'] === 'submitted' && ! $application->isSubmitted()) {
                 $data['submitted_at'] = now();
             }
 
@@ -125,7 +124,7 @@ class ScholarshipApplicationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update application: ' . $e->getMessage(),
+                'message' => 'Failed to update application: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -162,7 +161,7 @@ class ScholarshipApplicationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to submit review: ' . $e->getMessage(),
+                'message' => 'Failed to submit review: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -195,7 +194,7 @@ class ScholarshipApplicationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to award scholarship: ' . $e->getMessage(),
+                'message' => 'Failed to award scholarship: '.$e->getMessage(),
             ], 500);
         }
     }

@@ -374,7 +374,7 @@ export default {
     const handlePaste = (event) => {
       // Handle pasted images
       const items = event.clipboardData.items
-      for (let item of items) {
+      for (const item of items) {
         if (item.type.indexOf('image') !== -1) {
           const file = item.getAsFile()
           if (file) {

@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\FundraisingCampaign;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class FundraisingCampaignPolicy
 {
@@ -29,8 +28,8 @@ class FundraisingCampaignPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('admin') || 
-               $user->hasRole('institution_admin') || 
+        return $user->hasRole('admin') ||
+               $user->hasRole('institution_admin') ||
                $user->hasRole('alumni');
     }
 
@@ -39,8 +38,8 @@ class FundraisingCampaignPolicy
      */
     public function update(User $user, FundraisingCampaign $fundraisingCampaign): bool
     {
-        return $user->id === $fundraisingCampaign->created_by || 
-               $user->hasRole('admin') || 
+        return $user->id === $fundraisingCampaign->created_by ||
+               $user->hasRole('admin') ||
                $user->hasRole('institution_admin');
     }
 
@@ -49,8 +48,8 @@ class FundraisingCampaignPolicy
      */
     public function delete(User $user, FundraisingCampaign $fundraisingCampaign): bool
     {
-        return $user->id === $fundraisingCampaign->created_by || 
-               $user->hasRole('admin') || 
+        return $user->id === $fundraisingCampaign->created_by ||
+               $user->hasRole('admin') ||
                $user->hasRole('institution_admin');
     }
 

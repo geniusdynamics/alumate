@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\DonorStewardshipPlan;
 use App\Models\DonorProfile;
+use App\Models\DonorStewardshipPlan;
 use App\Services\DonorCrmService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class DonorStewardshipPlanController extends Controller
@@ -49,8 +49,8 @@ class DonorStewardshipPlanController extends Controller
         }
 
         $plans = $query->orderBy('priority')
-                      ->orderBy('target_ask_date')
-                      ->paginate(20);
+            ->orderBy('target_ask_date')
+            ->paginate(20);
 
         return response()->json($plans);
     }
@@ -83,14 +83,14 @@ class DonorStewardshipPlanController extends Controller
 
         return response()->json([
             'data' => $plan->load(['donorProfile.user', 'creator', 'assignedTo']),
-            'message' => 'Stewardship plan created successfully'
+            'message' => 'Stewardship plan created successfully',
         ], 201);
     }
 
     public function show(DonorStewardshipPlan $donorStewardshipPlan): JsonResponse
     {
         return response()->json([
-            'data' => $donorStewardshipPlan->load(['donorProfile.user', 'creator', 'assignedTo'])
+            'data' => $donorStewardshipPlan->load(['donorProfile.user', 'creator', 'assignedTo']),
         ]);
     }
 
@@ -117,7 +117,7 @@ class DonorStewardshipPlanController extends Controller
 
         return response()->json([
             'data' => $donorStewardshipPlan->fresh(['donorProfile.user', 'creator', 'assignedTo']),
-            'message' => 'Stewardship plan updated successfully'
+            'message' => 'Stewardship plan updated successfully',
         ]);
     }
 
@@ -126,7 +126,7 @@ class DonorStewardshipPlanController extends Controller
         $donorStewardshipPlan->delete();
 
         return response()->json([
-            'message' => 'Stewardship plan deleted successfully'
+            'message' => 'Stewardship plan deleted successfully',
         ]);
     }
 
@@ -140,21 +140,21 @@ class DonorStewardshipPlanController extends Controller
 
         return response()->json([
             'data' => $donorStewardshipPlan->fresh(),
-            'message' => 'Milestone marked as complete'
+            'message' => 'Milestone marked as complete',
         ]);
     }
 
     public function upcomingAsks(Request $request): JsonResponse
     {
         $days = $request->input('days', 30);
-        
+
         $plans = DonorStewardshipPlan::upcomingAsk($days)
             ->with(['donorProfile.user', 'assignedTo'])
             ->orderBy('target_ask_date')
             ->get();
 
         return response()->json([
-            'data' => $plans
+            'data' => $plans,
         ]);
     }
 }

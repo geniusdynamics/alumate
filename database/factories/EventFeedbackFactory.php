@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Event;
-use App\Models\User;
 use App\Models\EventFeedback;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventFeedbackFactory extends Factory
@@ -14,7 +14,7 @@ class EventFeedbackFactory extends Factory
     public function definition(): array
     {
         $overallRating = $this->faker->numberBetween(1, 5);
-        
+
         return [
             'event_id' => Event::factory(),
             'user_id' => User::factory(),
@@ -31,7 +31,7 @@ class EventFeedbackFactory extends Factory
                 'venue_facilities',
                 'organization',
                 'timing',
-                'accessibility'
+                'accessibility',
             ], $this->faker->numberBetween(1, 3)),
             'would_recommend' => $overallRating >= 4 ? $this->faker->boolean(80) : $this->faker->boolean(30),
             'would_attend_again' => $overallRating >= 4 ? $this->faker->boolean(85) : $this->faker->boolean(40),
@@ -42,7 +42,7 @@ class EventFeedbackFactory extends Factory
                 'More interactive sessions',
                 'Better venue location',
                 'More diverse speakers',
-                'Longer Q&A sessions'
+                'Longer Q&A sessions',
             ], $this->faker->numberBetween(1, 2)),
             'is_anonymous' => $this->faker->boolean(20),
         ];
@@ -66,7 +66,7 @@ class EventFeedbackFactory extends Factory
             'improvement_suggestions' => [
                 'Better organization needed',
                 'Content was not relevant',
-                'Poor venue facilities'
+                'Poor venue facilities',
             ],
         ]);
     }

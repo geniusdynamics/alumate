@@ -68,7 +68,7 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         // Redirect based on role
-        $redirectRoute = match($request->role) {
+        $redirectRoute = match ($request->role) {
             'graduate' => 'graduate.dashboard',
             'institution' => 'institution-admin.dashboard',
             default => 'dashboard'

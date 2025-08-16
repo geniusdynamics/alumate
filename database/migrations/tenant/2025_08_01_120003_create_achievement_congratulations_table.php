@@ -20,7 +20,7 @@ return new class extends Migration
 
             // Unique constraint to prevent duplicate congratulations
             $table->unique(['achievement_celebration_id', 'user_id'], 'unique_congratulations');
-            
+
             // Indexes
             $table->index(['achievement_celebration_id', 'created_at']);
             $table->index('user_id');

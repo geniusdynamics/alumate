@@ -25,8 +25,8 @@ class MentorshipAcceptedNotification extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('Mentorship Request Accepted!')
-            ->greeting('Congratulations ' . $notifiable->name . '!')
-            ->line($this->mentorshipRequest->mentor->name . ' has accepted your mentorship request.')
+            ->greeting('Congratulations '.$notifiable->name.'!')
+            ->line($this->mentorshipRequest->mentor->name.' has accepted your mentorship request.')
             ->line('You can now schedule sessions and begin your mentorship journey.')
             ->action('View Mentorship', url('/mentorship/dashboard'))
             ->line('We wish you a successful mentorship experience!');

@@ -69,7 +69,7 @@ class DiscussionReply extends Model
     {
         // First, unmark any existing solutions for this discussion
         $this->discussion->replies()->update(['is_solution' => false]);
-        
+
         // Mark this reply as the solution
         $this->update(['is_solution' => true]);
     }
@@ -87,14 +87,16 @@ class DiscussionReply extends Model
     public function toggleLike($user)
     {
         $like = $this->likes()->where('user_id', $user->id)->first();
-        
+
         if ($like) {
             $like->delete();
             $this->decrement('likes_count');
+
             return false; // unliked
         } else {
             $this->likes()->create(['user_id' => $user->id]);
             $this->increment('likes_count');
+
             return true; // liked
         }
     }

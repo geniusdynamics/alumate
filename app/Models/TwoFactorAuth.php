@@ -52,22 +52,26 @@ class TwoFactorAuth extends Model
 
     public function getRecoveryCodesAttribute($value)
     {
-        if (!$value) return null;
-        
+        if (! $value) {
+            return null;
+        }
+
         $codes = json_decode($value, true);
-        return array_map(function($code) {
+
+        return array_map(function ($code) {
             return Crypt::decryptString($code);
         }, $codes);
     }
 
     public function setRecoveryCodesAttribute($value)
     {
-        if (!$value) {
+        if (! $value) {
             $this->attributes['recovery_codes'] = null;
+
             return;
         }
 
-        $encrypted = array_map(function($code) {
+        $encrypted = array_map(function ($code) {
             return Crypt::encryptString($code);
         }, $value);
 
@@ -101,6 +105,7 @@ class TwoFactorAuth extends Model
         for ($i = 0; $i < $count; $i++) {
             $codes[] = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 8));
         }
+
         return $codes;
     }
 
@@ -108,35 +113,38 @@ class TwoFactorAuth extends Model
     {
         $codes = $this->recovery_codes ?? [];
         $index = array_search(strtoupper($code), array_map('strtoupper', $codes));
-        
+
         if ($index !== false) {
             unset($codes[$index]);
             $this->recovery_codes = array_values($codes);
             $this->save();
+
             return true;
         }
-        
+
         return false;
     }
 
     public function hasRecoveryCodes()
     {
-        return !empty($this->recovery_codes);
+        return ! empty($this->recovery_codes);
     }
 
     public function getQrCodeUrl($appName = null)
     {
-        if (!$this->secret) return null;
-        
+        if (! $this->secret) {
+            return null;
+        }
+
         $appName = $appName ?? config('app.name');
         $email = $this->user->email;
-        
+
         return "otpauth://totp/{$appName}:{$email}?secret={$this->secret}&issuer={$appName}";
     }
 
     public function verifyCode($code)
     {
-        if (!$this->enabled || !$this->secret) {
+        if (! $this->enabled || ! $this->secret) {
             return false;
         }
 

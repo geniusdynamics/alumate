@@ -38,7 +38,7 @@ class JobPostingFactory extends Factory
             'Customer Success Manager',
             'HR Specialist',
             'Financial Analyst',
-            'Operations Manager'
+            'Operations Manager',
         ];
 
         $skills = [
@@ -48,7 +48,7 @@ class JobPostingFactory extends Factory
             'AWS', 'Docker', 'Kubernetes', 'Git', 'CI/CD',
             'HTML', 'CSS', 'TypeScript', 'Angular', 'Flutter',
             'Machine Learning', 'Data Analysis', 'Excel', 'Tableau',
-            'Project Management', 'Agile', 'Scrum', 'Communication'
+            'Project Management', 'Agile', 'Scrum', 'Communication',
         ];
 
         $requirements = [
@@ -61,7 +61,7 @@ class JobPostingFactory extends Factory
             'Strong attention to detail',
             'Team player with leadership qualities',
             'Experience with version control systems',
-            'Knowledge of software development best practices'
+            'Knowledge of software development best practices',
         ];
 
         return [
@@ -69,7 +69,7 @@ class JobPostingFactory extends Factory
             'title' => $this->faker->randomElement($jobTitles),
             'description' => $this->generateJobDescription(),
             'requirements' => $this->faker->randomElements($requirements, $this->faker->numberBetween(3, 6)),
-            'location' => $this->faker->city() . ', ' . $this->faker->stateAbbr(),
+            'location' => $this->faker->city().', '.$this->faker->stateAbbr(),
             'salary_range' => $this->generateSalaryRange(),
             'posted_by' => User::factory(),
             'expires_at' => $this->faker->dateTimeBetween('now', '+3 months'),
@@ -88,29 +88,29 @@ class JobPostingFactory extends Factory
     {
         $descriptions = [
             "We are seeking a talented professional to join our growing team. You will be responsible for developing and maintaining high-quality software solutions that meet our clients' needs. This role offers excellent opportunities for growth and learning in a collaborative environment.",
-            
+
             "Join our innovative team and help us build the next generation of products. We're looking for someone who is passionate about technology and eager to make a meaningful impact. You'll work closely with cross-functional teams to deliver exceptional results.",
-            
-            "This is an exciting opportunity to work with cutting-edge technologies and contribute to projects that reach millions of users. We value creativity, collaboration, and continuous learning. The ideal candidate will bring fresh ideas and a strong technical background.",
-            
+
+            'This is an exciting opportunity to work with cutting-edge technologies and contribute to projects that reach millions of users. We value creativity, collaboration, and continuous learning. The ideal candidate will bring fresh ideas and a strong technical background.',
+
             "We're expanding our team and looking for a dedicated professional who thrives in a dynamic environment. You'll have the chance to work on challenging projects, mentor junior team members, and help shape our technical direction.",
-            
-            "Be part of a company that's transforming the industry through innovation and excellence. This role offers the perfect blend of technical challenges and creative problem-solving. We provide comprehensive benefits and a supportive work culture."
+
+            "Be part of a company that's transforming the industry through innovation and excellence. This role offers the perfect blend of technical challenges and creative problem-solving. We provide comprehensive benefits and a supportive work culture.",
         ];
 
-        return $this->faker->randomElement($descriptions) . "\n\n" . 
-               "Key Responsibilities:\n" .
-               "• " . implode("\n• ", $this->faker->randomElements([
-                   "Develop and maintain software applications",
-                   "Collaborate with cross-functional teams",
-                   "Participate in code reviews and technical discussions",
-                   "Write clean, maintainable, and efficient code",
-                   "Troubleshoot and debug applications",
-                   "Stay up-to-date with industry trends and technologies",
-                   "Contribute to architectural decisions",
-                   "Mentor junior developers",
-                   "Participate in agile development processes",
-                   "Ensure code quality and best practices"
+        return $this->faker->randomElement($descriptions)."\n\n".
+               "Key Responsibilities:\n".
+               '• '.implode("\n• ", $this->faker->randomElements([
+                   'Develop and maintain software applications',
+                   'Collaborate with cross-functional teams',
+                   'Participate in code reviews and technical discussions',
+                   'Write clean, maintainable, and efficient code',
+                   'Troubleshoot and debug applications',
+                   'Stay up-to-date with industry trends and technologies',
+                   'Contribute to architectural decisions',
+                   'Mentor junior developers',
+                   'Participate in agile development processes',
+                   'Ensure code quality and best practices',
                ], $this->faker->numberBetween(4, 7)));
     }
 
@@ -121,11 +121,11 @@ class JobPostingFactory extends Factory
     {
         $baseSalary = $this->faker->numberBetween(50000, 200000);
         $rangeDiff = $this->faker->numberBetween(10000, 30000);
-        
+
         $minSalary = $baseSalary;
         $maxSalary = $baseSalary + $rangeDiff;
-        
-        return '$' . number_format($minSalary) . ' - $' . number_format($maxSalary);
+
+        return '$'.number_format($minSalary).' - $'.number_format($maxSalary);
     }
 
     /**
@@ -167,12 +167,12 @@ class JobPostingFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'experience_level' => 'senior',
-            'title' => 'Senior ' . $this->faker->randomElement([
+            'title' => 'Senior '.$this->faker->randomElement([
                 'Software Engineer',
                 'Developer',
                 'Product Manager',
                 'Data Scientist',
-                'UX Designer'
+                'UX Designer',
             ]),
         ]);
     }
@@ -184,12 +184,12 @@ class JobPostingFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'experience_level' => 'entry',
-            'title' => 'Junior ' . $this->faker->randomElement([
+            'title' => 'Junior '.$this->faker->randomElement([
                 'Software Engineer',
                 'Developer',
                 'Data Analyst',
                 'UX Designer',
-                'Marketing Associate'
+                'Marketing Associate',
             ]),
         ]);
     }

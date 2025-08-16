@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Str;
 
 class UploadController extends Controller
 {
@@ -30,11 +30,11 @@ class UploadController extends Controller
             $file = $request->file('file');
             $originalName = $file->getClientOriginalName();
             $extension = $file->getClientOriginalExtension();
-            $fileName = Str::uuid() . '.' . $extension;
-            
+            $fileName = Str::uuid().'.'.$extension;
+
             // Store file
             $path = $file->storeAs('uploads', $fileName, 'public');
-            
+
             // Return file information
             return response()->json([
                 'success' => true,
@@ -76,15 +76,15 @@ class UploadController extends Controller
 
         try {
             $uploadedFiles = [];
-            
+
             foreach ($request->file('files') as $file) {
                 $originalName = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
-                $fileName = Str::uuid() . '.' . $extension;
-                
+                $fileName = Str::uuid().'.'.$extension;
+
                 // Store file
                 $path = $file->storeAs('uploads', $fileName, 'public');
-                
+
                 $uploadedFiles[] = [
                     'id' => Str::uuid(),
                     'original_name' => $originalName,
@@ -96,7 +96,7 @@ class UploadController extends Controller
                     'uploaded_at' => now(),
                 ];
             }
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $uploadedFiles,
@@ -127,10 +127,10 @@ class UploadController extends Controller
 
         try {
             $filePath = $request->input('file_path');
-            
+
             if (Storage::disk('public')->exists($filePath)) {
                 Storage::disk('public')->delete($filePath);
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'File deleted successfully',

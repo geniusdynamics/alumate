@@ -2,16 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\CustomReport;
-use App\Models\ReportExecution;
-use App\Models\Graduate;
 use App\Models\Course;
-use App\Models\Job;
-use App\Models\JobApplication;
+use App\Models\CustomReport;
 use App\Models\Employer;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use App\Models\Graduate;
+use App\Models\Job;
+use App\Models\ReportExecution;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class ReportBuilderService
 {
@@ -26,12 +24,12 @@ class ReportBuilderService
 
         try {
             $execution->markAsStarted();
-            
+
             $data = $this->generateReportData($report, $parameters);
             $filePath = $this->generateReportFile($report, $data, $parameters);
-            
+
             $execution->markAsCompleted($data, $filePath);
-            
+
             return $execution;
         } catch (\Exception $e) {
             $execution->markAsFailed($e->getMessage());
@@ -42,8 +40,8 @@ class ReportBuilderService
     public function generateReportData(CustomReport $report, array $parameters = [])
     {
         $filters = array_merge($report->filters, $parameters);
-        
-        return match($report->type) {
+
+        return match ($report->type) {
             'employment' => $this->generateEmploymentReport($filters, $report->columns),
             'course_performance' => $this->generateCoursePerformanceReport($filters, $report->columns),
             'job_market' => $this->generateJobMarketReport($filters, $report->columns),
@@ -60,17 +58,17 @@ class ReportBuilderService
         $format = $parameters['format'] ?? 'csv';
         $filename = $this->generateFilename($report, $format);
         $filePath = "reports/{$filename}";
-        
-        $content = match($format) {
+
+        $content = match ($format) {
             'csv' => $this->generateCsvContent($data),
             'excel' => $this->generateExcelContent($data),
             'pdf' => $this->generatePdfContent($report, $data),
             'json' => $this->generateJsonContent($data),
             default => $this->generateCsvContent($data),
         };
-        
+
         Storage::put($filePath, $content);
-        
+
         return $filePath;
     }
 
@@ -78,7 +76,7 @@ class ReportBuilderService
     {
         $filters = array_merge($report->filters, $parameters);
         $data = $this->generateReportData($report, $filters);
-        
+
         // Limit the data for preview
         if (isset($data['data']) && is_array($data['data'])) {
             $data['data'] = array_slice($data['data'], 0, $limit);
@@ -88,7 +86,7 @@ class ReportBuilderService
                 'is_preview' => true,
             ];
         }
-        
+
         return $data;
     }
 
@@ -96,43 +94,44 @@ class ReportBuilderService
     {
         $availableFilters = $report->getAvailableFilters($report->type);
         $errors = [];
-        
+
         foreach ($filters as $key => $value) {
-            if (!isset($availableFilters[$key])) {
+            if (! isset($availableFilters[$key])) {
                 $errors[$key] = "Invalid filter: {$key}";
+
                 continue;
             }
-            
+
             $filterConfig = $availableFilters[$key];
-            
+
             // Validate based on filter type
             switch ($filterConfig['type']) {
                 case 'date_range':
-                    if (!$this->isValidDateRange($value)) {
-                        $errors[$key] = "Invalid date range format";
+                    if (! $this->isValidDateRange($value)) {
+                        $errors[$key] = 'Invalid date range format';
                     }
                     break;
-                    
+
                 case 'number':
-                    if (!is_numeric($value)) {
-                        $errors[$key] = "Must be a number";
+                    if (! is_numeric($value)) {
+                        $errors[$key] = 'Must be a number';
                     }
                     break;
-                    
+
                 case 'select':
-                    if (!$this->isValidSelectOption($value, $filterConfig['options'])) {
-                        $errors[$key] = "Invalid option selected";
+                    if (! $this->isValidSelectOption($value, $filterConfig['options'])) {
+                        $errors[$key] = 'Invalid option selected';
                     }
                     break;
             }
         }
-        
+
         return $errors;
     }
 
     public function getFilterOptions($filterType, $optionKey)
     {
-        return match($optionKey) {
+        return match ($optionKey) {
             'courses' => Course::active()->orderBy('name')->pluck('name', 'id'),
             'graduation_years' => Graduate::distinct()->orderBy('graduation_year', 'desc')->pluck('graduation_year'),
             'salary_ranges' => $this->getSalaryRangeOptions(),
@@ -146,17 +145,17 @@ class ReportBuilderService
     private function generateEmploymentReport(array $filters, array $columns)
     {
         $query = Graduate::with(['user', 'course']);
-        
+
         // Apply filters
         $this->applyEmploymentFilters($query, $filters);
-        
+
         $graduates = $query->get();
         $totalRecords = $graduates->count();
-        
+
         $data = $graduates->map(function ($graduate) use ($columns) {
             return $this->mapGraduateToColumns($graduate, $columns);
         })->toArray();
-        
+
         return [
             'data' => $data,
             'total_records' => $totalRecords,
@@ -168,17 +167,17 @@ class ReportBuilderService
     private function generateCoursePerformanceReport(array $filters, array $columns)
     {
         $query = Course::with(['graduates']);
-        
+
         // Apply filters
         $this->applyCourseFilters($query, $filters);
-        
+
         $courses = $query->get();
         $totalRecords = $courses->count();
-        
+
         $data = $courses->map(function ($course) use ($columns) {
             return $this->mapCourseToColumns($course, $columns);
         })->toArray();
-        
+
         return [
             'data' => $data,
             'total_records' => $totalRecords,
@@ -190,17 +189,17 @@ class ReportBuilderService
     private function generateJobMarketReport(array $filters, array $columns)
     {
         $query = Job::with(['employer', 'course', 'applications']);
-        
+
         // Apply filters
         $this->applyJobFilters($query, $filters);
-        
+
         $jobs = $query->get();
         $totalRecords = $jobs->count();
-        
+
         $data = $jobs->map(function ($job) use ($columns) {
             return $this->mapJobToColumns($job, $columns);
         })->toArray();
-        
+
         return [
             'data' => $data,
             'total_records' => $totalRecords,
@@ -212,17 +211,17 @@ class ReportBuilderService
     private function generateGraduateOutcomesReport(array $filters, array $columns)
     {
         $query = Graduate::with(['user', 'course', 'applications']);
-        
+
         // Apply filters
         $this->applyEmploymentFilters($query, $filters);
-        
+
         $graduates = $query->get();
         $totalRecords = $graduates->count();
-        
+
         $data = $graduates->map(function ($graduate) use ($columns) {
             return $this->mapGraduateOutcomesToColumns($graduate, $columns);
         })->toArray();
-        
+
         return [
             'data' => $data,
             'total_records' => $totalRecords,
@@ -234,17 +233,17 @@ class ReportBuilderService
     private function generateEmployerAnalyticsReport(array $filters, array $columns)
     {
         $query = Employer::with(['jobs', 'user']);
-        
+
         // Apply filters
         $this->applyEmployerFilters($query, $filters);
-        
+
         $employers = $query->get();
         $totalRecords = $employers->count();
-        
+
         $data = $employers->map(function ($employer) use ($columns) {
             return $this->mapEmployerToColumns($employer, $columns);
         })->toArray();
-        
+
         return [
             'data' => $data,
             'total_records' => $totalRecords,
@@ -263,7 +262,7 @@ class ReportBuilderService
             'active_jobs' => Job::where('status', 'active')->count(),
             'verified_employers' => Employer::where('verification_status', 'verified')->count(),
         ];
-        
+
         return [
             'data' => [$data],
             'total_records' => 1,
@@ -288,24 +287,24 @@ class ReportBuilderService
     // Filter application methods
     private function applyEmploymentFilters($query, array $filters)
     {
-        if (!empty($filters['date_range'])) {
+        if (! empty($filters['date_range'])) {
             $dateRange = $this->parseDateRange($filters['date_range']);
             $query->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
         }
-        
-        if (!empty($filters['course_id'])) {
+
+        if (! empty($filters['course_id'])) {
             $query->where('course_id', $filters['course_id']);
         }
-        
-        if (!empty($filters['employment_status'])) {
+
+        if (! empty($filters['employment_status'])) {
             $query->where('employment_status', $filters['employment_status']);
         }
-        
-        if (!empty($filters['graduation_year'])) {
+
+        if (! empty($filters['graduation_year'])) {
             $query->where('graduation_year', $filters['graduation_year']);
         }
-        
-        if (!empty($filters['salary_range'])) {
+
+        if (! empty($filters['salary_range'])) {
             // Convert salary range to actual salary comparison
             switch ($filters['salary_range']) {
                 case 'Under $30K':
@@ -329,63 +328,63 @@ class ReportBuilderService
 
     private function applyCourseFilters($query, array $filters)
     {
-        if (!empty($filters['date_range'])) {
+        if (! empty($filters['date_range'])) {
             $dateRange = $this->parseDateRange($filters['date_range']);
             $query->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
         }
-        
-        if (!empty($filters['course_id'])) {
+
+        if (! empty($filters['course_id'])) {
             $query->where('id', $filters['course_id']);
         }
-        
-        if (!empty($filters['department'])) {
+
+        if (! empty($filters['department'])) {
             $query->where('department', $filters['department']);
         }
-        
-        if (!empty($filters['min_employment_rate'])) {
+
+        if (! empty($filters['min_employment_rate'])) {
             $query->where('employment_rate', '>=', $filters['min_employment_rate']);
         }
     }
 
     private function applyJobFilters($query, array $filters)
     {
-        if (!empty($filters['date_range'])) {
+        if (! empty($filters['date_range'])) {
             $dateRange = $this->parseDateRange($filters['date_range']);
             $query->whereBetween('created_at', [$dateRange['start'], $dateRange['end']]);
         }
-        
-        if (!empty($filters['location'])) {
-            $query->where('location', 'like', '%' . $filters['location'] . '%');
+
+        if (! empty($filters['location'])) {
+            $query->where('location', 'like', '%'.$filters['location'].'%');
         }
-        
-        if (!empty($filters['job_type'])) {
+
+        if (! empty($filters['job_type'])) {
             $query->where('job_type', $filters['job_type']);
         }
-        
-        if (!empty($filters['salary_min'])) {
+
+        if (! empty($filters['salary_min'])) {
             $query->where('salary_min', '>=', $filters['salary_min']);
         }
-        
-        if (!empty($filters['salary_max'])) {
+
+        if (! empty($filters['salary_max'])) {
             $query->where('salary_max', '<=', $filters['salary_max']);
         }
-        
-        if (!empty($filters['employer_id'])) {
+
+        if (! empty($filters['employer_id'])) {
             $query->where('employer_id', $filters['employer_id']);
         }
     }
 
     private function applyEmployerFilters($query, array $filters)
     {
-        if (!empty($filters['verification_status'])) {
+        if (! empty($filters['verification_status'])) {
             $query->where('verification_status', $filters['verification_status']);
         }
-        
-        if (!empty($filters['industry'])) {
+
+        if (! empty($filters['industry'])) {
             $query->where('industry', $filters['industry']);
         }
-        
-        if (!empty($filters['company_size'])) {
+
+        if (! empty($filters['company_size'])) {
             $query->where('company_size', $filters['company_size']);
         }
     }
@@ -394,9 +393,9 @@ class ReportBuilderService
     private function mapGraduateToColumns($graduate, array $columns)
     {
         $data = [];
-        
+
         foreach ($columns as $column) {
-            $data[$column] = match($column) {
+            $data[$column] = match ($column) {
                 'graduate_name' => $graduate->user->name,
                 'course_name' => $graduate->course->name,
                 'graduation_date' => $graduate->graduation_date,
@@ -408,7 +407,7 @@ class ReportBuilderService
                 default => null,
             };
         }
-        
+
         return $data;
     }
 
@@ -417,9 +416,9 @@ class ReportBuilderService
         $data = [];
         $employedCount = $course->graduates->where('employment_status.status', 'employed')->count();
         $totalGraduates = $course->graduates->count();
-        
+
         foreach ($columns as $column) {
-            $data[$column] = match($column) {
+            $data[$column] = match ($column) {
                 'course_name' => $course->name,
                 'total_graduates' => $totalGraduates,
                 'employed_count' => $employedCount,
@@ -430,20 +429,20 @@ class ReportBuilderService
                 default => null,
             };
         }
-        
+
         return $data;
     }
 
     private function mapJobToColumns($job, array $columns)
     {
         $data = [];
-        
+
         foreach ($columns as $column) {
-            $data[$column] = match($column) {
+            $data[$column] = match ($column) {
                 'job_title' => $job->title,
                 'company_name' => $job->employer->company_name,
                 'location' => $job->location,
-                'salary_range' => $job->salary_min && $job->salary_max ? 
+                'salary_range' => $job->salary_min && $job->salary_max ?
                     "{$job->salary_min} - {$job->salary_max}" : null,
                 'required_skills' => $job->required_skills ?? [],
                 'application_count' => $job->applications->count(),
@@ -452,16 +451,16 @@ class ReportBuilderService
                 default => null,
             };
         }
-        
+
         return $data;
     }
 
     private function mapGraduateOutcomesToColumns($graduate, array $columns)
     {
         $data = [];
-        
+
         foreach ($columns as $column) {
-            $data[$column] = match($column) {
+            $data[$column] = match ($column) {
                 'graduate_name' => $graduate->user->name,
                 'course_name' => $graduate->course->name,
                 'graduation_year' => $graduate->graduation_year,
@@ -472,16 +471,16 @@ class ReportBuilderService
                 default => null,
             };
         }
-        
+
         return $data;
     }
 
     private function mapEmployerToColumns($employer, array $columns)
     {
         $data = [];
-        
+
         foreach ($columns as $column) {
-            $data[$column] = match($column) {
+            $data[$column] = match ($column) {
                 'company_name' => $employer->company_name,
                 'industry' => $employer->industry,
                 'company_size' => $employer->company_size,
@@ -493,7 +492,7 @@ class ReportBuilderService
                 default => null,
             };
         }
-        
+
         return $data;
     }
 
@@ -503,22 +502,22 @@ class ReportBuilderService
         if (empty($data['data'])) {
             return '';
         }
-        
+
         $output = fopen('php://temp', 'r+');
-        
+
         // Write headers
         $headers = array_keys($data['data'][0]);
         fputcsv($output, $headers);
-        
+
         // Write data rows
         foreach ($data['data'] as $row) {
             fputcsv($output, $row);
         }
-        
+
         rewind($output);
         $content = stream_get_contents($output);
         fclose($output);
-        
+
         return $content;
     }
 
@@ -539,18 +538,18 @@ class ReportBuilderService
         // This would use a library like TCPDF or DOMPDF
         // For now, return a simple text representation
         $content = "Report: {$report->name}\n";
-        $content .= "Generated: " . now()->format('Y-m-d H:i:s') . "\n\n";
-        
-        if (!empty($data['summary'])) {
+        $content .= 'Generated: '.now()->format('Y-m-d H:i:s')."\n\n";
+
+        if (! empty($data['summary'])) {
             $content .= "Summary:\n";
             foreach ($data['summary'] as $key => $value) {
                 $content .= "- {$key}: {$value}\n";
             }
             $content .= "\n";
         }
-        
-        $content .= "Total Records: " . ($data['total_records'] ?? 0) . "\n";
-        
+
+        $content .= 'Total Records: '.($data['total_records'] ?? 0)."\n";
+
         return $content;
     }
 
@@ -559,19 +558,20 @@ class ReportBuilderService
     {
         $timestamp = now()->format('Y-m-d_H-i-s');
         $safeName = preg_replace('/[^A-Za-z0-9_-]/', '_', $report->name);
-        
+
         return "{$safeName}_{$timestamp}.{$format}";
     }
 
     private function isValidDateRange($value)
     {
-        if (!is_array($value) || !isset($value['start']) || !isset($value['end'])) {
+        if (! is_array($value) || ! isset($value['start']) || ! isset($value['end'])) {
             return false;
         }
-        
+
         try {
             Carbon::parse($value['start']);
             Carbon::parse($value['end']);
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -584,7 +584,7 @@ class ReportBuilderService
             // Dynamic options - would need to validate against actual data
             return true;
         }
-        
+
         return in_array($value, $options);
     }
 
@@ -612,10 +612,12 @@ class ReportBuilderService
     private function calculateOverallEmploymentRate()
     {
         $total = Graduate::count();
-        if ($total === 0) return 0;
-        
+        if ($total === 0) {
+            return 0;
+        }
+
         $employed = Graduate::where('employment_status', 'employed')->count();
-        
+
         return ($employed / $total) * 100;
     }
 
@@ -624,16 +626,16 @@ class ReportBuilderService
         $salaries = $graduates->filter(function ($graduate) {
             return isset($graduate->employment_status['salary_range']);
         });
-        
+
         if ($salaries->isEmpty()) {
             return null;
         }
-        
+
         // Convert salary ranges to midpoint values
         $salaryValues = $salaries->map(function ($graduate) {
             return $this->getSalaryMidpoint($graduate->employment_status['salary_range']);
         })->filter();
-        
+
         return $salaryValues->isEmpty() ? null : $salaryValues->average();
     }
 
@@ -648,7 +650,7 @@ class ReportBuilderService
             '75k_100k' => 87500,
             'above_100k' => 125000,
         ];
-        
+
         return $ranges[$range] ?? null;
     }
 
@@ -657,12 +659,12 @@ class ReportBuilderService
         return $graduates->filter(function ($graduate) {
             return isset($graduate->employment_status['company']);
         })
-        ->groupBy('employment_status.company')
-        ->map->count()
-        ->sortDesc()
-        ->take(5)
-        ->keys()
-        ->toArray();
+            ->groupBy('employment_status.company')
+            ->map->count()
+            ->sortDesc()
+            ->take(5)
+            ->keys()
+            ->toArray();
     }
 
     private function getCareerProgression($graduate)
@@ -680,7 +682,7 @@ class ReportBuilderService
     {
         $total = $graduates->count();
         $employed = $graduates->where('employment_status.status', 'employed')->count();
-        
+
         return [
             'total_graduates' => $total,
             'employed_count' => $employed,
@@ -695,13 +697,14 @@ class ReportBuilderService
         $avgEmploymentRate = $courses->avg(function ($course) {
             $total = $course->graduates->count();
             $employed = $course->graduates->where('employment_status.status', 'employed')->count();
+
             return $total > 0 ? ($employed / $total) * 100 : 0;
         });
-        
+
         return [
             'total_courses' => $totalCourses,
             'average_employment_rate' => $avgEmploymentRate,
-            'total_graduates' => $courses->sum(fn($course) => $course->graduates->count()),
+            'total_graduates' => $courses->sum(fn ($course) => $course->graduates->count()),
         ];
     }
 
@@ -711,7 +714,7 @@ class ReportBuilderService
             'total_jobs' => $jobs->count(),
             'active_jobs' => $jobs->where('status', 'active')->count(),
             'filled_jobs' => $jobs->where('status', 'filled')->count(),
-            'total_applications' => $jobs->sum(fn($job) => $job->applications->count()),
+            'total_applications' => $jobs->sum(fn ($job) => $job->applications->count()),
         ];
     }
 
@@ -725,7 +728,7 @@ class ReportBuilderService
         return [
             'total_employers' => $employers->count(),
             'verified_employers' => $employers->where('verification_status', 'verified')->count(),
-            'total_jobs_posted' => $employers->sum(fn($employer) => $employer->jobs->count()),
+            'total_jobs_posted' => $employers->sum(fn ($employer) => $employer->jobs->count()),
             'total_hires' => $employers->sum('total_hires'),
         ];
     }

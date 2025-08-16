@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
 use App\Models\Post;
-use App\Services\NotificationService;
+use App\Models\User;
 use App\Notifications\PostReactionNotification;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
@@ -15,14 +15,16 @@ class NotificationServiceTest extends TestCase
     use RefreshDatabase;
 
     protected NotificationService $service;
+
     protected User $user;
+
     protected User $otherUser;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->service = new NotificationService();
+
+        $this->service = new NotificationService;
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();
     }
@@ -58,7 +60,7 @@ class NotificationServiceTest extends TestCase
     public function can_mark_all_notifications_as_read()
     {
         $post = Post::factory()->create(['user_id' => $this->user->id]);
-        
+
         // Create multiple notifications
         for ($i = 0; $i < 3; $i++) {
             $notification = new PostReactionNotification($post, $this->otherUser, 'like');
@@ -76,7 +78,7 @@ class NotificationServiceTest extends TestCase
     public function can_get_unread_count()
     {
         $post = Post::factory()->create(['user_id' => $this->user->id]);
-        
+
         // Create notifications
         for ($i = 0; $i < 5; $i++) {
             $notification = new PostReactionNotification($post, $this->otherUser, 'like');
@@ -97,7 +99,7 @@ class NotificationServiceTest extends TestCase
 
         // First call should cache the result
         $count1 = $this->service->getUnreadCount($this->user);
-        
+
         // Second call should use cache
         $count2 = $this->service->getUnreadCount($this->user);
 
@@ -130,8 +132,8 @@ class NotificationServiceTest extends TestCase
             'push_enabled' => true,
             'email_frequency' => 'daily',
             'types' => [
-                'post_reaction' => ['email' => false, 'push' => true, 'database' => true]
-            ]
+                'post_reaction' => ['email' => false, 'push' => true, 'database' => true],
+            ],
         ];
 
         $this->service->updateUserPreferences($this->user, $newPreferences);
@@ -149,7 +151,7 @@ class NotificationServiceTest extends TestCase
     public function can_get_notification_stats()
     {
         $post = Post::factory()->create(['user_id' => $this->user->id]);
-        
+
         // Create notifications
         for ($i = 0; $i < 3; $i++) {
             $notification = new PostReactionNotification($post, $this->otherUser, 'like');
@@ -171,11 +173,11 @@ class NotificationServiceTest extends TestCase
     public function can_cleanup_old_notifications()
     {
         $post = Post::factory()->create(['user_id' => $this->user->id]);
-        
+
         // Create old notification
         $notification = new PostReactionNotification($post, $this->otherUser, 'like');
         $this->user->notify($notification);
-        
+
         // Manually update created_at to be old
         $this->user->notifications()->update(['created_at' => now()->subDays(100)]);
 
@@ -205,13 +207,13 @@ class NotificationServiceTest extends TestCase
         // Set preferences
         $preferences = [
             'email_enabled' => false,
-            'push_enabled' => true
+            'push_enabled' => true,
         ];
         $this->service->updateUserPreferences($this->user, $preferences);
 
         // First call should cache
         $prefs1 = $this->service->getUserPreferences($this->user);
-        
+
         // Second call should use cache
         $prefs2 = $this->service->getUserPreferences($this->user);
 
@@ -231,7 +233,7 @@ class NotificationServiceTest extends TestCase
 
         // Get count to cache it
         $this->service->getUnreadCount($this->user);
-        
+
         $cacheKey = "unread_notifications_count_{$this->user->id}";
         $this->assertTrue(Cache::has($cacheKey));
 

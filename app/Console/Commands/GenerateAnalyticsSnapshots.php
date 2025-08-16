@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Services\AnalyticsService;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 
 class GenerateAnalyticsSnapshots extends Command
 {
@@ -44,13 +44,16 @@ class GenerateAnalyticsSnapshots extends Command
                     break;
                 default:
                     $this->error("Invalid snapshot type: {$type}");
+
                     return 1;
             }
 
-            $this->info("Analytics snapshots generated successfully!");
+            $this->info('Analytics snapshots generated successfully!');
+
             return 0;
         } catch (\Exception $e) {
-            $this->error("Failed to generate snapshots: " . $e->getMessage());
+            $this->error('Failed to generate snapshots: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -61,7 +64,7 @@ class GenerateAnalyticsSnapshots extends Command
             $dates = [Carbon::parse($date)];
         } else {
             // Generate for the last 7 days if no date specified
-            $dates = collect(range(0, 6))->map(fn($i) => now()->subDays($i));
+            $dates = collect(range(0, 6))->map(fn ($i) => now()->subDays($i));
         }
 
         $bar = $this->output->createProgressBar($dates->count());
@@ -69,10 +72,11 @@ class GenerateAnalyticsSnapshots extends Command
 
         foreach ($dates as $snapshotDate) {
             $dateString = $snapshotDate->toDateString();
-            
+
             // Check if snapshot already exists
-            if (!$force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('daily', $dateString)) {
+            if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('daily', $dateString)) {
                 $bar->advance();
+
                 continue;
             }
 
@@ -90,7 +94,7 @@ class GenerateAnalyticsSnapshots extends Command
             $dates = [Carbon::parse($date)->startOfWeek()];
         } else {
             // Generate for the last 4 weeks if no date specified
-            $dates = collect(range(0, 3))->map(fn($i) => now()->subWeeks($i)->startOfWeek());
+            $dates = collect(range(0, 3))->map(fn ($i) => now()->subWeeks($i)->startOfWeek());
         }
 
         $bar = $this->output->createProgressBar($dates->count());
@@ -98,10 +102,11 @@ class GenerateAnalyticsSnapshots extends Command
 
         foreach ($dates as $snapshotDate) {
             $dateString = $snapshotDate->toDateString();
-            
+
             // Check if snapshot already exists
-            if (!$force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('weekly', $dateString)) {
+            if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('weekly', $dateString)) {
                 $bar->advance();
+
                 continue;
             }
 
@@ -119,7 +124,7 @@ class GenerateAnalyticsSnapshots extends Command
             $dates = [Carbon::parse($date)->startOfMonth()];
         } else {
             // Generate for the last 6 months if no date specified
-            $dates = collect(range(0, 5))->map(fn($i) => now()->subMonths($i)->startOfMonth());
+            $dates = collect(range(0, 5))->map(fn ($i) => now()->subMonths($i)->startOfMonth());
         }
 
         $bar = $this->output->createProgressBar($dates->count());
@@ -127,10 +132,11 @@ class GenerateAnalyticsSnapshots extends Command
 
         foreach ($dates as $snapshotDate) {
             $dateString = $snapshotDate->toDateString();
-            
+
             // Check if snapshot already exists
-            if (!$force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('monthly', $dateString)) {
+            if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('monthly', $dateString)) {
                 $bar->advance();
+
                 continue;
             }
 

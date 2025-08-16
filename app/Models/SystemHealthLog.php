@@ -55,10 +55,10 @@ class SystemHealthLog extends Model
 
     public function scopeLatestByComponent($query)
     {
-        return $query->whereIn('id', function($subQuery) {
+        return $query->whereIn('id', function ($subQuery) {
             $subQuery->selectRaw('MAX(id)')
-                    ->from('system_health_logs')
-                    ->groupBy('component');
+                ->from('system_health_logs')
+                ->groupBy('component');
         });
     }
 
@@ -108,14 +108,21 @@ class SystemHealthLog extends Model
 
     // Component constants
     public const COMPONENT_DATABASE = 'database';
+
     public const COMPONENT_CACHE = 'cache';
+
     public const COMPONENT_STORAGE = 'storage';
+
     public const COMPONENT_QUEUE = 'queue';
+
     public const COMPONENT_MEMORY = 'memory';
+
     public const COMPONENT_DISK_SPACE = 'disk_space';
 
     // Status constants
     public const STATUS_HEALTHY = 'healthy';
+
     public const STATUS_WARNING = 'warning';
+
     public const STATUS_CRITICAL = 'critical';
 }

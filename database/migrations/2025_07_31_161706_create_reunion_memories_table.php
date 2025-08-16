@@ -25,7 +25,7 @@ return new class extends Migration
             $table->datetime('memory_date')->nullable(); // When the memory took place
             $table->timestamps();
             $table->softDeletes();
-            
+
             // Indexes
             $table->index(['event_id', 'is_approved', 'visibility']);
             $table->index(['submitted_by', 'created_at']);

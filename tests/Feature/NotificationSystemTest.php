@@ -2,11 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Post;
-use App\Services\NotificationService;
+use App\Models\User;
 use App\Notifications\PostReactionNotification;
-use App\Notifications\ConnectionRequestNotification;
+use App\Services\NotificationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -16,13 +15,15 @@ class NotificationSystemTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected User $user;
+
     protected User $otherUser;
+
     protected NotificationService $notificationService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();
         $this->notificationService = app(NotificationService::class);
@@ -41,7 +42,7 @@ class NotificationSystemTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
             ])
             ->assertJsonStructure([
                 'notifications' => [
@@ -51,11 +52,11 @@ class NotificationSystemTest extends TestCase
                             'type',
                             'data',
                             'read_at',
-                            'created_at'
-                        ]
-                    ]
+                            'created_at',
+                        ],
+                    ],
                 ],
-                'unread_count'
+                'unread_count',
             ]);
     }
 
@@ -75,7 +76,7 @@ class NotificationSystemTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Notification marked as read'
+                'message' => 'Notification marked as read',
             ]);
 
         // Verify notification is marked as read
@@ -87,7 +88,7 @@ class NotificationSystemTest extends TestCase
     {
         // Create multiple notifications
         $post = Post::factory()->create(['user_id' => $this->user->id]);
-        
+
         for ($i = 0; $i < 3; $i++) {
             $notification = new PostReactionNotification($post, $this->otherUser, 'like');
             $this->user->notify($notification);
@@ -100,7 +101,7 @@ class NotificationSystemTest extends TestCase
             ->assertJson([
                 'success' => true,
                 'marked_count' => 3,
-                'unread_count' => 0
+                'unread_count' => 0,
             ]);
 
         // Verify all notifications are marked as read
@@ -112,7 +113,7 @@ class NotificationSystemTest extends TestCase
     {
         // Create notifications
         $post = Post::factory()->create(['user_id' => $this->user->id]);
-        
+
         for ($i = 0; $i < 5; $i++) {
             $notification = new PostReactionNotification($post, $this->otherUser, 'like');
             $this->user->notify($notification);
@@ -124,7 +125,7 @@ class NotificationSystemTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'unread_count' => 5
+                'unread_count' => 5,
             ]);
     }
 
@@ -136,15 +137,15 @@ class NotificationSystemTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
             ])
             ->assertJsonStructure([
                 'preferences' => [
                     'email_enabled',
                     'push_enabled',
                     'email_frequency',
-                    'types'
-                ]
+                    'types',
+                ],
             ]);
     }
 
@@ -156,8 +157,8 @@ class NotificationSystemTest extends TestCase
             'push_enabled' => true,
             'email_frequency' => 'daily',
             'types' => [
-                'post_reaction' => ['email' => false, 'push' => true, 'database' => true]
-            ]
+                'post_reaction' => ['email' => false, 'push' => true, 'database' => true],
+            ],
         ];
 
         $response = $this->actingAs($this->user)
@@ -166,7 +167,7 @@ class NotificationSystemTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Notification preferences updated successfully'
+                'message' => 'Notification preferences updated successfully',
             ]);
 
         // Verify preferences were saved
@@ -191,7 +192,7 @@ class NotificationSystemTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Notification deleted successfully'
+                'message' => 'Notification deleted successfully',
             ]);
 
         // Verify notification was deleted
@@ -203,7 +204,7 @@ class NotificationSystemTest extends TestCase
     {
         // Create various notifications
         $post = Post::factory()->create(['user_id' => $this->user->id]);
-        
+
         // Create some read and unread notifications
         for ($i = 0; $i < 3; $i++) {
             $notification = new PostReactionNotification($post, $this->otherUser, 'like');
@@ -218,15 +219,15 @@ class NotificationSystemTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
             ])
             ->assertJsonStructure([
                 'stats' => [
                     'total',
                     'unread',
                     'read',
-                    'by_type'
-                ]
+                    'by_type',
+                ],
             ]);
 
         $stats = $response->json('stats');
@@ -257,9 +258,9 @@ class NotificationSystemTest extends TestCase
                 'email_enabled' => false,
                 'push_enabled' => true,
                 'types' => [
-                    'post_reaction' => ['email' => false, 'push' => true, 'database' => true]
-                ]
-            ]
+                    'post_reaction' => ['email' => false, 'push' => true, 'database' => true],
+                ],
+            ],
         ]);
 
         $preferences = $this->notificationService->getUserPreferences($this->user);

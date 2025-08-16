@@ -2,10 +2,10 @@
 
 namespace Tests\Unit\Services;
 
-use App\Models\Group;
-use App\Models\User;
-use App\Models\Tenant;
 use App\Models\EducationHistory;
+use App\Models\Group;
+use App\Models\Tenant;
+use App\Models\User;
 use App\Services\GroupManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -19,7 +19,7 @@ class GroupManagerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->groupManager = new GroupManager();
+        $this->groupManager = new GroupManager;
     }
 
     public function test_creates_group_with_creator_as_admin()
@@ -42,7 +42,7 @@ class GroupManagerTest extends TestCase
         $this->assertEquals('Test Group', $group->name);
         $this->assertEquals($creator->id, $group->creator_id);
         $this->assertEquals(1, $group->member_count);
-        
+
         // Creator should be admin
         $this->assertTrue($group->isAdmin($creator));
     }
@@ -54,10 +54,10 @@ class GroupManagerTest extends TestCase
             'type' => 'school',
             'institution_id' => $tenant->id,
         ]);
-        
+
         $inviter = User::factory()->create();
         $user = User::factory()->create();
-        
+
         // Create education history for the user at this institution
         EducationHistory::factory()->create([
             'graduate_id' => $user->id,
@@ -78,9 +78,9 @@ class GroupManagerTest extends TestCase
             'privacy' => 'public',
             'institution_id' => $tenant->id,
         ]);
-        
+
         $user = User::factory()->create();
-        
+
         // Create education history
         EducationHistory::factory()->create([
             'graduate_id' => $user->id,
@@ -101,7 +101,7 @@ class GroupManagerTest extends TestCase
         $result = $this->groupManager->processJoinRequest($group, $user);
 
         $this->assertTrue($result);
-        
+
         // User should be added as pending member
         $membership = $group->users()->where('user_id', $user->id)->first();
         $this->assertEquals('pending', $membership->pivot->status);
@@ -115,7 +115,7 @@ class GroupManagerTest extends TestCase
         $result = $this->groupManager->processJoinRequest($group, $user);
 
         $this->assertTrue($result);
-        
+
         // User should be added as active member
         $membership = $group->users()->where('user_id', $user->id)->first();
         $this->assertEquals('active', $membership->pivot->status);
@@ -137,7 +137,7 @@ class GroupManagerTest extends TestCase
         $result = $this->groupManager->approveMember($group, $user, $admin);
 
         $this->assertTrue($result);
-        
+
         $membership = $group->users()->where('user_id', $user->id)->first();
         $this->assertEquals('active', $membership->pivot->status);
     }
@@ -173,7 +173,7 @@ class GroupManagerTest extends TestCase
         $result = $this->groupManager->updateMemberRole($group, $member, 'moderator', $admin);
 
         $this->assertTrue($result);
-        
+
         $membership = $group->users()->where('user_id', $member->id)->first();
         $this->assertEquals('moderator', $membership->pivot->role);
     }
@@ -196,7 +196,7 @@ class GroupManagerTest extends TestCase
     {
         $tenant = Tenant::factory()->create(['name' => 'Test University']);
         $user = User::factory()->create();
-        
+
         // Create education history
         EducationHistory::factory()->create([
             'graduate_id' => $user->id,
@@ -209,7 +209,7 @@ class GroupManagerTest extends TestCase
             'privacy' => 'public',
             'institution_id' => $tenant->id,
         ]);
-        
+
         $interestGroup = Group::factory()->create([
             'type' => 'interest',
             'privacy' => 'public',

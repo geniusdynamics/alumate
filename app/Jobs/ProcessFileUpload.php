@@ -7,21 +7,23 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProcessFileUpload implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected $filePath;
+
     protected $originalName;
+
     protected $userId;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(string $filePath, string $originalName, int $userId = null)
+    public function __construct(string $filePath, string $originalName, ?int $userId = null)
     {
         $this->filePath = $filePath;
         $this->originalName = $originalName;
@@ -55,7 +57,7 @@ class ProcessFileUpload implements ShouldQueue
     protected function processFile(): void
     {
         // Check if file exists
-        if (!Storage::disk('public')->exists($this->filePath)) {
+        if (! Storage::disk('public')->exists($this->filePath)) {
             throw new \Exception("File not found: {$this->filePath}");
         }
 
@@ -119,7 +121,7 @@ class ProcessFileUpload implements ShouldQueue
     public function failed(\Throwable $exception): void
     {
         Log::error("File processing job failed: {$exception->getMessage()}");
-        
+
         // Notify user of failure
         // Clean up any temporary files
         // Update file status in database

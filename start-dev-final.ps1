@@ -91,9 +91,9 @@ $laravelRunning = $false
 
 # Check Vite
 try {
-    $viteResponse = Invoke-WebRequest -Uri "http://localhost:5173" -TimeoutSec 5 -ErrorAction Stop
+    $viteResponse = Invoke-WebRequest -Uri "http://localhost:5100" -TimeoutSec 5 -ErrorAction Stop
     $viteRunning = $true
-    Write-Host "✅ Vite Dev Server: http://localhost:5173" -ForegroundColor Green
+    Write-Host "✅ Vite Dev Server: http://localhost:5100" -ForegroundColor Green
 } catch {
     Write-Host "⚠️  Vite Dev Server: Starting..." -ForegroundColor Yellow
 }

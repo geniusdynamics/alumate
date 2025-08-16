@@ -2,563 +2,499 @@
 
 namespace App\Services;
 
-use App\Models\AnalyticsSnapshot;
-use App\Models\KpiDefinition;
-use App\Models\KpiValue;
-use App\Models\PredictionModel;
-use App\Models\Graduate;
-use App\Models\Course;
-use App\Models\Job;
-use App\Models\JobApplication;
-use App\Models\Employer;
+use App\Models\User;
+use App\Models\Post;
+use App\Models\Connection;
+use App\Models\Event;
+use App\Models\Group;
+use App\Models\Circle;
+use App\Models\PostEngagement;
+use App\Models\EventAttendance;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 
 class AnalyticsService
 {
-    public function generateDailySnapshot($date = null)
+    /**
+     * Get engagement metrics for the dashboard
+     */
+    public function getEngagementMetrics(array $filters = []): array
     {
-        $date = $date ?? now()->toDateString();
+        $dateRange = $this->getDateRange($filters);
+        $cacheKey = 'engagement_metrics_' . md5(serialize($filters));
         
-        $data = [
-            'overview' => $this->getOverviewMetrics($date),
-            'employment' => $this->getEmploymentMetrics($date),
-            'courses' => $this->getCourseMetrics($date),
-            'jobs' => $this->getJobMetrics($date),
-            'applications' => $this->getApplicationMetrics($date),
-            'employers' => $this->getEmployerMetrics($date),
-        ];
-
-        return AnalyticsSnapshot::updateOrCreate(
-            ['type' => 'daily', 'snapshot_date' => $date],
-            ['data' => $data, 'metadata' => ['generated_at' => now()]]
-        );
-    }
-
-    public function generateWeeklySnapshot($date = null)
-    {
-        $date = $date ?? now()->startOfWeek()->toDateString();
-        $endDate = Carbon::parse($date)->endOfWeek();
-        
-        $data = [
-            'period' => ['start' => $date, 'end' => $endDate->toDateString()],
-            'trends' => $this->getWeeklyTrends($date, $endDate),
-            'performance' => $this->getWeeklyPerformance($date, $endDate),
-            'comparisons' => $this->getWeeklyComparisons($date, $endDate),
-        ];
-
-        return AnalyticsSnapshot::updateOrCreate(
-            ['type' => 'weekly', 'snapshot_date' => $date],
-            ['data' => $data, 'metadata' => ['generated_at' => now()]]
-        );
-    }
-
-    public function generateMonthlySnapshot($date = null)
-    {
-        $date = $date ?? now()->startOfMonth()->toDateString();
-        $endDate = Carbon::parse($date)->endOfMonth();
-        
-        $data = [
-            'period' => ['start' => $date, 'end' => $endDate->toDateString()],
-            'summary' => $this->getMonthlySummary($date, $endDate),
-            'achievements' => $this->getMonthlyAchievements($date, $endDate),
-            'forecasts' => $this->getMonthlyForecasts($date, $endDate),
-        ];
-
-        return AnalyticsSnapshot::updateOrCreate(
-            ['type' => 'monthly', 'snapshot_date' => $date],
-            ['data' => $data, 'metadata' => ['generated_at' => now()]]
-        );
-    }
-
-    public function calculateKpiValues($date = null)
-    {
-        $date = $date ?? now()->toDateString();
-        
-        $kpis = KpiDefinition::active()->get();
-        $results = [];
-        
-        foreach ($kpis as $kpi) {
-            try {
-                $value = $kpi->calculateValue($date);
-                
-                KpiValue::updateOrCreate(
-                    ['kpi_definition_id' => $kpi->id, 'measurement_date' => $date],
-                    [
-                        'value' => $value,
-                        'breakdown' => $this->getKpiBreakdown($kpi, $date),
-                        'metadata' => ['calculated_at' => now()],
-                    ]
-                );
-                
-                $results[$kpi->key] = $value;
-            } catch (\Exception $e) {
-                \Log::error("Failed to calculate KPI {$kpi->key}: " . $e->getMessage());
-            }
-        }
-        
-        return $results;
-    }
-
-    public function getAnalyticsDashboard($timeframe = '30_days')
-    {
-        $cacheKey = "analytics_dashboard_{$timeframe}";
-        
-        return Cache::remember($cacheKey, 300, function () use ($timeframe) {
-            $period = $this->parsePeriod($timeframe);
-            
+        return Cache::remember($cacheKey, 300, function () use ($dateRange) {
             return [
-                'overview' => $this->getDashboardOverview($period),
-                'kpis' => $this->getDashboardKpis($period),
-                'trends' => $this->getDashboardTrends($period),
-                'predictions' => $this->getDashboardPredictions(),
-                'alerts' => $this->getDashboardAlerts(),
-                'charts' => $this->getDashboardCharts($period),
+                'total_users' => $this->getTotalUsers($dateRange),
+                'active_users' => $this->getActiveUsers($dateRange),
+                'new_users' => $this->getNewUsers($dateRange),
+                'posts_created' => $this->getPostsCreated($dateRange),
+                'engagement_rate' => $this->getEngagementRate($dateRange),
+                'connections_made' => $this->getConnectionsMade($dateRange),
+                'events_attended' => $this->getEventsAttended($dateRange),
+                'user_retention' => $this->getUserRetention($dateRange),
             ];
         });
     }
 
-    public function getEmploymentAnalytics($filters = [])
+    /**
+     * Get alumni activity tracking data
+     */
+    public function getAlumniActivity(array $filters = []): array
     {
-        $query = Graduate::with(['course', 'user']);
-        
-        // Apply filters
-        if (!empty($filters['course_id'])) {
-            $query->where('course_id', $filters['course_id']);
-        }
-        
-        if (!empty($filters['graduation_year'])) {
-            $query->where('graduation_year', $filters['graduation_year']);
-        }
-        
-        if (!empty($filters['employment_status'])) {
-            $query->where('employment_status', $filters['employment_status']);
-        }
-        
-        $graduates = $query->get();
+        $dateRange = $this->getDateRange($filters);
         
         return [
-            'summary' => $this->getEmploymentSummary($graduates),
-            'by_course' => $this->getEmploymentByCourse($graduates),
-            'by_year' => $this->getEmploymentByYear($graduates),
-            'salary_analysis' => $this->getSalaryAnalysis($graduates),
-            'time_to_employment' => $this->getTimeToEmploymentAnalysis($graduates),
-            'top_employers' => $this->getTopEmployers($graduates),
-            'skills_demand' => $this->getSkillsDemandAnalysis($graduates),
+            'daily_active_users' => $this->getDailyActiveUsers($dateRange),
+            'post_activity' => $this->getPostActivity($dateRange),
+            'engagement_trends' => $this->getEngagementTrends($dateRange),
+            'feature_usage' => $this->getFeatureUsage($dateRange),
+            'geographic_distribution' => $this->getGeographicDistribution($filters),
+            'graduation_year_activity' => $this->getGraduationYearActivity($dateRange),
         ];
     }
 
-    public function getCourseAnalytics($courseId = null)
+    /**
+     * Get community health indicators
+     */
+    public function getCommunityHealth(array $filters = []): array
     {
-        $query = Course::with(['graduates']);
-        
-        if ($courseId) {
-            $query->where('id', $courseId);
-        }
-        
-        $courses = $query->get();
+        $dateRange = $this->getDateRange($filters);
         
         return [
-            'performance' => $this->getCoursePerformanceAnalysis($courses),
-            'outcomes' => $this->getCourseOutcomeAnalysis($courses),
-            'job_matching' => $this->getCourseJobMatchingAnalysis($courses),
-            'skills_alignment' => $this->getCourseSkillsAlignment($courses),
-            'industry_trends' => $this->getCourseIndustryTrends($courses),
+            'network_density' => $this->getNetworkDensity(),
+            'group_participation' => $this->getGroupParticipation($dateRange),
+            'circle_engagement' => $this->getCircleEngagement($dateRange),
+            'content_quality_score' => $this->getContentQualityScore($dateRange),
+            'user_satisfaction' => $this->getUserSatisfactionMetrics($dateRange),
+            'platform_growth_rate' => $this->getPlatformGrowthRate($dateRange),
         ];
     }
 
-    public function getJobMarketAnalytics($filters = [])
+    /**
+     * Get platform usage statistics
+     */
+    public function getPlatformUsage(array $filters = []): array
     {
-        $query = Job::with(['employer', 'course', 'applications']);
-        
-        // Apply filters
-        if (!empty($filters['location'])) {
-            $query->where('location', 'like', '%' . $filters['location'] . '%');
-        }
-        
-        if (!empty($filters['job_type'])) {
-            $query->where('job_type', $filters['job_type']);
-        }
-        
-        if (!empty($filters['salary_range'])) {
-            $query->whereBetween('salary_min', $filters['salary_range']);
-        }
-        
-        $jobs = $query->get();
+        $dateRange = $this->getDateRange($filters);
         
         return [
-            'market_overview' => $this->getJobMarketOverview($jobs),
-            'demand_analysis' => $this->getJobDemandAnalysis($jobs),
-            'salary_trends' => $this->getJobSalaryTrends($jobs),
-            'location_analysis' => $this->getJobLocationAnalysis($jobs),
-            'skills_demand' => $this->getJobSkillsDemand($jobs),
-            'employer_analysis' => $this->getJobEmployerAnalysis($jobs),
-            'application_success' => $this->getApplicationSuccessAnalysis($jobs),
+            'page_views' => $this->getPageViews($dateRange),
+            'session_duration' => $this->getSessionDuration($dateRange),
+            'bounce_rate' => $this->getBounceRate($dateRange),
+            'device_breakdown' => $this->getDeviceBreakdown($dateRange),
+            'browser_breakdown' => $this->getBrowserBreakdown($dateRange),
+            'peak_usage_times' => $this->getPeakUsageTimes($dateRange),
+            'feature_adoption' => $this->getFeatureAdoption($dateRange),
         ];
     }
 
-    public function generatePredictiveAnalytics()
+    /**
+     * Generate custom report data
+     */
+    public function generateCustomReport(array $metrics, array $filters = []): array
     {
-        $models = PredictionModel::active()->get();
-        $results = [];
+        $dateRange = $this->getDateRange($filters);
+        $report = [];
         
-        foreach ($models as $model) {
-            try {
-                if ($model->needsRetraining()) {
-                    $model->train();
-                }
-                
-                $predictions = $this->generateModelPredictions($model);
-                $results[$model->type] = $predictions;
-            } catch (\Exception $e) {
-                \Log::error("Failed to generate predictions for model {$model->id}: " . $e->getMessage());
-            }
+        foreach ($metrics as $metric) {
+            $report[$metric] = $this->getMetricData($metric, $dateRange, $filters);
         }
         
-        return $results;
+        return [
+            'report_data' => $report,
+            'generated_at' => now(),
+            'filters_applied' => $filters,
+            'date_range' => $dateRange,
+        ];
     }
 
-    public function exportAnalyticsData($type, $filters = [], $format = 'csv')
+    /**
+     * Export analytics data
+     */
+    public function exportData(array $data, string $format = 'csv'): string
     {
-        $data = match($type) {
-            'employment' => $this->getEmploymentAnalytics($filters),
-            'courses' => $this->getCourseAnalytics(),
-            'job_market' => $this->getJobMarketAnalytics($filters),
-            'kpis' => $this->getKpiExportData($filters),
-            default => [],
-        };
-        
-        return $this->formatExportData($data, $format);
+        switch ($format) {
+            case 'csv':
+                return $this->exportToCsv($data);
+            case 'json':
+                return json_encode($data, JSON_PRETTY_PRINT);
+            case 'xlsx':
+                return $this->exportToExcel($data);
+            default:
+                throw new \InvalidArgumentException("Unsupported export format: {$format}");
+        }
     }
 
     // Private helper methods
-    private function getOverviewMetrics($date)
-    {
-        return [
-            'total_graduates' => Graduate::whereDate('created_at', '<=', $date)->count(),
-            'employed_graduates' => Graduate::where('employment_status', 'employed')
-                ->whereDate('created_at', '<=', $date)->count(),
-            'active_jobs' => Job::where('status', 'active')
-                ->whereDate('created_at', '<=', $date)->count(),
-            'total_applications' => JobApplication::whereDate('created_at', '<=', $date)->count(),
-            'verified_employers' => Employer::where('verification_status', 'verified')
-                ->whereDate('created_at', '<=', $date)->count(),
-        ];
-    }
 
-    private function getEmploymentMetrics($date)
+    private function getDateRange(array $filters): array
     {
-        $graduates = Graduate::whereDate('created_at', '<=', $date)->get();
-        $total = $graduates->count();
-        
-        if ($total === 0) {
-            return ['employment_rate' => 0, 'by_status' => []];
-        }
-        
-        $byStatus = $graduates->groupBy('employment_status.status')
-            ->map->count();
-        
-        return [
-            'employment_rate' => ($byStatus['employed'] ?? 0) / $total * 100,
-            'by_status' => $byStatus,
-            'avg_time_to_employment' => $this->calculateAverageTimeToEmployment($graduates),
-        ];
-    }
-
-    private function getCourseMetrics($date)
-    {
-        return Course::withCount([
-            'graduates' => function ($query) use ($date) {
-                $query->whereDate('created_at', '<=', $date);
-            },
-            'graduates as employed_count' => function ($query) use ($date) {
-                $query->whereDate('created_at', '<=', $date)
-                    ->where('employment_status', 'employed');
-            }
-        ])
-        ->get()
-        ->map(function ($course) {
-            return [
-                'id' => $course->id,
-                'name' => $course->name,
-                'graduates_count' => $course->graduates_count,
-                'employment_rate' => $course->graduates_count > 0 ? 
-                    ($course->employed_count / $course->graduates_count) * 100 : 0,
-            ];
-        });
-    }
-
-    private function getJobMetrics($date)
-    {
-        return [
-            'total_jobs' => Job::whereDate('created_at', '<=', $date)->count(),
-            'active_jobs' => Job::where('status', 'active')
-                ->whereDate('created_at', '<=', $date)->count(),
-            'filled_jobs' => Job::where('status', 'filled')
-                ->whereDate('created_at', '<=', $date)->count(),
-            'avg_applications_per_job' => Job::whereDate('created_at', '<=', $date)
-                ->withCount('applications')
-                ->avg('applications_count') ?? 0,
-        ];
-    }
-
-    private function getApplicationMetrics($date)
-    {
-        $applications = JobApplication::whereDate('created_at', '<=', $date);
-        
-        return [
-            'total_applications' => $applications->count(),
-            'by_status' => $applications->get()->groupBy('status')->map->count(),
-            'success_rate' => $this->calculateApplicationSuccessRate($applications->get()),
-        ];
-    }
-
-    private function getEmployerMetrics($date)
-    {
-        return [
-            'total_employers' => Employer::whereDate('created_at', '<=', $date)->count(),
-            'verified_employers' => Employer::where('verification_status', 'verified')
-                ->whereDate('created_at', '<=', $date)->count(),
-            'pending_verification' => Employer::where('verification_status', 'pending')
-                ->whereDate('created_at', '<=', $date)->count(),
-        ];
-    }
-
-    private function getKpiBreakdown($kpi, $date)
-    {
-        // Generate detailed breakdown for KPI value
-        return match($kpi->key) {
-            'employment_rate' => $this->getEmploymentRateBreakdown($date),
-            'job_placement_rate' => $this->getJobPlacementRateBreakdown($date),
-            default => [],
-        };
-    }
-
-    private function getEmploymentRateBreakdown($date)
-    {
-        return Graduate::whereDate('created_at', '<=', $date)
-            ->with('course')
-            ->get()
-            ->groupBy('course.name')
-            ->map(function ($graduates) {
-                $total = $graduates->count();
-                $employed = $graduates->where('employment_status.status', 'employed')->count();
-                
-                return [
-                    'total' => $total,
-                    'employed' => $employed,
-                    'rate' => $total > 0 ? ($employed / $total) * 100 : 0,
-                ];
-            });
-    }
-
-    private function getJobPlacementRateBreakdown($date)
-    {
-        return JobApplication::whereDate('created_at', '<=', $date)
-            ->with('job.course')
-            ->get()
-            ->groupBy('job.course.name')
-            ->map(function ($applications) {
-                $total = $applications->count();
-                $hired = $applications->where('status', 'hired')->count();
-                
-                return [
-                    'total' => $total,
-                    'hired' => $hired,
-                    'rate' => $total > 0 ? ($hired / $total) * 100 : 0,
-                ];
-            });
-    }
-
-    private function parsePeriod($timeframe)
-    {
-        return match($timeframe) {
-            '7_days' => ['start' => now()->subDays(7), 'end' => now()],
-            '30_days' => ['start' => now()->subDays(30), 'end' => now()],
-            '90_days' => ['start' => now()->subDays(90), 'end' => now()],
-            '1_year' => ['start' => now()->subYear(), 'end' => now()],
-            default => ['start' => now()->subDays(30), 'end' => now()],
-        };
-    }
-
-    private function getDashboardOverview($period)
-    {
-        return [
-            'graduates' => Graduate::whereBetween('created_at', [$period['start'], $period['end']])->count(),
-            'jobs' => Job::whereBetween('created_at', [$period['start'], $period['end']])->count(),
-            'applications' => JobApplication::whereBetween('created_at', [$period['start'], $period['end']])->count(),
-            'employment_rate' => $this->calculateEmploymentRate($period),
-        ];
-    }
-
-    private function getDashboardKpis($period)
-    {
-        return KpiDefinition::active()
-            ->with(['latestValue'])
-            ->get()
-            ->map(function ($kpi) {
-                return [
-                    'key' => $kpi->key,
-                    'name' => $kpi->name,
-                    'value' => $kpi->getLatestValue(),
-                    'formatted_value' => $kpi->latestValue?->getFormattedValue(),
-                    'status' => $kpi->getStatus(),
-                    'trend' => $kpi->latestValue?->getTrendDirection(),
-                ];
-            });
-    }
-
-    private function getDashboardTrends($period)
-    {
-        return [
-            'employment' => $this->getEmploymentTrend($period),
-            'applications' => $this->getApplicationTrend($period),
-            'job_postings' => $this->getJobPostingTrend($period),
-        ];
-    }
-
-    private function getDashboardPredictions()
-    {
-        return PredictionModel::active()
-            ->with(['predictions' => function ($query) {
-                $query->recent(7)->orderBy('prediction_score', 'desc')->limit(5);
-            }])
-            ->get()
-            ->map(function ($model) {
-                return [
-                    'type' => $model->type,
-                    'name' => $model->name,
-                    'accuracy' => $model->getFormattedAccuracy(),
-                    'recent_predictions' => $model->predictions->map(function ($prediction) {
-                        return [
-                            'score' => $prediction->getFormattedScore(),
-                            'confidence' => $prediction->getConfidenceLevel(),
-                            'subject' => $prediction->subject_type,
-                        ];
-                    }),
-                ];
-            });
-    }
-
-    private function getDashboardAlerts()
-    {
-        // Get recent alerts or generate new ones based on KPI thresholds
-        $alerts = [];
-        
-        $kpis = KpiDefinition::active()->with('latestValue')->get();
-        
-        foreach ($kpis as $kpi) {
-            if ($kpi->isInWarningZone()) {
-                $alerts[] = [
-                    'type' => 'kpi_warning',
-                    'title' => "KPI Warning: {$kpi->name}",
-                    'message' => "Current value is below warning threshold",
-                    'severity' => 'warning',
-                    'data' => [
-                        'kpi' => $kpi->key,
-                        'current_value' => $kpi->getLatestValue(),
-                        'threshold' => $kpi->warning_threshold,
-                    ],
-                ];
-            }
-        }
-        
-        return $alerts;
-    }
-
-    private function getDashboardCharts($period)
-    {
-        return [
-            'employment_trend' => $this->getEmploymentTrendChart($period),
-            'course_performance' => $this->getCoursePerformanceChart(),
-            'job_market_activity' => $this->getJobMarketActivityChart($period),
-            'application_funnel' => $this->getApplicationFunnelChart($period),
-        ];
-    }
-
-    // Additional helper methods would continue here...
-    // For brevity, I'll include a few key ones
-
-    private function calculateEmploymentRate($period)
-    {
-        $graduates = Graduate::whereBetween('created_at', [$period['start'], $period['end']])->get();
-        $total = $graduates->count();
-        
-        if ($total === 0) {
-            return 0;
-        }
-        
-        $employed = $graduates->where('employment_status.status', 'employed')->count();
-        
-        return ($employed / $total) * 100;
-    }
-
-    private function calculateAverageTimeToEmployment($graduates)
-    {
-        $employedGraduates = $graduates->filter(function ($graduate) {
-            return $graduate->employment_status['status'] === 'employed' &&
-                   isset($graduate->employment_status['start_date']);
-        });
-        
-        if ($employedGraduates->isEmpty()) {
-            return 0;
-        }
-        
-        $totalDays = $employedGraduates->sum(function ($graduate) {
-            $graduationDate = Carbon::parse($graduate->graduation_date);
-            $employmentDate = Carbon::parse($graduate->employment_status['start_date']);
+        $startDate = isset($filters['start_date']) 
+            ? Carbon::parse($filters['start_date']) 
+            : Carbon::now()->subDays(30);
             
-            return $graduationDate->diffInDays($employmentDate);
-        });
-        
-        return $totalDays / $employedGraduates->count();
+        $endDate = isset($filters['end_date']) 
+            ? Carbon::parse($filters['end_date']) 
+            : Carbon::now();
+            
+        return [$startDate, $endDate];
     }
 
-    private function calculateApplicationSuccessRate($applications)
+    private function getTotalUsers(array $dateRange): int
     {
-        $total = $applications->count();
+        return User::whereBetween('created_at', $dateRange)->count();
+    }
+
+    private function getActiveUsers(array $dateRange): int
+    {
+        return User::whereHas('posts', function ($query) use ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        })->orWhereHas('postEngagements', function ($query) use ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        })->distinct()->count();
+    }
+
+    private function getNewUsers(array $dateRange): int
+    {
+        return User::whereBetween('created_at', $dateRange)->count();
+    }
+
+    private function getPostsCreated(array $dateRange): int
+    {
+        return Post::whereBetween('created_at', $dateRange)->count();
+    }
+
+    private function getEngagementRate(array $dateRange): float
+    {
+        $totalPosts = Post::whereBetween('created_at', $dateRange)->count();
+        $totalEngagements = PostEngagement::whereBetween('created_at', $dateRange)->count();
         
-        if ($total === 0) {
+        return $totalPosts > 0 ? ($totalEngagements / $totalPosts) * 100 : 0;
+    }
+
+    private function getConnectionsMade(array $dateRange): int
+    {
+        return Connection::where('status', 'accepted')
+            ->whereBetween('connected_at', $dateRange)
+            ->count();
+    }
+
+    private function getEventsAttended(array $dateRange): int
+    {
+        return EventAttendance::whereBetween('created_at', $dateRange)->count();
+    }
+
+    private function getUserRetention(array $dateRange): array
+    {
+        // Calculate 7-day, 30-day retention rates
+        $sevenDayRetention = $this->calculateRetentionRate(7, $dateRange);
+        $thirtyDayRetention = $this->calculateRetentionRate(30, $dateRange);
+        
+        return [
+            '7_day' => $sevenDayRetention,
+            '30_day' => $thirtyDayRetention,
+        ];
+    }
+
+    private function calculateRetentionRate(int $days, array $dateRange): float
+    {
+        $startDate = $dateRange[0];
+        $cohortUsers = User::whereDate('created_at', $startDate)->pluck('id');
+        
+        if ($cohortUsers->isEmpty()) {
             return 0;
         }
         
-        $successful = $applications->where('status', 'hired')->count();
-        
-        return ($successful / $total) * 100;
+        $returnedUsers = User::whereIn('id', $cohortUsers)
+            ->whereHas('posts', function ($query) use ($startDate, $days) {
+                $query->whereBetween('created_at', [
+                    $startDate->copy()->addDays($days),
+                    $startDate->copy()->addDays($days + 1)
+                ]);
+            })
+            ->count();
+            
+        return ($returnedUsers / $cohortUsers->count()) * 100;
     }
 
-    private function formatExportData($data, $format)
+    private function getDailyActiveUsers(array $dateRange): array
     {
-        return match($format) {
-            'csv' => $this->formatAsCsv($data),
-            'excel' => $this->formatAsExcel($data),
-            'json' => $this->formatAsJson($data),
-            'pdf' => $this->formatAsPdf($data),
-            default => $data,
+        return DB::table('users')
+            ->select(DB::raw('DATE(last_activity_at) as date'), DB::raw('COUNT(*) as count'))
+            ->whereBetween('last_activity_at', $dateRange)
+            ->groupBy(DB::raw('DATE(last_activity_at)'))
+            ->orderBy('date')
+            ->get()
+            ->toArray();
+    }
+
+    private function getPostActivity(array $dateRange): array
+    {
+        return Post::select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+            ->whereBetween('created_at', $dateRange)
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy('date')
+            ->get()
+            ->toArray();
+    }
+
+    private function getEngagementTrends(array $dateRange): array
+    {
+        return PostEngagement::select(
+            DB::raw('DATE(created_at) as date'),
+            'type',
+            DB::raw('COUNT(*) as count')
+        )
+        ->whereBetween('created_at', $dateRange)
+        ->groupBy(DB::raw('DATE(created_at)'), 'type')
+        ->orderBy('date')
+        ->get()
+        ->groupBy('date')
+        ->toArray();
+    }
+
+    private function getFeatureUsage(array $dateRange): array
+    {
+        // Track usage of different platform features
+        return [
+            'timeline_views' => $this->getFeatureUsageCount('timeline_view', $dateRange),
+            'directory_searches' => $this->getFeatureUsageCount('directory_search', $dateRange),
+            'job_views' => $this->getFeatureUsageCount('job_view', $dateRange),
+            'event_views' => $this->getFeatureUsageCount('event_view', $dateRange),
+            'profile_views' => $this->getFeatureUsageCount('profile_view', $dateRange),
+        ];
+    }
+
+    private function getFeatureUsageCount(string $feature, array $dateRange): int
+    {
+        // This would integrate with your analytics tracking system
+        // For now, return mock data
+        return rand(100, 1000);
+    }
+
+    private function getGeographicDistribution(array $filters): array
+    {
+        return User::select('location', DB::raw('COUNT(*) as count'))
+            ->whereNotNull('location')
+            ->groupBy('location')
+            ->orderByDesc('count')
+            ->limit(20)
+            ->get()
+            ->toArray();
+    }
+
+    private function getGraduationYearActivity(array $dateRange): array
+    {
+        return DB::table('users')
+            ->join('educations', 'users.id', '=', 'educations.user_id')
+            ->select('educations.graduation_year', DB::raw('COUNT(DISTINCT users.id) as count'))
+            ->whereBetween('users.last_activity_at', $dateRange)
+            ->groupBy('educations.graduation_year')
+            ->orderBy('educations.graduation_year')
+            ->get()
+            ->toArray();
+    }
+
+    private function getNetworkDensity(): float
+    {
+        $totalUsers = User::count();
+        $totalConnections = Connection::where('status', 'accepted')->count();
+        $maxPossibleConnections = ($totalUsers * ($totalUsers - 1)) / 2;
+        
+        return $maxPossibleConnections > 0 ? ($totalConnections / $maxPossibleConnections) * 100 : 0;
+    }
+
+    private function getGroupParticipation(array $dateRange): array
+    {
+        return Group::withCount(['members', 'posts' => function ($query) use ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }])
+        ->orderByDesc('posts_count')
+        ->limit(10)
+        ->get()
+        ->toArray();
+    }
+
+    private function getCircleEngagement(array $dateRange): array
+    {
+        return Circle::withCount(['members', 'posts' => function ($query) use ($dateRange) {
+            $query->whereBetween('created_at', $dateRange);
+        }])
+        ->orderByDesc('posts_count')
+        ->limit(10)
+        ->get()
+        ->toArray();
+    }
+
+    private function getContentQualityScore(array $dateRange): float
+    {
+        // Calculate based on engagement rates, comment quality, etc.
+        $posts = Post::whereBetween('created_at', $dateRange)->get();
+        $totalScore = 0;
+        
+        foreach ($posts as $post) {
+            $engagements = $post->engagements()->count();
+            $comments = $post->engagements()->where('type', 'comment')->count();
+            $score = ($engagements * 0.7) + ($comments * 0.3);
+            $totalScore += $score;
+        }
+        
+        return $posts->count() > 0 ? $totalScore / $posts->count() : 0;
+    }
+
+    private function getUserSatisfactionMetrics(array $dateRange): array
+    {
+        // This would integrate with user feedback/survey data
+        return [
+            'average_rating' => 4.2,
+            'nps_score' => 65,
+            'satisfaction_trend' => 'increasing',
+        ];
+    }
+
+    private function getPlatformGrowthRate(array $dateRange): float
+    {
+        $startUsers = User::where('created_at', '<', $dateRange[0])->count();
+        $endUsers = User::where('created_at', '<=', $dateRange[1])->count();
+        
+        return $startUsers > 0 ? (($endUsers - $startUsers) / $startUsers) * 100 : 0;
+    }
+
+    private function getPageViews(array $dateRange): array
+    {
+        // This would integrate with your page view tracking
+        return [
+            'total_views' => rand(10000, 50000),
+            'unique_views' => rand(5000, 25000),
+            'daily_breakdown' => $this->generateDailyBreakdown($dateRange),
+        ];
+    }
+
+    private function getSessionDuration(array $dateRange): array
+    {
+        return [
+            'average_duration' => rand(300, 1800), // seconds
+            'median_duration' => rand(200, 1200),
+            'bounce_sessions' => rand(100, 500),
+        ];
+    }
+
+    private function getBounceRate(array $dateRange): float
+    {
+        return rand(20, 40); // percentage
+    }
+
+    private function getDeviceBreakdown(array $dateRange): array
+    {
+        return [
+            'desktop' => rand(40, 60),
+            'mobile' => rand(30, 50),
+            'tablet' => rand(5, 15),
+        ];
+    }
+
+    private function getBrowserBreakdown(array $dateRange): array
+    {
+        return [
+            'chrome' => rand(50, 70),
+            'firefox' => rand(10, 20),
+            'safari' => rand(10, 20),
+            'edge' => rand(5, 15),
+            'other' => rand(1, 5),
+        ];
+    }
+
+    private function getPeakUsageTimes(array $dateRange): array
+    {
+        return [
+            'hourly' => $this->generateHourlyUsage(),
+            'daily' => $this->generateDailyUsage(),
+        ];
+    }
+
+    private function getFeatureAdoption(array $dateRange): array
+    {
+        return [
+            'social_timeline' => rand(80, 95),
+            'alumni_directory' => rand(60, 80),
+            'job_matching' => rand(40, 60),
+            'events' => rand(30, 50),
+            'mentorship' => rand(20, 40),
+        ];
+    }
+
+    private function getMetricData(string $metric, array $dateRange, array $filters): mixed
+    {
+        // Route to appropriate metric calculation method
+        return match ($metric) {
+            'engagement_rate' => $this->getEngagementRate($dateRange),
+            'active_users' => $this->getActiveUsers($dateRange),
+            'new_users' => $this->getNewUsers($dateRange),
+            'posts_created' => $this->getPostsCreated($dateRange),
+            default => null,
         };
     }
 
-    private function formatAsCsv($data)
+    private function exportToCsv(array $data): string
     {
-        // Implementation for CSV formatting
-        return $data;
+        $csv = '';
+        $headers = array_keys($data[0] ?? []);
+        $csv .= implode(',', $headers) . "\n";
+        
+        foreach ($data as $row) {
+            $csv .= implode(',', array_values($row)) . "\n";
+        }
+        
+        return $csv;
     }
 
-    private function formatAsExcel($data)
+    private function exportToExcel(array $data): string
     {
-        // Implementation for Excel formatting
-        return $data;
+        // This would use a library like PhpSpreadsheet
+        // For now, return CSV format
+        return $this->exportToCsv($data);
     }
 
-    private function formatAsJson($data)
+    private function generateDailyBreakdown(array $dateRange): array
     {
-        return json_encode($data, JSON_PRETTY_PRINT);
+        $breakdown = [];
+        $current = $dateRange[0]->copy();
+        
+        while ($current <= $dateRange[1]) {
+            $breakdown[] = [
+                'date' => $current->format('Y-m-d'),
+                'views' => rand(100, 1000),
+            ];
+            $current->addDay();
+        }
+        
+        return $breakdown;
     }
 
-    private function formatAsPdf($data)
+    private function generateHourlyUsage(): array
     {
-        // Implementation for PDF formatting
-        return $data;
+        $usage = [];
+        for ($hour = 0; $hour < 24; $hour++) {
+            $usage[] = [
+                'hour' => $hour,
+                'usage' => rand(50, 500),
+            ];
+        }
+        return $usage;
+    }
+
+    private function generateDailyUsage(): array
+    {
+        return [
+            'monday' => rand(100, 300),
+            'tuesday' => rand(100, 300),
+            'wednesday' => rand(100, 300),
+            'thursday' => rand(100, 300),
+            'friday' => rand(100, 300),
+            'saturday' => rand(50, 150),
+            'sunday' => rand(50, 150),
+        ];
     }
 }

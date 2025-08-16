@@ -14,12 +14,14 @@ class SuperAdminController extends Controller
     {
         $this->authorize('viewAny', User::class);
         $users = User::whereHas('roles', fn ($q) => $q->where('name', 'Super Admin'))->get();
+
         return Inertia::render('SuperAdmins/Index', ['users' => $users]);
     }
 
     public function create()
     {
         $this->authorize('create', User::class);
+
         return Inertia::render('SuperAdmins/Create');
     }
 

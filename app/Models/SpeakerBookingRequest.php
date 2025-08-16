@@ -89,7 +89,7 @@ class SpeakerBookingRequest extends Model
     public function scopeUpcoming($query)
     {
         return $query->where('status', 'accepted')
-                    ->where('event_date', '>=', now());
+            ->where('event_date', '>=', now());
     }
 
     public function scopeForSpeaker($query, $speakerId)
@@ -103,7 +103,7 @@ class SpeakerBookingRequest extends Model
     }
 
     // Methods
-    public function accept(string $response = null, array $bookingDetails = null): bool
+    public function accept(?string $response = null, ?array $bookingDetails = null): bool
     {
         $this->status = 'accepted';
         $this->speaker_response = $response;
@@ -114,7 +114,7 @@ class SpeakerBookingRequest extends Model
         return $this->save();
     }
 
-    public function decline(string $response = null): bool
+    public function decline(?string $response = null): bool
     {
         $this->status = 'declined';
         $this->speaker_response = $response;
@@ -123,7 +123,7 @@ class SpeakerBookingRequest extends Model
         return $this->save();
     }
 
-    public function cancel(string $reason = null): bool
+    public function cancel(?string $reason = null): bool
     {
         $this->status = 'cancelled';
         if ($reason) {
@@ -133,7 +133,7 @@ class SpeakerBookingRequest extends Model
         return $this->save();
     }
 
-    public function complete(array $feedback = null, float $rating = null): bool
+    public function complete(?array $feedback = null, ?float $rating = null): bool
     {
         $this->status = 'completed';
         if ($feedback) {
@@ -168,7 +168,7 @@ class SpeakerBookingRequest extends Model
 
     public function getStatusLabel(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'Pending Response',
             'accepted' => 'Confirmed',
             'declined' => 'Declined',
@@ -180,7 +180,7 @@ class SpeakerBookingRequest extends Model
 
     public function getEventTypeLabel(): string
     {
-        return match($this->event_type) {
+        return match ($this->event_type) {
             'virtual' => 'Virtual Event',
             'in_person' => 'In-Person Event',
             'hybrid' => 'Hybrid Event',
@@ -190,7 +190,7 @@ class SpeakerBookingRequest extends Model
 
     public function getFormatLabel(): string
     {
-        return match($this->event_format) {
+        return match ($this->event_format) {
             'keynote' => 'Keynote Speech',
             'workshop' => 'Workshop',
             'panel' => 'Panel Discussion',
@@ -206,14 +206,16 @@ class SpeakerBookingRequest extends Model
         if ($this->event_start_time && $this->event_end_time) {
             return $this->event_start_time->diffInMinutes($this->event_end_time);
         }
+
         return 0;
     }
 
     public function getBudgetDisplay(): string
     {
         if ($this->budget_offered) {
-            return '$' . number_format($this->budget_offered, 2);
+            return '$'.number_format($this->budget_offered, 2);
         }
+
         return 'Not specified';
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Job;
 use App\Models\Graduate;
+use App\Models\Job;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class SendJobDeadlineReminders extends Command
 {
     protected $signature = 'notifications:job-deadlines {--days=3 : Number of days before deadline to send reminder}';
+
     protected $description = 'Send job application deadline reminders to graduates';
 
     protected $notificationService;
@@ -25,7 +26,7 @@ class SendJobDeadlineReminders extends Command
     {
         $days = (int) $this->option('days');
         $targetDate = now()->addDays($days)->startOfDay();
-        
+
         $this->info("Sending job deadline reminders for jobs expiring in {$days} days...");
 
         // Get jobs with deadlines approaching
@@ -36,7 +37,8 @@ class SendJobDeadlineReminders extends Command
             ->get();
 
         if ($jobs->isEmpty()) {
-            $this->info('No jobs found with deadlines in ' . $days . ' days.');
+            $this->info('No jobs found with deadlines in '.$days.' days.');
+
             return;
         }
 
@@ -59,7 +61,7 @@ class SendJobDeadlineReminders extends Command
                     );
                     $totalNotifications++;
                 } catch (\Exception $e) {
-                    Log::error("Failed to send deadline reminder to graduate {$graduate->id}: " . $e->getMessage());
+                    Log::error("Failed to send deadline reminder to graduate {$graduate->id}: ".$e->getMessage());
                     $this->error("Failed to send notification to {$graduate->user->name}");
                 }
             }
@@ -71,8 +73,8 @@ class SendJobDeadlineReminders extends Command
     private function getInterestedGraduates($job)
     {
         $query = Graduate::with(['user'])
-            ->whereHas('user', function($q) {
-                $q->whereHas('roles', function($roleQuery) {
+            ->whereHas('user', function ($q) {
+                $q->whereHas('roles', function ($roleQuery) {
                     $roleQuery->where('name', 'graduate');
                 });
             });
@@ -84,9 +86,9 @@ class SendJobDeadlineReminders extends Command
 
         // Match by skills if available
         if ($job->required_skills) {
-            $query->where(function($q) use ($job) {
+            $query->where(function ($q) use ($job) {
                 $q->whereJsonOverlaps('skills', $job->required_skills)
-                  ->orWhereJsonOverlaps('skills', $job->preferred_skills ?? []);
+                    ->orWhereJsonOverlaps('skills', $job->preferred_skills ?? []);
             });
         }
 
@@ -97,14 +99,14 @@ class SendJobDeadlineReminders extends Command
         }
 
         // Only include graduates who allow job notifications
-        $query->whereHas('user.notificationPreferences', function($q) {
+        $query->whereHas('user.notificationPreferences', function ($q) {
             $q->where('notification_type', 'job_deadline')
-              ->where(function($prefQuery) {
-                  $prefQuery->where('email_enabled', true)
-                           ->orWhere('sms_enabled', true)
-                           ->orWhere('in_app_enabled', true)
-                           ->orWhere('push_enabled', true);
-              });
+                ->where(function ($prefQuery) {
+                    $prefQuery->where('email_enabled', true)
+                        ->orWhere('sms_enabled', true)
+                        ->orWhere('in_app_enabled', true)
+                        ->orWhere('push_enabled', true);
+                });
         });
 
         return $query->limit(100)->get(); // Limit to prevent overwhelming the system

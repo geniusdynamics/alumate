@@ -2,17 +2,17 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Post;
+use App\Jobs\PublishScheduledPostJob;
 use App\Models\Circle;
 use App\Models\Group;
-use App\Jobs\PublishScheduledPostJob;
+use App\Models\Post;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class PostCreationTest extends TestCase
 {
@@ -33,7 +33,7 @@ class PostCreationTest extends TestCase
             ->postJson('/api/posts', [
                 'content' => 'This is my first post!',
                 'post_type' => 'text',
-                'visibility' => 'public'
+                'visibility' => 'public',
             ]);
 
         $response->assertStatus(201)
@@ -44,15 +44,15 @@ class PostCreationTest extends TestCase
                     'post_type',
                     'visibility',
                     'user' => ['id', 'name'],
-                    'created_at'
-                ]
+                    'created_at',
+                ],
             ]);
 
         $this->assertDatabaseHas('posts', [
             'user_id' => $user->id,
             'content' => 'This is my first post!',
             'post_type' => 'text',
-            'visibility' => 'public'
+            'visibility' => 'public',
         ]);
     }
 
@@ -66,7 +66,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Check out this photo!',
                 'post_type' => 'media',
                 'visibility' => 'public',
-                'media' => [$file]
+                'media' => [$file],
             ]);
 
         $response->assertStatus(201)
@@ -78,19 +78,19 @@ class PostCreationTest extends TestCase
                     'visibility',
                     'media_urls',
                     'user' => ['id', 'name'],
-                    'created_at'
-                ]
+                    'created_at',
+                ],
             ]);
 
         $this->assertDatabaseHas('posts', [
             'user_id' => $user->id,
             'content' => 'Check out this photo!',
             'post_type' => 'media',
-            'visibility' => 'public'
+            'visibility' => 'public',
         ]);
 
         // Check if file was stored (using a more reliable method)
-        $this->assertTrue(Storage::disk('public')->exists('media/posts/' . $user->id . '/' . date('Y/m') . '/' . $file->hashName()));
+        $this->assertTrue(Storage::disk('public')->exists('media/posts/'.$user->id.'/'.date('Y/m').'/'.$file->hashName()));
     }
 
     public function test_user_can_create_post_for_specific_circles()
@@ -104,7 +104,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Circle-specific post',
                 'post_type' => 'text',
                 'visibility' => 'circles',
-                'circle_ids' => [$circle->id]
+                'circle_ids' => [$circle->id],
             ]);
 
         $response->assertStatus(201);
@@ -124,7 +124,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Group-specific post',
                 'post_type' => 'text',
                 'visibility' => 'groups',
-                'group_ids' => [$group->id]
+                'group_ids' => [$group->id],
             ]);
 
         $response->assertStatus(201);
@@ -143,7 +143,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Scheduled post',
                 'post_type' => 'text',
                 'visibility' => 'public',
-                'scheduled_at' => $scheduledTime->toISOString()
+                'scheduled_at' => $scheduledTime->toISOString(),
             ]);
 
         $response->assertStatus(201);
@@ -151,7 +151,7 @@ class PostCreationTest extends TestCase
         $this->assertDatabaseHas('posts', [
             'user_id' => $user->id,
             'content' => 'Scheduled post',
-            'scheduled_at' => $scheduledTime
+            'scheduled_at' => $scheduledTime,
         ]);
 
         Queue::assertPushed(PublishScheduledPostJob::class);
@@ -165,14 +165,14 @@ class PostCreationTest extends TestCase
             ->postJson('/api/posts/drafts', [
                 'content' => 'Draft post',
                 'post_type' => 'text',
-                'visibility' => 'public'
+                'visibility' => 'public',
             ]);
 
         $response->assertStatus(201);
 
         $this->assertDatabaseHas('post_drafts', [
             'user_id' => $user->id,
-            'content' => 'Draft post'
+            'content' => 'Draft post',
         ]);
     }
 
@@ -183,7 +183,7 @@ class PostCreationTest extends TestCase
         $response = $this->actingAs($user, 'sanctum')
             ->postJson('/api/posts', [
                 'post_type' => 'text',
-                'visibility' => 'public'
+                'visibility' => 'public',
             ]);
 
         $response->assertStatus(422)
@@ -198,7 +198,7 @@ class PostCreationTest extends TestCase
             ->postJson('/api/posts', [
                 'content' => 'Test post',
                 'post_type' => 'text',
-                'visibility' => 'invalid'
+                'visibility' => 'invalid',
             ]);
 
         $response->assertStatus(422)
@@ -216,7 +216,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Unauthorized circle post',
                 'post_type' => 'text',
                 'visibility' => 'circles',
-                'circle_ids' => [$circle->id]
+                'circle_ids' => [$circle->id],
             ]);
 
         $response->assertStatus(403);
@@ -233,7 +233,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Unauthorized group post',
                 'post_type' => 'text',
                 'visibility' => 'groups',
-                'group_ids' => [$group->id]
+                'group_ids' => [$group->id],
             ]);
 
         $response->assertStatus(403);
@@ -249,7 +249,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Post with invalid media',
                 'post_type' => 'media',
                 'visibility' => 'public',
-                'media' => [$invalidFile]
+                'media' => [$invalidFile],
             ]);
 
         $response->assertStatus(422)
@@ -266,7 +266,7 @@ class PostCreationTest extends TestCase
                 'content' => 'Post with large media',
                 'post_type' => 'media',
                 'visibility' => 'public',
-                'media' => [$largeFile]
+                'media' => [$largeFile],
             ]);
 
         $response->assertStatus(422)

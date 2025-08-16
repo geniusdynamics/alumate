@@ -13,7 +13,7 @@ class AchievementCongratulation extends Model
     protected $fillable = [
         'achievement_celebration_id',
         'user_id',
-        'message'
+        'message',
     ];
 
     /**

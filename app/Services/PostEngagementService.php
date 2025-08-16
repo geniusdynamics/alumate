@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\Post;
-use App\Models\User;
 use App\Models\Comment;
+use App\Models\Post;
 use App\Models\PostEngagement;
-use App\Notifications\PostMentionNotification;
+use App\Models\User;
 use App\Notifications\PostCommentNotification;
+use App\Notifications\PostMentionNotification;
 use App\Notifications\PostReactionNotification;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 
 class PostEngagementService
@@ -32,10 +32,10 @@ class PostEngagementService
             [
                 'post_id' => $post->id,
                 'user_id' => $user->id,
-                'type' => $type
+                'type' => $type,
             ],
             [
-                'metadata' => ['created_at' => now()]
+                'metadata' => ['created_at' => now()],
             ]
         );
 
@@ -95,7 +95,7 @@ class PostEngagementService
             'parent_id' => $parentId,
             'content' => $content,
             'mentions' => $mentions,
-            'metadata' => ['created_at' => now()]
+            'metadata' => ['created_at' => now()],
         ]);
 
         // Clear engagement stats cache
@@ -123,8 +123,8 @@ class PostEngagementService
             'visibility' => 'public', // Default visibility for shares
             'metadata' => [
                 'shared_post_id' => $post->id,
-                'shared_at' => now()
-            ]
+                'shared_at' => now(),
+            ],
         ]);
 
         // Record the share engagement
@@ -134,8 +134,8 @@ class PostEngagementService
             'type' => 'share',
             'metadata' => [
                 'shared_post_id' => $sharedPost->id,
-                'commentary' => $commentary
-            ]
+                'commentary' => $commentary,
+            ],
         ]);
 
         // Clear engagement stats cache
@@ -161,10 +161,10 @@ class PostEngagementService
             [
                 'post_id' => $post->id,
                 'user_id' => $user->id,
-                'type' => 'bookmark'
+                'type' => 'bookmark',
             ],
             [
-                'metadata' => ['bookmarked_at' => now()]
+                'metadata' => ['bookmarked_at' => now()],
             ]
         );
 
@@ -203,7 +203,7 @@ class PostEngagementService
             // Ensure all reaction types are present
             $reactionTypes = ['like', 'love', 'celebrate', 'support', 'insightful', 'share', 'bookmark'];
             foreach ($reactionTypes as $type) {
-                if (!isset($stats[$type])) {
+                if (! isset($stats[$type])) {
                     $stats[$type] = 0;
                 }
             }
@@ -226,7 +226,7 @@ class PostEngagementService
             'reactions' => array_intersect($engagements, ['like', 'love', 'celebrate', 'support', 'insightful']),
             'shared' => in_array('share', $engagements),
             'bookmarked' => in_array('bookmark', $engagements),
-            'commented' => Comment::where('post_id', $post->id)->where('user_id', $user->id)->exists()
+            'commented' => Comment::where('post_id', $post->id)->where('user_id', $user->id)->exists(),
         ];
     }
 
@@ -272,7 +272,7 @@ class PostEngagementService
         }
 
         // Notify mentioned users
-        if (!empty($mentions)) {
+        if (! empty($mentions)) {
             $mentionedUsers = User::whereIn('username', $mentions)
                 ->where('id', '!=', $commenter->id)
                 ->get();
@@ -285,8 +285,8 @@ class PostEngagementService
         // Notify parent comment author (if replying and not the commenter or post author)
         if ($comment->parent_id) {
             $parentComment = Comment::find($comment->parent_id);
-            if ($parentComment && 
-                $parentComment->user_id !== $commenter->id && 
+            if ($parentComment &&
+                $parentComment->user_id !== $commenter->id &&
                 $parentComment->user_id !== $post->user_id) {
                 $parentComment->user->notify(new PostCommentNotification($post, $comment, $commenter));
             }

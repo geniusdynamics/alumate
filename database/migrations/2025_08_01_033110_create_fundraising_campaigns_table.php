@@ -35,7 +35,7 @@ return new class extends Migration
             $table->json('analytics_data')->nullable(); // views, shares, etc.
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['status', 'start_date', 'end_date']);
             $table->index(['institution_id', 'status']);
             $table->index(['created_by']);

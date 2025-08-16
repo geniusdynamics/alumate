@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\SkillEndorsement;
-use App\Models\UserSkill;
 use App\Models\User;
+use App\Models\UserSkill;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SkillEndorsementFactory extends Factory

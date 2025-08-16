@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SecurityEvent;
 use App\Models\DataAccessLog;
 use App\Models\FailedLoginAttempt;
+use App\Models\SecurityEvent;
 use App\Models\SessionSecurity;
 use App\Models\TwoFactorAuth;
 use App\Services\SecurityService;
@@ -25,7 +25,7 @@ class SecurityController extends Controller
     public function dashboard()
     {
         $data = $this->securityService->getSecurityDashboardData();
-        
+
         return Inertia::render('Security/Dashboard', [
             'securityData' => $data,
         ]);
@@ -101,7 +101,7 @@ class SecurityController extends Controller
         $query = FailedLoginAttempt::orderBy('last_attempt_at', 'desc');
 
         if ($request->filled('email')) {
-            $query->where('email', 'like', '%' . $request->email . '%');
+            $query->where('email', 'like', '%'.$request->email.'%');
         }
 
         if ($request->filled('blocked')) {
@@ -196,7 +196,7 @@ class SecurityController extends Controller
         $user = Auth::user();
         $twoFactor = TwoFactorAuth::where('user_id', $user->id)->first();
 
-        if (!$twoFactor || !$twoFactor->enabled) {
+        if (! $twoFactor || ! $twoFactor->enabled) {
             $twoFactor = $this->securityService->enableTwoFactorAuth($user);
         }
 
@@ -214,7 +214,7 @@ class SecurityController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         if ($this->securityService->verifyTwoFactorCode($user, $request->code)) {
             return response()->json(['success' => true]);
         }
@@ -230,7 +230,7 @@ class SecurityController extends Controller
 
         $user = Auth::user();
 
-        if (!Hash::check($request->password, $user->password)) {
+        if (! Hash::check($request->password, $user->password)) {
             return back()->withErrors(['password' => 'Invalid password']);
         }
 
@@ -258,9 +258,10 @@ class SecurityController extends Controller
     {
         try {
             \DB::connection()->getPdo();
+
             return ['status' => 'healthy', 'message' => 'Database connection successful'];
         } catch (\Exception $e) {
-            return ['status' => 'critical', 'message' => 'Database connection failed: ' . $e->getMessage()];
+            return ['status' => 'critical', 'message' => 'Database connection failed: '.$e->getMessage()];
         }
     }
 
@@ -269,27 +270,28 @@ class SecurityController extends Controller
         try {
             \Cache::put('health_check', 'test', 60);
             $value = \Cache::get('health_check');
-            return $value === 'test' 
+
+            return $value === 'test'
                 ? ['status' => 'healthy', 'message' => 'Cache is working properly']
                 : ['status' => 'warning', 'message' => 'Cache read/write issue'];
         } catch (\Exception $e) {
-            return ['status' => 'critical', 'message' => 'Cache error: ' . $e->getMessage()];
+            return ['status' => 'critical', 'message' => 'Cache error: '.$e->getMessage()];
         }
     }
 
     private function checkStorageHealth()
     {
         try {
-            $testFile = 'health_check_' . time() . '.txt';
+            $testFile = 'health_check_'.time().'.txt';
             \Storage::put($testFile, 'test');
             $content = \Storage::get($testFile);
             \Storage::delete($testFile);
-            
+
             return $content === 'test'
                 ? ['status' => 'healthy', 'message' => 'Storage is working properly']
                 : ['status' => 'warning', 'message' => 'Storage read/write issue'];
         } catch (\Exception $e) {
-            return ['status' => 'critical', 'message' => 'Storage error: ' . $e->getMessage()];
+            return ['status' => 'critical', 'message' => 'Storage error: '.$e->getMessage()];
         }
     }
 
@@ -298,9 +300,10 @@ class SecurityController extends Controller
         try {
             // This is a simplified check - in production you'd want more comprehensive queue monitoring
             $queueSize = \Queue::size();
+
             return ['status' => 'healthy', 'message' => "Queue size: {$queueSize}"];
         } catch (\Exception $e) {
-            return ['status' => 'warning', 'message' => 'Queue monitoring unavailable: ' . $e->getMessage()];
+            return ['status' => 'warning', 'message' => 'Queue monitoring unavailable: '.$e->getMessage()];
         }
     }
 }

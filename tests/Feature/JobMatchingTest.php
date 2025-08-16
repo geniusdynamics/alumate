@@ -2,12 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\Company;
-use App\Models\JobPosting;
 use App\Models\JobApplication;
 use App\Models\JobMatchScore;
-use App\Services\JobMatchingService;
+use App\Models\JobPosting;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -54,10 +53,10 @@ class JobMatchingTest extends TestCase
                             'location',
                             'match_score',
                             'has_applied',
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
-                'meta'
+                'meta',
             ]);
     }
 
@@ -89,7 +88,7 @@ class JobMatchingTest extends TestCase
                     'company',
                     'match_analysis',
                     'mutual_connections',
-                ]
+                ],
             ]);
     }
 
@@ -113,7 +112,7 @@ class JobMatchingTest extends TestCase
         $response->assertOk()
             ->assertJson([
                 'success' => true,
-                'message' => 'Application submitted successfully!'
+                'message' => 'Application submitted successfully!',
             ]);
 
         $this->assertDatabaseHas('job_applications', [
@@ -122,7 +121,7 @@ class JobMatchingTest extends TestCase
             'status' => 'pending',
         ]);
 
-        Storage::disk('private')->assertExists('resumes/' . $resume->hashName());
+        Storage::disk('private')->assertExists('resumes/'.$resume->hashName());
     }
 
     public function test_user_cannot_apply_twice_for_same_job()
@@ -148,7 +147,7 @@ class JobMatchingTest extends TestCase
         $response->assertStatus(400)
             ->assertJson([
                 'success' => false,
-                'message' => 'You have already applied for this position.'
+                'message' => 'You have already applied for this position.',
             ]);
     }
 
@@ -185,7 +184,7 @@ class JobMatchingTest extends TestCase
         $response->assertOk()
             ->assertJson([
                 'success' => true,
-                'message' => 'Introduction request sent successfully!'
+                'message' => 'Introduction request sent successfully!',
             ]);
     }
 
@@ -226,8 +225,8 @@ class JobMatchingTest extends TestCase
                         'title',
                         'mutual_circles',
                         'can_request_introduction',
-                    ]
-                ]
+                    ],
+                ],
             ]);
 
         $this->assertCount(1, $response->json('data'));
@@ -262,9 +261,9 @@ class JobMatchingTest extends TestCase
                             'applied_at',
                             'job',
                             'is_active',
-                        ]
-                    ]
-                ]
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -272,12 +271,12 @@ class JobMatchingTest extends TestCase
     {
         $user = User::factory()->create();
         $company = Company::factory()->create();
-        
+
         $highScoreJob = JobPosting::factory()->create([
             'company_id' => $company->id,
             'is_active' => true,
         ]);
-        
+
         $lowScoreJob = JobPosting::factory()->create([
             'company_id' => $company->id,
             'is_active' => true,
@@ -300,7 +299,7 @@ class JobMatchingTest extends TestCase
             ->getJson('/api/jobs/recommendations?min_score=70');
 
         $response->assertOk();
-        
+
         $jobs = $response->json('data.data');
         $this->assertCount(1, $jobs);
         $this->assertEquals($highScoreJob->id, $jobs[0]['id']);
@@ -310,12 +309,12 @@ class JobMatchingTest extends TestCase
     {
         $user = User::factory()->create();
         $company = Company::factory()->create();
-        
+
         $activeJob = JobPosting::factory()->create([
             'company_id' => $company->id,
             'is_active' => true,
         ]);
-        
+
         $inactiveJob = JobPosting::factory()->create([
             'company_id' => $company->id,
             'is_active' => false,
@@ -338,7 +337,7 @@ class JobMatchingTest extends TestCase
             ->getJson('/api/jobs/recommendations');
 
         $response->assertOk();
-        
+
         $jobs = $response->json('data.data');
         $this->assertCount(1, $jobs);
         $this->assertEquals($activeJob->id, $jobs[0]['id']);

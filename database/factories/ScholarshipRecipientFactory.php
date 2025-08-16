@@ -17,7 +17,7 @@ class ScholarshipRecipientFactory extends Factory
     public function definition(): array
     {
         $awardDate = fake()->dateTimeBetween('-3 years', '-1 month');
-        
+
         return [
             'scholarship_id' => \App\Models\Scholarship::factory(),
             'application_id' => \App\Models\ScholarshipApplication::factory(),
@@ -31,7 +31,7 @@ class ScholarshipRecipientFactory extends Factory
                 'graduation_status' => fake()->randomElement(['enrolled', 'graduated', 'on_track', 'delayed']),
                 'academic_achievements' => fake()->boolean() ? [
                     fake()->sentence(),
-                    fake()->sentence()
+                    fake()->sentence(),
                 ] : [],
                 'courses_completed' => fake()->numberBetween(20, 120),
             ],
@@ -41,34 +41,34 @@ class ScholarshipRecipientFactory extends Factory
                     'Promoted to team lead position',
                     'Started own business',
                     'Accepted to graduate program',
-                    'Published research paper'
+                    'Published research paper',
                 ]),
                 'community_involvement' => fake()->randomElement([
                     'Volunteers at local food bank',
                     'Mentors high school students',
                     'Organizes community events',
                     'Participates in alumni network',
-                    'Leads student organization'
+                    'Leads student organization',
                 ]),
                 'financial_impact' => fake()->randomElement([
                     'Reduced student debt by 50%',
                     'Able to focus on studies full-time',
                     'Avoided taking additional loans',
-                    'Supported family financially'
-                ])
+                    'Supported family financially',
+                ]),
             ],
             'thank_you_message' => fake()->boolean(60) ? fake()->paragraph() : null,
             'updates' => fake()->boolean(40) ? [
                 [
                     'title' => 'Academic Achievement',
                     'description' => fake()->sentence(),
-                    'date' => fake()->dateTimeBetween($awardDate, 'now')->format('Y-m-d')
+                    'date' => fake()->dateTimeBetween($awardDate, 'now')->format('Y-m-d'),
                 ],
                 [
                     'title' => 'Career Update',
                     'description' => fake()->sentence(),
-                    'date' => fake()->dateTimeBetween($awardDate, 'now')->format('Y-m-d')
-                ]
+                    'date' => fake()->dateTimeBetween($awardDate, 'now')->format('Y-m-d'),
+                ],
             ] : null,
         ];
     }

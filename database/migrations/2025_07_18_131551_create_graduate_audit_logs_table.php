@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('description'); // human-readable description
             $table->json('metadata')->nullable(); // additional context
             $table->timestamps();
-            
+
             $table->index(['graduate_id', 'created_at']);
         });
     }

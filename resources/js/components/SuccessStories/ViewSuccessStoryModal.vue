@@ -1,11 +1,11 @@
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[50] backdrop-blur-sm" role="dialog" aria-modal="true">
     <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
       <div class="relative">
         <!-- Close Button -->
         <button
           @click="$emit('close')"
-          class="absolute top-4 right-4 z-10 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full p-2 text-gray-600 hover:text-gray-800 transition-colors"
+          class="absolute top-4 right-4 z-[20] bg-white/80 hover:bg-white rounded-full p-2 text-gray-600 hover:text-gray-800 transition-colors"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -189,7 +189,7 @@
     </div>
 
     <!-- Media Modal -->
-    <div v-if="selectedMedia" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-60" @click="selectedMedia = null">
+    <div v-if="selectedMedia" class="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-[110] backdrop-blur-sm" @click="selectedMedia = null" role="dialog" aria-modal="true">
       <div class="max-w-4xl max-h-full">
         <img
           :src="getImageUrl(selectedMedia)"

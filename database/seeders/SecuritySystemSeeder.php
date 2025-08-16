@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\BackupLog;
 use App\Models\NotificationTemplate;
 use App\Models\SecurityEvent;
 use App\Models\SystemHealthLog;
-use App\Models\BackupLog;
 use Illuminate\Database\Seeder;
 
 class SecuritySystemSeeder extends Seeder
@@ -150,7 +150,7 @@ System Administration',
                 'component' => $component,
                 'status' => SystemHealthLog::STATUS_HEALTHY,
                 'metrics' => $this->generateSampleMetrics($component),
-                'message' => ucfirst($component) . ' is operating normally',
+                'message' => ucfirst($component).' is operating normally',
                 'checked_at' => now(),
             ]);
         }
@@ -206,39 +206,39 @@ System Administration',
                     'query_time_ms' => rand(5, 25),
                     'database_size_mb' => rand(100, 500),
                 ];
-            
+
             case SystemHealthLog::COMPONENT_CACHE:
                 return [
                     'response_time_ms' => rand(1, 10),
                     'hit_rate_percent' => rand(85, 95),
                 ];
-            
+
             case SystemHealthLog::COMPONENT_STORAGE:
                 return [
                     'response_time_ms' => rand(20, 100),
                     'available_space_gb' => rand(50, 200),
                 ];
-            
+
             case SystemHealthLog::COMPONENT_QUEUE:
                 return [
                     'queue_size' => rand(0, 50),
                     'failed_jobs' => rand(0, 5),
                 ];
-            
+
             case SystemHealthLog::COMPONENT_MEMORY:
                 return [
-                    'memory_usage_bytes' => rand(1024*1024*100, 1024*1024*500),
-                    'memory_limit_bytes' => 1024*1024*1024,
+                    'memory_usage_bytes' => rand(1024 * 1024 * 100, 1024 * 1024 * 500),
+                    'memory_limit_bytes' => 1024 * 1024 * 1024,
                     'memory_usage_percent' => rand(40, 70),
                 ];
-            
+
             case SystemHealthLog::COMPONENT_DISK_SPACE:
                 return [
-                    'disk_free_bytes' => rand(1024*1024*1024*10, 1024*1024*1024*50),
-                    'disk_total_bytes' => 1024*1024*1024*100,
+                    'disk_free_bytes' => rand(1024 * 1024 * 1024 * 10, 1024 * 1024 * 1024 * 50),
+                    'disk_total_bytes' => 1024 * 1024 * 1024 * 100,
                     'disk_used_percent' => rand(30, 60),
                 ];
-            
+
             default:
                 return [];
         }

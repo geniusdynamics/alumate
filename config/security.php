@@ -8,7 +8,7 @@ return [
     */
     'max_login_attempts' => env('SECURITY_MAX_LOGIN_ATTEMPTS', 5),
     'lockout_duration' => env('SECURITY_LOCKOUT_DURATION', 30), // minutes
-    
+
     /*
     |--------------------------------------------------------------------------
     | Rate Limiting
@@ -16,7 +16,7 @@ return [
     */
     'rate_limit_authenticated' => env('SECURITY_RATE_LIMIT_AUTH', 100), // per minute
     'rate_limit_unauthenticated' => env('SECURITY_RATE_LIMIT_UNAUTH', 30), // per minute
-    
+
     /*
     |--------------------------------------------------------------------------
     | Session Security
@@ -24,7 +24,7 @@ return [
     */
     'session_timeout' => env('SECURITY_SESSION_TIMEOUT', 120), // minutes
     'track_suspicious_sessions' => env('SECURITY_TRACK_SUSPICIOUS', true),
-    
+
     /*
     |--------------------------------------------------------------------------
     | Two-Factor Authentication
@@ -35,7 +35,7 @@ return [
         'institution-admin',
     ],
     'two_factor_recovery_codes_count' => 8,
-    
+
     /*
     |--------------------------------------------------------------------------
     | Backup Settings
@@ -46,7 +46,7 @@ return [
         'compression_enabled' => env('BACKUP_COMPRESSION', true),
         'storage_disk' => env('BACKUP_STORAGE_DISK', 'local'),
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | Security Monitoring
@@ -57,7 +57,7 @@ return [
         'detect_malicious_requests' => env('SECURITY_DETECT_MALICIOUS', true),
         'alert_critical_events' => env('SECURITY_ALERT_CRITICAL', true),
     ],
-    
+
     /*
     |--------------------------------------------------------------------------
     | System Health Monitoring

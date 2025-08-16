@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\PeerFundraiser;
 use App\Models\FundraisingCampaign;
+use App\Models\PeerFundraiser;
 use App\Services\FundraisingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class PeerFundraiserController extends Controller
@@ -70,7 +70,7 @@ class PeerFundraiserController extends Controller
             'user',
             'donations' => function ($query) {
                 $query->completed()->recent()->with('donor');
-            }
+            },
         ]);
 
         return response()->json($peerFundraiser);

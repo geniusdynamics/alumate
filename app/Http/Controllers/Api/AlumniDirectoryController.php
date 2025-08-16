@@ -3,23 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\AlumniDirectoryService;
-use App\Models\User;
 use App\Models\Connection;
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Services\AlumniDirectoryService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
 
 class AlumniDirectoryController extends Controller
 {
     private AlumniDirectoryService $alumniDirectoryService;
-    
+
     public function __construct(AlumniDirectoryService $alumniDirectoryService)
     {
         $this->alumniDirectoryService = $alumniDirectoryService;
     }
-    
+
     /**
      * Get paginated list of alumni with filters
      */
@@ -27,8 +26,8 @@ class AlumniDirectoryController extends Controller
     {
         $filters = $request->validate([
             'search' => 'nullable|string|max:255',
-            'graduation_year_from' => 'nullable|integer|min:1900|max:' . (date('Y') + 10),
-            'graduation_year_to' => 'nullable|integer|min:1900|max:' . (date('Y') + 10),
+            'graduation_year_from' => 'nullable|integer|min:1900|max:'.(date('Y') + 10),
+            'graduation_year_to' => 'nullable|integer|min:1900|max:'.(date('Y') + 10),
             'location' => 'nullable|string|max:255',
             'industries' => 'nullable|array',
             'industries.*' => 'string|max:100',
@@ -45,16 +44,16 @@ class AlumniDirectoryController extends Controller
             'sort_by' => 'nullable|in:name,graduation_year,location,created_at',
             'sort_order' => 'nullable|in:asc,desc',
             'per_page' => 'nullable|integer|min:1|max:100',
-            'page' => 'nullable|integer|min:1'
+            'page' => 'nullable|integer|min:1',
         ]);
-        
+
         $pagination = [
             'per_page' => $request->get('per_page', 20),
-            'page' => $request->get('page', 1)
+            'page' => $request->get('page', 1),
         ];
-        
+
         $alumni = $this->alumniDirectoryService->getFilteredAlumni($filters, $pagination);
-        
+
         return response()->json([
             'data' => $alumni->items(),
             'meta' => [
@@ -63,17 +62,17 @@ class AlumniDirectoryController extends Controller
                 'per_page' => $alumni->perPage(),
                 'total' => $alumni->total(),
                 'from' => $alumni->firstItem(),
-                'to' => $alumni->lastItem()
+                'to' => $alumni->lastItem(),
             ],
             'links' => [
                 'first' => $alumni->url(1),
                 'last' => $alumni->url($alumni->lastPage()),
                 'prev' => $alumni->previousPageUrl(),
-                'next' => $alumni->nextPageUrl()
-            ]
+                'next' => $alumni->nextPageUrl(),
+            ],
         ]);
     }
-    
+
     /**
      * Get detailed alumni profile
      */
@@ -81,30 +80,30 @@ class AlumniDirectoryController extends Controller
     {
         $currentUser = Auth::user();
         $alumni = $this->alumniDirectoryService->getAlumniProfile($userId, $currentUser);
-        
-        if (!$alumni) {
+
+        if (! $alumni) {
             return response()->json([
-                'message' => 'Alumni not found'
+                'message' => 'Alumni not found',
             ], 404);
         }
-        
+
         return response()->json([
-            'data' => $alumni
+            'data' => $alumni,
         ]);
     }
-    
+
     /**
      * Get available filter options
      */
     public function filters(): JsonResponse
     {
         $filters = $this->alumniDirectoryService->getAvailableFilters();
-        
+
         return response()->json([
-            'data' => $filters
+            'data' => $filters,
         ]);
     }
-    
+
     /**
      * Search alumni with autocomplete suggestions
      */
@@ -113,77 +112,77 @@ class AlumniDirectoryController extends Controller
         $request->validate([
             'query' => 'required|string|min:2|max:255',
             'type' => 'nullable|in:name,company,location,skill',
-            'limit' => 'nullable|integer|min:1|max:20'
+            'limit' => 'nullable|integer|min:1|max:20',
         ]);
-        
+
         $query = $request->get('query');
         $type = $request->get('type', 'name');
         $limit = $request->get('limit', 10);
-        
+
         $results = $this->getSearchSuggestions($query, $type, $limit);
-        
+
         return response()->json([
-            'data' => $results
+            'data' => $results,
         ]);
     }
-    
+
     /**
      * Send connection request to alumni
      */
     public function connect(Request $request, int $userId): JsonResponse
     {
         $request->validate([
-            'message' => 'nullable|string|max:500'
+            'message' => 'nullable|string|max:500',
         ]);
-        
+
         $currentUser = Auth::user();
         $targetUser = User::find($userId);
-        
-        if (!$targetUser) {
+
+        if (! $targetUser) {
             return response()->json([
-                'message' => 'User not found'
+                'message' => 'User not found',
             ], 404);
         }
-        
+
         if ($currentUser->id === $targetUser->id) {
             return response()->json([
-                'message' => 'Cannot connect to yourself'
+                'message' => 'Cannot connect to yourself',
             ], 400);
         }
-        
+
         // Check if connection already exists
         $existingConnection = Connection::where(function ($q) use ($currentUser, $targetUser) {
             $q->where('user_id', $currentUser->id)
-              ->where('connected_user_id', $targetUser->id);
+                ->where('connected_user_id', $targetUser->id);
         })->orWhere(function ($q) use ($currentUser, $targetUser) {
             $q->where('user_id', $targetUser->id)
-              ->where('connected_user_id', $currentUser->id);
+                ->where('connected_user_id', $currentUser->id);
         })->first();
-        
+
         if ($existingConnection) {
             return response()->json([
                 'message' => 'Connection already exists',
-                'status' => $existingConnection->status
+                'status' => $existingConnection->status,
             ], 400);
         }
-        
+
         // Create connection request
         $connection = Connection::create([
             'user_id' => $currentUser->id,
             'connected_user_id' => $targetUser->id,
             'status' => 'pending',
-            'message' => $request->get('message')
+            'message' => $request->get('message'),
         ]);
-        
+
         // Send notification (would be handled by notification service)
         // NotificationService::sendConnectionRequest($targetUser, $currentUser, $connection);
-        
+
         return response()->json([
             'message' => 'Connection request sent successfully',
-            'data' => $connection
+            'data' => $connection,
         ], 201);
     }
-    
+
     /**
      * Get search suggestions based on query and type
      */
@@ -200,7 +199,7 @@ class AlumniDirectoryController extends Controller
                 return $this->getNameSuggestions($query, $limit);
         }
     }
-    
+
     /**
      * Get name suggestions
      */
@@ -213,7 +212,7 @@ class AlumniDirectoryController extends Controller
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get company suggestions
      */
@@ -231,12 +230,12 @@ class AlumniDirectoryController extends Controller
             ->map(function ($item) {
                 return [
                     'value' => $item->company,
-                    'count' => $item->count
+                    'count' => $item->count,
                 ];
             })
             ->toArray();
     }
-    
+
     /**
      * Get location suggestions
      */
@@ -254,12 +253,12 @@ class AlumniDirectoryController extends Controller
             ->map(function ($item) {
                 return [
                     'value' => $item->location,
-                    'count' => $item->count
+                    'count' => $item->count,
                 ];
             })
             ->toArray();
     }
-    
+
     /**
      * Get skill suggestions
      */
@@ -281,12 +280,12 @@ class AlumniDirectoryController extends Controller
             ->map(function ($count, $skill) {
                 return [
                     'value' => $skill,
-                    'count' => $count
+                    'count' => $count,
                 ];
             })
             ->values()
             ->toArray();
-        
+
         return $skills;
     }
 }

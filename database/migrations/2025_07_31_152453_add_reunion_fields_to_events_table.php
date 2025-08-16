@@ -21,7 +21,7 @@ return new class extends Migration
             $table->json('anniversary_milestones')->nullable()->after('enable_memory_wall'); // Track various anniversaries
             $table->text('reunion_theme')->nullable()->after('anniversary_milestones');
             $table->json('class_statistics')->nullable()->after('reunion_theme'); // Attendance stats, demographics
-            
+
             // Index for reunion queries
             $table->index(['is_reunion', 'graduation_year', 'institution_id']);
             $table->index(['reunion_year_milestone', 'graduation_year']);
@@ -33,7 +33,7 @@ return new class extends Migration
         Schema::table('events', function (Blueprint $table) {
             $table->dropIndex(['is_reunion', 'graduation_year', 'institution_id']);
             $table->dropIndex(['reunion_year_milestone', 'graduation_year']);
-            
+
             $table->dropColumn([
                 'graduation_year',
                 'class_identifier',
@@ -45,7 +45,7 @@ return new class extends Migration
                 'enable_memory_wall',
                 'anniversary_milestones',
                 'reunion_theme',
-                'class_statistics'
+                'class_statistics',
             ]);
         });
     }

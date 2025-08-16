@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class ProcessRecurringDonations extends Command
 {
     protected $signature = 'donations:process-recurring';
+
     protected $description = 'Process recurring donations that are due for payment';
 
     public function handle(): int

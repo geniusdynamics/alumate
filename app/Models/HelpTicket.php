@@ -195,8 +195,8 @@ class HelpTicket extends Model
         parent::boot();
 
         static::creating(function ($ticket) {
-            if (!$ticket->ticket_number) {
-                $ticket->ticket_number = 'TKT-' . strtoupper(Str::random(8));
+            if (! $ticket->ticket_number) {
+                $ticket->ticket_number = 'TKT-'.strtoupper(Str::random(8));
             }
         });
     }

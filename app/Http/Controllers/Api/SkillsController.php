@@ -4,221 +4,242 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Skill;
-use App\Models\UserSkill;
-use App\Models\LearningResource;
-use App\Services\SkillsService;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class SkillsController extends Controller
 {
-    protected SkillsService $skillsService;
-
-    public function __construct(SkillsService $skillsService)
+    public function __construct()
     {
-        $this->skillsService = $skillsService;
+        $this->middleware('auth:sanctum');
     }
 
-    public function getUserSkills(int $userId): JsonResponse
+    public function addSkill(Request $request)
     {
-        $userSkills = UserSkill::where('user_id', $userId)
-            ->with(['skill', 'endorsements.endorser'])
-            ->orderBy('endorsed_count', 'desc')
-            ->get();
+        $request->validate([
+            'skill' => 'required|string|max:100',
+        ]);
+
+        $user = Auth::user();
+        $skillName = trim($request->skill);
+
+        // Find or create skill
+        $skill = Skill::firstOrCreate(
+            ['name' => $skillName],
+            ['description' => '']
+        );
+
+        // Check if user already has this skill
+        $existingUserSkill = $user->skills()->where('skill_id', $skill->id)->first();
+
+        if ($existingUserSkill) {
+            throw ValidationException::withMessages([
+                'skill' => 'You already have this skill in your profile.',
+            ]);
+        }
+
+        // Add skill to user
+        $user->skills()->attach($skill->id, [
+            'proficiency_level' => 'beginner',
+            'years_of_experience' => 0,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
         return response()->json([
-            'skills' => $userSkills,
-            'total_skills' => $userSkills->count(),
-            'total_endorsements' => $userSkills->sum('endorsed_count'),
+            'success' => true,
+            'data' => [
+                'skill' => $skill,
+                'message' => 'Skill added to your profile successfully!',
+            ],
         ]);
     }
 
-    public function addSkill(Request $request): JsonResponse
+    public function requestEndorsement(Request $request)
     {
         $request->validate([
-            'skill_name' => 'required|string|max:255',
-            'category' => 'nullable|string|max:100',
-            'proficiency_level' => 'required|in:Beginner,Intermediate,Advanced,Expert',
-            'years_experience' => 'nullable|integer|min:0|max:50',
-            'description' => 'nullable|string|max:500',
-        ]);
-
-        try {
-            $userSkill = $this->skillsService->addSkillToUser(
-                $request->user(),
-                $request->all()
-            );
-
-            return response()->json([
-                'message' => 'Skill added successfully',
-                'user_skill' => $userSkill->load('skill'),
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Failed to add skill',
-                'error' => $e->getMessage(),
-            ], 400);
-        }
-    }
-
-    public function endorseSkill(Request $request): JsonResponse
-    {
-        $request->validate([
-            'user_skill_id' => 'required|exists:user_skills,id',
+            'skill_id' => 'required|exists:skills,id',
+            'endorser_id' => 'required|exists:users,id',
             'message' => 'nullable|string|max:500',
         ]);
 
-        try {
-            $endorsement = $this->skillsService->endorseUserSkill(
-                $request->user_skill_id,
-                $request->user(),
-                $request->message
-            );
+        $user = Auth::user();
+        $skill = Skill::findOrFail($request->skill_id);
+        $endorser = User::findOrFail($request->endorser_id);
 
-            return response()->json([
-                'message' => 'Skill endorsed successfully',
-                'endorsement' => $endorsement->load(['userSkill.skill', 'endorser']),
-            ], 201);
-        } catch (\InvalidArgumentException $e) {
-            return response()->json([
-                'message' => $e->getMessage(),
-            ], 400);
-        } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Failed to endorse skill',
-                'error' => $e->getMessage(),
-            ], 500);
+        // Check if user has this skill
+        $userSkill = $user->skills()->where('skill_id', $skill->id)->first();
+        if (! $userSkill) {
+            throw ValidationException::withMessages([
+                'skill_id' => 'You do not have this skill in your profile.',
+            ]);
         }
-    }
 
-    public function getResources(Request $request): JsonResponse
-    {
-        $request->validate([
-            'skill_id' => 'nullable|exists:skills,id',
-            'type' => 'nullable|in:Course,Article,Video,Book,Workshop,Certification',
-            'min_rating' => 'nullable|numeric|min:0|max:5',
+        // Check if users are connected
+        $connection = DB::table('connections')
+            ->where(function ($query) use ($user, $endorser) {
+                $query->where('user_id', $user->id)
+                    ->where('connected_user_id', $endorser->id);
+            })
+            ->orWhere(function ($query) use ($user, $endorser) {
+                $query->where('user_id', $endorser->id)
+                    ->where('connected_user_id', $user->id);
+            })
+            ->where('status', 'accepted')
+            ->first();
+
+        if (! $connection) {
+            throw ValidationException::withMessages([
+                'endorser_id' => 'You must be connected to request an endorsement.',
+            ]);
+        }
+
+        // Check if endorsement request already exists
+        $existingRequest = DB::table('endorsement_requests')
+            ->where('user_id', $user->id)
+            ->where('skill_id', $skill->id)
+            ->where('endorser_id', $endorser->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingRequest) {
+            throw ValidationException::withMessages([
+                'endorser_id' => 'You have already requested an endorsement from this person for this skill.',
+            ]);
+        }
+
+        // Create endorsement request
+        DB::table('endorsement_requests')->insert([
+            'user_id' => $user->id,
+            'skill_id' => $skill->id,
+            'endorser_id' => $endorser->id,
+            'message' => $request->message,
+            'status' => 'pending',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
-        $query = LearningResource::with(['creator', 'skills']);
-
-        if ($request->skill_id) {
-            $query->bySkill($request->skill_id);
-        }
-
-        if ($request->type) {
-            $query->byType($request->type);
-        }
-
-        if ($request->min_rating) {
-            $query->highRated($request->min_rating);
-        }
-
-        $resources = $query->orderBy('rating', 'desc')
-            ->paginate(20);
-
-        return response()->json($resources);
-    }
-
-    public function getSkillSuggestions(Request $request): JsonResponse
-    {
-        $suggestions = $this->skillsService->getSkillSuggestions($request->user());
+        // TODO: Send notification to endorser
 
         return response()->json([
-            'suggestions' => $suggestions,
-            'count' => $suggestions->count(),
+            'success' => true,
+            'message' => 'Endorsement request sent successfully!',
         ]);
     }
 
-    public function getSkillProgression(Request $request, int $skillId): JsonResponse
+    public function getUserSkills(?User $user = null)
     {
-        $progression = $this->skillsService->trackSkillProgression($request->user(), $skillId);
+        $targetUser = $user ?? Auth::user();
 
-        if (empty($progression)) {
-            return response()->json([
-                'message' => 'Skill not found for user',
-            ], 404);
-        }
-
-        return response()->json($progression);
-    }
-
-    public function getLearningRecommendations(Request $request, int $skillId): JsonResponse
-    {
-        $recommendations = $this->skillsService->recommendLearningResources($request->user(), $skillId);
-
-        return response()->json([
-            'recommendations' => $recommendations,
-            'count' => $recommendations->count(),
-        ]);
-    }
-
-    public function getSkillsGapAnalysis(Request $request): JsonResponse
-    {
-        $analysis = $this->skillsService->getSkillsGapAnalysis($request->user());
-
-        return response()->json($analysis);
-    }
-
-    public function searchSkills(Request $request): JsonResponse
-    {
-        $request->validate([
-            'query' => 'required|string|min:2',
-            'category' => 'nullable|string',
-        ]);
-
-        $query = Skill::search($request->query);
-
-        if ($request->category) {
-            $query->byCategory($request->category);
-        }
-
-        $skills = $query->verified()
-            ->limit(20)
+        $skills = $targetUser->skills()
+            ->withPivot(['proficiency_level', 'years_of_experience'])
+            ->withCount('endorsements')
             ->get();
 
         return response()->json([
-            'skills' => $skills,
-            'count' => $skills->count(),
+            'success' => true,
+            'data' => ['skills' => $skills],
         ]);
     }
 
-    public function createLearningResource(Request $request): JsonResponse
+    public function updateSkill(Request $request, Skill $skill)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:1000',
-            'type' => 'required|in:Course,Article,Video,Book,Workshop,Certification',
-            'url' => 'required|url',
-            'skill_ids' => 'required|array',
-            'skill_ids.*' => 'exists:skills,id',
+            'proficiency_level' => 'required|in:beginner,intermediate,advanced,expert',
+            'years_of_experience' => 'required|integer|min:0|max:50',
         ]);
 
-        $resource = LearningResource::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'type' => $request->type,
-            'url' => $request->url,
-            'skill_ids' => $request->skill_ids,
-            'created_by' => $request->user()->id,
+        $user = Auth::user();
+
+        // Check if user has this skill
+        $userSkill = $user->skills()->where('skill_id', $skill->id)->first();
+        if (! $userSkill) {
+            throw ValidationException::withMessages([
+                'skill' => 'You do not have this skill in your profile.',
+            ]);
+        }
+
+        // Update skill details
+        $user->skills()->updateExistingPivot($skill->id, [
+            'proficiency_level' => $request->proficiency_level,
+            'years_of_experience' => $request->years_of_experience,
+            'updated_at' => now(),
         ]);
 
         return response()->json([
-            'message' => 'Learning resource created successfully',
-            'resource' => $resource->load(['creator', 'skills']),
-        ], 201);
+            'success' => true,
+            'message' => 'Skill updated successfully!',
+        ]);
     }
 
-    public function rateResource(Request $request, LearningResource $resource): JsonResponse
+    public function removeSkill(Skill $skill)
     {
-        $request->validate([
-            'rating' => 'required|numeric|min:1|max:5',
-        ]);
+        $user = Auth::user();
 
-        $resource->addRating($request->rating);
+        // Check if user has this skill
+        $userSkill = $user->skills()->where('skill_id', $skill->id)->first();
+        if (! $userSkill) {
+            throw ValidationException::withMessages([
+                'skill' => 'You do not have this skill in your profile.',
+            ]);
+        }
+
+        // Remove skill from user
+        $user->skills()->detach($skill->id);
 
         return response()->json([
-            'message' => 'Resource rated successfully',
-            'resource' => $resource->fresh(),
+            'success' => true,
+            'message' => 'Skill removed from your profile.',
+        ]);
+    }
+
+    public function endorseSkill(Request $request)
+    {
+        $request->validate([
+            'endorsement_request_id' => 'required|exists:endorsement_requests,id',
+            'comment' => 'nullable|string|max:500',
+        ]);
+
+        $user = Auth::user();
+        $requestId = $request->endorsement_request_id;
+
+        // Get the endorsement request
+        $endorsementRequest = DB::table('endorsement_requests')
+            ->where('id', $requestId)
+            ->where('endorser_id', $user->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if (! $endorsementRequest) {
+            throw ValidationException::withMessages([
+                'endorsement_request_id' => 'Invalid or already processed endorsement request.',
+            ]);
+        }
+
+        // Create the endorsement
+        DB::table('skill_endorsements')->insert([
+            'user_id' => $endorsementRequest->user_id,
+            'skill_id' => $endorsementRequest->skill_id,
+            'endorser_id' => $user->id,
+            'comment' => $request->comment,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // Update the request status
+        DB::table('endorsement_requests')
+            ->where('id', $requestId)
+            ->update([
+                'status' => 'approved',
+                'updated_at' => now(),
+            ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Skill endorsed successfully!',
         ]);
     }
 }

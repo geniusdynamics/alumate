@@ -5,56 +5,124 @@ echo   Graduate Tracking System - Dev Setup
 echo ========================================
 echo.
 
-REM Start Laravel server in background
-echo [1/2] Starting Laravel server on port 8080...
-start "Laravel Server" D:\DevCenter\xampp\php-8.3.23\php.exe artisan serve --port=8080
+REM Clean up any existing processes
+echo [0/4] Cleaning up existing processes...
+taskkill /f /im php.exe 2>nul >nul
+taskkill /f /im node.exe 2>nul >nul
+timeout /t 2 /nobreak >nul
+echo ✓ Cleanup complete
 
-REM Wait a moment for Laravel to start
-timeout /t 5 /nobreak >nul
+REM Check if PHP exists
+echo [1/4] Checking PHP installation...
+if not exist "D:\DevCenter\xampp\php-8.3.23\php.exe" (
+    echo ❌ PHP not found at D:\DevCenter\xampp\php-8.3.23\php.exe
+    echo Please check your PHP installation path
+    pause
+    exit /b 1
+)
+echo ✓ PHP found
 
-REM Start npm dev server
-echo [2/2] Starting Vite development server...
-start "Vite Dev Server" npm run dev
+REM Check if Node.js exists
+echo [2/4] Checking Node.js installation...
+node --version >nul 2>&1
+if errorlevel 1 (
+    echo ❌ Node.js not found. Please install Node.js
+    pause
+    exit /b 1
+)
+echo ✓ Node.js found
 
-REM Wait for servers to fully start
-timeout /t 3 /nobreak >nul
+REM Clear Laravel caches
+echo [3/4] Clearing Laravel caches...
+D:\DevCenter\xampp\php-8.3.23\php.exe artisan config:clear >nul 2>&1
+D:\DevCenter\xampp\php-8.3.23\php.exe artisan route:clear >nul 2>&1
+D:\DevCenter\xampp\php-8.3.23\php.exe artisan view:clear >nul 2>&1
+D:\DevCenter\xampp\php-8.3.23\php.exe artisan cache:clear >nul 2>&1
+echo ✓ Caches cleared
 
+REM Start Vite development server in persistent window
+echo [4/4] Starting Vite development server...
+start "Vite Dev Server - Alumni Platform" cmd /k "echo Starting Vite Dev Server... && npm run dev"
+echo ✓ Vite server starting in separate window...
+
+REM Wait for Vite to initialize with better error handling
+echo Waiting for Vite to initialize on http://127.0.0.1:5100 ...
+set /a WAITED=0
+set /a TIMEOUT=60
+:WAIT_VITE
+REM Try to fetch Vite client endpoint using PowerShell
+powershell -Command "try { $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:5100/@vite/client' -UseBasicParsing -TimeoutSec 3; if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { exit 1 }"
+if %errorlevel%==0 (
+  echo ✓ Vite is ready after %WAITED%s
+  goto START_LARAVEL
+) else (
+  if %WAITED% GEQ %TIMEOUT% (
+    echo ⚠ Vite did not become ready within %TIMEOUT%s
+    echo ⚠ Check the Vite window for errors
+    echo ⚠ Continuing with Laravel anyway...
+    goto START_LARAVEL
+  ) else (
+    set /a WAITED+=3
+    echo   ... waiting (%WAITED%s/%TIMEOUT%s)
+    timeout /t 3 /nobreak >nul
+    goto WAIT_VITE
+  )
+)
+
+:START_LARAVEL
+echo.
+echo ========================================
+echo   STARTING LARAVEL SERVER
+echo ========================================
+echo.
+echo ✓ Vite Dev Server: http://127.0.0.1:5100
+echo ✓ Laravel Server: http://127.0.0.1:8080 (starting...)
+echo.
+echo Both servers will run independently.
+echo Close this window to stop Laravel server.
+echo Close the Vite window to stop Vite server.
+echo.
+echo Laravel server output:
+echo ----------------------------------------
+
+REM Start Laravel server in persistent mode
+start "Laravel Server - Alumni Platform" cmd /k "echo Starting Laravel Server... && D:\DevCenter\xampp\php-8.3.23\php.exe artisan serve --host=127.0.0.1 --port=8080"
+
+REM Show status and keep main window open for monitoring
 echo.
 echo ========================================
 echo   DEVELOPMENT SERVERS RUNNING
 echo ========================================
 echo.
-echo ^> Laravel Application: http://127.0.0.1:8080
-echo   - Super Admin: admin@system.com / password
-echo   - Institution Admin: admin@tech-institute.edu / password
-echo   - Graduate: john.smith@student.edu / password
-echo   - Employer: techcorp@company.com / password
+echo ✅ Vite Dev Server: http://127.0.0.1:5100
+echo ✅ Laravel Server: http://127.0.0.1:8080
 echo.
-echo ^> Vite Dev Server: http://localhost:5173 (for assets only)
+echo Both servers are running in separate windows.
 echo.
-echo ========================================
-echo   QUICK ACCESS LINKS
-echo ========================================
+echo 🔍 MONITORING:
+echo - Check Vite window for frontend compilation
+echo - Check Laravel window for backend logs
+echo - Both servers will auto-reload on file changes
 echo.
-echo ^> Super Admin Dashboard: http://127.0.0.1:8080/super-admin/dashboard
-echo ^> Login Page: http://127.0.0.1:8080/login
-echo ^> Register Page: http://127.0.0.1:8080/register
+echo 🛑 TO STOP:
+echo - Close individual server windows, OR
+echo - Press Ctrl+C in this window to stop monitoring
 echo.
-echo ========================================
-echo.
-echo Opening Laravel application in browser...
-timeout /t 2 /nobreak >nul
-start http://127.0.0.1:8080
-
-echo.
-echo Press any key to stop all servers...
+echo Press any key to open both URLs in browser...
 pause >nul
 
+REM Open both URLs in default browser
+start http://127.0.0.1:8080
+start http://127.0.0.1:5100
+
 echo.
-echo Stopping servers...
-taskkill /f /im php.exe 2>nul
-taskkill /f /im node.exe 2>nul
+echo ✓ URLs opened in browser
 echo.
-echo ========================================
-echo   All servers stopped. Goodbye!
-echo ========================================
+echo This monitoring window will stay open.
+echo Close it when you're done developing.
+echo.
+
+:MONITOR_LOOP
+echo [%time%] Monitoring servers... (Press Ctrl+C to stop)
+timeout /t 30 /nobreak >nul
+goto MONITOR_LOOP

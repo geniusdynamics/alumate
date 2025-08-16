@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SuccessStory;
 use App\Models\Course;
 use App\Models\Institution;
+use App\Models\SuccessStory;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class SuccessStoryController extends Controller
 {
@@ -37,9 +37,9 @@ class SuccessStoryController extends Controller
         if ($request->filled('search')) {
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('content', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('key_achievements', 'like', '%' . $searchTerm . '%');
+                $q->where('title', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('content', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('key_achievements', 'like', '%'.$searchTerm.'%');
             });
         }
 
@@ -71,7 +71,7 @@ class SuccessStoryController extends Controller
     public function create()
     {
         $user = Auth::user();
-        
+
         $categories = ['career_advancement', 'entrepreneurship', 'community_impact', 'academic_achievement', 'personal_growth', 'innovation'];
 
         return Inertia::render('Stories/Create', [
@@ -82,7 +82,7 @@ class SuccessStoryController extends Controller
     public function myStories()
     {
         $user = Auth::user();
-        
+
         // Get user's success stories
         $myStories = SuccessStory::where('user_id', $user->id)
             ->latest()
@@ -110,7 +110,7 @@ class SuccessStoryController extends Controller
     public function show(SuccessStory $story)
     {
         $story->load(['user.graduate.course', 'user.graduate.institution']);
-        
+
         // Increment view count
         $story->increment('view_count');
 
@@ -125,7 +125,7 @@ class SuccessStoryController extends Controller
         $similarStories = SuccessStory::where('id', '!=', $story->id)
             ->whereHas('user.graduate', function ($query) use ($story) {
                 $query->where('course_id', $story->user->graduate->course_id)
-                      ->orWhere('institution_id', $story->user->graduate->institution_id);
+                    ->orWhere('institution_id', $story->user->graduate->institution_id);
             })
             ->where('status', 'published')
             ->limit(3)
@@ -138,10 +138,71 @@ class SuccessStoryController extends Controller
         ]);
     }
 
+    /**
+     * Public success stories index (accessible without authentication)
+     */
+    public function publicIndex(Request $request)
+    {
+        // Build query for success stories (only published)
+        $query = SuccessStory::with(['user.graduate.course', 'user.graduate.institution'])
+            ->where('status', 'published');
+
+        // Apply filters
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('course_id')) {
+            $query->whereHas('user.graduate', function ($q) use ($request) {
+                $q->where('course_id', $request->course_id);
+            });
+        }
+
+        if ($request->filled('institution_id')) {
+            $query->whereHas('user.graduate', function ($q) use ($request) {
+                $q->where('institution_id', $request->institution_id);
+            });
+        }
+
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('title', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('content', 'like', '%'.$searchTerm.'%')
+                    ->orWhere('key_achievements', 'like', '%'.$searchTerm.'%');
+            });
+        }
+
+        $stories = $query->latest()->paginate(20);
+
+        // Get filter options
+        $courses = Course::all();
+        $institutions = Institution::all();
+        $categories = ['career_advancement', 'entrepreneurship', 'community_impact', 'academic_achievement', 'personal_growth', 'innovation'];
+
+        // Get featured stories
+        $featuredStories = SuccessStory::where('is_featured', true)
+            ->where('status', 'published')
+            ->with(['user.graduate.course'])
+            ->latest()
+            ->limit(3)
+            ->get();
+
+        return Inertia::render('Stories/PublicIndex', [
+            'stories' => $stories,
+            'featuredStories' => $featuredStories,
+            'courses' => $courses,
+            'institutions' => $institutions,
+            'categories' => $categories,
+            'filters' => $request->only(['category', 'course_id', 'institution_id', 'search']),
+            'auth_required' => true, // Show login prompt for creating stories
+        ]);
+    }
+
     private function getStoryPrompts($user)
     {
         $graduate = $user->graduate;
-        if (!$graduate) {
+        if (! $graduate) {
             return [];
         }
 

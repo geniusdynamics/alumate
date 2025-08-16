@@ -16,10 +16,15 @@ class NotificationTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $graduateUser;
+
     protected $graduate;
+
     protected $employerUser;
+
     protected $employer;
+
     protected $job;
 
     protected function setUp(): void

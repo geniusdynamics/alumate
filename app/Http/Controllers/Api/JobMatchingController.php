@@ -3,17 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\JobPosting;
 use App\Models\JobApplication;
-use App\Models\JobMatchScore;
+use App\Models\JobPosting;
 use App\Services\JobMatchingService;
 use App\Services\NotificationService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rule;
 
 class JobMatchingController extends Controller
 {
@@ -38,7 +36,7 @@ class JobMatchingController extends Controller
             ->with(['company', 'postedBy'])
             ->whereHas('matchScores', function ($q) use ($user, $minScore) {
                 $q->where('user_id', $user->id)
-                  ->where('score', '>=', $minScore);
+                    ->where('score', '>=', $minScore);
             });
 
         // Apply filters
@@ -55,7 +53,7 @@ class JobMatchingController extends Controller
         // Transform jobs with match data
         $jobs->getCollection()->transform(function ($job) use ($user) {
             $matchScore = $job->getMatchScoreForUser($user);
-            
+
             return [
                 'id' => $job->id,
                 'title' => $job->title,
@@ -93,7 +91,7 @@ class JobMatchingController extends Controller
                 'user_applications' => JobApplication::where('user_id', $user->id)
                     ->active()
                     ->count(),
-            ]
+            ],
         ]);
     }
 
@@ -103,14 +101,14 @@ class JobMatchingController extends Controller
     public function getJobDetails(Request $request, int $jobId): JsonResponse
     {
         $user = Auth::user();
-        
+
         $job = JobPosting::with(['company', 'postedBy', 'applications'])
             ->findOrFail($jobId);
 
-        if (!$job->isActive()) {
+        if (! $job->isActive()) {
             return response()->json([
                 'success' => false,
-                'message' => 'This job posting is no longer active.'
+                'message' => 'This job posting is no longer active.',
             ], 404);
         }
 
@@ -182,7 +180,7 @@ class JobMatchingController extends Controller
                     'introduction_requested' => $userApplication->hasIntroductionRequest(),
                 ] : null,
                 'application_count' => $job->applications()->count(),
-            ]
+            ],
         ]);
     }
 
@@ -192,7 +190,7 @@ class JobMatchingController extends Controller
     public function apply(Request $request, int $jobId): JsonResponse
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'cover_letter' => 'required|string|max:2000',
             'resume' => 'nullable|file|mimes:pdf,doc,docx|max:5120', // 5MB max
@@ -201,10 +199,10 @@ class JobMatchingController extends Controller
 
         $job = JobPosting::findOrFail($jobId);
 
-        if (!$job->isActive()) {
+        if (! $job->isActive()) {
             return response()->json([
                 'success' => false,
-                'message' => 'This job posting is no longer active.'
+                'message' => 'This job posting is no longer active.',
             ], 400);
         }
 
@@ -216,7 +214,7 @@ class JobMatchingController extends Controller
         if ($existingApplication) {
             return response()->json([
                 'success' => false,
-                'message' => 'You have already applied for this position.'
+                'message' => 'You have already applied for this position.',
             ], 400);
         }
 
@@ -266,15 +264,15 @@ class JobMatchingController extends Controller
                     'application_id' => $application->id,
                     'status' => $application->status,
                     'applied_at' => $application->applied_at,
-                ]
+                ],
             ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to submit application. Please try again.'
+                'message' => 'Failed to submit application. Please try again.',
             ], 500);
         }
     }
@@ -285,7 +283,7 @@ class JobMatchingController extends Controller
     public function requestIntroduction(Request $request, int $jobId): JsonResponse
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'contact_id' => 'required|exists:users,id',
             'message' => 'required|string|max:500',
@@ -296,14 +294,14 @@ class JobMatchingController extends Controller
 
         // Verify the contact actually works at the company
         $worksAtCompany = $contact->careerTimelines()
-            ->where('company', 'ILIKE', '%' . $job->company->name . '%')
+            ->where('company', 'ILIKE', '%'.$job->company->name.'%')
             ->where('is_current', true)
             ->exists();
 
-        if (!$worksAtCompany) {
+        if (! $worksAtCompany) {
             return response()->json([
                 'success' => false,
-                'message' => 'The selected contact does not appear to work at this company.'
+                'message' => 'The selected contact does not appear to work at this company.',
             ], 400);
         }
 
@@ -313,10 +311,10 @@ class JobMatchingController extends Controller
             ->where('status', 'accepted')
             ->exists();
 
-        if (!$areConnected) {
+        if (! $areConnected) {
             return response()->json([
                 'success' => false,
-                'message' => 'You must be connected with this person to request an introduction.'
+                'message' => 'You must be connected with this person to request an introduction.',
             ], 400);
         }
 
@@ -330,7 +328,7 @@ class JobMatchingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Introduction request sent successfully!'
+            'message' => 'Introduction request sent successfully!',
         ]);
     }
 
@@ -341,21 +339,21 @@ class JobMatchingController extends Controller
     {
         $user = Auth::user();
         $job = JobPosting::findOrFail($jobId);
-        
+
         $mutualConnections = $this->jobMatchingService->findMutualConnections($user, $job);
 
         return response()->json([
             'success' => true,
             'data' => $mutualConnections->map(function ($connection) {
                 $currentRole = $connection->careerTimelines->first();
-                
+
                 return [
                     'id' => $connection->id,
                     'name' => $connection->name,
                     'avatar_url' => $connection->avatar_url,
                     'title' => $currentRole?->title,
                     'department' => $currentRole?->department,
-                    'tenure' => $currentRole?->start_date ? 
+                    'tenure' => $currentRole?->start_date ?
                         $currentRole->start_date->diffForHumans() : null,
                     'mutual_circles' => $user->circles()
                         ->whereIn('id', $connection->circles->pluck('id'))
@@ -363,7 +361,7 @@ class JobMatchingController extends Controller
                         ->toArray(),
                     'can_request_introduction' => true,
                 ];
-            })
+            }),
         ]);
     }
 
@@ -410,7 +408,7 @@ class JobMatchingController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $applications
+            'data' => $applications,
         ]);
     }
 }

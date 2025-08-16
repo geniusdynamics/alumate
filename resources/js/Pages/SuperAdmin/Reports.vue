@@ -273,7 +273,7 @@
 <script setup>
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import AdminLayout from '@/Components/AdminLayout.vue';
+import AdminLayout from '@/components/AdminLayout.vue';
 import {
     ArrowLeftIcon,
     DocumentArrowDownIcon,

@@ -14,6 +14,7 @@ class AssistanceRequestController extends Controller
     {
         $graduate = Graduate::where('email', Auth::user()->email)->firstOrFail();
         $assistanceRequests = AssistanceRequest::where('graduate_id', $graduate->id)->get();
+
         return Inertia::render('Assistance/Index', ['assistanceRequests' => $assistanceRequests]);
     }
 

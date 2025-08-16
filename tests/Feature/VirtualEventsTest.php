@@ -15,18 +15,18 @@ class VirtualEventsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Mock Jitsi configuration
         config([
             'services.jitsi.domain' => 'meet.jit.si',
-            'services.jitsi.default_config' => []
+            'services.jitsi.default_config' => [],
         ]);
     }
 
     public function test_can_create_virtual_event_with_jitsi_meeting()
     {
         $user = User::factory()->create();
-        
+
         $eventData = [
             'title' => 'Virtual Alumni Meetup',
             'description' => 'A virtual meetup for alumni',
@@ -41,16 +41,16 @@ class VirtualEventsTest extends TestCase
                     'waiting_room_enabled' => false,
                     'chat_enabled' => true,
                     'screen_sharing_enabled' => true,
-                    'recording_enabled' => false
-                ]
-            ]
+                    'recording_enabled' => false,
+                ],
+            ],
         ];
 
         $response = $this->actingAs($user)
             ->postJson('/api/events', $eventData);
 
         $response->assertStatus(201);
-        
+
         $event = Event::first();
         $this->assertEquals('jitsi', $event->meeting_platform);
         $this->assertNotNull($event->jitsi_room_id);
@@ -61,7 +61,7 @@ class VirtualEventsTest extends TestCase
     public function test_can_create_hybrid_event_with_jitsi_meeting()
     {
         $user = User::factory()->create();
-        
+
         $eventData = [
             'title' => 'Hybrid Alumni Conference',
             'description' => 'A hybrid conference for alumni',
@@ -78,16 +78,16 @@ class VirtualEventsTest extends TestCase
                     'waiting_room_enabled' => true,
                     'chat_enabled' => true,
                     'screen_sharing_enabled' => true,
-                    'recording_enabled' => true
-                ]
-            ]
+                    'recording_enabled' => true,
+                ],
+            ],
         ];
 
         $response = $this->actingAs($user)
             ->postJson('/api/events', $eventData);
 
         $response->assertStatus(201);
-        
+
         $event = Event::first();
         $this->assertEquals('hybrid', $event->format);
         $this->assertEquals('jitsi', $event->meeting_platform);
@@ -98,7 +98,7 @@ class VirtualEventsTest extends TestCase
     public function test_can_create_event_with_manual_meeting_url()
     {
         $user = User::factory()->create();
-        
+
         $eventData = [
             'title' => 'Zoom Alumni Meetup',
             'description' => 'A virtual meetup using Zoom',
@@ -112,16 +112,16 @@ class VirtualEventsTest extends TestCase
                 'settings' => [
                     'meeting_url' => 'https://zoom.us/j/123456789',
                     'meeting_password' => 'password123',
-                    'meeting_instructions' => 'Join via Zoom app or browser'
-                ]
-            ]
+                    'meeting_instructions' => 'Join via Zoom app or browser',
+                ],
+            ],
         ];
 
         $response = $this->actingAs($user)
             ->postJson('/api/events', $eventData);
 
         $response->assertStatus(201);
-        
+
         $event = Event::first();
         $this->assertEquals('zoom', $event->meeting_platform);
         $this->assertEquals('https://zoom.us/j/123456789', $event->meeting_url);
@@ -132,7 +132,7 @@ class VirtualEventsTest extends TestCase
     {
         $event = Event::factory()->create([
             'title' => 'Test Virtual Event',
-            'format' => 'virtual'
+            'format' => 'virtual',
         ]);
 
         $jitsiService = app(JitsiMeetService::class);
@@ -142,8 +142,8 @@ class VirtualEventsTest extends TestCase
         $this->assertArrayHasKey('meeting_url', $meetingData);
         $this->assertArrayHasKey('embed_url', $meetingData);
         $this->assertArrayHasKey('config', $meetingData);
-        
-        $this->assertStringContains('alumni-' . $event->id, $meetingData['room_id']);
+
+        $this->assertStringContains('alumni-'.$event->id, $meetingData['room_id']);
         $this->assertStringContains('meet.jit.si', $meetingData['meeting_url']);
     }
 
@@ -177,7 +177,7 @@ class VirtualEventsTest extends TestCase
             'chat_enabled' => true,
             'screen_sharing_enabled' => true,
             'recording_enabled' => false,
-            'waiting_room_enabled' => false
+            'waiting_room_enabled' => false,
         ]);
 
         $jitsiService = app(JitsiMeetService::class);
@@ -201,20 +201,20 @@ class VirtualEventsTest extends TestCase
             'meeting_platform' => 'jitsi',
             'jitsi_room_id' => 'alumni-123-test-event',
             'chat_enabled' => true,
-            'recording_enabled' => false
+            'recording_enabled' => false,
         ]);
 
         $newSettings = [
             'chat_enabled' => false,
             'recording_enabled' => true,
-            'waiting_room_enabled' => true
+            'waiting_room_enabled' => true,
         ];
 
         $response = $this->actingAs($user)
             ->putJson("/api/events/{$event->id}/virtual-settings", $newSettings);
 
         $response->assertStatus(200);
-        
+
         $event->refresh();
         $this->assertFalse($event->chat_enabled);
         $this->assertTrue($event->recording_enabled);
@@ -226,23 +226,23 @@ class VirtualEventsTest extends TestCase
         $organizer = User::factory()->create();
         $registeredUser = User::factory()->create();
         $unregisteredUser = User::factory()->create();
-        
+
         $event = Event::factory()->create([
             'organizer_id' => $organizer->id,
             'format' => 'virtual',
-            'meeting_platform' => 'jitsi'
+            'meeting_platform' => 'jitsi',
         ]);
 
         // Register one user
         $event->registrations()->create([
             'user_id' => $registeredUser->id,
-            'status' => 'registered'
+            'status' => 'registered',
         ]);
 
         // Test registered user can see virtual event details
         $response = $this->actingAs($registeredUser)
             ->getJson("/api/events/{$event->id}");
-        
+
         $response->assertStatus(200);
         $eventData = $response->json();
         $this->assertTrue($eventData['user_data']['is_registered']);
@@ -250,7 +250,7 @@ class VirtualEventsTest extends TestCase
         // Test unregistered user cannot see meeting details
         $response = $this->actingAs($unregisteredUser)
             ->getJson("/api/events/{$event->id}");
-        
+
         $response->assertStatus(200);
         $eventData = $response->json();
         $this->assertFalse($eventData['user_data']['is_registered']);

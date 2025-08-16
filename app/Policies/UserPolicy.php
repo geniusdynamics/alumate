@@ -61,7 +61,7 @@ class UserPolicy
         }
 
         // Institution admins can update users in their institution
-        if ($user->hasRole('institution-admin') && 
+        if ($user->hasRole('institution-admin') &&
             $user->institution_id === $model->institution_id &&
             $user->hasPermissionTo('manage-users')) {
             return true;
@@ -86,9 +86,9 @@ class UserPolicy
         }
 
         // Institution admins can delete users in their institution (except other admins)
-        if ($user->hasRole('institution-admin') && 
+        if ($user->hasRole('institution-admin') &&
             $user->institution_id === $model->institution_id &&
-            !$model->hasRole('institution-admin') &&
+            ! $model->hasRole('institution-admin') &&
             $user->hasPermissionTo('manage-users')) {
             return true;
         }
@@ -128,9 +128,9 @@ class UserPolicy
         }
 
         // Institution admins can suspend users in their institution (except other admins)
-        if ($user->hasRole('institution-admin') && 
+        if ($user->hasRole('institution-admin') &&
             $user->institution_id === $model->institution_id &&
-            !$model->hasRole('institution-admin') &&
+            ! $model->hasRole('institution-admin') &&
             $user->hasPermissionTo('manage-users')) {
             return true;
         }
@@ -149,7 +149,7 @@ class UserPolicy
         }
 
         // Institution admins can manage roles for users in their institution (limited roles)
-        if ($user->hasRole('institution-admin') && 
+        if ($user->hasRole('institution-admin') &&
             $user->institution_id === $model->institution_id &&
             $user->hasPermissionTo('manage-users')) {
             return true;
@@ -174,7 +174,7 @@ class UserPolicy
         }
 
         // Institution admins can view activity logs for users in their institution
-        if ($user->hasRole('institution-admin') && 
+        if ($user->hasRole('institution-admin') &&
             $user->institution_id === $model->institution_id) {
             return true;
         }

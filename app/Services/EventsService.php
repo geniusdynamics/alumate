@@ -3,14 +3,12 @@
 namespace App\Services;
 
 use App\Models\Event;
-use App\Models\EventRegistration;
 use App\Models\EventCheckIn;
+use App\Models\EventRegistration;
 use App\Models\User;
-use App\Services\JitsiMeetService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class EventsService
 {
@@ -20,57 +18,58 @@ class EventsService
     {
         $this->jitsiMeetService = $jitsiMeetService;
     }
+
     public function getEventsForUser(User $user, array $filters = [], int $perPage = 15): LengthAwarePaginator
     {
         $query = Event::published()
             ->with(['organizer', 'institution'])
             ->where(function ($q) use ($user) {
                 $q->where('visibility', 'public')
-                  ->orWhere(function ($subQ) use ($user) {
-                      $subQ->where('visibility', 'alumni_only')
-                           ->where(function ($roleQ) use ($user) {
-                               $roleQ->whereHas('organizer', function ($orgQ) use ($user) {
-                                   // User can see events from their circles/groups
-                                   $orgQ->whereIn('id', $this->getUserNetworkIds($user));
-                               });
-                           });
-                  })
-                  ->orWhere(function ($subQ) use ($user) {
-                      $subQ->where('visibility', 'institution_only')
-                           ->where('institution_id', $user->institution_id);
-                  })
-                  ->orWhere('organizer_id', $user->id);
+                    ->orWhere(function ($subQ) use ($user) {
+                        $subQ->where('visibility', 'alumni_only')
+                            ->where(function ($roleQ) use ($user) {
+                                $roleQ->whereHas('organizer', function ($orgQ) use ($user) {
+                                    // User can see events from their circles/groups
+                                    $orgQ->whereIn('id', $this->getUserNetworkIds($user));
+                                });
+                            });
+                    })
+                    ->orWhere(function ($subQ) use ($user) {
+                        $subQ->where('visibility', 'institution_only')
+                            ->where('institution_id', $user->institution_id);
+                    })
+                    ->orWhere('organizer_id', $user->id);
             });
 
         // Apply filters
-        if (!empty($filters['type'])) {
+        if (! empty($filters['type'])) {
             $query->where('type', $filters['type']);
         }
 
-        if (!empty($filters['format'])) {
+        if (! empty($filters['format'])) {
             $query->where('format', $filters['format']);
         }
 
-        if (!empty($filters['date_range'])) {
+        if (! empty($filters['date_range'])) {
             $this->applyDateFilter($query, $filters['date_range']);
         }
 
-        if (!empty($filters['location']) && !empty($filters['radius'])) {
+        if (! empty($filters['location']) && ! empty($filters['radius'])) {
             $location = $filters['location'];
             $radius = $filters['radius'];
             $query->nearLocation($location['lat'], $location['lng'], $radius);
         }
 
-        if (!empty($filters['tags'])) {
+        if (! empty($filters['tags'])) {
             $query->whereJsonContains('tags', $filters['tags']);
         }
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'ILIKE', "%{$search}%")
-                  ->orWhere('description', 'ILIKE', "%{$search}%")
-                  ->orWhere('venue_name', 'ILIKE', "%{$search}%");
+                    ->orWhere('description', 'ILIKE', "%{$search}%")
+                    ->orWhere('venue_name', 'ILIKE', "%{$search}%");
             });
         }
 
@@ -106,6 +105,7 @@ class EventsService
     public function updateEvent(Event $event, array $data): Event
     {
         $event->update($data);
+
         return $event->load(['organizer', 'institution']);
     }
 
@@ -118,7 +118,7 @@ class EventsService
 
         // Check capacity
         $totalAttendees = 1 + ($registrationData['guests_count'] ?? 0);
-        if (!$event->hasCapacity() || $event->getAvailableSpots() < $totalAttendees) {
+        if (! $event->hasCapacity() || $event->getAvailableSpots() < $totalAttendees) {
             // Add to waitlist if capacity is full
             $status = 'waitlisted';
         } else {
@@ -144,17 +144,17 @@ class EventsService
         });
     }
 
-    public function cancelRegistration(Event $event, User $user, string $reason = null): void
+    public function cancelRegistration(Event $event, User $user, ?string $reason = null): void
     {
         $registration = $event->getUserRegistration($user);
-        
-        if (!$registration || !$registration->canCancel()) {
+
+        if (! $registration || ! $registration->canCancel()) {
             throw new \Exception('Cannot cancel this registration.');
         }
 
         DB::transaction(function () use ($registration, $reason, $event) {
             $registration->cancel($reason);
-            
+
             // If there's a waitlist, promote the next person
             $this->promoteFromWaitlist($event);
         });
@@ -163,8 +163,8 @@ class EventsService
     public function checkInUser(Event $event, User $user, array $checkInData = []): EventCheckIn
     {
         $registration = $event->getUserRegistration($user);
-        
-        if (!$registration || !$registration->canCheckIn()) {
+
+        if (! $registration || ! $registration->canCheckIn()) {
             throw new \Exception('User cannot check in for this event.');
         }
 
@@ -209,11 +209,11 @@ class EventsService
             'total_attended' => $registrations->where('status', 'attended')->count(),
             'total_no_show' => $registrations->where('status', 'no_show')->count(),
             'total_guests' => $registrations->sum('guests_count'),
-            'check_in_rate' => $registrations->where('status', 'registered')->count() > 0 
-                ? ($checkIns->count() / $registrations->where('status', 'registered')->count()) * 100 
+            'check_in_rate' => $registrations->where('status', 'registered')->count() > 0
+                ? ($checkIns->count() / $registrations->where('status', 'registered')->count()) * 100
                 : 0,
-            'capacity_utilization' => $event->max_capacity 
-                ? ($event->current_attendees / $event->max_capacity) * 100 
+            'capacity_utilization' => $event->max_capacity
+                ? ($event->current_attendees / $event->max_capacity) * 100
                 : null,
             'registration_timeline' => $this->getRegistrationTimeline($event),
         ];
@@ -226,7 +226,7 @@ class EventsService
             ->where(function ($q) use ($user) {
                 $q->whereHas('registrations', function ($regQ) use ($user) {
                     $regQ->where('user_id', $user->id)
-                         ->whereIn('status', ['registered', 'waitlisted']);
+                        ->whereIn('status', ['registered', 'waitlisted']);
                 });
             })
             ->with(['organizer', 'institution'])
@@ -244,14 +244,14 @@ class EventsService
                 // Events from user's institution
                 $q->where('institution_id', $user->institution_id)
                   // Events in user's location (if available)
-                  ->orWhere(function ($locQ) use ($user) {
-                      if ($user->location) {
-                          // This would need geocoding to work properly
-                          $locQ->where('venue_address', 'ILIKE', "%{$user->location}%");
-                      }
-                  })
+                    ->orWhere(function ($locQ) use ($user) {
+                        if ($user->location) {
+                            // This would need geocoding to work properly
+                            $locQ->where('venue_address', 'ILIKE', "%{$user->location}%");
+                        }
+                    })
                   // Events from user's network
-                  ->orWhereIn('organizer_id', $this->getUserNetworkIds($user));
+                    ->orWhereIn('organizer_id', $this->getUserNetworkIds($user));
             })
             ->whereDoesntHave('registrations', function ($regQ) use ($user) {
                 $regQ->where('user_id', $user->id);
@@ -265,7 +265,7 @@ class EventsService
     private function applyDateFilter($query, string $dateRange): void
     {
         $now = now();
-        
+
         switch ($dateRange) {
             case 'today':
                 $query->whereDate('start_date', $now->toDateString());
@@ -276,25 +276,25 @@ class EventsService
             case 'this_week':
                 $query->whereBetween('start_date', [
                     $now->startOfWeek(),
-                    $now->endOfWeek()
+                    $now->endOfWeek(),
                 ]);
                 break;
             case 'next_week':
                 $query->whereBetween('start_date', [
                     $now->addWeek()->startOfWeek(),
-                    $now->endOfWeek()
+                    $now->endOfWeek(),
                 ]);
                 break;
             case 'this_month':
                 $query->whereBetween('start_date', [
                     $now->startOfMonth(),
-                    $now->endOfMonth()
+                    $now->endOfMonth(),
                 ]);
                 break;
             case 'next_month':
                 $query->whereBetween('start_date', [
                     $now->addMonth()->startOfMonth(),
-                    $now->endOfMonth()
+                    $now->endOfMonth(),
                 ]);
                 break;
         }
@@ -302,7 +302,7 @@ class EventsService
 
     private function promoteFromWaitlist(Event $event): void
     {
-        if (!$event->hasCapacity()) {
+        if (! $event->hasCapacity()) {
             return;
         }
 
@@ -340,11 +340,11 @@ class EventsService
     private function setupVirtualMeeting(Event $event, array $data): void
     {
         $meetingPlatform = $data['meeting_platform'] ?? 'jitsi';
-        
+
         if ($meetingPlatform === 'jitsi') {
             // Auto-create Jitsi Meet room
             $meetingData = $this->jitsiMeetService->createMeeting($event->id, $event->title);
-            
+
             $event->update([
                 'jitsi_room_id' => $meetingData['room_id'],
                 'meeting_url' => $meetingData['meeting_url'],
@@ -373,7 +373,7 @@ class EventsService
             // Update Jitsi configuration
             $currentConfig = $event->jitsi_config ?? [];
             $newConfig = array_merge($currentConfig, $settings);
-            
+
             $event->update([
                 'jitsi_config' => $newConfig,
                 'waiting_room_enabled' => $settings['waiting_room_enabled'] ?? $event->waiting_room_enabled,
@@ -402,7 +402,7 @@ class EventsService
      */
     public function getMeetingCredentials(Event $event): array
     {
-        if (!$event->isVirtual()) {
+        if (! $event->isVirtual()) {
             return [];
         }
 

@@ -34,12 +34,16 @@ trait HasGraduateAuditLog
     public function logEmploymentUpdate($oldStatus, $newStatus, $jobDetails = [])
     {
         $description = "Employment status changed from '{$oldStatus}' to '{$newStatus}'";
-        if (!empty($jobDetails)) {
+        if (! empty($jobDetails)) {
             $details = [];
-            if (isset($jobDetails['job_title'])) $details[] = "Job: {$jobDetails['job_title']}";
-            if (isset($jobDetails['company'])) $details[] = "Company: {$jobDetails['company']}";
-            if (!empty($details)) {
-                $description .= " (" . implode(', ', $details) . ")";
+            if (isset($jobDetails['job_title'])) {
+                $details[] = "Job: {$jobDetails['job_title']}";
+            }
+            if (isset($jobDetails['company'])) {
+                $details[] = "Company: {$jobDetails['company']}";
+            }
+            if (! empty($details)) {
+                $description .= ' ('.implode(', ', $details).')';
             }
         }
 
@@ -48,7 +52,7 @@ trait HasGraduateAuditLog
 
     public function logPrivacyUpdate($changes)
     {
-        $description = "Privacy settings updated: " . implode(', ', array_keys($changes));
+        $description = 'Privacy settings updated: '.implode(', ', array_keys($changes));
         $this->logAuditTrail('privacy_updated', $description, null, null, null, $changes);
     }
 }

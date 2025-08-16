@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\SuccessStory;
-use App\Models\User;
 use App\Models\StudentAlumniConnection;
+use App\Models\SuccessStory;
 use App\Services\SuccessStoryService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class StudentAlumniStoryController extends Controller
 {
@@ -25,9 +23,9 @@ class StudentAlumniStoryController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required to access alumni stories'
+                'message' => 'Student profile required to access alumni stories',
             ], 403);
         }
 
@@ -40,7 +38,7 @@ class StudentAlumniStoryController extends Controller
             'course_id',
             'career_interest',
             'company',
-            'role'
+            'role',
         ]);
 
         // Add student-specific filtering
@@ -54,7 +52,7 @@ class StudentAlumniStoryController extends Controller
                 'career_interests' => $studentProfile->career_interests,
                 'course' => $studentProfile->course->name ?? null,
                 'graduation_year' => $studentProfile->expected_graduation_year,
-            ]
+            ],
         ]);
     }
 
@@ -66,9 +64,9 @@ class StudentAlumniStoryController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -82,7 +80,7 @@ class StudentAlumniStoryController extends Controller
                 'career_interests' => $studentProfile->career_interests,
                 'skills' => $studentProfile->skills,
                 'course' => $studentProfile->course->name ?? null,
-            ]
+            ],
         ]);
     }
 
@@ -93,9 +91,9 @@ class StudentAlumniStoryController extends Controller
     {
         $careerPath = $request->get('career_path');
 
-        if (!$careerPath) {
+        if (! $careerPath) {
             return response()->json([
-                'message' => 'Career path parameter required'
+                'message' => 'Career path parameter required',
             ], 400);
         }
 
@@ -103,9 +101,9 @@ class StudentAlumniStoryController extends Controller
             ->published()
             ->where(function ($query) use ($careerPath) {
                 $query->where('industry', 'like', "%{$careerPath}%")
-                      ->orWhere('current_role', 'like', "%{$careerPath}%")
-                      ->orWhere('achievement_type', 'like', "%{$careerPath}%")
-                      ->orWhereJsonContains('tags', $careerPath);
+                    ->orWhere('current_role', 'like', "%{$careerPath}%")
+                    ->orWhere('achievement_type', 'like', "%{$careerPath}%")
+                    ->orWhereJsonContains('tags', $careerPath);
             })
             ->orderBy('is_featured', 'desc')
             ->orderBy('view_count', 'desc')
@@ -114,7 +112,7 @@ class StudentAlumniStoryController extends Controller
         return response()->json([
             'success' => true,
             'data' => $stories,
-            'career_path' => $careerPath
+            'career_path' => $careerPath,
         ]);
     }
 
@@ -126,9 +124,9 @@ class StudentAlumniStoryController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -144,7 +142,7 @@ class StudentAlumniStoryController extends Controller
         return response()->json([
             'success' => true,
             'data' => $stories,
-            'course' => $studentProfile->course->name ?? null
+            'course' => $studentProfile->course->name ?? null,
         ]);
     }
 
@@ -166,7 +164,7 @@ class StudentAlumniStoryController extends Controller
         return response()->json([
             'success' => true,
             'data' => $stories,
-            'year_range' => "{$fiveYearsAgo} - {$currentYear}"
+            'year_range' => "{$fiveYearsAgo} - {$currentYear}",
         ]);
     }
 
@@ -178,15 +176,15 @@ class StudentAlumniStoryController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile || !$studentProfile->canConnectWithAlumni()) {
+        if (! $studentProfile || ! $studentProfile->canConnectWithAlumni()) {
             return response()->json([
-                'message' => 'Not authorized to connect with alumni'
+                'message' => 'Not authorized to connect with alumni',
             ], 403);
         }
 
         $validated = $request->validate([
             'message' => 'required|string|max:500',
-            'connection_type' => 'required|in:mentorship,networking,advice,collaboration'
+            'connection_type' => 'required|in:mentorship,networking,advice,collaboration',
         ]);
 
         // Check if connection already exists
@@ -198,7 +196,7 @@ class StudentAlumniStoryController extends Controller
         if ($existingConnection) {
             return response()->json([
                 'message' => 'Connection request already exists',
-                'status' => $existingConnection->status
+                'status' => $existingConnection->status,
             ], 400);
         }
 
@@ -221,7 +219,7 @@ class StudentAlumniStoryController extends Controller
                 'name' => $story->user->name,
                 'role' => $story->current_role,
                 'company' => $story->current_company,
-            ]
+            ],
         ]);
     }
 
@@ -233,9 +231,9 @@ class StudentAlumniStoryController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -246,7 +244,7 @@ class StudentAlumniStoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $connections
+            'data' => $connections,
         ]);
     }
 
@@ -258,9 +256,9 @@ class StudentAlumniStoryController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -268,7 +266,7 @@ class StudentAlumniStoryController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $insights
+            'data' => $insights,
         ]);
     }
 
@@ -281,41 +279,41 @@ class StudentAlumniStoryController extends Controller
             ->published();
 
         // Apply standard filters
-        if (!empty($filters['industry'])) {
+        if (! empty($filters['industry'])) {
             $query->byIndustry($filters['industry']);
         }
 
-        if (!empty($filters['achievement_type'])) {
+        if (! empty($filters['achievement_type'])) {
             $query->byAchievementType($filters['achievement_type']);
         }
 
-        if (!empty($filters['graduation_year'])) {
+        if (! empty($filters['graduation_year'])) {
             $query->byGraduationYear($filters['graduation_year']);
         }
 
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('summary', 'like', "%{$search}%")
-                  ->orWhere('current_role', 'like', "%{$search}%")
-                  ->orWhere('current_company', 'like', "%{$search}%");
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('current_role', 'like', "%{$search}%")
+                    ->orWhere('current_company', 'like', "%{$search}%");
             });
         }
 
         // Student-specific filters
-        if (!empty($filters['course_id'])) {
+        if (! empty($filters['course_id'])) {
             $query->whereHas('user.graduate', function ($q) use ($filters) {
                 $q->where('course_id', $filters['course_id']);
             });
         }
 
-        if (!empty($filters['career_interest']) && $studentProfile->career_interests) {
+        if (! empty($filters['career_interest']) && $studentProfile->career_interests) {
             $query->where(function ($q) use ($filters) {
                 $interest = $filters['career_interest'];
                 $q->where('industry', 'like', "%{$interest}%")
-                  ->orWhere('current_role', 'like', "%{$interest}%")
-                  ->orWhereJsonContains('tags', $interest);
+                    ->orWhere('current_role', 'like', "%{$interest}%")
+                    ->orWhereJsonContains('tags', $interest);
             });
         }
 
@@ -329,7 +327,7 @@ class StudentAlumniStoryController extends Controller
         }
 
         $query->orderBy('is_featured', 'desc')
-              ->orderBy('published_at', 'desc');
+            ->orderBy('published_at', 'desc');
 
         return $query->paginate($perPage);
     }
@@ -347,8 +345,8 @@ class StudentAlumniStoryController extends Controller
             $query->where(function ($q) use ($studentProfile) {
                 foreach ($studentProfile->career_interests as $interest) {
                     $q->orWhere('industry', 'like', "%{$interest}%")
-                      ->orWhere('current_role', 'like', "%{$interest}%")
-                      ->orWhereJsonContains('tags', $interest);
+                        ->orWhere('current_role', 'like', "%{$interest}%")
+                        ->orWhereJsonContains('tags', $interest);
                 }
             });
         }
@@ -361,9 +359,9 @@ class StudentAlumniStoryController extends Controller
         }
 
         return $query->orderBy('is_featured', 'desc')
-                    ->orderBy('view_count', 'desc')
-                    ->limit($limit)
-                    ->get();
+            ->orderBy('view_count', 'desc')
+            ->limit($limit)
+            ->get();
     }
 
     /**

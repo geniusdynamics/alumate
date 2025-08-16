@@ -90,7 +90,7 @@ class DonorProfile extends Model
     public function scopeNeedsContact($query)
     {
         return $query->where('next_contact_date', '<=', now())
-                    ->where('do_not_contact', false);
+            ->where('do_not_contact', false);
     }
 
     public function scopeByCapacityRange($query, $min, $max)
@@ -104,7 +104,7 @@ class DonorProfile extends Model
         $recentInteractions = $this->interactions()
             ->where('interaction_date', '>=', now()->subMonths(6))
             ->count();
-        
+
         $givingFrequency = $this->donations()
             ->where('created_at', '>=', now()->subYear())
             ->count();
@@ -121,7 +121,7 @@ class DonorProfile extends Model
     {
         $total = $this->donations()->sum('amount');
         $largest = $this->donations()->max('amount');
-        
+
         $this->update([
             'lifetime_giving' => $total,
             'largest_gift' => $largest,

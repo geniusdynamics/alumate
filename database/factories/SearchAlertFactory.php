@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\SavedSearch;
 use App\Models\SearchAlert;
 use App\Models\User;
-use App\Models\SavedSearch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -23,9 +23,9 @@ class SearchAlertFactory extends Factory
     {
         $frequencies = ['daily', 'weekly', 'monthly'];
         $frequency = $this->faker->randomElement($frequencies);
-        
+
         $isActive = $this->faker->boolean(80); // 80% chance of being active
-        $lastSentAt = $isActive && $this->faker->boolean(60) 
+        $lastSentAt = $isActive && $this->faker->boolean(60)
             ? $this->faker->dateTimeBetween('-1 month', 'now')
             : null;
 
@@ -54,7 +54,7 @@ class SearchAlertFactory extends Factory
     private function calculateNextSendTime(\DateTime $lastSent, string $frequency): \DateTime
     {
         $nextSend = clone $lastSent;
-        
+
         return match ($frequency) {
             'daily' => $nextSend->modify('+1 day'),
             'weekly' => $nextSend->modify('+1 week'),
@@ -70,7 +70,7 @@ class SearchAlertFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_active' => true,
-            'next_send_at' => $this->faker->dateTimeBetween('now', '+1 week')
+            'next_send_at' => $this->faker->dateTimeBetween('now', '+1 week'),
         ]);
     }
 
@@ -81,7 +81,7 @@ class SearchAlertFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_active' => false,
-            'next_send_at' => null
+            'next_send_at' => null,
         ]);
     }
 
@@ -91,7 +91,7 @@ class SearchAlertFactory extends Factory
     public function daily(): static
     {
         return $this->state(fn (array $attributes) => [
-            'frequency' => 'daily'
+            'frequency' => 'daily',
         ]);
     }
 
@@ -101,7 +101,7 @@ class SearchAlertFactory extends Factory
     public function weekly(): static
     {
         return $this->state(fn (array $attributes) => [
-            'frequency' => 'weekly'
+            'frequency' => 'weekly',
         ]);
     }
 
@@ -111,7 +111,7 @@ class SearchAlertFactory extends Factory
     public function monthly(): static
     {
         return $this->state(fn (array $attributes) => [
-            'frequency' => 'monthly'
+            'frequency' => 'monthly',
         ]);
     }
 
@@ -122,7 +122,7 @@ class SearchAlertFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_active' => true,
-            'next_send_at' => $this->faker->dateTimeBetween('-1 day', 'now')
+            'next_send_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
         ]);
     }
 
@@ -133,12 +133,12 @@ class SearchAlertFactory extends Factory
     {
         $lastSent = $this->faker->dateTimeBetween('-2 days', 'now');
         $frequency = $this->faker->randomElement(['daily', 'weekly', 'monthly']);
-        
+
         return $this->state(fn (array $attributes) => [
             'is_active' => true,
             'frequency' => $frequency,
             'last_sent_at' => $lastSent,
-            'next_send_at' => $this->calculateNextSendTime($lastSent, $frequency)
+            'next_send_at' => $this->calculateNextSendTime($lastSent, $frequency),
         ]);
     }
 
@@ -150,7 +150,7 @@ class SearchAlertFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'is_active' => true,
             'last_sent_at' => null,
-            'next_send_at' => $this->faker->dateTimeBetween('now', '+1 hour')
+            'next_send_at' => $this->faker->dateTimeBetween('now', '+1 hour'),
         ]);
     }
 
@@ -161,7 +161,7 @@ class SearchAlertFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'user_id' => $user->id,
-            'saved_search_id' => $savedSearch->id
+            'saved_search_id' => $savedSearch->id,
         ]);
     }
 }

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Carbon\Carbon;
 
 class CareerTimeline extends Model
 {
@@ -24,14 +23,14 @@ class CareerTimeline extends Model
         'location',
         'company_logo_url',
         'industry',
-        'employment_type'
+        'employment_type',
     ];
 
     protected $casts = [
         'achievements' => 'array',
         'start_date' => 'date',
         'end_date' => 'date',
-        'is_current' => 'boolean'
+        'is_current' => 'boolean',
     ];
 
     protected $dates = [
@@ -39,7 +38,7 @@ class CareerTimeline extends Model
         'end_date',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -56,6 +55,7 @@ class CareerTimeline extends Model
     public function getDurationInMonthsAttribute(): int
     {
         $endDate = $this->is_current ? now() : $this->end_date;
+
         return $this->start_date->diffInMonths($endDate);
     }
 
@@ -69,11 +69,11 @@ class CareerTimeline extends Model
         $remainingMonths = $months % 12;
 
         if ($years > 0 && $remainingMonths > 0) {
-            return "{$years} yr" . ($years > 1 ? 's' : '') . " {$remainingMonths} mo" . ($remainingMonths > 1 ? 's' : '');
+            return "{$years} yr".($years > 1 ? 's' : '')." {$remainingMonths} mo".($remainingMonths > 1 ? 's' : '');
         } elseif ($years > 0) {
-            return "{$years} yr" . ($years > 1 ? 's' : '');
+            return "{$years} yr".($years > 1 ? 's' : '');
         } else {
-            return "{$remainingMonths} mo" . ($remainingMonths > 1 ? 's' : '');
+            return "{$remainingMonths} mo".($remainingMonths > 1 ? 's' : '');
         }
     }
 
@@ -109,7 +109,7 @@ class CareerTimeline extends Model
      */
     public function isPromotionFrom(CareerTimeline $previous): bool
     {
-        return $this->company === $previous->company && 
+        return $this->company === $previous->company &&
                $this->start_date >= $previous->start_date;
     }
 }

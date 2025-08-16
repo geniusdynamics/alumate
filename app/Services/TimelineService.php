@@ -7,13 +7,15 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class TimelineService
 {
     private const CACHE_PREFIX = 'timeline:user:';
+
     private const ACTIVE_USER_TTL = 900; // 15 minutes
+
     private const INACTIVE_USER_TTL = 3600; // 1 hour
+
     private const ACTIVE_THRESHOLD_HOURS = 24; // Consider user active if last activity within 24 hours
 
     /**
@@ -22,7 +24,7 @@ class TimelineService
     public function generateTimelineForUser(User $user, int $limit = 20, ?string $cursor = null): array
     {
         $cacheKey = $this->getTimelineCacheKey($user->id, $cursor);
-        
+
         // Try to get from cache first
         $cachedTimeline = Cache::get($cacheKey);
         if ($cachedTimeline) {
@@ -31,10 +33,10 @@ class TimelineService
 
         // Generate fresh timeline
         $timeline = $this->buildTimelineQuery($user, $limit, $cursor);
-        
+
         // Cache the timeline
         $this->cacheTimeline($user, $timeline);
-        
+
         return $timeline;
     }
 
@@ -44,7 +46,7 @@ class TimelineService
     public function getCirclePosts(User $user, int $limit = 20, ?string $cursor = null): Collection
     {
         $circleIds = $user->circles()->pluck('circles.id')->toArray();
-        
+
         if (empty($circleIds)) {
             return collect();
         }
@@ -66,7 +68,7 @@ class TimelineService
     public function getGroupPosts(User $user, int $limit = 20, ?string $cursor = null): Collection
     {
         $groupIds = $user->groups()->pluck('groups.id')->toArray();
-        
+
         if (empty($groupIds)) {
             return collect();
         }
@@ -122,7 +124,7 @@ class TimelineService
     {
         $ttl = $this->getTtlForUser($user);
         $cacheKey = $this->getTimelineCacheKey($user->id);
-        
+
         Cache::put($cacheKey, $timeline, $ttl);
     }
 
@@ -131,12 +133,12 @@ class TimelineService
      */
     public function invalidateTimelineCache(User $user): void
     {
-        $pattern = self::CACHE_PREFIX . $user->id . ':*';
-        
+        $pattern = self::CACHE_PREFIX.$user->id.':*';
+
         // Get all cache keys for this user
         $keys = Cache::getRedis()->keys($pattern);
-        
-        if (!empty($keys)) {
+
+        if (! empty($keys)) {
             Cache::getRedis()->del($keys);
         }
     }
@@ -147,7 +149,7 @@ class TimelineService
     public function invalidateTimelineCacheForPost(Post $post): void
     {
         $affectedUserIds = $this->getAffectedUserIds($post);
-        
+
         foreach ($affectedUserIds as $userId) {
             $user = User::find($userId);
             if ($user) {
@@ -214,7 +216,7 @@ class TimelineService
     private function getConnectionPosts(User $user, int $limit, ?string $cursor): Collection
     {
         $connectionIds = $user->getAcceptedConnections()->pluck('users.id')->toArray();
-        
+
         if (empty($connectionIds)) {
             return collect();
         }
@@ -223,8 +225,8 @@ class TimelineService
             ->whereIn('user_id', $connectionIds)
             ->where(function ($q) {
                 $q->where('visibility', 'public')
-                  ->orWhere('visibility', 'circles')
-                  ->orWhere('visibility', 'groups');
+                    ->orWhere('visibility', 'circles')
+                    ->orWhere('visibility', 'groups');
             });
 
         return $this->applyCursorPagination($query, $limit, $cursor);
@@ -238,16 +240,16 @@ class TimelineService
         if ($cursor) {
             $decodedCursor = $this->decodeCursor($cursor);
             $query->where('created_at', '<', $decodedCursor['created_at'])
-                  ->orWhere(function ($q) use ($decodedCursor) {
-                      $q->where('created_at', '=', $decodedCursor['created_at'])
+                ->orWhere(function ($q) use ($decodedCursor) {
+                    $q->where('created_at', '=', $decodedCursor['created_at'])
                         ->where('id', '<', $decodedCursor['id']);
-                  });
+                });
         }
 
         return $query->orderBy('created_at', 'desc')
-                    ->orderBy('id', 'desc')
-                    ->limit($limit)
-                    ->get();
+            ->orderBy('id', 'desc')
+            ->limit($limit)
+            ->get();
     }
 
     /**
@@ -275,8 +277,8 @@ class TimelineService
     private function isFromConnection(Post $post, User $user): bool
     {
         return $user->getAcceptedConnections()
-                   ->where('users.id', $post->user_id)
-                   ->exists();
+            ->where('users.id', $post->user_id)
+            ->exists();
     }
 
     /**
@@ -324,10 +326,11 @@ class TimelineService
      */
     private function getTimelineCacheKey(int $userId, ?string $cursor = null): string
     {
-        $key = self::CACHE_PREFIX . $userId;
+        $key = self::CACHE_PREFIX.$userId;
         if ($cursor) {
-            $key .= ':' . md5($cursor);
+            $key .= ':'.md5($cursor);
         }
+
         return $key;
     }
 
@@ -336,7 +339,7 @@ class TimelineService
      */
     private function getTtlForUser(User $user): int
     {
-        $isActive = $user->last_activity_at && 
+        $isActive = $user->last_activity_at &&
                    $user->last_activity_at->diffInHours(now()) < self::ACTIVE_THRESHOLD_HOURS;
 
         return $isActive ? self::ACTIVE_USER_TTL : self::INACTIVE_USER_TTL;
@@ -374,13 +377,13 @@ class TimelineService
             $connectionIds = DB::table('connections')
                 ->where(function ($q) use ($post) {
                     $q->where('user_id', $post->user_id)
-                      ->orWhere('connected_user_id', $post->user_id);
+                        ->orWhere('connected_user_id', $post->user_id);
                 })
                 ->where('status', 'accepted')
                 ->get()
                 ->map(function ($connection) use ($post) {
-                    return $connection->user_id === $post->user_id 
-                        ? $connection->connected_user_id 
+                    return $connection->user_id === $post->user_id
+                        ? $connection->connected_user_id
                         : $connection->user_id;
                 })
                 ->toArray();

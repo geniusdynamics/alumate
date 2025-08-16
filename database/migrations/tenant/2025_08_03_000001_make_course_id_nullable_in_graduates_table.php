@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::table('graduates', function (Blueprint $table) {
             // Drop the foreign key constraint first
             $table->dropForeign(['course_id']);
-            
+
             // Make course_id nullable
             $table->foreignId('course_id')->nullable()->change();
-            
+
             // Re-add the foreign key constraint
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('set null');
         });
@@ -31,10 +31,10 @@ return new class extends Migration
         Schema::table('graduates', function (Blueprint $table) {
             // Drop the foreign key constraint
             $table->dropForeign(['course_id']);
-            
+
             // Make course_id not nullable again
             $table->foreignId('course_id')->nullable(false)->change();
-            
+
             // Re-add the foreign key constraint with cascade delete
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
         });

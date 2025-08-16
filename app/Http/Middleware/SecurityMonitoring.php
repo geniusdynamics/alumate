@@ -25,13 +25,13 @@ class SecurityMonitoring
 
         // Check rate limiting for authenticated users
         if (Auth::check()) {
-            $identifier = 'user:' . Auth::id() . ':' . $request->ip();
+            $identifier = 'user:'.Auth::id().':'.$request->ip();
             if ($this->securityService->detectRateLimitViolation($identifier, 100, 1)) {
                 return response()->json(['error' => 'Rate limit exceeded'], 429);
             }
         } else {
             // Rate limit for unauthenticated requests
-            $identifier = 'ip:' . $request->ip();
+            $identifier = 'ip:'.$request->ip();
             if ($this->securityService->detectRateLimitViolation($identifier, 30, 1)) {
                 return response()->json(['error' => 'Rate limit exceeded'], 429);
             }
@@ -59,7 +59,7 @@ class SecurityMonitoring
         ];
 
         $routeName = $request->route()->getName();
-        
+
         foreach ($sensitiveRoutes as $pattern) {
             if (fnmatch($pattern, $routeName)) {
                 return true;
@@ -93,13 +93,25 @@ class SecurityMonitoring
 
     private function getResourceTypeFromRoute($routeName)
     {
-        if (strpos($routeName, 'graduates') !== false) return 'graduate';
-        if (strpos($routeName, 'jobs') !== false) return 'job';
-        if (strpos($routeName, 'applications') !== false) return 'application';
-        if (strpos($routeName, 'employers') !== false) return 'employer';
-        if (strpos($routeName, 'users') !== false) return 'user';
-        if (strpos($routeName, 'institutions') !== false) return 'institution';
-        
+        if (strpos($routeName, 'graduates') !== false) {
+            return 'graduate';
+        }
+        if (strpos($routeName, 'jobs') !== false) {
+            return 'job';
+        }
+        if (strpos($routeName, 'applications') !== false) {
+            return 'application';
+        }
+        if (strpos($routeName, 'employers') !== false) {
+            return 'employer';
+        }
+        if (strpos($routeName, 'users') !== false) {
+            return 'user';
+        }
+        if (strpos($routeName, 'institutions') !== false) {
+            return 'institution';
+        }
+
         return null;
     }
 
@@ -107,7 +119,7 @@ class SecurityMonitoring
     {
         // Look for common parameter names that indicate resource ID
         $idParams = ['id', 'graduate', 'job', 'application', 'employer', 'user', 'institution'];
-        
+
         foreach ($idParams as $param) {
             if (isset($parameters[$param])) {
                 return is_object($parameters[$param]) ? $parameters[$param]->id : $parameters[$param];

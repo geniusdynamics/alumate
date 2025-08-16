@@ -14,7 +14,9 @@ class EmployerEnhancementsTest extends TestCase
     use RefreshDatabase;
 
     protected $superAdmin;
+
     protected $employerUser;
+
     protected $employer;
 
     protected function setUp(): void

@@ -28,7 +28,7 @@ if (file_exists('../../vite.config.js')) {
 // Check if public/build directory exists
 if (is_dir('../../public/build')) {
     echo "✅ public/build directory exists\n";
-    
+
     // Check for manifest file
     if (file_exists('../../public/build/manifest.json')) {
         echo "✅ Build manifest found\n";
@@ -56,11 +56,11 @@ if (file_exists('../../resources/css/app.css')) {
 echo "\n🚀 Recommended Actions:\n";
 echo "======================\n";
 
-if (!is_dir('../../node_modules')) {
+if (! is_dir('../../node_modules')) {
     echo "1. Install dependencies: npm install\n";
 }
 
-if (!is_dir('../../public/build') || !file_exists('../../public/build/manifest.json')) {
+if (! is_dir('../../public/build') || ! file_exists('../../public/build/manifest.json')) {
     echo "2. Build assets: npm run build\n";
     echo "   OR for development: npm run dev\n";
 }

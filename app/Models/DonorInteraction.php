@@ -61,7 +61,7 @@ class DonorInteraction extends Model
     public function scopeNeedsFollowUp($query)
     {
         return $query->where('next_follow_up_date', '<=', now())
-                    ->whereNotNull('next_follow_up_date');
+            ->whereNotNull('next_follow_up_date');
     }
 
     public function scopeRecent($query, $days = 30)
@@ -72,20 +72,20 @@ class DonorInteraction extends Model
     // Helper methods
     public function getFormattedDurationAttribute()
     {
-        if (!$this->duration) {
+        if (! $this->duration) {
             return null;
         }
 
         $minutes = $this->duration->format('H') * 60 + $this->duration->format('i');
-        
+
         if ($minutes < 60) {
-            return $minutes . ' minutes';
+            return $minutes.' minutes';
         }
-        
+
         $hours = floor($minutes / 60);
         $remainingMinutes = $minutes % 60;
-        
-        return $hours . 'h ' . $remainingMinutes . 'm';
+
+        return $hours.'h '.$remainingMinutes.'m';
     }
 
     public function getIsOverdueAttribute()

@@ -17,6 +17,7 @@ class RefreshTimelinesJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 300; // 5 minutes
+
     public $tries = 3;
 
     /**
@@ -74,7 +75,7 @@ class RefreshTimelinesJob implements ShouldQueue
                 foreach ($users as $user) {
                     try {
                         $timelineService->invalidateTimelineCache($user);
-                        
+
                         // Pre-generate timeline for very active users
                         if ($this->isVeryActiveUser($user)) {
                             $timelineService->generateTimelineForUser($user, 20);
@@ -99,7 +100,7 @@ class RefreshTimelinesJob implements ShouldQueue
      */
     private function refreshTimelinesForPost(TimelineService $timelineService): void
     {
-        if (!$this->post) {
+        if (! $this->post) {
             return;
         }
 
@@ -117,7 +118,7 @@ class RefreshTimelinesJob implements ShouldQueue
      */
     private function refreshSpecificUserTimelines(TimelineService $timelineService): void
     {
-        if (!$this->userIds) {
+        if (! $this->userIds) {
             return;
         }
 
@@ -126,7 +127,7 @@ class RefreshTimelinesJob implements ShouldQueue
         foreach ($users as $user) {
             try {
                 $timelineService->invalidateTimelineCache($user);
-                
+
                 // Pre-generate timeline for active users
                 if ($this->isActiveUser($user)) {
                     $timelineService->generateTimelineForUser($user, 20);
@@ -146,7 +147,7 @@ class RefreshTimelinesJob implements ShouldQueue
      */
     private function isVeryActiveUser(User $user): bool
     {
-        return $user->last_activity_at && 
+        return $user->last_activity_at &&
                $user->last_activity_at->diffInHours(now()) < 2;
     }
 
@@ -155,7 +156,7 @@ class RefreshTimelinesJob implements ShouldQueue
      */
     private function isActiveUser(User $user): bool
     {
-        return $user->last_activity_at && 
+        return $user->last_activity_at &&
                $user->last_activity_at->diffInHours(now()) < 24;
     }
 

@@ -14,7 +14,7 @@ class CampaignDonationPolicy
 
     public function view(User $user, CampaignDonation $donation): bool
     {
-        return $user->hasRole(['admin', 'fundraising_manager']) || 
+        return $user->hasRole(['admin', 'fundraising_manager']) ||
                $user->id === $donation->donor_id;
     }
 

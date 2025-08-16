@@ -62,14 +62,14 @@ class SuccessStory extends Model
     public function scopePublished($query)
     {
         return $query->where('status', 'published')
-                    ->whereNotNull('published_at')
-                    ->where('published_at', '<=', now());
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true)
-                    ->published();
+            ->published();
     }
 
     public function scopeByIndustry($query, $industry)

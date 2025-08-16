@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Imports\GraduatesImport;
-use App\Models\ImportHistory;
-use App\Models\Graduate;
 use App\Models\Course;
+use App\Models\Graduate;
+use App\Models\ImportHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use Maatwebsite\Excel\HeadingRowImport;
-use Inertia\Inertia;
 
 class GraduateImportController extends Controller
 {
@@ -22,7 +22,7 @@ class GraduateImportController extends Controller
             ->paginate(10);
 
         return Inertia::render('Graduates/ImportHistory', [
-            'importHistories' => $importHistories
+            'importHistories' => $importHistories,
         ]);
     }
 
@@ -38,8 +38,8 @@ class GraduateImportController extends Controller
                 'phone', 'address', 'student_id', 'gpa', 'academic_standing',
                 'current_job_title', 'current_company', 'current_salary',
                 'employment_start_date', 'skills', 'certifications',
-                'allow_employer_contact', 'job_search_active'
-            ]
+                'allow_employer_contact', 'job_search_active',
+            ],
         ]);
     }
 
@@ -47,7 +47,7 @@ class GraduateImportController extends Controller
     {
         $headers = [
             'name',
-            'email', 
+            'email',
             'phone',
             'address',
             'graduation_year',
@@ -63,7 +63,7 @@ class GraduateImportController extends Controller
             'skills',
             'certifications',
             'allow_employer_contact',
-            'job_search_active'
+            'job_search_active',
         ];
 
         $sampleData = [
@@ -85,7 +85,7 @@ class GraduateImportController extends Controller
                 'PHP, JavaScript, Vue.js, Laravel',
                 'AWS Certified Developer|Amazon|2023-01-15;Google Analytics Certified|Google|2022-12-10',
                 'true',
-                'false'
+                'false',
             ],
             [
                 'Jane Smith',
@@ -105,12 +105,14 @@ class GraduateImportController extends Controller
                 'Project Management, Excel, PowerPoint',
                 'PMP Certification|PMI|2023-03-20',
                 'true',
-                'true'
-            ]
+                'true',
+            ],
         ];
 
-        return Excel::download(new class($headers, $sampleData) {
+        return Excel::download(new class($headers, $sampleData)
+        {
             private $headers;
+
             private $sampleData;
 
             public function __construct($headers, $sampleData)
@@ -135,17 +137,17 @@ class GraduateImportController extends Controller
         try {
             // Store the file temporarily
             $filePath = $request->file('file')->store('temp-imports');
-            
+
             // Get headers to validate structure
             $headings = (new HeadingRowImport)->toArray($request->file('file'))[0][0] ?? [];
-            
+
             // Validate required headers
             $requiredHeaders = ['name', 'email', 'graduation_year', 'course_name', 'employment_status'];
             $missingHeaders = array_diff($requiredHeaders, $headings);
-            
-            if (!empty($missingHeaders)) {
+
+            if (! empty($missingHeaders)) {
                 return back()->withErrors([
-                    'file' => 'Missing required columns: ' . implode(', ', $missingHeaders)
+                    'file' => 'Missing required columns: '.implode(', ', $missingHeaders),
                 ]);
             }
 
@@ -162,7 +164,7 @@ class GraduateImportController extends Controller
             // Preview first 10 rows
             $import = new GraduatesImport($importHistory->id);
             $rows = Excel::toArray($import, $request->file('file'))[0];
-            
+
             // Remove header row and limit to first 10 rows for preview
             $previewRows = array_slice($rows, 1, 10);
             $totalRows = count($rows) - 1; // Exclude header
@@ -180,7 +182,7 @@ class GraduateImportController extends Controller
 
         } catch (\Exception $e) {
             return back()->withErrors([
-                'file' => 'Error processing file: ' . $e->getMessage()
+                'file' => 'Error processing file: '.$e->getMessage(),
             ]);
         }
     }
@@ -195,7 +197,7 @@ class GraduateImportController extends Controller
         ]);
 
         $importHistory = ImportHistory::findOrFail($request->import_history_id);
-        
+
         // Ensure the import belongs to the current user
         if ($importHistory->user_id !== auth()->id()) {
             abort(403);
@@ -213,12 +215,12 @@ class GraduateImportController extends Controller
                 'update_existing' => $request->boolean('update_existing', false),
                 'resolve_conflicts' => $request->input('resolve_conflicts', []),
             ]);
-            
+
             Excel::import($import, Storage::path($importHistory->file_path));
 
             // Get final statistics from the import
             $stats = $import->getImportStatistics();
-            
+
             $importHistory->update([
                 'status' => 'completed',
                 'completed_at' => now(),
@@ -236,9 +238,9 @@ class GraduateImportController extends Controller
             $importHistory->update(['file_path' => null]);
 
             $message = "Import completed! Created: {$stats['created_count']}, Updated: {$stats['updated_count']}, Skipped: {$stats['skipped_count']}";
-            
-            if (!empty($stats['conflicts'])) {
-                $message .= " | Conflicts: " . count($stats['conflicts']);
+
+            if (! empty($stats['conflicts'])) {
+                $message .= ' | Conflicts: '.count($stats['conflicts']);
             }
 
             return redirect()->route('graduates.import.history')
@@ -252,7 +254,7 @@ class GraduateImportController extends Controller
             ]);
 
             return back()->withErrors([
-                'import' => 'Import failed: ' . $e->getMessage()
+                'import' => 'Import failed: '.$e->getMessage(),
             ]);
         }
     }
@@ -265,7 +267,7 @@ class GraduateImportController extends Controller
         }
 
         return Inertia::render('Graduates/ImportDetails', [
-            'importHistory' => $importHistory
+            'importHistory' => $importHistory,
         ]);
     }
 
@@ -276,23 +278,23 @@ class GraduateImportController extends Controller
             abort(403);
         }
 
-        if (!$importHistory->canRollback()) {
+        if (! $importHistory->canRollback()) {
             return back()->withErrors([
-                'rollback' => 'This import cannot be rolled back. Rollback is only available within 24 hours of completion.'
+                'rollback' => 'This import cannot be rolled back. Rollback is only available within 24 hours of completion.',
             ]);
         }
 
         try {
             // Get all graduates created in this import
             $graduateIds = collect($importHistory->valid_rows)->pluck('graduate_id')->filter();
-            
+
             // Delete the graduates
             Graduate::whereIn('id', $graduateIds)->delete();
 
             // Update import history
             $importHistory->update([
                 'status' => 'rolled_back',
-                'error_message' => 'Import rolled back by user on ' . now()->format('Y-m-d H:i:s'),
+                'error_message' => 'Import rolled back by user on '.now()->format('Y-m-d H:i:s'),
             ]);
 
             return redirect()->route('graduates.import.history')
@@ -300,7 +302,7 @@ class GraduateImportController extends Controller
 
         } catch (\Exception $e) {
             return back()->withErrors([
-                'rollback' => 'Rollback failed: ' . $e->getMessage()
+                'rollback' => 'Rollback failed: '.$e->getMessage(),
             ]);
         }
     }

@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\SavedSearch;
 use App\Models\SearchAlert;
+use App\Models\User;
 use App\Services\ElasticsearchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class AdvancedSearchTest extends TestCase
 {
@@ -20,7 +20,7 @@ class AdvancedSearchTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Mock Elasticsearch service for testing
         $this->elasticsearchService = Mockery::mock(ElasticsearchService::class);
         $this->app->instance(ElasticsearchService::class, $this->elasticsearchService);
@@ -29,7 +29,7 @@ class AdvancedSearchTest extends TestCase
     public function test_user_can_perform_basic_search()
     {
         $user = User::factory()->create();
-        
+
         $this->elasticsearchService
             ->shouldReceive('searchUsers')
             ->once()
@@ -37,11 +37,11 @@ class AdvancedSearchTest extends TestCase
             ->andReturn([
                 'users' => collect([
                     ['id' => 1, 'name' => 'John Doe', 'company' => 'Tech Corp'],
-                    ['id' => 2, 'name' => 'Jane Doe', 'company' => 'StartupCo']
+                    ['id' => 2, 'name' => 'Jane Doe', 'company' => 'StartupCo'],
                 ]),
                 'total' => 2,
                 'aggregations' => [],
-                'suggestions' => []
+                'suggestions' => [],
             ]);
 
         $response = $this->actingAs($user)
@@ -53,19 +53,19 @@ class AdvancedSearchTest extends TestCase
                 'data' => [
                     'total' => 2,
                     'page' => 1,
-                    'size' => 20
-                ]
+                    'size' => 20,
+                ],
             ]);
     }
 
     public function test_user_can_search_with_filters()
     {
         $user = User::factory()->create();
-        
+
         $filters = [
             'graduation_year' => ['min' => 2020, 'max' => 2023],
             'location' => 'New York',
-            'industry' => ['Technology', 'Finance']
+            'industry' => ['Technology', 'Finance'],
         ];
 
         $this->elasticsearchService
@@ -78,35 +78,35 @@ class AdvancedSearchTest extends TestCase
                 'aggregations' => [
                     'graduation_years' => [
                         ['key' => 2023, 'count' => 15],
-                        ['key' => 2022, 'count' => 20]
-                    ]
+                        ['key' => 2022, 'count' => 20],
+                    ],
                 ],
-                'suggestions' => []
+                'suggestions' => [],
             ]);
 
         $response = $this->actingAs($user)
-            ->getJson('/api/search?' . http_build_query(['filters' => $filters]));
+            ->getJson('/api/search?'.http_build_query(['filters' => $filters]));
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
                 'data' => [
-                    'total' => 0
-                ]
+                    'total' => 0,
+                ],
             ]);
     }
 
     public function test_user_can_get_search_suggestions()
     {
         $user = User::factory()->create();
-        
+
         $this->elasticsearchService
             ->shouldReceive('suggestUsers')
             ->once()
             ->with('joh')
             ->andReturn([
                 ['text' => 'John Doe', 'type' => 'name', 'score' => 0.9],
-                ['text' => 'Johnson & Co', 'type' => 'company', 'score' => 0.7]
+                ['text' => 'Johnson & Co', 'type' => 'company', 'score' => 0.7],
             ]);
 
         $response = $this->actingAs($user)
@@ -117,15 +117,15 @@ class AdvancedSearchTest extends TestCase
                 'success' => true,
                 'data' => [
                     ['text' => 'John Doe', 'type' => 'name'],
-                    ['text' => 'Johnson & Co', 'type' => 'company']
-                ]
+                    ['text' => 'Johnson & Co', 'type' => 'company'],
+                ],
             ]);
     }
 
     public function test_user_can_save_search()
     {
         $user = User::factory()->create();
-        
+
         $this->elasticsearchService
             ->shouldReceive('saveSearch')
             ->once()
@@ -135,30 +135,30 @@ class AdvancedSearchTest extends TestCase
                 'user_id' => $user->id,
                 'name' => 'Software Engineers in SF',
                 'query' => 'software engineer',
-                'filters' => ['location' => 'San Francisco']
+                'filters' => ['location' => 'San Francisco'],
             ]));
 
         $response = $this->actingAs($user)
             ->postJson('/api/search/save', [
                 'name' => 'Software Engineers in SF',
                 'query' => 'software engineer',
-                'filters' => ['location' => 'San Francisco']
+                'filters' => ['location' => 'San Francisco'],
             ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Search saved successfully'
+                'message' => 'Search saved successfully',
             ]);
     }
 
     public function test_user_can_save_search_with_alert()
     {
         $user = User::factory()->create();
-        
+
         $savedSearch = SavedSearch::factory()->make([
             'id' => 1,
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $this->elasticsearchService
@@ -173,7 +173,7 @@ class AdvancedSearchTest extends TestCase
             ->andReturn(SearchAlert::factory()->make([
                 'user_id' => $user->id,
                 'saved_search_id' => 1,
-                'frequency' => 'weekly'
+                'frequency' => 'weekly',
             ]));
 
         $response = $this->actingAs($user)
@@ -182,22 +182,22 @@ class AdvancedSearchTest extends TestCase
                 'query' => 'test',
                 'filters' => [],
                 'create_alert' => true,
-                'alert_frequency' => 'weekly'
+                'alert_frequency' => 'weekly',
             ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Search saved successfully'
+                'message' => 'Search saved successfully',
             ]);
     }
 
     public function test_user_can_get_saved_searches()
     {
         $user = User::factory()->create();
-        
+
         $savedSearches = SavedSearch::factory()->count(3)->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $response = $this->actingAs($user)
@@ -205,7 +205,7 @@ class AdvancedSearchTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
             ])
             ->assertJsonCount(3, 'data');
     }
@@ -213,9 +213,9 @@ class AdvancedSearchTest extends TestCase
     public function test_user_can_delete_saved_search()
     {
         $user = User::factory()->create();
-        
+
         $savedSearch = SavedSearch::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $response = $this->actingAs($user)
@@ -224,11 +224,11 @@ class AdvancedSearchTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Saved search deleted successfully'
+                'message' => 'Saved search deleted successfully',
             ]);
 
         $this->assertDatabaseMissing('saved_searches', [
-            'id' => $savedSearch->id
+            'id' => $savedSearch->id,
         ]);
     }
 
@@ -236,9 +236,9 @@ class AdvancedSearchTest extends TestCase
     {
         $user = User::factory()->create();
         $otherUser = User::factory()->create();
-        
+
         $savedSearch = SavedSearch::factory()->create([
-            'user_id' => $otherUser->id
+            'user_id' => $otherUser->id,
         ]);
 
         $response = $this->actingAs($user)
@@ -247,35 +247,35 @@ class AdvancedSearchTest extends TestCase
         $response->assertStatus(404)
             ->assertJson([
                 'success' => false,
-                'message' => 'Saved search not found'
+                'message' => 'Saved search not found',
             ]);
     }
 
     public function test_user_can_update_search_alert()
     {
         $user = User::factory()->create();
-        
+
         $savedSearch = SavedSearch::factory()->create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
         ]);
 
         $alert = SearchAlert::factory()->create([
             'user_id' => $user->id,
             'saved_search_id' => $savedSearch->id,
             'frequency' => 'daily',
-            'is_active' => true
+            'is_active' => true,
         ]);
 
         $response = $this->actingAs($user)
             ->putJson("/api/search/alerts/{$alert->id}", [
                 'frequency' => 'weekly',
-                'is_active' => false
+                'is_active' => false,
             ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Search alert updated successfully'
+                'message' => 'Search alert updated successfully',
             ]);
 
         $alert->refresh();
@@ -295,13 +295,13 @@ class AdvancedSearchTest extends TestCase
 
         // Test invalid graduation year
         $response = $this->actingAs($user)
-            ->getJson('/api/search?' . http_build_query([
+            ->getJson('/api/search?'.http_build_query([
                 'filters' => [
                     'graduation_year' => [
                         'min' => 1800, // Too early
-                        'max' => 2050  // Too late
-                    ]
-                ]
+                        'max' => 2050,  // Too late
+                    ],
+                ],
             ]));
 
         $response->assertStatus(422)
@@ -315,7 +315,7 @@ class AdvancedSearchTest extends TestCase
         $response = $this->actingAs($user)
             ->postJson('/api/search/save', [
                 'query' => '', // Empty query
-                'alert_frequency' => 'invalid' // Invalid frequency
+                'alert_frequency' => 'invalid', // Invalid frequency
             ]);
 
         $response->assertStatus(422)

@@ -13,17 +13,17 @@ return new class extends Migration
     {
         // First, add the hired_at column
         Schema::table('job_applications', function (Blueprint $table) {
-            if (!Schema::hasColumn('job_applications', 'hired_at')) {
+            if (! Schema::hasColumn('job_applications', 'hired_at')) {
                 $table->timestamp('hired_at')->nullable()->after('status');
                 $table->index('hired_at');
             }
         });
 
         // Add 'hired' to the status enum if it doesn't exist
-        DB::statement("
+        DB::statement('
             ALTER TABLE job_applications
             DROP CONSTRAINT IF EXISTS job_applications_status_check
-        ");
+        ');
 
         DB::statement("
             ALTER TABLE job_applications

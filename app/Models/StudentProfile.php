@@ -86,7 +86,7 @@ class StudentProfile extends Model
     public function scopeSeekingMentorship($query)
     {
         return $query->where('seeking_mentorship', true)
-                    ->where('allow_mentor_requests', true);
+            ->where('allow_mentor_requests', true);
     }
 
     public function scopeByYear($query, $year)
@@ -119,6 +119,7 @@ class StudentProfile extends Model
     {
         // Assuming 4-year program by default
         $totalYears = 4;
+
         return min(100, ($this->current_year / $totalYears) * 100);
     }
 
@@ -136,7 +137,7 @@ class StudentProfile extends Model
         $completionData = [];
 
         foreach ($fields as $field) {
-            $isCompleted = !empty($this->$field);
+            $isCompleted = ! empty($this->$field);
             $completionData[$field] = $isCompleted;
             if ($isCompleted) {
                 $completedFields++;

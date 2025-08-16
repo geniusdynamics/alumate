@@ -111,7 +111,7 @@ class ReportExecution extends Model
 
     public function getDuration()
     {
-        if (!$this->started_at || !$this->completed_at) {
+        if (! $this->started_at || ! $this->completed_at) {
             return null;
         }
 
@@ -121,24 +121,24 @@ class ReportExecution extends Model
     public function getFormattedDuration()
     {
         $duration = $this->getDuration();
-        
+
         if ($duration === null) {
             return 'N/A';
         }
 
         if ($duration < 60) {
-            return $duration . 's';
+            return $duration.'s';
         }
 
         $minutes = floor($duration / 60);
         $seconds = $duration % 60;
 
-        return $minutes . 'm ' . $seconds . 's';
+        return $minutes.'m '.$seconds.'s';
     }
 
     public function getStatusColor()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'completed' => 'green',
             'failed' => 'red',
             'processing' => 'yellow',
@@ -149,7 +149,7 @@ class ReportExecution extends Model
 
     public function getStatusIcon()
     {
-        return match($this->status) {
+        return match ($this->status) {
             'completed' => 'check-circle',
             'failed' => 'x-circle',
             'processing' => 'clock',
@@ -160,12 +160,12 @@ class ReportExecution extends Model
 
     public function hasFile()
     {
-        return !empty($this->file_path) && \Storage::exists($this->file_path);
+        return ! empty($this->file_path) && \Storage::exists($this->file_path);
     }
 
     public function getFileSize()
     {
-        if (!$this->hasFile()) {
+        if (! $this->hasFile()) {
             return 0;
         }
 
@@ -175,25 +175,25 @@ class ReportExecution extends Model
     public function getFormattedFileSize()
     {
         $size = $this->getFileSize();
-        
+
         if ($size === 0) {
             return 'N/A';
         }
 
         $units = ['B', 'KB', 'MB', 'GB'];
         $unitIndex = 0;
-        
+
         while ($size >= 1024 && $unitIndex < count($units) - 1) {
             $size /= 1024;
             $unitIndex++;
         }
-        
-        return round($size, 2) . ' ' . $units[$unitIndex];
+
+        return round($size, 2).' '.$units[$unitIndex];
     }
 
     public function getDownloadUrl()
     {
-        if (!$this->hasFile()) {
+        if (! $this->hasFile()) {
             return null;
         }
 
@@ -202,7 +202,7 @@ class ReportExecution extends Model
 
     public function getResultSummary()
     {
-        if (!$this->result_data) {
+        if (! $this->result_data) {
             return null;
         }
 
@@ -226,12 +226,12 @@ class ReportExecution extends Model
 
     public function shouldExpire()
     {
-        if (!$this->isCompleted()) {
+        if (! $this->isCompleted()) {
             return false;
         }
 
         $expirationDays = config('analytics.report_expiration_days', 30);
-        
+
         return $this->completed_at->addDays($expirationDays)->isPast();
     }
 

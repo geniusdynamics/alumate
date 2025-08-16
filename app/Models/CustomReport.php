@@ -157,33 +157,33 @@ class CustomReport extends Model
 
     public function canBeExecutedBy(User $user)
     {
-        return $this->user_id === $user->id || 
-               $this->is_public || 
+        return $this->user_id === $user->id ||
+               $this->is_public ||
                $user->hasRole('super-admin');
     }
 
     public function shouldRunScheduled()
     {
-        if (!$this->is_scheduled || !$this->schedule_frequency) {
+        if (! $this->is_scheduled || ! $this->schedule_frequency) {
             return false;
         }
 
         $lastExecution = $this->latestExecution;
-        
-        if (!$lastExecution) {
+
+        if (! $lastExecution) {
             return true;
         }
 
         $nextRunDate = $this->calculateNextRunDate($lastExecution->created_at);
-        
+
         return now()->gte($nextRunDate);
     }
 
     private function calculateNextRunDate($lastRunDate)
     {
         $config = $this->schedule_config ?? [];
-        
-        return match($this->schedule_frequency) {
+
+        return match ($this->schedule_frequency) {
             'daily' => $lastRunDate->addDay(),
             'weekly' => $lastRunDate->addWeek(),
             'monthly' => $lastRunDate->addMonth(),

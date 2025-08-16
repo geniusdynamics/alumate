@@ -43,20 +43,26 @@ class ImportHistory extends Model
 
     public function getSuccessRateAttribute()
     {
-        if ($this->total_rows == 0) return 0;
+        if ($this->total_rows == 0) {
+            return 0;
+        }
+
         return round(($this->created_count + $this->updated_count) / $this->total_rows * 100, 2);
     }
 
     public function getErrorRateAttribute()
     {
-        if ($this->total_rows == 0) return 0;
+        if ($this->total_rows == 0) {
+            return 0;
+        }
+
         return round($this->skipped_count / $this->total_rows * 100, 2);
     }
 
     public function canRollback()
     {
-        return $this->status === 'completed' && 
-               $this->created_count > 0 && 
+        return $this->status === 'completed' &&
+               $this->created_count > 0 &&
                $this->created_at->diffInHours(now()) <= 24; // Allow rollback within 24 hours
     }
 }

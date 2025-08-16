@@ -2,15 +2,13 @@
 
 namespace App\Services;
 
+use App\Jobs\PublishScheduledPostJob;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Circle;
-use App\Models\Group;
-use App\Jobs\PublishScheduledPostJob;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Carbon\Carbon;
 
 class PostService
 {
@@ -24,24 +22,24 @@ class PostService
     public function createPost(array $data, User $user): Post
     {
         $this->validatePostData($data);
-        
+
         return DB::transaction(function () use ($data, $user) {
             // Handle media uploads if present
             $mediaUrls = [];
-            if (isset($data['media_files']) && !empty($data['media_files'])) {
+            if (isset($data['media_files']) && ! empty($data['media_files'])) {
                 $mediaUrls = $this->mediaUploadService->uploadMedia($data['media_files'], $user);
             }
-            
+
             // Determine visibility and target audiences
             $visibility = $this->determineVisibility($data);
             $circleIds = $this->getCircleIds($data, $user);
             $groupIds = $this->getGroupIds($data, $user);
-            
+
             // Check if this is a scheduled post
             if (isset($data['scheduled_for']) && $data['scheduled_for']) {
                 return $this->createScheduledPost($data, $user, $mediaUrls, $visibility, $circleIds, $groupIds);
             }
-            
+
             // Create the post
             $post = Post::create([
                 'user_id' => $user->id,
@@ -51,14 +49,14 @@ class PostService
                 'visibility' => $visibility,
                 'circle_ids' => $circleIds,
                 'group_ids' => $groupIds,
-                'metadata' => $data['metadata'] ?? []
+                'metadata' => $data['metadata'] ?? [],
             ]);
-            
+
             // Clear any existing draft
             if (isset($data['draft_id'])) {
                 DB::table('post_drafts')->where('id', $data['draft_id'])->where('user_id', $user->id)->delete();
             }
-            
+
             return $post;
         });
     }
@@ -68,27 +66,27 @@ class PostService
         if ($post->user_id !== $user->id) {
             throw new \UnauthorizedHttpException('You can only edit your own posts.');
         }
-        
+
         $this->validatePostData($data, true);
-        
+
         return DB::transaction(function () use ($post, $data, $user) {
             // Handle new media uploads
             $mediaUrls = $post->media_urls ?? [];
-            if (isset($data['media_files']) && !empty($data['media_files'])) {
+            if (isset($data['media_files']) && ! empty($data['media_files'])) {
                 $newMedia = $this->mediaUploadService->uploadMedia($data['media_files'], $user);
                 $mediaUrls = array_merge($mediaUrls, $newMedia);
             }
-            
+
             // Handle media deletions
-            if (isset($data['delete_media']) && !empty($data['delete_media'])) {
+            if (isset($data['delete_media']) && ! empty($data['delete_media'])) {
                 $mediaUrls = $this->removeMediaFromPost($mediaUrls, $data['delete_media']);
             }
-            
+
             // Update visibility and audiences
             $visibility = $this->determineVisibility($data);
             $circleIds = $this->getCircleIds($data, $user);
             $groupIds = $this->getGroupIds($data, $user);
-            
+
             $post->update([
                 'content' => $data['content'] ?? $post->content,
                 'media_urls' => $mediaUrls,
@@ -96,9 +94,9 @@ class PostService
                 'visibility' => $visibility,
                 'circle_ids' => $circleIds,
                 'group_ids' => $groupIds,
-                'metadata' => array_merge($post->metadata ?? [], $data['metadata'] ?? [])
+                'metadata' => array_merge($post->metadata ?? [], $data['metadata'] ?? []),
             ]);
-            
+
             return $post->fresh();
         });
     }
@@ -108,13 +106,13 @@ class PostService
         if ($post->user_id !== $user->id) {
             throw new \UnauthorizedHttpException('You can only delete your own posts.');
         }
-        
+
         return DB::transaction(function () use ($post) {
             // Delete associated media files
             if ($post->media_urls) {
                 $this->mediaUploadService->deleteMedia($post->media_urls);
             }
-            
+
             // Soft delete the post
             return $post->delete();
         });
@@ -136,9 +134,9 @@ class PostService
             'circle_ids' => $data['circle_ids'] ?? [],
             'group_ids' => $data['group_ids'] ?? [],
             'metadata' => $data['metadata'] ?? [],
-            'scheduled_for' => isset($data['scheduled_for']) ? Carbon::parse($data['scheduled_for']) : null
+            'scheduled_for' => isset($data['scheduled_for']) ? Carbon::parse($data['scheduled_for']) : null,
         ];
-        
+
         if (isset($data['draft_id'])) {
             DB::table('post_drafts')
                 ->where('id', $data['draft_id'])
@@ -148,18 +146,18 @@ class PostService
         } else {
             $draftId = DB::table('post_drafts')->insertGetId($draftData);
         }
-        
+
         return ['draft_id' => $draftId, 'saved_at' => now()];
     }
 
     protected function createScheduledPost(array $data, User $user, array $mediaUrls, string $visibility, array $circleIds, array $groupIds): array
     {
         $scheduledFor = Carbon::parse($data['scheduled_for']);
-        
+
         if ($scheduledFor->isPast()) {
             throw new ValidationException('Scheduled time must be in the future.');
         }
-        
+
         $scheduledPostId = DB::table('scheduled_posts')->insertGetId([
             'user_id' => $user->id,
             'content' => $data['content'] ?? '',
@@ -171,16 +169,16 @@ class PostService
             'metadata' => json_encode($data['metadata'] ?? []),
             'scheduled_for' => $scheduledFor,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
-        
+
         // Schedule the job
         PublishScheduledPostJob::dispatch($scheduledPostId)->delay($scheduledFor);
-        
+
         return [
             'scheduled_post_id' => $scheduledPostId,
             'scheduled_for' => $scheduledFor,
-            'message' => 'Post scheduled successfully'
+            'message' => 'Post scheduled successfully',
         ];
     }
 
@@ -195,11 +193,11 @@ class PostService
             'group_ids' => 'sometimes|array',
             'group_ids.*' => 'integer|exists:groups,id',
             'scheduled_for' => 'sometimes|date|after:now',
-            'metadata' => 'sometimes|array'
+            'metadata' => 'sometimes|array',
         ];
-        
+
         $validator = Validator::make($data, $rules);
-        
+
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -210,14 +208,14 @@ class PostService
         if (isset($data['visibility'])) {
             return $data['visibility'];
         }
-        
+
         // Auto-determine based on circles/groups
-        if (!empty($data['group_ids'])) {
+        if (! empty($data['group_ids'])) {
             return 'groups';
-        } elseif (!empty($data['circle_ids'])) {
+        } elseif (! empty($data['circle_ids'])) {
             return 'circles';
         }
-        
+
         return 'public';
     }
 
@@ -226,14 +224,15 @@ class PostService
         if (isset($data['circle_ids']) && is_array($data['circle_ids'])) {
             // Verify user belongs to these circles
             $userCircleIds = $user->circles()->pluck('circles.id')->toArray();
+
             return array_intersect($data['circle_ids'], $userCircleIds);
         }
-        
+
         // Default to all user's circles if visibility is 'circles'
         if (($data['visibility'] ?? 'public') === 'circles') {
             return $user->circles()->pluck('circles.id')->toArray();
         }
-        
+
         return [];
     }
 
@@ -242,9 +241,10 @@ class PostService
         if (isset($data['group_ids']) && is_array($data['group_ids'])) {
             // Verify user belongs to these groups
             $userGroupIds = $user->groups()->pluck('groups.id')->toArray();
+
             return array_intersect($data['group_ids'], $userGroupIds);
         }
-        
+
         return [];
     }
 
@@ -257,7 +257,7 @@ class PostService
                 unset($mediaUrls[$mediaIndex]);
             }
         }
-        
+
         return array_values($mediaUrls); // Re-index array
     }
 }

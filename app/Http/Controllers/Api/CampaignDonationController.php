@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\CampaignDonation;
 use App\Models\FundraisingCampaign;
-use App\Services\FundraisingService;
 use App\Services\DonationProcessingService;
-use Illuminate\Http\Request;
+use App\Services\FundraisingService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CampaignDonationController extends Controller
@@ -146,7 +146,7 @@ class CampaignDonationController extends Controller
         $this->authorize('refund', $donation);
 
         $validated = $request->validate([
-            'amount' => 'nullable|numeric|min:0.01|max:' . $donation->amount,
+            'amount' => 'nullable|numeric|min:0.01|max:'.$donation->amount,
             'reason' => 'nullable|string|max:500',
         ]);
 

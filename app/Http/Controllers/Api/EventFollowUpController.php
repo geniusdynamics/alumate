@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\EventHighlight;
 use App\Models\EventConnectionRecommendation;
+use App\Models\EventHighlight;
 use App\Services\EventFollowUpService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class EventFollowUpController extends Controller
@@ -63,7 +63,7 @@ class EventFollowUpController extends Controller
     public function getFeedbackAnalytics(Request $request, Event $event): JsonResponse
     {
         // Check if user can view analytics (organizer or admin)
-        if (!$event->canUserEdit($request->user())) {
+        if (! $event->canUserEdit($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -178,7 +178,7 @@ class EventFollowUpController extends Controller
 
         try {
             $connectedUser = \App\Models\User::findOrFail($request->input('connected_user_id'));
-            
+
             $connection = $this->followUpService->createNetworkingConnection(
                 $event,
                 $request->user(),
@@ -305,7 +305,7 @@ class EventFollowUpController extends Controller
     public function getFollowUpAnalytics(Request $request, Event $event): JsonResponse
     {
         // Check if user can view analytics
-        if (!$event->canUserEdit($request->user())) {
+        if (! $event->canUserEdit($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -320,7 +320,7 @@ class EventFollowUpController extends Controller
     public function toggleHighlightFeature(Request $request, EventHighlight $highlight): JsonResponse
     {
         // Check if user can manage the event
-        if (!$highlight->event->canUserEdit($request->user())) {
+        if (! $highlight->event->canUserEdit($request->user())) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

@@ -29,11 +29,11 @@ class SuccessStoryService
         $data['user_id'] = $user->id;
 
         // Auto-populate user data if not provided
-        if (!isset($data['graduation_year']) && $user->graduations->isNotEmpty()) {
+        if (! isset($data['graduation_year']) && $user->graduations->isNotEmpty()) {
             $data['graduation_year'] = $user->graduations->first()->graduation_year;
         }
 
-        if (!isset($data['degree_program']) && $user->graduations->isNotEmpty()) {
+        if (! isset($data['degree_program']) && $user->graduations->isNotEmpty()) {
             $data['degree_program'] = $user->graduations->first()->degree;
         }
 
@@ -59,6 +59,7 @@ class SuccessStoryService
         }
 
         $story->update($data);
+
         return $story->fresh();
     }
 
@@ -89,17 +90,17 @@ class SuccessStoryService
             $search = $filters['search'];
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('summary', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%")
-                  ->orWhereHas('user', function ($userQuery) use ($search) {
-                      $userQuery->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('summary', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         // Sort by featured first, then by published date
         $query->orderBy('is_featured', 'desc')
-              ->orderBy('published_at', 'desc');
+            ->orderBy('published_at', 'desc');
 
         return $query->paginate($perPage);
     }
@@ -126,9 +127,9 @@ class SuccessStoryService
         }
 
         return $query->orderBy('view_count', 'desc')
-                    ->orderBy('published_at', 'desc')
-                    ->limit($limit)
-                    ->get();
+            ->orderBy('published_at', 'desc')
+            ->limit($limit)
+            ->get();
     }
 
     public function getStoriesByDemographics(array $demographics, int $limit = 12): \Illuminate\Database\Eloquent\Collection
@@ -140,8 +141,8 @@ class SuccessStoryService
         }
 
         return $query->orderBy('published_at', 'desc')
-                    ->limit($limit)
-                    ->get();
+            ->limit($limit)
+            ->get();
     }
 
     public function getAnalytics(): array
@@ -182,7 +183,7 @@ class SuccessStoryService
 
         foreach ($files as $file) {
             if ($file instanceof UploadedFile) {
-                $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+                $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
                 $path = $file->storeAs('success-stories/media', $filename, 'public');
                 $uploadedFiles[] = $path;
             }
@@ -193,7 +194,8 @@ class SuccessStoryService
 
     private function uploadFeaturedImage(UploadedFile $file): string
     {
-        $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+        $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
+
         return $file->storeAs('success-stories/featured', $filename, 'public');
     }
 

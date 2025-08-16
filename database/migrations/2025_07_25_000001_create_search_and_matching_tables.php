@@ -35,7 +35,7 @@ return new class extends Migration
             $table->integer('search_applications')->default(0)->after('search_views');
             $table->decimal('avg_match_score', 5, 2)->nullable()->after('match_score');
             $table->json('popular_search_terms')->nullable()->after('avg_match_score');
-            
+
             $table->index('search_views');
             $table->index('avg_match_score');
         });
@@ -69,7 +69,7 @@ return new class extends Migration
     {
         Schema::dropIfExists('search_filters');
         // Note: job_graduate_matches table is dropped in tenant migrations
-        
+
         // Note: Graduate table rollback is handled in tenant migrations
 
         Schema::table('jobs', function (Blueprint $table) {

@@ -3,8 +3,8 @@
 namespace App\Jobs;
 
 use App\Models\SearchAlert;
-use App\Services\ElasticsearchService;
 use App\Notifications\SearchAlertNotification;
+use App\Services\ElasticsearchService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -44,7 +44,7 @@ class ProcessSearchAlertsJob implements ShouldQueue
                 Log::error('Failed to process search alert', [
                     'alert_id' => $alert->id,
                     'user_id' => $alert->user_id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -73,7 +73,7 @@ class ProcessSearchAlertsJob implements ShouldQueue
         // Only send notification if there are new results
         if ($currentCount > $previousCount) {
             $newResultsCount = $currentCount - $previousCount;
-            
+
             // Send notification
             $user->notify(new SearchAlertNotification(
                 $savedSearch,
@@ -84,7 +84,7 @@ class ProcessSearchAlertsJob implements ShouldQueue
             Log::info('Search alert notification sent', [
                 'alert_id' => $alert->id,
                 'user_id' => $user->id,
-                'new_results' => $newResultsCount
+                'new_results' => $newResultsCount,
             ]);
         }
 

@@ -3,8 +3,8 @@
 namespace Tests\Unit\Services;
 
 use App\Models\Circle;
-use App\Models\User;
 use App\Models\EducationHistory;
+use App\Models\User;
 use App\Services\CircleManager;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,13 +18,13 @@ class CircleManagerTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->circleManager = new CircleManager();
+        $this->circleManager = new CircleManager;
     }
 
     public function test_generates_school_year_circle_for_user()
     {
         $user = User::factory()->create();
-        
+
         // Create education history
         EducationHistory::factory()->create([
             'graduate_id' => $user->id,
@@ -44,14 +44,14 @@ class CircleManagerTest extends TestCase
     public function test_generates_multi_school_circles_for_user_with_multiple_educations()
     {
         $user = User::factory()->create();
-        
+
         // Create multiple education histories
         EducationHistory::factory()->create([
             'graduate_id' => $user->id,
             'institution_name' => 'University A',
             'end_year' => 2018,
         ]);
-        
+
         EducationHistory::factory()->create([
             'graduate_id' => $user->id,
             'institution_name' => 'University B',
@@ -62,7 +62,7 @@ class CircleManagerTest extends TestCase
 
         // Should have 2 school-year circles + 1 multi-school circle
         $this->assertCount(3, $circles);
-        
+
         $multiSchoolCircle = $circles->where('type', 'multi_school')->first();
         $this->assertNotNull($multiSchoolCircle);
         $this->assertStringContains('Multi-School Alumni', $multiSchoolCircle->name);
@@ -76,7 +76,7 @@ class CircleManagerTest extends TestCase
             'type' => 'school_year',
             'criteria' => [
                 'institution_name' => 'Test University',
-                'graduation_year' => 2020
+                'graduation_year' => 2020,
             ],
             'auto_generated' => true,
         ]);
@@ -136,7 +136,7 @@ class CircleManagerTest extends TestCase
     public function test_updates_circles_for_user()
     {
         $user = User::factory()->create();
-        
+
         // Create initial education
         EducationHistory::factory()->create([
             'graduate_id' => $user->id,

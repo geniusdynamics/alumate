@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\SocialProfile;
 use App\Services\SocialAuthService;
-use Illuminate\Http\Request;
+use Exception;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
-use Exception;
 
 class SocialAuthController extends Controller
 {
@@ -21,14 +21,14 @@ class SocialAuthController extends Controller
      */
     public function redirectToProvider(string $provider): RedirectResponse
     {
-        if (!$this->isValidProvider($provider)) {
+        if (! $this->isValidProvider($provider)) {
             return redirect()->route('login')->with('error', 'Invalid social provider.');
         }
 
         try {
             return Socialite::driver($provider)->redirect();
         } catch (Exception $e) {
-            return redirect()->route('login')->with('error', 'Unable to connect to ' . ucfirst($provider) . '. Please try again.');
+            return redirect()->route('login')->with('error', 'Unable to connect to '.ucfirst($provider).'. Please try again.');
         }
     }
 
@@ -37,19 +37,19 @@ class SocialAuthController extends Controller
      */
     public function handleProviderCallback(string $provider): RedirectResponse
     {
-        if (!$this->isValidProvider($provider)) {
+        if (! $this->isValidProvider($provider)) {
             return redirect()->route('login')->with('error', 'Invalid social provider.');
         }
 
         try {
             $socialUser = Socialite::driver($provider)->user();
-            
+
             $user = $this->socialAuthService->createOrUpdateUser($provider, $socialUser);
-            
+
             Auth::login($user, true);
-            
-            return redirect()->intended(route('dashboard'))->with('success', 'Successfully logged in with ' . ucfirst($provider) . '!');
-            
+
+            return redirect()->intended(route('dashboard'))->with('success', 'Successfully logged in with '.ucfirst($provider).'!');
+
         } catch (Exception $e) {
             return redirect()->route('login')->with('error', 'Authentication failed. Please try again.');
         }
@@ -60,23 +60,23 @@ class SocialAuthController extends Controller
      */
     public function linkProfile(Request $request, string $provider): RedirectResponse
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login')->with('error', 'You must be logged in to link social profiles.');
         }
 
-        if (!$this->isValidProvider($provider)) {
+        if (! $this->isValidProvider($provider)) {
             return redirect()->back()->with('error', 'Invalid social provider.');
         }
 
         try {
             $socialUser = Socialite::driver($provider)->user();
-            
+
             $this->socialAuthService->linkProfileToUser(Auth::user(), $provider, $socialUser);
-            
-            return redirect()->back()->with('success', ucfirst($provider) . ' profile linked successfully!');
-            
+
+            return redirect()->back()->with('success', ucfirst($provider).' profile linked successfully!');
+
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Failed to link ' . ucfirst($provider) . ' profile. It may already be linked to another account.');
+            return redirect()->back()->with('error', 'Failed to link '.ucfirst($provider).' profile. It may already be linked to another account.');
         }
     }
 
@@ -85,7 +85,7 @@ class SocialAuthController extends Controller
      */
     public function unlinkProfile(Request $request, int $profileId): RedirectResponse
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 
@@ -95,14 +95,14 @@ class SocialAuthController extends Controller
                 ->firstOrFail();
 
             // Prevent unlinking if it's the only authentication method
-            if (Auth::user()->socialProfiles()->count() === 1 && !Auth::user()->password) {
+            if (Auth::user()->socialProfiles()->count() === 1 && ! Auth::user()->password) {
                 return redirect()->back()->with('error', 'Cannot unlink your only authentication method. Please set a password first.');
             }
 
             $this->socialAuthService->unlinkProfile($profileId);
-            
-            return redirect()->back()->with('success', ucfirst($profile->provider) . ' profile unlinked successfully!');
-            
+
+            return redirect()->back()->with('success', ucfirst($profile->provider).' profile unlinked successfully!');
+
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'Failed to unlink social profile.');
         }
@@ -113,7 +113,7 @@ class SocialAuthController extends Controller
      */
     public function showLinkingPage()
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
 

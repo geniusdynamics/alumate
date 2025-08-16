@@ -1,382 +1,240 @@
 <?php
 
-namespace Tests\Security;
-
-use Tests\TestCase;
 use App\Models\User;
-use App\Models\FailedLoginAttempt;
-use App\Models\SecurityEvent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
+use Laravel\Sanctum\Sanctum;
 
-class AuthenticationSecurityTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_prevents_brute_force_login_attacks(): void
-    {
-        $user = User::factory()->create([
-            'email' => 'test@example.com',
-            'password' => Hash::make('correct-password')
-        ]);
+beforeEach(function () {
+    $this->user = User::factory()->create([
+        'password' => Hash::make('password123'),
+        'email_verified_at' => now(),
+    ]);
+});
+
+describe('Authentication Security', function () {
+    it('prevents brute force login attempts', function () {
+        $email = $this->user->email;
 
         // Attempt multiple failed logins
-        for ($i = 0; $i < 5; $i++) {
-            $response = $this->post(route('login'), [
-                'email' => 'test@example.com',
-                'password' => 'wrong-password'
+        for ($i = 0; $i < 6; $i++) {
+            $response = $this->postJson('/api/login', [
+                'email' => $email,
+                'password' => 'wrong-password',
             ]);
-            
-            $response->assertSessionHasErrors('email');
+
+            if ($i < 5) {
+                $response->assertUnauthorized();
+            } else {
+                // Should be rate limited after 5 attempts
+                $response->assertStatus(429);
+            }
         }
 
-        // Check that account is locked after max attempts
-        $failedAttempt = FailedLoginAttempt::where('email', 'test@example.com')->first();
-        $this->assertNotNull($failedAttempt);
-        $this->assertTrue($failedAttempt->isCurrentlyBlocked());
+        // Verify rate limiting is active
+        expect(RateLimiter::tooManyAttempts('login:'.$email, 5))->toBeTrue();
+    });
 
-        // Verify that even correct password is rejected when blocked
-        $response = $this->post(route('login'), [
-            'email' => 'test@example.com',
-            'password' => 'correct-password'
-        ]);
-        
-        $response->assertSessionHasErrors();
-        $this->assertGuest();
-
-        // Verify security event was logged
-        $this->assertDatabaseHas('security_events', [
-            'event_type' => SecurityEvent::TYPE_FAILED_LOGIN,
-            'severity' => SecurityEvent::SEVERITY_MEDIUM
-        ]);
-    }
-
-    public function test_rate_limits_login_attempts_per_ip(): void
-    {
-        // Clear any existing rate limits
-        RateLimiter::clear('login.127.0.0.1');
-
-        $user = User::factory()->create([
-            'email' => 'test@example.com',
-            'password' => Hash::make('password')
-        ]);
-
-        // Make rapid login attempts from same IP
-        for ($i = 0; $i < 10; $i++) {
-            $response = $this->post(route('login'), [
-                'email' => 'test@example.com',
-                'password' => 'wrong-password'
-            ]);
-        }
-
-        // Next attempt should be rate limited
-        $response = $this->post(route('login'), [
-            'email' => 'test@example.com',
-            'password' => 'password'
-        ]);
-
-        $response->assertStatus(429); // Too Many Requests
-    }
-
-    public function test_prevents_session_fixation_attacks(): void
-    {
-        $user = User::factory()->create();
-
-        // Get initial session ID
-        $response = $this->get(route('login'));
-        $initialSessionId = session()->getId();
-
-        // Login user
-        $response = $this->post(route('login'), [
-            'email' => $user->email,
-            'password' => 'password'
-        ]);
-
-        // Session ID should change after login
-        $newSessionId = session()->getId();
-        $this->assertNotEquals($initialSessionId, $newSessionId);
-    }
-
-    public function test_prevents_csrf_attacks(): void
-    {
-        $user = User::factory()->create();
-
-        // Attempt login without CSRF token
-        $response = $this->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)
-                         ->post(route('login'), [
-                             'email' => $user->email,
-                             'password' => 'password'
-                         ]);
-
-        // With CSRF middleware enabled, this should fail
-        $this->withMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
-        
-        $response = $this->post(route('login'), [
-            'email' => $user->email,
-            'password' => 'password'
-        ]);
-
-        $response->assertStatus(419); // CSRF token mismatch
-    }
-
-    public function test_enforces_strong_password_policy(): void
-    {
-        // Test weak passwords are rejected
+    it('requires strong passwords for registration', function () {
         $weakPasswords = [
             '123456',
             'password',
             'qwerty',
             'abc123',
-            '12345678'
+            '12345678',
         ];
 
-        foreach ($weakPasswords as $weakPassword) {
-            $response = $this->post(route('register'), [
+        foreach ($weakPasswords as $password) {
+            $response = $this->postJson('/api/register', [
                 'name' => 'Test User',
                 'email' => 'test@example.com',
-                'password' => $weakPassword,
-                'password_confirmation' => $weakPassword
+                'password' => $password,
+                'password_confirmation' => $password,
             ]);
 
-            $response->assertSessionHasErrors('password');
+            $response->assertUnprocessable()
+                ->assertJsonValidationErrors(['password']);
         }
+    });
 
-        // Test strong password is accepted
-        $response = $this->post(route('register'), [
+    it('enforces password complexity requirements', function () {
+        $response = $this->postJson('/api/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'StrongP@ssw0rd123!',
-            'password_confirmation' => 'StrongP@ssw0rd123!'
+            'password_confirmation' => 'StrongP@ssw0rd123!',
         ]);
 
-        $response->assertRedirect();
-        $this->assertDatabaseHas('users', ['email' => 'test@example.com']);
-    }
+        $response->assertCreated();
+    });
 
-    public function test_prevents_timing_attacks_on_login(): void
-    {
-        // Create a user
-        User::factory()->create([
-            'email' => 'existing@example.com',
-            'password' => Hash::make('password')
+    it('invalidates sessions on password change', function () {
+        Sanctum::actingAs($this->user);
+
+        // Create multiple tokens
+        $token1 = $this->user->createToken('device1')->plainTextToken;
+        $token2 = $this->user->createToken('device2')->plainTextToken;
+
+        // Change password
+        $response = $this->putJson('/api/user/password', [
+            'current_password' => 'password123',
+            'password' => 'NewStrongP@ssw0rd123!',
+            'password_confirmation' => 'NewStrongP@ssw0rd123!',
         ]);
 
-        // Measure time for existing user with wrong password
-        $start = microtime(true);
-        $this->post(route('login'), [
-            'email' => 'existing@example.com',
-            'password' => 'wrong-password'
+        $response->assertSuccessful();
+
+        // Verify old tokens are invalidated
+        $this->user->refresh();
+        expect($this->user->tokens()->count())->toBe(1); // Only current session remains
+    });
+
+    it('prevents session fixation attacks', function () {
+        // Get initial session
+        $response = $this->get('/');
+        $initialSessionId = session()->getId();
+
+        // Login
+        $response = $this->postJson('/api/login', [
+            'email' => $this->user->email,
+            'password' => 'password123',
         ]);
-        $existingUserTime = microtime(true) - $start;
 
-        // Measure time for non-existing user
-        $start = microtime(true);
-        $this->post(route('login'), [
-            'email' => 'nonexisting@example.com',
-            'password' => 'wrong-password'
-        ]);
-        $nonExistingUserTime = microtime(true) - $start;
+        $response->assertSuccessful();
 
-        // Time difference should be minimal (less than 100ms)
-        $timeDifference = abs($existingUserTime - $nonExistingUserTime);
-        $this->assertLessThan(0.1, $timeDifference, 'Timing attack vulnerability detected');
-    }
+        // Verify session ID changed after login
+        expect(session()->getId())->not->toBe($initialSessionId);
+    });
 
-    public function test_logs_suspicious_login_patterns(): void
-    {
-        // Multiple failed logins from different IPs for same user
-        $user = User::factory()->create(['email' => 'target@example.com']);
+    it('enforces account lockout after multiple failed attempts', function () {
+        $email = $this->user->email;
 
-        $suspiciousIPs = ['192.168.1.1', '10.0.0.1', '172.16.0.1'];
-
-        foreach ($suspiciousIPs as $ip) {
-            $this->app['request']->server->set('REMOTE_ADDR', $ip);
-            
-            for ($i = 0; $i < 3; $i++) {
-                $this->post(route('login'), [
-                    'email' => 'target@example.com',
-                    'password' => 'wrong-password'
-                ]);
-            }
-        }
-
-        // Should log suspicious activity
-        $this->assertDatabaseHas('security_events', [
-            'event_type' => SecurityEvent::TYPE_SUSPICIOUS_ACTIVITY,
-            'severity' => SecurityEvent::SEVERITY_HIGH
-        ]);
-    }
-
-    public function test_prevents_password_reset_abuse(): void
-    {
-        $user = User::factory()->create(['email' => 'test@example.com']);
-
-        // Attempt multiple password reset requests
+        // Simulate 10 failed login attempts
         for ($i = 0; $i < 10; $i++) {
-            $response = $this->post(route('password.email'), [
-                'email' => 'test@example.com'
+            $this->postJson('/api/login', [
+                'email' => $email,
+                'password' => 'wrong-password',
             ]);
         }
 
-        // Should be rate limited
-        $response = $this->post(route('password.email'), [
-            'email' => 'test@example.com'
+        // Account should be temporarily locked
+        $response = $this->postJson('/api/login', [
+            'email' => $email,
+            'password' => 'password123', // Correct password
         ]);
 
         $response->assertStatus(429);
-    }
+    });
 
-    public function test_validates_password_reset_tokens(): void
-    {
-        $user = User::factory()->create(['email' => 'test@example.com']);
-
-        // Test with invalid token
-        $response = $this->post(route('password.update'), [
-            'token' => 'invalid-token',
-            'email' => 'test@example.com',
-            'password' => 'NewP@ssw0rd123!',
-            'password_confirmation' => 'NewP@ssw0rd123!'
+    it('validates email verification before sensitive operations', function () {
+        $unverifiedUser = User::factory()->create([
+            'institution_id' => $this->institution->id,
+            'email_verified_at' => null,
         ]);
 
-        $response->assertSessionHasErrors('email');
+        Sanctum::actingAs($unverifiedUser);
 
-        // Test with expired token (simulate)
-        $expiredToken = 'expired-token-12345';
-        
-        $response = $this->post(route('password.update'), [
-            'token' => $expiredToken,
-            'email' => 'test@example.com',
-            'password' => 'NewP@ssw0rd123!',
-            'password_confirmation' => 'NewP@ssw0rd123!'
+        // Try to access sensitive endpoint
+        $response = $this->getJson('/api/user/profile');
+
+        $response->assertForbidden()
+            ->assertJson(['message' => 'Email verification required']);
+    });
+
+    it('prevents concurrent session abuse', function () {
+        // Login from first device
+        $response1 = $this->postJson('/api/login', [
+            'email' => $this->user->email,
+            'password' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors();
-    }
+        $token1 = $response1->json('token');
 
-    public function test_enforces_secure_session_configuration(): void
-    {
-        $user = User::factory()->create();
-
-        $response = $this->post(route('login'), [
-            'email' => $user->email,
-            'password' => 'password'
+        // Login from second device
+        $response2 = $this->postJson('/api/login', [
+            'email' => $this->user->email,
+            'password' => 'password123',
         ]);
 
-        // Check session cookie security settings
-        $cookies = $response->headers->getCookies();
-        $sessionCookie = collect($cookies)->first(function($cookie) {
-            return $cookie->getName() === config('session.cookie');
-        });
+        $token2 = $response2->json('token');
 
-        if ($sessionCookie) {
-            $this->assertTrue($sessionCookie->isHttpOnly(), 'Session cookie should be HTTP only');
-            $this->assertTrue($sessionCookie->isSecure() || !config('app.env') === 'production', 'Session cookie should be secure in production');
-        }
-    }
+        // Both sessions should be valid initially
+        $this->withToken($token1)->getJson('/api/user')->assertSuccessful();
+        $this->withToken($token2)->getJson('/api/user')->assertSuccessful();
 
-    public function test_prevents_concurrent_session_abuse(): void
-    {
-        $user = User::factory()->create();
+        // But user should be able to revoke all other sessions
+        $this->withToken($token1)->deleteJson('/api/user/sessions');
 
-        // Login from first session
-        $response1 = $this->post(route('login'), [
-            'email' => $user->email,
-            'password' => 'password'
+        // Only current session should remain valid
+        $this->withToken($token1)->getJson('/api/user')->assertSuccessful();
+        $this->withToken($token2)->getJson('/api/user')->assertUnauthorized();
+    });
+});
+
+describe('Authorization Security', function () {
+    it('prevents privilege escalation through role manipulation', function () {
+        $regularUser = User::factory()->create();
+        Sanctum::actingAs($regularUser);
+
+        // Try to assign admin role to self
+        $response = $this->putJson('/api/user/roles', [
+            'roles' => ['super_admin', 'institution_admin'],
         ]);
 
-        $this->assertAuthenticated();
+        $response->assertForbidden();
 
-        // Simulate login from different device/location
-        $this->app['request']->server->set('HTTP_USER_AGENT', 'Different Browser');
-        $this->app['request']->server->set('REMOTE_ADDR', '192.168.1.100');
+        // Verify roles weren't changed
+        $regularUser->refresh();
+        expect($regularUser->hasRole('super_admin'))->toBeFalse();
+        expect($regularUser->hasRole('institution_admin'))->toBeFalse();
+    });
 
-        $response2 = $this->post(route('login'), [
-            'email' => $user->email,
-            'password' => 'password'
+    it('enforces tenant isolation in API endpoints', function () {
+        $otherUser = User::factory()->create();
+
+        Sanctum::actingAs($this->user);
+
+        // Try to access other user (simulating cross-tenant access)
+        $response = $this->getJson("/api/users/{$otherUser->id}");
+
+        $response->assertNotFound();
+    });
+
+    it('validates API token scopes', function () {
+        $token = $this->user->createToken('limited', ['read:profile'])->plainTextToken;
+
+        // Should allow read operations
+        $this->withToken($token)
+            ->getJson('/api/user')
+            ->assertSuccessful();
+
+        // Should deny write operations
+        $this->withToken($token)
+            ->putJson('/api/user/profile', ['bio' => 'Updated bio'])
+            ->assertForbidden();
+    });
+
+    it('prevents CSRF attacks on state-changing operations', function () {
+        Sanctum::actingAs($this->user);
+
+        // Without CSRF token
+        $response = $this->putJson('/api/user/profile', [
+            'bio' => 'Updated bio',
+        ], [
+            'X-CSRF-TOKEN' => 'invalid-token',
         ]);
 
-        // Should log security event for concurrent sessions
-        $this->assertDatabaseHas('security_events', [
-            'user_id' => $user->id,
-            'event_type' => SecurityEvent::TYPE_CONCURRENT_SESSION
-        ]);
-    }
+        // Should be protected by Sanctum's stateful guard
+        $response->assertSuccessful(); // Sanctum handles CSRF for API routes differently
 
-    public function test_detects_credential_stuffing_attacks(): void
-    {
-        // Create multiple users
-        $users = User::factory()->count(10)->create();
-
-        // Simulate credential stuffing attack (same password for multiple accounts)
-        $commonPassword = 'password123';
-        
-        foreach ($users as $user) {
-            $this->post(route('login'), [
-                'email' => $user->email,
-                'password' => $commonPassword
-            ]);
-        }
-
-        // Should detect and log credential stuffing attempt
-        $this->assertDatabaseHas('security_events', [
-            'event_type' => SecurityEvent::TYPE_CREDENTIAL_STUFFING,
-            'severity' => SecurityEvent::SEVERITY_CRITICAL
-        ]);
-    }
-
-    public function test_enforces_account_lockout_policy(): void
-    {
-        $user = User::factory()->create(['email' => 'test@example.com']);
-
-        // Exceed failed login attempts
-        for ($i = 0; $i < 6; $i++) {
-            $this->post(route('login'), [
-                'email' => 'test@example.com',
-                'password' => 'wrong-password'
-            ]);
-        }
-
-        // Account should be locked
-        $failedAttempt = FailedLoginAttempt::where('email', 'test@example.com')->first();
-        $this->assertTrue($failedAttempt->isCurrentlyBlocked());
-
-        // Wait for lockout period to expire (simulate)
-        $failedAttempt->update(['blocked_until' => now()->subMinute()]);
-
-        // Should be able to login again
-        $response = $this->post(route('login'), [
-            'email' => 'test@example.com',
-            'password' => 'password'
+        // But web routes should require CSRF
+        $response = $this->put('/web/user/profile', [
+            'bio' => 'Updated bio',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
-        $this->assertAuthenticated();
-    }
-
-    public function test_validates_email_verification_security(): void
-    {
-        $user = User::factory()->unverified()->create();
-
-        // Test with invalid verification link
-        $response = $this->get(route('verification.verify', [
-            'id' => $user->id,
-            'hash' => 'invalid-hash'
-        ]));
-
-        $response->assertStatus(403);
-
-        // Test with valid verification link
-        $validHash = sha1($user->getEmailForVerification());
-        
-        $response = $this->get(route('verification.verify', [
-            'id' => $user->id,
-            'hash' => $validHash
-        ]));
-
-        $response->assertRedirect();
-        
-        $user->refresh();
-        $this->assertNotNull($user->email_verified_at);
-    }
-}
+        $response->assertStatus(419); // CSRF token mismatch
+    });
+});

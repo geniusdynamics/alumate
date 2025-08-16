@@ -62,7 +62,7 @@ class HelpTicketResponse extends Model
 
     public function isFromUser()
     {
-        return !$this->isFromStaff();
+        return ! $this->isFromStaff();
     }
 
     public function canBeViewedBy($user)
@@ -73,7 +73,7 @@ class HelpTicketResponse extends Model
         }
 
         // Public responses can be viewed by ticket owner and staff
-        return $this->ticket->user_id === $user->id || 
+        return $this->ticket->user_id === $user->id ||
                $user->hasAnyRole(['super-admin', 'institution-admin']);
     }
 }

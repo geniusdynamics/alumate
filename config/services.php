@@ -35,4 +35,20 @@ return [
         ],
     ],
 
+    'sentry' => [
+        'dsn' => env('SENTRY_LARAVEL_DSN', 'https://5b2c3cb3a5eb423893d58842bbe71483@app1.genius2.mrmarkuz.ddnss.eu/1'),
+        'environment' => env('APP_ENV', 'production'),
+        'release' => env('APP_VERSION', '1.0.0'),
+        'traces_sample_rate' => (float) env('SENTRY_TRACES_SAMPLE_RATE', 0.1),
+        'profiles_sample_rate' => (float) env('SENTRY_PROFILES_SAMPLE_RATE', 0.1),
+    ],
+
+    'monitoring' => [
+        'alert_email' => env('MONITORING_ALERT_EMAIL'),
+        'slack_webhook' => env('MONITORING_SLACK_WEBHOOK'),
+        'pagerduty_key' => env('PAGERDUTY_INTEGRATION_KEY'),
+        'datadog_api_key' => env('DATADOG_API_KEY'),
+        'newrelic_api_key' => env('NEWRELIC_API_KEY'),
+    ],
+
 ];

@@ -4,16 +4,15 @@ namespace App\Services;
 
 use App\Models\TaxReceipt;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\View;
 
 class TaxReceiptPdfService
 {
     public function generatePdf(TaxReceipt $taxReceipt): string
     {
         $data = $this->preparePdfData($taxReceipt);
-        
+
         $pdf = Pdf::loadView('pdf.tax-receipt', $data);
-        
+
         // Set PDF options
         $pdf->setPaper('letter', 'portrait');
         $pdf->setOptions([
@@ -28,7 +27,7 @@ class TaxReceiptPdfService
     private function preparePdfData(TaxReceipt $taxReceipt): array
     {
         $donations = $taxReceipt->getDonationRecords();
-        
+
         return [
             'receipt' => $taxReceipt,
             'donations' => $donations,
@@ -58,14 +57,15 @@ class TaxReceiptPdfService
         $formatter = new \NumberFormatter('en', \NumberFormatter::SPELLOUT);
         $dollars = floor($amount);
         $cents = round(($amount - $dollars) * 100);
-        
+
         $dollarsWords = $formatter->format($dollars);
-        
+
         if ($cents > 0) {
             $centsWords = $formatter->format($cents);
-            return ucfirst($dollarsWords) . ' dollars and ' . $centsWords . ' cents';
+
+            return ucfirst($dollarsWords).' dollars and '.$centsWords.' cents';
         }
-        
-        return ucfirst($dollarsWords) . ' dollars';
+
+        return ucfirst($dollarsWords).' dollars';
     }
 }

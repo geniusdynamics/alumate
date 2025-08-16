@@ -59,7 +59,7 @@ class Post extends Model
      */
     public function canBeViewedBy(?User $user): bool
     {
-        if (!$user) {
+        if (! $user) {
             return $this->visibility === 'public';
         }
 
@@ -94,7 +94,7 @@ class Post extends Model
      */
     public function isEngagedBy(?User $user, string $type): bool
     {
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -123,7 +123,7 @@ class Post extends Model
      */
     public function getFormattedMediaAttribute(): array
     {
-        if (!$this->media_urls) {
+        if (! $this->media_urls) {
             return [];
         }
 
@@ -142,7 +142,7 @@ class Post extends Model
      */
     private function isUserInPostCircles(User $user): bool
     {
-        if (!$this->circle_ids) {
+        if (! $this->circle_ids) {
             return false;
         }
 
@@ -156,7 +156,7 @@ class Post extends Model
      */
     private function isUserInPostGroups(User $user): bool
     {
-        if (!$this->group_ids) {
+        if (! $this->group_ids) {
             return false;
         }
 
@@ -171,7 +171,7 @@ class Post extends Model
     private function guessMediaType(string $url): string
     {
         $extension = strtolower(pathinfo($url, PATHINFO_EXTENSION));
-        
+
         return match ($extension) {
             'jpg', 'jpeg', 'png', 'gif', 'webp' => 'image',
             'mp4', 'avi', 'mov', 'wmv', 'webm' => 'video',
@@ -185,25 +185,25 @@ class Post extends Model
      */
     public function scopeVisibleTo($query, ?User $user)
     {
-        if (!$user) {
+        if (! $user) {
             return $query->where('visibility', 'public');
         }
 
         return $query->where(function ($q) use ($user) {
             $q->where('visibility', 'public')
-              ->orWhere('user_id', $user->id)
-              ->orWhere(function ($subQ) use ($user) {
-                  $subQ->where('visibility', 'circles')
-                       ->whereRaw('JSON_OVERLAPS(circle_ids, ?)', [
-                           json_encode($user->circles()->pluck('circles.id')->toArray())
-                       ]);
-              })
-              ->orWhere(function ($subQ) use ($user) {
-                  $subQ->where('visibility', 'groups')
-                       ->whereRaw('JSON_OVERLAPS(group_ids, ?)', [
-                           json_encode($user->groups()->pluck('groups.id')->toArray())
-                       ]);
-              });
+                ->orWhere('user_id', $user->id)
+                ->orWhere(function ($subQ) use ($user) {
+                    $subQ->where('visibility', 'circles')
+                        ->whereRaw('JSON_OVERLAPS(circle_ids, ?)', [
+                            json_encode($user->circles()->pluck('circles.id')->toArray()),
+                        ]);
+                })
+                ->orWhere(function ($subQ) use ($user) {
+                    $subQ->where('visibility', 'groups')
+                        ->whereRaw('JSON_OVERLAPS(group_ids, ?)', [
+                            json_encode($user->groups()->pluck('groups.id')->toArray()),
+                        ]);
+                });
         });
     }
 

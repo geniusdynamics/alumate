@@ -26,7 +26,7 @@ class SuccessStoryController extends Controller
             'achievement_type',
             'graduation_year',
             'tags',
-            'search'
+            'search',
         ]);
 
         $perPage = $request->get('per_page', 12);
@@ -91,7 +91,7 @@ class SuccessStoryController extends Controller
     public function update(Request $request, SuccessStory $successStory): JsonResponse
     {
         // Check if user can update this story
-        if ($successStory->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+        if ($successStory->user_id !== Auth::id() && ! Auth::user()->hasRole('admin')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to update this story',
@@ -132,7 +132,7 @@ class SuccessStoryController extends Controller
     public function destroy(SuccessStory $successStory): JsonResponse
     {
         // Check if user can delete this story
-        if ($successStory->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
+        if ($successStory->user_id !== Auth::id() && ! Auth::user()->hasRole('admin')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to delete this story',
@@ -202,7 +202,7 @@ class SuccessStoryController extends Controller
      */
     public function share(SuccessStory $successStory): JsonResponse
     {
-        if (!$successStory->allow_social_sharing) {
+        if (! $successStory->allow_social_sharing) {
             return response()->json([
                 'success' => false,
                 'message' => 'This story does not allow social sharing',
@@ -242,7 +242,7 @@ class SuccessStoryController extends Controller
      */
     public function analytics(): JsonResponse
     {
-        if (!Auth::user()->hasRole('admin')) {
+        if (! Auth::user()->hasRole('admin')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized',
@@ -262,7 +262,7 @@ class SuccessStoryController extends Controller
      */
     public function toggleFeature(SuccessStory $successStory): JsonResponse
     {
-        if (!Auth::user()->hasRole('admin')) {
+        if (! Auth::user()->hasRole('admin')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized',

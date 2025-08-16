@@ -17,14 +17,14 @@ class UserAchievement extends Model
         'earned_at',
         'metadata',
         'is_featured',
-        'is_notified'
+        'is_notified',
     ];
 
     protected $casts = [
         'earned_at' => 'datetime',
         'metadata' => 'array',
         'is_featured' => 'boolean',
-        'is_notified' => 'boolean'
+        'is_notified' => 'boolean',
     ];
 
     /**
@@ -80,7 +80,7 @@ class UserAchievement extends Model
      */
     public function toggleFeatured(): void
     {
-        $this->update(['is_featured' => !$this->is_featured]);
+        $this->update(['is_featured' => ! $this->is_featured]);
     }
 
     /**
@@ -92,7 +92,7 @@ class UserAchievement extends Model
             'celebration_type' => $type,
             'message' => $message,
             'celebration_data' => $data,
-            'is_public' => true
+            'is_public' => true,
         ]);
     }
 }

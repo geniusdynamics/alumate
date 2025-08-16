@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\FundraisingCampaign;
 use App\Services\FundraisingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class FundraisingCampaignController extends Controller
@@ -40,7 +40,7 @@ class FundraisingCampaignController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'ILIKE', "%{$search}%")
-                  ->orWhere('description', 'ILIKE', "%{$search}%");
+                    ->orWhere('description', 'ILIKE', "%{$search}%");
             });
         }
 
@@ -89,7 +89,7 @@ class FundraisingCampaignController extends Controller
             },
             'peerFundraisers' => function ($query) {
                 $query->active()->with('user');
-            }
+            },
         ]);
 
         $analytics = $this->fundraisingService->getCampaignAnalytics($campaign);

@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         // Check if posts table already exists
-        if (!Schema::hasTable('posts')) {
+        if (! Schema::hasTable('posts')) {
             // Create the posts table if it doesn't exist
             Schema::create('posts', function (Blueprint $table) {
                 $table->id();
@@ -38,7 +38,7 @@ return new class extends Migration
             // Table exists, add missing columns and indexes
             Schema::table('posts', function (Blueprint $table) {
                 // Add soft deletes if not present
-                if (!Schema::hasColumn('posts', 'deleted_at')) {
+                if (! Schema::hasColumn('posts', 'deleted_at')) {
                     $table->softDeletes();
                 }
             });
@@ -49,19 +49,19 @@ return new class extends Migration
             } catch (Exception $e) {
                 // Index might already exist
             }
-            
+
             try {
                 DB::statement('CREATE INDEX IF NOT EXISTS idx_posts_user ON posts (user_id)');
             } catch (Exception $e) {
                 // Index might already exist
             }
-            
+
             try {
                 DB::statement('CREATE INDEX IF NOT EXISTS idx_posts_type ON posts (post_type)');
             } catch (Exception $e) {
                 // Index might already exist
             }
-            
+
             try {
                 DB::statement('CREATE INDEX IF NOT EXISTS idx_posts_visibility ON posts (visibility)');
             } catch (Exception $e) {
@@ -76,13 +76,13 @@ return new class extends Migration
             } catch (Exception $e) {
                 // Index might already exist
             }
-            
+
             try {
                 DB::statement('CREATE INDEX IF NOT EXISTS idx_posts_group_ids_gin ON posts USING GIN (group_ids)');
             } catch (Exception $e) {
                 // Index might already exist
             }
-            
+
             try {
                 DB::statement('CREATE INDEX IF NOT EXISTS idx_posts_metadata_gin ON posts USING GIN (metadata)');
             } catch (Exception $e) {

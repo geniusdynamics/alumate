@@ -184,7 +184,7 @@ import { Head, Link, router } from '@inertiajs/vue3'
 import { reactive } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import SuccessStoryCard from '@/components/SuccessStories/SuccessStoryCard.vue'
-import Pagination from '@/Components/Pagination.vue'
+import Pagination from '@/components/Pagination.vue'
 import { StarIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({

@@ -13,23 +13,23 @@ return new class extends Migration
     {
         Schema::table('job_applications', function (Blueprint $table) {
             // Add new columns for job matching system if they don't exist
-            if (!Schema::hasColumn('job_applications', 'introduction_requested')) {
+            if (! Schema::hasColumn('job_applications', 'introduction_requested')) {
                 $table->boolean('introduction_requested')->default(false);
             }
-            
-            if (!Schema::hasColumn('job_applications', 'introduction_contact_id')) {
+
+            if (! Schema::hasColumn('job_applications', 'introduction_contact_id')) {
                 $table->foreignId('introduction_contact_id')->nullable()->constrained('users')->onDelete('set null');
             }
-            
-            if (!Schema::hasColumn('job_applications', 'notes')) {
+
+            if (! Schema::hasColumn('job_applications', 'notes')) {
                 $table->text('notes')->nullable();
             }
-            
-            if (!Schema::hasColumn('job_applications', 'applied_at')) {
+
+            if (! Schema::hasColumn('job_applications', 'applied_at')) {
                 $table->timestamp('applied_at')->nullable();
             }
-            
-            if (!Schema::hasColumn('job_applications', 'resume_url')) {
+
+            if (! Schema::hasColumn('job_applications', 'resume_url')) {
                 $table->string('resume_url')->nullable();
             }
         });
@@ -62,14 +62,14 @@ return new class extends Migration
             } catch (\Exception $e) {
                 // Indexes might not exist, ignore the error
             }
-            
+
             // Remove columns added for job matching
             $table->dropColumn([
                 'introduction_requested',
-                'introduction_contact_id', 
+                'introduction_contact_id',
                 'notes',
                 'applied_at',
-                'resume_url'
+                'resume_url',
             ]);
         });
     }

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Graduate;
-use App\Models\SuccessStory;
-use App\Models\Job;
 use App\Models\CareerTimeline;
-use Illuminate\Http\Request;
+use App\Models\Graduate;
+use App\Models\Job;
+use App\Models\SuccessStory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class StudentCareerGuidanceController extends Controller
@@ -21,9 +21,9 @@ class StudentCareerGuidanceController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -37,7 +37,7 @@ class StudentCareerGuidanceController extends Controller
                 'skills' => $studentProfile->skills,
                 'course' => $studentProfile->course->name ?? null,
                 'graduation_year' => $studentProfile->expected_graduation_year,
-            ]
+            ],
         ]);
     }
 
@@ -49,9 +49,9 @@ class StudentCareerGuidanceController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -59,7 +59,7 @@ class StudentCareerGuidanceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $careerPaths
+            'data' => $careerPaths,
         ]);
     }
 
@@ -70,9 +70,9 @@ class StudentCareerGuidanceController extends Controller
     {
         $industry = $request->get('industry');
 
-        if (!$industry) {
+        if (! $industry) {
             return response()->json([
-                'message' => 'Industry parameter required'
+                'message' => 'Industry parameter required',
             ], 400);
         }
 
@@ -81,7 +81,7 @@ class StudentCareerGuidanceController extends Controller
         return response()->json([
             'success' => true,
             'data' => $insights,
-            'industry' => $industry
+            'industry' => $industry,
         ]);
     }
 
@@ -93,9 +93,9 @@ class StudentCareerGuidanceController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -103,7 +103,7 @@ class StudentCareerGuidanceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $salaryData
+            'data' => $salaryData,
         ]);
     }
 
@@ -115,9 +115,9 @@ class StudentCareerGuidanceController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -127,7 +127,7 @@ class StudentCareerGuidanceController extends Controller
         return response()->json([
             'success' => true,
             'data' => $skillGaps,
-            'target_role' => $targetRole
+            'target_role' => $targetRole,
         ]);
     }
 
@@ -139,9 +139,9 @@ class StudentCareerGuidanceController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -149,7 +149,7 @@ class StudentCareerGuidanceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $trends
+            'data' => $trends,
         ]);
     }
 
@@ -161,9 +161,9 @@ class StudentCareerGuidanceController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -171,7 +171,7 @@ class StudentCareerGuidanceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $recommendations
+            'data' => $recommendations,
         ]);
     }
 
@@ -183,9 +183,9 @@ class StudentCareerGuidanceController extends Controller
         $user = $request->user();
         $studentProfile = $user->studentProfile;
 
-        if (!$studentProfile) {
+        if (! $studentProfile) {
             return response()->json([
-                'message' => 'Student profile required'
+                'message' => 'Student profile required',
             ], 403);
         }
 
@@ -193,7 +193,7 @@ class StudentCareerGuidanceController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $timelines
+            'data' => $timelines,
         ]);
     }
 
@@ -279,7 +279,7 @@ class StudentCareerGuidanceController extends Controller
                                 'end_date' => $milestone->end_date,
                                 'duration_months' => $milestone->duration_months,
                             ];
-                        })
+                        }),
                     ];
                 }
             }
@@ -349,8 +349,8 @@ class StudentCareerGuidanceController extends Controller
                         'Location significantly impacts salary',
                         'Company size and industry matter',
                         'Skills and certifications can increase earning potential',
-                        'Experience and performance drive progression'
-                    ]
+                        'Experience and performance drive progression',
+                    ],
                 ];
             }
         }
@@ -389,7 +389,7 @@ class StudentCareerGuidanceController extends Controller
                 'missing_skills' => $missingSkills,
                 'skill_match_percentage' => count($currentSkills) > 0 ?
                     (count(array_intersect($requiredSkills, $currentSkills)) / count($requiredSkills)) * 100 : 0,
-                'recommendations' => $this->generateSkillRecommendations($missingSkills)
+                'recommendations' => $this->generateSkillRecommendations($missingSkills),
             ];
         }
 
@@ -455,7 +455,7 @@ class StudentCareerGuidanceController extends Controller
             'Attend industry conferences and networking events',
             'Connect with alumni on LinkedIn',
             'Participate in career fairs and company information sessions',
-            'Join relevant online communities and forums'
+            'Join relevant online communities and forums',
         ];
 
         return $recommendations;
@@ -472,10 +472,10 @@ class StudentCareerGuidanceController extends Controller
             $careerTimelines = CareerTimeline::whereHas('user.graduate', function ($query) use ($studentProfile) {
                 $query->where('course_id', $studentProfile->course_id);
             })
-            ->with(['user.graduate', 'milestones'])
-            ->orderBy('created_at', 'desc')
-            ->limit(5)
-            ->get();
+                ->with(['user.graduate', 'milestones'])
+                ->orderBy('created_at', 'desc')
+                ->limit(5)
+                ->get();
 
             $timelines = $careerTimelines->map(function ($timeline) {
                 return [
@@ -489,7 +489,7 @@ class StudentCareerGuidanceController extends Controller
                             'date' => $milestone->date,
                             'category' => $milestone->category,
                         ];
-                    })
+                    }),
                 ];
             });
         }
@@ -511,9 +511,9 @@ class StudentCareerGuidanceController extends Controller
                     'Online courses (Coursera, Udemy, LinkedIn Learning)',
                     'Professional certifications',
                     'Workshops and seminars',
-                    'Hands-on projects and internships'
+                    'Hands-on projects and internships',
                 ],
-                'priority' => 'high' // This could be calculated based on demand
+                'priority' => 'high', // This could be calculated based on demand
             ];
         }
 

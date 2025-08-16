@@ -2,20 +2,22 @@
 
 namespace Tests\UserAcceptance;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Exception;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * User Acceptance Test Runner
- * 
+ *
  * This class provides utilities to execute user acceptance tests
  * and manage test data lifecycle.
  */
 class TestRunner
 {
     private $testResults = [];
+
     private $currentTest = null;
+
     private $startTime = null;
 
     /**
@@ -43,7 +45,7 @@ class TestRunner
             $this->generateTestReport();
 
         } catch (Exception $e) {
-            $this->log('Test suite failed: ' . $e->getMessage(), 'error');
+            $this->log('Test suite failed: '.$e->getMessage(), 'error');
             throw $e;
         } finally {
             // Cleanup test environment
@@ -59,17 +61,17 @@ class TestRunner
     private function setupTestEnvironment()
     {
         $this->log('Setting up test environment...');
-        
+
         try {
             // Create comprehensive test data
             $testData = TestDataSets::createAllTestData();
             $this->log('Test data created successfully');
-            
+
             // Store test data for use in tests
             $this->testData = $testData;
-            
+
         } catch (Exception $e) {
-            $this->log('Failed to setup test environment: ' . $e->getMessage(), 'error');
+            $this->log('Failed to setup test environment: '.$e->getMessage(), 'error');
             throw $e;
         }
     }
@@ -82,17 +84,17 @@ class TestRunner
         $this->log('Running Super Admin tests...');
 
         // SA-001: Institution Management
-        $this->runTest('SA-001', 'Institution Management', function() {
+        $this->runTest('SA-001', 'Institution Management', function () {
             return $this->testInstitutionManagement();
         });
 
         // SA-002: System-Wide Analytics
-        $this->runTest('SA-002', 'System-Wide Analytics', function() {
+        $this->runTest('SA-002', 'System-Wide Analytics', function () {
             return $this->testSystemAnalytics();
         });
 
         // SA-003: Employer Verification
-        $this->runTest('SA-003', 'Employer Verification', function() {
+        $this->runTest('SA-003', 'Employer Verification', function () {
             return $this->testEmployerVerification();
         });
     }
@@ -105,22 +107,22 @@ class TestRunner
         $this->log('Running Institution Admin tests...');
 
         // IA-001: Graduate Management
-        $this->runTest('IA-001', 'Graduate Management', function() {
+        $this->runTest('IA-001', 'Graduate Management', function () {
             return $this->testGraduateManagement();
         });
 
         // IA-002: Bulk Graduate Import
-        $this->runTest('IA-002', 'Bulk Graduate Import', function() {
+        $this->runTest('IA-002', 'Bulk Graduate Import', function () {
             return $this->testBulkGraduateImport();
         });
 
         // IA-003: Course Management
-        $this->runTest('IA-003', 'Course Management', function() {
+        $this->runTest('IA-003', 'Course Management', function () {
             return $this->testCourseManagement();
         });
 
         // IA-004: Institution Analytics
-        $this->runTest('IA-004', 'Institution Analytics', function() {
+        $this->runTest('IA-004', 'Institution Analytics', function () {
             return $this->testInstitutionAnalytics();
         });
     }
@@ -133,22 +135,22 @@ class TestRunner
         $this->log('Running Employer tests...');
 
         // E-001: Employer Registration
-        $this->runTest('E-001', 'Employer Registration', function() {
+        $this->runTest('E-001', 'Employer Registration', function () {
             return $this->testEmployerRegistration();
         });
 
         // E-002: Job Posting
-        $this->runTest('E-002', 'Job Posting', function() {
+        $this->runTest('E-002', 'Job Posting', function () {
             return $this->testJobPosting();
         });
 
         // E-003: Application Management
-        $this->runTest('E-003', 'Application Management', function() {
+        $this->runTest('E-003', 'Application Management', function () {
             return $this->testApplicationManagement();
         });
 
         // E-004: Graduate Search
-        $this->runTest('E-004', 'Graduate Search', function() {
+        $this->runTest('E-004', 'Graduate Search', function () {
             return $this->testGraduateSearch();
         });
     }
@@ -161,22 +163,22 @@ class TestRunner
         $this->log('Running Graduate tests...');
 
         // G-001: Profile Management
-        $this->runTest('G-001', 'Profile Management', function() {
+        $this->runTest('G-001', 'Profile Management', function () {
             return $this->testProfileManagement();
         });
 
         // G-002: Job Search and Application
-        $this->runTest('G-002', 'Job Search and Application', function() {
+        $this->runTest('G-002', 'Job Search and Application', function () {
             return $this->testJobSearchAndApplication();
         });
 
         // G-003: Classmate Connections
-        $this->runTest('G-003', 'Classmate Connections', function() {
+        $this->runTest('G-003', 'Classmate Connections', function () {
             return $this->testClassmateConnections();
         });
 
         // G-004: Career Tracking
-        $this->runTest('G-004', 'Career Tracking', function() {
+        $this->runTest('G-004', 'Career Tracking', function () {
             return $this->testCareerTracking();
         });
     }
@@ -189,12 +191,12 @@ class TestRunner
         $this->log('Running Integration tests...');
 
         // CR-001: Job Matching Workflow
-        $this->runTest('CR-001', 'Job Matching Workflow', function() {
+        $this->runTest('CR-001', 'Job Matching Workflow', function () {
             return $this->testJobMatchingWorkflow();
         });
 
         // CR-002: Data Flow Verification
-        $this->runTest('CR-002', 'Data Flow Verification', function() {
+        $this->runTest('CR-002', 'Data Flow Verification', function () {
             return $this->testDataFlowVerification();
         });
     }
@@ -207,12 +209,12 @@ class TestRunner
         $this->log('Running Performance tests...');
 
         // P-001: Load Testing
-        $this->runTest('P-001', 'Load Testing', function() {
+        $this->runTest('P-001', 'Load Testing', function () {
             return $this->testLoadPerformance();
         });
 
         // P-002: Data Volume Testing
-        $this->runTest('P-002', 'Data Volume Testing', function() {
+        $this->runTest('P-002', 'Data Volume Testing', function () {
             return $this->testDataVolumePerformance();
         });
     }
@@ -225,12 +227,12 @@ class TestRunner
         $this->log('Running Security tests...');
 
         // S-001: Authentication Testing
-        $this->runTest('S-001', 'Authentication Testing', function() {
+        $this->runTest('S-001', 'Authentication Testing', function () {
             return $this->testAuthentication();
         });
 
         // S-002: Data Protection Testing
-        $this->runTest('S-002', 'Data Protection Testing', function() {
+        $this->runTest('S-002', 'Data Protection Testing', function () {
             return $this->testDataProtection();
         });
     }
@@ -242,12 +244,12 @@ class TestRunner
     {
         $this->currentTest = $testId;
         $startTime = microtime(true);
-        
+
         try {
             $this->log("Running test {$testId}: {$testName}");
             $result = $testFunction();
             $duration = microtime(true) - $startTime;
-            
+
             $this->testResults[$testId] = [
                 'name' => $testName,
                 'status' => 'passed',
@@ -255,12 +257,12 @@ class TestRunner
                 'result' => $result,
                 'error' => null,
             ];
-            
+
             $this->log("Test {$testId} PASSED ({$duration}s)");
-            
+
         } catch (Exception $e) {
             $duration = microtime(true) - $startTime;
-            
+
             $this->testResults[$testId] = [
                 'name' => $testName,
                 'status' => 'failed',
@@ -268,8 +270,8 @@ class TestRunner
                 'result' => null,
                 'error' => $e->getMessage(),
             ];
-            
-            $this->log("Test {$testId} FAILED: " . $e->getMessage(), 'error');
+
+            $this->log("Test {$testId} FAILED: ".$e->getMessage(), 'error');
         }
     }
 
@@ -280,18 +282,18 @@ class TestRunner
     {
         // Verify institution CRUD operations
         $institutions = $this->testData['institutions'];
-        
+
         if (count($institutions) < 2) {
             throw new Exception('Insufficient test institutions created');
         }
-        
+
         // Test institution data integrity
         foreach ($institutions as $institution) {
             if (empty($institution->name) || empty($institution->email)) {
                 throw new Exception('Institution missing required fields');
             }
         }
-        
+
         return ['institutions_tested' => count($institutions), 'status' => 'all_operations_successful'];
     }
 
@@ -301,13 +303,13 @@ class TestRunner
         $graduates = $this->testData['graduates'];
         $jobs = $this->testData['jobs'];
         $applications = $this->testData['applications'];
-        
-        $employedCount = collect($graduates)->filter(function($grad) {
+
+        $employedCount = collect($graduates)->filter(function ($grad) {
             return $grad['graduate']->employment_status === 'employed';
         })->count();
-        
+
         $employmentRate = count($graduates) > 0 ? ($employedCount / count($graduates)) * 100 : 0;
-        
+
         return [
             'total_graduates' => count($graduates),
             'total_jobs' => count($jobs),
@@ -319,15 +321,15 @@ class TestRunner
     private function testEmployerVerification()
     {
         $employers = $this->testData['employers'];
-        
-        $verifiedCount = collect($employers)->filter(function($employer) {
+
+        $verifiedCount = collect($employers)->filter(function ($employer) {
             return $employer->verification_status === 'verified';
         })->count();
-        
-        $pendingCount = collect($employers)->filter(function($employer) {
+
+        $pendingCount = collect($employers)->filter(function ($employer) {
             return $employer->verification_status === 'pending';
         })->count();
-        
+
         return [
             'total_employers' => count($employers),
             'verified_employers' => $verifiedCount,
@@ -338,15 +340,15 @@ class TestRunner
     private function testGraduateManagement()
     {
         $graduates = $this->testData['graduates'];
-        
+
         // Test graduate profile completeness
         $profileCompletionSum = 0;
         foreach ($graduates as $graduateData) {
             $profileCompletionSum += $graduateData['profile']->profile_completion;
         }
-        
+
         $averageCompletion = count($graduates) > 0 ? $profileCompletionSum / count($graduates) : 0;
-        
+
         return [
             'total_graduates' => count($graduates),
             'average_profile_completion' => $averageCompletion,
@@ -367,11 +369,11 @@ class TestRunner
     {
         $courses = $this->testData['courses'];
         $totalCourses = 0;
-        
+
         foreach ($courses as $institutionCourses) {
             $totalCourses += count($institutionCourses);
         }
-        
+
         return [
             'total_courses' => $totalCourses,
             'institutions_with_courses' => count($courses),
@@ -391,14 +393,14 @@ class TestRunner
     private function testEmployerRegistration()
     {
         $employers = $this->testData['employers'];
-        
+
         // Verify employer registration data
         foreach ($employers as $employer) {
             if (empty($employer->company_name) || empty($employer->contact_email)) {
                 throw new Exception('Employer missing required registration fields');
             }
         }
-        
+
         return [
             'registrations_tested' => count($employers),
             'validation_status' => 'passed',
@@ -408,14 +410,14 @@ class TestRunner
     private function testJobPosting()
     {
         $jobs = $this->testData['jobs'];
-        
+
         // Verify job posting data integrity
         foreach ($jobs as $job) {
             if (empty($job->title) || empty($job->description)) {
                 throw new Exception('Job missing required fields');
             }
         }
-        
+
         return [
             'jobs_tested' => count($jobs),
             'posting_validation' => 'successful',
@@ -425,13 +427,13 @@ class TestRunner
     private function testApplicationManagement()
     {
         $applications = $this->testData['applications'];
-        
+
         $statusCounts = [];
         foreach ($applications as $application) {
             $status = $application->status;
             $statusCounts[$status] = ($statusCounts[$status] ?? 0) + 1;
         }
-        
+
         return [
             'total_applications' => count($applications),
             'status_distribution' => $statusCounts,
@@ -451,18 +453,18 @@ class TestRunner
     private function testProfileManagement()
     {
         $graduates = $this->testData['graduates'];
-        
+
         // Test profile management features
         $profilesWithPhotos = 0;
         $profilesWithSkills = 0;
-        
+
         foreach ($graduates as $graduateData) {
             $profile = $graduateData['profile'];
-            if (!empty($profile->skills)) {
+            if (! empty($profile->skills)) {
                 $profilesWithSkills++;
             }
         }
-        
+
         return [
             'profiles_tested' => count($graduates),
             'profiles_with_skills' => $profilesWithSkills,
@@ -474,7 +476,7 @@ class TestRunner
     {
         $jobs = $this->testData['jobs'];
         $applications = $this->testData['applications'];
-        
+
         return [
             'available_jobs' => count($jobs),
             'applications_submitted' => count($applications),
@@ -495,11 +497,11 @@ class TestRunner
     private function testCareerTracking()
     {
         $graduates = $this->testData['graduates'];
-        
-        $employedGraduates = collect($graduates)->filter(function($graduateData) {
+
+        $employedGraduates = collect($graduates)->filter(function ($graduateData) {
             return $graduateData['graduate']->employment_status === 'employed';
         })->count();
-        
+
         return [
             'career_tracking' => 'functional',
             'employed_graduates' => $employedGraduates,
@@ -530,15 +532,15 @@ class TestRunner
     private function testLoadPerformance()
     {
         $startTime = microtime(true);
-        
+
         // Simulate load testing
         for ($i = 0; $i < 100; $i++) {
             // Simulate database queries
             DB::table('users')->count();
         }
-        
+
         $duration = microtime(true) - $startTime;
-        
+
         return [
             'concurrent_operations' => 100,
             'total_duration' => $duration,
@@ -551,7 +553,7 @@ class TestRunner
     {
         // Test with large datasets
         $graduates = $this->testData['graduates'];
-        
+
         return [
             'data_volume_tested' => count($graduates),
             'query_performance' => 'acceptable',
@@ -588,7 +590,7 @@ class TestRunner
         $passedTests = collect($this->testResults)->where('status', 'passed')->count();
         $failedTests = $totalTests - $passedTests;
         $totalDuration = microtime(true) - $this->startTime;
-        
+
         $report = [
             'summary' => [
                 'total_tests' => $totalTests,
@@ -600,17 +602,17 @@ class TestRunner
             'test_results' => $this->testResults,
             'generated_at' => now()->toISOString(),
         ];
-        
+
         // Save report to file
-        $reportPath = storage_path('app/test-reports/uat-report-' . date('Y-m-d-H-i-s') . '.json');
-        if (!file_exists(dirname($reportPath))) {
+        $reportPath = storage_path('app/test-reports/uat-report-'.date('Y-m-d-H-i-s').'.json');
+        if (! file_exists(dirname($reportPath))) {
             mkdir(dirname($reportPath), 0755, true);
         }
         file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
-        
+
         $this->log("Test report generated: {$reportPath}");
         $this->log("Test Summary: {$passedTests}/{$totalTests} tests passed ({$report['summary']['success_rate']}%)");
-        
+
         return $report;
     }
 
@@ -620,12 +622,12 @@ class TestRunner
     private function cleanupTestEnvironment()
     {
         $this->log('Cleaning up test environment...');
-        
+
         try {
             TestDataSets::cleanupTestData();
             $this->log('Test environment cleaned up successfully');
         } catch (Exception $e) {
-            $this->log('Failed to cleanup test environment: ' . $e->getMessage(), 'error');
+            $this->log('Failed to cleanup test environment: '.$e->getMessage(), 'error');
         }
     }
 
@@ -636,9 +638,9 @@ class TestRunner
     {
         $timestamp = date('Y-m-d H:i:s');
         $logMessage = "[{$timestamp}] UAT: {$message}";
-        
-        echo $logMessage . "\n";
-        
+
+        echo $logMessage."\n";
+
         if ($level === 'error') {
             Log::error($logMessage);
         } else {

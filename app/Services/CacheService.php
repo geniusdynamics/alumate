@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class CacheService
 {
@@ -13,14 +13,15 @@ class CacheService
     /**
      * Get data from cache or execute callback and cache result
      */
-    public function remember(string $key, $callback, int $ttl = null)
+    public function remember(string $key, $callback, ?int $ttl = null)
     {
         $ttl = $ttl ?? $this->defaultTtl;
-        
+
         try {
             return Cache::remember($key, $ttl, $callback);
         } catch (\Exception $e) {
-            Log::error("Cache error for key {$key}: " . $e->getMessage());
+            Log::error("Cache error for key {$key}: ".$e->getMessage());
+
             return is_callable($callback) ? $callback() : $callback;
         }
     }
@@ -28,14 +29,15 @@ class CacheService
     /**
      * Store data in cache
      */
-    public function put(string $key, $value, int $ttl = null): bool
+    public function put(string $key, $value, ?int $ttl = null): bool
     {
         $ttl = $ttl ?? $this->defaultTtl;
-        
+
         try {
             return Cache::put($key, $value, $ttl);
         } catch (\Exception $e) {
-            Log::error("Cache put error for key {$key}: " . $e->getMessage());
+            Log::error("Cache put error for key {$key}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -48,7 +50,8 @@ class CacheService
         try {
             return Cache::get($key, $default);
         } catch (\Exception $e) {
-            Log::error("Cache get error for key {$key}: " . $e->getMessage());
+            Log::error("Cache get error for key {$key}: ".$e->getMessage());
+
             return $default;
         }
     }
@@ -61,7 +64,8 @@ class CacheService
         try {
             return Cache::forget($key);
         } catch (\Exception $e) {
-            Log::error("Cache forget error for key {$key}: " . $e->getMessage());
+            Log::error("Cache forget error for key {$key}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -74,7 +78,8 @@ class CacheService
         try {
             return Cache::flush();
         } catch (\Exception $e) {
-            Log::error("Cache flush error: " . $e->getMessage());
+            Log::error('Cache flush error: '.$e->getMessage());
+
             return false;
         }
     }
@@ -87,7 +92,8 @@ class CacheService
         try {
             return Cache::tags($tags);
         } catch (\Exception $e) {
-            Log::error("Cache tags error: " . $e->getMessage());
+            Log::error('Cache tags error: '.$e->getMessage());
+
             return Cache::store('array'); // Fallback to array store
         }
     }
@@ -100,7 +106,8 @@ class CacheService
         try {
             return Cache::increment($key, $value);
         } catch (\Exception $e) {
-            Log::error("Cache increment error for key {$key}: " . $e->getMessage());
+            Log::error("Cache increment error for key {$key}: ".$e->getMessage());
+
             return 0;
         }
     }
@@ -113,7 +120,8 @@ class CacheService
         try {
             return Cache::decrement($key, $value);
         } catch (\Exception $e) {
-            Log::error("Cache decrement error for key {$key}: " . $e->getMessage());
+            Log::error("Cache decrement error for key {$key}: ".$e->getMessage());
+
             return 0;
         }
     }
@@ -126,7 +134,8 @@ class CacheService
         try {
             return Cache::has($key);
         } catch (\Exception $e) {
-            Log::error("Cache has error for key {$key}: " . $e->getMessage());
+            Log::error("Cache has error for key {$key}: ".$e->getMessage());
+
             return false;
         }
     }
@@ -139,7 +148,8 @@ class CacheService
         try {
             return Cache::many($keys);
         } catch (\Exception $e) {
-            Log::error("Cache many error: " . $e->getMessage());
+            Log::error('Cache many error: '.$e->getMessage());
+
             return [];
         }
     }
@@ -147,14 +157,15 @@ class CacheService
     /**
      * Put multiple values in cache
      */
-    public function putMany(array $values, int $ttl = null): bool
+    public function putMany(array $values, ?int $ttl = null): bool
     {
         $ttl = $ttl ?? $this->defaultTtl;
-        
+
         try {
             return Cache::putMany($values, $ttl);
         } catch (\Exception $e) {
-            Log::error("Cache putMany error: " . $e->getMessage());
+            Log::error('Cache putMany error: '.$e->getMessage());
+
             return false;
         }
     }

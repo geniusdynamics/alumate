@@ -63,17 +63,20 @@ class ElasticsearchIndexCommand extends Command
 
             if ($result) {
                 $this->info('✅ Elasticsearch index created successfully!');
+
                 return Command::SUCCESS;
             } else {
                 $this->error('❌ Failed to create Elasticsearch index');
+
                 return Command::FAILURE;
             }
         } catch (\Exception $e) {
             $this->error("❌ Error creating index: {$e->getMessage()}");
             Log::error('Elasticsearch index creation failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
+
             return Command::FAILURE;
         }
     }
@@ -83,9 +86,10 @@ class ElasticsearchIndexCommand extends Command
      */
     protected function reindexUsers(): int
     {
-        if (!$this->option('force')) {
-            if (!$this->confirm('This will reindex all users. Continue?')) {
+        if (! $this->option('force')) {
+            if (! $this->confirm('This will reindex all users. Continue?')) {
                 $this->info('Operation cancelled.');
+
                 return Command::SUCCESS;
             }
         }
@@ -102,6 +106,7 @@ class ElasticsearchIndexCommand extends Command
 
         if ($totalUsers === 0) {
             $this->info('No users found to index.');
+
             return Command::SUCCESS;
         }
 
@@ -116,7 +121,7 @@ class ElasticsearchIndexCommand extends Command
             foreach ($users as $user) {
                 try {
                     $result = $this->elasticsearchService->indexUser($user);
-                    
+
                     if ($result) {
                         $indexed++;
                     } else {
@@ -126,7 +131,7 @@ class ElasticsearchIndexCommand extends Command
                     $failed++;
                     Log::error('Failed to index user', [
                         'user_id' => $user->id,
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
 
@@ -137,12 +142,12 @@ class ElasticsearchIndexCommand extends Command
         $progressBar->finish();
         $this->newLine(2);
 
-        $this->info("✅ Reindexing completed!");
+        $this->info('✅ Reindexing completed!');
         $this->info("   - Successfully indexed: {$indexed} users");
-        
+
         if ($failed > 0) {
             $this->warn("   - Failed to index: {$failed} users");
-            $this->warn("   Check the logs for details about failed indexing operations.");
+            $this->warn('   Check the logs for details about failed indexing operations.');
         }
 
         return Command::SUCCESS;
@@ -153,10 +158,11 @@ class ElasticsearchIndexCommand extends Command
      */
     protected function deleteIndex(): int
     {
-        if (!$this->option('force')) {
+        if (! $this->option('force')) {
             $this->warn('⚠️  This will permanently delete the Elasticsearch index and all search data!');
-            if (!$this->confirm('Are you sure you want to continue?')) {
+            if (! $this->confirm('Are you sure you want to continue?')) {
                 $this->info('Operation cancelled.');
+
                 return Command::SUCCESS;
             }
         }
@@ -166,13 +172,14 @@ class ElasticsearchIndexCommand extends Command
         try {
             // We'll need to add a deleteIndex method to the service
             $indexName = config('elasticsearch.indices.alumni.name');
-            
+
             // For now, we'll use a simple approach
             $this->warn('Index deletion not implemented in service. Please delete manually if needed.');
-            
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
             $this->error("❌ Error deleting index: {$e->getMessage()}");
+
             return Command::FAILURE;
         }
     }

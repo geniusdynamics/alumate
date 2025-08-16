@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class SavedSearch extends Model
 {
@@ -16,13 +16,23 @@ class SavedSearch extends Model
         'name',
         'query',
         'filters',
-        'result_count',
-        'last_executed_at'
+        'email_alerts',
+        'alert_frequency',
+        'last_run_at',
+        'last_result_count'
     ];
 
     protected $casts = [
         'filters' => 'array',
-        'last_executed_at' => 'datetime'
+        'email_alerts' => 'boolean',
+        'last_run_at' => 'datetime',
+        'last_result_count' => 'integer'
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'last_run_at'
     ];
 
     /**
@@ -34,69 +44,143 @@ class SavedSearch extends Model
     }
 
     /**
-     * Get the search alerts for this saved search
+     * Scope to get searches that need alert processing
      */
-    public function alerts(): HasMany
+    public function scopeNeedsAlertProcessing($query)
     {
-        return $this->hasMany(SearchAlert::class);
+        return $query->where('email_alerts', true)
+            ->where(function ($q) {
+                $q->whereNull('last_run_at')
+                  ->orWhere(function ($subQuery) {
+                      $subQuery->where('alert_frequency', 'immediate')
+                               ->where('last_run_at', '<', now()->subMinutes(5));
+                  })
+                  ->orWhere(function ($subQuery) {
+                      $subQuery->where('alert_frequency', 'daily')
+                               ->where('last_run_at', '<', now()->subDay());
+                  })
+                  ->orWhere(function ($subQuery) {
+                      $subQuery->where('alert_frequency', 'weekly')
+                               ->where('last_run_at', '<', now()->subWeek());
+                  });
+            });
     }
 
     /**
-     * Get active alerts for this saved search
+     * Get the formatted alert frequency
      */
-    public function activeAlerts(): HasMany
+    public function getFormattedAlertFrequencyAttribute(): string
     {
-        return $this->hasMany(SearchAlert::class)->where('is_active', true);
+        $frequencies = [
+            'immediate' => 'Immediate',
+            'daily' => 'Daily',
+            'weekly' => 'Weekly'
+        ];
+
+        return $frequencies[$this->alert_frequency] ?? $this->alert_frequency;
     }
 
     /**
-     * Update the result count for this search
+     * Get a summary of active filters
      */
-    public function updateResultCount(int $count): void
+    public function getFiltersSummaryAttribute(): string
+    {
+        if (empty($this->filters)) {
+            return 'No filters';
+        }
+
+        $summary = [];
+
+        if (!empty($this->filters['location'])) {
+            $summary[] = "Location: {$this->filters['location']}";
+        }
+
+        if (!empty($this->filters['graduation_year'])) {
+            $summary[] = "Year: {$this->filters['graduation_year']}";
+        }
+
+        if (!empty($this->filters['industry']) && is_array($this->filters['industry'])) {
+            $count = count($this->filters['industry']);
+            $summary[] = "Industries: {$count}";
+        }
+
+        if (!empty($this->filters['skills']) && is_array($this->filters['skills'])) {
+            $count = count($this->filters['skills']);
+            $summary[] = "Skills: {$count}";
+        }
+
+        if (!empty($this->filters['types']) && is_array($this->filters['types'])) {
+            $types = $this->filters['types'];
+            if (count($types) < 4) { // Less than all types
+                $summary[] = "Types: " . implode(', ', $types);
+            }
+        }
+
+        return empty($summary) ? 'No filters' : implode(', ', $summary);
+    }
+
+    /**
+     * Check if the search should be run for alerts
+     */
+    public function shouldRunForAlerts(): bool
+    {
+        if (!$this->email_alerts) {
+            return false;
+        }
+
+        if (!$this->last_run_at) {
+            return true;
+        }
+
+        switch ($this->alert_frequency) {
+            case 'immediate':
+                return $this->last_run_at->lt(now()->subMinutes(5));
+            case 'daily':
+                return $this->last_run_at->lt(now()->subDay());
+            case 'weekly':
+                return $this->last_run_at->lt(now()->subWeek());
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Mark the search as run with result count
+     */
+    public function markAsRun(int $resultCount): void
     {
         $this->update([
-            'result_count' => $count,
-            'last_executed_at' => now()
+            'last_run_at' => now(),
+            'last_result_count' => $resultCount
         ]);
     }
 
     /**
-     * Get a human-readable description of the search filters
+     * Get the next scheduled run time for alerts
      */
-    public function getFilterDescriptionAttribute(): string
+    public function getNextRunTimeAttribute(): ?Carbon
     {
-        $descriptions = [];
-        
-        if (!empty($this->filters['location'])) {
-            $descriptions[] = "Location: {$this->filters['location']}";
+        if (!$this->email_alerts || !$this->last_run_at) {
+            return null;
         }
-        
-        if (!empty($this->filters['industry'])) {
-            $industry = is_array($this->filters['industry']) 
-                ? implode(', ', $this->filters['industry']) 
-                : $this->filters['industry'];
-            $descriptions[] = "Industry: $industry";
+
+        switch ($this->alert_frequency) {
+            case 'immediate':
+                return $this->last_run_at->addMinutes(5);
+            case 'daily':
+                return $this->last_run_at->addDay();
+            case 'weekly':
+                return $this->last_run_at->addWeek();
+            default:
+                return null;
         }
-        
-        if (!empty($this->filters['graduation_year'])) {
-            if (is_array($this->filters['graduation_year'])) {
-                $descriptions[] = "Graduated: {$this->filters['graduation_year']['min']}-{$this->filters['graduation_year']['max']}";
-            } else {
-                $descriptions[] = "Graduated: {$this->filters['graduation_year']}";
-            }
-        }
-        
-        if (!empty($this->filters['company'])) {
-            $descriptions[] = "Company: {$this->filters['company']}";
-        }
-        
-        if (!empty($this->filters['skills'])) {
-            $skills = is_array($this->filters['skills']) 
-                ? implode(', ', $this->filters['skills']) 
-                : $this->filters['skills'];
-            $descriptions[] = "Skills: $skills";
-        }
-        
-        return implode(' • ', $descriptions);
+    }
+
+    /**
+     * Check if there are new results since last run
+     */
+    public function hasNewResults(int $currentResultCount): bool
+    {
+        return $this->last_result_count === null || $currentResultCount > $this->last_result_count;
     }
 }

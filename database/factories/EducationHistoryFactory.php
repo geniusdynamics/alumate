@@ -14,17 +14,17 @@ class EducationHistoryFactory extends Factory
     {
         $startYear = $this->faker->numberBetween(2000, 2020);
         $endYear = $startYear + $this->faker->numberBetween(2, 6);
-        
+
         $degrees = ['Bachelor of Science', 'Bachelor of Arts', 'Master of Science', 'Master of Arts', 'PhD', 'Associate Degree'];
         $fields = [
-            'Computer Science', 'Business Administration', 'Engineering', 'Psychology', 
-            'Biology', 'Mathematics', 'English Literature', 'History', 'Economics', 
-            'Marketing', 'Nursing', 'Education', 'Art', 'Music'
+            'Computer Science', 'Business Administration', 'Engineering', 'Psychology',
+            'Biology', 'Mathematics', 'English Literature', 'History', 'Economics',
+            'Marketing', 'Nursing', 'Education', 'Art', 'Music',
         ];
-        
+
         return [
             'graduate_id' => User::factory(),
-            'institution_name' => $this->faker->company . ' ' . $this->faker->randomElement(['University', 'College', 'Institute']),
+            'institution_name' => $this->faker->company.' '.$this->faker->randomElement(['University', 'College', 'Institute']),
             'degree' => $this->faker->randomElement($degrees),
             'field_of_study' => $this->faker->randomElement($fields),
             'start_year' => $startYear,
@@ -64,7 +64,7 @@ class EducationHistoryFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'degree' => 'Bachelor of ' . $this->faker->randomElement(['Science', 'Arts']),
+                'degree' => 'Bachelor of '.$this->faker->randomElement(['Science', 'Arts']),
                 'start_year' => $attributes['end_year'] - 4,
             ];
         });
@@ -74,7 +74,7 @@ class EducationHistoryFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'degree' => 'Master of ' . $this->faker->randomElement(['Science', 'Arts', 'Business Administration']),
+                'degree' => 'Master of '.$this->faker->randomElement(['Science', 'Arts', 'Business Administration']),
                 'start_year' => $attributes['end_year'] - 2,
             ];
         });

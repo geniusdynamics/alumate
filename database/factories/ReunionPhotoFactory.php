@@ -23,12 +23,12 @@ class ReunionPhotoFactory extends Factory
             'uploaded_by' => User::factory(),
             'title' => $this->faker->optional()->sentence(3),
             'description' => $this->faker->optional()->paragraph(),
-            'file_path' => 'reunion-photos/' . $this->faker->uuid() . '.jpg',
-            'file_name' => $this->faker->uuid() . '.jpg',
+            'file_path' => 'reunion-photos/'.$this->faker->uuid().'.jpg',
+            'file_name' => $this->faker->uuid().'.jpg',
             'mime_type' => 'image/jpeg',
             'file_size' => $this->faker->numberBetween(100000, 5000000),
             'metadata' => [
-                'original_name' => $this->faker->word() . '.jpg',
+                'original_name' => $this->faker->word().'.jpg',
                 'dimensions' => [
                     'width' => $this->faker->numberBetween(800, 4000),
                     'height' => $this->faker->numberBetween(600, 3000),

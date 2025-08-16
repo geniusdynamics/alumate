@@ -107,12 +107,12 @@ class EmployerRating extends Model
 
     public function canBeEditedBy($user)
     {
-        return $this->graduate->user_id === $user->id && !$this->is_approved;
+        return $this->graduate->user_id === $user->id && ! $this->is_approved;
     }
 
     public function getAverageRating()
     {
-        if (!$this->rating_categories) {
+        if (! $this->rating_categories) {
             return $this->rating;
         }
 

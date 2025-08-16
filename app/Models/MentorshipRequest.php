@@ -53,8 +53,8 @@ class MentorshipRequest extends Model
     public function upcomingSessions(): HasMany
     {
         return $this->sessions()
-                    ->where('status', 'scheduled')
-                    ->where('scheduled_at', '>', now());
+            ->where('status', 'scheduled')
+            ->where('scheduled_at', '>', now());
     }
 
     public function scopePending($query)
@@ -70,19 +70,21 @@ class MentorshipRequest extends Model
     public function scopeActive($query)
     {
         return $query->where('status', 'accepted')
-                    ->whereNull('completed_at');
+            ->whereNull('completed_at');
     }
 
     public function accept(): bool
     {
         $this->status = 'accepted';
         $this->accepted_at = now();
+
         return $this->save();
     }
 
     public function decline(): bool
     {
         $this->status = 'declined';
+
         return $this->save();
     }
 
@@ -90,12 +92,13 @@ class MentorshipRequest extends Model
     {
         $this->status = 'completed';
         $this->completed_at = now();
+
         return $this->save();
     }
 
     public function getProgressPercentage(): float
     {
-        if ($this->status !== 'accepted' || !$this->accepted_at) {
+        if ($this->status !== 'accepted' || ! $this->accepted_at) {
             return 0;
         }
 

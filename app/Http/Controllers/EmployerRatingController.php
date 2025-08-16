@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\EmployerRating;
 use App\Models\Employer;
+use App\Models\EmployerRating;
 use App\Models\Job;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +40,7 @@ class EmployerRatingController extends Controller
 
     public function show(EmployerRating $rating)
     {
-        if (!$rating->is_approved) {
+        if (! $rating->is_approved) {
             abort(404);
         }
 
@@ -54,8 +54,8 @@ class EmployerRatingController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
-        
-        if (!$user->graduate) {
+
+        if (! $user->graduate) {
             abort(403, 'Only graduates can rate employers.');
         }
 
@@ -96,8 +96,8 @@ class EmployerRatingController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        
-        if (!$user->graduate) {
+
+        if (! $user->graduate) {
             abort(403, 'Only graduates can rate employers.');
         }
 
@@ -142,8 +142,8 @@ class EmployerRatingController extends Controller
     public function edit(EmployerRating $rating)
     {
         $user = Auth::user();
-        
-        if (!$rating->canBeEditedBy($user)) {
+
+        if (! $rating->canBeEditedBy($user)) {
             abort(403, 'You cannot edit this rating.');
         }
 
@@ -157,8 +157,8 @@ class EmployerRatingController extends Controller
     public function update(Request $request, EmployerRating $rating)
     {
         $user = Auth::user();
-        
-        if (!$rating->canBeEditedBy($user)) {
+
+        if (! $rating->canBeEditedBy($user)) {
             abort(403, 'You cannot edit this rating.');
         }
 
@@ -191,7 +191,7 @@ class EmployerRatingController extends Controller
     public function destroy(EmployerRating $rating)
     {
         $user = Auth::user();
-        
+
         if ($rating->graduate->user_id !== $user->id) {
             abort(403, 'You cannot delete this rating.');
         }

@@ -42,8 +42,8 @@ class ReunionPhotoComment extends Model
     // Helper methods
     public function canBeEditedBy(User $user): bool
     {
-        return $user->id === $this->user_id || 
-               $user->hasRole('admin') || 
+        return $user->id === $this->user_id ||
+               $user->hasRole('admin') ||
                $this->photo->event->canUserEdit($user);
     }
 

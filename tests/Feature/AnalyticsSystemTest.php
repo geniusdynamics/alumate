@@ -2,40 +2,41 @@
 
 namespace Tests\Feature;
 
-use Tests\TestCase;
-use App\Models\User;
-use App\Models\Graduate;
+use App\Models\AnalyticsSnapshot;
 use App\Models\Course;
-use App\Models\Job;
-use App\Models\JobApplication;
+use App\Models\CustomReport;
 use App\Models\Employer;
+use App\Models\Graduate;
+use App\Models\Job;
 use App\Models\KpiDefinition;
 use App\Models\KpiValue;
-use App\Models\CustomReport;
-use App\Models\ReportExecution;
-use App\Models\PredictionModel;
 use App\Models\Prediction;
-use App\Models\AnalyticsSnapshot;
+use App\Models\PredictionModel;
+use App\Models\ReportExecution;
+use App\Models\User;
 use App\Services\AnalyticsService;
 use App\Services\ReportBuilderService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
 
 class AnalyticsSystemTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
     protected $analyticsService;
+
     protected $reportBuilderService;
+
     protected $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->analyticsService = app(AnalyticsService::class);
         $this->reportBuilderService = app(ReportBuilderService::class);
-        
+
         $this->user = User::factory()->create();
         $this->actingAs($this->user);
     }
@@ -44,7 +45,7 @@ class AnalyticsSystemTest extends TestCase
     public function it_can_access_analytics_dashboard()
     {
         $response = $this->get(route('analytics.dashboard'));
-        
+
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->component('Analytics/Dashboard'));
     }
@@ -56,9 +57,9 @@ class AnalyticsSystemTest extends TestCase
         $course = Course::factory()->create();
         Graduate::factory()->count(10)->create(['course_id' => $course->id]);
         Job::factory()->count(5)->create();
-        
+
         $snapshot = $this->analyticsService->generateDailySnapshot();
-        
+
         $this->assertInstanceOf(AnalyticsSnapshot::class, $snapshot);
         $this->assertEquals('daily', $snapshot->type);
         $this->assertIsArray($snapshot->data);
@@ -80,13 +81,13 @@ class AnalyticsSystemTest extends TestCase
                 'numerator' => [
                     'model' => 'App\\Models\\Graduate',
                     'filters' => [
-                        ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed']
-                    ]
+                        ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed'],
+                    ],
                 ],
                 'denominator' => [
                     'model' => 'App\\Models\\Graduate',
-                    'filters' => []
-                ]
+                    'filters' => [],
+                ],
             ],
             'target_type' => 'minimum',
             'target_value' => 80.0,
@@ -96,17 +97,17 @@ class AnalyticsSystemTest extends TestCase
 
         // Create test graduates
         Graduate::factory()->count(8)->create([
-            'employment_status' => ['status' => 'employed']
+            'employment_status' => ['status' => 'employed'],
         ]);
         Graduate::factory()->count(2)->create([
-            'employment_status' => ['status' => 'unemployed']
+            'employment_status' => ['status' => 'unemployed'],
         ]);
 
         $results = $this->analyticsService->calculateKpiValues();
-        
+
         $this->assertArrayHasKey('test_employment_rate', $results);
         $this->assertEquals(80.0, $results['test_employment_rate']);
-        
+
         // Check that KPI value was stored
         $kpiValue = KpiValue::where('kpi_definition_id', $kpi->id)->first();
         $this->assertNotNull($kpiValue);
@@ -127,7 +128,7 @@ class AnalyticsSystemTest extends TestCase
         ];
 
         $response = $this->post(route('analytics.reports.create'), $reportData);
-        
+
         $response->assertRedirect(route('analytics.reports'));
         $this->assertDatabaseHas('custom_reports', [
             'name' => 'Test Employment Report',
@@ -141,7 +142,7 @@ class AnalyticsSystemTest extends TestCase
     {
         $course = Course::factory()->create();
         Graduate::factory()->count(5)->create(['course_id' => $course->id]);
-        
+
         $report = CustomReport::create([
             'user_id' => $this->user->id,
             'name' => 'Test Report',
@@ -152,7 +153,7 @@ class AnalyticsSystemTest extends TestCase
         ]);
 
         $execution = $this->reportBuilderService->executeReport($report);
-        
+
         $this->assertInstanceOf(ReportExecution::class, $execution);
         $this->assertEquals('completed', $execution->status);
         $this->assertNotNull($execution->result_data);
@@ -164,7 +165,7 @@ class AnalyticsSystemTest extends TestCase
     {
         $course = Course::factory()->create();
         Graduate::factory()->count(3)->create(['course_id' => $course->id]);
-        
+
         $report = CustomReport::create([
             'user_id' => $this->user->id,
             'name' => 'Preview Test Report',
@@ -175,7 +176,7 @@ class AnalyticsSystemTest extends TestCase
         ]);
 
         $preview = $this->reportBuilderService->getReportPreview($report);
-        
+
         $this->assertIsArray($preview);
         $this->assertArrayHasKey('data', $preview);
         $this->assertArrayHasKey('preview_info', $preview);
@@ -198,7 +199,7 @@ class AnalyticsSystemTest extends TestCase
         ];
 
         $model = PredictionModel::create($modelData);
-        
+
         $this->assertInstanceOf(PredictionModel::class, $model);
         $this->assertEquals('job_placement', $model->type);
         $this->assertTrue($model->is_active);
@@ -227,7 +228,7 @@ class AnalyticsSystemTest extends TestCase
         ]);
 
         $prediction = $model->predict($graduate);
-        
+
         $this->assertInstanceOf(Prediction::class, $prediction);
         $this->assertEquals($graduate->id, $prediction->subject_id);
         $this->assertEquals(get_class($graduate), $prediction->subject_type);
@@ -249,12 +250,12 @@ class AnalyticsSystemTest extends TestCase
         ]);
 
         $analytics = $this->analyticsService->getEmploymentAnalytics();
-        
+
         $this->assertIsArray($analytics);
         $this->assertArrayHasKey('summary', $analytics);
         $this->assertArrayHasKey('by_course', $analytics);
         $this->assertArrayHasKey('by_year', $analytics);
-        
+
         $this->assertEquals(8, $analytics['summary']['total_graduates']);
         $this->assertEquals(5, $analytics['summary']['employed_count']);
         $this->assertEquals(62.5, $analytics['summary']['employment_rate']);
@@ -265,9 +266,9 @@ class AnalyticsSystemTest extends TestCase
     {
         $employer = Employer::factory()->create();
         Job::factory()->count(10)->create(['employer_id' => $employer->id]);
-        
+
         $analytics = $this->analyticsService->getJobMarketAnalytics();
-        
+
         $this->assertIsArray($analytics);
         $this->assertArrayHasKey('market_overview', $analytics);
         $this->assertArrayHasKey('demand_analysis', $analytics);
@@ -279,9 +280,9 @@ class AnalyticsSystemTest extends TestCase
     {
         $course = Course::factory()->create();
         Graduate::factory()->count(3)->create(['course_id' => $course->id]);
-        
+
         $exportData = $this->analyticsService->exportAnalyticsData('employment', [], 'json');
-        
+
         $this->assertIsString($exportData);
         $decodedData = json_decode($exportData, true);
         $this->assertIsArray($decodedData);
@@ -291,9 +292,9 @@ class AnalyticsSystemTest extends TestCase
     public function it_can_access_kpis_page()
     {
         KpiDefinition::factory()->count(3)->create();
-        
+
         $response = $this->get(route('analytics.kpis'));
-        
+
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->component('Analytics/Kpis'));
     }
@@ -302,9 +303,9 @@ class AnalyticsSystemTest extends TestCase
     public function it_can_access_predictions_page()
     {
         PredictionModel::factory()->count(2)->create();
-        
+
         $response = $this->get(route('analytics.predictions'));
-        
+
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->component('Analytics/Predictions'));
     }
@@ -313,9 +314,9 @@ class AnalyticsSystemTest extends TestCase
     public function it_can_access_reports_page()
     {
         CustomReport::factory()->count(3)->create(['user_id' => $this->user->id]);
-        
+
         $response = $this->get(route('analytics.reports'));
-        
+
         $response->assertStatus(200);
         $response->assertInertia(fn ($page) => $page->component('Analytics/Reports'));
     }
@@ -329,15 +330,15 @@ class AnalyticsSystemTest extends TestCase
             'calculation_config' => [
                 'query' => [
                     'model' => 'App\\Models\\Graduate',
-                    'filters' => []
-                ]
+                    'filters' => [],
+                ],
             ],
         ]);
-        
+
         Graduate::factory()->count(5)->create();
-        
+
         $response = $this->post(route('analytics.calculate-kpis'));
-        
+
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
     }
@@ -347,9 +348,9 @@ class AnalyticsSystemTest extends TestCase
     {
         PredictionModel::factory()->create();
         Graduate::factory()->count(3)->create();
-        
+
         $response = $this->post(route('analytics.generate-predictions'));
-        
+
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
     }
@@ -358,13 +359,13 @@ class AnalyticsSystemTest extends TestCase
     public function it_can_export_data_via_api()
     {
         Graduate::factory()->count(3)->create();
-        
+
         $response = $this->post(route('analytics.export'), [
             'type' => 'employment',
             'format' => 'json',
             'filters' => [],
         ]);
-        
+
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/json');
     }
@@ -377,7 +378,7 @@ class AnalyticsSystemTest extends TestCase
             'type' => 'invalid_type',
             'columns' => 'not_an_array',
         ]);
-        
+
         $response->assertSessionHasErrors(['name', 'type', 'columns']);
     }
 
@@ -396,7 +397,7 @@ class AnalyticsSystemTest extends TestCase
         ]);
 
         $response = $this->post(route('analytics.reports.execute', $report->id));
-        
+
         $response->assertStatus(403);
     }
 
@@ -417,7 +418,7 @@ class AnalyticsSystemTest extends TestCase
         Graduate::factory()->count(2)->create();
 
         $response = $this->post(route('analytics.reports.execute', $report->id));
-        
+
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
     }

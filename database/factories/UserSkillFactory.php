@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\UserSkill;
-use App\Models\User;
 use App\Models\Skill;
+use App\Models\User;
+use App\Models\UserSkill;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class UserSkillFactory extends Factory
@@ -58,7 +58,7 @@ class UserSkillFactory extends Factory
         ]);
     }
 
-    public function withEndorsements(int $count = null): static
+    public function withEndorsements(?int $count = null): static
     {
         return $this->state(fn (array $attributes) => [
             'endorsed_count' => $count ?? $this->faker->numberBetween(5, 25),

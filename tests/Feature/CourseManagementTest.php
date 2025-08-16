@@ -13,6 +13,7 @@ class CourseManagementTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $user;
 
     protected function setUp(): void

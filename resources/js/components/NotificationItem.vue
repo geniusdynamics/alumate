@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'notification-item px-4 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors',
+      'notification-item group px-4 py-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors',
       { 'bg-blue-50': !isRead }
     ]"
     @click="handleClick"
@@ -304,7 +304,7 @@ const declineConnection = async () => {
 
 <style scoped>
 .notification-item {
-  @apply group;
+  /* group class should be applied in template, not with @apply */
 }
 
 .notification-item:hover .opacity-0 {

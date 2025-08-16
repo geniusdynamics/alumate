@@ -3,10 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\Event;
-use App\Models\User;
 use App\Models\Institution;
-use App\Models\ReunionPhoto;
 use App\Models\ReunionMemory;
+use App\Models\ReunionPhoto;
+use App\Models\User;
 use App\Services\ReunionService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -18,21 +18,23 @@ class ReunionTest extends TestCase
     use RefreshDatabase;
 
     private User $user;
+
     private Institution $institution;
+
     private ReunionService $reunionService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->institution = Institution::factory()->create();
         $this->user = User::factory()->create([
             'institution_id' => $this->institution->id,
             'graduation_year' => 2020,
         ]);
-        
+
         $this->reunionService = app(ReunionService::class);
-        
+
         // Fake storage for file uploads
         Storage::fake('public');
     }
@@ -217,7 +219,7 @@ class ReunionTest extends TestCase
     {
         $reunion = Event::factory()->create(['is_reunion' => true]);
         $photo = ReunionPhoto::factory()->forEvent($reunion)->create(['likes_count' => 1]);
-        
+
         // Create existing like
         $photo->likes()->create(['user_id' => $this->user->id]);
 
@@ -285,13 +287,13 @@ class ReunionTest extends TestCase
                     'year',
                     'graduation_year',
                     'years_away',
-                ]
+                ],
             ]);
 
         // Should include 10-year milestone (2030) since user graduated in 2020
         $milestones = $response->json();
         $tenYearMilestone = collect($milestones)->firstWhere('milestone', 10);
-        
+
         $this->assertNotNull($tenYearMilestone);
         $this->assertEquals(2030, $tenYearMilestone['year']);
         $this->assertEquals(2020, $tenYearMilestone['graduation_year']);
@@ -336,7 +338,7 @@ class ReunionTest extends TestCase
     public function test_can_get_reunion_statistics()
     {
         $reunion = Event::factory()->create(['is_reunion' => true]);
-        
+
         // Create some test data
         ReunionPhoto::factory()->count(5)->forEvent($reunion)->create();
         ReunionMemory::factory()->count(3)->forEvent($reunion)->create();
@@ -382,9 +384,9 @@ class ReunionTest extends TestCase
             ->getJson('/api/reunions');
 
         $response->assertOk();
-        
+
         $reunionIds = collect($response->json('data'))->pluck('id');
-        
+
         // Should see public and institution reunions, but not private
         $this->assertContains($publicReunion->id, $reunionIds);
         $this->assertContains($institutionReunion->id, $reunionIds);
@@ -413,9 +415,9 @@ class ReunionTest extends TestCase
             ->getJson("/api/reunions/{$reunion->id}/photos");
 
         $response->assertOk();
-        
+
         $photoIds = collect($response->json())->pluck('id');
-        
+
         // User should see both photos since they're from the same class
         $this->assertContains($publicPhoto->id, $photoIds);
         $this->assertContains($classOnlyPhoto->id, $photoIds);

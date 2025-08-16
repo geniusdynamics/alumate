@@ -1,189 +1,173 @@
 # Graduate Tracking System - Development Server Starter
-# PowerShell script to start development servers in the correct order
+# PowerShell script for proper server startup sequence
 
 Write-Host "========================================" -ForegroundColor Green
-Write-Host "   Graduate Tracking System - Dev Setup" -ForegroundColor Green
+Write-Host "  🎓 Graduate Tracking System - Ready!" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 
-# Function to check if a port is in use
-function Test-Port {
-    param([int]$Port)
-    try {
-        $connection = New-Object System.Net.Sockets.TcpClient
-        $connection.Connect("127.0.0.1", $Port)
-        $connection.Close()
-        return $true
-    }
-    catch {
-        return $false
-    }
-}
-
-# Function to wait for a service to be ready
-function Wait-ForService {
-    param([int]$Port, [string]$ServiceName, [int]$TimeoutSeconds = 60)
-    
-    Write-Host "Waiting for $ServiceName to be ready on port $Port..." -ForegroundColor Yellow
-    $timeout = (Get-Date).AddSeconds($TimeoutSeconds)
-    
-    do {
-        if (Test-Port -Port $Port) {
-            Write-Host "✅ $ServiceName is ready!" -ForegroundColor Green
-            return $true
-        }
-        Start-Sleep -Seconds 2
-        Write-Host "." -NoNewline -ForegroundColor Yellow
-    } while ((Get-Date) -lt $timeout)
-    
-    Write-Host ""
-    Write-Host "❌ Timeout waiting for $ServiceName" -ForegroundColor Red
-    return $false
+# Kill any existing processes first
+Write-Host "[0/5] Cleaning up existing processes..." -ForegroundColor Yellow
+try {
+    Stop-Job -Name 'ViteServer' -ErrorAction SilentlyContinue
+    Remove-Job -Name 'ViteServer' -ErrorAction SilentlyContinue
+    Stop-Job -Name 'LaravelServer' -ErrorAction SilentlyContinue
+    Remove-Job -Name 'LaravelServer' -ErrorAction SilentlyContinue
+    taskkill /F /IM php.exe 2>$null | Out-Null
+    taskkill /F /IM node.exe 2>$null | Out-Null
+    Write-Host "✓ Existing processes cleaned up" -ForegroundColor Green
+} catch {
+    Write-Host "✓ No existing processes to clean up" -ForegroundColor Green
 }
 
 # Check if PHP is available
-Write-Host "[1/5] Checking PHP availability..." -ForegroundColor Cyan
-$phpPath = "D:\DevCenter\xampp\php-8.3.23\php.exe"
-if (-not (Test-Path $phpPath)) {
-    Write-Host "❌ PHP not found at $phpPath" -ForegroundColor Red
-    Write-Host "Please check your PHP installation path" -ForegroundColor Red
+Write-Host "[1/5] Checking PHP installation..." -ForegroundColor Yellow
+try {
+    $phpVersion = & "D:\DevCenter\xampp\php-8.3.23\php.exe" --version 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ PHP is available" -ForegroundColor Green
+    } else {
+        throw "PHP not found"
+    }
+} catch {
+    Write-Host "❌ PHP not found at D:\DevCenter\xampp\php-8.3.23\php.exe" -ForegroundColor Red
     exit 1
 }
-Write-Host "✅ PHP found at $phpPath" -ForegroundColor Green
 
 # Check if Node.js is available
-Write-Host "[2/5] Checking Node.js availability..." -ForegroundColor Cyan
+Write-Host "[2/5] Checking Node.js installation..." -ForegroundColor Yellow
 try {
-    $nodeVersion = node --version
-    Write-Host "✅ Node.js version: $nodeVersion" -ForegroundColor Green
-}
-catch {
+    $nodeVersion = node --version 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ Node.js is available: $nodeVersion" -ForegroundColor Green
+    } else {
+        throw "Node.js not found"
+    }
+} catch {
     Write-Host "❌ Node.js not found. Please install Node.js" -ForegroundColor Red
     exit 1
 }
 
-# Kill any existing processes on our ports
-Write-Host "[3/5] Cleaning up existing processes..." -ForegroundColor Cyan
-$processes = Get-NetTCPConnection -LocalPort 5173, 8080 -ErrorAction SilentlyContinue
-if ($processes) {
-    Write-Host "Stopping existing processes on ports 5173 and 8080..." -ForegroundColor Yellow
-    Stop-Process -Name "node" -Force -ErrorAction SilentlyContinue
-    Stop-Process -Name "php" -Force -ErrorAction SilentlyContinue
-    Start-Sleep -Seconds 2
-}
-
-# Start Vite development server
-Write-Host "[4/5] Starting Vite development server..." -ForegroundColor Cyan
+# Clear Laravel caches
+Write-Host "[3/5] Clearing Laravel caches..." -ForegroundColor Yellow
 try {
-    $viteProcess = Start-Process -FilePath "cmd" -ArgumentList "/c", "npm run dev" -PassThru -WindowStyle Normal
-    Write-Host "Vite process started with PID: $($viteProcess.Id)" -ForegroundColor Green
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan config:clear 2>$null
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan route:clear 2>$null
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan view:clear 2>$null
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan cache:clear 2>$null
+    Write-Host "✓ Laravel caches cleared" -ForegroundColor Green
 } catch {
-    Write-Host "❌ Failed to start Vite: $($_.Exception.Message)" -ForegroundColor Red
-    exit 1
+    Write-Host "⚠️  Warning: Could not clear some caches" -ForegroundColor Yellow
 }
 
-# Wait for Vite to be ready
-if (-not (Wait-ForService -Port 5173 -ServiceName "Vite Dev Server" -TimeoutSeconds 30)) {
-    Write-Host "Failed to start Vite server. Exiting..." -ForegroundColor Red
-    exit 1
-}
+# Start Vite and Laravel in separate persistent windows
+Write-Host "[4/4] Starting development servers..." -ForegroundColor Green
 
-# Start Laravel server
-Write-Host "[5/5] Starting Laravel server..." -ForegroundColor Cyan
-try {
-    $laravelProcess = Start-Process -FilePath $phpPath -ArgumentList "artisan", "serve", "--host=127.0.0.1", "--port=8080" -PassThru -WindowStyle Normal
-    Write-Host "Laravel process started with PID: $($laravelProcess.Id)" -ForegroundColor Green
-} catch {
-    Write-Host "❌ Failed to start Laravel: $($_.Exception.Message)" -ForegroundColor Red
-    exit 1
-}
+# Start Vite dev server in separate window
+Write-Host "Starting Vite development server in separate window..." -ForegroundColor Green
+Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "title Vite Dev Server - Alumni Platform && echo Starting Vite Dev Server... && npm run dev" -WindowStyle Normal
+Write-Host "✓ Vite server starting in separate window..." -ForegroundColor Green
 
-# Wait for Laravel to be ready
-if (-not (Wait-ForService -Port 8080 -ServiceName "Laravel Server" -TimeoutSeconds 30)) {
-    Write-Host "Failed to start Laravel server. Checking for issues..." -ForegroundColor Red
+# Wait for Vite to initialize with better error handling
+Write-Host "Waiting for Vite to initialize on http://127.0.0.1:5100 ..." -ForegroundColor Yellow
+$waited = 0
+$timeout = 60
+$viteReady = $false
+
+do {
+    try {
+        $response = Invoke-WebRequest -Uri "http://127.0.0.1:5100/@vite/client" -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+        if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) {
+            Write-Host "✓ Vite is ready after $waited seconds" -ForegroundColor Green
+            $viteReady = $true
+            break
+        }
+    } catch {
+        # Vite not ready yet, continue waiting
+    }
     
-    # Try to diagnose the issue
-    Write-Host "Running diagnostics..." -ForegroundColor Yellow
-    & $phpPath "scripts/debugging/diagnose_blank_screen.php"
-    exit 1
-}
+    if ($waited -ge $timeout) {
+        Write-Host "⚠ Vite did not become ready within $timeout seconds" -ForegroundColor Yellow
+        Write-Host "⚠ Check the Vite window for errors" -ForegroundColor Yellow
+        Write-Host "⚠ Continuing with Laravel anyway..." -ForegroundColor Yellow
+        break
+    }
+    
+    $waited += 3
+    Write-Host "   ... waiting ($waited/$timeout seconds)" -ForegroundColor Gray
+    Start-Sleep -Seconds 3
+} while ($true)
+
+# Start Laravel server in separate window
+Write-Host "`n========================================" -ForegroundColor Cyan
+Write-Host "   STARTING LARAVEL SERVER" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "✓ Vite Dev Server: http://127.0.0.1:5100" -ForegroundColor Green
+Write-Host "✓ Laravel Server: http://127.0.0.1:8080 (starting...)" -ForegroundColor Green
+Write-Host "`nBoth servers will run independently." -ForegroundColor White
+Write-Host "Close individual server windows to stop them." -ForegroundColor White
+
+Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "title Laravel Server - Alumni Platform && echo Starting Laravel Server... && D:\DevCenter\xampp\php-8.3.23\php.exe artisan serve --host=127.0.0.1 --port=8080" -WindowStyle Normal
+
+# Give Laravel a moment to start
+Start-Sleep -Seconds 3
+
+# Show status
+Write-Host "`n========================================" -ForegroundColor Cyan
+Write-Host "   DEVELOPMENT SERVERS RUNNING" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "✅ Vite Dev Server: http://127.0.0.1:5100" -ForegroundColor Green
+Write-Host "✅ Laravel Server: http://127.0.0.1:8080" -ForegroundColor Green
+Write-Host "`nBoth servers are running in separate windows." -ForegroundColor White
+Write-Host "`n🔍 MONITORING:" -ForegroundColor Cyan
+Write-Host "- Check Vite window for frontend compilation" -ForegroundColor Gray
+Write-Host "- Check Laravel window for backend logs" -ForegroundColor Gray
+Write-Host "- Both servers will auto-reload on file changes" -ForegroundColor Gray
+Write-Host "`n🛑 TO STOP:" -ForegroundColor Cyan
+Write-Host "- Close individual server windows, OR" -ForegroundColor Gray
+Write-Host "- Press Ctrl+C in this window to stop monitoring" -ForegroundColor Gray
 
 Write-Host ""
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "   DEVELOPMENT SERVERS RUNNING" -ForegroundColor Green
-Write-Host "========================================" -ForegroundColor Green
+Write-Host "🔑 DEMO ACCOUNTS:" -ForegroundColor Cyan
+Write-Host "  Super Admin:" -ForegroundColor Yellow
+Write-Host "    📧 admin@system.com" -ForegroundColor White
+Write-Host "    🔒 password" -ForegroundColor White
 Write-Host ""
-Write-Host "🚀 Laravel Application: " -NoNewline -ForegroundColor White
-Write-Host "http://127.0.0.1:8080" -ForegroundColor Cyan
-Write-Host "   - Super Admin Login: admin@system.com / password" -ForegroundColor Gray
-Write-Host "   - Institution Admin: admin@tech-institute.edu / password" -ForegroundColor Gray
-Write-Host "   - Institution Admin: admin@business-college.edu / password" -ForegroundColor Gray
+Write-Host "  Institution Admin:" -ForegroundColor Yellow
+Write-Host "    📧 admin@tech-institute.edu" -ForegroundColor White
+Write-Host "    🔒 password" -ForegroundColor White
 Write-Host ""
-Write-Host "⚡ Vite Dev Server: " -NoNewline -ForegroundColor White
-Write-Host "http://localhost:5173" -ForegroundColor Cyan
-Write-Host "   (for assets only - don't access directly)" -ForegroundColor Gray
-Write-Host ""
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "   QUICK ACCESS LINKS" -ForegroundColor Green
-Write-Host "========================================" -ForegroundColor Green
-Write-Host ""
-Write-Host "🔗 Super Admin Dashboard: " -NoNewline -ForegroundColor White
-Write-Host "http://127.0.0.1:8080/super-admin/dashboard" -ForegroundColor Cyan
-Write-Host "🔗 Login Page: " -NoNewline -ForegroundColor White
-Write-Host "http://127.0.0.1:8080/login" -ForegroundColor Cyan
-Write-Host "🔗 Register Page: " -NoNewline -ForegroundColor White
-Write-Host "http://127.0.0.1:8080/register" -ForegroundColor Cyan
-Write-Host "🔗 Testing Suite: " -NoNewline -ForegroundColor White
-Write-Host "http://127.0.0.1:8080/testing" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "========================================" -ForegroundColor Green
+Write-Host "  Graduate:" -ForegroundColor Yellow
+Write-Host "    📧 john.smith@student.edu" -ForegroundColor White
+Write-Host "    🔒 password" -ForegroundColor White
 Write-Host ""
 
-# Open the application in browser
-Write-Host "Opening Laravel application in browser..." -ForegroundColor Yellow
-Start-Sleep -Seconds 2
+Write-Host "🌐 ACCESS LINKS:" -ForegroundColor Cyan
+Write-Host "  • Main App: http://127.0.0.1:8080" -ForegroundColor White
+Write-Host "  • Login: http://127.0.0.1:8080/login" -ForegroundColor White
+Write-Host "  • Register: http://127.0.0.1:8080/register" -ForegroundColor White
+Write-Host ""
+
+# Open both URLs in browser
+Write-Host "🚀 Opening URLs in browser..." -ForegroundColor Yellow
 Start-Process "http://127.0.0.1:8080"
+Start-Process "http://127.0.0.1:5100"
+Write-Host "✓ URLs opened in browser" -ForegroundColor Green
 
-Write-Host ""
-Write-Host "Press Ctrl+C to stop all servers..." -ForegroundColor Yellow
-Write-Host "Or close this window to terminate both processes." -ForegroundColor Yellow
+Write-Host "`nThis monitoring window will stay open." -ForegroundColor White
+Write-Host "Close it when you're done developing." -ForegroundColor White
 
-# Wait for user to stop the servers
+# Monitor the servers
+Write-Host "`nPress Ctrl+C to stop monitoring..." -ForegroundColor Yellow
+
 try {
-    # Keep the script running and monitor the processes
     while ($true) {
-        # Check if processes are still running
-        if ($viteProcess.HasExited) {
-            Write-Host "⚠️  Vite process has stopped unexpectedly" -ForegroundColor Yellow
-        }
-        if ($laravelProcess.HasExited) {
-            Write-Host "⚠️  Laravel process has stopped unexpectedly" -ForegroundColor Yellow
-        }
-        
-        Start-Sleep -Seconds 5
+        $timestamp = Get-Date -Format "HH:mm:ss"
+        Write-Host "[$timestamp] Monitoring servers... (Press Ctrl+C to stop)" -ForegroundColor Gray
+        Start-Sleep -Seconds 30
     }
-}
-catch {
-    Write-Host ""
-    Write-Host "Stopping servers..." -ForegroundColor Yellow
-}
-finally {
-    # Cleanup processes
-    Write-Host "Cleaning up processes..." -ForegroundColor Yellow
-    
-    if (-not $viteProcess.HasExited) {
-        Stop-Process -Id $viteProcess.Id -Force -ErrorAction SilentlyContinue
-    }
-    if (-not $laravelProcess.HasExited) {
-        Stop-Process -Id $laravelProcess.Id -Force -ErrorAction SilentlyContinue
-    }
-    
-    # Kill any remaining node/php processes
-    Stop-Process -Name "node" -Force -ErrorAction SilentlyContinue
-    Stop-Process -Name "php" -Force -ErrorAction SilentlyContinue
-    
-    Write-Host ""
-    Write-Host "========================================" -ForegroundColor Green
-    Write-Host "   All servers stopped. Goodbye!" -ForegroundColor Green
-    Write-Host "========================================" -ForegroundColor Green
+} catch {
+    Write-Host "`nMonitoring stopped." -ForegroundColor Yellow
+    Write-Host "Server windows will continue running independently." -ForegroundColor White
+    Write-Host "Close them manually when done developing." -ForegroundColor White
 }

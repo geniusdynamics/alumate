@@ -2,19 +2,18 @@
 
 namespace Tests\UserAcceptance;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 
 /**
  * User Feedback Collector for User Acceptance Testing
- * 
+ *
  * This class provides functionality to collect, store, and analyze
  * user feedback during the testing process.
  */
 class FeedbackCollector
 {
     private $feedbackData = [];
+
     private $sessionId;
 
     public function __construct()
@@ -143,6 +142,7 @@ class FeedbackCollector
         ];
 
         $this->saveFeedbackReport($report);
+
         return $report;
     }
 
@@ -236,7 +236,7 @@ class FeedbackCollector
         }
 
         // Usability recommendations
-        $lowUsabilityRatings = $usabilityFeedback->filter(function($feedback) {
+        $lowUsabilityRatings = $usabilityFeedback->filter(function ($feedback) {
             return $feedback['overall_satisfaction'] < 3;
         });
 
@@ -244,7 +244,7 @@ class FeedbackCollector
             $recommendations[] = [
                 'type' => 'usability',
                 'title' => 'Improve User Experience',
-                'description' => "Multiple users reported low satisfaction scores. Focus on navigation and ease of use improvements.",
+                'description' => 'Multiple users reported low satisfaction scores. Focus on navigation and ease of use improvements.',
                 'priority' => 'medium',
                 'affected_areas' => $lowUsabilityRatings->pluck('test_id')->unique()->values()->toArray(),
             ];
@@ -259,7 +259,7 @@ class FeedbackCollector
             $recommendations[] = [
                 'type' => 'performance',
                 'title' => 'Optimize System Performance',
-                'description' => "Users reported slow response times. Consider performance optimization.",
+                'description' => 'Users reported slow response times. Consider performance optimization.',
                 'priority' => 'medium',
                 'affected_areas' => $performanceIssues->pluck('test_id')->unique()->values()->toArray(),
             ];
@@ -367,7 +367,7 @@ class FeedbackCollector
      */
     private function saveFeedbackReport($report)
     {
-        $filename = "feedback/uat-report-{$this->sessionId}-" . date('Y-m-d-H-i-s') . ".json";
+        $filename = "feedback/uat-report-{$this->sessionId}-".date('Y-m-d-H-i-s').'.json';
         Storage::put($filename, json_encode($report, JSON_PRETTY_PRINT));
     }
 
@@ -384,7 +384,7 @@ class FeedbackCollector
             'Severity',
             'Category',
             'Timestamp',
-            'Feedback/Description'
+            'Feedback/Description',
         ];
 
         foreach ($this->feedbackData as $feedback) {
@@ -395,20 +395,21 @@ class FeedbackCollector
                 $feedback['severity'] ?? '',
                 $feedback['category'] ?? '',
                 $feedback['timestamp'],
-                $feedback['feedback'] ?? $feedback['description'] ?? ''
+                $feedback['feedback'] ?? $feedback['description'] ?? '',
             ];
         }
 
-        $filename = "feedback/uat-feedback-export-{$this->sessionId}-" . date('Y-m-d-H-i-s') . ".csv";
-        
+        $filename = "feedback/uat-feedback-export-{$this->sessionId}-".date('Y-m-d-H-i-s').'.csv';
+
         $csvContent = '';
         foreach ($csvData as $row) {
-            $csvContent .= implode(',', array_map(function($field) {
-                return '"' . str_replace('"', '""', $field) . '"';
-            }, $row)) . "\n";
+            $csvContent .= implode(',', array_map(function ($field) {
+                return '"'.str_replace('"', '""', $field).'"';
+            }, $row))."\n";
         }
 
         Storage::put($filename, $csvContent);
+
         return $filename;
     }
 

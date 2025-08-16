@@ -1,5 +1,5 @@
 <template>
-  <div class="connection-modal-overlay fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" @click="handleOverlayClick">
+  <div class="connection-modal-overlay fixed inset-0 bg-black/50 overflow-y-auto h-full w-full z-[50] backdrop-blur-sm" @click="handleOverlayClick" role="dialog" aria-modal="true">
     <div class="connection-modal relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
       <!-- Modal Header -->
       <div class="modal-header flex justify-between items-center pb-4 border-b border-gray-200">

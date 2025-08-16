@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ScholarshipSeeder extends Seeder
@@ -14,19 +13,19 @@ class ScholarshipSeeder extends Seeder
     {
         // Create sample scholarships
         $scholarships = \App\Models\Scholarship::factory(10)->create();
-        
+
         // Create applications for each scholarship
         foreach ($scholarships as $scholarship) {
             $applications = \App\Models\ScholarshipApplication::factory(rand(3, 8))
                 ->create(['scholarship_id' => $scholarship->id]);
-            
+
             // Create reviews for submitted applications
             foreach ($applications as $application) {
                 if ($application->status === 'submitted' || $application->status === 'under_review') {
                     \App\Models\ScholarshipReview::factory(rand(1, 3))
                         ->create(['application_id' => $application->id]);
                 }
-                
+
                 // Create recipients for awarded applications
                 if ($application->status === 'awarded') {
                     \App\Models\ScholarshipRecipient::factory()

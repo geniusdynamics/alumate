@@ -13,7 +13,7 @@ class StudentController extends Controller
     public function storiesDiscovery(Request $request)
     {
         $user = Auth::user();
-        
+
         // Build query for stories
         $query = SuccessStory::with(['author.profile', 'author.careerTimeline'])
             ->where('status', 'published')
@@ -24,13 +24,13 @@ class StudentController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
-                  ->orWhere('content', 'like', "%{$searchTerm}%")
-                  ->orWhere('key_insights', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('author', function ($authorQuery) use ($searchTerm) {
-                      $authorQuery->where('name', 'like', "%{$searchTerm}%")
-                                  ->orWhere('current_position', 'like', "%{$searchTerm}%")
-                                  ->orWhere('current_company', 'like', "%{$searchTerm}%");
-                  });
+                    ->orWhere('content', 'like', "%{$searchTerm}%")
+                    ->orWhere('key_insights', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('author', function ($authorQuery) use ($searchTerm) {
+                        $authorQuery->where('name', 'like', "%{$searchTerm}%")
+                            ->orWhere('current_position', 'like', "%{$searchTerm}%")
+                            ->orWhere('current_company', 'like', "%{$searchTerm}%");
+                    });
             });
         }
 
@@ -43,7 +43,7 @@ class StudentController extends Controller
         if ($request->filled('graduation_year')) {
             $yearFilter = $request->graduation_year;
             $currentYear = date('Y');
-            
+
             $query->whereHas('author', function ($authorQuery) use ($yearFilter, $currentYear) {
                 switch ($yearFilter) {
                     case 'recent':
@@ -107,7 +107,7 @@ class StudentController extends Controller
                 break;
             case 'graduation_year':
                 $query->join('users', 'success_stories.user_id', '=', 'users.id')
-                      ->orderBy('users.graduation_year', 'desc');
+                    ->orderBy('users.graduation_year', 'desc');
                 break;
             default: // relevance
                 // Calculate relevance based on user's profile
@@ -125,6 +125,7 @@ class StudentController extends Controller
         $stories->getCollection()->transform(function ($story) use ($user) {
             $story->relevance_score = $this->calculateRelevanceScore($story, $user);
             $story->relevance_reason = $this->getRelevanceReason($story, $user);
+
             return $story;
         });
 
@@ -142,7 +143,7 @@ class StudentController extends Controller
             'stories' => $stories,
             'suggestedConnections' => $suggestedConnections,
             'careerFields' => $careerFields,
-            'filters' => $request->only(['search', 'career_field', 'graduation_year', 'company_type', 'story_type', 'sort', 'quick_filter'])
+            'filters' => $request->only(['search', 'career_field', 'graduation_year', 'company_type', 'story_type', 'sort', 'quick_filter']),
         ]);
     }
 
@@ -163,7 +164,7 @@ class StudentController extends Controller
                 $story->key_insights ? $story->key_insights : [],
                 $story->skills ? $story->skills : []
             );
-            
+
             foreach ($userInterests as $interest) {
                 if (in_array(strtolower($interest), $storyKeywords)) {
                     $score += 1;
@@ -195,11 +196,11 @@ class StudentController extends Controller
 
         $yearDiff = abs(($user->expected_graduation_year ?? date('Y')) - $story->author->graduation_year);
         if ($yearDiff <= 3) {
-            $reasons[] = "Recent graduate with similar timeline";
+            $reasons[] = 'Recent graduate with similar timeline';
         }
 
         if ($user->career_goals && stripos($story->category, $user->career_goals) !== false) {
-            $reasons[] = "Aligns with your career interests";
+            $reasons[] = 'Aligns with your career interests';
         }
 
         return implode(' • ', array_slice($reasons, 0, 2));
@@ -230,7 +231,7 @@ class StudentController extends Controller
                     'response_rate' => rand(70, 95), // TODO: Calculate actual response rate
                     'connection_reason' => $this->getConnectionReason($alumni, $user),
                     'mentorship_available' => $alumni->profile->mentorship_available ?? false,
-                    'connection_sent' => false // TODO: Check if connection already sent
+                    'connection_sent' => false, // TODO: Check if connection already sent
                 ];
             });
     }
@@ -246,7 +247,7 @@ class StudentController extends Controller
         if ($alumni->current_company && $user->target_companies) {
             $targetCompanies = is_array($user->target_companies) ? $user->target_companies : json_decode($user->target_companies, true);
             if (in_array($alumni->current_company, $targetCompanies ?? [])) {
-                $reasons[] = "Works at your target company";
+                $reasons[] = 'Works at your target company';
             }
         }
 
@@ -254,7 +255,7 @@ class StudentController extends Controller
             $reasons[] = "Has shared {$alumni->successStories->count()} inspiring stories";
         }
 
-        return $reasons ? $reasons[0] : "Fellow alumni with valuable experience";
+        return $reasons ? $reasons[0] : 'Fellow alumni with valuable experience';
     }
 
     public function careerGuidance()
@@ -287,28 +288,28 @@ class StudentController extends Controller
                 'title' => 'Resume Builder',
                 'description' => 'Create a professional resume with our guided builder',
                 'icon' => 'document',
-                'category' => 'application'
+                'category' => 'application',
             ],
             [
                 'id' => 2,
                 'title' => 'Interview Simulator',
                 'description' => 'Practice interviews with AI-powered feedback',
                 'icon' => 'chat',
-                'category' => 'preparation'
+                'category' => 'preparation',
             ],
             [
                 'id' => 3,
                 'title' => 'Salary Calculator',
                 'description' => 'Research salary ranges for your target roles',
                 'icon' => 'currency',
-                'category' => 'research'
+                'category' => 'research',
             ],
             [
                 'id' => 4,
                 'title' => 'Networking Tracker',
                 'description' => 'Manage your professional connections',
                 'icon' => 'users',
-                'category' => 'networking'
+                'category' => 'networking',
             ],
         ];
 
@@ -319,14 +320,14 @@ class StudentController extends Controller
                 'title' => 'Tech Industry Trends 2024',
                 'summary' => 'AI and machine learning continue to drive growth',
                 'growth_rate' => '+15%',
-                'avg_salary' => '$95,000'
+                'avg_salary' => '$95,000',
             ],
             [
                 'id' => 2,
                 'title' => 'Healthcare Innovation',
                 'summary' => 'Digital health solutions creating new opportunities',
                 'growth_rate' => '+12%',
-                'avg_salary' => '$78,000'
+                'avg_salary' => '$78,000',
             ],
         ];
 
@@ -343,13 +344,13 @@ class StudentController extends Controller
                 'id' => 1,
                 'title' => 'Tech Career Fair',
                 'date' => now()->addDays(7),
-                'type' => 'career_fair'
+                'type' => 'career_fair',
             ],
             [
                 'id' => 2,
                 'title' => 'Resume Workshop',
                 'date' => now()->addDays(14),
-                'type' => 'workshop'
+                'type' => 'workshop',
             ],
         ];
 
@@ -377,24 +378,38 @@ class StudentController extends Controller
         $score = 0;
 
         // Profile completion
-        if ($user->profile_completion >= 80) $score += 25;
-        elseif ($user->profile_completion >= 60) $score += 15;
-        elseif ($user->profile_completion >= 40) $score += 10;
+        if ($user->profile_completion >= 80) {
+            $score += 25;
+        } elseif ($user->profile_completion >= 60) {
+            $score += 15;
+        } elseif ($user->profile_completion >= 40) {
+            $score += 10;
+        }
 
         // Resume uploaded
-        if ($user->resume_url) $score += 20;
+        if ($user->resume_url) {
+            $score += 20;
+        }
 
         // Career goals set
-        if ($user->career_goals) $score += 15;
+        if ($user->career_goals) {
+            $score += 15;
+        }
 
         // Skills listed
-        if ($user->skills && count($user->skills) >= 5) $score += 20;
-        elseif ($user->skills && count($user->skills) >= 3) $score += 10;
+        if ($user->skills && count($user->skills) >= 5) {
+            $score += 20;
+        } elseif ($user->skills && count($user->skills) >= 3) {
+            $score += 10;
+        }
 
         // Network connections
         $connectionCount = $user->connections()->count();
-        if ($connectionCount >= 10) $score += 20;
-        elseif ($connectionCount >= 5) $score += 10;
+        if ($connectionCount >= 10) {
+            $score += 20;
+        } elseif ($connectionCount >= 5) {
+            $score += 10;
+        }
 
         return min(100, $score);
     }

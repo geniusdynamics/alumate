@@ -2,10 +2,10 @@
 
 namespace App\Listeners;
 
+use App\Models\ActivityLog;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Auth\Events\Logout;
 use Illuminate\Auth\Events\Registered;
-use App\Models\ActivityLog;
 
 class LogUserActivity
 {

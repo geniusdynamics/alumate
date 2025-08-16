@@ -77,7 +77,7 @@ class NotificationPreference extends Model
     public static function createDefaultPreferences($userId)
     {
         $defaults = self::getDefaultPreferences();
-        
+
         foreach ($defaults as $type => $settings) {
             self::create(array_merge([
                 'user_id' => $userId,
@@ -90,7 +90,7 @@ class NotificationPreference extends Model
     {
         $preferences = self::where('user_id', $userId)->get()->keyBy('notification_type');
         $defaults = self::getDefaultPreferences();
-        
+
         $result = [];
         foreach ($defaults as $type => $defaultSettings) {
             if (isset($preferences[$type])) {
@@ -102,7 +102,7 @@ class NotificationPreference extends Model
                 ], $defaultSettings);
             }
         }
-        
+
         return $result;
     }
 }

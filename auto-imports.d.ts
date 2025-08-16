@@ -6,202 +6,41 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-  const Accordion: typeof import('./resources/js/components/ui/accordion/index')['Accordion']
-  const AccordionContent: typeof import('./resources/js/components/ui/accordion/index')['AccordionContent']
-  const AccordionItem: typeof import('./resources/js/components/ui/accordion/index')['AccordionItem']
-  const AccordionTrigger: typeof import('./resources/js/components/ui/accordion/index')['AccordionTrigger']
-  const AlumniCard: typeof import('./resources/js/components/AlumniCard.vue')['default']
-  const AlumniProfile: typeof import('./resources/js/components/AlumniProfile.vue')['default']
-  const AutoForm: typeof import('./resources/js/components/ui/auto-form/index')['AutoForm']
-  const AutoFormField: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormField']
-  const AutoFormFieldArray: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldArray']
-  const AutoFormFieldBoolean: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldBoolean']
-  const AutoFormFieldDate: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldDate']
-  const AutoFormFieldEnum: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldEnum']
-  const AutoFormFieldFile: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldFile']
-  const AutoFormFieldInput: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldInput']
-  const AutoFormFieldNumber: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldNumber']
-  const AutoFormFieldObject: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldObject']
-  const AutoFormLabel: typeof import('./resources/js/components/ui/auto-form/index')['AutoFormLabel']
-  const Avatar: typeof import('./resources/js/components/ui/avatar/index')['Avatar']
-  const AvatarFallback: typeof import('./resources/js/components/ui/avatar/index')['AvatarFallback']
-  const AvatarImage: typeof import('./resources/js/components/ui/avatar/index')['AvatarImage']
-  const Badge: typeof import('./resources/js/components/ui/badge/index')['Badge']
-  const Breadcrumb: typeof import('./resources/js/components/ui/breadcrumb/index')['Breadcrumb']
-  const BreadcrumbEllipsis: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbEllipsis']
-  const BreadcrumbItem: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbItem']
-  const BreadcrumbLink: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbLink']
-  const BreadcrumbList: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbList']
-  const BreadcrumbPage: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbPage']
-  const BreadcrumbSeparator: typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbSeparator']
-  const Button: typeof import('./resources/js/components/ui/button/index')['Button']
-  const Calendar: typeof import('./resources/js/components/ui/calendar/index')['Calendar']
-  const CalendarCell: typeof import('./resources/js/components/ui/calendar/index')['CalendarCell']
-  const CalendarCellTrigger: typeof import('./resources/js/components/ui/calendar/index')['CalendarCellTrigger']
-  const CalendarGrid: typeof import('./resources/js/components/ui/calendar/index')['CalendarGrid']
-  const CalendarGridBody: typeof import('./resources/js/components/ui/calendar/index')['CalendarGridBody']
-  const CalendarGridHead: typeof import('./resources/js/components/ui/calendar/index')['CalendarGridHead']
-  const CalendarGridRow: typeof import('./resources/js/components/ui/calendar/index')['CalendarGridRow']
-  const CalendarHeadCell: typeof import('./resources/js/components/ui/calendar/index')['CalendarHeadCell']
-  const CalendarHeader: typeof import('./resources/js/components/ui/calendar/index')['CalendarHeader']
-  const CalendarHeading: typeof import('./resources/js/components/ui/calendar/index')['CalendarHeading']
-  const CalendarNextButton: typeof import('./resources/js/components/ui/calendar/index')['CalendarNextButton']
-  const CalendarPrevButton: typeof import('./resources/js/components/ui/calendar/index')['CalendarPrevButton']
-  const Card: typeof import('./resources/js/components/ui/card/index')['Card']
-  const CardAction: typeof import('./resources/js/components/ui/card/index')['CardAction']
-  const CardContent: typeof import('./resources/js/components/ui/card/index')['CardContent']
-  const CardDescription: typeof import('./resources/js/components/ui/card/index')['CardDescription']
-  const CardFooter: typeof import('./resources/js/components/ui/card/index')['CardFooter']
-  const CardHeader: typeof import('./resources/js/components/ui/card/index')['CardHeader']
-  const CardTitle: typeof import('./resources/js/components/ui/card/index')['CardTitle']
-  const Checkbox: typeof import('./resources/js/components/ui/checkbox/index')['Checkbox']
-  const Collapsible: typeof import('./resources/js/components/ui/collapsible/index')['Collapsible']
-  const CollapsibleContent: typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleContent']
-  const CollapsibleTrigger: typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleTrigger']
-  const CommentThread: typeof import('./resources/js/components/PostComments.vue')['CommentThread']
-  const ConnectionRequestModal: typeof import('./resources/js/components/ConnectionRequestModal.vue')['default']
-  const DEFAULT_ZOD_HANDLERS: typeof import('./resources/js/components/ui/auto-form/constant')['DEFAULT_ZOD_HANDLERS']
-  const DependencyType: typeof import('./resources/js/components/ui/auto-form/interface')['DependencyType']
-  const Dialog: typeof import('./resources/js/components/ui/dialog/index')['Dialog']
-  const DialogClose: typeof import('./resources/js/components/ui/dialog/index')['DialogClose']
-  const DialogContent: typeof import('./resources/js/components/ui/dialog/index')['DialogContent']
-  const DialogDescription: typeof import('./resources/js/components/ui/dialog/index')['DialogDescription']
-  const DialogFooter: typeof import('./resources/js/components/ui/dialog/index')['DialogFooter']
-  const DialogHeader: typeof import('./resources/js/components/ui/dialog/index')['DialogHeader']
-  const DialogOverlay: typeof import('./resources/js/components/ui/dialog/index')['DialogOverlay']
-  const DialogScrollContent: typeof import('./resources/js/components/ui/dialog/index')['DialogScrollContent']
-  const DialogTitle: typeof import('./resources/js/components/ui/dialog/index')['DialogTitle']
-  const DialogTrigger: typeof import('./resources/js/components/ui/dialog/index')['DialogTrigger']
-  const DirectoryFilters: typeof import('./resources/js/components/DirectoryFilters.vue')['default']
-  const DropdownMenu: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenu']
-  const DropdownMenuCheckboxItem: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuCheckboxItem']
-  const DropdownMenuContent: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuContent']
-  const DropdownMenuGroup: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuGroup']
-  const DropdownMenuItem: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuItem']
-  const DropdownMenuLabel: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuLabel']
-  const DropdownMenuPortal: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuPortal']
-  const DropdownMenuRadioGroup: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuRadioGroup']
-  const DropdownMenuRadioItem: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuRadioItem']
-  const DropdownMenuSeparator: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSeparator']
-  const DropdownMenuShortcut: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuShortcut']
-  const DropdownMenuSub: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSub']
-  const DropdownMenuSubContent: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSubContent']
-  const DropdownMenuSubTrigger: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSubTrigger']
-  const DropdownMenuTrigger: typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuTrigger']
+  const ABTestingService: typeof import('./resources/js/services/ABTestingService')['ABTestingService']
+  const AccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['AccessibilityManager']
+  const AccessibilityService: typeof import('./resources/js/services/AccessibilityService')['default']
+  const AccessibilityTester: typeof import('./resources/js/utils/AccessibilityTester.js')['AccessibilityTester']
+  const AnalyticsService: typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']
+  const AriaManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']
+  const BundleAnalyzer: typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']
+  const CDNService: typeof import('./resources/js/services/CDNService')['default']
+  const ColorContrastManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']
+  const ConversionTrackingService: typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']
   const EffectScope: typeof import('vue')['EffectScope']
-  const FORM_ITEM_INJECTION_KEY: typeof import('./resources/js/components/ui/form/injectionKeys')['FORM_ITEM_INJECTION_KEY']
-  const Form: typeof import('./resources/js/components/ui/form/index')['Form']
-  const FormControl: typeof import('./resources/js/components/ui/form/index')['FormControl']
-  const FormDescription: typeof import('./resources/js/components/ui/form/index')['FormDescription']
-  const FormField: typeof import('./resources/js/components/ui/form/index')['FormField']
-  const FormFieldArray: typeof import('./resources/js/components/ui/form/index')['FormFieldArray']
-  const FormItem: typeof import('./resources/js/components/ui/form/index')['FormItem']
-  const FormLabel: typeof import('./resources/js/components/ui/form/index')['FormLabel']
-  const FormMessage: typeof import('./resources/js/components/ui/form/index')['FormMessage']
-  const INPUT_COMPONENTS: typeof import('./resources/js/components/ui/auto-form/constant')['INPUT_COMPONENTS']
-  const Input: typeof import('./resources/js/components/ui/input/index')['Input']
-  const Label: typeof import('./resources/js/components/ui/label/index')['Label']
-  const LearningResources: typeof import('./resources/js/components/LearningResources.vue')['default']
-  const NavigationMenu: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenu']
-  const NavigationMenuContent: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuContent']
-  const NavigationMenuIndicator: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuIndicator']
-  const NavigationMenuItem: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuItem']
-  const NavigationMenuLink: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuLink']
-  const NavigationMenuList: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuList']
-  const NavigationMenuTrigger: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuTrigger']
-  const NavigationMenuViewport: typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuViewport']
-  const Popover: typeof import('./resources/js/components/ui/popover/index')['Popover']
-  const PopoverAnchor: typeof import('./resources/js/components/ui/popover/index')['PopoverAnchor']
-  const PopoverContent: typeof import('./resources/js/components/ui/popover/index')['PopoverContent']
-  const PopoverTrigger: typeof import('./resources/js/components/ui/popover/index')['PopoverTrigger']
-  const PostCreator: typeof import('./resources/js/components/PostCreator.vue')['default']
-  const Progress: typeof import('./resources/js/components/ui/progress/index')['Progress']
-  const RadioGroup: typeof import('./resources/js/components/ui/radio-group/index')['RadioGroup']
-  const RadioGroupItem: typeof import('./resources/js/components/ui/radio-group/index')['RadioGroupItem']
-  const SIDEBAR_COOKIE_MAX_AGE: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_MAX_AGE']
-  const SIDEBAR_COOKIE_NAME: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_NAME']
-  const SIDEBAR_KEYBOARD_SHORTCUT: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_KEYBOARD_SHORTCUT']
-  const SIDEBAR_WIDTH: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_WIDTH']
-  const SIDEBAR_WIDTH_ICON: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_WIDTH_ICON']
-  const SIDEBAR_WIDTH_MOBILE: typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_WIDTH_MOBILE']
-  const Select: typeof import('./resources/js/components/ui/select/index')['Select']
-  const SelectContent: typeof import('./resources/js/components/ui/select/index')['SelectContent']
-  const SelectGroup: typeof import('./resources/js/components/ui/select/index')['SelectGroup']
-  const SelectItem: typeof import('./resources/js/components/ui/select/index')['SelectItem']
-  const SelectItemText: typeof import('./resources/js/components/ui/select/index')['SelectItemText']
-  const SelectLabel: typeof import('./resources/js/components/ui/select/index')['SelectLabel']
-  const SelectScrollDownButton: typeof import('./resources/js/components/ui/select/index')['SelectScrollDownButton']
-  const SelectScrollUpButton: typeof import('./resources/js/components/ui/select/index')['SelectScrollUpButton']
-  const SelectSeparator: typeof import('./resources/js/components/ui/select/index')['SelectSeparator']
-  const SelectTrigger: typeof import('./resources/js/components/ui/select/index')['SelectTrigger']
-  const SelectValue: typeof import('./resources/js/components/ui/select/index')['SelectValue']
-  const Separator: typeof import('./resources/js/components/ui/separator/index')['Separator']
-  const Sheet: typeof import('./resources/js/components/ui/sheet/index')['Sheet']
-  const SheetClose: typeof import('./resources/js/components/ui/sheet/index')['SheetClose']
-  const SheetContent: typeof import('./resources/js/components/ui/sheet/index')['SheetContent']
-  const SheetDescription: typeof import('./resources/js/components/ui/sheet/index')['SheetDescription']
-  const SheetFooter: typeof import('./resources/js/components/ui/sheet/index')['SheetFooter']
-  const SheetHeader: typeof import('./resources/js/components/ui/sheet/index')['SheetHeader']
-  const SheetTitle: typeof import('./resources/js/components/ui/sheet/index')['SheetTitle']
-  const SheetTrigger: typeof import('./resources/js/components/ui/sheet/index')['SheetTrigger']
-  const Sidebar: typeof import('./resources/js/components/ui/sidebar/index')['Sidebar']
-  const SidebarContent: typeof import('./resources/js/components/ui/sidebar/index')['SidebarContent']
-  const SidebarFooter: typeof import('./resources/js/components/ui/sidebar/index')['SidebarFooter']
-  const SidebarGroup: typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroup']
-  const SidebarGroupAction: typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroupAction']
-  const SidebarGroupContent: typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroupContent']
-  const SidebarGroupLabel: typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroupLabel']
-  const SidebarHeader: typeof import('./resources/js/components/ui/sidebar/index')['SidebarHeader']
-  const SidebarInput: typeof import('./resources/js/components/ui/sidebar/index')['SidebarInput']
-  const SidebarInset: typeof import('./resources/js/components/ui/sidebar/index')['SidebarInset']
-  const SidebarMenu: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenu']
-  const SidebarMenuAction: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuAction']
-  const SidebarMenuBadge: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuBadge']
-  const SidebarMenuButton: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuButton']
-  const SidebarMenuItem: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuItem']
-  const SidebarMenuSkeleton: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSkeleton']
-  const SidebarMenuSub: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSub']
-  const SidebarMenuSubButton: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSubButton']
-  const SidebarMenuSubItem: typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSubItem']
-  const SidebarProvider: typeof import('./resources/js/components/ui/sidebar/index')['SidebarProvider']
-  const SidebarRail: typeof import('./resources/js/components/ui/sidebar/index')['SidebarRail']
-  const SidebarSeparator: typeof import('./resources/js/components/ui/sidebar/index')['SidebarSeparator']
-  const SidebarTrigger: typeof import('./resources/js/components/ui/sidebar/index')['SidebarTrigger']
-  const Skeleton: typeof import('./resources/js/components/ui/skeleton/index')['Skeleton']
-  const SkillEndorsement: typeof import('./resources/js/components/SkillEndorsement.vue')['default']
-  const SkillProgression: typeof import('./resources/js/components/SkillProgression.vue')['default']
-  const SkillSuggestions: typeof import('./resources/js/components/SkillSuggestions.vue')['default']
-  const SkillsInput: typeof import('./resources/js/components/SkillsInput.vue')['default']
-  const SkillsProfile: typeof import('./resources/js/components/SkillsProfile.vue')['default']
-  const Stepper: typeof import('./resources/js/components/ui/stepper/index')['Stepper']
-  const StepperDescription: typeof import('./resources/js/components/ui/stepper/index')['StepperDescription']
-  const StepperIndicator: typeof import('./resources/js/components/ui/stepper/index')['StepperIndicator']
-  const StepperItem: typeof import('./resources/js/components/ui/stepper/index')['StepperItem']
-  const StepperSeparator: typeof import('./resources/js/components/ui/stepper/index')['StepperSeparator']
-  const StepperTitle: typeof import('./resources/js/components/ui/stepper/index')['StepperTitle']
-  const StepperTrigger: typeof import('./resources/js/components/ui/stepper/index')['StepperTrigger']
-  const Switch: typeof import('./resources/js/components/ui/switch/index')['Switch']
-  const Table: typeof import('./resources/js/components/ui/table/index')['Table']
-  const TableBody: typeof import('./resources/js/components/ui/table/index')['TableBody']
-  const TableCaption: typeof import('./resources/js/components/ui/table/index')['TableCaption']
-  const TableCell: typeof import('./resources/js/components/ui/table/index')['TableCell']
-  const TableEmpty: typeof import('./resources/js/components/ui/table/index')['TableEmpty']
-  const TableFooter: typeof import('./resources/js/components/ui/table/index')['TableFooter']
-  const TableHead: typeof import('./resources/js/components/ui/table/index')['TableHead']
-  const TableHeader: typeof import('./resources/js/components/ui/table/index')['TableHeader']
-  const TableRow: typeof import('./resources/js/components/ui/table/index')['TableRow']
-  const Textarea: typeof import('./resources/js/components/ui/textarea/index')['Textarea']
-  const Toaster: typeof import('./resources/js/components/ui/sonner/index')['Toaster']
-  const Tooltip: typeof import('./resources/js/components/ui/tooltip/index')['Tooltip']
-  const TooltipContent: typeof import('./resources/js/components/ui/tooltip/index')['TooltipContent']
-  const TooltipProvider: typeof import('./resources/js/components/ui/tooltip/index')['TooltipProvider']
-  const TooltipTrigger: typeof import('./resources/js/components/ui/tooltip/index')['TooltipTrigger']
-  const WorkshopCalendar: typeof import('./resources/js/components/WorkshopCalendar.vue')['default']
+  const FocusManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['FocusManager']
+  const FormAccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['FormAccessibilityManager']
+  const HeatMapService: typeof import('./resources/js/services/HeatMapService')['HeatMapService']
+  const KeyboardNavigationManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['KeyboardNavigationManager']
+  const LoadingPresets: typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']
+  const MobileAccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['MobileAccessibilityManager']
+  const OnboardingService: typeof import('./resources/js/services/OnboardingService.js')['default']
+  const PerformanceOptimizer: typeof import('./resources/js/utils/performance-optimizer')['PerformanceOptimizer']
+  const PerformanceService: typeof import('./resources/js/services/PerformanceService')['default']
+  const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
+  const PushNotificationService: typeof import('./resources/js/services/PushNotificationService.js')['default']
+  const SEOService: typeof import('./resources/js/services/SEOService')['default']
+  const ScreenReaderManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['ScreenReaderManager']
+  const UserFlowIntegration: typeof import('./resources/js/services/UserFlowIntegration.js')['default']
+  const WebSocketService: typeof import('./resources/js/services/WebSocketService.js')['default']
+  const Z_INDEX: typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']
+  const accessibilityHelpers: typeof import('./resources/js/utils/accessibility-performance-setup.js')['accessibilityHelpers']
+  const accessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['accessibilityManager']
+  const accessibilityService: typeof import('./resources/js/services/AccessibilityService')['accessibilityService']
+  const accessibilityTester: typeof import('./resources/js/utils/AccessibilityTester.js')['accessibilityTester']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
-  const beautifyObjectName: typeof import('./resources/js/components/ui/auto-form/utils')['beautifyObjectName']
-  const booleanishToBoolean: typeof import('./resources/js/components/ui/auto-form/utils')['booleanishToBoolean']
-  const buttonVariants: typeof import('./resources/js/components/ui/button/index')['buttonVariants']
+  const bundleAnalyzer: typeof import('./resources/js/utils/bundle-analyzer')['bundleAnalyzer']
+  const cdnService: typeof import('./resources/js/services/CDNService')['cdnService']
   const cn: typeof import('./resources/js/utils/cn')['cn']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
@@ -214,6 +53,8 @@ declare global {
   const createEventHook: typeof import('@vueuse/core')['createEventHook']
   const createGlobalState: typeof import('@vueuse/core')['createGlobalState']
   const createInjectionState: typeof import('@vueuse/core')['createInjectionState']
+  const createIntersectionObserver: typeof import('./resources/js/utils/lazy-loading')['createIntersectionObserver']
+  const createLazyComponent: typeof import('./resources/js/utils/lazy-loading')['createLazyComponent']
   const createReactiveFn: typeof import('@vueuse/core')['createReactiveFn']
   const createRef: typeof import('@vueuse/core')['createRef']
   const createReusableTemplate: typeof import('@vueuse/core')['createReusableTemplate']
@@ -225,39 +66,37 @@ declare global {
   const debouncedWatch: typeof import('@vueuse/core')['debouncedWatch']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
-  const dependencies: typeof import('./resources/js/components/ui/auto-form/dependencies')['default']
+  const dynamicImportWithRetry: typeof import('./resources/js/utils/lazy-loading')['dynamicImportWithRetry']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
   const fileUploadService: typeof import('./resources/js/services/fileUploadService')['default']
-  const getBaseSchema: typeof import('./resources/js/components/ui/auto-form/utils')['getBaseSchema']
-  const getBaseType: typeof import('./resources/js/components/ui/auto-form/utils')['getBaseType']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
   const getCurrentScope: typeof import('vue')['getCurrentScope']
-  const getDefaultValueInZodStack: typeof import('./resources/js/components/ui/auto-form/utils')['getDefaultValueInZodStack']
-  const getFromPath: typeof import('./resources/js/components/ui/auto-form/utils')['getFromPath']
-  const getIndexIfArray: typeof import('./resources/js/components/ui/auto-form/utils')['getIndexIfArray']
   const getInitials: typeof import('./resources/js/composables/useInitials')['getInitials']
-  const getObjectFormSchema: typeof import('./resources/js/components/ui/auto-form/utils')['getObjectFormSchema']
+  const getZIndex: typeof import('./resources/js/utils/zIndex.js')['getZIndex']
+  const getZIndexClass: typeof import('./resources/js/utils/zIndex.js')['getZIndexClass']
   const h: typeof import('vue')['h']
   const httpService: typeof import('./resources/js/services/httpService')['default']
   const ignorableWatch: typeof import('@vueuse/core')['ignorableWatch']
-  const initializeTheme: typeof import('./resources/js/composables/useAppearance')['initializeTheme']
+  const initializeAccessibilityAndPerformance: typeof import('./resources/js/utils/accessibility-performance-setup.js')['initializeAccessibilityAndPerformance']
+  const initializeTheme: typeof import('./resources/js/composables/useTheme.js')['initializeTheme']
   const inject: typeof import('vue')['inject']
-  const injectDependencies: typeof import('./resources/js/components/ui/auto-form/dependencies')['injectDependencies']
   const injectLocal: typeof import('@vueuse/core')['injectLocal']
+  const isAbove: typeof import('./resources/js/utils/zIndex.js')['isAbove']
   const isDefined: typeof import('@vueuse/core')['isDefined']
-  const isNotNestedPath: typeof import('./resources/js/components/ui/auto-form/utils')['isNotNestedPath']
   const isProxy: typeof import('vue')['isProxy']
   const isReactive: typeof import('vue')['isReactive']
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
+  const isTouchDevice: typeof import('./resources/js/composables/useSwipeGestures.js')['isTouchDevice']
+  const lazyLoadImage: typeof import('./resources/js/utils/lazy-loading')['lazyLoadImage']
+  const lazyRoute: typeof import('./resources/js/utils/lazy-loading')['lazyRoute']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
+  const markPerformance: typeof import('./resources/js/utils/performance-monitor.js')['markPerformance']
   const markRaw: typeof import('vue')['markRaw']
-  const maybeBooleanishToBoolean: typeof import('./resources/js/components/ui/auto-form/utils')['maybeBooleanishToBoolean']
-  const navigationMenuTriggerStyle: typeof import('./resources/js/components/ui/navigation-menu/index')['navigationMenuTriggerStyle']
+  const measurePerformance: typeof import('./resources/js/utils/performance-monitor.js')['measurePerformance']
   const nextTick: typeof import('vue')['nextTick']
-  const normalizeFormPath: typeof import('./resources/js/components/ui/auto-form/utils')['normalizeFormPath']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
   const onBeforeUnmount: typeof import('vue')['onBeforeUnmount']
@@ -278,10 +117,16 @@ declare global {
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
+  const performanceHelpers: typeof import('./resources/js/utils/accessibility-performance-setup.js')['performanceHelpers']
+  const performanceMonitor: typeof import('./resources/js/utils/performance-monitor.js')['default']
+  const performanceOptimizer: typeof import('./resources/js/utils/performance-optimizer')['performanceOptimizer']
+  const performanceService: typeof import('./resources/js/services/PerformanceService')['performanceService']
+  const preloadComponent: typeof import('./resources/js/utils/lazy-loading')['preloadComponent']
+  const preloadCriticalResources: typeof import('./resources/js/utils/lazy-loading')['preloadCriticalResources']
+  const preloadService: typeof import('./resources/js/services/PreloadService')['preloadService']
+  const preventTouchDefault: typeof import('./resources/js/composables/useSwipeGestures.js')['preventTouchDefault']
   const provide: typeof import('vue')['provide']
-  const provideDependencies: typeof import('./resources/js/components/ui/auto-form/dependencies')['provideDependencies']
   const provideLocal: typeof import('@vueuse/core')['provideLocal']
-  const provideSidebarContext: typeof import('./resources/js/components/ui/sidebar/utils')['provideSidebarContext']
   const reactify: typeof import('@vueuse/core')['reactify']
   const reactifyObject: typeof import('@vueuse/core')['reactifyObject']
   const reactive: typeof import('vue')['reactive']
@@ -289,6 +134,7 @@ declare global {
   const reactiveOmit: typeof import('@vueuse/core')['reactiveOmit']
   const reactivePick: typeof import('@vueuse/core')['reactivePick']
   const readonly: typeof import('vue')['readonly']
+  const recordCustomMetric: typeof import('./resources/js/utils/performance-monitor.js')['recordCustomMetric']
   const ref: typeof import('vue')['ref']
   const refAutoReset: typeof import('@vueuse/core')['refAutoReset']
   const refDebounced: typeof import('@vueuse/core')['refDebounced']
@@ -298,10 +144,10 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const seoService: typeof import('./resources/js/services/SEOService')['seoService']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
   const shallowRef: typeof import('vue')['shallowRef']
-  const sidebarMenuButtonVariants: typeof import('./resources/js/components/ui/sidebar/index')['sidebarMenuButtonVariants']
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
   const templateRef: typeof import('@vueuse/core')['templateRef']
@@ -322,9 +168,12 @@ declare global {
   const unrefElement: typeof import('@vueuse/core')['unrefElement']
   const until: typeof import('@vueuse/core')['until']
   const updateTheme: typeof import('./resources/js/composables/useAppearance')['updateTheme']
+  const useAccessibilityTesting: typeof import('./resources/js/utils/AccessibilityTester.js')['useAccessibilityTesting']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
+  const useAnalytics: typeof import('./resources/js/composables/useAnalytics')['useAnalytics']
   const useAnimate: typeof import('@vueuse/core')['useAnimate']
   const useAppearance: typeof import('./resources/js/composables/useAppearance')['useAppearance']
+  const useAria: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useAria']
   const useArrayDifference: typeof import('@vueuse/core')['useArrayDifference']
   const useArrayEvery: typeof import('@vueuse/core')['useArrayEvery']
   const useArrayFilter: typeof import('@vueuse/core')['useArrayFilter']
@@ -340,6 +189,7 @@ declare global {
   const useAsyncQueue: typeof import('@vueuse/core')['useAsyncQueue']
   const useAsyncState: typeof import('@vueuse/core')['useAsyncState']
   const useAttrs: typeof import('vue')['useAttrs']
+  const useAudienceDetection: typeof import('./resources/js/composables/useAudienceDetection')['useAudienceDetection']
   const useBase64: typeof import('@vueuse/core')['useBase64']
   const useBattery: typeof import('@vueuse/core')['useBattery']
   const useBluetooth: typeof import('@vueuse/core')['useBluetooth']
@@ -351,7 +201,10 @@ declare global {
   const useClipboardItems: typeof import('@vueuse/core')['useClipboardItems']
   const useCloned: typeof import('@vueuse/core')['useCloned']
   const useColorMode: typeof import('@vueuse/core')['useColorMode']
+  const useComponentPerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['useComponentPerformance']
   const useConfirmDialog: typeof import('@vueuse/core')['useConfirmDialog']
+  const useConnectionRealTime: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useConnectionRealTime']
+  const useConversionTracking: typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']
   const useCountdown: typeof import('@vueuse/core')['useCountdown']
   const useCounter: typeof import('@vueuse/core')['useCounter']
   const useCssModule: typeof import('vue')['useCssModule']
@@ -362,9 +215,11 @@ declare global {
   const useDark: typeof import('@vueuse/core')['useDark']
   const useDataTable: typeof import('./resources/js/composables/useDataTable')['useDataTable']
   const useDateFormat: typeof import('@vueuse/core')['useDateFormat']
-  const useDebounce: typeof import('@vueuse/core')['useDebounce']
+  const useDebounce: typeof import('./resources/js/composables/useDebounce.js')['useDebounce']
   const useDebounceFn: typeof import('@vueuse/core')['useDebounceFn']
+  const useDebouncedRef: typeof import('./resources/js/composables/useDebounce.js')['useDebouncedRef']
   const useDebouncedRefHistory: typeof import('@vueuse/core')['useDebouncedRefHistory']
+  const useDebouncedWatch: typeof import('./resources/js/composables/useDebounce.js')['useDebouncedWatch']
   const useDeviceMotion: typeof import('@vueuse/core')['useDeviceMotion']
   const useDeviceOrientation: typeof import('@vueuse/core')['useDeviceOrientation']
   const useDevicePixelRatio: typeof import('@vueuse/core')['useDevicePixelRatio']
@@ -381,14 +236,15 @@ declare global {
   const useEventBus: typeof import('@vueuse/core')['useEventBus']
   const useEventListener: typeof import('@vueuse/core')['useEventListener']
   const useEventSource: typeof import('@vueuse/core')['useEventSource']
+  const useExitIntent: typeof import('./resources/js/composables/useExitIntent')['useExitIntent']
   const useEyeDropper: typeof import('@vueuse/core')['useEyeDropper']
   const useFavicon: typeof import('@vueuse/core')['useFavicon']
   const useFetch: typeof import('@vueuse/core')['useFetch']
   const useFileDialog: typeof import('@vueuse/core')['useFileDialog']
   const useFileSystemAccess: typeof import('@vueuse/core')['useFileSystemAccess']
   const useFocus: typeof import('@vueuse/core')['useFocus']
+  const useFocusManagement: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useFocusManagement']
   const useFocusWithin: typeof import('@vueuse/core')['useFocusWithin']
-  const useFormField: typeof import('./resources/js/components/ui/form/useFormField')['useFormField']
   const useFps: typeof import('@vueuse/core')['useFps']
   const useFullscreen: typeof import('@vueuse/core')['useFullscreen']
   const useGamepad: typeof import('@vueuse/core')['useGamepad']
@@ -402,7 +258,12 @@ declare global {
   const useInterval: typeof import('@vueuse/core')['useInterval']
   const useIntervalFn: typeof import('@vueuse/core')['useIntervalFn']
   const useKeyModifier: typeof import('@vueuse/core')['useKeyModifier']
+  const useKeyboardNavigation: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useKeyboardNavigation']
   const useLastChanged: typeof import('@vueuse/core')['useLastChanged']
+  const useLazyComponent: typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']
+  const useLazyImage: typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']
+  const useLazyLoading: typeof import('./resources/js/composables/useLazyLoading')['useLazyLoading']
+  const useLoadingStates: typeof import('./resources/js/composables/useLoadingStates')['useLoadingStates']
   const useLocalStorage: typeof import('@vueuse/core')['useLocalStorage']
   const useMagicKeys: typeof import('@vueuse/core')['useMagicKeys']
   const useManualRefHistory: typeof import('@vueuse/core')['useManualRefHistory']
@@ -410,6 +271,7 @@ declare global {
   const useMediaQuery: typeof import('@vueuse/core')['useMediaQuery']
   const useMemoize: typeof import('@vueuse/core')['useMemoize']
   const useMemory: typeof import('@vueuse/core')['useMemory']
+  const useModal: typeof import('./resources/js/composables/useModal.js')['default']
   const useModel: typeof import('vue')['useModel']
   const useMounted: typeof import('@vueuse/core')['useMounted']
   const useMouse: typeof import('@vueuse/core')['useMouse']
@@ -423,13 +285,16 @@ declare global {
   const useOffsetPagination: typeof import('@vueuse/core')['useOffsetPagination']
   const useOnline: typeof import('@vueuse/core')['useOnline']
   const usePageLeave: typeof import('@vueuse/core')['usePageLeave']
+  const usePagePerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePagePerformance']
   const useParallax: typeof import('@vueuse/core')['useParallax']
   const useParentElement: typeof import('@vueuse/core')['useParentElement']
+  const usePerformanceMonitoring: typeof import('./resources/js/composables/usePerformanceMonitoring')['usePerformanceMonitoring']
   const usePerformanceObserver: typeof import('@vueuse/core')['usePerformanceObserver']
   const usePermission: typeof import('@vueuse/core')['usePermission']
   const usePointer: typeof import('@vueuse/core')['usePointer']
   const usePointerLock: typeof import('@vueuse/core')['usePointerLock']
   const usePointerSwipe: typeof import('@vueuse/core')['usePointerSwipe']
+  const usePostRealTime: typeof import('./resources/js/composables/useRealTimeUpdates.js')['usePostRealTime']
   const usePreferredColorScheme: typeof import('@vueuse/core')['usePreferredColorScheme']
   const usePreferredContrast: typeof import('@vueuse/core')['usePreferredContrast']
   const usePreferredDark: typeof import('@vueuse/core')['usePreferredDark']
@@ -437,20 +302,25 @@ declare global {
   const usePreferredReducedMotion: typeof import('@vueuse/core')['usePreferredReducedMotion']
   const usePreferredReducedTransparency: typeof import('@vueuse/core')['usePreferredReducedTransparency']
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
+  const usePullToRefresh: typeof import('./resources/js/composables/useSwipeGestures.js')['usePullToRefresh']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
+  const useRealTimePerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['useRealTimePerformance']
+  const useRealTimeUpdates: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useRealTimeUpdates']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
   const useSSRWidth: typeof import('@vueuse/core')['useSSRWidth']
   const useScreenOrientation: typeof import('@vueuse/core')['useScreenOrientation']
+  const useScreenReader: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useScreenReader']
   const useScreenSafeArea: typeof import('@vueuse/core')['useScreenSafeArea']
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
   const useScroll: typeof import('@vueuse/core')['useScroll']
   const useScrollLock: typeof import('@vueuse/core')['useScrollLock']
+  const useScrollTracking: typeof import('./resources/js/composables/useScrollTracking')['useScrollTracking']
   const useSessionStorage: typeof import('@vueuse/core')['useSessionStorage']
   const useShare: typeof import('@vueuse/core')['useShare']
-  const useSidebar: typeof import('./resources/js/components/ui/sidebar/utils')['useSidebar']
   const useSlots: typeof import('vue')['useSlots']
   const useSorted: typeof import('@vueuse/core')['useSorted']
+  const useSpecificLoading: typeof import('./resources/js/composables/useLoadingStates')['useSpecificLoading']
   const useSpeechRecognition: typeof import('@vueuse/core')['useSpeechRecognition']
   const useSpeechSynthesis: typeof import('@vueuse/core')['useSpeechSynthesis']
   const useStepper: typeof import('@vueuse/core')['useStepper']
@@ -459,15 +329,19 @@ declare global {
   const useStyleTag: typeof import('@vueuse/core')['useStyleTag']
   const useSupported: typeof import('@vueuse/core')['useSupported']
   const useSwipe: typeof import('@vueuse/core')['useSwipe']
+  const useSwipeGestures: typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeGestures']
+  const useSwipeableTabs: typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeableTabs']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
   const useTemplateRefsList: typeof import('@vueuse/core')['useTemplateRefsList']
   const useTextDirection: typeof import('@vueuse/core')['useTextDirection']
   const useTextSelection: typeof import('@vueuse/core')['useTextSelection']
   const useTextareaAutosize: typeof import('@vueuse/core')['useTextareaAutosize']
+  const useTheme: typeof import('./resources/js/composables/useTheme.js')['useTheme']
   const useThrottle: typeof import('@vueuse/core')['useThrottle']
   const useThrottleFn: typeof import('@vueuse/core')['useThrottleFn']
   const useThrottledRefHistory: typeof import('@vueuse/core')['useThrottledRefHistory']
   const useTimeAgo: typeof import('@vueuse/core')['useTimeAgo']
+  const useTimelineRealTime: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useTimelineRealTime']
   const useTimeout: typeof import('@vueuse/core')['useTimeout']
   const useTimeoutFn: typeof import('@vueuse/core')['useTimeoutFn']
   const useTimeoutPoll: typeof import('@vueuse/core')['useTimeoutPoll']
@@ -480,6 +354,7 @@ declare global {
   const useTransition: typeof import('@vueuse/core')['useTransition']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
   const useUserMedia: typeof import('@vueuse/core')['useUserMedia']
+  const useUserPreferences: typeof import('./resources/js/composables/useUserPreferences.js')['useUserPreferences']
   const useVModel: typeof import('@vueuse/core')['useVModel']
   const useVModels: typeof import('@vueuse/core')['useVModels']
   const useVibrate: typeof import('@vueuse/core')['useVibrate']
@@ -492,7 +367,6 @@ declare global {
   const useWindowFocus: typeof import('@vueuse/core')['useWindowFocus']
   const useWindowScroll: typeof import('@vueuse/core')['useWindowScroll']
   const useWindowSize: typeof import('@vueuse/core')['useWindowSize']
-  const valueUpdater: typeof import('./resources/js/components/ui/table/utils')['valueUpdater']
   const watch: typeof import('vue')['watch']
   const watchArray: typeof import('@vueuse/core')['watchArray']
   const watchAtMost: typeof import('@vueuse/core')['watchAtMost']
@@ -509,6 +383,7 @@ declare global {
   const watchTriggerable: typeof import('@vueuse/core')['watchTriggerable']
   const watchWithFilter: typeof import('@vueuse/core')['watchWithFilter']
   const whenever: typeof import('@vueuse/core')['whenever']
+  const zIndex: typeof import('./resources/js/utils/zIndex.js')['default']
 }
 // for type re-export
 declare global {
@@ -516,32 +391,47 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { Column, PaginationData, DataTableProps } from './resources/js/components/data/DataTable.vue'
-  import('./resources/js/components/data/DataTable.vue')
+  export type { ABTestingService } from './resources/js/services/ABTestingService'
+  import('./resources/js/services/ABTestingService')
   // @ts-ignore
-  export type { DependencyType, FieldProps, Shape, InputComponents, ConfigItem, Config, ValueDependency, EnumValues, OptionsDependency, Dependency } from './resources/js/components/ui/auto-form/interface'
-  import('./resources/js/components/ui/auto-form/interface')
+  export type { AccessibilityOptions, AriaLiveRegion } from './resources/js/services/AccessibilityService'
+  import('./resources/js/services/AccessibilityService')
   // @ts-ignore
-  export type { ZodObjectOrWrapped } from './resources/js/components/ui/auto-form/utils'
-  import('./resources/js/components/ui/auto-form/utils')
+  export type { AnalyticsService, AnalyticsConfig, AnalyticsMetrics } from './resources/js/services/AnalyticsService'
+  import('./resources/js/services/AnalyticsService')
   // @ts-ignore
-  export type { BadgeProps } from './resources/js/components/ui/badge/Badge.vue'
-  import('./resources/js/components/ui/badge/Badge.vue')
+  export type { CDNConfig, ImageOptions } from './resources/js/services/CDNService'
+  import('./resources/js/services/CDNService')
   // @ts-ignore
-  export type { ButtonVariants } from './resources/js/components/ui/button/index'
-  import('./resources/js/components/ui/button/index')
+  export type { ConversionTrackingService } from './resources/js/services/ConversionTrackingService'
+  import('./resources/js/services/ConversionTrackingService')
   // @ts-ignore
-  export type { SidebarMenuButtonProps } from './resources/js/components/ui/sidebar/SidebarMenuButtonChild.vue'
-  import('./resources/js/components/ui/sidebar/SidebarMenuButtonChild.vue')
+  export type { HeatMapService } from './resources/js/services/HeatMapService'
+  import('./resources/js/services/HeatMapService')
   // @ts-ignore
-  export type { SidebarProps, SidebarMenuButtonVariants } from './resources/js/components/ui/sidebar/index'
-  import('./resources/js/components/ui/sidebar/index')
+  export type { PerformanceMetrics, ResourceTiming } from './resources/js/services/PerformanceService'
+  import('./resources/js/services/PerformanceService')
+  // @ts-ignore
+  export type { PreloadResource } from './resources/js/services/PreloadService'
+  import('./resources/js/services/PreloadService')
+  // @ts-ignore
+  export type { SEOMetadata, StructuredData, BreadcrumbItem } from './resources/js/services/SEOService'
+  import('./resources/js/services/SEOService')
   // @ts-ignore
   export type { UploadedFile, UploadResponse, UploadProgress } from './resources/js/services/fileUploadService'
   import('./resources/js/services/fileUploadService')
   // @ts-ignore
-  export type { Toast } from './resources/js/composables/useToast'
-  import('./resources/js/composables/useToast')
+  export type { FocusManager, AriaManager, ColorContrastManager, KeyboardNavigationManager, ScreenReaderManager, MobileAccessibilityManager, FormAccessibilityManager, AccessibilityManager } from './resources/js/utils/AccessibilityHelpers.js'
+  import('./resources/js/utils/AccessibilityHelpers.js')
+  // @ts-ignore
+  export type { AccessibilityTester } from './resources/js/utils/AccessibilityTester.js'
+  import('./resources/js/utils/AccessibilityTester.js')
+  // @ts-ignore
+  export type { LazyLoadOptions } from './resources/js/composables/useLazyLoading'
+  import('./resources/js/composables/useLazyLoading')
+  // @ts-ignore
+  export type { LoadingState, LoadingConfig } from './resources/js/composables/useLoadingStates'
+  import('./resources/js/composables/useLoadingStates')
 }
 
 // for vue template auto import
@@ -549,202 +439,41 @@ import { UnwrapRef } from 'vue'
 declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
-    readonly Accordion: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['Accordion']>
-    readonly AccordionContent: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionContent']>
-    readonly AccordionItem: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionItem']>
-    readonly AccordionTrigger: UnwrapRef<typeof import('./resources/js/components/ui/accordion/index')['AccordionTrigger']>
-    readonly AlumniCard: UnwrapRef<typeof import('./resources/js/components/AlumniCard.vue')['default']>
-    readonly AlumniProfile: UnwrapRef<typeof import('./resources/js/components/AlumniProfile.vue')['default']>
-    readonly AutoForm: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoForm']>
-    readonly AutoFormField: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormField']>
-    readonly AutoFormFieldArray: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldArray']>
-    readonly AutoFormFieldBoolean: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldBoolean']>
-    readonly AutoFormFieldDate: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldDate']>
-    readonly AutoFormFieldEnum: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldEnum']>
-    readonly AutoFormFieldFile: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldFile']>
-    readonly AutoFormFieldInput: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldInput']>
-    readonly AutoFormFieldNumber: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldNumber']>
-    readonly AutoFormFieldObject: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormFieldObject']>
-    readonly AutoFormLabel: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/index')['AutoFormLabel']>
-    readonly Avatar: UnwrapRef<typeof import('./resources/js/components/ui/avatar/index')['Avatar']>
-    readonly AvatarFallback: UnwrapRef<typeof import('./resources/js/components/ui/avatar/index')['AvatarFallback']>
-    readonly AvatarImage: UnwrapRef<typeof import('./resources/js/components/ui/avatar/index')['AvatarImage']>
-    readonly Badge: UnwrapRef<typeof import('./resources/js/components/ui/badge/index')['Badge']>
-    readonly Breadcrumb: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['Breadcrumb']>
-    readonly BreadcrumbEllipsis: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbEllipsis']>
-    readonly BreadcrumbItem: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbItem']>
-    readonly BreadcrumbLink: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbLink']>
-    readonly BreadcrumbList: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbList']>
-    readonly BreadcrumbPage: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbPage']>
-    readonly BreadcrumbSeparator: UnwrapRef<typeof import('./resources/js/components/ui/breadcrumb/index')['BreadcrumbSeparator']>
-    readonly Button: UnwrapRef<typeof import('./resources/js/components/ui/button/index')['Button']>
-    readonly Calendar: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['Calendar']>
-    readonly CalendarCell: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarCell']>
-    readonly CalendarCellTrigger: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarCellTrigger']>
-    readonly CalendarGrid: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarGrid']>
-    readonly CalendarGridBody: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarGridBody']>
-    readonly CalendarGridHead: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarGridHead']>
-    readonly CalendarGridRow: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarGridRow']>
-    readonly CalendarHeadCell: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarHeadCell']>
-    readonly CalendarHeader: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarHeader']>
-    readonly CalendarHeading: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarHeading']>
-    readonly CalendarNextButton: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarNextButton']>
-    readonly CalendarPrevButton: UnwrapRef<typeof import('./resources/js/components/ui/calendar/index')['CalendarPrevButton']>
-    readonly Card: UnwrapRef<typeof import('./resources/js/components/ui/card/index')['Card']>
-    readonly CardAction: UnwrapRef<typeof import('./resources/js/components/ui/card/index')['CardAction']>
-    readonly CardContent: UnwrapRef<typeof import('./resources/js/components/ui/card/index')['CardContent']>
-    readonly CardDescription: UnwrapRef<typeof import('./resources/js/components/ui/card/index')['CardDescription']>
-    readonly CardFooter: UnwrapRef<typeof import('./resources/js/components/ui/card/index')['CardFooter']>
-    readonly CardHeader: UnwrapRef<typeof import('./resources/js/components/ui/card/index')['CardHeader']>
-    readonly CardTitle: UnwrapRef<typeof import('./resources/js/components/ui/card/index')['CardTitle']>
-    readonly Checkbox: UnwrapRef<typeof import('./resources/js/components/ui/checkbox/index')['Checkbox']>
-    readonly Collapsible: UnwrapRef<typeof import('./resources/js/components/ui/collapsible/index')['Collapsible']>
-    readonly CollapsibleContent: UnwrapRef<typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleContent']>
-    readonly CollapsibleTrigger: UnwrapRef<typeof import('./resources/js/components/ui/collapsible/index')['CollapsibleTrigger']>
-    readonly CommentThread: UnwrapRef<typeof import('./resources/js/components/PostComments.vue')['CommentThread']>
-    readonly ConnectionRequestModal: UnwrapRef<typeof import('./resources/js/components/ConnectionRequestModal.vue')['default']>
-    readonly DEFAULT_ZOD_HANDLERS: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/constant')['DEFAULT_ZOD_HANDLERS']>
-    readonly DependencyType: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/interface')['DependencyType']>
-    readonly Dialog: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['Dialog']>
-    readonly DialogClose: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogClose']>
-    readonly DialogContent: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogContent']>
-    readonly DialogDescription: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogDescription']>
-    readonly DialogFooter: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogFooter']>
-    readonly DialogHeader: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogHeader']>
-    readonly DialogOverlay: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogOverlay']>
-    readonly DialogScrollContent: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogScrollContent']>
-    readonly DialogTitle: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogTitle']>
-    readonly DialogTrigger: UnwrapRef<typeof import('./resources/js/components/ui/dialog/index')['DialogTrigger']>
-    readonly DirectoryFilters: UnwrapRef<typeof import('./resources/js/components/DirectoryFilters.vue')['default']>
-    readonly DropdownMenu: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenu']>
-    readonly DropdownMenuCheckboxItem: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuCheckboxItem']>
-    readonly DropdownMenuContent: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuContent']>
-    readonly DropdownMenuGroup: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuGroup']>
-    readonly DropdownMenuItem: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuItem']>
-    readonly DropdownMenuLabel: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuLabel']>
-    readonly DropdownMenuPortal: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuPortal']>
-    readonly DropdownMenuRadioGroup: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuRadioGroup']>
-    readonly DropdownMenuRadioItem: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuRadioItem']>
-    readonly DropdownMenuSeparator: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSeparator']>
-    readonly DropdownMenuShortcut: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuShortcut']>
-    readonly DropdownMenuSub: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSub']>
-    readonly DropdownMenuSubContent: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSubContent']>
-    readonly DropdownMenuSubTrigger: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuSubTrigger']>
-    readonly DropdownMenuTrigger: UnwrapRef<typeof import('./resources/js/components/ui/dropdown-menu/index')['DropdownMenuTrigger']>
+    readonly ABTestingService: UnwrapRef<typeof import('./resources/js/services/ABTestingService')['ABTestingService']>
+    readonly AccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['AccessibilityManager']>
+    readonly AccessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['default']>
+    readonly AccessibilityTester: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['AccessibilityTester']>
+    readonly AnalyticsService: UnwrapRef<typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']>
+    readonly AriaManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']>
+    readonly BundleAnalyzer: UnwrapRef<typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']>
+    readonly CDNService: UnwrapRef<typeof import('./resources/js/services/CDNService')['default']>
+    readonly ColorContrastManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']>
+    readonly ConversionTrackingService: UnwrapRef<typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
-    readonly FORM_ITEM_INJECTION_KEY: UnwrapRef<typeof import('./resources/js/components/ui/form/injectionKeys')['FORM_ITEM_INJECTION_KEY']>
-    readonly Form: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['Form']>
-    readonly FormControl: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormControl']>
-    readonly FormDescription: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormDescription']>
-    readonly FormField: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormField']>
-    readonly FormFieldArray: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormFieldArray']>
-    readonly FormItem: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormItem']>
-    readonly FormLabel: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormLabel']>
-    readonly FormMessage: UnwrapRef<typeof import('./resources/js/components/ui/form/index')['FormMessage']>
-    readonly INPUT_COMPONENTS: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/constant')['INPUT_COMPONENTS']>
-    readonly Input: UnwrapRef<typeof import('./resources/js/components/ui/input/index')['Input']>
-    readonly Label: UnwrapRef<typeof import('./resources/js/components/ui/label/index')['Label']>
-    readonly LearningResources: UnwrapRef<typeof import('./resources/js/components/LearningResources.vue')['default']>
-    readonly NavigationMenu: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenu']>
-    readonly NavigationMenuContent: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuContent']>
-    readonly NavigationMenuIndicator: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuIndicator']>
-    readonly NavigationMenuItem: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuItem']>
-    readonly NavigationMenuLink: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuLink']>
-    readonly NavigationMenuList: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuList']>
-    readonly NavigationMenuTrigger: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuTrigger']>
-    readonly NavigationMenuViewport: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['NavigationMenuViewport']>
-    readonly Popover: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['Popover']>
-    readonly PopoverAnchor: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverAnchor']>
-    readonly PopoverContent: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverContent']>
-    readonly PopoverTrigger: UnwrapRef<typeof import('./resources/js/components/ui/popover/index')['PopoverTrigger']>
-    readonly PostCreator: UnwrapRef<typeof import('./resources/js/components/PostCreator.vue')['default']>
-    readonly Progress: UnwrapRef<typeof import('./resources/js/components/ui/progress/index')['Progress']>
-    readonly RadioGroup: UnwrapRef<typeof import('./resources/js/components/ui/radio-group/index')['RadioGroup']>
-    readonly RadioGroupItem: UnwrapRef<typeof import('./resources/js/components/ui/radio-group/index')['RadioGroupItem']>
-    readonly SIDEBAR_COOKIE_MAX_AGE: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_MAX_AGE']>
-    readonly SIDEBAR_COOKIE_NAME: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_COOKIE_NAME']>
-    readonly SIDEBAR_KEYBOARD_SHORTCUT: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_KEYBOARD_SHORTCUT']>
-    readonly SIDEBAR_WIDTH: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_WIDTH']>
-    readonly SIDEBAR_WIDTH_ICON: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_WIDTH_ICON']>
-    readonly SIDEBAR_WIDTH_MOBILE: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['SIDEBAR_WIDTH_MOBILE']>
-    readonly Select: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['Select']>
-    readonly SelectContent: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectContent']>
-    readonly SelectGroup: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectGroup']>
-    readonly SelectItem: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectItem']>
-    readonly SelectItemText: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectItemText']>
-    readonly SelectLabel: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectLabel']>
-    readonly SelectScrollDownButton: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectScrollDownButton']>
-    readonly SelectScrollUpButton: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectScrollUpButton']>
-    readonly SelectSeparator: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectSeparator']>
-    readonly SelectTrigger: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectTrigger']>
-    readonly SelectValue: UnwrapRef<typeof import('./resources/js/components/ui/select/index')['SelectValue']>
-    readonly Separator: UnwrapRef<typeof import('./resources/js/components/ui/separator/index')['Separator']>
-    readonly Sheet: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['Sheet']>
-    readonly SheetClose: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['SheetClose']>
-    readonly SheetContent: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['SheetContent']>
-    readonly SheetDescription: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['SheetDescription']>
-    readonly SheetFooter: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['SheetFooter']>
-    readonly SheetHeader: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['SheetHeader']>
-    readonly SheetTitle: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['SheetTitle']>
-    readonly SheetTrigger: UnwrapRef<typeof import('./resources/js/components/ui/sheet/index')['SheetTrigger']>
-    readonly Sidebar: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['Sidebar']>
-    readonly SidebarContent: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarContent']>
-    readonly SidebarFooter: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarFooter']>
-    readonly SidebarGroup: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroup']>
-    readonly SidebarGroupAction: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroupAction']>
-    readonly SidebarGroupContent: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroupContent']>
-    readonly SidebarGroupLabel: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarGroupLabel']>
-    readonly SidebarHeader: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarHeader']>
-    readonly SidebarInput: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarInput']>
-    readonly SidebarInset: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarInset']>
-    readonly SidebarMenu: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenu']>
-    readonly SidebarMenuAction: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuAction']>
-    readonly SidebarMenuBadge: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuBadge']>
-    readonly SidebarMenuButton: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuButton']>
-    readonly SidebarMenuItem: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuItem']>
-    readonly SidebarMenuSkeleton: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSkeleton']>
-    readonly SidebarMenuSub: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSub']>
-    readonly SidebarMenuSubButton: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSubButton']>
-    readonly SidebarMenuSubItem: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarMenuSubItem']>
-    readonly SidebarProvider: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarProvider']>
-    readonly SidebarRail: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarRail']>
-    readonly SidebarSeparator: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarSeparator']>
-    readonly SidebarTrigger: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['SidebarTrigger']>
-    readonly Skeleton: UnwrapRef<typeof import('./resources/js/components/ui/skeleton/index')['Skeleton']>
-    readonly SkillEndorsement: UnwrapRef<typeof import('./resources/js/components/SkillEndorsement.vue')['default']>
-    readonly SkillProgression: UnwrapRef<typeof import('./resources/js/components/SkillProgression.vue')['default']>
-    readonly SkillSuggestions: UnwrapRef<typeof import('./resources/js/components/SkillSuggestions.vue')['default']>
-    readonly SkillsInput: UnwrapRef<typeof import('./resources/js/components/SkillsInput.vue')['default']>
-    readonly SkillsProfile: UnwrapRef<typeof import('./resources/js/components/SkillsProfile.vue')['default']>
-    readonly Stepper: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['Stepper']>
-    readonly StepperDescription: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperDescription']>
-    readonly StepperIndicator: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperIndicator']>
-    readonly StepperItem: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperItem']>
-    readonly StepperSeparator: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperSeparator']>
-    readonly StepperTitle: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperTitle']>
-    readonly StepperTrigger: UnwrapRef<typeof import('./resources/js/components/ui/stepper/index')['StepperTrigger']>
-    readonly Switch: UnwrapRef<typeof import('./resources/js/components/ui/switch/index')['Switch']>
-    readonly Table: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['Table']>
-    readonly TableBody: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableBody']>
-    readonly TableCaption: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableCaption']>
-    readonly TableCell: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableCell']>
-    readonly TableEmpty: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableEmpty']>
-    readonly TableFooter: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableFooter']>
-    readonly TableHead: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableHead']>
-    readonly TableHeader: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableHeader']>
-    readonly TableRow: UnwrapRef<typeof import('./resources/js/components/ui/table/index')['TableRow']>
-    readonly Textarea: UnwrapRef<typeof import('./resources/js/components/ui/textarea/index')['Textarea']>
-    readonly Toaster: UnwrapRef<typeof import('./resources/js/components/ui/sonner/index')['Toaster']>
-    readonly Tooltip: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['Tooltip']>
-    readonly TooltipContent: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipContent']>
-    readonly TooltipProvider: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipProvider']>
-    readonly TooltipTrigger: UnwrapRef<typeof import('./resources/js/components/ui/tooltip/index')['TooltipTrigger']>
-    readonly WorkshopCalendar: UnwrapRef<typeof import('./resources/js/components/WorkshopCalendar.vue')['default']>
+    readonly FocusManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['FocusManager']>
+    readonly FormAccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['FormAccessibilityManager']>
+    readonly HeatMapService: UnwrapRef<typeof import('./resources/js/services/HeatMapService')['HeatMapService']>
+    readonly KeyboardNavigationManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['KeyboardNavigationManager']>
+    readonly LoadingPresets: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']>
+    readonly MobileAccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['MobileAccessibilityManager']>
+    readonly OnboardingService: UnwrapRef<typeof import('./resources/js/services/OnboardingService.js')['default']>
+    readonly PerformanceOptimizer: UnwrapRef<typeof import('./resources/js/utils/performance-optimizer')['PerformanceOptimizer']>
+    readonly PerformanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['default']>
+    readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
+    readonly PushNotificationService: UnwrapRef<typeof import('./resources/js/services/PushNotificationService.js')['default']>
+    readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>
+    readonly ScreenReaderManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['ScreenReaderManager']>
+    readonly UserFlowIntegration: UnwrapRef<typeof import('./resources/js/services/UserFlowIntegration.js')['default']>
+    readonly WebSocketService: UnwrapRef<typeof import('./resources/js/services/WebSocketService.js')['default']>
+    readonly Z_INDEX: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']>
+    readonly accessibilityHelpers: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['accessibilityHelpers']>
+    readonly accessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['accessibilityManager']>
+    readonly accessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['accessibilityService']>
+    readonly accessibilityTester: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['accessibilityTester']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
-    readonly beautifyObjectName: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['beautifyObjectName']>
-    readonly booleanishToBoolean: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['booleanishToBoolean']>
-    readonly buttonVariants: UnwrapRef<typeof import('./resources/js/components/ui/button/index')['buttonVariants']>
+    readonly bundleAnalyzer: UnwrapRef<typeof import('./resources/js/utils/bundle-analyzer')['bundleAnalyzer']>
+    readonly cdnService: UnwrapRef<typeof import('./resources/js/services/CDNService')['cdnService']>
     readonly cn: UnwrapRef<typeof import('./resources/js/utils/cn')['cn']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
@@ -757,6 +486,8 @@ declare module 'vue' {
     readonly createEventHook: UnwrapRef<typeof import('@vueuse/core')['createEventHook']>
     readonly createGlobalState: UnwrapRef<typeof import('@vueuse/core')['createGlobalState']>
     readonly createInjectionState: UnwrapRef<typeof import('@vueuse/core')['createInjectionState']>
+    readonly createIntersectionObserver: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['createIntersectionObserver']>
+    readonly createLazyComponent: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['createLazyComponent']>
     readonly createReactiveFn: UnwrapRef<typeof import('@vueuse/core')['createReactiveFn']>
     readonly createRef: UnwrapRef<typeof import('@vueuse/core')['createRef']>
     readonly createReusableTemplate: UnwrapRef<typeof import('@vueuse/core')['createReusableTemplate']>
@@ -768,39 +499,37 @@ declare module 'vue' {
     readonly debouncedWatch: UnwrapRef<typeof import('@vueuse/core')['debouncedWatch']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
-    readonly dependencies: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/dependencies')['default']>
+    readonly dynamicImportWithRetry: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['dynamicImportWithRetry']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly fileUploadService: UnwrapRef<typeof import('./resources/js/services/fileUploadService')['default']>
-    readonly getBaseSchema: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['getBaseSchema']>
-    readonly getBaseType: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['getBaseType']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>
-    readonly getDefaultValueInZodStack: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['getDefaultValueInZodStack']>
-    readonly getFromPath: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['getFromPath']>
-    readonly getIndexIfArray: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['getIndexIfArray']>
     readonly getInitials: UnwrapRef<typeof import('./resources/js/composables/useInitials')['getInitials']>
-    readonly getObjectFormSchema: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['getObjectFormSchema']>
+    readonly getZIndex: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['getZIndex']>
+    readonly getZIndexClass: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['getZIndexClass']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly httpService: UnwrapRef<typeof import('./resources/js/services/httpService')['default']>
     readonly ignorableWatch: UnwrapRef<typeof import('@vueuse/core')['ignorableWatch']>
-    readonly initializeTheme: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['initializeTheme']>
+    readonly initializeAccessibilityAndPerformance: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['initializeAccessibilityAndPerformance']>
+    readonly initializeTheme: UnwrapRef<typeof import('./resources/js/composables/useTheme.js')['initializeTheme']>
     readonly inject: UnwrapRef<typeof import('vue')['inject']>
-    readonly injectDependencies: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/dependencies')['injectDependencies']>
     readonly injectLocal: UnwrapRef<typeof import('@vueuse/core')['injectLocal']>
+    readonly isAbove: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['isAbove']>
     readonly isDefined: UnwrapRef<typeof import('@vueuse/core')['isDefined']>
-    readonly isNotNestedPath: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['isNotNestedPath']>
     readonly isProxy: UnwrapRef<typeof import('vue')['isProxy']>
     readonly isReactive: UnwrapRef<typeof import('vue')['isReactive']>
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
+    readonly isTouchDevice: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['isTouchDevice']>
+    readonly lazyLoadImage: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['lazyLoadImage']>
+    readonly lazyRoute: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['lazyRoute']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
+    readonly markPerformance: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['markPerformance']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
-    readonly maybeBooleanishToBoolean: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['maybeBooleanishToBoolean']>
-    readonly navigationMenuTriggerStyle: UnwrapRef<typeof import('./resources/js/components/ui/navigation-menu/index')['navigationMenuTriggerStyle']>
+    readonly measurePerformance: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['measurePerformance']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
-    readonly normalizeFormPath: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/utils')['normalizeFormPath']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onBeforeMount: UnwrapRef<typeof import('vue')['onBeforeMount']>
     readonly onBeforeUnmount: UnwrapRef<typeof import('vue')['onBeforeUnmount']>
@@ -821,10 +550,16 @@ declare module 'vue' {
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
+    readonly performanceHelpers: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['performanceHelpers']>
+    readonly performanceMonitor: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['default']>
+    readonly performanceOptimizer: UnwrapRef<typeof import('./resources/js/utils/performance-optimizer')['performanceOptimizer']>
+    readonly performanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['performanceService']>
+    readonly preloadComponent: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['preloadComponent']>
+    readonly preloadCriticalResources: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['preloadCriticalResources']>
+    readonly preloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['preloadService']>
+    readonly preventTouchDefault: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['preventTouchDefault']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
-    readonly provideDependencies: UnwrapRef<typeof import('./resources/js/components/ui/auto-form/dependencies')['provideDependencies']>
     readonly provideLocal: UnwrapRef<typeof import('@vueuse/core')['provideLocal']>
-    readonly provideSidebarContext: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['provideSidebarContext']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
     readonly reactifyObject: UnwrapRef<typeof import('@vueuse/core')['reactifyObject']>
     readonly reactive: UnwrapRef<typeof import('vue')['reactive']>
@@ -832,6 +567,7 @@ declare module 'vue' {
     readonly reactiveOmit: UnwrapRef<typeof import('@vueuse/core')['reactiveOmit']>
     readonly reactivePick: UnwrapRef<typeof import('@vueuse/core')['reactivePick']>
     readonly readonly: UnwrapRef<typeof import('vue')['readonly']>
+    readonly recordCustomMetric: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['recordCustomMetric']>
     readonly ref: UnwrapRef<typeof import('vue')['ref']>
     readonly refAutoReset: UnwrapRef<typeof import('@vueuse/core')['refAutoReset']>
     readonly refDebounced: UnwrapRef<typeof import('@vueuse/core')['refDebounced']>
@@ -841,10 +577,10 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly seoService: UnwrapRef<typeof import('./resources/js/services/SEOService')['seoService']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
     readonly shallowRef: UnwrapRef<typeof import('vue')['shallowRef']>
-    readonly sidebarMenuButtonVariants: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/index')['sidebarMenuButtonVariants']>
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
@@ -865,9 +601,12 @@ declare module 'vue' {
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
     readonly updateTheme: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['updateTheme']>
+    readonly useAccessibilityTesting: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['useAccessibilityTesting']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
+    readonly useAnalytics: UnwrapRef<typeof import('./resources/js/composables/useAnalytics')['useAnalytics']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useAppearance: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['useAppearance']>
+    readonly useAria: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useAria']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
     readonly useArrayEvery: UnwrapRef<typeof import('@vueuse/core')['useArrayEvery']>
     readonly useArrayFilter: UnwrapRef<typeof import('@vueuse/core')['useArrayFilter']>
@@ -883,6 +622,7 @@ declare module 'vue' {
     readonly useAsyncQueue: UnwrapRef<typeof import('@vueuse/core')['useAsyncQueue']>
     readonly useAsyncState: UnwrapRef<typeof import('@vueuse/core')['useAsyncState']>
     readonly useAttrs: UnwrapRef<typeof import('vue')['useAttrs']>
+    readonly useAudienceDetection: UnwrapRef<typeof import('./resources/js/composables/useAudienceDetection')['useAudienceDetection']>
     readonly useBase64: UnwrapRef<typeof import('@vueuse/core')['useBase64']>
     readonly useBattery: UnwrapRef<typeof import('@vueuse/core')['useBattery']>
     readonly useBluetooth: UnwrapRef<typeof import('@vueuse/core')['useBluetooth']>
@@ -895,6 +635,8 @@ declare module 'vue' {
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
     readonly useColorMode: UnwrapRef<typeof import('@vueuse/core')['useColorMode']>
     readonly useConfirmDialog: UnwrapRef<typeof import('@vueuse/core')['useConfirmDialog']>
+    readonly useConnectionRealTime: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['useConnectionRealTime']>
+    readonly useConversionTracking: UnwrapRef<typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']>
     readonly useCountdown: UnwrapRef<typeof import('@vueuse/core')['useCountdown']>
     readonly useCounter: UnwrapRef<typeof import('@vueuse/core')['useCounter']>
     readonly useCssModule: UnwrapRef<typeof import('vue')['useCssModule']>
@@ -905,9 +647,11 @@ declare module 'vue' {
     readonly useDark: UnwrapRef<typeof import('@vueuse/core')['useDark']>
     readonly useDataTable: UnwrapRef<typeof import('./resources/js/composables/useDataTable')['useDataTable']>
     readonly useDateFormat: UnwrapRef<typeof import('@vueuse/core')['useDateFormat']>
-    readonly useDebounce: UnwrapRef<typeof import('@vueuse/core')['useDebounce']>
+    readonly useDebounce: UnwrapRef<typeof import('./resources/js/composables/useDebounce.js')['useDebounce']>
     readonly useDebounceFn: UnwrapRef<typeof import('@vueuse/core')['useDebounceFn']>
+    readonly useDebouncedRef: UnwrapRef<typeof import('./resources/js/composables/useDebounce.js')['useDebouncedRef']>
     readonly useDebouncedRefHistory: UnwrapRef<typeof import('@vueuse/core')['useDebouncedRefHistory']>
+    readonly useDebouncedWatch: UnwrapRef<typeof import('./resources/js/composables/useDebounce.js')['useDebouncedWatch']>
     readonly useDeviceMotion: UnwrapRef<typeof import('@vueuse/core')['useDeviceMotion']>
     readonly useDeviceOrientation: UnwrapRef<typeof import('@vueuse/core')['useDeviceOrientation']>
     readonly useDevicePixelRatio: UnwrapRef<typeof import('@vueuse/core')['useDevicePixelRatio']>
@@ -924,14 +668,15 @@ declare module 'vue' {
     readonly useEventBus: UnwrapRef<typeof import('@vueuse/core')['useEventBus']>
     readonly useEventListener: UnwrapRef<typeof import('@vueuse/core')['useEventListener']>
     readonly useEventSource: UnwrapRef<typeof import('@vueuse/core')['useEventSource']>
+    readonly useExitIntent: UnwrapRef<typeof import('./resources/js/composables/useExitIntent')['useExitIntent']>
     readonly useEyeDropper: UnwrapRef<typeof import('@vueuse/core')['useEyeDropper']>
     readonly useFavicon: UnwrapRef<typeof import('@vueuse/core')['useFavicon']>
     readonly useFetch: UnwrapRef<typeof import('@vueuse/core')['useFetch']>
     readonly useFileDialog: UnwrapRef<typeof import('@vueuse/core')['useFileDialog']>
     readonly useFileSystemAccess: UnwrapRef<typeof import('@vueuse/core')['useFileSystemAccess']>
     readonly useFocus: UnwrapRef<typeof import('@vueuse/core')['useFocus']>
+    readonly useFocusManagement: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useFocusManagement']>
     readonly useFocusWithin: UnwrapRef<typeof import('@vueuse/core')['useFocusWithin']>
-    readonly useFormField: UnwrapRef<typeof import('./resources/js/components/ui/form/useFormField')['useFormField']>
     readonly useFps: UnwrapRef<typeof import('@vueuse/core')['useFps']>
     readonly useFullscreen: UnwrapRef<typeof import('@vueuse/core')['useFullscreen']>
     readonly useGamepad: UnwrapRef<typeof import('@vueuse/core')['useGamepad']>
@@ -945,7 +690,12 @@ declare module 'vue' {
     readonly useInterval: UnwrapRef<typeof import('@vueuse/core')['useInterval']>
     readonly useIntervalFn: UnwrapRef<typeof import('@vueuse/core')['useIntervalFn']>
     readonly useKeyModifier: UnwrapRef<typeof import('@vueuse/core')['useKeyModifier']>
+    readonly useKeyboardNavigation: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useKeyboardNavigation']>
     readonly useLastChanged: UnwrapRef<typeof import('@vueuse/core')['useLastChanged']>
+    readonly useLazyComponent: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']>
+    readonly useLazyImage: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']>
+    readonly useLazyLoading: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyLoading']>
+    readonly useLoadingStates: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['useLoadingStates']>
     readonly useLocalStorage: UnwrapRef<typeof import('@vueuse/core')['useLocalStorage']>
     readonly useMagicKeys: UnwrapRef<typeof import('@vueuse/core')['useMagicKeys']>
     readonly useManualRefHistory: UnwrapRef<typeof import('@vueuse/core')['useManualRefHistory']>
@@ -953,6 +703,7 @@ declare module 'vue' {
     readonly useMediaQuery: UnwrapRef<typeof import('@vueuse/core')['useMediaQuery']>
     readonly useMemoize: UnwrapRef<typeof import('@vueuse/core')['useMemoize']>
     readonly useMemory: UnwrapRef<typeof import('@vueuse/core')['useMemory']>
+    readonly useModal: UnwrapRef<typeof import('./resources/js/composables/useModal.js')['default']>
     readonly useModel: UnwrapRef<typeof import('vue')['useModel']>
     readonly useMounted: UnwrapRef<typeof import('@vueuse/core')['useMounted']>
     readonly useMouse: UnwrapRef<typeof import('@vueuse/core')['useMouse']>
@@ -968,11 +719,13 @@ declare module 'vue' {
     readonly usePageLeave: UnwrapRef<typeof import('@vueuse/core')['usePageLeave']>
     readonly useParallax: UnwrapRef<typeof import('@vueuse/core')['useParallax']>
     readonly useParentElement: UnwrapRef<typeof import('@vueuse/core')['useParentElement']>
+    readonly usePerformanceMonitoring: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring')['usePerformanceMonitoring']>
     readonly usePerformanceObserver: UnwrapRef<typeof import('@vueuse/core')['usePerformanceObserver']>
     readonly usePermission: UnwrapRef<typeof import('@vueuse/core')['usePermission']>
     readonly usePointer: UnwrapRef<typeof import('@vueuse/core')['usePointer']>
     readonly usePointerLock: UnwrapRef<typeof import('@vueuse/core')['usePointerLock']>
     readonly usePointerSwipe: UnwrapRef<typeof import('@vueuse/core')['usePointerSwipe']>
+    readonly usePostRealTime: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['usePostRealTime']>
     readonly usePreferredColorScheme: UnwrapRef<typeof import('@vueuse/core')['usePreferredColorScheme']>
     readonly usePreferredContrast: UnwrapRef<typeof import('@vueuse/core')['usePreferredContrast']>
     readonly usePreferredDark: UnwrapRef<typeof import('@vueuse/core')['usePreferredDark']>
@@ -980,20 +733,24 @@ declare module 'vue' {
     readonly usePreferredReducedMotion: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedMotion']>
     readonly usePreferredReducedTransparency: UnwrapRef<typeof import('@vueuse/core')['usePreferredReducedTransparency']>
     readonly usePrevious: UnwrapRef<typeof import('@vueuse/core')['usePrevious']>
+    readonly usePullToRefresh: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['usePullToRefresh']>
     readonly useRafFn: UnwrapRef<typeof import('@vueuse/core')['useRafFn']>
+    readonly useRealTimeUpdates: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['useRealTimeUpdates']>
     readonly useRefHistory: UnwrapRef<typeof import('@vueuse/core')['useRefHistory']>
     readonly useResizeObserver: UnwrapRef<typeof import('@vueuse/core')['useResizeObserver']>
     readonly useSSRWidth: UnwrapRef<typeof import('@vueuse/core')['useSSRWidth']>
     readonly useScreenOrientation: UnwrapRef<typeof import('@vueuse/core')['useScreenOrientation']>
+    readonly useScreenReader: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useScreenReader']>
     readonly useScreenSafeArea: UnwrapRef<typeof import('@vueuse/core')['useScreenSafeArea']>
     readonly useScriptTag: UnwrapRef<typeof import('@vueuse/core')['useScriptTag']>
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
     readonly useScrollLock: UnwrapRef<typeof import('@vueuse/core')['useScrollLock']>
+    readonly useScrollTracking: UnwrapRef<typeof import('./resources/js/composables/useScrollTracking')['useScrollTracking']>
     readonly useSessionStorage: UnwrapRef<typeof import('@vueuse/core')['useSessionStorage']>
     readonly useShare: UnwrapRef<typeof import('@vueuse/core')['useShare']>
-    readonly useSidebar: UnwrapRef<typeof import('./resources/js/components/ui/sidebar/utils')['useSidebar']>
     readonly useSlots: UnwrapRef<typeof import('vue')['useSlots']>
     readonly useSorted: UnwrapRef<typeof import('@vueuse/core')['useSorted']>
+    readonly useSpecificLoading: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['useSpecificLoading']>
     readonly useSpeechRecognition: UnwrapRef<typeof import('@vueuse/core')['useSpeechRecognition']>
     readonly useSpeechSynthesis: UnwrapRef<typeof import('@vueuse/core')['useSpeechSynthesis']>
     readonly useStepper: UnwrapRef<typeof import('@vueuse/core')['useStepper']>
@@ -1002,15 +759,19 @@ declare module 'vue' {
     readonly useStyleTag: UnwrapRef<typeof import('@vueuse/core')['useStyleTag']>
     readonly useSupported: UnwrapRef<typeof import('@vueuse/core')['useSupported']>
     readonly useSwipe: UnwrapRef<typeof import('@vueuse/core')['useSwipe']>
+    readonly useSwipeGestures: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeGestures']>
+    readonly useSwipeableTabs: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['useSwipeableTabs']>
     readonly useTemplateRef: UnwrapRef<typeof import('vue')['useTemplateRef']>
     readonly useTemplateRefsList: UnwrapRef<typeof import('@vueuse/core')['useTemplateRefsList']>
     readonly useTextDirection: UnwrapRef<typeof import('@vueuse/core')['useTextDirection']>
     readonly useTextSelection: UnwrapRef<typeof import('@vueuse/core')['useTextSelection']>
     readonly useTextareaAutosize: UnwrapRef<typeof import('@vueuse/core')['useTextareaAutosize']>
+    readonly useTheme: UnwrapRef<typeof import('./resources/js/composables/useTheme.js')['useTheme']>
     readonly useThrottle: UnwrapRef<typeof import('@vueuse/core')['useThrottle']>
     readonly useThrottleFn: UnwrapRef<typeof import('@vueuse/core')['useThrottleFn']>
     readonly useThrottledRefHistory: UnwrapRef<typeof import('@vueuse/core')['useThrottledRefHistory']>
     readonly useTimeAgo: UnwrapRef<typeof import('@vueuse/core')['useTimeAgo']>
+    readonly useTimelineRealTime: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['useTimelineRealTime']>
     readonly useTimeout: UnwrapRef<typeof import('@vueuse/core')['useTimeout']>
     readonly useTimeoutFn: UnwrapRef<typeof import('@vueuse/core')['useTimeoutFn']>
     readonly useTimeoutPoll: UnwrapRef<typeof import('@vueuse/core')['useTimeoutPoll']>
@@ -1023,6 +784,7 @@ declare module 'vue' {
     readonly useTransition: UnwrapRef<typeof import('@vueuse/core')['useTransition']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
+    readonly useUserPreferences: UnwrapRef<typeof import('./resources/js/composables/useUserPreferences.js')['useUserPreferences']>
     readonly useVModel: UnwrapRef<typeof import('@vueuse/core')['useVModel']>
     readonly useVModels: UnwrapRef<typeof import('@vueuse/core')['useVModels']>
     readonly useVibrate: UnwrapRef<typeof import('@vueuse/core')['useVibrate']>
@@ -1035,7 +797,6 @@ declare module 'vue' {
     readonly useWindowFocus: UnwrapRef<typeof import('@vueuse/core')['useWindowFocus']>
     readonly useWindowScroll: UnwrapRef<typeof import('@vueuse/core')['useWindowScroll']>
     readonly useWindowSize: UnwrapRef<typeof import('@vueuse/core')['useWindowSize']>
-    readonly valueUpdater: UnwrapRef<typeof import('./resources/js/components/ui/table/utils')['valueUpdater']>
     readonly watch: UnwrapRef<typeof import('vue')['watch']>
     readonly watchArray: UnwrapRef<typeof import('@vueuse/core')['watchArray']>
     readonly watchAtMost: UnwrapRef<typeof import('@vueuse/core')['watchAtMost']>
@@ -1052,5 +813,6 @@ declare module 'vue' {
     readonly watchTriggerable: UnwrapRef<typeof import('@vueuse/core')['watchTriggerable']>
     readonly watchWithFilter: UnwrapRef<typeof import('@vueuse/core')['watchWithFilter']>
     readonly whenever: UnwrapRef<typeof import('@vueuse/core')['whenever']>
+    readonly zIndex: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['default']>
   }
 }

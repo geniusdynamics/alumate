@@ -70,7 +70,7 @@ class JobMatchScore extends Model
     public function getMatchLevel(): string
     {
         $score = $this->score;
-        
+
         if ($score >= 80) {
             return 'High';
         } elseif ($score >= 60) {
@@ -106,17 +106,17 @@ class JobMatchScore extends Model
      */
     public function getTopReasons(int $limit = 3): array
     {
-        if (!$this->reasons) {
+        if (! $this->reasons) {
             return [];
         }
 
         // Sort reasons by importance/score and return top ones
         $reasons = collect($this->reasons);
-        
+
         return $reasons->sortByDesc('score')
-                      ->take($limit)
-                      ->pluck('reason')
-                      ->toArray();
+            ->take($limit)
+            ->pluck('reason')
+            ->toArray();
     }
 
     /**

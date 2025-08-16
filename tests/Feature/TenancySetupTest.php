@@ -5,12 +5,11 @@ namespace Tests\Feature;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
-use Stancl\Tenancy\Tenancy;
 use Tests\TestCase;
 
 class TenancySetupTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

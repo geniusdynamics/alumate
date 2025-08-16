@@ -25,10 +25,10 @@ return new class extends Migration
             $table->text('cancellation_reason')->nullable();
             $table->datetime('cancelled_at')->nullable();
             $table->timestamps();
-            
+
             // Unique constraint to prevent duplicate registrations
             $table->unique(['event_id', 'user_id']);
-            
+
             // Indexes
             $table->index(['event_id', 'status']);
             $table->index(['user_id', 'status']);

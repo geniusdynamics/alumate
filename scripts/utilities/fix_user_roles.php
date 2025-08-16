@@ -38,7 +38,7 @@ try {
 
     // Create the correct roles with proper names
     echo "\n🎭 Creating roles...\n";
-    
+
     $superAdminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'super-admin']);
     $institutionAdminRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'institution-admin']);
     $employerRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'employer']);
@@ -51,7 +51,7 @@ try {
 
     // Assign permissions to roles
     echo "\n🔐 Assigning permissions to roles...\n";
-    
+
     $superAdminRole->syncPermissions([
         'access super-admin dashboard',
         'manage institutions',
@@ -132,13 +132,13 @@ try {
     // Verify the fix
     echo "🔍 Verification:\n";
     echo "----------------\n";
-    
+
     $superAdmin = \App\Models\User::where('email', 'admin@system.com')->first();
     if ($superAdmin) {
         echo "Super Admin (admin@system.com):\n";
-        echo "  Has super-admin role: " . ($superAdmin->hasRole('super-admin') ? '✅ Yes' : '❌ No') . "\n";
-        echo "  Can access dashboard: " . ($superAdmin->can('access super-admin dashboard') ? '✅ Yes' : '❌ No') . "\n";
-        echo "  Permissions count: " . $superAdmin->getAllPermissions()->count() . "\n\n";
+        echo '  Has super-admin role: '.($superAdmin->hasRole('super-admin') ? '✅ Yes' : '❌ No')."\n";
+        echo '  Can access dashboard: '.($superAdmin->can('access super-admin dashboard') ? '✅ Yes' : '❌ No')."\n";
+        echo '  Permissions count: '.$superAdmin->getAllPermissions()->count()."\n\n";
     }
 
     echo "🎯 Test the fix:\n";
@@ -147,6 +147,6 @@ try {
     echo "3. Should work without 403 error!\n";
 
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo 'File: '.$e->getFile().':'.$e->getLine()."\n";
 }

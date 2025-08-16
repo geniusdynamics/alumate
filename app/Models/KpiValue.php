@@ -46,13 +46,13 @@ class KpiValue extends Model
     public function getFormattedValue()
     {
         $kpi = $this->kpiDefinition;
-        
-        return match($kpi->calculation_method) {
-            'percentage' => number_format((float)$this->value, 1) . '%',
-            'count' => number_format((float)$this->value, 0),
-            'average' => number_format((float)$this->value, 2),
-            'ratio' => number_format((float)$this->value, 3) . ':1',
-            default => number_format((float)$this->value, 2),
+
+        return match ($kpi->calculation_method) {
+            'percentage' => number_format((float) $this->value, 1).'%',
+            'count' => number_format((float) $this->value, 0),
+            'average' => number_format((float) $this->value, 2),
+            'ratio' => number_format((float) $this->value, 3).':1',
+            default => number_format((float) $this->value, 2),
         };
     }
 
@@ -63,7 +63,7 @@ class KpiValue extends Model
 
     public function hasBreakdown()
     {
-        return !empty($this->breakdown);
+        return ! empty($this->breakdown);
     }
 
     public function getMetadataValue($key, $default = null)
@@ -78,7 +78,7 @@ class KpiValue extends Model
                 ->where('measurement_date', '<', $this->measurement_date)
                 ->orderBy('measurement_date', 'desc')
                 ->first();
-            
+
             $previousValue = $previous?->value;
         }
 
@@ -102,7 +102,7 @@ class KpiValue extends Model
                 ->where('measurement_date', '<', $this->measurement_date)
                 ->orderBy('measurement_date', 'desc')
                 ->first();
-            
+
             $previousValue = $previous?->value;
         }
 
@@ -120,7 +120,7 @@ class KpiValue extends Model
 
         // For minimum targets, up is good
         // For maximum targets, down is good
-        return match($kpi->target_type) {
+        return match ($kpi->target_type) {
             'minimum' => $direction === 'up',
             'maximum' => $direction === 'down',
             default => $direction === 'up',

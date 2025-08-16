@@ -19,7 +19,7 @@ class ReunionMemoryFactory extends Factory
     public function definition(): array
     {
         $type = $this->faker->randomElement(['story', 'achievement', 'memory', 'tribute', 'update']);
-        
+
         return [
             'event_id' => Event::factory(),
             'submitted_by' => User::factory(),
@@ -95,11 +95,11 @@ class ReunionMemoryFactory extends Factory
     private function getContent(string $type): string
     {
         return match ($type) {
-            'story' => $this->faker->paragraphs(3, true) . ' Those were the days!',
-            'achievement' => 'I\'m excited to share this milestone with all of you. ' . $this->faker->paragraphs(2, true),
-            'memory' => 'Looking back on our time together, ' . $this->faker->paragraphs(2, true) . ' I miss those days!',
-            'tribute' => 'I wanted to take a moment to remember ' . $this->faker->paragraphs(2, true) . ' They will be deeply missed.',
-            'update' => 'Hey everyone! Here\'s what\'s been happening in my life: ' . $this->faker->paragraphs(2, true),
+            'story' => $this->faker->paragraphs(3, true).' Those were the days!',
+            'achievement' => 'I\'m excited to share this milestone with all of you. '.$this->faker->paragraphs(2, true),
+            'memory' => 'Looking back on our time together, '.$this->faker->paragraphs(2, true).' I miss those days!',
+            'tribute' => 'I wanted to take a moment to remember '.$this->faker->paragraphs(2, true).' They will be deeply missed.',
+            'update' => 'Hey everyone! Here\'s what\'s been happening in my life: '.$this->faker->paragraphs(2, true),
             default => $this->faker->paragraphs(2, true),
         };
     }

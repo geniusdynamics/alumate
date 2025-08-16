@@ -38,7 +38,7 @@ class EventCheckIn extends Model
     // Helper methods
     public function getCheckInMethodLabel(): string
     {
-        return match($this->check_in_method) {
+        return match ($this->check_in_method) {
             'manual' => 'Manual Check-in',
             'qr_code' => 'QR Code Scan',
             'nfc' => 'NFC Tap',

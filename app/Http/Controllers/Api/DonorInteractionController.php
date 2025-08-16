@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DonorInteraction;
 use App\Models\DonorProfile;
 use App\Services\DonorCrmService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class DonorInteractionController extends Controller
@@ -80,14 +80,14 @@ class DonorInteractionController extends Controller
 
         return response()->json([
             'data' => $interaction->load(['donorProfile.user', 'user']),
-            'message' => 'Interaction logged successfully'
+            'message' => 'Interaction logged successfully',
         ], 201);
     }
 
     public function show(DonorInteraction $donorInteraction): JsonResponse
     {
         return response()->json([
-            'data' => $donorInteraction->load(['donorProfile.user', 'user'])
+            'data' => $donorInteraction->load(['donorProfile.user', 'user']),
         ]);
     }
 
@@ -120,7 +120,7 @@ class DonorInteractionController extends Controller
 
         return response()->json([
             'data' => $donorInteraction->fresh(['donorProfile.user', 'user']),
-            'message' => 'Interaction updated successfully'
+            'message' => 'Interaction updated successfully',
         ]);
     }
 
@@ -129,7 +129,7 @@ class DonorInteractionController extends Controller
         $donorInteraction->delete();
 
         return response()->json([
-            'message' => 'Interaction deleted successfully'
+            'message' => 'Interaction deleted successfully',
         ]);
     }
 
@@ -141,7 +141,7 @@ class DonorInteractionController extends Controller
             ->get();
 
         return response()->json([
-            'data' => $interactions
+            'data' => $interactions,
         ]);
     }
 }

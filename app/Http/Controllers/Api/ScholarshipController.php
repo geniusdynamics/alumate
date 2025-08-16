@@ -64,7 +64,7 @@ class ScholarshipController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create scholarship: ' . $e->getMessage(),
+                'message' => 'Failed to create scholarship: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -79,7 +79,7 @@ class ScholarshipController extends Controller
             },
             'recipients' => function ($query) {
                 $query->with('recipient')->latest();
-            }
+            },
         ]);
 
         return response()->json([
@@ -126,7 +126,7 @@ class ScholarshipController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update scholarship: ' . $e->getMessage(),
+                'message' => 'Failed to update scholarship: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -143,7 +143,7 @@ class ScholarshipController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete scholarship: ' . $e->getMessage(),
+                'message' => 'Failed to delete scholarship: '.$e->getMessage(),
             ], 500);
         }
     }

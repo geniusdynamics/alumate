@@ -39,7 +39,7 @@ class MentorProfile extends Model
     public function activeMentorships(): HasMany
     {
         return $this->hasMany(MentorshipRequest::class, 'mentor_id', 'user_id')
-                    ->where('status', 'accepted');
+            ->where('status', 'accepted');
     }
 
     public function scopeActive($query)
@@ -50,9 +50,9 @@ class MentorProfile extends Model
     public function scopeAvailable($query)
     {
         return $query->where('is_active', true)
-                    ->whereHas('user', function ($q) {
-                        $q->whereRaw('(SELECT COUNT(*) FROM mentorship_requests WHERE mentor_id = users.id AND status = "accepted") < mentor_profiles.max_mentees');
-                    });
+            ->whereHas('user', function ($q) {
+                $q->whereRaw('(SELECT COUNT(*) FROM mentorship_requests WHERE mentor_id = users.id AND status = "accepted") < mentor_profiles.max_mentees');
+            });
     }
 
     public function getCurrentMenteeCount(): int
@@ -67,11 +67,11 @@ class MentorProfile extends Model
 
     public function getAvailabilityStatusAttribute(): string
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 'inactive';
         }
 
-        if (!$this->hasAvailableSlots()) {
+        if (! $this->hasAvailableSlots()) {
             return 'full';
         }
 

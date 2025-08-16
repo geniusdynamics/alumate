@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\CustomReport;
 use App\Models\KpiDefinition;
 use App\Models\PredictionModel;
-use App\Models\CustomReport;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -30,13 +30,13 @@ class AnalyticsSeeder extends Seeder
                     'numerator' => [
                         'model' => 'App\\Models\\Graduate',
                         'filters' => [
-                            ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed']
-                        ]
+                            ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed'],
+                        ],
                     ],
                     'denominator' => [
                         'model' => 'App\\Models\\Graduate',
-                        'filters' => []
-                    ]
+                        'filters' => [],
+                    ],
                 ],
                 'target_type' => 'minimum',
                 'target_value' => 80.0,
@@ -52,13 +52,13 @@ class AnalyticsSeeder extends Seeder
                     'numerator' => [
                         'model' => 'App\\Models\\JobApplication',
                         'filters' => [
-                            ['field' => 'status', 'operator' => '=', 'value' => 'hired']
-                        ]
+                            ['field' => 'status', 'operator' => '=', 'value' => 'hired'],
+                        ],
                     ],
                     'denominator' => [
                         'model' => 'App\\Models\\JobApplication',
-                        'filters' => []
-                    ]
+                        'filters' => [],
+                    ],
                 ],
                 'target_type' => 'minimum',
                 'target_value' => 25.0,
@@ -75,9 +75,9 @@ class AnalyticsSeeder extends Seeder
                         'model' => 'App\\Models\\Graduate',
                         'field' => 'days_to_employment',
                         'filters' => [
-                            ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed']
-                        ]
-                    ]
+                            ['field' => 'employment_status->status', 'operator' => '=', 'value' => 'employed'],
+                        ],
+                    ],
                 ],
                 'target_type' => 'maximum',
                 'target_value' => 90.0,
@@ -93,13 +93,13 @@ class AnalyticsSeeder extends Seeder
                     'numerator' => [
                         'model' => 'App\\Models\\Graduate',
                         'filters' => [
-                            ['field' => 'graduation_date', 'operator' => '!=', 'value' => null]
-                        ]
+                            ['field' => 'graduation_date', 'operator' => '!=', 'value' => null],
+                        ],
                     ],
                     'denominator' => [
                         'model' => 'App\\Models\\Graduate',
-                        'filters' => []
-                    ]
+                        'filters' => [],
+                    ],
                 ],
                 'target_type' => 'minimum',
                 'target_value' => 85.0,
@@ -115,9 +115,9 @@ class AnalyticsSeeder extends Seeder
                     'query' => [
                         'model' => 'App\\Models\\Job',
                         'filters' => [
-                            ['field' => 'status', 'operator' => '=', 'value' => 'active']
-                        ]
-                    ]
+                            ['field' => 'status', 'operator' => '=', 'value' => 'active'],
+                        ],
+                    ],
                 ],
                 'target_type' => 'minimum',
                 'target_value' => 50.0,
@@ -133,8 +133,8 @@ class AnalyticsSeeder extends Seeder
                     'query' => [
                         'model' => 'App\\Models\\EmployerRating',
                         'field' => 'rating',
-                        'filters' => []
-                    ]
+                        'filters' => [],
+                    ],
                 ],
                 'target_type' => 'minimum',
                 'target_value' => 4.0,
@@ -257,11 +257,11 @@ class AnalyticsSeeder extends Seeder
             $query->where('name', 'super-admin');
         })->first();
 
-        if (!$adminUser) {
+        if (! $adminUser) {
             $adminUser = User::first();
         }
 
-        if (!$adminUser) {
+        if (! $adminUser) {
             return; // No users to create reports for
         }
 

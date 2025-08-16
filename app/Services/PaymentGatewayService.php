@@ -3,10 +3,9 @@
 namespace App\Services;
 
 use App\Models\CampaignDonation;
-use App\Models\PaymentTransaction;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Config;
 use Exception;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 
 class PaymentGatewayService
 {
@@ -21,7 +20,7 @@ class PaymentGatewayService
                 case 'bank_transfer':
                     return $this->processBankTransfer($donation, $paymentData);
                 default:
-                    throw new Exception('Unsupported payment method: ' . $donation->payment_method);
+                    throw new Exception('Unsupported payment method: '.$donation->payment_method);
             }
         } catch (Exception $e) {
             Log::error('Payment processing failed', [
@@ -29,14 +28,14 @@ class PaymentGatewayService
                 'payment_method' => $donation->payment_method,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
 
     public function processRecurringPayment(CampaignDonation $donation): array
     {
-        if (!$donation->is_recurring) {
+        if (! $donation->is_recurring) {
             throw new Exception('Donation is not set up for recurring payments');
         }
 
@@ -47,14 +46,14 @@ class PaymentGatewayService
                 case 'paypal':
                     return $this->processPayPalRecurring($donation);
                 default:
-                    throw new Exception('Recurring payments not supported for: ' . $donation->payment_method);
+                    throw new Exception('Recurring payments not supported for: '.$donation->payment_method);
             }
         } catch (Exception $e) {
             Log::error('Recurring payment processing failed', [
                 'donation_id' => $donation->id,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
@@ -68,22 +67,22 @@ class PaymentGatewayService
                 case 'paypal':
                     return $this->cancelPayPalRecurring($donation);
                 default:
-                    throw new Exception('Recurring cancellation not supported for: ' . $donation->payment_method);
+                    throw new Exception('Recurring cancellation not supported for: '.$donation->payment_method);
             }
         } catch (Exception $e) {
             Log::error('Recurring payment cancellation failed', [
                 'donation_id' => $donation->id,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
 
-    public function refundPayment(CampaignDonation $donation, float $amount = null): array
+    public function refundPayment(CampaignDonation $donation, ?float $amount = null): array
     {
         $refundAmount = $amount ?? $donation->amount;
-        
+
         try {
             switch ($donation->payment_method) {
                 case 'stripe':
@@ -91,7 +90,7 @@ class PaymentGatewayService
                 case 'paypal':
                     return $this->refundPayPalPayment($donation, $refundAmount);
                 default:
-                    throw new Exception('Refunds not supported for: ' . $donation->payment_method);
+                    throw new Exception('Refunds not supported for: '.$donation->payment_method);
             }
         } catch (Exception $e) {
             Log::error('Payment refund failed', [
@@ -99,7 +98,7 @@ class PaymentGatewayService
                 'refund_amount' => $refundAmount,
                 'error' => $e->getMessage(),
             ]);
-            
+
             throw $e;
         }
     }
@@ -152,9 +151,9 @@ class PaymentGatewayService
     {
         // PayPal SDK integration would go here
         // For now, simulate successful payment
-        
-        $paymentId = 'pp_' . uniqid();
-        
+
+        $paymentId = 'pp_'.uniqid();
+
         return [
             'success' => true,
             'payment_id' => $paymentId,
@@ -170,10 +169,10 @@ class PaymentGatewayService
     {
         // Bank transfer would typically be manual verification
         // Mark as pending for manual processing
-        
+
         return [
             'success' => true,
-            'payment_id' => 'bt_' . uniqid(),
+            'payment_id' => 'bt_'.uniqid(),
             'status' => 'pending_verification',
             'payment_data' => [
                 'bank_reference' => $paymentData['reference'] ?? null,
@@ -211,7 +210,7 @@ class PaymentGatewayService
                 'price_data' => [
                     'currency' => strtolower($donation->currency),
                     'product_data' => [
-                        'name' => 'Recurring Donation - ' . $donation->campaign->title,
+                        'name' => 'Recurring Donation - '.$donation->campaign->title,
                     ],
                     'unit_amount' => $donation->amount * 100,
                     'recurring' => [
@@ -238,21 +237,21 @@ class PaymentGatewayService
     private function processStripeRecurring(CampaignDonation $donation): array
     {
         $subscriptionId = $donation->payment_data['stripe_subscription_id'] ?? null;
-        
-        if (!$subscriptionId) {
+
+        if (! $subscriptionId) {
             throw new Exception('No subscription ID found for recurring donation');
         }
 
         try {
             $subscription = \Stripe\Subscription::retrieve($subscriptionId);
-            
+
             return [
                 'success' => true,
                 'subscription_status' => $subscription->status,
                 'next_payment_date' => $subscription->current_period_end,
             ];
         } catch (\Stripe\Exception\ApiErrorException $e) {
-            throw new Exception('Failed to process recurring payment: ' . $e->getMessage());
+            throw new Exception('Failed to process recurring payment: '.$e->getMessage());
         }
     }
 
@@ -268,8 +267,8 @@ class PaymentGatewayService
     private function cancelStripeRecurring(CampaignDonation $donation): bool
     {
         $subscriptionId = $donation->payment_data['stripe_subscription_id'] ?? null;
-        
-        if (!$subscriptionId) {
+
+        if (! $subscriptionId) {
             return false;
         }
 
@@ -277,14 +276,14 @@ class PaymentGatewayService
             \Stripe\Subscription::update($subscriptionId, [
                 'cancel_at_period_end' => true,
             ]);
-            
+
             return true;
         } catch (\Stripe\Exception\ApiErrorException $e) {
             Log::error('Failed to cancel Stripe subscription', [
                 'subscription_id' => $subscriptionId,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return false;
         }
     }
@@ -298,8 +297,8 @@ class PaymentGatewayService
     private function refundStripePayment(CampaignDonation $donation, float $amount): array
     {
         $paymentIntentId = $donation->payment_data['stripe_payment_intent_id'] ?? null;
-        
-        if (!$paymentIntentId) {
+
+        if (! $paymentIntentId) {
             throw new Exception('No Stripe payment intent ID found');
         }
 
@@ -320,7 +319,7 @@ class PaymentGatewayService
                 'status' => $refund->status,
             ];
         } catch (\Stripe\Exception\ApiErrorException $e) {
-            throw new Exception('Stripe refund failed: ' . $e->getMessage());
+            throw new Exception('Stripe refund failed: '.$e->getMessage());
         }
     }
 
@@ -329,7 +328,7 @@ class PaymentGatewayService
         // PayPal refund processing would go here
         return [
             'success' => true,
-            'refund_id' => 'pp_refund_' . uniqid(),
+            'refund_id' => 'pp_refund_'.uniqid(),
             'amount' => $amount,
             'status' => 'completed',
         ];

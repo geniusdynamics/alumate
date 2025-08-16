@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\FundraisingCampaign;
 use App\Models\CampaignDonation;
+use App\Models\FundraisingCampaign;
 use App\Models\RecurringDonation;
 use App\Models\TaxReceipt;
+use App\Models\User;
 use App\Services\DonationProcessingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -16,13 +16,15 @@ class DonationProcessingTest extends TestCase
     use RefreshDatabase;
 
     private DonationProcessingService $donationService;
+
     private User $donor;
+
     private FundraisingCampaign $campaign;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->donationService = app(DonationProcessingService::class);
         $this->donor = User::factory()->create();
         $this->campaign = FundraisingCampaign::factory()->create();
@@ -71,7 +73,7 @@ class DonationProcessingTest extends TestCase
 
         $this->assertTrue($donation->is_recurring);
         $this->assertEquals('monthly', $donation->recurring_frequency);
-        
+
         // Check that recurring donation record was created
         $this->assertDatabaseHas('recurring_donations', [
             'original_donation_id' => $donation->id,
@@ -97,7 +99,7 @@ class DonationProcessingTest extends TestCase
         $this->assertInstanceOf(CampaignDonation::class, $donation);
         $this->assertEquals($recurringDonation->amount, $donation->amount);
         $this->assertEquals('completed', $donation->status);
-        
+
         // Check that recurring donation was updated
         $recurringDonation->refresh();
         $this->assertEquals(1, $recurringDonation->total_payments);
@@ -115,7 +117,7 @@ class DonationProcessingTest extends TestCase
         $success = $this->donationService->cancelRecurringDonation($recurringDonation, 'Test cancellation');
 
         $this->assertTrue($success);
-        
+
         $recurringDonation->refresh();
         $this->assertEquals('cancelled', $recurringDonation->status);
         $this->assertEquals('Test cancellation', $recurringDonation->cancellation_reason);
@@ -146,7 +148,7 @@ class DonationProcessingTest extends TestCase
     public function test_cannot_generate_duplicate_tax_receipt(): void
     {
         $taxYear = now()->year;
-        
+
         // Create existing receipt
         TaxReceipt::factory()->create([
             'donor_id' => $this->donor->id,
@@ -171,7 +173,7 @@ class DonationProcessingTest extends TestCase
         $success = $this->donationService->refundDonation($donation, 50.00, 'Partial refund test');
 
         $this->assertTrue($success);
-        
+
         $donation->refresh();
         $this->assertEquals('partially_refunded', $donation->status);
         $this->assertArrayHasKey('refund_amount', $donation->payment_data);

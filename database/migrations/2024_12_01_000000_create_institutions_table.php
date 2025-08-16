@@ -9,7 +9,7 @@ return new class extends Migration
     public function up()
     {
         // Only create if it doesn't exist
-        if (!Schema::hasTable('institutions')) {
+        if (! Schema::hasTable('institutions')) {
             Schema::create('institutions', function (Blueprint $table) {
                 $table->id();
                 $table->string('name');
@@ -19,7 +19,7 @@ return new class extends Migration
                 $table->text('description')->nullable();
                 $table->boolean('is_active')->default(true);
                 $table->timestamps();
-                
+
                 $table->index('name');
                 $table->index('type');
                 $table->index('is_active');

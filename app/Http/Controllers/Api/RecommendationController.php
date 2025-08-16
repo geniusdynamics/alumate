@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\AlumniRecommendationService;
 use App\Jobs\GenerateRecommendationsJob;
-use Illuminate\Http\Request;
+use App\Services\AlumniRecommendationService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class RecommendationController extends Controller
 {
@@ -27,9 +27,9 @@ class RecommendationController extends Controller
         try {
             $user = $request->user();
             $limit = $request->input('limit', 10);
-            
+
             $recommendations = $this->recommendationService->getRecommendationsForUser($user, $limit);
-            
+
             return response()->json([
                 'data' => $recommendations->map(function ($recommendation) {
                     return [
@@ -63,18 +63,18 @@ class RecommendationController extends Controller
                 'meta' => [
                     'total' => $recommendations->count(),
                     'generated_at' => now()->toISOString(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to get recommendations', [
                 'user_id' => $request->user()->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'error' => 'Failed to load recommendations',
-                'message' => 'Please try again later'
+                'message' => 'Please try again later',
             ], 500);
         }
     }
@@ -86,26 +86,26 @@ class RecommendationController extends Controller
     {
         try {
             $user = $request->user();
-            
+
             $this->recommendationService->dismissRecommendation($user, $userId);
-            
+
             Log::info('Recommendation dismissed', [
                 'user_id' => $user->id,
-                'dismissed_user_id' => $userId
+                'dismissed_user_id' => $userId,
             ]);
-            
+
             return response()->json([
-                'message' => 'Recommendation dismissed successfully'
+                'message' => 'Recommendation dismissed successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to dismiss recommendation', [
                 'user_id' => $request->user()->id,
                 'dismissed_user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return response()->json([
-                'error' => 'Failed to dismiss recommendation'
+                'error' => 'Failed to dismiss recommendation',
             ], 500);
         }
     }
@@ -117,49 +117,49 @@ class RecommendationController extends Controller
     {
         $request->validate([
             'reason' => 'required|string|in:not_relevant,already_know,not_interested,other',
-            'comment' => 'nullable|string|max:500'
+            'comment' => 'nullable|string|max:500',
         ]);
 
         try {
             $user = $request->user();
             $reason = $request->input('reason');
             $comment = $request->input('comment');
-            
+
             // Store feedback for analytics
             $feedbackKey = "recommendation_feedback:user:{$user->id}";
             $feedback = Cache::get($feedbackKey, []);
-            
+
             $feedback[] = [
                 'recommended_user_id' => $userId,
                 'reason' => $reason,
                 'comment' => $comment,
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ];
-            
+
             Cache::put($feedbackKey, $feedback, now()->addDays(90));
-            
+
             // Also dismiss the recommendation
             $this->recommendationService->dismissRecommendation($user, $userId);
-            
+
             Log::info('Recommendation feedback received', [
                 'user_id' => $user->id,
                 'recommended_user_id' => $userId,
                 'reason' => $reason,
-                'has_comment' => !empty($comment)
+                'has_comment' => ! empty($comment),
             ]);
-            
+
             return response()->json([
-                'message' => 'Feedback submitted successfully'
+                'message' => 'Feedback submitted successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to submit recommendation feedback', [
                 'user_id' => $request->user()->id,
                 'recommended_user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return response()->json([
-                'error' => 'Failed to submit feedback'
+                'error' => 'Failed to submit feedback',
             ], 500);
         }
     }
@@ -171,21 +171,21 @@ class RecommendationController extends Controller
     {
         try {
             $user = $request->user();
-            
+
             // Clear existing cache
             $this->recommendationService->clearRecommendationCache($user);
-            
+
             // Dispatch job to generate fresh recommendations
             GenerateRecommendationsJob::dispatch($user->id);
-            
+
             // Get fresh recommendations
             $recommendations = $this->recommendationService->getRecommendationsForUser($user, 10);
-            
+
             Log::info('Recommendations refreshed', [
                 'user_id' => $user->id,
-                'new_count' => $recommendations->count()
+                'new_count' => $recommendations->count(),
             ]);
-            
+
             return response()->json([
                 'data' => $recommendations->map(function ($recommendation) {
                     return [
@@ -219,17 +219,17 @@ class RecommendationController extends Controller
                 'meta' => [
                     'total' => $recommendations->count(),
                     'generated_at' => now()->toISOString(),
-                    'refreshed' => true
-                ]
+                    'refreshed' => true,
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to refresh recommendations', [
                 'user_id' => $request->user()->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return response()->json([
-                'error' => 'Failed to refresh recommendations'
+                'error' => 'Failed to refresh recommendations',
             ], 500);
         }
     }

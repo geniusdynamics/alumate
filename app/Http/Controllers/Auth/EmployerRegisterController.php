@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Employer;
+use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,7 +36,7 @@ class EmployerRegisterController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            
+
             // Company Information
             'company_name' => 'required|string|max:255',
             'company_address' => 'nullable|string|max:500',
@@ -46,15 +46,15 @@ class EmployerRegisterController extends Controller
             'industry' => 'nullable|string|max:100',
             'company_size' => 'nullable|string|in:startup,small,medium,large,enterprise',
             'company_description' => 'nullable|string|max:1000',
-            'established_year' => 'nullable|integer|min:1800|max:' . date('Y'),
+            'established_year' => 'nullable|integer|min:1800|max:'.date('Y'),
             'employee_count' => 'nullable|integer|min:1',
-            
+
             // Contact Person Information
             'contact_person_name' => 'required|string|max:255',
             'contact_person_title' => 'nullable|string|max:100',
             'contact_person_email' => 'nullable|email|max:255',
             'contact_person_phone' => 'nullable|string|max:20',
-            
+
             // Legal Agreements
             'terms_accepted' => 'required|accepted',
             'privacy_policy_accepted' => 'required|accepted',
@@ -96,7 +96,7 @@ class EmployerRegisterController extends Controller
 
         Auth::login($user);
 
-        return to_route('employer.dashboard')->with('message', 
+        return to_route('employer.dashboard')->with('message',
             'Registration successful! Your account is pending verification. You\'ll be able to post jobs once approved.'
         );
     }

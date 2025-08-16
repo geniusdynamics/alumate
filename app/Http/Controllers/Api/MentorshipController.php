@@ -7,8 +7,8 @@ use App\Models\MentorProfile;
 use App\Models\MentorshipRequest;
 use App\Models\MentorshipSession;
 use App\Services\MentorshipService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class MentorshipController extends Controller
@@ -30,7 +30,7 @@ class MentorshipController extends Controller
         try {
             // Check if user already has a mentor profile
             $existingProfile = MentorProfile::where('user_id', $request->user()->id)->first();
-            
+
             if ($existingProfile) {
                 $profile = $this->mentorshipService->updateMentorProfile(
                     $existingProfile,
@@ -45,12 +45,12 @@ class MentorshipController extends Controller
 
             return response()->json([
                 'message' => 'Mentor profile created successfully',
-                'profile' => $profile->load('user')
+                'profile' => $profile->load('user'),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to create mentor profile',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 400);
         }
     }
@@ -73,7 +73,7 @@ class MentorshipController extends Controller
         )->take($limit);
 
         return response()->json([
-            'mentors' => $mentors->load(['user.educations', 'user.careerTimelines'])
+            'mentors' => $mentors->load(['user.educations', 'user.careerTimelines']),
         ]);
     }
 
@@ -95,12 +95,12 @@ class MentorshipController extends Controller
 
             return response()->json([
                 'message' => 'Mentorship request sent successfully',
-                'request' => $mentorshipRequest->load(['mentor', 'mentee'])
+                'request' => $mentorshipRequest->load(['mentor', 'mentee']),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to send mentorship request',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 400);
         }
     }
@@ -112,13 +112,13 @@ class MentorshipController extends Controller
         // Ensure the current user is the mentor
         if ($mentorshipRequest->mentor_id !== $request->user()->id) {
             return response()->json([
-                'message' => 'Unauthorized to accept this request'
+                'message' => 'Unauthorized to accept this request',
             ], 403);
         }
 
         if ($mentorshipRequest->status !== 'pending') {
             return response()->json([
-                'message' => 'Request has already been processed'
+                'message' => 'Request has already been processed',
             ], 400);
         }
 
@@ -127,12 +127,12 @@ class MentorshipController extends Controller
 
             return response()->json([
                 'message' => 'Mentorship request accepted successfully',
-                'request' => $acceptedRequest->load(['mentor', 'mentee'])
+                'request' => $acceptedRequest->load(['mentor', 'mentee']),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to accept mentorship request',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 400);
         }
     }
@@ -144,20 +144,20 @@ class MentorshipController extends Controller
         // Ensure the current user is the mentor
         if ($mentorshipRequest->mentor_id !== $request->user()->id) {
             return response()->json([
-                'message' => 'Unauthorized to decline this request'
+                'message' => 'Unauthorized to decline this request',
             ], 403);
         }
 
         if ($mentorshipRequest->status !== 'pending') {
             return response()->json([
-                'message' => 'Request has already been processed'
+                'message' => 'Request has already been processed',
             ], 400);
         }
 
         $mentorshipRequest->decline();
 
         return response()->json([
-            'message' => 'Mentorship request declined'
+            'message' => 'Mentorship request declined',
         ]);
     }
 
@@ -173,9 +173,9 @@ class MentorshipController extends Controller
         $mentorship = MentorshipRequest::findOrFail($request->mentorship_id);
 
         // Ensure the current user is either mentor or mentee
-        if (!in_array($request->user()->id, [$mentorship->mentor_id, $mentorship->mentee_id])) {
+        if (! in_array($request->user()->id, [$mentorship->mentor_id, $mentorship->mentee_id])) {
             return response()->json([
-                'message' => 'Unauthorized to schedule session for this mentorship'
+                'message' => 'Unauthorized to schedule session for this mentorship',
             ], 403);
         }
 
@@ -187,12 +187,12 @@ class MentorshipController extends Controller
 
             return response()->json([
                 'message' => 'Session scheduled successfully',
-                'session' => $session->load('mentorship.mentor', 'mentorship.mentee')
+                'session' => $session->load('mentorship.mentor', 'mentorship.mentee'),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to schedule session',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 400);
         }
     }
@@ -213,7 +213,7 @@ class MentorshipController extends Controller
 
         return response()->json([
             'as_mentor' => $asMentor,
-            'as_mentee' => $asMentee
+            'as_mentee' => $asMentee,
         ]);
     }
 
@@ -222,7 +222,7 @@ class MentorshipController extends Controller
         $sessions = $this->mentorshipService->getUpcomingSessions($request->user());
 
         return response()->json([
-            'sessions' => $sessions
+            'sessions' => $sessions,
         ]);
     }
 
@@ -238,15 +238,15 @@ class MentorshipController extends Controller
         $mentorship = $session->mentorship;
 
         // Ensure the current user is either mentor or mentee
-        if (!in_array($request->user()->id, [$mentorship->mentor_id, $mentorship->mentee_id])) {
+        if (! in_array($request->user()->id, [$mentorship->mentor_id, $mentorship->mentee_id])) {
             return response()->json([
-                'message' => 'Unauthorized to complete this session'
+                'message' => 'Unauthorized to complete this session',
             ], 403);
         }
 
-        if (!$session->canBeCompleted()) {
+        if (! $session->canBeCompleted()) {
             return response()->json([
-                'message' => 'Session cannot be completed at this time'
+                'message' => 'Session cannot be completed at this time',
             ], 400);
         }
 
@@ -256,7 +256,7 @@ class MentorshipController extends Controller
             $feedback[$userType] = [
                 'rating' => $request->rating,
                 'feedback' => $request->feedback,
-                'submitted_at' => now()->toISOString()
+                'submitted_at' => now()->toISOString(),
             ];
         }
 
@@ -268,7 +268,7 @@ class MentorshipController extends Controller
 
         return response()->json([
             'message' => 'Session completed successfully',
-            'session' => $session->fresh()
+            'session' => $session->fresh(),
         ]);
     }
 
@@ -277,7 +277,7 @@ class MentorshipController extends Controller
         $analytics = $this->mentorshipService->getMentorshipAnalytics($request->user()->id);
 
         return response()->json([
-            'analytics' => $analytics
+            'analytics' => $analytics,
         ]);
     }
 
@@ -287,14 +287,14 @@ class MentorshipController extends Controller
             ->with('user')
             ->first();
 
-        if (!$profile) {
+        if (! $profile) {
             return response()->json([
-                'message' => 'Mentor profile not found'
+                'message' => 'Mentor profile not found',
             ], 404);
         }
 
         return response()->json([
-            'profile' => $profile
+            'profile' => $profile,
         ]);
     }
 
@@ -311,9 +311,9 @@ class MentorshipController extends Controller
 
         $profile = MentorProfile::where('user_id', $request->user()->id)->first();
 
-        if (!$profile) {
+        if (! $profile) {
             return response()->json([
-                'message' => 'Mentor profile not found'
+                'message' => 'Mentor profile not found',
             ], 404);
         }
 
@@ -325,12 +325,12 @@ class MentorshipController extends Controller
 
             return response()->json([
                 'message' => 'Mentor profile updated successfully',
-                'profile' => $updatedProfile->load('user')
+                'profile' => $updatedProfile->load('user'),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to update mentor profile',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 400);
         }
     }

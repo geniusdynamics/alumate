@@ -16,11 +16,11 @@ class PostEngagement extends Model
         'post_id',
         'user_id',
         'type',
-        'metadata',
+        'data',
     ];
 
     protected $casts = [
-        'metadata' => 'array',
+        'data' => 'array',
         'created_at' => 'datetime',
     ];
 

@@ -31,8 +31,8 @@ class Circle extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'circle_memberships')
-                    ->withPivot('joined_at', 'status')
-                    ->withTimestamps();
+            ->withPivot('joined_at', 'status')
+            ->withTimestamps();
     }
 
     /**
@@ -66,7 +66,7 @@ class Circle extends Model
         ]);
 
         $this->updateMemberCount();
-        
+
         return true;
     }
 
@@ -76,12 +76,13 @@ class Circle extends Model
     public function removeMember(User $user): bool
     {
         $detached = $this->users()->detach($user->id);
-        
+
         if ($detached) {
             $this->updateMemberCount();
+
             return true;
         }
-        
+
         return false;
     }
 
@@ -100,14 +101,14 @@ class Circle extends Model
     public function getPostsForUser(User $user)
     {
         // Check if user is a member of this circle
-        if (!$this->users()->where('user_id', $user->id)->wherePivot('status', 'active')->exists()) {
+        if (! $this->users()->where('user_id', $user->id)->wherePivot('status', 'active')->exists()) {
             return collect(); // Return empty collection if user is not a member
         }
 
         return Post::whereJsonContains('circle_ids', $this->id)
-                   ->with(['user', 'engagements'])
-                   ->orderBy('created_at', 'desc')
-                   ->get();
+            ->with(['user', 'engagements'])
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     /**
@@ -140,6 +141,7 @@ class Circle extends Model
 
             case 'multi_school':
                 $institutionNames = $criteria['institution_names'] ?? [];
+
                 return $user->educations()
                     ->whereIn('institution_name', $institutionNames)
                     ->count() >= 2; // Must have attended at least 2 of the schools

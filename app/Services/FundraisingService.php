@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\FundraisingCampaign;
 use App\Models\CampaignDonation;
 use App\Models\CampaignUpdate;
+use App\Models\FundraisingCampaign;
 use App\Models\PeerFundraiser;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class FundraisingService
 {
@@ -23,7 +23,7 @@ class FundraisingService
             ]);
 
             // Create initial update if story is provided
-            if (!empty($data['story'])) {
+            if (! empty($data['story'])) {
                 $this->createUpdate($campaign, $creator, [
                     'title' => 'Campaign Launch',
                     'content' => $data['story'],
@@ -38,6 +38,7 @@ class FundraisingService
     public function updateCampaign(FundraisingCampaign $campaign, array $data): FundraisingCampaign
     {
         $campaign->update($data);
+
         return $campaign->fresh();
     }
 
@@ -69,7 +70,7 @@ class FundraisingService
 
     public function createPeerFundraiser(FundraisingCampaign $campaign, User $user, array $data): PeerFundraiser
     {
-        if (!$campaign->allow_peer_fundraising) {
+        if (! $campaign->allow_peer_fundraising) {
             throw new \Exception('Peer fundraising is not allowed for this campaign.');
         }
 

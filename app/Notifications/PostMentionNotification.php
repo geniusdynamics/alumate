@@ -2,13 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\User;
-use App\Models\Comment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PostMentionNotification extends Notification implements ShouldQueue
@@ -16,7 +16,9 @@ class PostMentionNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected Post $post;
+
     protected Comment $comment;
+
     protected User $mentioner;
 
     public function __construct(Post $post, Comment $comment, User $mentioner)
@@ -49,7 +51,7 @@ class PostMentionNotification extends Notification implements ShouldQueue
             'mentioner_avatar' => $this->mentioner->avatar_url,
             'comment_content' => substr($this->comment->content, 0, 100),
             'post_content' => substr($this->post->content, 0, 100),
-            'created_at' => now()->toISOString()
+            'created_at' => now()->toISOString(),
         ];
     }
 
@@ -78,8 +80,8 @@ class PostMentionNotification extends Notification implements ShouldQueue
             ->subject("{$this->mentioner->name} mentioned you in a comment")
             ->greeting("Hi {$notifiable->name}!")
             ->line("{$this->mentioner->name} mentioned you in a comment on this post:")
-            ->line('"' . substr($this->post->content, 0, 100) . '"')
-            ->line('Comment: "' . substr($this->comment->content, 0, 100) . '"')
+            ->line('"'.substr($this->post->content, 0, 100).'"')
+            ->line('Comment: "'.substr($this->comment->content, 0, 100).'"')
             ->action('View Post', url("/posts/{$this->post->id}"))
             ->line('Thank you for being part of our alumni community!');
     }

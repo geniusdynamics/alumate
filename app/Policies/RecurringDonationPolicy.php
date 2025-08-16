@@ -14,7 +14,7 @@ class RecurringDonationPolicy
 
     public function view(User $user, RecurringDonation $recurringDonation): bool
     {
-        return $user->hasRole(['admin', 'fundraising_manager']) || 
+        return $user->hasRole(['admin', 'fundraising_manager']) ||
                $user->id === $recurringDonation->donor_id;
     }
 
@@ -25,13 +25,13 @@ class RecurringDonationPolicy
 
     public function update(User $user, RecurringDonation $recurringDonation): bool
     {
-        return $user->hasRole(['admin', 'fundraising_manager']) || 
+        return $user->hasRole(['admin', 'fundraising_manager']) ||
                $user->id === $recurringDonation->donor_id;
     }
 
     public function delete(User $user, RecurringDonation $recurringDonation): bool
     {
-        return $user->hasRole(['admin', 'fundraising_manager']) || 
+        return $user->hasRole(['admin', 'fundraising_manager']) ||
                $user->id === $recurringDonation->donor_id;
     }
 }

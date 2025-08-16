@@ -113,7 +113,7 @@ class EventConnectionRecommendation extends Model
 
     public function getMatchLevel(): string
     {
-        return match(true) {
+        return match (true) {
             $this->match_score >= 90 => 'Excellent',
             $this->match_score >= 80 => 'Very Good',
             $this->match_score >= 70 => 'Good',
@@ -125,18 +125,21 @@ class EventConnectionRecommendation extends Model
     public function getMatchReasonsSummary(): string
     {
         $reasons = $this->match_reasons ?? [];
+
         return implode(', ', array_slice($reasons, 0, 3));
     }
 
     public function hasSharedAttribute(string $attribute): bool
     {
         $attributes = $this->shared_attributes ?? [];
-        return isset($attributes[$attribute]) && !empty($attributes[$attribute]);
+
+        return isset($attributes[$attribute]) && ! empty($attributes[$attribute]);
     }
 
     public function getSharedAttributeValue(string $attribute): mixed
     {
         $attributes = $this->shared_attributes ?? [];
+
         return $attributes[$attribute] ?? null;
     }
 

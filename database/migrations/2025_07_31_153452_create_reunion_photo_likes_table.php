@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('reunion_photo_id')->constrained('reunion_photos')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            
+
             // Ensure one like per user per photo
             $table->unique(['reunion_photo_id', 'user_id']);
             $table->index(['user_id', 'created_at']);

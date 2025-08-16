@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class FailedLoginAttempt extends Model
 {
@@ -38,7 +37,7 @@ class FailedLoginAttempt extends Model
     public function scopeBlocked($query)
     {
         return $query->whereNotNull('blocked_until')
-                    ->where('blocked_until', '>', now());
+            ->where('blocked_until', '>', now());
     }
 
     public function scopeRecent($query, $minutes = 60)
@@ -50,8 +49,8 @@ class FailedLoginAttempt extends Model
     public static function recordAttempt($email, $ip, $userAgent = null)
     {
         $attempt = self::where('email', $email)
-                      ->where('ip_address', $ip)
-                      ->first();
+            ->where('ip_address', $ip)
+            ->first();
 
         if ($attempt) {
             $attempt->increment('attempts');
@@ -82,16 +81,16 @@ class FailedLoginAttempt extends Model
     public static function clearAttempts($email, $ip)
     {
         return self::where('email', $email)
-                  ->where('ip_address', $ip)
-                  ->delete();
+            ->where('ip_address', $ip)
+            ->delete();
     }
 
     public static function isBlocked($email, $ip)
     {
         return self::where('email', $email)
-                  ->where('ip_address', $ip)
-                  ->blocked()
-                  ->exists();
+            ->where('ip_address', $ip)
+            ->blocked()
+            ->exists();
     }
 
     public function isCurrentlyBlocked()
@@ -101,7 +100,7 @@ class FailedLoginAttempt extends Model
 
     public function getTimeUntilUnblocked()
     {
-        if (!$this->isCurrentlyBlocked()) {
+        if (! $this->isCurrentlyBlocked()) {
             return null;
         }
 

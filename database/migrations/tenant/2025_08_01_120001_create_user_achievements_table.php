@@ -23,7 +23,7 @@ return new class extends Migration
 
             // Unique constraint to prevent duplicate achievements
             $table->unique(['user_id', 'achievement_id']);
-            
+
             // Indexes
             $table->index(['user_id', 'earned_at']);
             $table->index(['user_id', 'is_featured']);

@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class RecurringDonation extends Model
 {
@@ -72,7 +72,7 @@ class RecurringDonation extends Model
     public function scopeDueForPayment($query)
     {
         return $query->where('status', 'active')
-                    ->where('next_payment_date', '<=', now()->toDateString());
+            ->where('next_payment_date', '<=', now()->toDateString());
     }
 
     public function scopeByFrequency($query, string $frequency)
@@ -82,8 +82,8 @@ class RecurringDonation extends Model
 
     public function calculateNextPaymentDate(): Carbon
     {
-        $lastDate = $this->last_payment_date ? 
-            Carbon::parse($this->last_payment_date) : 
+        $lastDate = $this->last_payment_date ?
+            Carbon::parse($this->last_payment_date) :
             Carbon::parse($this->started_at);
 
         return match ($this->frequency) {
@@ -123,7 +123,7 @@ class RecurringDonation extends Model
         }
     }
 
-    public function cancel(string $reason = null): void
+    public function cancel(?string $reason = null): void
     {
         $this->update([
             'status' => 'cancelled',

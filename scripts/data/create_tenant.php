@@ -17,12 +17,12 @@ try {
         'data' => [
             'name' => 'Test University',
             'domain' => 'test-university.localhost',
-        ]
+        ],
     ]);
 
     // Create the domain
     $tenant->domains()->create([
-        'domain' => 'test-university.localhost'
+        'domain' => 'test-university.localhost',
     ]);
 
     echo "✓ Created tenant: test-university\n";
@@ -30,6 +30,6 @@ try {
     echo "\nYou can now run the sample data script within this tenant context.\n";
 
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo "Stack trace: " . $e->getTraceAsString() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo 'Stack trace: '.$e->getTraceAsString()."\n";
 }

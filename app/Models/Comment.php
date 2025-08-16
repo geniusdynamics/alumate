@@ -18,16 +18,16 @@ class Comment extends Model
         'parent_id',
         'content',
         'mentions',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
         'mentions' => 'array',
-        'metadata' => 'array'
+        'metadata' => 'array',
     ];
 
     protected $dates = [
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -83,7 +83,7 @@ class Comment extends Model
      */
     public function isReply(): bool
     {
-        return !is_null($this->parent_id);
+        return ! is_null($this->parent_id);
     }
 
     /**
@@ -93,12 +93,12 @@ class Comment extends Model
     {
         $depth = 0;
         $parent = $this->parent;
-        
+
         while ($parent) {
             $depth++;
             $parent = $parent->parent;
         }
-        
+
         return $depth;
     }
 
@@ -108,6 +108,7 @@ class Comment extends Model
     public function parseMentions(): array
     {
         preg_match_all('/@(\w+)/', $this->content, $matches);
+
         return $matches[1] ?? [];
     }
 

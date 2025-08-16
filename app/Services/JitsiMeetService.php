@@ -4,12 +4,11 @@ namespace App\Services;
 
 use App\Models\Event;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class JitsiMeetService
 {
     private string $jitsiDomain;
+
     private array $defaultConfig;
 
     public function __construct()
@@ -24,10 +23,10 @@ class JitsiMeetService
     public function createMeeting(int $eventId, string $eventTitle): array
     {
         $event = Event::findOrFail($eventId);
-        
+
         // Generate unique room ID
         $roomId = $this->generateRoomId($event, $eventTitle);
-        
+
         // Set up default Jitsi configuration
         $config = array_merge($this->defaultConfig, [
             'roomName' => $roomId,
@@ -97,7 +96,7 @@ class JitsiMeetService
         $width = $options['width'] ?? '100%';
         $height = $options['height'] ?? '600px';
         $allowFullscreen = $options['allowFullscreen'] ?? true;
-        
+
         $allowAttributes = [
             'camera',
             'microphone',
@@ -125,7 +124,7 @@ class JitsiMeetService
     public function validateMeetingUrl(string $url): array
     {
         $url = trim($url);
-        
+
         // Zoom validation
         if (preg_match('/zoom\.us\/j\/(\d+)/', $url, $matches)) {
             return [
@@ -195,8 +194,8 @@ class JitsiMeetService
     public function extractMeetingDetails(string $url): array
     {
         $validation = $this->validateMeetingUrl($url);
-        
-        if (!$validation['valid']) {
+
+        if (! $validation['valid']) {
             return $validation;
         }
 
@@ -211,11 +210,11 @@ class JitsiMeetService
                 $details['meeting_id'] = $validation['meeting_id'];
                 $details['dial_in'] = $this->getZoomDialInNumbers();
                 break;
-                
+
             case 'google_meet':
                 $details['meeting_code'] = $validation['meeting_code'];
                 break;
-                
+
             case 'jitsi':
                 $details['room_id'] = $validation['room_id'];
                 $details['embed_allowed'] = true;
@@ -232,6 +231,7 @@ class JitsiMeetService
     {
         $slug = Str::slug($eventTitle, '-');
         $timestamp = now()->format('Ymd');
+
         return "alumni-{$event->id}-{$slug}-{$timestamp}";
     }
 
@@ -249,7 +249,7 @@ class JitsiMeetService
     private function getEmbedUrl(string $roomId, array $config = []): string
     {
         $params = [];
-        
+
         foreach ($config as $key => $value) {
             if (is_bool($value)) {
                 $params["config.{$key}"] = $value ? 'true' : 'false';
@@ -259,7 +259,8 @@ class JitsiMeetService
         }
 
         $queryString = http_build_query($params);
-        return "https://{$this->jitsiDomain}/{$roomId}" . ($queryString ? "?{$queryString}" : '');
+
+        return "https://{$this->jitsiDomain}/{$roomId}".($queryString ? "?{$queryString}" : '');
     }
 
     /**
@@ -268,15 +269,15 @@ class JitsiMeetService
     private function getToolbarButtons(Event $event): array
     {
         $buttons = ['microphone', 'camera', 'desktop', 'fullscreen', 'fodeviceselection', 'hangup', 'profile', 'settings'];
-        
+
         if ($event->chat_enabled ?? true) {
             $buttons[] = 'chat';
         }
-        
+
         if ($event->recording_enabled ?? false) {
             $buttons[] = 'recording';
         }
-        
+
         if ($event->screen_sharing_enabled ?? true) {
             $buttons[] = 'desktop';
         }
@@ -293,11 +294,11 @@ class JitsiMeetService
         $instructions .= "1. Click the meeting link or join button\n";
         $instructions .= "2. Allow camera and microphone access when prompted\n";
         $instructions .= "3. Enter your name when joining\n";
-        
+
         if ($event->waiting_room_enabled) {
             $instructions .= "4. Wait for the host to admit you to the meeting\n";
         }
-        
+
         $instructions .= "\nTechnical requirements:\n";
         $instructions .= "- Modern web browser (Chrome, Firefox, Safari, Edge)\n";
         $instructions .= "- Stable internet connection\n";
@@ -314,18 +315,18 @@ class JitsiMeetService
         switch ($platform) {
             case 'zoom':
                 return "1. Click the meeting link\n2. Download Zoom client if prompted\n3. Enter meeting ID and password if required\n4. Join with audio and video";
-                
+
             case 'teams':
                 return "1. Click the meeting link\n2. Choose to join via web browser or Teams app\n3. Enter your name\n4. Join the meeting";
-                
+
             case 'google_meet':
                 return "1. Click the meeting link\n2. Sign in with Google account if required\n3. Allow camera and microphone access\n4. Join the meeting";
-                
+
             case 'webex':
                 return "1. Click the meeting link\n2. Enter your name and email\n3. Join via browser or download WebEx app\n4. Connect audio and video";
-                
+
             default:
-                return "Click the meeting link to join the virtual event. Ensure you have a stable internet connection and allow camera/microphone access if participating.";
+                return 'Click the meeting link to join the virtual event. Ensure you have a stable internet connection and allow camera/microphone access if participating.';
         }
     }
 

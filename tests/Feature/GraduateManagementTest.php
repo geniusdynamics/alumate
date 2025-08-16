@@ -16,7 +16,9 @@ class GraduateManagementTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $user;
+
     protected $course;
 
     protected function setUp(): void

@@ -41,7 +41,7 @@ class RunComprehensiveTests extends Command
 
         // Run test suites
         $results = [];
-        
+
         if ($suite === 'all') {
             $results = $this->runAllTestSuites($withCoverage, $parallel, $stopOnFailure);
         } else {
@@ -78,7 +78,7 @@ class RunComprehensiveTests extends Command
         $this->call('view:clear');
 
         // Ensure reports directory exists
-        if (!is_dir(base_path('tests/reports'))) {
+        if (! is_dir(base_path('tests/reports'))) {
             mkdir(base_path('tests/reports'), 0755, true);
         }
 
@@ -90,11 +90,11 @@ class RunComprehensiveTests extends Command
     {
         $suites = [
             'unit' => 'Unit Tests',
-            'integration' => 'Integration Tests', 
+            'integration' => 'Integration Tests',
             'feature' => 'Feature Tests',
             'e2e' => 'End-to-End Tests',
             'performance' => 'Performance Tests',
-            'security' => 'Security Tests'
+            'security' => 'Security Tests',
         ];
 
         $results = [];
@@ -102,12 +102,12 @@ class RunComprehensiveTests extends Command
         foreach ($suites as $suite => $description) {
             $this->info("🧪 Running {$description}...");
             $results[$suite] = $this->runTestSuite($suite, $withCoverage, $parallel, $stopOnFailure);
-            
+
             if ($stopOnFailure && $results[$suite]['exit_code'] !== 0) {
                 $this->error("❌ Stopping due to failure in {$description}");
                 break;
             }
-            
+
             $this->newLine();
         }
 
@@ -117,7 +117,7 @@ class RunComprehensiveTests extends Command
     protected function runTestSuite(string $suite, bool $withCoverage, bool $parallel, bool $stopOnFailure): array
     {
         $command = $this->buildTestCommand($suite, $withCoverage, $parallel, $stopOnFailure);
-        
+
         $startTime = microtime(true);
         $result = Process::run($command);
         $endTime = microtime(true);
@@ -131,7 +131,7 @@ class RunComprehensiveTests extends Command
             'output' => $result->output(),
             'error_output' => $result->errorOutput(),
             'execution_time' => $executionTime,
-            'success' => $result->successful()
+            'success' => $result->successful(),
         ];
     }
 
@@ -214,7 +214,7 @@ class RunComprehensiveTests extends Command
             }
 
             // Show errors if any
-            if (!$result['success'] && !empty($result['error_output'])) {
+            if (! $result['success'] && ! empty($result['error_output'])) {
                 $this->error("Error output for {$suite}:");
                 $this->line($result['error_output']);
                 $this->newLine();
@@ -225,7 +225,7 @@ class RunComprehensiveTests extends Command
         $this->info("Total Tests: {$totalTests}");
         $this->info("Total Failures: {$totalFailures}");
         $this->info("Total Time: {$totalTime}s");
-        
+
         $successRate = $totalTests > 0 ? round((($totalTests - $totalFailures) / $totalTests) * 100, 2) : 0;
         $this->info("Success Rate: {$successRate}%");
     }
@@ -236,19 +236,19 @@ class RunComprehensiveTests extends Command
 
         try {
             $report = $this->reportGenerator->generateComprehensiveReport();
-            
+
             $this->info('✅ Test report generated successfully');
-            $this->line("Report saved to: tests/reports/latest_report.json");
-            
+            $this->line('Report saved to: tests/reports/latest_report.json');
+
             // Display key metrics
             $this->newLine();
             $this->info('📋 Key Metrics:');
             $this->line("Total Test Files: {$report['summary']['total_test_files']}");
             $this->line("Total Tests: {$report['summary']['total_tests']}");
             $this->line("Coverage: {$report['summary']['coverage_percentage']}%");
-            
+
             // Display recommendations
-            if (!empty($report['recommendations'])) {
+            if (! empty($report['recommendations'])) {
                 $this->newLine();
                 $this->warn('⚠️  Recommendations:');
                 foreach ($report['recommendations'] as $recommendation) {
@@ -269,8 +269,8 @@ class RunComprehensiveTests extends Command
         // Run PHP CS Fixer
         $this->info('Running PHP CS Fixer...');
         $result = Process::run('vendor/bin/php-cs-fixer fix --dry-run --diff');
-        
-        if (!$result->successful()) {
+
+        if (! $result->successful()) {
             $this->warn('Code style issues found:');
             $this->line($result->output());
         } else {
@@ -281,8 +281,8 @@ class RunComprehensiveTests extends Command
         if (file_exists('vendor/bin/phpstan')) {
             $this->info('Running PHPStan...');
             $result = Process::run('vendor/bin/phpstan analyse');
-            
-            if (!$result->successful()) {
+
+            if (! $result->successful()) {
                 $this->warn('Static analysis issues found:');
                 $this->line($result->output());
             } else {
@@ -294,8 +294,8 @@ class RunComprehensiveTests extends Command
         if (file_exists('vendor/bin/security-checker')) {
             $this->info('Running security checks...');
             $result = Process::run('vendor/bin/security-checker security:check');
-            
-            if (!$result->successful()) {
+
+            if (! $result->successful()) {
                 $this->error('Security vulnerabilities found:');
                 $this->line($result->output());
             } else {
@@ -312,7 +312,7 @@ class RunComprehensiveTests extends Command
             'database_queries' => $this->analyzeQueryPerformance(),
             'memory_usage' => $this->analyzeMemoryUsage(),
             'response_times' => $this->analyzeResponseTimes(),
-            'bottlenecks' => $this->identifyBottlenecks()
+            'bottlenecks' => $this->identifyBottlenecks(),
         ];
 
         file_put_contents(
@@ -329,7 +329,7 @@ class RunComprehensiveTests extends Command
         return [
             'slow_queries' => [],
             'n_plus_one_issues' => [],
-            'missing_indexes' => []
+            'missing_indexes' => [],
         ];
     }
 
@@ -338,7 +338,7 @@ class RunComprehensiveTests extends Command
         return [
             'peak_memory' => memory_get_peak_usage(true),
             'average_memory' => memory_get_usage(true),
-            'memory_leaks' => []
+            'memory_leaks' => [],
         ];
     }
 
@@ -347,7 +347,7 @@ class RunComprehensiveTests extends Command
         return [
             'average_response_time' => 0,
             'slowest_endpoints' => [],
-            'fastest_endpoints' => []
+            'fastest_endpoints' => [],
         ];
     }
 
@@ -356,7 +356,7 @@ class RunComprehensiveTests extends Command
         return [
             'database_bottlenecks' => [],
             'cpu_intensive_operations' => [],
-            'io_bottlenecks' => []
+            'io_bottlenecks' => [],
         ];
     }
 }

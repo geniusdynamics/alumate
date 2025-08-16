@@ -2,15 +2,15 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use App\Services\SearchService;
-use App\Models\Graduate;
-use App\Models\Job;
 use App\Models\Course;
 use App\Models\Employer;
+use App\Models\Graduate;
+use App\Models\Job;
 use App\Models\SavedSearch;
 use App\Models\SearchAlert;
+use App\Services\SearchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
 class SearchServiceTest extends TestCase
 {
@@ -32,13 +32,13 @@ class SearchServiceTest extends TestCase
             'skills' => ['PHP', 'Laravel', 'JavaScript'],
             'employment_status' => ['status' => 'unemployed'],
             'job_search_active' => true,
-            'allow_employer_contact' => true
+            'allow_employer_contact' => true,
         ]);
 
         $results = $this->searchService->searchGraduates([
             'skills' => ['PHP'],
             'course_id' => $course->id,
-            'employment_status' => 'unemployed'
+            'employment_status' => 'unemployed',
         ]);
 
         $this->assertCount(5, $results);
@@ -53,19 +53,19 @@ class SearchServiceTest extends TestCase
     {
         $course = Course::factory()->create();
         $employer = Employer::factory()->create();
-        
+
         Job::factory()->count(3)->create([
             'course_id' => $course->id,
             'employer_id' => $employer->id,
             'required_skills' => ['PHP', 'Laravel'],
             'status' => 'active',
-            'location' => 'Remote'
+            'location' => 'Remote',
         ]);
 
         $results = $this->searchService->searchJobs([
             'skills' => ['PHP'],
             'course_id' => $course->id,
-            'location' => 'Remote'
+            'location' => 'Remote',
         ]);
 
         $this->assertCount(3, $results);
@@ -84,7 +84,7 @@ class SearchServiceTest extends TestCase
             'graduation_year' => 2024,
             'gpa' => 3.5,
             'skills' => ['PHP', 'JavaScript'],
-            'employment_status' => ['status' => 'unemployed']
+            'employment_status' => ['status' => 'unemployed'],
         ]);
 
         $results = $this->searchService->advancedGraduateSearch([
@@ -93,7 +93,7 @@ class SearchServiceTest extends TestCase
             'graduation_year_to' => 2024,
             'min_gpa' => 3.0,
             'skills' => ['PHP'],
-            'employment_status' => 'unemployed'
+            'employment_status' => 'unemployed',
         ]);
 
         $this->assertCount(3, $results);
@@ -108,7 +108,7 @@ class SearchServiceTest extends TestCase
     {
         $course = Course::factory()->create();
         $employer = Employer::factory()->create();
-        
+
         Job::factory()->count(2)->create([
             'course_id' => $course->id,
             'employer_id' => $employer->id,
@@ -116,7 +116,7 @@ class SearchServiceTest extends TestCase
             'salary_max' => 70000,
             'required_skills' => ['PHP', 'Laravel'],
             'experience_level' => 'entry',
-            'job_type' => 'full-time'
+            'job_type' => 'full-time',
         ]);
 
         $results = $this->searchService->advancedJobSearch([
@@ -125,7 +125,7 @@ class SearchServiceTest extends TestCase
             'salary_max' => 75000,
             'skills' => ['PHP'],
             'experience_level' => 'entry',
-            'job_type' => 'full-time'
+            'job_type' => 'full-time',
         ]);
 
         $this->assertCount(2, $results);
@@ -140,15 +140,15 @@ class SearchServiceTest extends TestCase
     public function test_can_save_search(): void
     {
         $user = $this->createUserWithRole('employer');
-        
+
         $savedSearch = $this->searchService->saveSearch($user, [
             'name' => 'PHP Developers',
             'type' => 'graduates',
             'criteria' => [
                 'skills' => ['PHP', 'Laravel'],
-                'employment_status' => 'unemployed'
+                'employment_status' => 'unemployed',
             ],
-            'alert_frequency' => 'daily'
+            'alert_frequency' => 'daily',
         ]);
 
         $this->assertInstanceOf(SavedSearch::class, $savedSearch);
@@ -161,16 +161,16 @@ class SearchServiceTest extends TestCase
     public function test_can_create_search_alert(): void
     {
         $user = $this->createUserWithRole('graduate');
-        
+
         $alert = $this->searchService->createSearchAlert($user, [
             'name' => 'Laravel Jobs',
             'type' => 'jobs',
             'criteria' => [
                 'skills' => ['Laravel'],
-                'location' => 'Remote'
+                'location' => 'Remote',
             ],
             'frequency' => 'weekly',
-            'is_active' => true
+            'is_active' => true,
         ]);
 
         $this->assertInstanceOf(SearchAlert::class, $alert);
@@ -184,13 +184,13 @@ class SearchServiceTest extends TestCase
     {
         $user = $this->createUserWithRole('employer');
         $course = Course::factory()->create();
-        
+
         // Create test graduates
         Graduate::factory()->count(3)->create([
             'course_id' => $course->id,
             'skills' => ['PHP', 'Laravel'],
             'employment_status' => ['status' => 'unemployed'],
-            'job_search_active' => true
+            'job_search_active' => true,
         ]);
 
         $savedSearch = SavedSearch::create([
@@ -199,8 +199,8 @@ class SearchServiceTest extends TestCase
             'type' => 'graduates',
             'criteria' => [
                 'skills' => ['PHP'],
-                'employment_status' => 'unemployed'
-            ]
+                'employment_status' => 'unemployed',
+            ],
         ]);
 
         $results = $this->searchService->executeSavedSearch($savedSearch);
@@ -234,12 +234,12 @@ class SearchServiceTest extends TestCase
         SavedSearch::factory()->count(3)->create([
             'user_id' => $user1->id,
             'type' => 'graduates',
-            'criteria' => ['skills' => ['PHP']]
+            'criteria' => ['skills' => ['PHP']],
         ]);
         SavedSearch::factory()->count(2)->create([
             'user_id' => $user2->id,
             'type' => 'graduates',
-            'criteria' => ['skills' => ['JavaScript']]
+            'criteria' => ['skills' => ['JavaScript']],
         ]);
 
         $popular = $this->searchService->getPopularSearches('graduates');
@@ -251,35 +251,35 @@ class SearchServiceTest extends TestCase
     public function test_can_track_search_analytics(): void
     {
         $user = $this->createUserWithRole('employer');
-        
+
         $this->searchService->trackSearchAnalytics($user, [
             'type' => 'graduates',
             'criteria' => ['skills' => ['PHP']],
             'results_count' => 5,
-            'execution_time' => 0.25
+            'execution_time' => 0.25,
         ]);
 
         $this->assertDatabaseHas('search_analytics', [
             'user_id' => $user->id,
             'search_type' => 'graduates',
-            'results_count' => 5
+            'results_count' => 5,
         ]);
     }
 
     public function test_can_get_search_history(): void
     {
         $user = $this->createUserWithRole('employer');
-        
+
         // Track some searches
         $this->searchService->trackSearchAnalytics($user, [
             'type' => 'graduates',
             'criteria' => ['skills' => ['PHP']],
-            'results_count' => 5
+            'results_count' => 5,
         ]);
         $this->searchService->trackSearchAnalytics($user, [
             'type' => 'graduates',
             'criteria' => ['skills' => ['JavaScript']],
-            'results_count' => 3
+            'results_count' => 3,
         ]);
 
         $history = $this->searchService->getSearchHistory($user);
@@ -294,7 +294,7 @@ class SearchServiceTest extends TestCase
             'skills' => ['PHP', 'Laravel', 'JavaScript'],
             'employment_status' => 'unemployed',
             'graduation_year_from' => 2020,
-            'graduation_year_to' => 2024
+            'graduation_year_to' => 2024,
         ];
 
         $optimized = $this->searchService->optimizeSearchQuery('graduates', $criteria);

@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\CareerTimeline;
 use App\Models\CareerMilestone;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use App\Models\CareerTimeline;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class CareerTimelineService
 {
@@ -36,7 +35,7 @@ class CareerTimelineService
             'milestones' => $milestones,
             'progression' => $this->calculateCareerProgression($user),
             'stats' => $this->getCareerStats($user),
-            'can_edit' => $viewerUser && $viewerUser->id === $user->id
+            'can_edit' => $viewerUser && $viewerUser->id === $user->id,
         ];
     }
 
@@ -67,7 +66,7 @@ class CareerTimelineService
             'location' => $data['location'] ?? null,
             'company_logo_url' => $data['company_logo_url'] ?? null,
             'industry' => $data['industry'] ?? null,
-            'employment_type' => $data['employment_type'] ?? 'full-time'
+            'employment_type' => $data['employment_type'] ?? 'full-time',
         ]);
 
         // Auto-detect and create milestone for job change
@@ -116,7 +115,7 @@ class CareerTimelineService
             'company' => $data['company'] ?? null,
             'organization' => $data['organization'] ?? null,
             'metadata' => $data['metadata'] ?? [],
-            'is_featured' => $data['is_featured'] ?? false
+            'is_featured' => $data['is_featured'] ?? false,
         ]);
     }
 
@@ -136,7 +135,7 @@ class CareerTimelineService
                 'promotions_count' => 0,
                 'career_growth_rate' => 0,
                 'average_tenure_months' => 0,
-                'industries' => []
+                'industries' => [],
             ];
         }
 
@@ -153,7 +152,7 @@ class CareerTimelineService
             'promotions_count' => $promotionsCount,
             'career_growth_rate' => $this->calculateGrowthRate($careerEntries),
             'average_tenure_months' => round($averageTenure, 1),
-            'industries' => $industries
+            'industries' => $industries,
         ];
     }
 
@@ -175,21 +174,21 @@ class CareerTimelineService
                 'type' => 'skill_development',
                 'title' => 'Build Core Skills',
                 'description' => 'Focus on developing fundamental skills in your field',
-                'priority' => 'high'
+                'priority' => 'high',
             ];
         } elseif ($progression['total_experience_years'] < 5) {
             $suggestions[] = [
                 'type' => 'specialization',
                 'title' => 'Develop Specialization',
                 'description' => 'Consider specializing in a specific area of expertise',
-                'priority' => 'medium'
+                'priority' => 'medium',
             ];
         } else {
             $suggestions[] = [
                 'type' => 'leadership',
                 'title' => 'Leadership Development',
                 'description' => 'Consider taking on leadership roles or responsibilities',
-                'priority' => 'high'
+                'priority' => 'high',
             ];
         }
 
@@ -199,7 +198,7 @@ class CareerTimelineService
                 'type' => 'career_move',
                 'title' => 'Consider New Opportunities',
                 'description' => 'You\'ve been in your current role for over 2 years. Consider new challenges.',
-                'priority' => 'medium'
+                'priority' => 'medium',
             ];
         }
 
@@ -208,7 +207,7 @@ class CareerTimelineService
             'type' => 'certification',
             'title' => 'Professional Certification',
             'description' => 'Consider obtaining relevant professional certifications',
-            'priority' => 'low'
+            'priority' => 'low',
         ];
 
         return $suggestions;
@@ -230,7 +229,7 @@ class CareerTimelineService
         return [
             'total_milestones' => $milestonesCount,
             'awards_count' => $awardsCount,
-            'certifications_count' => $certificationsCount
+            'certifications_count' => $certificationsCount,
         ];
     }
 
@@ -247,15 +246,15 @@ class CareerTimelineService
                 'type' => 'career_entry',
                 'date' => $entry->start_date,
                 'data' => $entry,
-                'sort_date' => $entry->start_date
+                'sort_date' => $entry->start_date,
             ]);
 
-            if (!$entry->is_current && $entry->end_date) {
+            if (! $entry->is_current && $entry->end_date) {
                 $timeline->push([
                     'type' => 'career_end',
                     'date' => $entry->end_date,
                     'data' => $entry,
-                    'sort_date' => $entry->end_date
+                    'sort_date' => $entry->end_date,
                 ]);
             }
         }
@@ -266,7 +265,7 @@ class CareerTimelineService
                 'type' => 'milestone',
                 'date' => $milestone->date,
                 'data' => $milestone,
-                'sort_date' => $milestone->date
+                'sort_date' => $milestone->date,
             ]);
         }
 
@@ -279,10 +278,10 @@ class CareerTimelineService
     private function validateCareerDates(array $data): void
     {
         $startDate = Carbon::parse($data['start_date']);
-        
+
         if (isset($data['end_date']) && $data['end_date']) {
             $endDate = Carbon::parse($data['end_date']);
-            
+
             if ($endDate->lt($startDate)) {
                 throw new \InvalidArgumentException('End date cannot be before start date');
             }
@@ -328,6 +327,7 @@ class CareerTimelineService
         }
 
         $positionChanges = $careerEntries->count() - 1;
+
         return round(($positionChanges / $timeSpan) * 12, 2); // Changes per year
     }
 
@@ -342,20 +342,20 @@ class CareerTimelineService
             ->first();
 
         if ($previousEntry) {
-            $milestoneType = $careerEntry->isPromotionFrom($previousEntry) 
-                ? CareerMilestone::TYPE_PROMOTION 
+            $milestoneType = $careerEntry->isPromotionFrom($previousEntry)
+                ? CareerMilestone::TYPE_PROMOTION
                 : CareerMilestone::TYPE_JOB_CHANGE;
 
             CareerMilestone::create([
                 'user_id' => $user->id,
                 'type' => $milestoneType,
-                'title' => $milestoneType === CareerMilestone::TYPE_PROMOTION 
-                    ? "Promoted to {$careerEntry->title}" 
+                'title' => $milestoneType === CareerMilestone::TYPE_PROMOTION
+                    ? "Promoted to {$careerEntry->title}"
                     : "Started new role at {$careerEntry->company}",
                 'description' => "Started as {$careerEntry->title} at {$careerEntry->company}",
                 'date' => $careerEntry->start_date,
                 'company' => $careerEntry->company,
-                'visibility' => CareerMilestone::VISIBILITY_PUBLIC
+                'visibility' => CareerMilestone::VISIBILITY_PUBLIC,
             ]);
         }
     }

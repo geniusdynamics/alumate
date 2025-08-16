@@ -2,8 +2,8 @@
 
 require_once '../../vendor/autoload.php';
 
-use App\Models\Graduate;
 use App\Models\Course;
+use App\Models\Graduate;
 use App\Models\KpiDefinition;
 
 // Bootstrap Laravel
@@ -17,17 +17,17 @@ try {
 
     // Test 1: Check data counts
     echo "📊 Data Overview:\n";
-    echo "- Graduates: " . Graduate::count() . "\n";
-    echo "- Courses: " . Course::count() . "\n";
-    echo "- KPI Definitions: " . KpiDefinition::count() . "\n";
+    echo '- Graduates: '.Graduate::count()."\n";
+    echo '- Courses: '.Course::count()."\n";
+    echo '- KPI Definitions: '.KpiDefinition::count()."\n";
     echo "\n";
 
     // Test 2: Generate analytics dashboard
     echo "🎯 Testing Analytics Dashboard...\n";
     $dashboard = $analyticsService->getAnalyticsDashboard();
-    echo "- Overview metrics: " . count($dashboard['overview'] ?? []) . " items\n";
-    echo "- KPIs: " . count($dashboard['kpis'] ?? []) . " items\n";
-    echo "- Charts: " . count($dashboard['charts'] ?? []) . " items\n";
+    echo '- Overview metrics: '.count($dashboard['overview'] ?? [])." items\n";
+    echo '- KPIs: '.count($dashboard['kpis'] ?? [])." items\n";
+    echo '- Charts: '.count($dashboard['charts'] ?? [])." items\n";
     echo "\n";
 
     // Test 3: Calculate KPIs
@@ -42,17 +42,17 @@ try {
     echo "👥 Testing Employment Analytics...\n";
     $employmentAnalytics = $analyticsService->getEmploymentAnalytics();
     $summary = $employmentAnalytics['summary'] ?? [];
-    echo "- Total Graduates: " . ($summary['total_graduates'] ?? 0) . "\n";
-    echo "- Employed Count: " . ($summary['employed_count'] ?? 0) . "\n";
-    echo "- Employment Rate: " . number_format($summary['employment_rate'] ?? 0, 1) . "%\n";
+    echo '- Total Graduates: '.($summary['total_graduates'] ?? 0)."\n";
+    echo '- Employed Count: '.($summary['employed_count'] ?? 0)."\n";
+    echo '- Employment Rate: '.number_format($summary['employment_rate'] ?? 0, 1)."%\n";
     echo "\n";
 
     // Test 5: Generate Daily Snapshot
     echo "📸 Testing Snapshot Generation...\n";
     $snapshot = $analyticsService->generateDailySnapshot();
-    echo "- Snapshot ID: " . $snapshot->id . "\n";
-    echo "- Snapshot Type: " . $snapshot->type . "\n";
-    echo "- Data Keys: " . implode(', ', array_keys($snapshot->data)) . "\n";
+    echo '- Snapshot ID: '.$snapshot->id."\n";
+    echo '- Snapshot Type: '.$snapshot->type."\n";
+    echo '- Data Keys: '.implode(', ', array_keys($snapshot->data))."\n";
     echo "\n";
 
     echo "✅ All tests completed successfully!\n";
@@ -60,7 +60,7 @@ try {
     echo "Visit: http://localhost:8080/analytics/dashboard\n";
 
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
-    echo "Stack trace: " . $e->getTraceAsString() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo 'File: '.$e->getFile().':'.$e->getLine()."\n";
+    echo 'Stack trace: '.$e->getTraceAsString()."\n";
 }

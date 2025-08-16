@@ -12,14 +12,21 @@ class CareerMilestone extends Model
     use HasFactory, SoftDeletes;
 
     const TYPE_PROMOTION = 'promotion';
+
     const TYPE_JOB_CHANGE = 'job_change';
+
     const TYPE_AWARD = 'award';
+
     const TYPE_CERTIFICATION = 'certification';
+
     const TYPE_EDUCATION = 'education';
+
     const TYPE_ACHIEVEMENT = 'achievement';
 
     const VISIBILITY_PUBLIC = 'public';
+
     const VISIBILITY_CONNECTIONS = 'connections';
+
     const VISIBILITY_PRIVATE = 'private';
 
     protected $fillable = [
@@ -32,20 +39,20 @@ class CareerMilestone extends Model
         'company',
         'organization',
         'metadata',
-        'is_featured'
+        'is_featured',
     ];
 
     protected $casts = [
         'date' => 'date',
         'metadata' => 'array',
-        'is_featured' => 'boolean'
+        'is_featured' => 'boolean',
     ];
 
     protected $dates = [
         'date',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -67,7 +74,7 @@ class CareerMilestone extends Model
             self::TYPE_AWARD => 'Award',
             self::TYPE_CERTIFICATION => 'Certification',
             self::TYPE_EDUCATION => 'Education',
-            self::TYPE_ACHIEVEMENT => 'Achievement'
+            self::TYPE_ACHIEVEMENT => 'Achievement',
         ];
     }
 
@@ -79,7 +86,7 @@ class CareerMilestone extends Model
         return [
             self::VISIBILITY_PUBLIC => 'Public',
             self::VISIBILITY_CONNECTIONS => 'Connections Only',
-            self::VISIBILITY_PRIVATE => 'Private'
+            self::VISIBILITY_PRIVATE => 'Private',
         ];
     }
 
@@ -88,7 +95,7 @@ class CareerMilestone extends Model
      */
     public function isVisibleTo(?User $viewer): bool
     {
-        if (!$viewer) {
+        if (! $viewer) {
             return $this->visibility === self::VISIBILITY_PUBLIC;
         }
 
@@ -113,20 +120,20 @@ class CareerMilestone extends Model
      */
     public function scopeVisibleTo($query, ?User $viewer)
     {
-        if (!$viewer) {
+        if (! $viewer) {
             return $query->where('visibility', self::VISIBILITY_PUBLIC);
         }
 
         return $query->where(function ($q) use ($viewer) {
             $q->where('user_id', $viewer->id)
-              ->orWhere('visibility', self::VISIBILITY_PUBLIC)
-              ->orWhere(function ($subQ) use ($viewer) {
-                  $subQ->where('visibility', self::VISIBILITY_CONNECTIONS)
-                       ->whereHas('user.connections', function ($connQ) use ($viewer) {
-                           $connQ->where('connected_user_id', $viewer->id)
-                                 ->where('status', 'accepted');
-                       });
-              });
+                ->orWhere('visibility', self::VISIBILITY_PUBLIC)
+                ->orWhere(function ($subQ) use ($viewer) {
+                    $subQ->where('visibility', self::VISIBILITY_CONNECTIONS)
+                        ->whereHas('user.connections', function ($connQ) use ($viewer) {
+                            $connQ->where('connected_user_id', $viewer->id)
+                                ->where('status', 'accepted');
+                        });
+                });
         });
     }
 
@@ -159,7 +166,7 @@ class CareerMilestone extends Model
      */
     public function getIconAttribute(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             self::TYPE_PROMOTION => 'trending-up',
             self::TYPE_JOB_CHANGE => 'briefcase',
             self::TYPE_AWARD => 'award',

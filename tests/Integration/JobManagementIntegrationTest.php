@@ -2,33 +2,33 @@
 
 namespace Tests\Integration;
 
-use Tests\TestCase;
-use App\Models\User;
+use App\Models\Course;
 use App\Models\Employer;
+use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Graduate;
-use App\Models\Course;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Notification;
+use Tests\TestCase;
 
 class JobManagementIntegrationTest extends TestCase
 {
     use RefreshDatabase;
 
     protected User $employerUser;
+
     protected Employer $employer;
+
     protected Course $course;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->employerUser = $this->createUserWithRole('employer');
         $this->employer = Employer::factory()->verified()->create([
-            'user_id' => $this->employerUser->id
+            'user_id' => $this->employerUser->id,
         ]);
         $this->course = Course::factory()->create();
     }
@@ -50,12 +50,12 @@ class JobManagementIntegrationTest extends TestCase
             'course_id' => $this->course->id,
             'required_skills' => ['PHP', 'Laravel', 'MySQL'],
             'benefits' => ['Health Insurance', 'Remote Work', 'Flexible Hours'],
-            'application_deadline' => now()->addDays(30)->format('Y-m-d')
+            'application_deadline' => now()->addDays(30)->format('Y-m-d'),
         ];
 
         $response = $this->post(route('jobs.store'), $jobData);
         $response->assertRedirect(route('jobs.index'));
-        
+
         $job = Job::where('title', 'Senior PHP Developer')->first();
         $this->assertNotNull($job);
         $this->assertEquals($this->employer->id, $job->employer_id);
@@ -63,19 +63,18 @@ class JobManagementIntegrationTest extends TestCase
         // 2. View job in management interface
         $response = $this->get(route('jobs.show', $job));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Jobs/Show')
-                ->where('job.title', 'Senior PHP Developer')
+        $response->assertInertia(fn ($page) => $page->component('Jobs/Show')
+            ->where('job.title', 'Senior PHP Developer')
         );
 
         // 3. Update job posting
         $response = $this->put(route('jobs.update', $job), [
             'title' => 'Senior PHP Developer (Updated)',
-            'salary_max' => 95000
+            'salary_max' => 95000,
         ]);
 
         $response->assertRedirect(route('jobs.show', $job));
-        
+
         $job->refresh();
         $this->assertEquals('Senior PHP Developer (Updated)', $job->title);
         $this->assertEquals(95000, $job->salary_max);
@@ -83,25 +82,24 @@ class JobManagementIntegrationTest extends TestCase
         // 4. View job analytics
         $response = $this->get(route('jobs.analytics', $job));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Jobs/Analytics')
-                ->has('analytics.views')
-                ->has('analytics.applications')
+        $response->assertInertia(fn ($page) => $page->component('Jobs/Analytics')
+            ->has('analytics.views')
+            ->has('analytics.applications')
         );
     }
 
     public function test_job_application_management_workflow(): void
     {
         Notification::fake();
-        
+
         // Create job and graduates
         $job = Job::factory()->active()->create([
             'employer_id' => $this->employer->id,
-            'course_id' => $this->course->id
+            'course_id' => $this->course->id,
         ]);
 
         $graduates = Graduate::factory()->count(5)->create([
-            'course_id' => $this->course->id
+            'course_id' => $this->course->id,
         ]);
 
         // Create applications
@@ -109,7 +107,7 @@ class JobManagementIntegrationTest extends TestCase
             JobApplication::factory()->create([
                 'job_id' => $job->id,
                 'graduate_id' => $graduate->id,
-                'status' => 'pending'
+                'status' => 'pending',
             ]);
         }
 
@@ -118,9 +116,8 @@ class JobManagementIntegrationTest extends TestCase
         // 1. View applications
         $response = $this->get(route('jobs.applications.index', $job));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Jobs/Applications/Index')
-                ->has('applications', 5)
+        $response->assertInertia(fn ($page) => $page->component('Jobs/Applications/Index')
+            ->has('applications', 5)
         );
 
         // 2. Review application
@@ -131,7 +128,7 @@ class JobManagementIntegrationTest extends TestCase
         // 3. Update application status
         $response = $this->put(route('job-applications.update', $application), [
             'status' => 'reviewed',
-            'notes' => 'Good candidate, moving to next stage'
+            'notes' => 'Good candidate, moving to next stage',
         ]);
 
         $response->assertRedirect();
@@ -143,7 +140,7 @@ class JobManagementIntegrationTest extends TestCase
         // 4. Shortlist candidate
         $response = $this->put(route('job-applications.update', $application), [
             'status' => 'shortlisted',
-            'notes' => 'Shortlisted for interview'
+            'notes' => 'Shortlisted for interview',
         ]);
 
         $application->refresh();
@@ -153,7 +150,7 @@ class JobManagementIntegrationTest extends TestCase
         $response = $this->post(route('job-applications.schedule-interview', $application), [
             'interview_date' => now()->addDays(7)->format('Y-m-d H:i'),
             'interview_location' => 'Office Conference Room A',
-            'interview_notes' => 'Technical interview with team lead'
+            'interview_notes' => 'Technical interview with team lead',
         ]);
 
         $response->assertRedirect();
@@ -167,8 +164,8 @@ class JobManagementIntegrationTest extends TestCase
             'offer_expiry_date' => now()->addDays(14)->format('Y-m-d'),
             'offer_details' => [
                 'start_date' => now()->addMonth()->format('Y-m-d'),
-                'benefits' => ['Health Insurance', 'Dental Coverage']
-            ]
+                'benefits' => ['Health Insurance', 'Dental Coverage'],
+            ],
         ]);
 
         $response->assertRedirect();
@@ -193,7 +190,7 @@ class JobManagementIntegrationTest extends TestCase
             'location' => 'New York',
             'course_id' => $this->course->id,
             'salary_min' => 45000,
-            'salary_max' => 55000
+            'salary_max' => 55000,
         ];
 
         $response = $this->post(route('jobs.store'), $jobData);
@@ -208,14 +205,13 @@ class JobManagementIntegrationTest extends TestCase
 
         $response = $this->get(route('admin.job-approval.index'));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Admin/JobApproval/Index')
-                ->has('pendingJobs')
+        $response->assertInertia(fn ($page) => $page->component('Admin/JobApproval/Index')
+            ->has('pendingJobs')
         );
 
         // 3. Approve job
         $response = $this->post(route('admin.job-approval.approve', $job), [
-            'notes' => 'Job approved after review'
+            'notes' => 'Job approved after review',
         ]);
 
         $response->assertRedirect();
@@ -230,14 +226,14 @@ class JobManagementIntegrationTest extends TestCase
             'course_id' => $this->course->id,
             'skills' => ['PHP', 'Laravel', 'MySQL'],
             'job_search_active' => true,
-            'allow_employer_contact' => true
+            'allow_employer_contact' => true,
         ]);
 
         $jsGraduates = Graduate::factory()->count(2)->create([
             'course_id' => $this->course->id,
             'skills' => ['JavaScript', 'React', 'Node.js'],
             'job_search_active' => true,
-            'allow_employer_contact' => true
+            'allow_employer_contact' => true,
         ]);
 
         // Create PHP job
@@ -245,7 +241,7 @@ class JobManagementIntegrationTest extends TestCase
             'employer_id' => $this->employer->id,
             'course_id' => $this->course->id,
             'title' => 'PHP Developer',
-            'required_skills' => ['PHP', 'Laravel']
+            'required_skills' => ['PHP', 'Laravel'],
         ]);
 
         $this->actingAs($this->employerUser);
@@ -253,15 +249,14 @@ class JobManagementIntegrationTest extends TestCase
         // 1. View job matches
         $response = $this->get(route('jobs.matches', $phpJob));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Jobs/Matches')
-                ->has('matches', 3) // Should match PHP graduates
+        $response->assertInertia(fn ($page) => $page->component('Jobs/Matches')
+            ->has('matches', 3) // Should match PHP graduates
         );
 
         // 2. Send job recommendations to graduates
         $response = $this->post(route('jobs.send-recommendations', $phpJob), [
             'graduate_ids' => $phpGraduates->pluck('id')->toArray(),
-            'message' => 'We think you would be a great fit for this position!'
+            'message' => 'We think you would be a great fit for this position!',
         ]);
 
         $response->assertRedirect();
@@ -276,7 +271,7 @@ class JobManagementIntegrationTest extends TestCase
             'course_id' => $this->course->id,
             'location' => 'Remote',
             'job_type' => 'full-time',
-            'required_skills' => ['PHP', 'Laravel']
+            'required_skills' => ['PHP', 'Laravel'],
         ]);
 
         Job::factory()->count(2)->create([
@@ -284,27 +279,26 @@ class JobManagementIntegrationTest extends TestCase
             'course_id' => $this->course->id,
             'location' => 'New York',
             'job_type' => 'part-time',
-            'required_skills' => ['JavaScript', 'React']
+            'required_skills' => ['JavaScript', 'React'],
         ]);
 
         // Test public job search
         $response = $this->get(route('jobs.public.index', [
             'location' => 'Remote',
             'job_type' => 'full-time',
-            'skills' => ['PHP']
+            'skills' => ['PHP'],
         ]));
 
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Jobs/PublicIndex')
-                ->has('jobs.data', 3)
+        $response->assertInertia(fn ($page) => $page->component('Jobs/PublicIndex')
+            ->has('jobs.data', 3)
         );
 
         // Test advanced search
         $response = $this->get(route('jobs.public.index', [
             'course_id' => $this->course->id,
             'salary_min' => 50000,
-            'experience_level' => 'entry'
+            'experience_level' => 'entry',
         ]));
 
         $response->assertStatus(200);
@@ -318,20 +312,19 @@ class JobManagementIntegrationTest extends TestCase
         $job = Job::factory()->create([
             'employer_id' => $this->employer->id,
             'application_deadline' => now()->addDays(2),
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // 1. View expiring jobs
         $response = $this->get(route('employer.dashboard'));
         $response->assertStatus(200);
-        $response->assertInertia(fn ($page) => 
-            $page->component('Dashboard/Employer')
-                ->has('expiringJobs')
+        $response->assertInertia(fn ($page) => $page->component('Dashboard/Employer')
+            ->has('expiringJobs')
         );
 
         // 2. Renew job
         $response = $this->post(route('jobs.renew', $job), [
-            'new_deadline' => now()->addDays(30)->format('Y-m-d')
+            'new_deadline' => now()->addDays(30)->format('Y-m-d'),
         ]);
 
         $response->assertRedirect();
@@ -340,7 +333,7 @@ class JobManagementIntegrationTest extends TestCase
 
         // 3. Close job manually
         $response = $this->post(route('jobs.close', $job), [
-            'reason' => 'Position filled'
+            'reason' => 'Position filled',
         ]);
 
         $response->assertRedirect();
@@ -355,14 +348,14 @@ class JobManagementIntegrationTest extends TestCase
         // Create multiple jobs
         $jobs = Job::factory()->count(5)->create([
             'employer_id' => $this->employer->id,
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // 1. Bulk update job status
         $response = $this->post(route('jobs.bulk-update'), [
             'job_ids' => $jobs->pluck('id')->toArray(),
             'action' => 'pause',
-            'reason' => 'Temporary pause for review'
+            'reason' => 'Temporary pause for review',
         ]);
 
         $response->assertRedirect();
@@ -376,7 +369,7 @@ class JobManagementIntegrationTest extends TestCase
         // 2. Bulk delete jobs
         $response = $this->post(route('jobs.bulk-delete'), [
             'job_ids' => $jobs->take(2)->pluck('id')->toArray(),
-            'confirm' => true
+            'confirm' => true,
         ]);
 
         $response->assertRedirect();

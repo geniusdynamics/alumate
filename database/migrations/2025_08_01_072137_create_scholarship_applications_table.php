@@ -27,7 +27,7 @@ return new class extends Migration
             $table->decimal('score', 5, 2)->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->unique(['scholarship_id', 'applicant_id']);
             $table->index(['scholarship_id', 'status']);
             $table->index(['applicant_id', 'status']);

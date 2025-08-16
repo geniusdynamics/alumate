@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('years_experience')->default(0);
             $table->integer('endorsed_count')->default(0);
             $table->timestamps();
-            
+
             $table->unique(['user_id', 'skill_id']);
             $table->index(['user_id', 'proficiency_level']);
             $table->index('endorsed_count');

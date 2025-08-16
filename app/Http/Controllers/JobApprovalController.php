@@ -17,11 +17,11 @@ class JobApprovalController extends Controller
             ->orderBy('created_at', 'desc');
 
         if ($request->search) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhereHas('employer', function($eq) use ($request) {
-                      $eq->where('company_name', 'like', "%{$request->search}%");
-                  });
+                    ->orWhereHas('employer', function ($eq) use ($request) {
+                        $eq->where('company_name', 'like', "%{$request->search}%");
+                    });
             });
         }
 
@@ -81,7 +81,7 @@ class JobApprovalController extends Controller
         ]);
 
         $job->approve(Auth::id());
-        
+
         // Add approval notes if provided
         if ($request->notes) {
             $job->update(['approval_notes' => $request->notes]);

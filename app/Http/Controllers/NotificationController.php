@@ -20,7 +20,7 @@ class NotificationController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         $notifications = $this->notificationService->getNotificationHistory($user, 50);
         $unreadCount = $user->unreadNotifications()->count();
 
@@ -43,7 +43,7 @@ class NotificationController extends Controller
     public function updatePreferences(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'preferences' => 'required|array',
             'preferences.*.notification_type' => 'required|string',
@@ -100,7 +100,7 @@ class NotificationController extends Controller
 
     public function testNotification(Request $request)
     {
-        if (!app()->environment('local')) {
+        if (! app()->environment('local')) {
             abort(404);
         }
 

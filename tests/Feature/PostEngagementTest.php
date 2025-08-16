@@ -2,10 +2,9 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\Post;
 use App\Models\Comment;
-use App\Models\PostEngagement;
+use App\Models\Post;
+use App\Models\User;
 use App\Services\PostEngagementService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -16,14 +15,17 @@ class PostEngagementTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected User $user;
+
     protected User $otherUser;
+
     protected Post $post;
+
     protected PostEngagementService $engagementService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();
         $this->post = Post::factory()->create(['user_id' => $this->otherUser->id]);
@@ -35,19 +37,19 @@ class PostEngagementTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->postJson("/api/posts/{$this->post->id}/react", [
-                'type' => 'like'
+                'type' => 'like',
             ]);
 
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Reaction added successfully'
+                'message' => 'Reaction added successfully',
             ]);
 
         $this->assertDatabaseHas('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'like'
+            'type' => 'like',
         ]);
     }
 
@@ -59,18 +61,18 @@ class PostEngagementTest extends TestCase
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/posts/{$this->post->id}/unreact", [
-                'type' => 'like'
+                'type' => 'like',
             ]);
 
         $response->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
             ]);
 
         $this->assertDatabaseMissing('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'like'
+            'type' => 'like',
         ]);
     }
 
@@ -81,20 +83,20 @@ class PostEngagementTest extends TestCase
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/posts/{$this->post->id}/comment", [
-                'content' => $commentContent
+                'content' => $commentContent,
             ]);
 
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
-                'message' => 'Comment added successfully'
+                'message' => 'Comment added successfully',
             ]);
 
         $this->assertDatabaseHas('comments', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
             'content' => $commentContent,
-            'parent_id' => null
+            'parent_id' => null,
         ]);
     }
 
@@ -104,7 +106,7 @@ class PostEngagementTest extends TestCase
         // Create a parent comment
         $parentComment = Comment::factory()->create([
             'post_id' => $this->post->id,
-            'user_id' => $this->otherUser->id
+            'user_id' => $this->otherUser->id,
         ]);
 
         $replyContent = 'This is a reply';
@@ -112,7 +114,7 @@ class PostEngagementTest extends TestCase
         $response = $this->actingAs($this->user)
             ->postJson("/api/posts/{$this->post->id}/comment", [
                 'content' => $replyContent,
-                'parent_id' => $parentComment->id
+                'parent_id' => $parentComment->id,
             ]);
 
         $response->assertStatus(201);
@@ -121,7 +123,7 @@ class PostEngagementTest extends TestCase
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
             'content' => $replyContent,
-            'parent_id' => $parentComment->id
+            'parent_id' => $parentComment->id,
         ]);
     }
 
@@ -132,27 +134,27 @@ class PostEngagementTest extends TestCase
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/posts/{$this->post->id}/share", [
-                'commentary' => $commentary
+                'commentary' => $commentary,
             ]);
 
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
-                'message' => 'Post shared successfully'
+                'message' => 'Post shared successfully',
             ]);
 
         // Check that a share engagement was created
         $this->assertDatabaseHas('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'share'
+            'type' => 'share',
         ]);
 
         // Check that a new shared post was created
         $this->assertDatabaseHas('posts', [
             'user_id' => $this->user->id,
             'content' => $commentary,
-            'post_type' => 'share'
+            'post_type' => 'share',
         ]);
     }
 
@@ -165,13 +167,13 @@ class PostEngagementTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'bookmarked' => true
+                'bookmarked' => true,
             ]);
 
         $this->assertDatabaseHas('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'bookmark'
+            'type' => 'bookmark',
         ]);
     }
 
@@ -187,13 +189,13 @@ class PostEngagementTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'bookmarked' => false
+                'bookmarked' => false,
             ]);
 
         $this->assertDatabaseMissing('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'bookmark'
+            'type' => 'bookmark',
         ]);
     }
 
@@ -214,8 +216,8 @@ class PostEngagementTest extends TestCase
                 'stats' => [
                     'like' => 1,
                     'love' => 1,
-                    'comment' => 1
-                ]
+                    'comment' => 1,
+                ],
             ]);
     }
 
@@ -224,7 +226,7 @@ class PostEngagementTest extends TestCase
     {
         // Create some comments
         Comment::factory()->count(3)->create([
-            'post_id' => $this->post->id
+            'post_id' => $this->post->id,
         ]);
 
         $response = $this->actingAs($this->user)
@@ -232,7 +234,7 @@ class PostEngagementTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
             ])
             ->assertJsonStructure([
                 'comments' => [
@@ -243,12 +245,12 @@ class PostEngagementTest extends TestCase
                             'user' => [
                                 'id',
                                 'name',
-                                'username'
+                                'username',
                             ],
-                            'created_at'
-                        ]
-                    ]
-                ]
+                            'created_at',
+                        ],
+                    ],
+                ],
             ]);
     }
 
@@ -274,7 +276,7 @@ class PostEngagementTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJson([
-                'success' => true
+                'success' => true,
             ])
             ->assertJsonCount(2, 'users');
     }
@@ -284,7 +286,7 @@ class PostEngagementTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->postJson("/api/posts/{$this->post->id}/react", [
-                'type' => 'invalid_reaction'
+                'type' => 'invalid_reaction',
             ]);
 
         $response->assertStatus(422)
@@ -296,7 +298,7 @@ class PostEngagementTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->postJson("/api/posts/{$this->post->id}/comment", [
-                'content' => '' // Empty content
+                'content' => '', // Empty content
             ]);
 
         $response->assertStatus(422)
@@ -308,7 +310,7 @@ class PostEngagementTest extends TestCase
     {
         $response = $this->actingAs($this->user)
             ->postJson('/api/posts/99999/react', [
-                'type' => 'like'
+                'type' => 'like',
             ]);
 
         $response->assertStatus(404);
@@ -318,7 +320,7 @@ class PostEngagementTest extends TestCase
     public function unauthenticated_user_cannot_engage_with_posts()
     {
         $response = $this->postJson("/api/posts/{$this->post->id}/react", [
-            'type' => 'like'
+            'type' => 'like',
         ]);
 
         $response->assertStatus(401);

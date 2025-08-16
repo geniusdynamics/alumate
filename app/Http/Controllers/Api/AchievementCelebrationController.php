@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\AchievementCelebration;
 use App\Models\UserAchievement;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class AchievementCelebrationController extends Controller
@@ -17,10 +17,10 @@ class AchievementCelebrationController extends Controller
     public function index(Request $request): JsonResponse
     {
         $celebrations = AchievementCelebration::with([
-                'userAchievement.user',
-                'userAchievement.achievement',
-                'congratulations.user'
-            ])
+            'userAchievement.user',
+            'userAchievement.achievement',
+            'congratulations.user',
+        ])
             ->public()
             ->latest()
             ->paginate(20);
@@ -34,7 +34,7 @@ class AchievementCelebrationController extends Controller
     public function congratulate(Request $request, AchievementCelebration $celebration): JsonResponse
     {
         $request->validate([
-            'message' => 'nullable|string|max:500'
+            'message' => 'nullable|string|max:500',
         ]);
 
         $user = $request->user();
@@ -48,12 +48,12 @@ class AchievementCelebrationController extends Controller
             return response()->json([
                 'success' => true,
                 'congratulation' => $congratulation->load('user'),
-                'congratulations_count' => $celebration->congratulations_count
+                'congratulations_count' => $celebration->congratulations_count,
             ]);
 
         } catch (\Exception $e) {
             throw ValidationException::withMessages([
-                'message' => [$e->getMessage()]
+                'message' => [$e->getMessage()],
             ]);
         }
     }
@@ -64,19 +64,19 @@ class AchievementCelebrationController extends Controller
     public function removeCongratulation(Request $request, AchievementCelebration $celebration): JsonResponse
     {
         $user = $request->user();
-        
+
         $removed = $celebration->removeCongratulation($user);
 
-        if (!$removed) {
+        if (! $removed) {
             return response()->json([
                 'success' => false,
-                'message' => 'Congratulation not found'
+                'message' => 'Congratulation not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'congratulations_count' => $celebration->congratulations_count
+            'congratulations_count' => $celebration->congratulations_count,
         ]);
     }
 
@@ -86,9 +86,9 @@ class AchievementCelebrationController extends Controller
     public function congratulations(AchievementCelebration $celebration): JsonResponse
     {
         $congratulations = $celebration->congratulations()
-                                     ->with('user')
-                                     ->latest()
-                                     ->paginate(20);
+            ->with('user')
+            ->latest()
+            ->paginate(20);
 
         return response()->json($congratulations);
     }
@@ -100,14 +100,14 @@ class AchievementCelebrationController extends Controller
     {
         $request->validate([
             'user_achievement_id' => 'required|exists:user_achievements,id',
-            'message' => 'nullable|string|max:1000'
+            'message' => 'nullable|string|max:1000',
         ]);
 
         $user = $request->user();
-        
+
         $userAchievement = UserAchievement::where('id', $request->user_achievement_id)
-                                        ->where('user_id', $user->id)
-                                        ->firstOrFail();
+            ->where('user_id', $user->id)
+            ->firstOrFail();
 
         $celebration = $userAchievement->createCelebration(
             'manual',
@@ -118,8 +118,8 @@ class AchievementCelebrationController extends Controller
             'success' => true,
             'celebration' => $celebration->load([
                 'userAchievement.achievement',
-                'congratulations.user'
-            ])
+                'congratulations.user',
+            ]),
         ]);
     }
 }

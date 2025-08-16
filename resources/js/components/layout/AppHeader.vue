@@ -5,10 +5,16 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
 import type { BreadcrumbItemType } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-import { User, LogOut, Settings } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
+import { User, LogOut, Settings, Bell, Plus } from 'lucide-vue-next';
+import NotificationDropdown from '@/Components/NotificationDropdown.vue';
+import PostCreator from '@/Components/PostCreator.vue';
+import HelpButton from '@/components/onboarding/HelpButton.vue';
+import GlobalSearch from '@/components/GlobalSearch.vue';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 interface Props {
     breadcrumbs?: BreadcrumbItemType[];
@@ -20,6 +26,8 @@ withDefaults(defineProps<Props>(), {
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
+const notifications = computed(() => page.props.auth?.notifications || []);
+const showPostCreator = ref(false);
 
 const logout = () => {
     router.post(route('logout'));
@@ -32,6 +40,16 @@ const getUserInitials = (name: string) => {
         .join('')
         .toUpperCase()
         .slice(0, 2);
+};
+
+
+
+const handlePostCreated = () => {
+    showPostCreator.value = false;
+    // Refresh current page if on timeline
+    if (route().current('social.timeline')) {
+        router.reload();
+    }
 };
 </script>
 
@@ -54,6 +72,37 @@ const getUserInitials = (name: string) => {
                 </template>
             </BreadcrumbList>
         </Breadcrumb>
+        
+        <!-- Global Search Bar -->
+        <div class="flex-1 max-w-md mx-4">
+            <GlobalSearch placeholder="Search alumni, jobs, events, and more..." />
+        </div>
+        
+        <!-- Header Actions -->
+        <div class="flex items-center gap-2">
+            <!-- Create Post Button -->
+            <Dialog v-model:open="showPostCreator">
+                <DialogTrigger as-child>
+                    <Button variant="outline" size="sm">
+                        <Plus class="h-4 w-4 mr-2" />
+                        Post
+                    </Button>
+                </DialogTrigger>
+                <DialogContent class="max-w-2xl">
+                    <PostCreator 
+                        :user-circles="[]"
+                        :user-groups="[]"
+                        @post-created="handlePostCreated"
+                    />
+                </DialogContent>
+            </Dialog>
+            
+            <!-- Notifications -->
+            <NotificationDropdown :notifications="notifications" />
+            
+            <!-- Help Button -->
+            <HelpButton />
+        </div>
         
         <!-- User Menu -->
         <div class="ml-auto">

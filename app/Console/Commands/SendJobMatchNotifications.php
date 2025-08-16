@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Job;
 use App\Models\Graduate;
+use App\Models\Job;
 use App\Services\NotificationService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 class SendJobMatchNotifications extends Command
 {
     protected $signature = 'notifications:job-matches {--hours=24 : Send notifications for jobs posted in the last X hours}';
+
     protected $description = 'Send job match notifications to graduates for recently posted jobs';
 
     protected $notificationService;
@@ -25,7 +26,7 @@ class SendJobMatchNotifications extends Command
     {
         $hours = (int) $this->option('hours');
         $since = now()->subHours($hours);
-        
+
         $this->info("Sending job match notifications for jobs posted in the last {$hours} hours...");
 
         // Get recently posted active jobs
@@ -36,6 +37,7 @@ class SendJobMatchNotifications extends Command
 
         if ($jobs->isEmpty()) {
             $this->info('No new jobs found in the specified time period.');
+
             return;
         }
 
@@ -57,7 +59,7 @@ class SendJobMatchNotifications extends Command
                     );
                     $totalNotifications++;
                 } catch (\Exception $e) {
-                    Log::error("Failed to send job match notification to graduate {$graduate->id}: " . $e->getMessage());
+                    Log::error("Failed to send job match notification to graduate {$graduate->id}: ".$e->getMessage());
                     $this->error("Failed to send notification to {$graduate->user->name}");
                 }
             }
@@ -69,8 +71,8 @@ class SendJobMatchNotifications extends Command
     private function getMatchingGraduates($job)
     {
         $query = Graduate::with(['user'])
-            ->whereHas('user', function($q) {
-                $q->whereHas('roles', function($roleQuery) {
+            ->whereHas('user', function ($q) {
+                $q->whereHas('roles', function ($roleQuery) {
                     $roleQuery->where('name', 'graduate');
                 });
             });
@@ -82,7 +84,7 @@ class SendJobMatchNotifications extends Command
 
         // Match by skills if available
         if ($job->required_skills || $job->preferred_skills) {
-            $query->where(function($q) use ($job) {
+            $query->where(function ($q) use ($job) {
                 if ($job->required_skills) {
                     $q->whereJsonOverlaps('skills', $job->required_skills);
                 }
@@ -105,19 +107,19 @@ class SendJobMatchNotifications extends Command
         }
 
         // Only include graduates who allow job match notifications
-        $query->whereHas('user.notificationPreferences', function($q) {
+        $query->whereHas('user.notificationPreferences', function ($q) {
             $q->where('notification_type', 'job_match')
-              ->where(function($prefQuery) {
-                  $prefQuery->where('email_enabled', true)
-                           ->orWhere('sms_enabled', true)
-                           ->orWhere('in_app_enabled', true)
-                           ->orWhere('push_enabled', true);
-              });
+                ->where(function ($prefQuery) {
+                    $prefQuery->where('email_enabled', true)
+                        ->orWhere('sms_enabled', true)
+                        ->orWhere('in_app_enabled', true)
+                        ->orWhere('push_enabled', true);
+                });
         });
 
         // Prioritize by profile completion and recent activity
         $query->orderByDesc('profile_completed_at')
-              ->orderByDesc('updated_at');
+            ->orderByDesc('updated_at');
 
         return $query->limit(50)->get(); // Limit to prevent spam
     }

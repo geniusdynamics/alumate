@@ -18,7 +18,7 @@ class TenantSeeder extends Seeder
                 'contact_information' => [
                     'phone' => '+1-555-123-4567',
                     'email' => 'contact@tech-institute.edu',
-                    'website' => 'https://tech-institute.edu'
+                    'website' => 'https://tech-institute.edu',
                 ],
                 'plan' => 'premium',
                 'data' => [
@@ -32,15 +32,15 @@ class TenantSeeder extends Seeder
                         'Computer Science',
                         'Engineering',
                         'Business Administration',
-                        'Data Science'
-                    ]
-                ]
+                        'Data Science',
+                    ],
+                ],
             ]
         );
 
         // Create domain for the tenant
         $tenant->domains()->firstOrCreate([
-            'domain' => 'tech-institute.localhost'
+            'domain' => 'tech-institute.localhost',
         ]);
 
         $this->command->info('Demo tenant created successfully!');

@@ -39,6 +39,7 @@ class DataAccessLog extends Model
         if ($id) {
             $query->where('resource_id', $id);
         }
+
         return $query;
     }
 
@@ -80,18 +81,29 @@ class DataAccessLog extends Model
 
     // Access types constants
     const ACCESS_VIEW = 'view';
+
     const ACCESS_CREATE = 'create';
+
     const ACCESS_UPDATE = 'update';
+
     const ACCESS_DELETE = 'delete';
+
     const ACCESS_EXPORT = 'export';
+
     const ACCESS_IMPORT = 'import';
 
     // Resource types constants
     const RESOURCE_GRADUATE = 'graduate';
+
     const RESOURCE_JOB = 'job';
+
     const RESOURCE_APPLICATION = 'application';
+
     const RESOURCE_EMPLOYER = 'employer';
+
     const RESOURCE_COURSE = 'course';
+
     const RESOURCE_USER = 'user';
+
     const RESOURCE_INSTITUTION = 'institution';
 }

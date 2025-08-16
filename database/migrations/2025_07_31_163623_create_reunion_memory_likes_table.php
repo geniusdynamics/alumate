@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('reunion_memory_id')->constrained('reunion_memories')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            
+
             // Ensure one like per user per memory
             $table->unique(['reunion_memory_id', 'user_id']);
             $table->index(['user_id', 'created_at']);

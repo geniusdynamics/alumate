@@ -2,12 +2,10 @@
 
 namespace App\Events;
 
-use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Post;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -17,6 +15,7 @@ class PostCommentAdded implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Post $post;
+
     public Comment $comment;
 
     public function __construct(Post $post, Comment $comment)
@@ -55,7 +54,7 @@ class PostCommentAdded implements ShouldBroadcast
                 ],
                 'created_at' => $this->comment->created_at->toISOString(),
             ],
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ];
     }
 

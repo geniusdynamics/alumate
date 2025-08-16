@@ -154,7 +154,7 @@
 <script setup>
 import { Head } from '@inertiajs/vue3'
 import { computed } from 'vue'
-import AdminLayout from '@/Components/AdminLayout.vue'
+import AdminLayout from '@/components/AdminLayout.vue'
 
 const props = defineProps({
     systemSettings: Object,

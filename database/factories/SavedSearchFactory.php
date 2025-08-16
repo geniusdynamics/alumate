@@ -28,7 +28,7 @@ class SavedSearchFactory extends Factory
             'sales representative',
             'business analyst',
             'UX designer',
-            'project manager'
+            'project manager',
         ];
 
         $locations = [
@@ -39,7 +39,7 @@ class SavedSearchFactory extends Factory
             'Boston',
             'Seattle',
             'Austin',
-            'Denver'
+            'Denver',
         ];
 
         $industries = [
@@ -50,7 +50,7 @@ class SavedSearchFactory extends Factory
             'Retail',
             'Manufacturing',
             'Consulting',
-            'Media'
+            'Media',
         ];
 
         $skills = [
@@ -61,7 +61,7 @@ class SavedSearchFactory extends Factory
             ['C#', '.NET', 'SQL Server'],
             ['Ruby', 'Rails', 'Redis'],
             ['Go', 'Docker', 'Kubernetes'],
-            ['Swift', 'iOS', 'Xcode']
+            ['Swift', 'iOS', 'Xcode'],
         ];
 
         $query = $this->faker->randomElement($queries);
@@ -72,18 +72,18 @@ class SavedSearchFactory extends Factory
             if ($this->faker->boolean(60)) {
                 $filters['location'] = $this->faker->randomElement($locations);
             }
-            
+
             if ($this->faker->boolean(50)) {
                 $filters['industry'] = $this->faker->randomElements($industries, $this->faker->numberBetween(1, 3));
             }
-            
+
             if ($this->faker->boolean(40)) {
                 $filters['graduation_year'] = [
                     'min' => $this->faker->numberBetween(2010, 2020),
-                    'max' => $this->faker->numberBetween(2021, 2024)
+                    'max' => $this->faker->numberBetween(2021, 2024),
                 ];
             }
-            
+
             if ($this->faker->boolean(30)) {
                 $filters['skills'] = $this->faker->randomElement($skills);
             }
@@ -106,28 +106,28 @@ class SavedSearchFactory extends Factory
     private function generateSearchName(string $query, array $filters): string
     {
         $parts = [];
-        
-        if (!empty($query)) {
+
+        if (! empty($query)) {
             $parts[] = ucwords($query);
         }
-        
-        if (!empty($filters['location'])) {
+
+        if (! empty($filters['location'])) {
             $parts[] = "in {$filters['location']}";
         }
-        
-        if (!empty($filters['industry'])) {
-            $industry = is_array($filters['industry']) 
-                ? implode(', ', $filters['industry']) 
+
+        if (! empty($filters['industry'])) {
+            $industry = is_array($filters['industry'])
+                ? implode(', ', $filters['industry'])
                 : $filters['industry'];
             $parts[] = "in $industry";
         }
-        
-        if (!empty($filters['graduation_year'])) {
+
+        if (! empty($filters['graduation_year'])) {
             if (is_array($filters['graduation_year'])) {
                 $parts[] = "({$filters['graduation_year']['min']}-{$filters['graduation_year']['max']})";
             }
         }
-        
+
         return implode(' ', $parts) ?: 'Alumni Search';
     }
 
@@ -138,7 +138,7 @@ class SavedSearchFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'query' => $query,
-            'name' => ucwords($query)
+            'name' => ucwords($query),
         ]);
     }
 
@@ -149,7 +149,7 @@ class SavedSearchFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'filters' => $filters,
-            'name' => $this->generateSearchName($attributes['query'] ?? '', $filters)
+            'name' => $this->generateSearchName($attributes['query'] ?? '', $filters),
         ]);
     }
 
@@ -160,7 +160,7 @@ class SavedSearchFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'result_count' => $this->faker->numberBetween(50, 200),
-            'last_executed_at' => $this->faker->dateTimeBetween('-1 week', 'now')
+            'last_executed_at' => $this->faker->dateTimeBetween('-1 week', 'now'),
         ]);
     }
 
@@ -170,7 +170,7 @@ class SavedSearchFactory extends Factory
     public function empty(): static
     {
         return $this->state(fn (array $attributes) => [
-            'result_count' => 0
+            'result_count' => 0,
         ]);
     }
 
@@ -180,7 +180,7 @@ class SavedSearchFactory extends Factory
     public function recent(): static
     {
         return $this->state(fn (array $attributes) => [
-            'last_executed_at' => $this->faker->dateTimeBetween('-1 day', 'now')
+            'last_executed_at' => $this->faker->dateTimeBetween('-1 day', 'now'),
         ]);
     }
 }

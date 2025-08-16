@@ -252,6 +252,20 @@
             @close="showAddEntryModal = false"
             @saved="handleEntrySaved"
         />
+
+        <!-- User Flow Integration -->
+        <UserFlowIntegration />
+        
+        <!-- Real-time Updates -->
+        <RealTimeUpdates 
+            :show-activity-feed="true"
+        />
+        
+        <!-- Cross-feature Connections -->
+        <CrossFeatureConnections 
+            context="career"
+            :context-data="{ careerEntries, goals, milestones }"
+        />
     </AppLayout>
 </template>
 
@@ -259,7 +273,10 @@
 import { Head, Link } from '@inertiajs/vue3'
 import { ref } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
-import CareerEntryModal from '@/Components/CareerEntryModal.vue'
+import CareerEntryModal from '@/components/CareerEntryModal.vue'
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue'
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue'
+import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue'
 import { format } from 'date-fns'
 import {
     BriefcaseIcon,

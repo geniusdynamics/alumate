@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use App\Models\MentorProfile;
 use App\Models\MentorshipRequest;
 use App\Models\MentorshipSession;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,7 +14,9 @@ class MentorshipSessionTest extends TestCase
     use RefreshDatabase;
 
     private User $mentor;
+
     private User $mentee;
+
     private MentorshipRequest $mentorship;
 
     protected function setUp(): void
@@ -53,17 +55,17 @@ class MentorshipSessionTest extends TestCase
         $response = $this->postJson('/api/mentorships/sessions', $sessionData);
 
         $response->assertStatus(201)
-                ->assertJsonStructure([
-                    'message',
-                    'session' => [
-                        'id',
-                        'mentorship_id',
-                        'scheduled_at',
-                        'duration',
-                        'notes',
-                        'status',
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'message',
+                'session' => [
+                    'id',
+                    'mentorship_id',
+                    'scheduled_at',
+                    'duration',
+                    'notes',
+                    'status',
+                ],
+            ]);
 
         $this->assertDatabaseHas('mentorship_sessions', [
             'mentorship_id' => $this->mentorship->id,
@@ -129,9 +131,9 @@ class MentorshipSessionTest extends TestCase
         $response = $this->postJson('/api/mentorships/sessions', $sessionData);
 
         $response->assertStatus(400)
-                ->assertJson([
-                    'message' => 'Can only schedule sessions for accepted mentorships.'
-                ]);
+            ->assertJson([
+                'message' => 'Can only schedule sessions for accepted mentorships.',
+            ]);
     }
 
     public function test_cannot_schedule_session_in_past()
@@ -147,7 +149,7 @@ class MentorshipSessionTest extends TestCase
         $response = $this->postJson('/api/mentorships/sessions', $sessionData);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['scheduled_at']);
+            ->assertJsonValidationErrors(['scheduled_at']);
     }
 
     public function test_can_get_upcoming_sessions()
@@ -177,20 +179,20 @@ class MentorshipSessionTest extends TestCase
         $response = $this->getJson('/api/mentorships/sessions/upcoming');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'sessions' => [
-                        '*' => [
-                            'id',
-                            'scheduled_at',
-                            'duration',
-                            'status',
-                            'mentorship' => [
-                                'mentor',
-                                'mentee'
-                            ]
-                        ]
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'sessions' => [
+                    '*' => [
+                        'id',
+                        'scheduled_at',
+                        'duration',
+                        'status',
+                        'mentorship' => [
+                            'mentor',
+                            'mentee',
+                        ],
+                    ],
+                ],
+            ]);
 
         $sessions = $response->json('sessions');
         $this->assertCount(2, $sessions);
@@ -216,9 +218,9 @@ class MentorshipSessionTest extends TestCase
         $response = $this->postJson("/api/mentorships/sessions/{$session->id}/complete", $completionData);
 
         $response->assertStatus(200)
-                ->assertJson([
-                    'message' => 'Session completed successfully'
-                ]);
+            ->assertJson([
+                'message' => 'Session completed successfully',
+            ]);
 
         $session->refresh();
         $this->assertEquals('completed', $session->status);
@@ -236,7 +238,7 @@ class MentorshipSessionTest extends TestCase
         $response = $this->postJson('/api/mentorships/sessions', []);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['mentorship_id', 'scheduled_at']);
+            ->assertJsonValidationErrors(['mentorship_id', 'scheduled_at']);
 
         // Test invalid duration
         $response = $this->postJson('/api/mentorships/sessions', [
@@ -246,7 +248,7 @@ class MentorshipSessionTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['duration']);
+            ->assertJsonValidationErrors(['duration']);
 
         // Test invalid mentorship_id
         $response = $this->postJson('/api/mentorships/sessions', [
@@ -256,6 +258,6 @@ class MentorshipSessionTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['mentorship_id']);
+            ->assertJsonValidationErrors(['mentorship_id']);
     }
 }

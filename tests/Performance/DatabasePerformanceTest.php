@@ -2,16 +2,15 @@
 
 namespace Tests\Performance;
 
-use Tests\TestCase;
-use App\Models\Graduate;
 use App\Models\Course;
+use App\Models\Employer;
+use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Employer;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Tests\TestCase;
 
 class DatabasePerformanceTest extends TestCase
 {
@@ -20,7 +19,7 @@ class DatabasePerformanceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Enable query logging for performance analysis
         DB::enableQueryLog();
     }
@@ -29,35 +28,35 @@ class DatabasePerformanceTest extends TestCase
     {
         // Create large dataset
         $courses = Course::factory()->count(50)->create();
-        
+
         $startTime = microtime(true);
-        
+
         // Create 10,000 graduates
         Graduate::factory()->count(10000)->create([
-            'course_id' => $courses->random()->id
+            'course_id' => $courses->random()->id,
         ]);
-        
+
         $creationTime = microtime(true) - $startTime;
         $this->assertLessThan(30, $creationTime, 'Graduate creation took too long');
 
         // Test search performance
         $searchStartTime = microtime(true);
-        
+
         $results = Graduate::where('employment_status->status', 'unemployed')
-                          ->where('job_search_active', true)
-                          ->whereJsonContains('skills', 'PHP')
-                          ->with(['course'])
-                          ->paginate(50);
-        
+            ->where('job_search_active', true)
+            ->whereJsonContains('skills', 'PHP')
+            ->with(['course'])
+            ->paginate(50);
+
         $searchTime = microtime(true) - $searchStartTime;
         $this->assertLessThan(2, $searchTime, 'Graduate search took too long');
-        
+
         // Verify query efficiency
         $queries = DB::getQueryLog();
-        $searchQueries = array_filter($queries, function($query) {
+        $searchQueries = array_filter($queries, function ($query) {
             return strpos($query['query'], 'graduates') !== false;
         });
-        
+
         $this->assertLessThan(5, count($searchQueries), 'Too many queries for graduate search');
     }
 
@@ -66,36 +65,36 @@ class DatabasePerformanceTest extends TestCase
         // Create test data
         $course = Course::factory()->create();
         $employer = Employer::factory()->create();
-        
+
         // Create 5,000 graduates with various skills
         $skills = ['PHP', 'JavaScript', 'Python', 'Java', 'C#', 'Laravel', 'React', 'Vue.js'];
         Graduate::factory()->count(5000)->create([
             'course_id' => $course->id,
-            'skills' => function() use ($skills) {
+            'skills' => function () use ($skills) {
                 return collect($skills)->random(rand(2, 5))->toArray();
             },
             'job_search_active' => true,
-            'allow_employer_contact' => true
+            'allow_employer_contact' => true,
         ]);
 
         // Create job with specific requirements
         $job = Job::factory()->create([
             'employer_id' => $employer->id,
             'course_id' => $course->id,
-            'required_skills' => ['PHP', 'Laravel', 'MySQL']
+            'required_skills' => ['PHP', 'Laravel', 'MySQL'],
         ]);
 
         $startTime = microtime(true);
-        
+
         // Test job matching performance
         $matches = $job->getMatchingGraduates();
-        
+
         $matchingTime = microtime(true) - $startTime;
         $this->assertLessThan(3, $matchingTime, 'Job matching took too long');
-        
+
         // Verify results quality
         $this->assertGreaterThan(0, $matches->count());
-        
+
         foreach ($matches->take(10) as $graduate) {
             $this->assertContains('PHP', $graduate->skills);
             $this->assertTrue($graduate->job_search_active);
@@ -107,53 +106,53 @@ class DatabasePerformanceTest extends TestCase
         // Create large dataset for analytics
         $courses = Course::factory()->count(20)->create();
         $employers = Employer::factory()->count(100)->create();
-        
+
         // Create 15,000 graduates
         Graduate::factory()->count(15000)->create([
-            'course_id' => function() use ($courses) {
+            'course_id' => function () use ($courses) {
                 return $courses->random()->id;
-            }
+            },
         ]);
 
         // Create 2,000 jobs
         Job::factory()->count(2000)->create([
-            'employer_id' => function() use ($employers) {
+            'employer_id' => function () use ($employers) {
                 return $employers->random()->id;
             },
-            'course_id' => function() use ($courses) {
+            'course_id' => function () use ($courses) {
                 return $courses->random()->id;
-            }
+            },
         ]);
 
         $startTime = microtime(true);
-        
+
         // Test employment rate calculation
-        $employmentRate = Graduate::where('employment_status->status', 'employed')->count() / 
+        $employmentRate = Graduate::where('employment_status->status', 'employed')->count() /
                          Graduate::count() * 100;
-        
+
         $calculationTime = microtime(true) - $startTime;
         $this->assertLessThan(1, $calculationTime, 'Employment rate calculation took too long');
 
         $startTime = microtime(true);
-        
+
         // Test course-wise analytics
         $courseAnalytics = Course::withCount([
             'graduates',
-            'graduates as employed_count' => function($query) {
+            'graduates as employed_count' => function ($query) {
                 $query->where('employment_status->status', 'employed');
-            }
+            },
         ])->get();
-        
+
         $analyticsTime = microtime(true) - $startTime;
         $this->assertLessThan(2, $analyticsTime, 'Course analytics calculation took too long');
-        
+
         $this->assertEquals(20, $courseAnalytics->count());
     }
 
     public function test_bulk_import_performance(): void
     {
         $course = Course::factory()->create();
-        
+
         // Prepare bulk data
         $graduateData = [];
         for ($i = 0; $i < 5000; $i++) {
@@ -167,18 +166,18 @@ class DatabasePerformanceTest extends TestCase
                 'skills' => json_encode(['PHP', 'JavaScript']),
                 'employment_status' => json_encode(['status' => 'unemployed']),
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ];
         }
 
         $startTime = microtime(true);
-        
+
         // Test bulk insert performance
         Graduate::insert($graduateData);
-        
+
         $insertTime = microtime(true) - $startTime;
         $this->assertLessThan(10, $insertTime, 'Bulk insert took too long');
-        
+
         // Verify data integrity
         $this->assertEquals(5000, Graduate::count());
     }
@@ -190,15 +189,15 @@ class DatabasePerformanceTest extends TestCase
         $employer = Employer::factory()->create();
         $job = Job::factory()->active()->create([
             'employer_id' => $employer->id,
-            'course_id' => $course->id
+            'course_id' => $course->id,
         ]);
-        
+
         $graduates = Graduate::factory()->count(1000)->create([
-            'course_id' => $course->id
+            'course_id' => $course->id,
         ]);
 
         $startTime = microtime(true);
-        
+
         // Simulate concurrent applications
         $applicationData = [];
         foreach ($graduates as $graduate) {
@@ -208,15 +207,15 @@ class DatabasePerformanceTest extends TestCase
                 'status' => 'pending',
                 'applied_at' => now(),
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ];
         }
-        
+
         JobApplication::insert($applicationData);
-        
+
         $applicationTime = microtime(true) - $startTime;
         $this->assertLessThan(5, $applicationTime, 'Bulk job applications took too long');
-        
+
         // Verify application counts
         $this->assertEquals(1000, $job->applications()->count());
     }
@@ -228,25 +227,25 @@ class DatabasePerformanceTest extends TestCase
         Job::factory()->count(2000)->create();
 
         $startTime = microtime(true);
-        
+
         // Test full-text search performance
         $graduateResults = Graduate::where('name', 'LIKE', '%John%')
-                                 ->orWhereJsonContains('skills', 'PHP')
-                                 ->limit(100)
-                                 ->get();
-        
+            ->orWhereJsonContains('skills', 'PHP')
+            ->limit(100)
+            ->get();
+
         $searchTime = microtime(true) - $startTime;
         $this->assertLessThan(1, $searchTime, 'Graduate search took too long');
 
         $startTime = microtime(true);
-        
+
         // Test job search performance
         $jobResults = Job::where('title', 'LIKE', '%Developer%')
-                        ->orWhereJsonContains('required_skills', 'PHP')
-                        ->with(['employer', 'course'])
-                        ->limit(100)
-                        ->get();
-        
+            ->orWhereJsonContains('required_skills', 'PHP')
+            ->with(['employer', 'course'])
+            ->limit(100)
+            ->get();
+
         $jobSearchTime = microtime(true) - $startTime;
         $this->assertLessThan(1, $jobSearchTime, 'Job search took too long');
     }
@@ -259,28 +258,28 @@ class DatabasePerformanceTest extends TestCase
 
         // Test without cache
         $startTime = microtime(true);
-        
+
         $stats = [
             'total_graduates' => Graduate::count(),
             'employed_graduates' => Graduate::where('employment_status->status', 'employed')->count(),
-            'courses_count' => Course::count()
+            'courses_count' => Course::count(),
         ];
-        
+
         $noCacheTime = microtime(true) - $startTime;
 
         // Test with cache
         Cache::flush();
-        
+
         $startTime = microtime(true);
-        
-        $cachedStats = Cache::remember('dashboard_stats', 3600, function() {
+
+        $cachedStats = Cache::remember('dashboard_stats', 3600, function () {
             return [
                 'total_graduates' => Graduate::count(),
                 'employed_graduates' => Graduate::where('employment_status->status', 'employed')->count(),
-                'courses_count' => Course::count()
+                'courses_count' => Course::count(),
             ];
         });
-        
+
         $cacheTime = microtime(true) - $startTime;
 
         // Second call should be much faster
@@ -327,11 +326,11 @@ class DatabasePerformanceTest extends TestCase
     public function test_database_connection_pool_performance(): void
     {
         $startTime = microtime(true);
-        
+
         // Simulate multiple concurrent database operations
         $operations = [];
         for ($i = 0; $i < 100; $i++) {
-            $operations[] = function() {
+            $operations[] = function () {
                 return Graduate::inRandomOrder()->first();
             };
         }
@@ -343,7 +342,7 @@ class DatabasePerformanceTest extends TestCase
         }
 
         $totalTime = microtime(true) - $startTime;
-        
+
         // Should handle 100 operations efficiently
         $this->assertLessThan(5, $totalTime, 'Database connection pool performance issue');
         $this->assertCount(100, $results);
@@ -353,11 +352,11 @@ class DatabasePerformanceTest extends TestCase
     {
         // Log query performance for analysis
         $queries = DB::getQueryLog();
-        $slowQueries = array_filter($queries, function($query) {
+        $slowQueries = array_filter($queries, function ($query) {
             return $query['time'] > 100; // Queries taking more than 100ms
         });
 
-        if (!empty($slowQueries)) {
+        if (! empty($slowQueries)) {
             echo "\nSlow queries detected:\n";
             foreach ($slowQueries as $query) {
                 echo "Time: {$query['time']}ms - Query: {$query['query']}\n";

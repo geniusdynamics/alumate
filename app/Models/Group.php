@@ -50,8 +50,8 @@ class Group extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_memberships')
-                    ->withPivot('role', 'joined_at', 'status')
-                    ->withTimestamps();
+            ->withPivot('role', 'joined_at', 'status')
+            ->withTimestamps();
     }
 
     /**
@@ -114,7 +114,7 @@ class Group extends Model
         if ($status === 'active') {
             $this->updateMemberCount();
         }
-        
+
         return true;
     }
 
@@ -124,12 +124,13 @@ class Group extends Model
     public function removeMember(User $user): bool
     {
         $detached = $this->users()->detach($user->id);
-        
+
         if ($detached) {
             $this->updateMemberCount();
+
             return true;
         }
-        
+
         return false;
     }
 
@@ -179,7 +180,7 @@ class Group extends Model
             ->wherePivot('status', 'active')
             ->first();
 
-        if (!$membership) {
+        if (! $membership) {
             return false;
         }
 
@@ -236,6 +237,7 @@ class Group extends Model
 
         if ($updated) {
             $this->updateMemberCount();
+
             return true;
         }
 

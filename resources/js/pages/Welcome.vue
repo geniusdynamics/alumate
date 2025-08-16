@@ -372,7 +372,7 @@
                                 Development server is running
                             </p>
                             <p class="text-sm text-green-600 font-mono mt-1">
-                                Laravel: http://127.0.0.1:8080 | Vite: http://localhost:5173
+                                Laravel: http://127.0.0.1:8080 | Vite: http://localhost:5100
                             </p>
                         </div>
                     </div>

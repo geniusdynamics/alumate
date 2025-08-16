@@ -409,7 +409,7 @@ export default {
       
       const weeks = []
       let currentWeek = []
-      let currentDate = new Date(startDate)
+      const currentDate = new Date(startDate)
       
       for (let i = 0; i < 42; i++) {
         const dayWorkshops = this.workshops.filter(w => 
@@ -686,7 +686,7 @@ export default {
 }
 
 .calendar-day.has-events {
-  @apply bg-blue-25;
+  @apply bg-blue-50;
 }
 
 .day-number {

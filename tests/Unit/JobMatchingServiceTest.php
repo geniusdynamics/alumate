@@ -2,11 +2,11 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
-use App\Models\Company;
-use App\Models\JobPosting;
-use App\Models\Connection;
 use App\Models\Circle;
+use App\Models\Company;
+use App\Models\Connection;
+use App\Models\JobPosting;
+use App\Models\User;
 use App\Services\JobMatchingService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -20,15 +20,15 @@ class JobMatchingServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->jobMatchingService = new JobMatchingService();
+        $this->jobMatchingService = new JobMatchingService;
     }
 
     public function test_calculate_match_score_returns_weighted_score()
     {
         $user = User::factory()->create([
-            'skills' => ['PHP', 'Laravel', 'Vue.js']
+            'skills' => ['PHP', 'Laravel', 'Vue.js'],
         ]);
-        
+
         $company = Company::factory()->create();
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,
@@ -50,7 +50,7 @@ class JobMatchingServiceTest extends TestCase
         $contact1 = User::factory()->create();
         $contact2 = User::factory()->create();
         $company = Company::factory()->create();
-        
+
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,
         ]);
@@ -92,9 +92,9 @@ class JobMatchingServiceTest extends TestCase
     public function test_skills_score_calculates_percentage_match()
     {
         $user = User::factory()->create([
-            'skills' => ['PHP', 'Laravel', 'Vue.js', 'MySQL']
+            'skills' => ['PHP', 'Laravel', 'Vue.js', 'MySQL'],
         ]);
-        
+
         $company = Company::factory()->create();
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,
@@ -109,9 +109,9 @@ class JobMatchingServiceTest extends TestCase
     public function test_skills_score_handles_partial_matches()
     {
         $user = User::factory()->create([
-            'skills' => ['PHP', 'Vue.js']
+            'skills' => ['PHP', 'Vue.js'],
         ]);
-        
+
         $company = Company::factory()->create();
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,
@@ -126,7 +126,7 @@ class JobMatchingServiceTest extends TestCase
     public function test_education_score_considers_degree_relevance()
     {
         $user = User::factory()->create();
-        
+
         // Create education with computer science degree
         $user->educations()->create([
             'degree' => 'Bachelor of Computer Science',
@@ -152,7 +152,7 @@ class JobMatchingServiceTest extends TestCase
         $user = User::factory()->create();
         $employee = User::factory()->create();
         $company = Company::factory()->create();
-        
+
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,
         ]);
@@ -184,7 +184,7 @@ class JobMatchingServiceTest extends TestCase
         $user = User::factory()->create();
         $contact = User::factory()->create();
         $company = Company::factory()->create();
-        
+
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,
         ]);
@@ -213,12 +213,12 @@ class JobMatchingServiceTest extends TestCase
     public function test_get_match_reasons_returns_detailed_explanations()
     {
         $user = User::factory()->create([
-            'skills' => ['PHP', 'Laravel']
+            'skills' => ['PHP', 'Laravel'],
         ]);
-        
+
         $contact = User::factory()->create();
         $company = Company::factory()->create();
-        
+
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,
             'skills_required' => ['PHP', 'Laravel'],
@@ -243,7 +243,7 @@ class JobMatchingServiceTest extends TestCase
 
         $this->assertIsArray($reasons);
         $this->assertNotEmpty($reasons);
-        
+
         // Check that reasons have required structure
         foreach ($reasons as $reason) {
             $this->assertArrayHasKey('type', $reason);
@@ -272,7 +272,7 @@ class JobMatchingServiceTest extends TestCase
         // Test update
         $originalScore = $matchScore->score;
         $updatedMatchScore = $this->jobMatchingService->storeMatchScore($job, $user);
-        
+
         $this->assertEquals($matchScore->id, $updatedMatchScore->id);
         // Score might be the same or different depending on data, but should be recalculated
         $this->assertNotNull($updatedMatchScore->calculated_at);
@@ -294,9 +294,9 @@ class JobMatchingServiceTest extends TestCase
     public function test_neutral_skills_score_when_no_skills_data()
     {
         $user = User::factory()->create([
-            'skills' => null
+            'skills' => null,
         ]);
-        
+
         $company = Company::factory()->create();
         $job = JobPosting::factory()->create([
             'company_id' => $company->id,

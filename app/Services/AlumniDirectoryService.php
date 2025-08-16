@@ -2,12 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\Models\Circle;
-use App\Models\Group;
 use App\Models\Connection;
+use App\Models\Group;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class AlumniDirectoryService
@@ -18,13 +17,13 @@ class AlumniDirectoryService
     public function getFilteredAlumni(array $filters, array $pagination = [])
     {
         $query = $this->buildFilterQuery($filters);
-        
+
         $perPage = $pagination['per_page'] ?? 20;
         $page = $pagination['page'] ?? 1;
-        
+
         return $query->paginate($perPage, ['*'], 'page', $page);
     }
-    
+
     /**
      * Build database query from filter parameters
      */
@@ -40,107 +39,107 @@ class AlumniDirectoryService
                 },
                 'socialProfiles',
                 'circles',
-                'groups'
+                'groups',
             ])
             ->where('is_active', true);
-        
+
         // Search query
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $searchTerm = $filters['search'];
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'ILIKE', "%{$searchTerm}%")
-                  ->orWhere('bio', 'ILIKE', "%{$searchTerm}%")
-                  ->orWhere('location', 'ILIKE', "%{$searchTerm}%")
-                  ->orWhereHas('workExperiences', function ($workQ) use ($searchTerm) {
-                      $workQ->where('company', 'ILIKE', "%{$searchTerm}%")
-                           ->orWhere('title', 'ILIKE', "%{$searchTerm}%");
-                  })
-                  ->orWhereHas('educations', function ($eduQ) use ($searchTerm) {
-                      $eduQ->whereHas('institution', function ($instQ) use ($searchTerm) {
-                          $instQ->where('name', 'ILIKE', "%{$searchTerm}%");
-                      });
-                  });
+                    ->orWhere('bio', 'ILIKE', "%{$searchTerm}%")
+                    ->orWhere('location', 'ILIKE', "%{$searchTerm}%")
+                    ->orWhereHas('workExperiences', function ($workQ) use ($searchTerm) {
+                        $workQ->where('company', 'ILIKE', "%{$searchTerm}%")
+                            ->orWhere('title', 'ILIKE', "%{$searchTerm}%");
+                    })
+                    ->orWhereHas('educations', function ($eduQ) use ($searchTerm) {
+                        $eduQ->whereHas('institution', function ($instQ) use ($searchTerm) {
+                            $instQ->where('name', 'ILIKE', "%{$searchTerm}%");
+                        });
+                    });
             });
         }
-        
+
         // Graduation year range
-        if (!empty($filters['graduation_year_from']) || !empty($filters['graduation_year_to'])) {
+        if (! empty($filters['graduation_year_from']) || ! empty($filters['graduation_year_to'])) {
             $query->whereHas('educations', function ($eduQ) use ($filters) {
-                if (!empty($filters['graduation_year_from'])) {
+                if (! empty($filters['graduation_year_from'])) {
                     $eduQ->where('graduation_year', '>=', $filters['graduation_year_from']);
                 }
-                if (!empty($filters['graduation_year_to'])) {
+                if (! empty($filters['graduation_year_to'])) {
                     $eduQ->where('graduation_year', '<=', $filters['graduation_year_to']);
                 }
             });
         }
-        
+
         // Location filter
-        if (!empty($filters['location'])) {
+        if (! empty($filters['location'])) {
             $query->where('location', 'ILIKE', "%{$filters['location']}%");
         }
-        
+
         // Industry filter
-        if (!empty($filters['industries']) && is_array($filters['industries'])) {
+        if (! empty($filters['industries']) && is_array($filters['industries'])) {
             $query->whereHas('workExperiences', function ($workQ) use ($filters) {
                 $workQ->whereIn('industry', $filters['industries']);
             });
         }
-        
+
         // Company filter
-        if (!empty($filters['company'])) {
+        if (! empty($filters['company'])) {
             $query->whereHas('workExperiences', function ($workQ) use ($filters) {
                 $workQ->where('company', 'ILIKE', "%{$filters['company']}%");
             });
         }
-        
+
         // Skills filter
-        if (!empty($filters['skills']) && is_array($filters['skills'])) {
+        if (! empty($filters['skills']) && is_array($filters['skills'])) {
             $query->where(function ($q) use ($filters) {
                 foreach ($filters['skills'] as $skill) {
                     $q->orWhereJsonContains('skills', $skill);
                 }
             });
         }
-        
+
         // Current role/title filter
-        if (!empty($filters['current_role'])) {
+        if (! empty($filters['current_role'])) {
             $query->whereHas('workExperiences', function ($workQ) use ($filters) {
                 $workQ->where('is_current', true)
-                     ->where('title', 'ILIKE', "%{$filters['current_role']}%");
+                    ->where('title', 'ILIKE', "%{$filters['current_role']}%");
             });
         }
-        
+
         // Institution filter
-        if (!empty($filters['institutions']) && is_array($filters['institutions'])) {
+        if (! empty($filters['institutions']) && is_array($filters['institutions'])) {
             $query->whereHas('educations', function ($eduQ) use ($filters) {
                 $eduQ->whereIn('institution_id', $filters['institutions']);
             });
         }
-        
+
         // Circle filter
-        if (!empty($filters['circles']) && is_array($filters['circles'])) {
+        if (! empty($filters['circles']) && is_array($filters['circles'])) {
             $query->whereHas('circles', function ($circleQ) use ($filters) {
                 $circleQ->whereIn('circles.id', $filters['circles']);
             });
         }
-        
+
         // Group filter
-        if (!empty($filters['groups']) && is_array($filters['groups'])) {
+        if (! empty($filters['groups']) && is_array($filters['groups'])) {
             $query->whereHas('groups', function ($groupQ) use ($filters) {
                 $groupQ->whereIn('groups.id', $filters['groups']);
             });
         }
-        
+
         // Sort options
         $sortBy = $filters['sort_by'] ?? 'name';
         $sortOrder = $filters['sort_order'] ?? 'asc';
-        
+
         switch ($sortBy) {
             case 'graduation_year':
                 $query->leftJoin('educations', 'users.id', '=', 'educations.user_id')
-                      ->orderBy('educations.graduation_year', $sortOrder)
-                      ->select('users.*');
+                    ->orderBy('educations.graduation_year', $sortOrder)
+                    ->select('users.*');
                 break;
             case 'location':
                 $query->orderBy('location', $sortOrder);
@@ -151,10 +150,10 @@ class AlumniDirectoryService
             default:
                 $query->orderBy('name', $sortOrder);
         }
-        
+
         return $query;
-    }   
- 
+    }
+
     /**
      * Get available filter options with counts
      */
@@ -171,7 +170,7 @@ class AlumniDirectoryService
             'groups' => $this->getActiveGroups(),
         ];
     }
-    
+
     /**
      * Get detailed alumni profile with privacy controls
      */
@@ -186,25 +185,25 @@ class AlumniDirectoryService
             'circles',
             'groups.institution',
             'achievements',
-            'certifications'
+            'certifications',
         ])->find($userId);
-        
-        if (!$alumni) {
+
+        if (! $alumni) {
             return null;
         }
-        
+
         // Apply privacy controls
         $alumni = $this->applyPrivacyControls($alumni, $currentUser);
-        
+
         // Add computed attributes
         $alumni->mutual_connections = $this->getMutualConnections($alumni, $currentUser);
         $alumni->shared_circles = $this->getSharedCircles($alumni, $currentUser);
         $alumni->shared_groups = $this->getSharedGroups($alumni, $currentUser);
         $alumni->connection_status = $this->getConnectionStatus($alumni, $currentUser);
-        
+
         return $alumni;
     }
-    
+
     /**
      * Get mutual connections between two users
      */
@@ -212,16 +211,16 @@ class AlumniDirectoryService
     {
         $alumniConnections = $alumni->connections()->pluck('connected_user_id')->toArray();
         $currentUserConnections = $currentUser->connections()->pluck('connected_user_id')->toArray();
-        
+
         $mutualIds = array_intersect($alumniConnections, $currentUserConnections);
-        
+
         return User::whereIn('id', $mutualIds)
             ->select('id', 'name', 'avatar_url')
             ->limit(10)
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get shared circles between two users
      */
@@ -233,7 +232,7 @@ class AlumniDirectoryService
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get shared groups between two users
      */
@@ -245,7 +244,7 @@ class AlumniDirectoryService
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get connection status between two users
      */
@@ -254,22 +253,22 @@ class AlumniDirectoryService
         if ($alumni->id === $currentUser->id) {
             return 'self';
         }
-        
+
         $connection = Connection::where(function ($q) use ($alumni, $currentUser) {
             $q->where('user_id', $currentUser->id)
-              ->where('connected_user_id', $alumni->id);
+                ->where('connected_user_id', $alumni->id);
         })->orWhere(function ($q) use ($alumni, $currentUser) {
             $q->where('user_id', $alumni->id)
-              ->where('connected_user_id', $currentUser->id);
+                ->where('connected_user_id', $currentUser->id);
         })->first();
-        
-        if (!$connection) {
+
+        if (! $connection) {
             return 'none';
         }
-        
+
         return $connection->status;
     }
-    
+
     /**
      * Apply privacy controls to alumni profile
      */
@@ -277,31 +276,31 @@ class AlumniDirectoryService
     {
         $privacySettings = $alumni->privacy_settings ?? [];
         $connectionStatus = $this->getConnectionStatus($alumni, $currentUser);
-        
+
         // Hide contact information based on privacy settings
-        if (!$this->canViewContactInfo($alumni, $currentUser, $connectionStatus)) {
+        if (! $this->canViewContactInfo($alumni, $currentUser, $connectionStatus)) {
             $alumni->email = null;
             $alumni->phone = null;
         }
-        
+
         // Hide work experience details if not connected
-        if (!$this->canViewWorkDetails($alumni, $currentUser, $connectionStatus)) {
+        if (! $this->canViewWorkDetails($alumni, $currentUser, $connectionStatus)) {
             $alumni->workExperiences->each(function ($work) {
                 $work->salary = null;
                 $work->detailed_description = null;
             });
         }
-        
+
         return $alumni;
     }
-    
+
     /**
      * Check if current user can view contact information
      */
     private function canViewContactInfo(User $alumni, User $currentUser, string $connectionStatus): bool
     {
         $setting = $alumni->privacy_settings['contact_info'] ?? 'connections';
-        
+
         switch ($setting) {
             case 'public':
                 return true;
@@ -313,14 +312,14 @@ class AlumniDirectoryService
                 return false;
         }
     }
-    
+
     /**
      * Check if current user can view work details
      */
     private function canViewWorkDetails(User $alumni, User $currentUser, string $connectionStatus): bool
     {
         $setting = $alumni->privacy_settings['work_details'] ?? 'public';
-        
+
         switch ($setting) {
             case 'public':
                 return true;
@@ -332,7 +331,7 @@ class AlumniDirectoryService
                 return true;
         }
     }
-    
+
     /**
      * Get graduation year range for filters
      */
@@ -342,13 +341,13 @@ class AlumniDirectoryService
             ->selectRaw('MIN(graduation_year) as min_year, MAX(graduation_year) as max_year')
             ->whereNotNull('graduation_year')
             ->first();
-        
+
         return [
             'min' => $years->min_year ?? date('Y') - 50,
-            'max' => $years->max_year ?? date('Y')
+            'max' => $years->max_year ?? date('Y'),
         ];
     }
-    
+
     /**
      * Get top locations for filters
      */
@@ -364,7 +363,7 @@ class AlumniDirectoryService
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get top industries for filters
      */
@@ -380,7 +379,7 @@ class AlumniDirectoryService
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get top companies for filters
      */
@@ -396,7 +395,7 @@ class AlumniDirectoryService
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get top skills for filters
      */
@@ -417,10 +416,10 @@ class AlumniDirectoryService
             })
             ->values()
             ->toArray();
-        
+
         return $skills;
     }
-    
+
     /**
      * Get institutions for filters
      */
@@ -434,7 +433,7 @@ class AlumniDirectoryService
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get active circles for filters
      */
@@ -447,7 +446,7 @@ class AlumniDirectoryService
             ->get()
             ->toArray();
     }
-    
+
     /**
      * Get active groups for filters
      */

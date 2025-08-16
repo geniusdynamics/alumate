@@ -49,7 +49,7 @@ class HandleInertiaRequests extends Middleware
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
                     'email_verified_at' => $request->user()->email_verified_at,
-                    'roles' => $request->user()->roles->map(fn($role) => [
+                    'roles' => $request->user()->roles->map(fn ($role) => [
                         'id' => $role->id,
                         'name' => $role->name,
                         'permissions' => $role->permissions->pluck('name'),

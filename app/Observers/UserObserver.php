@@ -2,15 +2,16 @@
 
 namespace App\Observers;
 
+use App\Jobs\UpdateUserCirclesJob;
 use App\Models\User;
 use App\Services\CircleManager;
 use App\Services\GroupManager;
-use App\Jobs\UpdateUserCirclesJob;
 use Illuminate\Support\Facades\Log;
 
 class UserObserver
 {
     protected CircleManager $circleManager;
+
     protected GroupManager $groupManager;
 
     public function __construct(CircleManager $circleManager, GroupManager $groupManager)
@@ -27,19 +28,19 @@ class UserObserver
         try {
             // Generate circles for the new user
             $this->circleManager->generateCirclesForUser($user);
-            
+
             // Auto-join school groups
             $this->groupManager->autoJoinSchoolGroups($user);
-            
+
             Log::info('Successfully processed new user registration', [
                 'user_id' => $user->id,
-                'email' => $user->email
+                'email' => $user->email,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to process new user registration', [
                 'user_id' => $user->id,
                 'email' => $user->email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -54,14 +55,14 @@ class UserObserver
             try {
                 // Dispatch job to update circles in the background
                 UpdateUserCirclesJob::dispatch($user);
-                
+
                 Log::info('Dispatched circle update job for user', [
-                    'user_id' => $user->id
+                    'user_id' => $user->id,
                 ]);
             } catch (\Exception $e) {
                 Log::error('Failed to dispatch circle update job', [
                     'user_id' => $user->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -86,12 +87,12 @@ class UserObserver
             }
 
             Log::info('Successfully cleaned up user circles and groups', [
-                'user_id' => $user->id
+                'user_id' => $user->id,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to clean up user circles and groups', [
                 'user_id' => $user->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -104,12 +105,12 @@ class UserObserver
         // Check if the user's education history has been modified
         // This is a simple check - in a real application, you might want to
         // track specific changes to education records
-        
+
         // For now, we'll check if the user's profile data has changed
         // which might indicate education updates
         $dirty = $user->getDirty();
-        
-        return isset($dirty['profile_data']) || 
+
+        return isset($dirty['profile_data']) ||
                $user->educations()->where('updated_at', '>', now()->subMinutes(5))->exists();
     }
 }

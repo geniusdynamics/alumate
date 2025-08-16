@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('expires_at')->nullable();
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
-            
+
             $table->index(['is_published', 'published_at']);
             $table->index(['scope', 'type']);
             $table->index(['expires_at']);
@@ -34,7 +34,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamp('read_at');
             $table->timestamps();
-            
+
             $table->unique(['announcement_id', 'user_id']);
         });
 

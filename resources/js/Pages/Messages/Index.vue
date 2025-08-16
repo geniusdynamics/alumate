@@ -1,229 +1,288 @@
 <template>
-    <AppLayout title="Messages">
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Messages
-            </h2>
-        </template>
+  <div class="messaging-app">
+    <Head title="Messages" />
+    
+    <div class="messaging-layout">
+      <!-- Sidebar -->
+      <div class="messaging-sidebar">
+        <ConversationList
+          :selected-conversation-id="selectedConversation?.id"
+          @conversation-selected="selectConversation"
+        />
+      </div>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
-                        <!-- Tabs -->
-                        <div class="border-b border-gray-200 mb-6">
-                            <nav class="-mb-px flex space-x-8">
-                                <Link 
-                                    :href="route('messages.index', { tab: 'inbox' })"
-                                    :class="[
-                                        'py-2 px-1 border-b-2 font-medium text-sm',
-                                        tab === 'inbox' 
-                                            ? 'border-indigo-500 text-indigo-600' 
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    ]"
-                                >
-                                    Inbox
-                                    <span v-if="unreadCount > 0" class="ml-2 bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                                        {{ unreadCount }}
-                                    </span>
-                                </Link>
-                                <Link 
-                                    :href="route('messages.index', { tab: 'sent' })"
-                                    :class="[
-                                        'py-2 px-1 border-b-2 font-medium text-sm',
-                                        tab === 'sent' 
-                                            ? 'border-indigo-500 text-indigo-600' 
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    ]"
-                                >
-                                    Sent
-                                </Link>
-                                <Link 
-                                    :href="route('messages.index', { tab: 'archived' })"
-                                    :class="[
-                                        'py-2 px-1 border-b-2 font-medium text-sm',
-                                        tab === 'archived' 
-                                            ? 'border-indigo-500 text-indigo-600' 
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    ]"
-                                >
-                                    Archived
-                                </Link>
-                            </nav>
-                        </div>
+      <!-- Main Chat Area -->
+      <div class="messaging-main">
+        <ChatInterface :conversation="selectedConversation" />
+      </div>
+    </div>
 
-                        <!-- Filters -->
-                        <div class="mb-6 flex flex-col sm:flex-row gap-4">
-                            <div class="flex-1">
-                                <input
-                                    v-model="searchForm.search"
-                                    type="text"
-                                    placeholder="Search messages..."
-                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    @input="search"
-                                />
-                            </div>
-                            <div>
-                                <select
-                                    v-model="searchForm.type"
-                                    class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    @change="search"
-                                >
-                                    <option value="">All Types</option>
-                                    <option value="direct">Direct</option>
-                                    <option value="application_related">Application Related</option>
-                                    <option value="system">System</option>
-                                </select>
-                            </div>
-                            <div>
-                                <Link
-                                    :href="route('messages.create')"
-                                    class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
-                                >
-                                    New Message
-                                </Link>
-                            </div>
-                        </div>
-
-                        <!-- Messages List -->
-                        <div class="space-y-4">
-                            <div
-                                v-for="message in messages.data"
-                                :key="message.id"
-                                class="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
-                            >
-                                <div class="flex items-start justify-between">
-                                    <div class="flex-1">
-                                        <div class="flex items-center space-x-2 mb-2">
-                                            <Link
-                                                :href="route('messages.show', message.id)"
-                                                :class="[
-                                                    'font-medium text-lg',
-                                                    !message.read_at && tab === 'inbox' ? 'text-gray-900' : 'text-gray-700'
-                                                ]"
-                                            >
-                                                {{ message.subject }}
-                                            </Link>
-                                            <span
-                                                v-if="!message.read_at && tab === 'inbox'"
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-                                            >
-                                                New
-                                            </span>
-                                            <span
-                                                v-if="message.type !== 'direct'"
-                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
-                                            >
-                                                {{ message.type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) }}
-                                            </span>
-                                        </div>
-                                        <div class="text-sm text-gray-600 mb-2">
-                                            <span v-if="tab === 'sent'">To: {{ message.recipient.name }}</span>
-                                            <span v-else>From: {{ message.sender.name }}</span>
-                                            <span class="mx-2">•</span>
-                                            <span>{{ formatDate(message.created_at) }}</span>
-                                        </div>
-                                        <p class="text-gray-700 text-sm line-clamp-2">
-                                            {{ message.content }}
-                                        </p>
-                                    </div>
-                                    <div class="flex items-center space-x-2 ml-4">
-                                        <button
-                                            v-if="tab !== 'archived'"
-                                            @click="archiveMessage(message)"
-                                            class="text-gray-400 hover:text-gray-600"
-                                            title="Archive"
-                                        >
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8l4 4 4-4m0 0l4-4 4 4m-4-4v12" />
-                                            </svg>
-                                        </button>
-                                        <button
-                                            v-else
-                                            @click="unarchiveMessage(message)"
-                                            class="text-gray-400 hover:text-gray-600"
-                                            title="Unarchive"
-                                        >
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l4-4 4 4m0 0l4-4-4-4m4 4H3" />
-                                            </svg>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div v-if="messages.links" class="mt-6">
-                            <Pagination :links="messages.links" />
-                        </div>
-
-                        <!-- Empty State -->
-                        <div v-if="messages.data.length === 0" class="text-center py-12">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8l-4 4-4-4m0 0L9 9l-4-4" />
-                            </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">No messages</h3>
-                            <p class="mt-1 text-sm text-gray-500">
-                                {{ tab === 'inbox' ? "You don't have any messages yet." : `No ${tab} messages found.` }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Mobile overlay for conversation list -->
+    <div
+      v-if="showMobileSidebar"
+      class="mobile-sidebar-overlay"
+      @click="showMobileSidebar = false"
+    >
+      <div class="mobile-sidebar" @click.stop>
+        <div class="mobile-sidebar-header">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Messages</h2>
+          <button
+            @click="showMobileSidebar = false"
+            class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-    </AppLayout>
+        <ConversationList
+          :selected-conversation-id="selectedConversation?.id"
+          @conversation-selected="selectConversationMobile"
+        />
+      </div>
+    </div>
+
+    <!-- Mobile header -->
+    <div class="mobile-header">
+      <button
+        @click="showMobileSidebar = true"
+        class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <h1 class="text-lg font-semibold text-gray-900 dark:text-white">
+        {{ selectedConversation ? getConversationTitle(selectedConversation) : 'Messages' }}
+      </h1>
+      <div class="w-10"></div> <!-- Spacer for centering -->
+    </div>
+
+    <!-- Unread count badge for mobile -->
+    <div
+      v-if="unreadCount > 0"
+      class="mobile-unread-badge"
+      @click="showMobileSidebar = true"
+    >
+      {{ unreadCount > 99 ? '99+' : unreadCount }}
+    </div>
+  </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
-import AppLayout from '@/Layouts/AppLayout.vue'
-import Pagination from '@/Components/Pagination.vue'
-import { debounce } from 'lodash'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { Head } from '@inertiajs/vue3'
+import { useMessagingStore } from '@/stores/messaging'
+import { useAuthStore } from '@/stores/auth'
+import ConversationList from '@/Components/Messaging/ConversationList.vue'
+import ChatInterface from '@/Components/Messaging/ChatInterface.vue'
 
-const props = defineProps({
-    messages: Object,
-    tab: String,
-    filters: Object,
-    unreadCount: Number,
+const messagingStore = useMessagingStore()
+const authStore = useAuthStore()
+
+const selectedConversation = ref(null)
+const showMobileSidebar = ref(false)
+
+const unreadCount = computed(() => messagingStore.unreadCount)
+const currentUser = computed(() => authStore.user)
+
+const getConversationTitle = (conversation) => {
+  if (conversation.title) {
+    return conversation.title
+  }
+
+  if (conversation.type === 'direct') {
+    const otherParticipant = conversation.participants?.find(p => p.id !== currentUser.value?.id)
+    return otherParticipant?.name || 'Unknown User'
+  }
+
+  if (conversation.circle) {
+    return conversation.circle.name
+  }
+
+  if (conversation.group) {
+    return conversation.group.name
+  }
+
+  return `${conversation.type} conversation`
+}
+
+const selectConversation = (conversation) => {
+  selectedConversation.value = conversation
+}
+
+const selectConversationMobile = (conversation) => {
+  selectedConversation.value = conversation
+  showMobileSidebar.value = false
+}
+
+// Handle browser back/forward navigation
+const handlePopState = (event) => {
+  if (event.state?.conversationId) {
+    const conversation = messagingStore.conversations.find(c => c.id === event.state.conversationId)
+    if (conversation) {
+      selectedConversation.value = conversation
+    }
+  } else {
+    selectedConversation.value = null
+  }
+}
+
+// Update URL when conversation changes
+const updateUrl = (conversation) => {
+  const url = conversation 
+    ? `/messages/${conversation.id}`
+    : '/messages'
+  
+  const state = conversation 
+    ? { conversationId: conversation.id }
+    : null
+
+  window.history.pushState(state, '', url)
+}
+
+// Watch for conversation selection changes
+const selectConversationWithHistory = (conversation) => {
+  selectedConversation.value = conversation
+  updateUrl(conversation)
+}
+
+onMounted(async () => {
+  // Initialize messaging store
+  await messagingStore.initialize()
+
+  // Set up browser navigation
+  window.addEventListener('popstate', handlePopState)
+
+  // Check if there's a conversation ID in the URL
+  const pathParts = window.location.pathname.split('/')
+  if (pathParts[1] === 'messages' && pathParts[2]) {
+    const conversationId = parseInt(pathParts[2])
+    const conversation = messagingStore.conversations.find(c => c.id === conversationId)
+    if (conversation) {
+      selectedConversation.value = conversation
+    }
+  }
 })
 
-const searchForm = reactive({
-    search: props.filters.search || '',
-    type: props.filters.type || '',
+onUnmounted(() => {
+  window.removeEventListener('popstate', handlePopState)
 })
 
-const search = debounce(() => {
-    router.get(route('messages.index'), {
-        tab: props.tab,
-        search: searchForm.search,
-        type: searchForm.type,
-    }, {
-        preserveState: true,
-        replace: true,
-    })
-}, 300)
-
-const archiveMessage = (message) => {
-    router.patch(route('messages.archive', message.id), {}, {
-        preserveScroll: true,
-    })
+// Handle keyboard shortcuts
+const handleKeyDown = (event) => {
+  // Escape key to close mobile sidebar
+  if (event.key === 'Escape' && showMobileSidebar.value) {
+    showMobileSidebar.value = false
+  }
+  
+  // Ctrl/Cmd + K to open search
+  if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+    event.preventDefault()
+    // Open search modal
+  }
 }
 
-const unarchiveMessage = (message) => {
-    router.patch(route('messages.unarchive', message.id), {}, {
-        preserveScroll: true,
-    })
-}
+onMounted(() => {
+  document.addEventListener('keydown', handleKeyDown)
+})
 
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    })
-}
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleKeyDown)
+})
 </script>
+
+<style scoped>
+.messaging-app {
+  @apply h-screen bg-white dark:bg-gray-900;
+}
+
+.messaging-layout {
+  @apply h-full flex;
+}
+
+.messaging-sidebar {
+  @apply w-80 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hidden lg:block;
+}
+
+.messaging-main {
+  @apply flex-1 flex flex-col min-w-0;
+}
+
+.mobile-sidebar-overlay {
+  @apply fixed inset-0 z-50 bg-black bg-opacity-50 lg:hidden;
+}
+
+.mobile-sidebar {
+  @apply w-80 h-full bg-white dark:bg-gray-800 shadow-xl;
+}
+
+.mobile-sidebar-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700;
+}
+
+.mobile-header {
+  @apply flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 lg:hidden;
+}
+
+.mobile-unread-badge {
+  @apply fixed bottom-4 right-4 w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg cursor-pointer lg:hidden z-40;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1023px) {
+  .messaging-layout {
+    @apply flex-col;
+  }
+  
+  .messaging-sidebar {
+    @apply hidden;
+  }
+  
+  .messaging-main {
+    @apply flex-1;
+  }
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .messaging-app {
+    @apply bg-gray-900;
+  }
+}
+
+/* Animation for mobile sidebar */
+.mobile-sidebar {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Scrollbar styling */
+.messaging-sidebar::-webkit-scrollbar,
+.messaging-main::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.messaging-sidebar::-webkit-scrollbar-track,
+.messaging-main::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+.messaging-sidebar::-webkit-scrollbar-thumb,
+.messaging-main::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+}
+
+.messaging-sidebar::-webkit-scrollbar-thumb:hover,
+.messaging-main::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+</style>

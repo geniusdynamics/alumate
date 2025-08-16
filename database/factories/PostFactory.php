@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Post;
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -84,13 +84,13 @@ class PostFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'post_type' => 'career_update',
-            'content' => 'Excited to announce my new role as ' . $this->faker->jobTitle . ' at ' . $this->faker->company . '!',
+            'content' => 'Excited to announce my new role as '.$this->faker->jobTitle.' at '.$this->faker->company.'!',
             'metadata' => [
                 'career_update' => [
                     'type' => 'new_job',
                     'company' => $this->faker->company,
                     'title' => $this->faker->jobTitle,
-                ]
+                ],
             ],
         ]);
     }
@@ -102,17 +102,17 @@ class PostFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'post_type' => 'achievement',
-            'content' => 'Proud to share that I\'ve ' . $this->faker->randomElement([
-                'completed my certification in ' . $this->faker->word,
-                'won an award for ' . $this->faker->word,
-                'published an article about ' . $this->faker->word,
-                'spoke at a conference about ' . $this->faker->word,
+            'content' => 'Proud to share that I\'ve '.$this->faker->randomElement([
+                'completed my certification in '.$this->faker->word,
+                'won an award for '.$this->faker->word,
+                'published an article about '.$this->faker->word,
+                'spoke at a conference about '.$this->faker->word,
             ]),
             'metadata' => [
                 'achievement' => [
                     'type' => $this->faker->randomElement(['certification', 'award', 'publication', 'speaking']),
                     'title' => $this->faker->sentence(3),
-                ]
+                ],
             ],
         ]);
     }

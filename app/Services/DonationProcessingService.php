@@ -2,17 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\CampaignDonation;
-use App\Models\RecurringDonation;
-use App\Models\PaymentTransaction;
-use App\Models\DonationAcknowledgment;
-use App\Models\TaxReceipt;
-use App\Jobs\ProcessRecurringDonationsJob;
-use App\Jobs\SendDonationAcknowledgmentJob;
 use App\Jobs\GenerateTaxReceiptJob;
+use App\Jobs\SendDonationAcknowledgmentJob;
+use App\Models\CampaignDonation;
+use App\Models\DonationAcknowledgment;
+use App\Models\PaymentTransaction;
+use App\Models\RecurringDonation;
+use App\Models\TaxReceipt;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class DonationProcessingService
 {
@@ -114,7 +113,7 @@ class DonationProcessingService
                 $donation->update([
                     'status' => 'completed',
                     'processed_at' => now(),
-                    'payment_id' => 'recurring_' . uniqid(),
+                    'payment_id' => 'recurring_'.uniqid(),
                 ]);
 
                 // Update recurring donation record
@@ -145,15 +144,16 @@ class DonationProcessingService
             ]);
 
             $recurringDonation->recordFailedPayment();
+
             return null;
         }
     }
 
-    public function refundDonation(CampaignDonation $donation, float $amount = null, string $reason = null): bool
+    public function refundDonation(CampaignDonation $donation, ?float $amount = null, ?string $reason = null): bool
     {
         try {
             $refundAmount = $amount ?? $donation->amount;
-            
+
             // Process refund through payment gateway
             $refundResult = $this->paymentGateway->refundPayment($donation, $refundAmount);
 
@@ -196,7 +196,7 @@ class DonationProcessingService
         }
     }
 
-    public function cancelRecurringDonation(RecurringDonation $recurringDonation, string $reason = null): bool
+    public function cancelRecurringDonation(RecurringDonation $recurringDonation, ?string $reason = null): bool
     {
         try {
             // Cancel with payment gateway
@@ -204,6 +204,7 @@ class DonationProcessingService
 
             if ($cancelled) {
                 $recurringDonation->cancel($reason);
+
                 return true;
             }
 
@@ -269,8 +270,8 @@ class DonationProcessingService
             'transaction_type' => $type,
             'gateway' => $donation->payment_method,
             'gateway_transaction_id' => $paymentResult['payment_id'],
-            'amount' => $type === 'refund' ? 
-                ($paymentResult['amount'] ?? $donation->amount) : 
+            'amount' => $type === 'refund' ?
+                ($paymentResult['amount'] ?? $donation->amount) :
                 $donation->amount,
             'currency' => $donation->currency,
             'status' => $paymentResult['status'],
@@ -300,7 +301,7 @@ class DonationProcessingService
     private function calculateNextPaymentDate(CampaignDonation $donation): string
     {
         $now = now();
-        
+
         return match ($donation->recurring_frequency) {
             'monthly' => $now->addMonth()->toDateString(),
             'quarterly' => $now->addMonths(3)->toDateString(),
@@ -312,7 +313,7 @@ class DonationProcessingService
     private function scheduleAcknowledgment(CampaignDonation $donation): void
     {
         // Don't send acknowledgment for anonymous donations unless they specifically requested it
-        if ($donation->is_anonymous && !($donation->payment_data['send_acknowledgment'] ?? false)) {
+        if ($donation->is_anonymous && ! ($donation->payment_data['send_acknowledgment'] ?? false)) {
             return;
         }
 
@@ -352,8 +353,8 @@ class DonationProcessingService
             ->orderBy('id', 'desc')
             ->first();
 
-        $nextNumber = $lastReceipt ? 
-            (int) substr($lastReceipt->receipt_number, -6) + 1 : 
+        $nextNumber = $lastReceipt ?
+            (int) substr($lastReceipt->receipt_number, -6) + 1 :
             1;
 
         return str_pad($nextNumber, 6, '0', STR_PAD_LEFT);

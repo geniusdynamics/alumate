@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Event;
-use App\Models\User;
 use App\Models\EventHighlight;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventHighlightFactory extends Factory
@@ -14,7 +14,7 @@ class EventHighlightFactory extends Factory
     public function definition(): array
     {
         $type = $this->faker->randomElement(['photo', 'video', 'quote', 'moment', 'achievement']);
-        
+
         return [
             'event_id' => Event::factory(),
             'created_by' => User::factory(),
@@ -42,11 +42,11 @@ class EventHighlightFactory extends Factory
                 'Amazing keynote speaker',
                 'Group photo with classmates',
                 'Beautiful venue setup',
-                'Award ceremony moment'
+                'Award ceremony moment',
             ]),
             'media_urls' => [
-                'https://picsum.photos/800/600?random=' . $this->faker->numberBetween(1, 1000),
-                'https://picsum.photos/800/600?random=' . $this->faker->numberBetween(1001, 2000),
+                'https://picsum.photos/800/600?random='.$this->faker->numberBetween(1, 1000),
+                'https://picsum.photos/800/600?random='.$this->faker->numberBetween(1001, 2000),
             ],
         ]);
     }
@@ -60,10 +60,10 @@ class EventHighlightFactory extends Factory
                 'Alumni success stories',
                 'Event recap video',
                 'Behind the scenes',
-                'Q&A session'
+                'Q&A session',
             ]),
             'media_urls' => [
-                'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4'
+                'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
             ],
         ]);
     }
@@ -80,7 +80,7 @@ class EventHighlightFactory extends Factory
                     'The future belongs to those who believe in the beauty of their dreams.',
                     'Innovation distinguishes between a leader and a follower.',
                     'The only way to do great work is to love what you do.',
-                    'Your network is your net worth.'
+                    'Your network is your net worth.',
                 ]),
                 'quote_author' => $this->faker->name(),
             ],
@@ -96,7 +96,7 @@ class EventHighlightFactory extends Factory
                 'Standing ovation moment',
                 'Breakthrough announcement',
                 'Emotional speech',
-                'Surprise guest appearance'
+                'Surprise guest appearance',
             ]),
         ]);
     }
@@ -110,7 +110,7 @@ class EventHighlightFactory extends Factory
                 'Outstanding Contribution Recognition',
                 'Innovation Excellence Award',
                 'Community Service Honor',
-                'Lifetime Achievement Award'
+                'Lifetime Achievement Award',
             ]),
         ]);
     }
@@ -135,28 +135,28 @@ class EventHighlightFactory extends Factory
 
     private function getTypeSpecificTitle(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             'photo' => $this->faker->randomElement([
                 'Great networking session',
                 'Amazing keynote speaker',
                 'Group photo with classmates',
-                'Beautiful venue setup'
+                'Beautiful venue setup',
             ]),
             'video' => $this->faker->randomElement([
                 'Keynote speech highlights',
                 'Alumni success stories',
-                'Event recap video'
+                'Event recap video',
             ]),
             'quote' => 'Inspiring Quote',
             'moment' => $this->faker->randomElement([
                 'Unexpected reunion',
                 'Standing ovation moment',
-                'Breakthrough announcement'
+                'Breakthrough announcement',
             ]),
             'achievement' => $this->faker->randomElement([
                 'Alumni of the Year Award',
                 'Outstanding Contribution Recognition',
-                'Innovation Excellence Award'
+                'Innovation Excellence Award',
             ]),
             default => $this->faker->sentence(3)
         };
@@ -164,12 +164,12 @@ class EventHighlightFactory extends Factory
 
     private function getTypeSpecificMedia(string $type): ?array
     {
-        return match($type) {
+        return match ($type) {
             'photo' => [
-                'https://picsum.photos/800/600?random=' . $this->faker->numberBetween(1, 1000)
+                'https://picsum.photos/800/600?random='.$this->faker->numberBetween(1, 1000),
             ],
             'video' => [
-                'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4'
+                'https://sample-videos.com/zip/10/mp4/SampleVideo_1280x720_1mb.mp4',
             ],
             default => null
         };
@@ -177,12 +177,12 @@ class EventHighlightFactory extends Factory
 
     private function getTypeSpecificMetadata(string $type): ?array
     {
-        return match($type) {
+        return match ($type) {
             'quote' => [
                 'quote_content' => $this->faker->randomElement([
                     'Success is not final, failure is not fatal: it is the courage to continue that counts.',
                     'The future belongs to those who believe in the beauty of their dreams.',
-                    'Innovation distinguishes between a leader and a follower.'
+                    'Innovation distinguishes between a leader and a follower.',
                 ]),
                 'quote_author' => $this->faker->name(),
             ],

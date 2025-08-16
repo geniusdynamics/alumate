@@ -14,7 +14,9 @@ class GroupInvitationNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected Group $group;
+
     protected User $inviter;
+
     protected ?string $message;
 
     /**

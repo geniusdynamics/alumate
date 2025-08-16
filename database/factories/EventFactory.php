@@ -3,10 +3,9 @@
 namespace Database\Factories;
 
 use App\Models\Event;
-use App\Models\User;
 use App\Models\Institution;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Carbon\Carbon;
 
 class EventFactory extends Factory
 {
@@ -15,15 +14,15 @@ class EventFactory extends Factory
     public function definition(): array
     {
         $startDate = $this->faker->dateTimeBetween('now', '+6 months');
-        $endDate = (clone $startDate)->add(new \DateInterval('PT' . $this->faker->numberBetween(1, 8) . 'H'));
-        
+        $endDate = (clone $startDate)->add(new \DateInterval('PT'.$this->faker->numberBetween(1, 8).'H'));
+
         $types = ['networking', 'reunion', 'webinar', 'workshop', 'social', 'professional', 'fundraising', 'other'];
         $formats = ['in_person', 'virtual', 'hybrid'];
         $visibilities = ['public', 'alumni_only', 'institution_only', 'private'];
-        
+
         $format = $this->faker->randomElement($formats);
         $type = $this->faker->randomElement($types);
-        
+
         return [
             'title' => $this->faker->sentence(4),
             'description' => $this->faker->paragraphs(3, true),
@@ -34,15 +33,15 @@ class EventFactory extends Factory
             'start_date' => $startDate,
             'end_date' => $endDate,
             'timezone' => $this->faker->randomElement(['UTC', 'America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles']),
-            
+
             // Location details based on format
-            'venue_name' => $format !== 'virtual' ? $this->faker->company . ' Conference Center' : null,
+            'venue_name' => $format !== 'virtual' ? $this->faker->company.' Conference Center' : null,
             'venue_address' => $format !== 'virtual' ? $this->faker->address : null,
             'latitude' => $format !== 'virtual' ? $this->faker->latitude : null,
             'longitude' => $format !== 'virtual' ? $this->faker->longitude : null,
-            'virtual_link' => $format !== 'in_person' ? 'https://zoom.us/j/' . $this->faker->numerify('###########') : null,
+            'virtual_link' => $format !== 'in_person' ? 'https://zoom.us/j/'.$this->faker->numerify('###########') : null,
             'virtual_instructions' => $format !== 'in_person' ? $this->faker->paragraph : null,
-            
+
             // Capacity and registration
             'max_capacity' => $this->faker->boolean(70) ? $this->faker->numberBetween(10, 500) : null,
             'current_attendees' => 0,
@@ -50,14 +49,14 @@ class EventFactory extends Factory
             'ticket_price' => $this->faker->boolean(30) ? $this->faker->randomFloat(2, 0, 100) : null,
             'registration_status' => 'open',
             'registration_deadline' => $this->faker->boolean(40) ? $this->faker->dateTimeBetween('now', $startDate) : null,
-            
+
             // Organizer and visibility
             'organizer_id' => User::factory(),
             'institution_id' => $this->faker->boolean(60) ? Institution::factory() : null,
             'visibility' => $this->faker->randomElement($visibilities),
             'target_circles' => $this->faker->boolean(40) ? $this->faker->randomElements([1, 2, 3, 4, 5], $this->faker->numberBetween(1, 3)) : null,
             'target_groups' => $this->faker->boolean(40) ? $this->faker->randomElements([1, 2, 3, 4, 5], $this->faker->numberBetween(1, 3)) : null,
-            
+
             // Event settings
             'settings' => [
                 'send_reminders' => $this->faker->boolean(80),
@@ -68,12 +67,12 @@ class EventFactory extends Factory
             'max_guests_per_attendee' => $this->faker->numberBetween(1, 5),
             'enable_networking' => $this->faker->boolean(80),
             'enable_checkin' => $this->faker->boolean(90),
-            
+
             // Status and metadata
             'status' => $this->faker->randomElement(['draft', 'published']),
             'tags' => $this->faker->boolean(60) ? $this->faker->randomElements([
-                'networking', 'career', 'alumni', 'professional-development', 
-                'social', 'fundraising', 'reunion', 'workshop', 'webinar'
+                'networking', 'career', 'alumni', 'professional-development',
+                'social', 'fundraising', 'reunion', 'workshop', 'webinar',
             ], $this->faker->numberBetween(1, 4)) : null,
         ];
     }
@@ -96,8 +95,8 @@ class EventFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             $startDate = $this->faker->dateTimeBetween('+1 day', '+3 months');
-            $endDate = (clone $startDate)->add(new \DateInterval('PT' . $this->faker->numberBetween(1, 8) . 'H'));
-            
+            $endDate = (clone $startDate)->add(new \DateInterval('PT'.$this->faker->numberBetween(1, 8).'H'));
+
             return [
                 'start_date' => $startDate,
                 'end_date' => $endDate,
@@ -110,8 +109,8 @@ class EventFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             $startDate = $this->faker->dateTimeBetween('-6 months', '-1 day');
-            $endDate = (clone $startDate)->add(new \DateInterval('PT' . $this->faker->numberBetween(1, 8) . 'H'));
-            
+            $endDate = (clone $startDate)->add(new \DateInterval('PT'.$this->faker->numberBetween(1, 8).'H'));
+
             return [
                 'start_date' => $startDate,
                 'end_date' => $endDate,
@@ -128,7 +127,7 @@ class EventFactory extends Factory
             'venue_address' => null,
             'latitude' => null,
             'longitude' => null,
-            'virtual_link' => 'https://zoom.us/j/' . $this->faker->numerify('###########'),
+            'virtual_link' => 'https://zoom.us/j/'.$this->faker->numerify('###########'),
             'virtual_instructions' => $this->faker->paragraph,
         ]);
     }
@@ -137,7 +136,7 @@ class EventFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'format' => 'in_person',
-            'venue_name' => $this->faker->company . ' Conference Center',
+            'venue_name' => $this->faker->company.' Conference Center',
             'venue_address' => $this->faker->address,
             'latitude' => $this->faker->latitude,
             'longitude' => $this->faker->longitude,

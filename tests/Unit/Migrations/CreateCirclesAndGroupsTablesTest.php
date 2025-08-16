@@ -109,7 +109,7 @@ class CreateCirclesAndGroupsTablesTest extends TestCase
         $circle = \DB::table('circles')->where('name', 'Test Circle')->first();
         $this->assertEquals(0, $circle->member_count);
         $this->assertEquals(0, $circle->auto_generated);
-        
+
         // Clean up
         \DB::table('circles')->where('name', 'Test Circle')->delete();
     }

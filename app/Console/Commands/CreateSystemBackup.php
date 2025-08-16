@@ -4,23 +4,24 @@ namespace App\Console\Commands;
 
 use App\Models\BackupLog;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 
 class CreateSystemBackup extends Command
 {
     protected $signature = 'backup:create {--type=full : Type of backup (full, incremental, differential)} {--compress : Compress the backup file}';
+
     protected $description = 'Create a system backup including database and files';
 
     public function handle()
     {
         $type = $this->option('type');
         $compress = $this->option('compress');
-        
+
         $this->info("Starting {$type} backup...");
-        
+
         $backupLog = BackupLog::create([
             'backup_type' => $type,
             'status' => 'started',
@@ -29,9 +30,9 @@ class CreateSystemBackup extends Command
 
         try {
             $backupPath = $this->createBackup($type, $compress);
-            
+
             $fileSize = Storage::size($backupPath);
-            
+
             $backupLog->update([
                 'status' => 'completed',
                 'completed_at' => now(),
@@ -44,9 +45,9 @@ class CreateSystemBackup extends Command
                 ],
             ]);
 
-            $this->info("Backup completed successfully!");
+            $this->info('Backup completed successfully!');
             $this->info("File: {$backupPath}");
-            $this->info("Size: " . $this->formatBytes($fileSize));
+            $this->info('Size: '.$this->formatBytes($fileSize));
 
             // Clean up old backups
             $this->cleanupOldBackups();
@@ -57,9 +58,9 @@ class CreateSystemBackup extends Command
                 'error_message' => $e->getMessage(),
             ]);
 
-            $this->error("Backup failed: " . $e->getMessage());
-            Log::error("Backup failed", ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            
+            $this->error('Backup failed: '.$e->getMessage());
+            Log::error('Backup failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+
             return 1;
         }
 
@@ -70,15 +71,15 @@ class CreateSystemBackup extends Command
     {
         $timestamp = now()->format('Y-m-d_H-i-s');
         $backupDir = "backups/{$timestamp}";
-        
+
         Storage::makeDirectory($backupDir);
 
         // Create database backup
-        $this->info("Backing up database...");
+        $this->info('Backing up database...');
         $dbBackupPath = $this->createDatabaseBackup($backupDir);
 
         // Create files backup based on type
-        $this->info("Backing up files...");
+        $this->info('Backing up files...');
         $filesBackupPath = $this->createFilesBackup($backupDir, $type);
 
         // Create backup manifest
@@ -95,12 +96,12 @@ class CreateSystemBackup extends Command
 
         // Compress if requested
         if ($compress) {
-            $this->info("Compressing backup...");
+            $this->info('Compressing backup...');
             $compressedPath = $this->compressBackup($backupDir);
-            
+
             // Clean up uncompressed files
             Storage::deleteDirectory($backupDir);
-            
+
             return $compressedPath;
         }
 
@@ -109,8 +110,8 @@ class CreateSystemBackup extends Command
 
     private function createDatabaseBackup($backupDir)
     {
-        $config = config('database.connections.' . config('database.default'));
-        $filename = "database_" . now()->format('Y-m-d_H-i-s') . ".sql";
+        $config = config('database.connections.'.config('database.default'));
+        $filename = 'database_'.now()->format('Y-m-d_H-i-s').'.sql';
         $backupPath = "{$backupDir}/{$filename}";
 
         if ($config['driver'] === 'mysql') {
@@ -134,14 +135,14 @@ class CreateSystemBackup extends Command
                 storage_path("app/{$backupPath}")
             );
         } else {
-            throw new \Exception("Unsupported database driver: " . $config['driver']);
+            throw new \Exception('Unsupported database driver: '.$config['driver']);
         }
 
         $process = Process::fromShellCommandline($command);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \Exception("Database backup failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \Exception('Database backup failed: '.$process->getErrorOutput());
         }
 
         return $backupPath;
@@ -149,7 +150,7 @@ class CreateSystemBackup extends Command
 
     private function createFilesBackup($backupDir, $type)
     {
-        $filename = "files_" . now()->format('Y-m-d_H-i-s') . ".tar";
+        $filename = 'files_'.now()->format('Y-m-d_H-i-s').'.tar';
         $backupPath = "{$backupDir}/{$filename}";
         $fullBackupPath = storage_path("app/{$backupPath}");
 
@@ -163,18 +164,18 @@ class CreateSystemBackup extends Command
 
         // Create tar archive
         $command = "tar -cf {$fullBackupPath}";
-        
+
         foreach ($directories as $dir) {
             if (file_exists(base_path($dir))) {
-                $command .= " -C " . base_path() . " {$dir}";
+                $command .= ' -C '.base_path()." {$dir}";
             }
         }
 
         $process = Process::fromShellCommandline($command);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \Exception("Files backup failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \Exception('Files backup failed: '.$process->getErrorOutput());
         }
 
         return $backupPath;
@@ -182,17 +183,17 @@ class CreateSystemBackup extends Command
 
     private function compressBackup($backupDir)
     {
-        $compressedFilename = basename($backupDir) . ".tar.gz";
+        $compressedFilename = basename($backupDir).'.tar.gz';
         $compressedPath = "backups/{$compressedFilename}";
         $fullCompressedPath = storage_path("app/{$compressedPath}");
 
-        $command = "tar -czf {$fullCompressedPath} -C " . storage_path("app") . " {$backupDir}";
-        
+        $command = "tar -czf {$fullCompressedPath} -C ".storage_path('app')." {$backupDir}";
+
         $process = Process::fromShellCommandline($command);
         $process->run();
 
-        if (!$process->isSuccessful()) {
-            throw new \Exception("Compression failed: " . $process->getErrorOutput());
+        if (! $process->isSuccessful()) {
+            throw new \Exception('Compression failed: '.$process->getErrorOutput());
         }
 
         return $compressedPath;
@@ -219,13 +220,15 @@ class CreateSystemBackup extends Command
     private function getDatabaseSize()
     {
         try {
-            $config = config('database.connections.' . config('database.default'));
-            
+            $config = config('database.connections.'.config('database.default'));
+
             if ($config['driver'] === 'mysql') {
                 $result = DB::select("SELECT ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) AS 'size_mb' FROM information_schema.tables WHERE table_schema = ?", [$config['database']]);
-                return $result[0]->size_mb . ' MB';
+
+                return $result[0]->size_mb.' MB';
             } elseif ($config['driver'] === 'pgsql') {
-                $result = DB::select("SELECT pg_size_pretty(pg_database_size(?)) as size", [$config['database']]);
+                $result = DB::select('SELECT pg_size_pretty(pg_database_size(?)) as size', [$config['database']]);
+
                 return $result[0]->size;
             }
         } catch (\Exception $e) {
@@ -240,7 +243,7 @@ class CreateSystemBackup extends Command
         try {
             $count = 0;
             $directories = ['storage/app/public', 'storage/app/uploads'];
-            
+
             foreach ($directories as $dir) {
                 $fullPath = base_path($dir);
                 if (is_dir($fullPath)) {
@@ -248,7 +251,7 @@ class CreateSystemBackup extends Command
                     $count += iterator_count($iterator);
                 }
             }
-            
+
             return $count;
         } catch (\Exception $e) {
             return 0;
@@ -257,12 +260,12 @@ class CreateSystemBackup extends Command
 
     private function formatBytes($bytes, $precision = 2)
     {
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
 
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
 
-        return round($bytes, $precision) . ' ' . $units[$i];
+        return round($bytes, $precision).' '.$units[$i];
     }
 }

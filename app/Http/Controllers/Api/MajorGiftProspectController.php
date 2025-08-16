@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\MajorGiftProspect;
 use App\Models\DonorProfile;
+use App\Models\MajorGiftProspect;
 use App\Models\User;
 use App\Services\DonorCrmService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class MajorGiftProspectController extends Controller
@@ -55,8 +55,8 @@ class MajorGiftProspectController extends Controller
         }
 
         $prospects = $query->orderBy('expected_close_date')
-                          ->orderBy('ask_amount', 'desc')
-                          ->paginate(20);
+            ->orderBy('ask_amount', 'desc')
+            ->paginate(20);
 
         return response()->json($prospects);
     }
@@ -82,7 +82,7 @@ class MajorGiftProspectController extends Controller
 
         $profile = DonorProfile::findOrFail($request->input('donor_profile_id'));
         $officer = User::findOrFail($request->input('assigned_officer_id'));
-        
+
         $prospect = $this->donorCrmService->createMajorGiftProspect(
             $profile,
             $officer,
@@ -91,14 +91,14 @@ class MajorGiftProspectController extends Controller
 
         return response()->json([
             'data' => $prospect->load(['donorProfile.user', 'assignedOfficer']),
-            'message' => 'Major gift prospect created successfully'
+            'message' => 'Major gift prospect created successfully',
         ], 201);
     }
 
     public function show(MajorGiftProspect $majorGiftProspect): JsonResponse
     {
         return response()->json([
-            'data' => $majorGiftProspect->load(['donorProfile.user', 'assignedOfficer'])
+            'data' => $majorGiftProspect->load(['donorProfile.user', 'assignedOfficer']),
         ]);
     }
 
@@ -126,7 +126,7 @@ class MajorGiftProspectController extends Controller
 
         return response()->json([
             'data' => $majorGiftProspect->fresh(['donorProfile.user', 'assignedOfficer']),
-            'message' => 'Major gift prospect updated successfully'
+            'message' => 'Major gift prospect updated successfully',
         ]);
     }
 
@@ -135,7 +135,7 @@ class MajorGiftProspectController extends Controller
         $majorGiftProspect->delete();
 
         return response()->json([
-            'message' => 'Major gift prospect deleted successfully'
+            'message' => 'Major gift prospect deleted successfully',
         ]);
     }
 
@@ -145,7 +145,7 @@ class MajorGiftProspectController extends Controller
 
         return response()->json([
             'data' => $majorGiftProspect->fresh(),
-            'message' => 'Prospect moved to next stage successfully'
+            'message' => 'Prospect moved to next stage successfully',
         ]);
     }
 
@@ -163,7 +163,7 @@ class MajorGiftProspectController extends Controller
 
         return response()->json([
             'data' => $majorGiftProspect->fresh(),
-            'message' => 'Prospect closed as won successfully'
+            'message' => 'Prospect closed as won successfully',
         ]);
     }
 
@@ -177,7 +177,7 @@ class MajorGiftProspectController extends Controller
 
         return response()->json([
             'data' => $majorGiftProspect->fresh(),
-            'message' => 'Prospect closed as lost'
+            'message' => 'Prospect closed as lost',
         ]);
     }
 
@@ -201,21 +201,21 @@ class MajorGiftProspectController extends Controller
 
         return response()->json([
             'data' => $pipeline,
-            'summary' => $summary
+            'summary' => $summary,
         ]);
     }
 
     public function closingSoon(Request $request): JsonResponse
     {
         $days = $request->input('days', 30);
-        
+
         $prospects = MajorGiftProspect::closingSoon($days)
             ->with(['donorProfile.user', 'assignedOfficer'])
             ->orderBy('expected_close_date')
             ->get();
 
         return response()->json([
-            'data' => $prospects
+            'data' => $prospects,
         ]);
     }
 }

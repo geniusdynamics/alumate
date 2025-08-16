@@ -16,9 +16,11 @@ class GenerateRecommendationsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $timeout = 300; // 5 minutes
+
     public $tries = 3;
 
     private ?int $userId;
+
     private bool $forAllUsers;
 
     /**
@@ -46,9 +48,9 @@ class GenerateRecommendationsJob implements ShouldQueue
                 'user_id' => $this->userId,
                 'for_all_users' => $this->forAllUsers,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             throw $e;
         }
     }
@@ -59,9 +61,10 @@ class GenerateRecommendationsJob implements ShouldQueue
     private function generateForUser(int $userId, AlumniRecommendationService $recommendationService): void
     {
         $user = User::find($userId);
-        
-        if (!$user) {
+
+        if (! $user) {
             Log::warning('User not found for recommendation generation', ['user_id' => $userId]);
+
             return;
         }
 
@@ -73,7 +76,7 @@ class GenerateRecommendationsJob implements ShouldQueue
 
         Log::info('Generated recommendations for user', [
             'user_id' => $userId,
-            'recommendation_count' => $recommendations->count()
+            'recommendation_count' => $recommendations->count(),
         ]);
     }
 
@@ -100,14 +103,14 @@ class GenerateRecommendationsJob implements ShouldQueue
                         if ($processedCount % 100 === 0) {
                             Log::info('Bulk recommendation generation progress', [
                                 'processed' => $processedCount,
-                                'errors' => $errorCount
+                                'errors' => $errorCount,
                             ]);
                         }
                     } catch (\Exception $e) {
                         $errorCount++;
                         Log::error('Failed to generate recommendations for user', [
                             'user_id' => $user->id,
-                            'error' => $e->getMessage()
+                            'error' => $e->getMessage(),
                         ]);
                     }
                 }
@@ -115,7 +118,7 @@ class GenerateRecommendationsJob implements ShouldQueue
 
         Log::info('Completed bulk recommendation generation', [
             'total_processed' => $processedCount,
-            'total_errors' => $errorCount
+            'total_errors' => $errorCount,
         ]);
     }
 
@@ -128,7 +131,7 @@ class GenerateRecommendationsJob implements ShouldQueue
             'user_id' => $this->userId,
             'for_all_users' => $this->forAllUsers,
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 
@@ -138,15 +141,15 @@ class GenerateRecommendationsJob implements ShouldQueue
     public function tags(): array
     {
         $tags = ['recommendations'];
-        
+
         if ($this->userId) {
             $tags[] = "user:{$this->userId}";
         }
-        
+
         if ($this->forAllUsers) {
             $tags[] = 'bulk-generation';
         }
-        
+
         return $tags;
     }
 }

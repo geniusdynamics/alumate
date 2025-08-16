@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\RecurringDonation;
 use App\Services\DonationProcessingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class RecurringDonationController extends Controller
 {
@@ -52,7 +52,7 @@ class RecurringDonationController extends Controller
             'originalDonation',
             'donations' => function ($query) {
                 $query->orderBy('processed_at', 'desc');
-            }
+            },
         ]);
 
         return response()->json($recurringDonation);

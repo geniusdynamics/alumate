@@ -69,7 +69,7 @@ class Scholarship extends Model
     public function scopeOpenForApplications($query)
     {
         return $query->where('status', 'active')
-                    ->where('application_deadline', '>=', now());
+            ->where('application_deadline', '>=', now());
     }
 
     public function isOpenForApplications(): bool

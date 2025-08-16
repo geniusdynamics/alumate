@@ -16,7 +16,7 @@ return new class extends Migration
             $table->json('data'); // Stores the analytics data
             $table->json('metadata')->nullable(); // Additional context
             $table->timestamps();
-            
+
             $table->index(['type', 'snapshot_date']);
         });
 
@@ -77,7 +77,7 @@ return new class extends Migration
             $table->json('breakdown')->nullable(); // Detailed breakdown of the value
             $table->json('metadata')->nullable(); // Additional context
             $table->timestamps();
-            
+
             $table->unique(['kpi_definition_id', 'measurement_date']);
             $table->index(['measurement_date', 'value']);
         });
@@ -108,7 +108,7 @@ return new class extends Migration
             $table->date('prediction_date');
             $table->date('target_date')->nullable(); // When the prediction is for
             $table->timestamps();
-            
+
             $table->index(['subject_type', 'subject_id']);
             $table->index(['prediction_date', 'prediction_score']);
         });

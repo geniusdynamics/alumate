@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Traits\Exportable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 
@@ -18,19 +17,19 @@ class EmployerController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Employer::class);
-        
+
         $query = Employer::with(['user', 'verifier']);
 
         // Apply filters
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('company_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('company_registration_number', 'like', '%' . $request->search . '%')
-                  ->orWhere('industry', 'like', '%' . $request->search . '%')
-                  ->orWhere('contact_person_name', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('user', function($userQuery) use ($request) {
-                      $userQuery->where('email', 'like', '%' . $request->search . '%');
-                  });
+            $query->where(function ($q) use ($request) {
+                $q->where('company_name', 'like', '%'.$request->search.'%')
+                    ->orWhere('company_registration_number', 'like', '%'.$request->search.'%')
+                    ->orWhere('industry', 'like', '%'.$request->search.'%')
+                    ->orWhere('contact_person_name', 'like', '%'.$request->search.'%')
+                    ->orWhereHas('user', function ($userQuery) use ($request) {
+                        $userQuery->where('email', 'like', '%'.$request->search.'%');
+                    });
             });
         }
 
@@ -77,7 +76,7 @@ class EmployerController extends Controller
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
-        
+
         $allowedSorts = ['company_name', 'verification_status', 'created_at', 'total_jobs_posted', 'employer_rating'];
         if (in_array($sortBy, $allowedSorts)) {
             $query->orderBy($sortBy, $sortOrder);
@@ -98,9 +97,9 @@ class EmployerController extends Controller
             'companySizes' => $companySizes,
             'subscriptionPlans' => $subscriptionPlans,
             'filters' => $request->only([
-                'search', 'verification_status', 'industry', 'company_size', 
+                'search', 'verification_status', 'industry', 'company_size',
                 'subscription_plan', 'is_active', 'can_post_jobs',
-                'sort_by', 'sort_order'
+                'sort_by', 'sort_order',
             ]),
         ]);
     }
@@ -128,7 +127,7 @@ class EmployerController extends Controller
             'contact_person_title' => 'nullable|string|max:255',
             'contact_person_email' => 'nullable|email|max:255',
             'contact_person_phone' => 'nullable|string|max:255',
-            'established_year' => 'nullable|integer|min:1800|max:' . date('Y'),
+            'established_year' => 'nullable|integer|min:1800|max:'.date('Y'),
             'employee_count' => 'nullable|integer|min:1',
             'terms_accepted' => 'required|accepted',
             'privacy_policy_accepted' => 'required|accepted',
@@ -175,9 +174,9 @@ class EmployerController extends Controller
     public function show(Employer $employer)
     {
         $this->authorize('view', $employer);
-        
+
         $employer->load(['user', 'verifier', 'jobs.applications']);
-        
+
         // Get employer statistics
         $statistics = [
             'profile_completion' => $employer->getProfileCompletionPercentage(),
@@ -196,7 +195,7 @@ class EmployerController extends Controller
     public function edit(Employer $employer)
     {
         $this->authorize('update', $employer);
-        
+
         return Inertia::render('Employers/Edit', [
             'employer' => $employer,
         ]);
@@ -205,7 +204,7 @@ class EmployerController extends Controller
     public function update(Request $request, Employer $employer)
     {
         $this->authorize('update', $employer);
-        
+
         $data = $request->validate([
             'company_name' => 'required|string|max:255',
             'company_address' => 'nullable|string|max:255',
@@ -220,7 +219,7 @@ class EmployerController extends Controller
             'contact_person_title' => 'nullable|string|max:255',
             'contact_person_email' => 'nullable|email|max:255',
             'contact_person_phone' => 'nullable|string|max:255',
-            'established_year' => 'nullable|integer|min:1800|max:' . date('Y'),
+            'established_year' => 'nullable|integer|min:1800|max:'.date('Y'),
             'employee_count' => 'nullable|integer|min:1',
             'business_locations' => 'nullable|array',
             'services_products' => 'nullable|array',
@@ -238,11 +237,11 @@ class EmployerController extends Controller
     public function destroy(Employer $employer)
     {
         $this->authorize('delete', $employer);
-        
+
         // Check if employer has active jobs
         if ($employer->active_jobs_count > 0) {
             return back()->withErrors([
-                'employer' => 'Cannot delete employer with active job postings. Please close all jobs first.'
+                'employer' => 'Cannot delete employer with active job postings. Please close all jobs first.',
             ]);
         }
 
@@ -255,7 +254,7 @@ class EmployerController extends Controller
     public function submitVerification(Request $request, Employer $employer)
     {
         $this->authorize('update', $employer);
-        
+
         $request->validate([
             'verification_documents' => 'required|array|min:1',
             'verification_documents.*' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // 5MB max
@@ -285,7 +284,7 @@ class EmployerController extends Controller
     public function verify(Request $request, Employer $employer)
     {
         $this->authorize('verify', $employer);
-        
+
         $request->validate([
             'verification_notes' => 'nullable|string|max:1000',
         ]);
@@ -298,7 +297,7 @@ class EmployerController extends Controller
     public function reject(Request $request, Employer $employer)
     {
         $this->authorize('verify', $employer);
-        
+
         $request->validate([
             'rejection_reason' => 'required|string|max:1000',
         ]);
@@ -311,7 +310,7 @@ class EmployerController extends Controller
     public function suspend(Request $request, Employer $employer)
     {
         $this->authorize('verify', $employer);
-        
+
         $request->validate([
             'suspension_reason' => 'required|string|max:1000',
         ]);
@@ -324,7 +323,7 @@ class EmployerController extends Controller
     public function reactivate(Employer $employer)
     {
         $this->authorize('verify', $employer);
-        
+
         $employer->reactivate();
 
         return back()->with('success', 'Employer reactivated successfully.');
@@ -333,7 +332,7 @@ class EmployerController extends Controller
     public function updateSubscription(Request $request, Employer $employer)
     {
         $this->authorize('update', $employer);
-        
+
         $request->validate([
             'subscription_plan' => 'required|in:free,basic,premium,enterprise',
             'job_posting_limit' => 'required|integer|min:1|max:1000',
@@ -351,14 +350,14 @@ class EmployerController extends Controller
     public function export(Request $request)
     {
         $this->authorize('viewAny', Employer::class);
-        
+
         $query = Employer::with(['user']);
 
         // Apply same filters as index method
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('company_name', 'like', '%' . $request->search . '%')
-                  ->orWhere('industry', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('company_name', 'like', '%'.$request->search.'%')
+                    ->orWhere('industry', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -374,16 +373,16 @@ class EmployerController extends Controller
         $columns = [
             'id', 'company_name', 'industry', 'company_size', 'verification_status',
             'total_jobs_posted', 'active_jobs_count', 'employer_rating',
-            'subscription_plan', 'created_at', 'verification_completed_at'
+            'subscription_plan', 'created_at', 'verification_completed_at',
         ];
 
         $format = $request->get('format', 'csv');
-        $filename = 'employers_export_' . date('Y-m-d_H-i-s');
+        $filename = 'employers_export_'.date('Y-m-d_H-i-s');
 
         if ($format === 'json') {
-            return $this->exportToJson($query, $filename . '.json');
+            return $this->exportToJson($query, $filename.'.json');
         }
 
-        return $this->exportToCsv($query, $columns, $filename . '.csv');
+        return $this->exportToCsv($query, $columns, $filename.'.csv');
     }
 }

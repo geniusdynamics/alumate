@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\PeerFundraiser;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class PeerFundraiserPolicy
 {
@@ -37,8 +36,8 @@ class PeerFundraiserPolicy
      */
     public function update(User $user, PeerFundraiser $peerFundraiser): bool
     {
-        return $user->id === $peerFundraiser->user_id || 
-               $user->hasRole('admin') || 
+        return $user->id === $peerFundraiser->user_id ||
+               $user->hasRole('admin') ||
                $user->hasRole('institution_admin');
     }
 
@@ -47,8 +46,8 @@ class PeerFundraiserPolicy
      */
     public function delete(User $user, PeerFundraiser $peerFundraiser): bool
     {
-        return $user->id === $peerFundraiser->user_id || 
-               $user->hasRole('admin') || 
+        return $user->id === $peerFundraiser->user_id ||
+               $user->hasRole('admin') ||
                $user->hasRole('institution_admin');
     }
 

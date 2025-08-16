@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
-use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Post;
 use App\Models\PostEngagement;
+use App\Models\User;
 use App\Services\PostEngagementService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -15,15 +15,18 @@ class PostEngagementServiceTest extends TestCase
     use RefreshDatabase;
 
     protected PostEngagementService $service;
+
     protected User $user;
+
     protected User $otherUser;
+
     protected Post $post;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
-        $this->service = new PostEngagementService();
+
+        $this->service = new PostEngagementService;
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();
         $this->post = Post::factory()->create(['user_id' => $this->otherUser->id]);
@@ -45,7 +48,7 @@ class PostEngagementServiceTest extends TestCase
     {
         // Add initial reaction
         $this->service->addReaction($this->post, $this->user, 'like');
-        
+
         // Add different reaction
         $this->service->addReaction($this->post, $this->user, 'love');
 
@@ -53,13 +56,13 @@ class PostEngagementServiceTest extends TestCase
         $this->assertDatabaseMissing('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'like'
+            'type' => 'like',
         ]);
 
         $this->assertDatabaseHas('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'love'
+            'type' => 'love',
         ]);
     }
 
@@ -68,7 +71,7 @@ class PostEngagementServiceTest extends TestCase
     {
         // Add reaction first
         $this->service->addReaction($this->post, $this->user, 'like');
-        
+
         // Remove reaction
         $result = $this->service->removeReaction($this->post, $this->user, 'like');
 
@@ -76,7 +79,7 @@ class PostEngagementServiceTest extends TestCase
         $this->assertDatabaseMissing('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'like'
+            'type' => 'like',
         ]);
     }
 
@@ -99,7 +102,7 @@ class PostEngagementServiceTest extends TestCase
         // Create parent comment
         $parentComment = Comment::factory()->create([
             'post_id' => $this->post->id,
-            'user_id' => $this->otherUser->id
+            'user_id' => $this->otherUser->id,
         ]);
 
         $replyContent = 'This is a reply';
@@ -124,7 +127,7 @@ class PostEngagementServiceTest extends TestCase
         $this->assertDatabaseHas('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'share'
+            'type' => 'share',
         ]);
     }
 
@@ -142,7 +145,7 @@ class PostEngagementServiceTest extends TestCase
     {
         // Add bookmark first
         $this->service->bookmarkPost($this->post, $this->user);
-        
+
         // Remove bookmark
         $result = $this->service->removeBookmark($this->post, $this->user);
 
@@ -150,7 +153,7 @@ class PostEngagementServiceTest extends TestCase
         $this->assertDatabaseMissing('post_engagements', [
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'type' => 'bookmark'
+            'type' => 'bookmark',
         ]);
     }
 
@@ -224,7 +227,7 @@ class PostEngagementServiceTest extends TestCase
         $results = $this->service->searchUsersForMention('doe');
 
         $this->assertCount(2, $results);
-        
+
         $usernames = array_column($results, 'username');
         $this->assertContains('johndoe', $usernames);
         $this->assertContains('janedoe', $usernames);
@@ -238,19 +241,19 @@ class PostEngagementServiceTest extends TestCase
         $level1 = Comment::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'parent_id' => null
+            'parent_id' => null,
         ]);
 
         $level2 = Comment::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'parent_id' => $level1->id
+            'parent_id' => $level1->id,
         ]);
 
         $level3 = Comment::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
-            'parent_id' => $level2->id
+            'parent_id' => $level2->id,
         ]);
 
         $this->assertEquals(0, $level1->getDepthLevel());
@@ -263,21 +266,21 @@ class PostEngagementServiceTest extends TestCase
     {
         $parentComment = Comment::factory()->create([
             'post_id' => $this->post->id,
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
 
         $childComment = Comment::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->otherUser->id,
-            'parent_id' => $parentComment->id
+            'parent_id' => $parentComment->id,
         ]);
 
         // Test parent relationship
         $this->assertEquals($parentComment->id, $childComment->parent->id);
-        
+
         // Test child relationship
         $this->assertTrue($parentComment->replies->contains($childComment));
-        
+
         // Test level checks
         $this->assertTrue($parentComment->isTopLevel());
         $this->assertFalse($parentComment->isReply());

@@ -14,6 +14,7 @@ class MergeController extends Controller
         // For simplicity, we'll just show all graduates.
         // In a real application, you would probably want to show only potential duplicates.
         $graduates = Graduate::with('tenant')->get();
+
         return Inertia::render('Merge/Index', ['graduates' => $graduates]);
     }
 

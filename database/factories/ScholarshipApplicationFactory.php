@@ -17,7 +17,7 @@ class ScholarshipApplicationFactory extends Factory
     public function definition(): array
     {
         $submittedAt = fake()->boolean(80) ? fake()->dateTimeBetween('-2 months', 'now') : null;
-        
+
         return [
             'scholarship_id' => \App\Models\Scholarship::factory(),
             'applicant_id' => \App\Models\User::factory(),
@@ -26,15 +26,15 @@ class ScholarshipApplicationFactory extends Factory
                 'academic_year' => fake()->randomElement(['freshman', 'sophomore', 'junior', 'senior', 'graduate']),
                 'field_of_study' => fake()->randomElement(['Engineering', 'Business', 'Liberal Arts', 'Sciences', 'Medicine']),
                 'expected_graduation' => fake()->dateTimeBetween('+1 year', '+4 years')->format('Y-m-d'),
-                'current_institution' => fake()->company() . ' University',
+                'current_institution' => fake()->company().' University',
             ],
             'documents' => [
-                'transcript' => fake()->boolean() ? 'transcripts/transcript_' . fake()->uuid() . '.pdf' : null,
+                'transcript' => fake()->boolean() ? 'transcripts/transcript_'.fake()->uuid().'.pdf' : null,
                 'recommendation_letters' => fake()->boolean() ? [
-                    'letters/letter1_' . fake()->uuid() . '.pdf',
-                    'letters/letter2_' . fake()->uuid() . '.pdf'
+                    'letters/letter1_'.fake()->uuid().'.pdf',
+                    'letters/letter2_'.fake()->uuid().'.pdf',
                 ] : [],
-                'portfolio' => fake()->boolean() ? 'portfolios/portfolio_' . fake()->uuid() . '.pdf' : null,
+                'portfolio' => fake()->boolean() ? 'portfolios/portfolio_'.fake()->uuid().'.pdf' : null,
             ],
             'personal_statement' => fake()->paragraphs(4, true),
             'gpa' => fake()->randomFloat(2, 2.0, 4.0),
@@ -45,15 +45,15 @@ class ScholarshipApplicationFactory extends Factory
                     'title' => fake()->jobTitle(),
                     'email' => fake()->safeEmail(),
                     'phone' => fake()->phoneNumber(),
-                    'relationship' => fake()->randomElement(['Professor', 'Supervisor', 'Mentor', 'Advisor'])
+                    'relationship' => fake()->randomElement(['Professor', 'Supervisor', 'Mentor', 'Advisor']),
                 ],
                 [
                     'name' => fake()->name(),
                     'title' => fake()->jobTitle(),
                     'email' => fake()->safeEmail(),
                     'phone' => fake()->phoneNumber(),
-                    'relationship' => fake()->randomElement(['Professor', 'Supervisor', 'Mentor', 'Advisor'])
-                ]
+                    'relationship' => fake()->randomElement(['Professor', 'Supervisor', 'Mentor', 'Advisor']),
+                ],
             ],
             'submitted_at' => $submittedAt,
             'admin_notes' => fake()->boolean(30) ? fake()->sentence() : null,

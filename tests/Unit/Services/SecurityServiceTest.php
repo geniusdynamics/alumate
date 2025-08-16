@@ -2,21 +2,21 @@
 
 namespace Tests\Unit\Services;
 
-use Tests\TestCase;
-use App\Services\SecurityService;
-use App\Models\User;
-use App\Models\SecurityEvent;
 use App\Models\FailedLoginAttempt;
+use App\Models\SecurityEvent;
 use App\Models\SessionSecurity;
 use App\Models\TwoFactorAuth;
+use App\Models\User;
+use App\Services\SecurityService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
+use Tests\TestCase;
 
 class SecurityServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     protected SecurityService $securityService;
+
     protected User $user;
 
     protected function setUp(): void
@@ -110,7 +110,7 @@ class SecurityServiceTest extends TestCase
     {
         // First enable 2FA
         $twoFactor = $this->securityService->enableTwoFactorAuth($this->user);
-        
+
         // Then disable it
         $this->securityService->disableTwoFactorAuth($this->user);
 
@@ -123,15 +123,15 @@ class SecurityServiceTest extends TestCase
     public function test_can_detect_rate_limit_violation(): void
     {
         $identifier = 'test_user_123';
-        
+
         // Should not be rate limited initially
         $this->assertFalse($this->securityService->detectRateLimitViolation($identifier, 5, 1));
-        
+
         // Simulate multiple requests
         for ($i = 0; $i < 4; $i++) {
             $this->assertFalse($this->securityService->detectRateLimitViolation($identifier, 5, 1));
         }
-        
+
         // Should be rate limited on 6th attempt
         $this->assertTrue($this->securityService->detectRateLimitViolation($identifier, 5, 1));
     }
@@ -140,11 +140,11 @@ class SecurityServiceTest extends TestCase
     {
         // Mock a request with SQL injection attempt
         $this->app['request']->merge(['test' => "'; DROP TABLE users; --"]);
-        
+
         $isMalicious = $this->securityService->detectMaliciousRequest();
-        
+
         $this->assertTrue($isMalicious);
-        
+
         // Should log security event
         $this->assertDatabaseHas('security_events', [
             'event_type' => SecurityEvent::TYPE_MALICIOUS_REQUEST,

@@ -4,9 +4,9 @@ namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Database\Eloquent\Collection;
 
 class MentorSuggestionsNotification extends Notification implements ShouldQueue
 {
@@ -29,9 +29,9 @@ class MentorSuggestionsNotification extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject('Mentor Suggestions for You')
-            ->greeting('Hello ' . $notifiable->name . '!')
+            ->greeting('Hello '.$notifiable->name.'!')
             ->line('We found some great mentors who might be perfect for your career journey.')
-            ->line('Top suggestions include: ' . $mentorNames)
+            ->line('Top suggestions include: '.$mentorNames)
             ->action('Browse Mentors', url('/mentorship/directory'))
             ->line('Don\'t miss out on this opportunity to accelerate your career growth!');
     }

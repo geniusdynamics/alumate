@@ -12,7 +12,9 @@ class ApplicationStatusChanged
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $application;
+
     public $oldStatus;
+
     public $newStatus;
 
     public function __construct(JobApplication $application, $oldStatus, $newStatus)

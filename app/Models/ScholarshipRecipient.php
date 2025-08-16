@@ -60,7 +60,7 @@ class ScholarshipRecipient extends Model
 
     public function hasSuccessStory(): bool
     {
-        return !empty($this->success_story);
+        return ! empty($this->success_story);
     }
 
     public function getYearsSinceAwardAttribute(): int
