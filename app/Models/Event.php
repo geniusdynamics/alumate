@@ -70,6 +70,13 @@ class Event extends Model
         'enable_checkin',
         'status',
         'tags',
+        // Calendar integration fields
+        'user_id',
+        'location',
+        'is_virtual',
+        'attendees',
+        'event_type',
+        'external_calendar_ids',
     ];
 
     protected $casts = [
@@ -107,12 +114,21 @@ class Event extends Model
         'current_attendees' => 'integer',
         'graduation_year' => 'integer',
         'reunion_year_milestone' => 'integer',
+        // Calendar integration casts
+        'attendees' => 'array',
+        'is_virtual' => 'boolean',
+        'external_calendar_ids' => 'array',
     ];
 
     // Relationships
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'organizer_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function institution(): BelongsTo

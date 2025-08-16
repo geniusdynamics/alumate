@@ -8,6 +8,11 @@ use Inertia\Inertia;
 
 Route::get('/', [\App\Http\Controllers\HomepageController::class, 'index'])->name('home');
 
+// Developer Documentation
+Route::middleware('auth')->get('/developer/api-documentation', function () {
+    return Inertia::render('Developer/ApiDocumentation');
+})->name('developer.api-documentation');
+
 // PWA Offline Route
 Route::get('/offline', function () {
     return view('offline');
@@ -359,6 +364,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('help', function () {
         return Inertia::render('Help');
     })->name('help');
+});
+
+// Training & Documentation Routes
+Route::middleware(['auth'])->prefix('training')->name('training.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\UserTrainingController::class, 'index'])->name('index');
+    Route::get('guide/{guideId}', [\App\Http\Controllers\UserTrainingController::class, 'showGuide'])->name('guide');
+    Route::get('tutorial/{tutorialId}', [\App\Http\Controllers\UserTrainingController::class, 'showVideoTutorial'])->name('tutorial');
+    Route::get('faqs', [\App\Http\Controllers\UserTrainingController::class, 'showFAQs'])->name('faqs');
 });
 
 // Student-specific routes
@@ -715,8 +728,15 @@ Route::middleware(['auth', 'role:admin|super_admin'])->prefix('analytics')->name
     Route::get('dashboard', function () {
         return Inertia::render('Analytics/Dashboard');
     })->name('dashboard');
-    
+
     Route::get('career-outcomes', function () {
         return Inertia::render('Analytics/CareerOutcomes');
     })->name('career-outcomes');
+});
+
+// Performance Monitoring Admin Route
+Route::middleware(['auth', 'role:super-admin'])->group(function () {
+    Route::get('/admin/performance', function () {
+        return Inertia::render('Admin/PerformanceMonitoring');
+    })->name('admin.performance');
 });

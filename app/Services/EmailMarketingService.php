@@ -2,16 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\EmailCampaign;
-use App\Models\EmailTemplate;
+use App\Jobs\ProcessAutomationRuleJob;
+use App\Jobs\SendEmailCampaignJob;
 use App\Models\EmailAutomationRule;
+use App\Models\EmailCampaign;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
-use App\Jobs\SendEmailCampaignJob;
-use App\Jobs\ProcessAutomationRuleJob;
 
 class EmailMarketingService
 {
@@ -67,14 +65,14 @@ class EmailMarketingService
     public function sendCampaign(EmailCampaign $campaign): bool
     {
         if ($campaign->status !== 'draft' && $campaign->status !== 'scheduled') {
-            throw new \Exception('Campaign cannot be sent in current status: ' . $campaign->status);
+            throw new \Exception('Campaign cannot be sent in current status: '.$campaign->status);
         }
 
         $campaign->update(['status' => 'sending']);
 
         // Get recipients based on audience criteria
         $recipients = $this->getRecipients($campaign);
-        
+
         $campaign->update(['total_recipients' => $recipients->count()]);
 
         // Create recipient records
@@ -109,7 +107,7 @@ class EmailMarketingService
                 'is_ab_test' => true,
                 'ab_test_variant' => 'B',
                 'ab_test_parent_id' => $parentCampaign->id,
-                'name' => $parentCampaign->name . ' (Variant B)',
+                'name' => $parentCampaign->name.' (Variant B)',
             ]
         ));
 
@@ -153,7 +151,7 @@ class EmailMarketingService
             if (isset($criteria['engagement_level'])) {
                 // Add engagement filtering logic based on user activity
                 $query->withCount(['posts', 'connections', 'eventAttendances'])
-                      ->having('posts_count', '>=', $criteria['min_posts'] ?? 0);
+                    ->having('posts_count', '>=', $criteria['min_posts'] ?? 0);
             }
 
             // Filter by location
@@ -170,8 +168,12 @@ class EmailMarketingService
         $personalizedContent = $content;
 
         // Basic personalization
-        $personalizedContent = str_replace('{{first_name}}', $user->first_name ?? 'Alumni', $personalizedContent);
-        $personalizedContent = str_replace('{{last_name}}', $user->last_name ?? '', $personalizedContent);
+        $nameParts = explode(' ', $user->name, 2);
+        $firstName = $nameParts[0] ?? 'Alumni';
+        $lastName = $nameParts[1] ?? '';
+
+        $personalizedContent = str_replace('{{first_name}}', $firstName, $personalizedContent);
+        $personalizedContent = str_replace('{{last_name}}', $lastName, $personalizedContent);
         $personalizedContent = str_replace('{{full_name}}', $user->name, $personalizedContent);
         $personalizedContent = str_replace('{{email}}', $user->email, $personalizedContent);
 
@@ -180,7 +182,7 @@ class EmailMarketingService
             switch ($rule['type']) {
                 case 'recent_posts':
                     $recentPosts = $user->posts()->latest()->limit(3)->get();
-                    $postsHtml = $recentPosts->map(fn($post) => "<li>{$post->content}</li>")->join('');
+                    $postsHtml = $recentPosts->map(fn ($post) => "<li>{$post->content}</li>")->join('');
                     $personalizedContent = str_replace('{{recent_posts}}', "<ul>{$postsHtml}</ul>", $personalizedContent);
                     break;
 
@@ -197,7 +199,7 @@ class EmailMarketingService
                         ->where('start_date', '>', now())
                         ->limit(3)
                         ->get();
-                    $eventsHtml = $upcomingEvents->map(fn($event) => "<li>{$event->title} - {$event->start_date->format('M j, Y')}</li>")->join('');
+                    $eventsHtml = $upcomingEvents->map(fn ($event) => "<li>{$event->title} - {$event->start_date->format('M j, Y')}</li>")->join('');
                     $personalizedContent = str_replace('{{upcoming_events}}', "<ul>{$eventsHtml}</ul>", $personalizedContent);
                     break;
             }
@@ -209,8 +211,8 @@ class EmailMarketingService
     public function trackEngagement(EmailCampaign $campaign, User $user, string $action, array $data = []): void
     {
         $recipient = $campaign->recipients()->where('user_id', $user->id)->first();
-        
-        if (!$recipient) {
+
+        if (! $recipient) {
             return;
         }
 
@@ -297,7 +299,7 @@ class EmailMarketingService
 
     protected function matchesTriggerConditions(EmailAutomationRule $rule, array $data): bool
     {
-        if (!$rule->trigger_conditions) {
+        if (! $rule->trigger_conditions) {
             return true;
         }
 
@@ -342,7 +344,8 @@ class EmailMarketingService
     protected function getProvider(string $providerName): object
     {
         $providerClass = $this->providers[$providerName] ?? $this->providers['internal'];
-        return new $providerClass();
+
+        return new $providerClass;
     }
 }
 
@@ -350,7 +353,9 @@ class EmailMarketingService
 interface EmailProviderInterface
 {
     public function createCampaign(EmailCampaign $campaign): array;
+
     public function sendCampaign(EmailCampaign $campaign, Collection $recipients): array;
+
     public function getCampaignStats(EmailCampaign $campaign): array;
 }
 
@@ -379,7 +384,7 @@ class MailchimpProvider implements EmailProviderInterface
     public function createCampaign(EmailCampaign $campaign): array
     {
         // Mailchimp API integration
-        return ['success' => true, 'campaign_id' => 'mc_' . uniqid()];
+        return ['success' => true, 'campaign_id' => 'mc_'.uniqid()];
     }
 
     public function sendCampaign(EmailCampaign $campaign, Collection $recipients): array
@@ -400,7 +405,7 @@ class ConstantContactProvider implements EmailProviderInterface
     public function createCampaign(EmailCampaign $campaign): array
     {
         // Constant Contact API integration
-        return ['success' => true, 'campaign_id' => 'cc_' . uniqid()];
+        return ['success' => true, 'campaign_id' => 'cc_'.uniqid()];
     }
 
     public function sendCampaign(EmailCampaign $campaign, Collection $recipients): array
@@ -421,7 +426,7 @@ class MauticProvider implements EmailProviderInterface
     public function createCampaign(EmailCampaign $campaign): array
     {
         // Mautic API integration
-        return ['success' => true, 'campaign_id' => 'mautic_' . uniqid()];
+        return ['success' => true, 'campaign_id' => 'mautic_'.uniqid()];
     }
 
     public function sendCampaign(EmailCampaign $campaign, Collection $recipients): array

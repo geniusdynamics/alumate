@@ -6,7 +6,6 @@
         "artisan",
         "boost:mcp"
       ],
-      "cwd": "D:\\DevCenter\\abuilds\\alumate",
       "env": {
         "FASTMCP_LOG_LEVEL": "ERROR"
       },
@@ -20,7 +19,8 @@
         "list_artisan_commands",
         "tinker",
         "read_log_entries",
-        "last_error"
+        "last_error",
+        "database-query"
       ]
     }
   }

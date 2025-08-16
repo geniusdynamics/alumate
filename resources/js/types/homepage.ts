@@ -1537,7 +1537,6 @@ export interface CTAClickEvent {
     y: number
   }
   additionalData?: Record<string, any>
-}
   variantId: string
   variantName: string
   participants: number

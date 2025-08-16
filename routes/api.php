@@ -25,12 +25,17 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Test route for social rate limiting
+Route::post('/test/social-action', function (Request $request) {
+    return response()->json(['message' => 'Action completed']);
+})->middleware(['auth:sanctum', 'social.rate_limit:post_interaction']);
+
 // PWA Health Check
 Route::get('/ping', function () {
     return response()->json([
         'status' => 'ok',
         'timestamp' => now()->toISOString(),
-        'message' => 'Alumni Platform API is online'
+        'message' => 'Alumni Platform API is online',
     ]);
 });
 
@@ -38,16 +43,16 @@ Route::get('/ping', function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('push/vapid-key', function () {
         return response()->json([
-            'publicKey' => config('services.vapid.public_key', 'demo-key-for-development')
+            'publicKey' => config('services.vapid.public_key', 'demo-key-for-development'),
         ]);
     });
-    
+
     Route::post('push/subscribe', function (Request $request) {
         // In a real implementation, you'd save the subscription to the database
         // For now, just return success
         return response()->json(['success' => true]);
     });
-    
+
     Route::post('push/unsubscribe', function (Request $request) {
         // In a real implementation, you'd remove the subscription from the database
         // For now, just return success
@@ -56,12 +61,16 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Post routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->group(function () {
     Route::apiResource('posts', PostController::class);
-    Route::post('posts/media', [PostController::class, 'uploadMedia']);
     Route::post('posts/drafts', [PostController::class, 'saveDraft']);
     Route::get('posts/drafts', [PostController::class, 'getDrafts']);
     Route::get('posts/scheduled', [PostController::class, 'getScheduledPosts']);
+});
+
+// Media upload routes (with stricter rate limiting)
+Route::middleware(['auth:sanctum', 'api.rate_limit:upload'])->group(function () {
+    Route::post('posts/media', [PostController::class, 'uploadMedia']);
 });
 
 // Timeline routes
@@ -133,7 +142,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 // Advanced Search routes
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'api.rate_limit:search'])->group(function () {
     Route::post('search', [SearchController::class, 'search']);
     Route::get('search/suggestions', [SearchController::class, 'suggestions']);
     Route::post('saved-searches', [SearchController::class, 'saveSearch']);
@@ -278,7 +287,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('fundraising-campaigns', App\Http\Controllers\Api\FundraisingCampaignController::class);
     Route::get('fundraising-campaigns/{campaign}/analytics', [App\Http\Controllers\Api\FundraisingCampaignController::class, 'analytics']);
     Route::get('fundraising-campaigns/{campaign}/share', [App\Http\Controllers\Api\FundraisingCampaignController::class, 'share']);
-    
+
     // Comprehensive Fundraising Analytics
     Route::prefix('fundraising-analytics')->group(function () {
         Route::get('dashboard', [App\Http\Controllers\Api\FundraisingAnalyticsController::class, 'dashboard']);
@@ -447,6 +456,27 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/mentorships', [StudentMentorshipController::class, 'getStudentMentorships']);
 });
 
+// Developer API Documentation routes
+Route::middleware('auth:sanctum')->prefix('developer')->name('developer.')->group(function () {
+    // API Documentation
+    Route::get('documentation', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiDocumentation']);
+    
+    // API Key Management
+    Route::post('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'generateApiKey']);
+    Route::get('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiKeys']);
+    Route::delete('api-keys/{tokenId}', [\App\Http\Controllers\Api\DeveloperController::class, 'revokeApiKey']);
+    
+    // Webhook Management
+    Route::post('webhooks', [\App\Http\Controllers\Api\DeveloperController::class, 'createWebhook']);
+    Route::get('webhooks', [\App\Http\Controllers\Api\DeveloperController::class, 'getWebhooks']);
+    Route::post('webhooks/{webhookId}/test', [\App\Http\Controllers\Api\DeveloperController::class, 'testWebhook']);
+    Route::delete('webhooks/{webhookId}', [\App\Http\Controllers\Api\DeveloperController::class, 'deleteWebhook']);
+    Route::get('webhook-events', [\App\Http\Controllers\Api\DeveloperController::class, 'getWebhookEvents']);
+    
+    // Tools
+    Route::get('postman-collection', [\App\Http\Controllers\Api\DeveloperController::class, 'generatePostmanCollection']);
+});
+
 // Speaker Bureau routes
 Route::middleware('auth:sanctum')->group(function () {
     // Public speaker browsing
@@ -459,7 +489,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('speakers/profile', [SpeakerBureauController::class, 'createProfile']);
 
     // Booking management
-    Route::post('speakers/{speaker}/book', [SpeakerBureauController::class, 'requestBooking']);
+    Route::post('speakers/{speaker}/book', [SpeakerBureauController::class, 'book']);
+});
+
+// Webhook routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:webhook'])->group(function () {
+    Route::apiResource('webhooks', App\Http\Controllers\Api\WebhookController::class);
+    Route::post('webhooks/{webhook}/test', [App\Http\Controllers\Api\WebhookController::class, 'test']);
+    Route::get('webhooks/{webhook}/deliveries', [App\Http\Controllers\Api\WebhookController::class, 'deliveries']);
+    Route::post('webhooks/{webhook}/deliveries/{delivery}/retry', [App\Http\Controllers\Api\WebhookController::class, 'retryDelivery']);
+    Route::get('webhooks/{webhook}/statistics', [App\Http\Controllers\Api\WebhookController::class, 'statistics']);
+    Route::get('webhooks/events', [App\Http\Controllers\Api\WebhookController::class, 'events']);
+    Route::post('webhooks/validate-url', [App\Http\Controllers\Api\WebhookController::class, 'validateUrl']);
+    Route::post('webhooks/{webhook}/pause', [App\Http\Controllers\Api\WebhookController::class, 'pause']);
+    Route::post('webhooks/{webhook}/resume', [App\Http\Controllers\Api\WebhookController::class, 'resume']);
+
+    // Speaker booking requests
+    Route::post('speakers/{speaker}/request-booking', [SpeakerBureauController::class, 'requestBooking']);
     Route::get('speaker/bookings', [SpeakerBureauController::class, 'getSpeakerBookings']);
     Route::get('my-bookings', [SpeakerBureauController::class, 'getUserBookings']);
     Route::post('bookings/{booking}/respond', [SpeakerBureauController::class, 'respondToBooking']);
@@ -485,14 +531,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('email-campaigns/{campaign}/ab-test', [App\Http\Controllers\Api\EmailCampaignController::class, 'createAbTest']);
     Route::post('email-campaigns/{campaign}/preview', [App\Http\Controllers\Api\EmailCampaignController::class, 'preview']);
     Route::get('email-campaigns/{campaign}/recipients', [App\Http\Controllers\Api\EmailCampaignController::class, 'recipients']);
-    
+
     // Email Templates
     Route::get('email-templates', [App\Http\Controllers\Api\EmailCampaignController::class, 'templates']);
-    
+
     // Email Automation
     Route::get('email-automation-rules', [App\Http\Controllers\Api\EmailCampaignController::class, 'automationRules']);
     Route::post('email-automation-rules', [App\Http\Controllers\Api\EmailCampaignController::class, 'createAutomationRule']);
-    
+
     // Email Analytics
     Route::get('email-campaigns/analytics', [App\Http\Controllers\Api\EmailCampaignController::class, 'analytics']);
 });
@@ -519,21 +565,21 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     // Forum management
     Route::apiResource('forums', App\Http\Controllers\Api\ForumController::class);
-    
+
     // Topic management
     Route::apiResource('forums.topics', App\Http\Controllers\Api\ForumTopicController::class);
     Route::post('forums/{forum}/topics/{topic}/subscribe', [App\Http\Controllers\Api\ForumTopicController::class, 'toggleSubscription']);
-    
+
     // Post management
     Route::apiResource('topics.posts', App\Http\Controllers\Api\ForumPostController::class)->except(['index']);
     Route::post('posts/{post}/like', [App\Http\Controllers\Api\ForumPostController::class, 'toggleLike']);
     Route::post('posts/{post}/solution', [App\Http\Controllers\Api\ForumPostController::class, 'markAsSolution']);
-    
+
     // Forum search and discovery
     Route::get('forums/search', [App\Http\Controllers\Api\ForumSearchController::class, 'search']);
     Route::get('forums/tags', [App\Http\Controllers\Api\ForumSearchController::class, 'getTags']);
     Route::get('forums/tags/{tag}/topics', [App\Http\Controllers\Api\ForumSearchController::class, 'getTopicsByTag']);
-    
+
     // Forum moderation (admin/moderator only)
     Route::post('forums/moderate/{type}/{id}', [App\Http\Controllers\Api\ForumModerationController::class, 'moderate']);
     Route::get('forums/moderation/pending', [App\Http\Controllers\Api\ForumModerationController::class, 'getPending']);
@@ -549,7 +595,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('video-calls/{call}/end', [App\Http\Controllers\Api\VideoCallController::class, 'end']);
     Route::get('video-calls/upcoming', [App\Http\Controllers\Api\VideoCallController::class, 'upcoming']);
     Route::get('video-calls/active', [App\Http\Controllers\Api\VideoCallController::class, 'active']);
-    
+
     // Coffee Chat System
     Route::get('coffee-chat/suggestions', [App\Http\Controllers\Api\CoffeeChatController::class, 'suggestions']);
     Route::post('coffee-chat/request', [App\Http\Controllers\Api\CoffeeChatController::class, 'request']);
@@ -569,6 +615,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('onboarding/events', [App\Http\Controllers\Api\OnboardingController::class, 'recordEvent']);
     Route::post('user/interests', [App\Http\Controllers\Api\OnboardingController::class, 'saveUserInterests']);
     Route::get('onboarding/help/{elementId}', [App\Http\Controllers\Api\OnboardingController::class, 'getContextualHelp']);
+
+    // Training & Documentation API routes
+    Route::prefix('training')->group(function () {
+        Route::get('guides', [\App\Http\Controllers\UserTrainingController::class, 'getUserGuides']);
+        Route::get('tutorials', [\App\Http\Controllers\UserTrainingController::class, 'getVideoTutorials']);
+        Route::get('onboarding-sequence', [\App\Http\Controllers\UserTrainingController::class, 'getOnboardingSequence']);
+        Route::get('faqs', [\App\Http\Controllers\UserTrainingController::class, 'getFAQs']);
+        Route::get('progress', [\App\Http\Controllers\UserTrainingController::class, 'getTrainingProgress']);
+        Route::post('mark-step-completed', [\App\Http\Controllers\UserTrainingController::class, 'markStepCompleted']);
+        Route::get('search', [\App\Http\Controllers\UserTrainingController::class, 'search']);
+        Route::post('faq-helpful', [\App\Http\Controllers\UserTrainingController::class, 'markFAQHelpful']);
+        Route::post('feedback', [\App\Http\Controllers\UserTrainingController::class, 'submitFeedback']);
+    });
 });
 
 // Messaging System routes
@@ -579,7 +638,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('conversations/direct', [App\Http\Controllers\Api\ConversationController::class, 'createDirect']);
     Route::post('conversations/group', [App\Http\Controllers\Api\ConversationController::class, 'createGroup']);
     Route::post('conversations/circle', [App\Http\Controllers\Api\ConversationController::class, 'createCircle']);
-    
+
     // Conversation management
     Route::post('conversations/{conversationId}/participants', [App\Http\Controllers\Api\ConversationController::class, 'addParticipant']);
     Route::delete('conversations/{conversationId}/participants/{userId}', [App\Http\Controllers\Api\ConversationController::class, 'removeParticipant']);
@@ -587,7 +646,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('conversations/{conversationId}/archive', [App\Http\Controllers\Api\ConversationController::class, 'archive']);
     Route::post('conversations/{conversationId}/mute', [App\Http\Controllers\Api\ConversationController::class, 'toggleMute']);
     Route::post('conversations/{conversationId}/pin', [App\Http\Controllers\Api\ConversationController::class, 'togglePin']);
-    
+
     // Messages
     Route::post('messages', [App\Http\Controllers\Api\MessagingController::class, 'sendMessage']);
     Route::post('messages/{messageId}/read', [App\Http\Controllers\Api\MessagingController::class, 'markAsRead']);
@@ -701,4 +760,54 @@ Route::middleware(['auth:sanctum', 'role:admin|super_admin'])->prefix('analytics
     Route::post('custom-report', [App\Http\Controllers\Api\AnalyticsController::class, 'generateCustomReport']);
     Route::get('export', [App\Http\Controllers\Api\AnalyticsController::class, 'exportData']);
     Route::get('available-metrics', [App\Http\Controllers\Api\AnalyticsController::class, 'getAvailableMetrics']);
+});
+
+// Calendar Integration routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Calendar connections
+    Route::get('calendar/connections', [App\Http\Controllers\Api\CalendarSyncController::class, 'index']);
+    Route::post('calendar/connect', [App\Http\Controllers\Api\CalendarSyncController::class, 'connect']);
+    Route::post('calendar/connections/{connection}/disconnect', [App\Http\Controllers\Api\CalendarSyncController::class, 'disconnect']);
+    Route::post('calendar/connections/{connection}/sync', [App\Http\Controllers\Api\CalendarSyncController::class, 'sync']);
+    Route::get('calendar/sync-status', [App\Http\Controllers\Api\CalendarSyncController::class, 'syncStatus']);
+
+    // Availability and scheduling
+    Route::get('calendar/availability', [App\Http\Controllers\Api\CalendarSyncController::class, 'availability']);
+    Route::post('calendar/find-slots', [App\Http\Controllers\Api\CalendarSyncController::class, 'findSlots']);
+
+    // Event management
+    Route::post('calendar/events', [App\Http\Controllers\Api\CalendarSyncController::class, 'createEvent']);
+    Route::post('calendar/events/{event}/invites', [App\Http\Controllers\Api\CalendarSyncController::class, 'sendInvites']);
+
+    // Mentorship scheduling
+    Route::post('calendar/schedule-mentorship', [App\Http\Controllers\Api\CalendarSyncController::class, 'scheduleMentorship']);
+});
+
+// Performance Monitoring routes (Admin only)
+Route::middleware(['auth:sanctum', 'role:super-admin'])->prefix('admin/performance')->group(function () {
+    Route::get('metrics', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'metrics']);
+    Route::get('budget-details', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'getBudgetDetails']);
+    Route::post('clear-caches', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'clearCaches']);
+    Route::post('optimize-social-graph', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'optimizeSocialGraph']);
+    Route::post('optimize-timeline', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'optimizeTimeline']);
+    Route::post('optimize-cdn', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'optimizeCdn']);
+    Route::post('setup-alerts', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'setupAlerts']);
+    Route::post('execute-optimization', [App\Http\Controllers\Api\Admin\PerformanceController::class, 'executeAutomatedOptimization']);
+});
+
+// User Testing and Feedback routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Feedback routes
+    Route::post('feedback', [App\Http\Controllers\Api\FeedbackController::class, 'store']);
+    Route::get('feedback', [App\Http\Controllers\Api\FeedbackController::class, 'index']);
+
+    // A/B Testing routes
+    Route::get('ab-tests/{testName}/variant', [App\Http\Controllers\Api\FeedbackController::class, 'getABTestVariant']);
+    Route::post('ab-tests/conversion', [App\Http\Controllers\Api\FeedbackController::class, 'trackConversion']);
+});
+
+// Admin A/B Testing routes
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->group(function () {
+    Route::apiResource('ab-tests', App\Http\Controllers\Api\Admin\ABTestController::class);
+    Route::get('ab-tests-analytics', [App\Http\Controllers\Api\Admin\ABTestController::class, 'analytics']);
 });

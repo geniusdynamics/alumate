@@ -32,6 +32,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'tenant' => \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+            'api.rate_limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
+            'social.rate_limit' => \App\Http\Middleware\SocialRateLimiting::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

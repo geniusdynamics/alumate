@@ -12,16 +12,23 @@ class MentorshipSession extends Model
 
     protected $fillable = [
         'mentorship_id',
+        'mentor_id',
+        'mentee_id',
         'scheduled_at',
         'duration',
+        'duration_minutes',
         'notes',
         'status',
         'feedback',
+        'topic',
+        'meeting_url',
+        'event_id',
     ];
 
     protected $casts = [
         'scheduled_at' => 'datetime',
         'duration' => 'integer',
+        'duration_minutes' => 'integer',
         'feedback' => 'array',
     ];
 
@@ -30,14 +37,19 @@ class MentorshipSession extends Model
         return $this->belongsTo(MentorshipRequest::class, 'mentorship_id');
     }
 
-    public function mentor()
+    public function mentor(): BelongsTo
     {
-        return $this->mentorship->mentor();
+        return $this->belongsTo(User::class, 'mentor_id');
     }
 
-    public function mentee()
+    public function mentee(): BelongsTo
     {
-        return $this->mentorship->mentee();
+        return $this->belongsTo(User::class, 'mentee_id');
+    }
+
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class);
     }
 
     public function scopeUpcoming($query)

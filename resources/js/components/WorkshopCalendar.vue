@@ -686,7 +686,7 @@ export default {
 }
 
 .calendar-day.has-events {
-  @apply bg-blue-25;
+  @apply bg-blue-50;
 }
 
 .day-number {

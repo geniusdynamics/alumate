@@ -15,7 +15,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <button
                     @click="startTour"
                     class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow text-left"
@@ -28,11 +28,22 @@
                 </button>
 
                 <a
-                    :href="route('whats-new')"
+                    :href="route('training.index')"
                     class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow text-left block"
                 >
                     <div class="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                        <SparklesIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
+                        <AcademicCapIcon class="w-6 h-6 text-green-600 dark:text-green-400" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Training Center</h3>
+                    <p class="text-gray-600 dark:text-gray-400">Access guides, tutorials, and documentation</p>
+                </a>
+
+                <a
+                    :href="route('whats-new')"
+                    class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow text-left block"
+                >
+                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
+                        <SparklesIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
                     </div>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">What's New</h3>
                     <p class="text-gray-600 dark:text-gray-400">Discover the latest features and updates</p>
@@ -42,8 +53,8 @@
                     @click="showKeyboardShortcuts"
                     class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-lg transition-shadow text-left"
                 >
-                    <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-4">
-                        <CommandLineIcon class="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                    <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-4">
+                        <CommandLineIcon class="w-6 h-6 text-orange-600 dark:text-orange-400" />
                     </div>
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Keyboard Shortcuts</h3>
                     <p class="text-gray-600 dark:text-gray-400">Learn shortcuts to work more efficiently</p>
@@ -156,7 +167,8 @@ import {
     SparklesIcon,
     CommandLineIcon,
     ChevronDownIcon,
-    XMarkIcon
+    XMarkIcon,
+    AcademicCapIcon
 } from '@heroicons/vue/24/outline'
 
 const showShortcuts = ref(false)

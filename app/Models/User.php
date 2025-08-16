@@ -182,8 +182,6 @@ class User extends Authenticatable
         return $this->hasMany(CareerTimeline::class);
     }
 
-
-
     public function skills()
     {
         return $this->belongsToMany(Skill::class, 'user_skills');
@@ -704,6 +702,26 @@ class User extends Authenticatable
         return $this->hasMany(ScreenSharingSession::class, 'presenter_user_id');
     }
 
+    public function calendarConnections()
+    {
+        return $this->hasMany(CalendarConnection::class);
+    }
+
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function mentorshipSessions()
+    {
+        return $this->hasMany(MentorshipSession::class, 'mentor_id');
+    }
+
+    public function menteeSessions()
+    {
+        return $this->hasMany(MentorshipSession::class, 'mentee_id');
+    }
+
     // Video calling helper methods
     public function getActiveVideoCall()
     {
@@ -740,11 +758,47 @@ class User extends Authenticatable
     {
         return CoffeeChatRequest::where(function ($query) {
             $query->where('requester_id', $this->id)
-                  ->orWhere('recipient_id', $this->id);
+                ->orWhere('recipient_id', $this->id);
         })
-        ->where('status', 'completed')
-        ->with(['requester', 'recipient'])
-        ->orderBy('updated_at', 'desc')
-        ->get();
+            ->where('status', 'completed')
+            ->with(['requester', 'recipient'])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+    }
+
+    // User Testing relationships
+    public function feedback()
+    {
+        return $this->hasMany(UserFeedback::class);
+    }
+
+    public function testingSessions()
+    {
+        return $this->hasMany(UserTestingSession::class);
+    }
+
+    public function abTestAssignments()
+    {
+        return $this->hasMany(ABTestAssignment::class);
+    }
+
+    public function abTestConversions()
+    {
+        return $this->hasMany(ABTestConversion::class);
+    }
+
+    public function sentMentorshipRequests()
+    {
+        return $this->hasMany(MentorshipRequest::class, 'mentee_id');
+    }
+
+    public function jobApplications()
+    {
+        return $this->hasMany(JobApplication::class);
+    }
+
+    public function eventAttendances()
+    {
+        return $this->hasMany(EventAttendance::class);
     }
 }

@@ -7,24 +7,39 @@
 export {}
 declare global {
   const ABTestingService: typeof import('./resources/js/services/ABTestingService')['ABTestingService']
+  const AccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['AccessibilityManager']
   const AccessibilityService: typeof import('./resources/js/services/AccessibilityService')['default']
+  const AccessibilityTester: typeof import('./resources/js/utils/AccessibilityTester.js')['AccessibilityTester']
   const AnalyticsService: typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']
+  const AriaManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']
+  const BundleAnalyzer: typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']
   const CDNService: typeof import('./resources/js/services/CDNService')['default']
+  const ColorContrastManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']
   const ConversionTrackingService: typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']
   const EffectScope: typeof import('vue')['EffectScope']
+  const FocusManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['FocusManager']
+  const FormAccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['FormAccessibilityManager']
   const HeatMapService: typeof import('./resources/js/services/HeatMapService')['HeatMapService']
+  const KeyboardNavigationManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['KeyboardNavigationManager']
   const LoadingPresets: typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']
+  const MobileAccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['MobileAccessibilityManager']
   const OnboardingService: typeof import('./resources/js/services/OnboardingService.js')['default']
+  const PerformanceOptimizer: typeof import('./resources/js/utils/performance-optimizer')['PerformanceOptimizer']
   const PerformanceService: typeof import('./resources/js/services/PerformanceService')['default']
   const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
   const PushNotificationService: typeof import('./resources/js/services/PushNotificationService.js')['default']
   const SEOService: typeof import('./resources/js/services/SEOService')['default']
+  const ScreenReaderManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['ScreenReaderManager']
   const UserFlowIntegration: typeof import('./resources/js/services/UserFlowIntegration.js')['default']
+  const WebSocketService: typeof import('./resources/js/services/WebSocketService.js')['default']
   const Z_INDEX: typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']
   const accessibilityHelpers: typeof import('./resources/js/utils/accessibility-performance-setup.js')['accessibilityHelpers']
+  const accessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['accessibilityManager']
   const accessibilityService: typeof import('./resources/js/services/AccessibilityService')['accessibilityService']
+  const accessibilityTester: typeof import('./resources/js/utils/AccessibilityTester.js')['accessibilityTester']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
+  const bundleAnalyzer: typeof import('./resources/js/utils/bundle-analyzer')['bundleAnalyzer']
   const cdnService: typeof import('./resources/js/services/CDNService')['cdnService']
   const cn: typeof import('./resources/js/utils/cn')['cn']
   const computed: typeof import('vue')['computed']
@@ -38,6 +53,8 @@ declare global {
   const createEventHook: typeof import('@vueuse/core')['createEventHook']
   const createGlobalState: typeof import('@vueuse/core')['createGlobalState']
   const createInjectionState: typeof import('@vueuse/core')['createInjectionState']
+  const createIntersectionObserver: typeof import('./resources/js/utils/lazy-loading')['createIntersectionObserver']
+  const createLazyComponent: typeof import('./resources/js/utils/lazy-loading')['createLazyComponent']
   const createReactiveFn: typeof import('@vueuse/core')['createReactiveFn']
   const createRef: typeof import('@vueuse/core')['createRef']
   const createReusableTemplate: typeof import('@vueuse/core')['createReusableTemplate']
@@ -49,6 +66,7 @@ declare global {
   const debouncedWatch: typeof import('@vueuse/core')['debouncedWatch']
   const defineAsyncComponent: typeof import('vue')['defineAsyncComponent']
   const defineComponent: typeof import('vue')['defineComponent']
+  const dynamicImportWithRetry: typeof import('./resources/js/utils/lazy-loading')['dynamicImportWithRetry']
   const eagerComputed: typeof import('@vueuse/core')['eagerComputed']
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
@@ -72,6 +90,8 @@ declare global {
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
   const isTouchDevice: typeof import('./resources/js/composables/useSwipeGestures.js')['isTouchDevice']
+  const lazyLoadImage: typeof import('./resources/js/utils/lazy-loading')['lazyLoadImage']
+  const lazyRoute: typeof import('./resources/js/utils/lazy-loading')['lazyRoute']
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const markPerformance: typeof import('./resources/js/utils/performance-monitor.js')['markPerformance']
   const markRaw: typeof import('vue')['markRaw']
@@ -99,7 +119,10 @@ declare global {
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
   const performanceHelpers: typeof import('./resources/js/utils/accessibility-performance-setup.js')['performanceHelpers']
   const performanceMonitor: typeof import('./resources/js/utils/performance-monitor.js')['default']
+  const performanceOptimizer: typeof import('./resources/js/utils/performance-optimizer')['performanceOptimizer']
   const performanceService: typeof import('./resources/js/services/PerformanceService')['performanceService']
+  const preloadComponent: typeof import('./resources/js/utils/lazy-loading')['preloadComponent']
+  const preloadCriticalResources: typeof import('./resources/js/utils/lazy-loading')['preloadCriticalResources']
   const preloadService: typeof import('./resources/js/services/PreloadService')['preloadService']
   const preventTouchDefault: typeof import('./resources/js/composables/useSwipeGestures.js')['preventTouchDefault']
   const provide: typeof import('vue')['provide']
@@ -145,10 +168,12 @@ declare global {
   const unrefElement: typeof import('@vueuse/core')['unrefElement']
   const until: typeof import('@vueuse/core')['until']
   const updateTheme: typeof import('./resources/js/composables/useAppearance')['updateTheme']
+  const useAccessibilityTesting: typeof import('./resources/js/utils/AccessibilityTester.js')['useAccessibilityTesting']
   const useActiveElement: typeof import('@vueuse/core')['useActiveElement']
   const useAnalytics: typeof import('./resources/js/composables/useAnalytics')['useAnalytics']
   const useAnimate: typeof import('@vueuse/core')['useAnimate']
   const useAppearance: typeof import('./resources/js/composables/useAppearance')['useAppearance']
+  const useAria: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useAria']
   const useArrayDifference: typeof import('@vueuse/core')['useArrayDifference']
   const useArrayEvery: typeof import('@vueuse/core')['useArrayEvery']
   const useArrayFilter: typeof import('@vueuse/core')['useArrayFilter']
@@ -178,6 +203,7 @@ declare global {
   const useColorMode: typeof import('@vueuse/core')['useColorMode']
   const useComponentPerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['useComponentPerformance']
   const useConfirmDialog: typeof import('@vueuse/core')['useConfirmDialog']
+  const useConnectionRealTime: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useConnectionRealTime']
   const useConversionTracking: typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']
   const useCountdown: typeof import('@vueuse/core')['useCountdown']
   const useCounter: typeof import('@vueuse/core')['useCounter']
@@ -217,6 +243,7 @@ declare global {
   const useFileDialog: typeof import('@vueuse/core')['useFileDialog']
   const useFileSystemAccess: typeof import('@vueuse/core')['useFileSystemAccess']
   const useFocus: typeof import('@vueuse/core')['useFocus']
+  const useFocusManagement: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useFocusManagement']
   const useFocusWithin: typeof import('@vueuse/core')['useFocusWithin']
   const useFps: typeof import('@vueuse/core')['useFps']
   const useFullscreen: typeof import('@vueuse/core')['useFullscreen']
@@ -231,6 +258,7 @@ declare global {
   const useInterval: typeof import('@vueuse/core')['useInterval']
   const useIntervalFn: typeof import('@vueuse/core')['useIntervalFn']
   const useKeyModifier: typeof import('@vueuse/core')['useKeyModifier']
+  const useKeyboardNavigation: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useKeyboardNavigation']
   const useLastChanged: typeof import('@vueuse/core')['useLastChanged']
   const useLazyComponent: typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']
   const useLazyImage: typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']
@@ -260,12 +288,13 @@ declare global {
   const usePagePerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePagePerformance']
   const useParallax: typeof import('@vueuse/core')['useParallax']
   const useParentElement: typeof import('@vueuse/core')['useParentElement']
-  const usePerformanceMonitoring: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePerformanceMonitoring']
+  const usePerformanceMonitoring: typeof import('./resources/js/composables/usePerformanceMonitoring')['usePerformanceMonitoring']
   const usePerformanceObserver: typeof import('@vueuse/core')['usePerformanceObserver']
   const usePermission: typeof import('@vueuse/core')['usePermission']
   const usePointer: typeof import('@vueuse/core')['usePointer']
   const usePointerLock: typeof import('@vueuse/core')['usePointerLock']
   const usePointerSwipe: typeof import('@vueuse/core')['usePointerSwipe']
+  const usePostRealTime: typeof import('./resources/js/composables/useRealTimeUpdates.js')['usePostRealTime']
   const usePreferredColorScheme: typeof import('@vueuse/core')['usePreferredColorScheme']
   const usePreferredContrast: typeof import('@vueuse/core')['usePreferredContrast']
   const usePreferredDark: typeof import('@vueuse/core')['usePreferredDark']
@@ -275,11 +304,13 @@ declare global {
   const usePrevious: typeof import('@vueuse/core')['usePrevious']
   const usePullToRefresh: typeof import('./resources/js/composables/useSwipeGestures.js')['usePullToRefresh']
   const useRafFn: typeof import('@vueuse/core')['useRafFn']
+  const useRealTimePerformance: typeof import('./resources/js/composables/usePerformanceMonitoring.js')['useRealTimePerformance']
   const useRealTimeUpdates: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useRealTimeUpdates']
   const useRefHistory: typeof import('@vueuse/core')['useRefHistory']
   const useResizeObserver: typeof import('@vueuse/core')['useResizeObserver']
   const useSSRWidth: typeof import('@vueuse/core')['useSSRWidth']
   const useScreenOrientation: typeof import('@vueuse/core')['useScreenOrientation']
+  const useScreenReader: typeof import('./resources/js/utils/AccessibilityHelpers.js')['useScreenReader']
   const useScreenSafeArea: typeof import('@vueuse/core')['useScreenSafeArea']
   const useScriptTag: typeof import('@vueuse/core')['useScriptTag']
   const useScroll: typeof import('@vueuse/core')['useScroll']
@@ -310,6 +341,7 @@ declare global {
   const useThrottleFn: typeof import('@vueuse/core')['useThrottleFn']
   const useThrottledRefHistory: typeof import('@vueuse/core')['useThrottledRefHistory']
   const useTimeAgo: typeof import('@vueuse/core')['useTimeAgo']
+  const useTimelineRealTime: typeof import('./resources/js/composables/useRealTimeUpdates.js')['useTimelineRealTime']
   const useTimeout: typeof import('@vueuse/core')['useTimeout']
   const useTimeoutFn: typeof import('@vueuse/core')['useTimeoutFn']
   const useTimeoutPoll: typeof import('@vueuse/core')['useTimeoutPoll']
@@ -389,14 +421,17 @@ declare global {
   export type { UploadedFile, UploadResponse, UploadProgress } from './resources/js/services/fileUploadService'
   import('./resources/js/services/fileUploadService')
   // @ts-ignore
+  export type { FocusManager, AriaManager, ColorContrastManager, KeyboardNavigationManager, ScreenReaderManager, MobileAccessibilityManager, FormAccessibilityManager, AccessibilityManager } from './resources/js/utils/AccessibilityHelpers.js'
+  import('./resources/js/utils/AccessibilityHelpers.js')
+  // @ts-ignore
+  export type { AccessibilityTester } from './resources/js/utils/AccessibilityTester.js'
+  import('./resources/js/utils/AccessibilityTester.js')
+  // @ts-ignore
   export type { LazyLoadOptions } from './resources/js/composables/useLazyLoading'
   import('./resources/js/composables/useLazyLoading')
   // @ts-ignore
   export type { LoadingState, LoadingConfig } from './resources/js/composables/useLoadingStates'
   import('./resources/js/composables/useLoadingStates')
-  // @ts-ignore
-  export type { Toast } from './resources/js/composables/useToast'
-  import('./resources/js/composables/useToast')
 }
 
 // for vue template auto import
@@ -405,24 +440,39 @@ declare module 'vue' {
   interface GlobalComponents {}
   interface ComponentCustomProperties {
     readonly ABTestingService: UnwrapRef<typeof import('./resources/js/services/ABTestingService')['ABTestingService']>
+    readonly AccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['AccessibilityManager']>
     readonly AccessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['default']>
+    readonly AccessibilityTester: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['AccessibilityTester']>
     readonly AnalyticsService: UnwrapRef<typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']>
+    readonly AriaManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']>
+    readonly BundleAnalyzer: UnwrapRef<typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']>
     readonly CDNService: UnwrapRef<typeof import('./resources/js/services/CDNService')['default']>
+    readonly ColorContrastManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']>
     readonly ConversionTrackingService: UnwrapRef<typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
+    readonly FocusManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['FocusManager']>
+    readonly FormAccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['FormAccessibilityManager']>
     readonly HeatMapService: UnwrapRef<typeof import('./resources/js/services/HeatMapService')['HeatMapService']>
+    readonly KeyboardNavigationManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['KeyboardNavigationManager']>
     readonly LoadingPresets: UnwrapRef<typeof import('./resources/js/composables/useLoadingStates')['LoadingPresets']>
+    readonly MobileAccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['MobileAccessibilityManager']>
     readonly OnboardingService: UnwrapRef<typeof import('./resources/js/services/OnboardingService.js')['default']>
+    readonly PerformanceOptimizer: UnwrapRef<typeof import('./resources/js/utils/performance-optimizer')['PerformanceOptimizer']>
     readonly PerformanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['default']>
     readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
     readonly PushNotificationService: UnwrapRef<typeof import('./resources/js/services/PushNotificationService.js')['default']>
     readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>
+    readonly ScreenReaderManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['ScreenReaderManager']>
     readonly UserFlowIntegration: UnwrapRef<typeof import('./resources/js/services/UserFlowIntegration.js')['default']>
+    readonly WebSocketService: UnwrapRef<typeof import('./resources/js/services/WebSocketService.js')['default']>
     readonly Z_INDEX: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']>
     readonly accessibilityHelpers: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['accessibilityHelpers']>
+    readonly accessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['accessibilityManager']>
     readonly accessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['accessibilityService']>
+    readonly accessibilityTester: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['accessibilityTester']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
+    readonly bundleAnalyzer: UnwrapRef<typeof import('./resources/js/utils/bundle-analyzer')['bundleAnalyzer']>
     readonly cdnService: UnwrapRef<typeof import('./resources/js/services/CDNService')['cdnService']>
     readonly cn: UnwrapRef<typeof import('./resources/js/utils/cn')['cn']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
@@ -436,6 +486,8 @@ declare module 'vue' {
     readonly createEventHook: UnwrapRef<typeof import('@vueuse/core')['createEventHook']>
     readonly createGlobalState: UnwrapRef<typeof import('@vueuse/core')['createGlobalState']>
     readonly createInjectionState: UnwrapRef<typeof import('@vueuse/core')['createInjectionState']>
+    readonly createIntersectionObserver: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['createIntersectionObserver']>
+    readonly createLazyComponent: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['createLazyComponent']>
     readonly createReactiveFn: UnwrapRef<typeof import('@vueuse/core')['createReactiveFn']>
     readonly createRef: UnwrapRef<typeof import('@vueuse/core')['createRef']>
     readonly createReusableTemplate: UnwrapRef<typeof import('@vueuse/core')['createReusableTemplate']>
@@ -447,6 +499,7 @@ declare module 'vue' {
     readonly debouncedWatch: UnwrapRef<typeof import('@vueuse/core')['debouncedWatch']>
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
+    readonly dynamicImportWithRetry: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['dynamicImportWithRetry']>
     readonly eagerComputed: UnwrapRef<typeof import('@vueuse/core')['eagerComputed']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
@@ -470,6 +523,8 @@ declare module 'vue' {
     readonly isReadonly: UnwrapRef<typeof import('vue')['isReadonly']>
     readonly isRef: UnwrapRef<typeof import('vue')['isRef']>
     readonly isTouchDevice: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['isTouchDevice']>
+    readonly lazyLoadImage: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['lazyLoadImage']>
+    readonly lazyRoute: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['lazyRoute']>
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly markPerformance: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['markPerformance']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
@@ -497,7 +552,10 @@ declare module 'vue' {
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly performanceHelpers: UnwrapRef<typeof import('./resources/js/utils/accessibility-performance-setup.js')['performanceHelpers']>
     readonly performanceMonitor: UnwrapRef<typeof import('./resources/js/utils/performance-monitor.js')['default']>
+    readonly performanceOptimizer: UnwrapRef<typeof import('./resources/js/utils/performance-optimizer')['performanceOptimizer']>
     readonly performanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['performanceService']>
+    readonly preloadComponent: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['preloadComponent']>
+    readonly preloadCriticalResources: UnwrapRef<typeof import('./resources/js/utils/lazy-loading')['preloadCriticalResources']>
     readonly preloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['preloadService']>
     readonly preventTouchDefault: UnwrapRef<typeof import('./resources/js/composables/useSwipeGestures.js')['preventTouchDefault']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
@@ -543,10 +601,12 @@ declare module 'vue' {
     readonly unrefElement: UnwrapRef<typeof import('@vueuse/core')['unrefElement']>
     readonly until: UnwrapRef<typeof import('@vueuse/core')['until']>
     readonly updateTheme: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['updateTheme']>
+    readonly useAccessibilityTesting: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['useAccessibilityTesting']>
     readonly useActiveElement: UnwrapRef<typeof import('@vueuse/core')['useActiveElement']>
     readonly useAnalytics: UnwrapRef<typeof import('./resources/js/composables/useAnalytics')['useAnalytics']>
     readonly useAnimate: UnwrapRef<typeof import('@vueuse/core')['useAnimate']>
     readonly useAppearance: UnwrapRef<typeof import('./resources/js/composables/useAppearance')['useAppearance']>
+    readonly useAria: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useAria']>
     readonly useArrayDifference: UnwrapRef<typeof import('@vueuse/core')['useArrayDifference']>
     readonly useArrayEvery: UnwrapRef<typeof import('@vueuse/core')['useArrayEvery']>
     readonly useArrayFilter: UnwrapRef<typeof import('@vueuse/core')['useArrayFilter']>
@@ -574,8 +634,8 @@ declare module 'vue' {
     readonly useClipboardItems: UnwrapRef<typeof import('@vueuse/core')['useClipboardItems']>
     readonly useCloned: UnwrapRef<typeof import('@vueuse/core')['useCloned']>
     readonly useColorMode: UnwrapRef<typeof import('@vueuse/core')['useColorMode']>
-    readonly useComponentPerformance: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring.js')['useComponentPerformance']>
     readonly useConfirmDialog: UnwrapRef<typeof import('@vueuse/core')['useConfirmDialog']>
+    readonly useConnectionRealTime: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['useConnectionRealTime']>
     readonly useConversionTracking: UnwrapRef<typeof import('./resources/js/composables/useConversionTracking')['useConversionTracking']>
     readonly useCountdown: UnwrapRef<typeof import('@vueuse/core')['useCountdown']>
     readonly useCounter: UnwrapRef<typeof import('@vueuse/core')['useCounter']>
@@ -615,6 +675,7 @@ declare module 'vue' {
     readonly useFileDialog: UnwrapRef<typeof import('@vueuse/core')['useFileDialog']>
     readonly useFileSystemAccess: UnwrapRef<typeof import('@vueuse/core')['useFileSystemAccess']>
     readonly useFocus: UnwrapRef<typeof import('@vueuse/core')['useFocus']>
+    readonly useFocusManagement: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useFocusManagement']>
     readonly useFocusWithin: UnwrapRef<typeof import('@vueuse/core')['useFocusWithin']>
     readonly useFps: UnwrapRef<typeof import('@vueuse/core')['useFps']>
     readonly useFullscreen: UnwrapRef<typeof import('@vueuse/core')['useFullscreen']>
@@ -629,6 +690,7 @@ declare module 'vue' {
     readonly useInterval: UnwrapRef<typeof import('@vueuse/core')['useInterval']>
     readonly useIntervalFn: UnwrapRef<typeof import('@vueuse/core')['useIntervalFn']>
     readonly useKeyModifier: UnwrapRef<typeof import('@vueuse/core')['useKeyModifier']>
+    readonly useKeyboardNavigation: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useKeyboardNavigation']>
     readonly useLastChanged: UnwrapRef<typeof import('@vueuse/core')['useLastChanged']>
     readonly useLazyComponent: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyComponent']>
     readonly useLazyImage: UnwrapRef<typeof import('./resources/js/composables/useLazyLoading')['useLazyImage']>
@@ -655,15 +717,15 @@ declare module 'vue' {
     readonly useOffsetPagination: UnwrapRef<typeof import('@vueuse/core')['useOffsetPagination']>
     readonly useOnline: UnwrapRef<typeof import('@vueuse/core')['useOnline']>
     readonly usePageLeave: UnwrapRef<typeof import('@vueuse/core')['usePageLeave']>
-    readonly usePagePerformance: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePagePerformance']>
     readonly useParallax: UnwrapRef<typeof import('@vueuse/core')['useParallax']>
     readonly useParentElement: UnwrapRef<typeof import('@vueuse/core')['useParentElement']>
-    readonly usePerformanceMonitoring: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring.js')['usePerformanceMonitoring']>
+    readonly usePerformanceMonitoring: UnwrapRef<typeof import('./resources/js/composables/usePerformanceMonitoring')['usePerformanceMonitoring']>
     readonly usePerformanceObserver: UnwrapRef<typeof import('@vueuse/core')['usePerformanceObserver']>
     readonly usePermission: UnwrapRef<typeof import('@vueuse/core')['usePermission']>
     readonly usePointer: UnwrapRef<typeof import('@vueuse/core')['usePointer']>
     readonly usePointerLock: UnwrapRef<typeof import('@vueuse/core')['usePointerLock']>
     readonly usePointerSwipe: UnwrapRef<typeof import('@vueuse/core')['usePointerSwipe']>
+    readonly usePostRealTime: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['usePostRealTime']>
     readonly usePreferredColorScheme: UnwrapRef<typeof import('@vueuse/core')['usePreferredColorScheme']>
     readonly usePreferredContrast: UnwrapRef<typeof import('@vueuse/core')['usePreferredContrast']>
     readonly usePreferredDark: UnwrapRef<typeof import('@vueuse/core')['usePreferredDark']>
@@ -678,6 +740,7 @@ declare module 'vue' {
     readonly useResizeObserver: UnwrapRef<typeof import('@vueuse/core')['useResizeObserver']>
     readonly useSSRWidth: UnwrapRef<typeof import('@vueuse/core')['useSSRWidth']>
     readonly useScreenOrientation: UnwrapRef<typeof import('@vueuse/core')['useScreenOrientation']>
+    readonly useScreenReader: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['useScreenReader']>
     readonly useScreenSafeArea: UnwrapRef<typeof import('@vueuse/core')['useScreenSafeArea']>
     readonly useScriptTag: UnwrapRef<typeof import('@vueuse/core')['useScriptTag']>
     readonly useScroll: UnwrapRef<typeof import('@vueuse/core')['useScroll']>
@@ -708,6 +771,7 @@ declare module 'vue' {
     readonly useThrottleFn: UnwrapRef<typeof import('@vueuse/core')['useThrottleFn']>
     readonly useThrottledRefHistory: UnwrapRef<typeof import('@vueuse/core')['useThrottledRefHistory']>
     readonly useTimeAgo: UnwrapRef<typeof import('@vueuse/core')['useTimeAgo']>
+    readonly useTimelineRealTime: UnwrapRef<typeof import('./resources/js/composables/useRealTimeUpdates.js')['useTimelineRealTime']>
     readonly useTimeout: UnwrapRef<typeof import('@vueuse/core')['useTimeout']>
     readonly useTimeoutFn: UnwrapRef<typeof import('@vueuse/core')['useTimeoutFn']>
     readonly useTimeoutPoll: UnwrapRef<typeof import('@vueuse/core')['useTimeoutPoll']>

@@ -38,6 +38,14 @@
                 </button>
                 
                 <a
+                    :href="route('training.index')"
+                    class="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                    <AcademicCapIcon class="w-4 h-4 mr-3" />
+                    Training Center
+                </a>
+                
+                <a
                     :href="route('whats-new')"
                     class="flex items-center w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
@@ -129,7 +137,8 @@ import {
     CommandLineIcon,
     EnvelopeIcon,
     BugAntIcon,
-    XMarkIcon
+    XMarkIcon,
+    AcademicCapIcon
 } from '@heroicons/vue/24/outline'
 
 const showHelpMenu = ref(false)
