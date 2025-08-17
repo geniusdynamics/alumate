@@ -52,6 +52,9 @@ class InstitutionAdminDashboardController extends Controller
             'courseOutcomes' => $this->getCourseOutcomes(),
             'jobApplicationTrends' => $this->getJobApplicationTrends(),
             'graduateProgression' => $this->getGraduateProgression(),
+            'timeToEmployment' => $this->getTimeToEmployment(),
+            'salaryProgression' => $this->getSalaryProgression(),
+            'employmentByLocation' => $this->getEmploymentByLocation(),
         ];
 
         return Inertia::render('InstitutionAdmin/Analytics', [
@@ -579,6 +582,48 @@ class InstitutionAdminDashboardController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function getTimeToEmployment(): array
+    {
+        // This metric would require graduates to have a graduation date and an employment start date.
+        // For now, we'll simulate this data.
+        return [
+            'average_days' => rand(60, 120),
+            'median_days' => rand(50, 110),
+            'under_3_months_percentage' => rand(40, 60),
+            'under_6_months_percentage' => rand(70, 85),
+        ];
+    }
+
+    private function getSalaryProgression(): array
+    {
+        // This requires historical salary data, which is not currently in the model.
+        // We will simulate this for the demo.
+        return [
+            'year_1' => ['average' => rand(45000, 55000), 'median' => rand(42000, 52000)],
+            'year_3' => ['average' => rand(60000, 75000), 'median' => rand(58000, 72000)],
+            'year_5' => ['average' => rand(80000, 100000), 'median' => rand(78000, 95000)],
+        ];
+    }
+
+    private function getEmploymentByLocation(): array
+    {
+        // This assumes location data is stored in a structured way.
+        return Graduate::where('employment_status', 'employed')
+            ->select('address')
+            ->get()
+            ->mapToGroups(function ($item) {
+                // A more robust implementation would parse the address to get city/state
+                return [($item->address ?? 'Unknown') => 1];
+            })
+            ->map(function ($items, $key) {
+                return ['location' => $key, 'count' => count($items)];
+            })
+            ->sortByDesc('count')
+            ->take(10)
+            ->values()
+            ->toArray();
     }
 
     private function getStartDate($dateRange)

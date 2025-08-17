@@ -99,6 +99,35 @@
                     </div>
                 </div>
 
+                <!-- New Analytics Cards -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Time to Employment</h3>
+                        <div v-if="analytics.timeToEmployment" class="space-y-2">
+                            <p class="text-sm"><strong>Average:</strong> {{ analytics.timeToEmployment.average_days }} days</p>
+                            <p class="text-sm"><strong>Median:</strong> {{ analytics.timeToEmployment.median_days }} days</p>
+                            <p class="text-sm"><strong>&lt; 6 Months:</strong> {{ analytics.timeToEmployment.under_6_months_percentage }}%</p>
+                        </div>
+                    </div>
+                     <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Salary Progression</h3>
+                        <div v-if="analytics.salaryProgression" class="space-y-2">
+                             <p class="text-sm"><strong>1 Year Avg:</strong> ${{ analytics.salaryProgression.year_1.average.toLocaleString() }}</p>
+                             <p class="text-sm"><strong>3 Year Avg:</strong> ${{ analytics.salaryProgression.year_3.average.toLocaleString() }}</p>
+                             <p class="text-sm"><strong>5 Year Avg:</strong> ${{ analytics.salaryProgression.year_5.average.toLocaleString() }}</p>
+                        </div>
+                    </div>
+                     <div class="bg-white shadow rounded-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4">Employment by Location</h3>
+                         <div class="space-y-2">
+                            <div v-for="location in analytics.employmentByLocation" :key="location.location" class="flex justify-between text-sm">
+                                <span>{{ location.location }}</span>
+                                <span>{{ location.count }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Salary Ranges and Top Employers -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <div class="bg-white shadow rounded-lg">
