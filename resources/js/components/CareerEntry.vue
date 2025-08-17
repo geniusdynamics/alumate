@@ -95,7 +95,7 @@
       
       <!-- Promotion indicator -->
       <div v-if="isPromotion" class="flex items-center text-xs text-green-600">
-        <TrendingUpIcon class="w-4 h-4 mr-1" />
+        <ArrowTrendingUpIcon class="w-4 h-4 mr-1" />
         Promotion
       </div>
     </div>
@@ -111,7 +111,7 @@ import {
   MapPinIcon,
   PencilIcon,
   TrashIcon,
-  TrendingUpIcon
+  ArrowTrendingUpIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
