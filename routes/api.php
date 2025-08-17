@@ -39,6 +39,9 @@ Route::get('/ping', function () {
     ]);
 });
 
+// Homepage Navigation
+Route::get('/homepage-navigation', [\App\Http\Controllers\Api\HomepageNavigationController::class, 'index']);
+
 // PWA Push Notification routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('push/vapid-key', function () {
