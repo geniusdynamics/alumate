@@ -22,5 +22,12 @@ class AppServiceProvider extends ServiceProvider
         // Register model observers
         \App\Models\User::observe(\App\Observers\UserObserver::class);
         \App\Models\EducationHistory::observe(\App\Observers\EducationHistoryObserver::class);
+
+        // Register console commands
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                \App\Console\Commands\MonitorHomepage::class,
+            ]);
+        }
     }
 }

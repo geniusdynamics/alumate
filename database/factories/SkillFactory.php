@@ -18,7 +18,7 @@ class SkillFactory extends Factory
             'Communication' => ['Public Speaking', 'Technical Writing', 'Presentation Skills', 'Cross-functional Collaboration'],
             'Design' => ['UI/UX Design', 'Graphic Design', 'Prototyping', 'User Research', 'Design Systems'],
             'Business' => ['Business Analysis', 'Market Research', 'Financial Planning', 'Product Strategy'],
-            'Marketing' => ['Digital Marketing', 'Content Marketing', 'SEO', 'Social Media Marketing', 'Brand Management']
+            'Marketing' => ['Digital Marketing', 'Content Marketing', 'SEO', 'Social Media Marketing', 'Brand Management'],
         ];
 
         $category = $this->faker->randomElement($categories);
@@ -44,8 +44,8 @@ class SkillFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'category' => 'Technical',
             'name' => $this->faker->randomElement([
-                'JavaScript', 'Python', 'React', 'Vue.js', 'Node.js', 
-                'PHP', 'Laravel', 'Docker', 'AWS', 'MySQL'
+                'JavaScript', 'Python', 'React', 'Vue.js', 'Node.js',
+                'PHP', 'Laravel', 'Docker', 'AWS', 'MySQL',
             ]),
         ]);
     }
@@ -55,8 +55,8 @@ class SkillFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'category' => 'Leadership',
             'name' => $this->faker->randomElement([
-                'Team Management', 'Strategic Planning', 'Project Management', 
-                'Mentoring', 'Decision Making'
+                'Team Management', 'Strategic Planning', 'Project Management',
+                'Mentoring', 'Decision Making',
             ]),
         ]);
     }

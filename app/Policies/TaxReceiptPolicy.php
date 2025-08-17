@@ -14,7 +14,7 @@ class TaxReceiptPolicy
 
     public function view(User $user, TaxReceipt $taxReceipt): bool
     {
-        return $user->hasRole(['admin', 'fundraising_manager', 'accountant']) || 
+        return $user->hasRole(['admin', 'fundraising_manager', 'accountant']) ||
                $user->id === $taxReceipt->donor_id;
     }
 

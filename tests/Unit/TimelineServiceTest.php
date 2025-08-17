@@ -18,12 +18,13 @@ class TimelineServiceTest extends TestCase
     use RefreshDatabase;
 
     private TimelineService $timelineService;
+
     private User $user;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->timelineService = new TimelineService();
+        $this->timelineService = new TimelineService;
         $this->user = User::factory()->create();
     }
 
@@ -31,7 +32,7 @@ class TimelineServiceTest extends TestCase
     {
         // Create some posts
         $posts = Post::factory()->count(5)->create([
-            'visibility' => 'public'
+            'visibility' => 'public',
         ]);
 
         $timeline = $this->timelineService->generateTimelineForUser($this->user, 10);
@@ -52,7 +53,7 @@ class TimelineServiceTest extends TestCase
         // Create posts for the circle
         $posts = Post::factory()->count(3)->create([
             'visibility' => 'circles',
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
 
         $circlePosts = $this->timelineService->getCirclePosts($this->user, 10);
@@ -69,7 +70,7 @@ class TimelineServiceTest extends TestCase
         // Create posts for the group
         $posts = Post::factory()->count(2)->create([
             'visibility' => 'groups',
-            'group_ids' => [$group->id]
+            'group_ids' => [$group->id],
         ]);
 
         $groupPosts = $this->timelineService->getGroupPosts($this->user, 10);
@@ -81,7 +82,7 @@ class TimelineServiceTest extends TestCase
     {
         $post = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHour()
+            'created_at' => now()->subHour(),
         ]);
 
         $score = $this->timelineService->scorePost($post, $this->user);
@@ -93,23 +94,23 @@ class TimelineServiceTest extends TestCase
     public function test_scores_post_higher_for_connections()
     {
         $connectedUser = User::factory()->create();
-        
+
         // Create connection
         Connection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $connectedUser->id,
-            'status' => 'accepted'
+            'status' => 'accepted',
         ]);
 
         $postFromConnection = Post::factory()->create([
             'user_id' => $connectedUser->id,
             'visibility' => 'public',
-            'created_at' => now()->subHour()
+            'created_at' => now()->subHour(),
         ]);
 
         $postFromStranger = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHour()
+            'created_at' => now()->subHour(),
         ]);
 
         $connectionScore = $this->timelineService->scorePost($postFromConnection, $this->user);
@@ -122,18 +123,18 @@ class TimelineServiceTest extends TestCase
     {
         $popularPost = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHour()
+            'created_at' => now()->subHour(),
         ]);
 
         $unpopularPost = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHour()
+            'created_at' => now()->subHour(),
         ]);
 
         // Add engagements to popular post
         PostEngagement::factory()->count(5)->create([
             'post_id' => $popularPost->id,
-            'type' => 'like'
+            'type' => 'like',
         ]);
 
         $popularScore = $this->timelineService->scorePost($popularPost, $this->user);
@@ -147,7 +148,7 @@ class TimelineServiceTest extends TestCase
         Cache::shouldReceive('put')
             ->once()
             ->with(
-                $this->stringContains('timeline:user:' . $this->user->id),
+                $this->stringContains('timeline:user:'.$this->user->id),
                 $this->anything(),
                 $this->anything()
             );
@@ -160,13 +161,13 @@ class TimelineServiceTest extends TestCase
     {
         $mockRedis = $this->createMock(\Illuminate\Redis\Connections\Connection::class);
         $mockRedis->expects($this->once())
-                  ->method('keys')
-                  ->with('timeline:user:' . $this->user->id . ':*')
-                  ->willReturn(['key1', 'key2']);
+            ->method('keys')
+            ->with('timeline:user:'.$this->user->id.':*')
+            ->willReturn(['key1', 'key2']);
 
         $mockRedis->expects($this->once())
-                  ->method('del')
-                  ->with(['key1', 'key2']);
+            ->method('del')
+            ->with(['key1', 'key2']);
 
         Cache::shouldReceive('getRedis')
             ->twice()
@@ -178,14 +179,14 @@ class TimelineServiceTest extends TestCase
     public function test_returns_empty_collection_for_user_with_no_circles()
     {
         $circlePosts = $this->timelineService->getCirclePosts($this->user, 10);
-        
+
         $this->assertCount(0, $circlePosts);
     }
 
     public function test_returns_empty_collection_for_user_with_no_groups()
     {
         $groupPosts = $this->timelineService->getGroupPosts($this->user, 10);
-        
+
         $this->assertCount(0, $groupPosts);
     }
 
@@ -194,25 +195,25 @@ class TimelineServiceTest extends TestCase
         // Create posts with different timestamps
         $olderPost = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHours(2)
+            'created_at' => now()->subHours(2),
         ]);
 
         $newerPost = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHour()
+            'created_at' => now()->subHour(),
         ]);
 
         // Get first page
         $firstPage = $this->timelineService->generateTimelineForUser($this->user, 1);
-        
+
         $this->assertCount(1, $firstPage['posts']);
         $this->assertEquals($newerPost->id, $firstPage['posts'][0]['id']);
         $this->assertNotNull($firstPage['next_cursor']);
 
         // Get second page using cursor
         $secondPage = $this->timelineService->generateTimelineForUser(
-            $this->user, 
-            1, 
+            $this->user,
+            1,
             $firstPage['next_cursor']
         );
 
@@ -234,17 +235,17 @@ class TimelineServiceTest extends TestCase
         $publicPost = Post::factory()->create(['visibility' => 'public']);
         $circlePost = Post::factory()->create([
             'visibility' => 'circles',
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
         $groupPost = Post::factory()->create([
             'visibility' => 'groups',
-            'group_ids' => [$group->id]
+            'group_ids' => [$group->id],
         ]);
 
         $timeline = $this->timelineService->generateTimelineForUser($this->user, 10);
 
         $postIds = collect($timeline['posts'])->pluck('id')->toArray();
-        
+
         $this->assertContains($publicPost->id, $postIds);
         $this->assertContains($circlePost->id, $postIds);
         $this->assertContains($groupPost->id, $postIds);

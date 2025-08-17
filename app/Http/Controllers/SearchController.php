@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\SearchService;
-use App\Models\SavedSearch;
 use App\Models\Course;
+use App\Models\SavedSearch;
 use App\Models\SearchAnalytics;
+use App\Services\SearchService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -22,10 +22,10 @@ class SearchController extends Controller
     {
         $searchType = $request->get('type', 'jobs');
         $savedSearches = [];
-        
+
         if (auth()->check()) {
             $savedSearches = $this->searchService->getUserSavedSearches(
-                auth()->id(), 
+                auth()->id(),
                 $searchType
             );
         }
@@ -67,7 +67,7 @@ class SearchController extends Controller
             'results' => $results,
             'criteria' => $criteria,
             'suggestions' => $this->searchService->getSearchSuggestions(
-                $criteria['keywords'] ?? '', 
+                $criteria['keywords'] ?? '',
                 'jobs'
             ),
         ]);
@@ -81,7 +81,7 @@ class SearchController extends Controller
             'keywords' => 'nullable|string|max:255',
             'course_id' => 'nullable|exists:courses,id',
             'graduation_year' => 'nullable|array',
-            'graduation_year.*' => 'integer|min:2000|max:' . (date('Y') + 5),
+            'graduation_year.*' => 'integer|min:2000|max:'.(date('Y') + 5),
             'employment_status' => 'nullable|string|in:employed,unemployed,self_employed,student',
             'skills' => 'nullable|array',
             'skills.*' => 'string|max:100',
@@ -142,7 +142,7 @@ class SearchController extends Controller
 
         if ($type === 'jobs') {
             $graduate = auth()->user()->graduate;
-            if (!$graduate) {
+            if (! $graduate) {
                 return response()->json(['recommendations' => []]);
             }
 
@@ -154,7 +154,7 @@ class SearchController extends Controller
             ]);
 
             $recommendations = $this->searchService->getAdvancedJobMatches($graduate, $preferences);
-            
+
             return response()->json([
                 'recommendations' => $recommendations->take($limit)->values(),
                 'total' => $recommendations->count(),
@@ -163,13 +163,13 @@ class SearchController extends Controller
 
         if ($type === 'candidates' && auth()->user()->hasRole('employer')) {
             $jobId = $request->get('job_id');
-            if (!$jobId) {
+            if (! $jobId) {
                 return response()->json(['error' => 'Job ID is required'], 400);
             }
 
             $job = auth()->user()->employer->jobs()->findOrFail($jobId);
             $recommendations = $this->searchService->getCandidateRecommendations($job, $limit);
-            
+
             return response()->json([
                 'recommendations' => $recommendations->values(),
                 'total' => $recommendations->count(),
@@ -329,7 +329,7 @@ class SearchController extends Controller
                             'part_time' => 'Part Time',
                             'contract' => 'Contract',
                             'internship' => 'Internship',
-                        ]
+                        ],
                     ],
                     'experience_level' => [
                         'type' => 'select',
@@ -339,7 +339,7 @@ class SearchController extends Controller
                             'junior' => 'Junior',
                             'mid' => 'Mid Level',
                             'senior' => 'Senior',
-                        ]
+                        ],
                     ],
                     'salary_min' => ['type' => 'number', 'label' => 'Minimum Salary'],
                     'salary_max' => ['type' => 'number', 'label' => 'Maximum Salary'],
@@ -351,7 +351,7 @@ class SearchController extends Controller
                             'onsite' => 'On-site',
                             'remote' => 'Remote',
                             'hybrid' => 'Hybrid',
-                        ]
+                        ],
                     ],
                 ]);
 
@@ -367,7 +367,7 @@ class SearchController extends Controller
                             'unemployed' => 'Unemployed',
                             'self_employed' => 'Self Employed',
                             'student' => 'Student',
-                        ]
+                        ],
                     ],
                     'skills' => ['type' => 'tags', 'label' => 'Skills'],
                     'min_gpa' => ['type' => 'number', 'label' => 'Minimum GPA', 'step' => 0.1, 'max' => 4],
@@ -385,7 +385,7 @@ class SearchController extends Controller
                             'diploma' => 'Diploma',
                             'degree' => 'Degree',
                             'postgraduate' => 'Postgraduate',
-                        ]
+                        ],
                     ],
                     'duration_min' => ['type' => 'number', 'label' => 'Min Duration (months)'],
                     'duration_max' => ['type' => 'number', 'label' => 'Max Duration (months)'],
@@ -402,10 +402,10 @@ class SearchController extends Controller
     private function getPopularKeywords($analytics)
     {
         $keywords = [];
-        
+
         foreach ($analytics as $search) {
             $criteria = $search->search_criteria;
-            if (!empty($criteria['keywords'])) {
+            if (! empty($criteria['keywords'])) {
                 $words = explode(' ', strtolower($criteria['keywords']));
                 foreach ($words as $word) {
                     $word = trim($word);
@@ -417,6 +417,7 @@ class SearchController extends Controller
         }
 
         arsort($keywords);
+
         return array_slice($keywords, 0, 10, true);
     }
 

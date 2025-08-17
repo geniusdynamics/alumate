@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\CareerTimeline;
 use App\Models\CareerMilestone;
+use App\Models\CareerTimeline;
+use App\Models\User;
 use App\Services\CareerTimelineService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CareerTimelineController extends Controller
@@ -29,7 +29,7 @@ class CareerTimelineController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $timeline
+            'data' => $timeline,
         ]);
     }
 
@@ -50,7 +50,7 @@ class CareerTimelineController extends Controller
             'location' => 'nullable|string|max:255',
             'company_logo_url' => 'nullable|url|max:500',
             'industry' => 'nullable|string|max:255',
-            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance'
+            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance',
         ]);
 
         try {
@@ -59,12 +59,12 @@ class CareerTimelineController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Career entry added successfully',
-                'data' => $careerEntry->load('user')
+                'data' => $careerEntry->load('user'),
             ], 201);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
@@ -86,7 +86,7 @@ class CareerTimelineController extends Controller
             'location' => 'nullable|string|max:255',
             'company_logo_url' => 'nullable|url|max:500',
             'industry' => 'nullable|string|max:255',
-            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance'
+            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance',
         ]);
 
         try {
@@ -95,12 +95,12 @@ class CareerTimelineController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Career entry updated successfully',
-                'data' => $careerEntry->load('user')
+                'data' => $careerEntry->load('user'),
             ]);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 422);
         }
     }
@@ -118,7 +118,7 @@ class CareerTimelineController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Career entry deleted successfully'
+            'message' => 'Career entry deleted successfully',
         ]);
     }
 
@@ -136,7 +136,7 @@ class CareerTimelineController extends Controller
             'company' => 'nullable|string|max:255',
             'organization' => 'nullable|string|max:255',
             'metadata' => 'nullable|array',
-            'is_featured' => 'boolean'
+            'is_featured' => 'boolean',
         ]);
 
         $milestone = $this->careerTimelineService->addMilestone($validated, $request->user());
@@ -144,7 +144,7 @@ class CareerTimelineController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Milestone added successfully',
-            'data' => $milestone->load('user')
+            'data' => $milestone->load('user'),
         ], 201);
     }
 
@@ -166,7 +166,7 @@ class CareerTimelineController extends Controller
             'company' => 'nullable|string|max:255',
             'organization' => 'nullable|string|max:255',
             'metadata' => 'nullable|array',
-            'is_featured' => 'boolean'
+            'is_featured' => 'boolean',
         ]);
 
         $milestone->update($validated);
@@ -174,7 +174,7 @@ class CareerTimelineController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Milestone updated successfully',
-            'data' => $milestone->fresh()->load('user')
+            'data' => $milestone->fresh()->load('user'),
         ]);
     }
 
@@ -191,7 +191,7 @@ class CareerTimelineController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Milestone deleted successfully'
+            'message' => 'Milestone deleted successfully',
         ]);
     }
 
@@ -204,7 +204,7 @@ class CareerTimelineController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $suggestions
+            'data' => $suggestions,
         ]);
     }
 
@@ -223,9 +223,9 @@ class CareerTimelineController extends Controller
                     'part-time' => 'Part-time',
                     'contract' => 'Contract',
                     'internship' => 'Internship',
-                    'freelance' => 'Freelance'
-                ]
-            ]
+                    'freelance' => 'Freelance',
+                ],
+            ],
         ]);
     }
 }

@@ -78,7 +78,7 @@ class FundraisingCampaign extends Model
         if ($this->goal_amount <= 0) {
             return 0;
         }
-        
+
         return min(100, ($this->raised_amount / $this->goal_amount) * 100);
     }
 
@@ -89,15 +89,15 @@ class FundraisingCampaign extends Model
 
     public function getIsActiveAttribute(): bool
     {
-        return $this->status === 'active' && 
+        return $this->status === 'active' &&
                now()->between($this->start_date, $this->end_date);
     }
 
     public function scopeActive($query)
     {
         return $query->where('status', 'active')
-                    ->where('start_date', '<=', now())
-                    ->where('end_date', '>=', now());
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now());
     }
 
     public function scopeByInstitution($query, $institutionId)

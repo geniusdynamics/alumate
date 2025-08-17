@@ -151,8 +151,8 @@
 import { Head, router } from '@inertiajs/vue3'
 import { reactive } from 'vue'
 import AppLayout from '@/layouts/AppLayout.vue'
-import EventCard from '@/Components/EventCard.vue'
-import Pagination from '@/Components/Pagination.vue'
+import EventCard from '@/components/EventCard.vue'
+import Pagination from '@/components/Pagination.vue'
 import { CalendarIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({

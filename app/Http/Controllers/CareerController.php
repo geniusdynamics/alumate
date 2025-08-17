@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CareerTimeline;
 use App\Models\CareerMilestone;
-use App\Models\MentorshipRequest;
+use App\Models\CareerTimeline;
 use App\Models\MentorProfile;
+use App\Models\MentorshipRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class CareerController extends Controller
 {
     public function timeline()
     {
         $user = Auth::user();
-        
+
         // Get user's career timeline entries
         $careerEntries = CareerTimeline::where('user_id', $user->id)
             ->with(['milestones'])
@@ -48,7 +48,7 @@ class CareerController extends Controller
     public function goals()
     {
         $user = Auth::user();
-        
+
         // Get user's career goals
         $activeGoals = CareerMilestone::where('user_id', $user->id)
             ->whereNull('achieved_at')
@@ -73,7 +73,7 @@ class CareerController extends Controller
     public function mentorship()
     {
         $user = Auth::user();
-        
+
         // Get user's mentorship requests
         $mentorshipRequests = MentorshipRequest::where('mentee_id', $user->id)
             ->with(['mentor.user', 'mentor.skills'])
@@ -85,7 +85,7 @@ class CareerController extends Controller
             ->with(['user.graduate', 'skills', 'sessions'])
             ->whereDoesntHave('mentorshipRequests', function ($query) use ($user) {
                 $query->where('mentee_id', $user->id)
-                      ->whereIn('status', ['pending', 'accepted']);
+                    ->whereIn('status', ['pending', 'accepted']);
             })
             ->get();
 
@@ -109,10 +109,107 @@ class CareerController extends Controller
         ]);
     }
 
+    public function mentorshipHub(Request $request)
+    {
+        $user = Auth::user();
+
+        // Get active mentorships (both as mentor and mentee)
+        $activeMentorships = MentorshipRequest::where(function ($query) use ($user) {
+            $query->where('mentee_id', $user->id)
+                ->orWhereHas('mentor', function ($q) use ($user) {
+                    $q->where('user_id', $user->id);
+                });
+        })
+            ->where('status', 'accepted')
+            ->with(['mentor.user', 'mentee'])
+            ->get();
+
+        // Get pending requests (received as mentor)
+        $pendingRequests = MentorshipRequest::whereHas('mentor', function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+        })
+            ->where('status', 'pending')
+            ->with(['mentee'])
+            ->get();
+
+        // Get upcoming sessions
+        $upcomingSessions = collect(); // Placeholder for mentorship sessions
+
+        // Get available mentors with filtering
+        $mentorsQuery = MentorProfile::where('is_available', true)
+            ->with(['user.graduate', 'skills'])
+            ->whereDoesntHave('mentorshipRequests', function ($query) use ($user) {
+                $query->where('mentee_id', $user->id)
+                    ->whereIn('status', ['pending', 'accepted']);
+            });
+
+        // Apply filters
+        if ($request->filled('expertise')) {
+            $mentorsQuery->whereHas('skills', function ($query) use ($request) {
+                $query->where('name', 'like', '%'.$request->expertise.'%');
+            });
+        }
+
+        if ($request->filled('location')) {
+            $mentorsQuery->whereHas('user.graduate', function ($query) use ($request) {
+                $query->where('current_location', 'like', '%'.$request->location.'%');
+            });
+        }
+
+        if ($request->filled('availability')) {
+            $mentorsQuery->where('availability', $request->availability);
+        }
+
+        $mentors = $mentorsQuery->limit(20)->get();
+
+        // Get mentorship goals
+        $mentorshipGoals = CareerMilestone::where('user_id', $user->id)
+            ->where('category', 'mentorship')
+            ->whereNull('achieved_at')
+            ->orderBy('target_date', 'asc')
+            ->get();
+
+        // Get learning resources
+        $learningResources = $this->getLearningResources();
+
+        // Get expertise areas for filtering
+        $expertiseAreas = MentorProfile::whereHas('skills')
+            ->with('skills')
+            ->get()
+            ->pluck('skills')
+            ->flatten()
+            ->pluck('name')
+            ->unique()
+            ->sort()
+            ->values();
+
+        // Get mentorship stats
+        $mentorshipStats = [
+            'active_mentorships' => $activeMentorships->count(),
+            'completed_sessions' => 0, // Placeholder
+            'goals_achieved' => CareerMilestone::where('user_id', $user->id)
+                ->where('category', 'mentorship')
+                ->whereNotNull('achieved_at')
+                ->count(),
+        ];
+
+        return Inertia::render('Career/MentorshipHub', [
+            'mentors' => $mentors,
+            'activeMentorships' => $activeMentorships,
+            'pendingRequests' => $pendingRequests,
+            'upcomingSessions' => $upcomingSessions,
+            'mentorshipGoals' => $mentorshipGoals,
+            'learningResources' => $learningResources,
+            'expertiseAreas' => $expertiseAreas,
+            'mentorshipStats' => $mentorshipStats,
+            'currentFilters' => $request->only(['expertise', 'location', 'availability']),
+        ]);
+    }
+
     private function getCareerInsights($user)
     {
         $graduate = $user->graduate;
-        if (!$graduate) {
+        if (! $graduate) {
             return [];
         }
 
@@ -133,8 +230,8 @@ class CareerController extends Controller
         $hasMentor = MentorshipRequest::where('mentee_id', $user->id)
             ->where('status', 'accepted')
             ->exists();
-        
-        if (!$hasMentor) {
+
+        if (! $hasMentor) {
             $insights[] = [
                 'type' => 'opportunity',
                 'title' => 'Find a Mentor',
@@ -160,7 +257,7 @@ class CareerController extends Controller
     private function getGoalSuggestions($user)
     {
         $graduate = $user->graduate;
-        if (!$graduate) {
+        if (! $graduate) {
             return [];
         }
 
@@ -198,5 +295,43 @@ class CareerController extends Controller
         ];
 
         return $suggestions;
+    }
+
+    private function getLearningResources()
+    {
+        return [
+            [
+                'title' => 'Career Development Fundamentals',
+                'type' => 'course',
+                'provider' => 'LinkedIn Learning',
+                'duration' => '2 hours',
+                'url' => '#',
+                'description' => 'Learn the basics of career planning and development.',
+            ],
+            [
+                'title' => 'Effective Networking Strategies',
+                'type' => 'article',
+                'provider' => 'Harvard Business Review',
+                'duration' => '10 min read',
+                'url' => '#',
+                'description' => 'Master the art of professional networking.',
+            ],
+            [
+                'title' => 'Leadership Skills Workshop',
+                'type' => 'workshop',
+                'provider' => 'Alumni Association',
+                'duration' => '4 hours',
+                'url' => '#',
+                'description' => 'Develop essential leadership capabilities.',
+            ],
+            [
+                'title' => 'Industry Trends Report 2024',
+                'type' => 'report',
+                'provider' => 'McKinsey & Company',
+                'duration' => '30 min read',
+                'url' => '#',
+                'description' => 'Stay updated with the latest industry insights.',
+            ],
+        ];
     }
 }

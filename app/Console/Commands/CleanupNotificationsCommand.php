@@ -23,9 +23,10 @@ class CleanupNotificationsCommand extends Command
     public function handle(NotificationService $notificationService): int
     {
         $days = (int) $this->option('days');
-        
+
         if ($days < 1) {
             $this->error('Days must be a positive integer');
+
             return self::FAILURE;
         }
 
@@ -33,13 +34,13 @@ class CleanupNotificationsCommand extends Command
 
         try {
             $deletedCount = $notificationService->cleanupOldNotifications($days);
-            
+
             $this->info("Successfully deleted {$deletedCount} old notifications.");
-            
+
             return self::SUCCESS;
         } catch (\Exception $e) {
             $this->error("Failed to cleanup notifications: {$e->getMessage()}");
-            
+
             return self::FAILURE;
         }
     }

@@ -11,5 +11,7 @@ export { default as AutoFormFieldInput } from './AutoFormFieldInput.vue'
 export { default as AutoFormFieldNumber } from './AutoFormFieldNumber.vue'
 export { default as AutoFormFieldObject } from './AutoFormFieldObject.vue'
 export { default as AutoFormLabel } from './AutoFormLabel.vue'
-export type { Config, ConfigItem, FieldProps } from './interface'
-export { getBaseSchema, getBaseType, getObjectFormSchema } from './utils'
+// Types and utils are auto-imported directly from their source files
+// Commenting out to prevent duplicate imports
+// export type { Config, ConfigItem, FieldProps } from './interface'
+// export { getBaseSchema, getBaseType, getObjectFormSchema } from './utils'

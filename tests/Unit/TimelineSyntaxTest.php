@@ -2,9 +2,9 @@
 
 test('timeline service class exists and has correct methods', function () {
     expect(class_exists(\App\Services\TimelineService::class))->toBeTrue();
-    
+
     $reflection = new ReflectionClass(\App\Services\TimelineService::class);
-    
+
     expect($reflection->hasMethod('generateTimelineForUser'))->toBeTrue();
     expect($reflection->hasMethod('getCirclePosts'))->toBeTrue();
     expect($reflection->hasMethod('getGroupPosts'))->toBeTrue();
@@ -15,9 +15,9 @@ test('timeline service class exists and has correct methods', function () {
 
 test('timeline controller class exists and has correct methods', function () {
     expect(class_exists(\App\Http\Controllers\Api\TimelineController::class))->toBeTrue();
-    
+
     $reflection = new ReflectionClass(\App\Http\Controllers\Api\TimelineController::class);
-    
+
     expect($reflection->hasMethod('index'))->toBeTrue();
     expect($reflection->hasMethod('refresh'))->toBeTrue();
     expect($reflection->hasMethod('loadMore'))->toBeTrue();
@@ -27,9 +27,9 @@ test('timeline controller class exists and has correct methods', function () {
 
 test('refresh timelines job class exists and has correct methods', function () {
     expect(class_exists(\App\Jobs\RefreshTimelinesJob::class))->toBeTrue();
-    
+
     $reflection = new ReflectionClass(\App\Jobs\RefreshTimelinesJob::class);
-    
+
     expect($reflection->hasMethod('handle'))->toBeTrue();
     expect($reflection->hasMethod('forNewPost'))->toBeTrue();
     expect($reflection->hasMethod('forUsers'))->toBeTrue();
@@ -37,9 +37,9 @@ test('refresh timelines job class exists and has correct methods', function () {
 });
 
 test('timeline vue component exists', function () {
-    $componentPath = __DIR__ . '/../../resources/js/Components/Timeline.vue';
+    $componentPath = __DIR__.'/../../resources/js/Components/Timeline.vue';
     expect(file_exists($componentPath))->toBeTrue();
-    
+
     $content = file_get_contents($componentPath);
     expect($content)->toContain('<template>');
     expect($content)->toContain('<script setup>');
@@ -47,18 +47,18 @@ test('timeline vue component exists', function () {
 });
 
 test('post skeleton vue component exists', function () {
-    $componentPath = __DIR__ . '/../../resources/js/Components/PostSkeleton.vue';
+    $componentPath = __DIR__.'/../../resources/js/Components/PostSkeleton.vue';
     expect(file_exists($componentPath))->toBeTrue();
-    
+
     $content = file_get_contents($componentPath);
     expect($content)->toContain('<template>');
     expect($content)->toContain('animate-pulse');
 });
 
 test('api routes are registered', function () {
-    $routesPath = __DIR__ . '/../../routes/api.php';
+    $routesPath = __DIR__.'/../../routes/api.php';
     $content = file_get_contents($routesPath);
-    
+
     expect($content)->toContain('TimelineController');
     expect($content)->toContain('timeline');
     expect($content)->toContain('timeline/refresh');

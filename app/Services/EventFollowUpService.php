@@ -3,12 +3,12 @@
 namespace App\Services;
 
 use App\Models\Event;
-use App\Models\User;
+use App\Models\EventConnectionRecommendation;
 use App\Models\EventFeedback;
+use App\Models\EventFollowUpActivity;
 use App\Models\EventHighlight;
 use App\Models\EventNetworkingConnection;
-use App\Models\EventConnectionRecommendation;
-use App\Models\EventFollowUpActivity;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +20,7 @@ class EventFollowUpService
     public function submitFeedback(Event $event, User $user, array $feedbackData): EventFeedback
     {
         // Check if user attended the event
-        if (!$event->isUserCheckedIn($user)) {
+        if (! $event->isUserCheckedIn($user)) {
             throw new \Exception('Only attendees can provide feedback.');
         }
 
@@ -50,7 +50,7 @@ class EventFollowUpService
             // Record follow-up activity
             $this->recordActivity($event, $user, 'feedback_given', [
                 'rating' => $feedbackData['overall_rating'],
-                'has_text_feedback' => !empty($feedbackData['feedback_text']),
+                'has_text_feedback' => ! empty($feedbackData['feedback_text']),
             ]);
 
             return $feedback;
@@ -78,7 +78,7 @@ class EventFollowUpService
 
         $totalResponses = $feedback->count();
         $averageRating = $feedback->avg('overall_rating');
-        
+
         $ratingBreakdown = [
             'overall' => $feedback->avg('overall_rating'),
             'content' => $feedback->whereNotNull('content_rating')->avg('content_rating'),
@@ -92,10 +92,10 @@ class EventFollowUpService
 
         return [
             'total_responses' => $totalResponses,
-            'response_rate' => $event->checkIns()->count() > 0 ? 
+            'response_rate' => $event->checkIns()->count() > 0 ?
                 ($totalResponses / $event->checkIns()->count()) * 100 : 0,
             'average_rating' => round($averageRating, 2),
-            'rating_breakdown' => array_map(fn($rating) => round($rating, 2), $ratingBreakdown),
+            'rating_breakdown' => array_map(fn ($rating) => round($rating, 2), $ratingBreakdown),
             'rating_distribution' => $this->getRatingDistribution($feedback),
             'recommendation_rate' => round($recommendationRate, 2),
             'return_rate' => round($returnRate, 2),
@@ -109,7 +109,7 @@ class EventFollowUpService
     public function createHighlight(Event $event, User $user, array $highlightData): EventHighlight
     {
         // Check if user attended the event
-        if (!$event->isUserCheckedIn($user)) {
+        if (! $event->isUserCheckedIn($user)) {
             throw new \Exception('Only attendees can create highlights.');
         }
 
@@ -128,7 +128,7 @@ class EventFollowUpService
             // Record follow-up activity
             $this->recordActivity($event, $user, 'highlight_created', [
                 'highlight_type' => $highlightData['type'],
-                'has_media' => !empty($highlightData['media_urls']),
+                'has_media' => ! empty($highlightData['media_urls']),
             ]);
 
             return $highlight;
@@ -146,11 +146,11 @@ class EventFollowUpService
             ->approved()
             ->with(['creator', 'interactions.user']);
 
-        if (!empty($filters['type'])) {
+        if (! empty($filters['type'])) {
             $query->where('type', $filters['type']);
         }
 
-        if (!empty($filters['featured_only'])) {
+        if (! empty($filters['featured_only'])) {
             $query->featured();
         }
 
@@ -173,13 +173,13 @@ class EventFollowUpService
      * Create a networking connection between two users at an event
      */
     public function createNetworkingConnection(
-        Event $event, 
-        User $user, 
-        User $connectedUser, 
+        Event $event,
+        User $user,
+        User $connectedUser,
         array $connectionData
     ): EventNetworkingConnection {
         // Check if both users attended the event
-        if (!$event->isUserCheckedIn($user) || !$event->isUserCheckedIn($connectedUser)) {
+        if (! $event->isUserCheckedIn($user) || ! $event->isUserCheckedIn($connectedUser)) {
             throw new \Exception('Both users must have attended the event to create a connection.');
         }
 
@@ -187,7 +187,7 @@ class EventFollowUpService
         $existingConnection = $event->networkingConnections()
             ->where(function ($q) use ($user, $connectedUser) {
                 $q->where('user_id', $user->id)->where('connected_user_id', $connectedUser->id)
-                  ->orWhere('user_id', $connectedUser->id)->where('connected_user_id', $user->id);
+                    ->orWhere('user_id', $connectedUser->id)->where('connected_user_id', $user->id);
             })
             ->first();
 
@@ -236,7 +236,7 @@ class EventFollowUpService
             $existingConnection = $event->networkingConnections()
                 ->where(function ($q) use ($user, $attendee) {
                     $q->where('user_id', $user->id)->where('connected_user_id', $attendee->id)
-                      ->orWhere('user_id', $attendee->id)->where('connected_user_id', $user->id);
+                        ->orWhere('user_id', $attendee->id)->where('connected_user_id', $user->id);
                 })
                 ->exists();
 
@@ -302,7 +302,7 @@ class EventFollowUpService
     /**
      * Get follow-up activities for an event
      */
-    public function getFollowUpActivities(Event $event, User $user = null): Collection
+    public function getFollowUpActivities(Event $event, ?User $user = null): Collection
     {
         $query = $event->followUpActivities()->with('user');
 
@@ -327,7 +327,7 @@ class EventFollowUpService
         return [
             'total_attendees' => $totalAttendees,
             'active_participants' => $uniqueParticipants,
-            'participation_rate' => $totalAttendees > 0 ? 
+            'participation_rate' => $totalAttendees > 0 ?
                 round(($uniqueParticipants / $totalAttendees) * 100, 2) : 0,
             'activity_breakdown' => $activityCounts->toArray(),
             'total_connections' => $event->networkingConnections()->count(),
@@ -375,8 +375,8 @@ class EventFollowUpService
         }
 
         // Similar location
-        if ($user1->location && $user2->location && 
-            stripos($user1->location, $user2->location) !== false || 
+        if ($user1->location && $user2->location &&
+            stripos($user1->location, $user2->location) !== false ||
             stripos($user2->location, $user1->location) !== false) {
             $score += 10;
             $reasons[] = 'Similar location';
@@ -416,6 +416,7 @@ class EventFollowUpService
                 'percentage' => $feedback->count() > 0 ? round(($count / $feedback->count()) * 100, 1) : 0,
             ];
         }
+
         return $distribution;
     }
 
@@ -442,7 +443,7 @@ class EventFollowUpService
     private function calculateEngagementScore(Event $event): float
     {
         $totalAttendees = $event->checkIns()->count();
-        
+
         if ($totalAttendees === 0) {
             return 0;
         }

@@ -16,19 +16,19 @@ class SearchAlert extends Model
         'frequency',
         'is_active',
         'last_sent_at',
-        'next_send_at'
+        'next_send_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'last_sent_at' => 'datetime',
-        'next_send_at' => 'datetime'
+        'next_send_at' => 'datetime',
     ];
 
     const FREQUENCIES = [
         'daily' => 'Daily',
         'weekly' => 'Weekly',
-        'monthly' => 'Monthly'
+        'monthly' => 'Monthly',
     ];
 
     /**
@@ -53,14 +53,14 @@ class SearchAlert extends Model
     public function calculateNextSendTime(): void
     {
         $lastSent = $this->last_sent_at ?? now();
-        
+
         $nextSend = match ($this->frequency) {
             'daily' => $lastSent->addDay(),
             'weekly' => $lastSent->addWeek(),
             'monthly' => $lastSent->addMonth(),
             default => $lastSent->addDay()
         };
-        
+
         $this->update(['next_send_at' => $nextSend]);
     }
 
@@ -78,14 +78,14 @@ class SearchAlert extends Model
      */
     public function isDue(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
-        
-        if (!$this->next_send_at) {
+
+        if (! $this->next_send_at) {
             return true; // First time sending
         }
-        
+
         return $this->next_send_at <= now();
     }
 
@@ -105,7 +105,7 @@ class SearchAlert extends Model
         return $query->active()
             ->where(function ($q) {
                 $q->whereNull('next_send_at')
-                  ->orWhere('next_send_at', '<=', now());
+                    ->orWhere('next_send_at', '<=', now());
             });
     }
 }

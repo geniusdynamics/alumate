@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Console\Command;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TestDashboardEndpoints extends Command
 {
@@ -28,8 +28,8 @@ class TestDashboardEndpoints extends Command
      */
     public function handle()
     {
-        $this->info("Testing Dashboard Endpoints...");
-        $this->line("");
+        $this->info('Testing Dashboard Endpoints...');
+        $this->line('');
 
         // Test each user type
         $this->testUserDashboard('admin@system.com', 'Super Admin', '/super-admin/dashboard');
@@ -37,8 +37,8 @@ class TestDashboardEndpoints extends Command
         $this->testUserDashboard('techcorp@company.com', 'Employer', '/employer/dashboard');
         $this->testUserDashboard('john.smith@student.edu', 'Graduate', '/graduate/dashboard');
 
-        $this->line("");
-        $this->info("All endpoint tests completed!");
+        $this->line('');
+        $this->info('All endpoint tests completed!');
     }
 
     private function testUserDashboard($email, $userType, $dashboardRoute)
@@ -46,8 +46,9 @@ class TestDashboardEndpoints extends Command
         $this->info("=== Testing {$userType} Dashboard ===");
 
         $user = User::where('email', $email)->first();
-        if (!$user) {
+        if (! $user) {
             $this->error("✗ User {$email} not found");
+
             return;
         }
 
@@ -63,8 +64,9 @@ class TestDashboardEndpoints extends Command
 
             // Test the route exists
             $route = \Illuminate\Support\Facades\Route::getRoutes()->match($request);
-            if (!$route) {
+            if (! $route) {
                 $this->error("✗ Route {$dashboardRoute} not found");
+
                 return;
             }
 
@@ -72,11 +74,11 @@ class TestDashboardEndpoints extends Command
             $this->info("✓ User {$email} can access {$userType} dashboard");
 
         } catch (\Exception $e) {
-            $this->error("✗ {$userType} dashboard failed: " . $e->getMessage());
+            $this->error("✗ {$userType} dashboard failed: ".$e->getMessage());
         } finally {
             Auth::logout();
         }
 
-        $this->line("");
+        $this->line('');
     }
 }

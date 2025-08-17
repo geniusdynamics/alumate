@@ -13,18 +13,20 @@ class TenantFactory extends Factory
     {
         $institutionTypes = ['University', 'College', 'Institute', 'Academy'];
         $institutionType = $this->faker->randomElement($institutionTypes);
-        
+        $institutionName = $this->faker->company.' '.$institutionType;
+
         return [
             'id' => $this->faker->unique()->slug(),
-            'name' => $this->faker->company . ' ' . $institutionType,
+            'name' => $institutionName,
             'address' => $this->faker->address,
-            'contact_information' => [
+            'contact_information' => json_encode([
                 'email' => $this->faker->companyEmail,
                 'phone' => $this->faker->phoneNumber,
                 'website' => $this->faker->url,
-            ],
+            ]),
             'plan' => $this->faker->randomElement(['basic', 'premium', 'enterprise']),
             'data' => [
+                'name' => $institutionName, // Also store in data for compatibility
                 'established' => $this->faker->numberBetween(1800, 2020),
                 'type' => strtolower($institutionType),
                 'accreditation' => $this->faker->words(3, true),
@@ -36,7 +38,7 @@ class TenantFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'name' => $this->faker->company . ' University',
+                'name' => $this->faker->company.' University',
                 'data' => array_merge($attributes['data'] ?? [], [
                     'type' => 'university',
                 ]),
@@ -48,7 +50,7 @@ class TenantFactory extends Factory
     {
         return $this->state(function (array $attributes) {
             return [
-                'name' => $this->faker->company . ' College',
+                'name' => $this->faker->company.' College',
                 'data' => array_merge($attributes['data'] ?? [], [
                     'type' => 'college',
                 ]),

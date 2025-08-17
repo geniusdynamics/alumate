@@ -13,6 +13,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class GraduateController extends Controller
 {
     use Exportable;
+
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -25,16 +26,16 @@ class GraduateController extends Controller
             }
         }
 
-        $query = Graduate::with('course');
+        $query = Graduate::with(['course', 'tenant']);
 
         // Apply filters
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%')
-                  ->orWhere('student_id', 'like', '%' . $request->search . '%')
-                  ->orWhere('current_job_title', 'like', '%' . $request->search . '%')
-                  ->orWhere('current_company', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('email', 'like', '%'.$request->search.'%')
+                    ->orWhere('student_id', 'like', '%'.$request->search.'%')
+                    ->orWhere('current_job_title', 'like', '%'.$request->search.'%')
+                    ->orWhere('current_company', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -104,7 +105,7 @@ class GraduateController extends Controller
             if ($request->has_certifications === 'true') {
                 $query->whereNotNull('certifications')->where('certifications', '!=', '[]');
             } else {
-                $query->where(function($q) {
+                $query->where(function ($q) {
                     $q->whereNull('certifications')->orWhere('certifications', '[]');
                 });
             }
@@ -113,30 +114,37 @@ class GraduateController extends Controller
         // Sorting
         $sortBy = $request->get('sort_by', 'name');
         $sortOrder = $request->get('sort_order', 'asc');
-        
+
         $allowedSorts = ['name', 'graduation_year', 'employment_status', 'profile_completion_percentage', 'created_at'];
         if (in_array($sortBy, $allowedSorts)) {
             $query->orderBy($sortBy, $sortOrder);
         }
 
-        $graduates = $query->paginate(15)->withQueryString();
+        $graduates = $query->paginate(10)->withQueryString();
 
         // Get filter options
         $graduationYears = Graduate::distinct()->pluck('graduation_year')->sort()->values();
         $employmentStatuses = ['unemployed', 'employed', 'self_employed', 'further_studies', 'other'];
         $academicStandings = ['excellent', 'very_good', 'good', 'satisfactory', 'pass'];
 
+        // Get courses safely
+        try {
+            $courses = Course::all();
+        } catch (\Exception $e) {
+            $courses = collect();
+        }
+
         return Inertia::render('Graduates/Index', [
             'graduates' => $graduates,
-            'courses' => Course::all(),
+            'courses' => $courses,
             'graduationYears' => $graduationYears,
             'employmentStatuses' => $employmentStatuses,
             'academicStandings' => $academicStandings,
             'filters' => $request->only([
-                'search', 'employment_status', 'graduation_year', 'graduation_year_range', 
-                'course_id', 'skills', 'gpa_min', 'gpa_max', 'academic_standing', 
+                'search', 'employment_status', 'graduation_year', 'graduation_year_range',
+                'course_id', 'skills', 'gpa_min', 'gpa_max', 'academic_standing',
                 'job_search_active', 'profile_completion_min', 'has_certifications',
-                'sort_by', 'sort_order'
+                'sort_by', 'sort_order',
             ]),
         ]);
     }
@@ -155,7 +163,7 @@ class GraduateController extends Controller
             'email' => 'required|email|max:255|unique:graduates',
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
-            'graduation_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
+            'graduation_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y') + 1),
             'course_id' => 'required|exists:courses,id',
             'student_id' => 'nullable|string|max:255|unique:graduates',
             'gpa' => 'nullable|numeric|min:0|max:4',
@@ -196,7 +204,7 @@ class GraduateController extends Controller
             'email' => 'required|email|max:255|unique:graduates,email,'.$graduate->id,
             'phone' => 'nullable|string|max:255',
             'address' => 'nullable|string|max:255',
-            'graduation_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y')+1),
+            'graduation_year' => 'required|digits:4|integer|min:1900|max:'.(date('Y') + 1),
             'course_id' => 'required|exists:courses,id',
             'student_id' => 'nullable|string|max:255|unique:graduates,student_id,'.$graduate->id,
             'gpa' => 'nullable|numeric|min:0|max:4',
@@ -216,10 +224,10 @@ class GraduateController extends Controller
         // Track changes for audit log
         $changes = [];
         foreach ($data as $field => $value) {
-            if ($graduate->$field != $value) {
+            if ($value != $graduate->$field) {
                 $changes[$field] = [
                     'old' => $graduate->$field,
-                    'new' => $value
+                    'new' => $value,
                 ];
             }
         }
@@ -228,9 +236,9 @@ class GraduateController extends Controller
         $graduate->updateProfileCompletion();
 
         // Log significant changes
-        if (!empty($changes)) {
+        if (! empty($changes)) {
             $changedFields = array_keys($changes);
-            $description = 'Profile updated: ' . implode(', ', $changedFields);
+            $description = 'Profile updated: '.implode(', ', $changedFields);
             $graduate->logAuditTrail('profile_updated', $description, null, null, null, $changes);
         }
 
@@ -288,10 +296,10 @@ class GraduateController extends Controller
         // Track changes for audit log
         $changes = [];
         foreach ($data as $field => $value) {
-            if ($graduate->$field != $value) {
+            if ($value != $graduate->$field) {
                 $changes[$field] = [
                     'old' => $graduate->$field,
-                    'new' => $value
+                    'new' => $value,
                 ];
             }
         }
@@ -299,7 +307,7 @@ class GraduateController extends Controller
         $graduate->update($data);
 
         // Log privacy changes
-        if (!empty($changes)) {
+        if (! empty($changes)) {
             $graduate->logPrivacyUpdate($changes);
         }
 
@@ -316,9 +324,10 @@ class GraduateController extends Controller
                 'company' => $graduate->current_company,
                 'start_date' => $graduate->employment_start_date,
                 'salary' => $graduate->current_salary,
-                'status' => 'current'
+                'status' => 'current',
             ]];
         }
+
         return [];
     }
 
@@ -338,13 +347,13 @@ class GraduateController extends Controller
             $format = $request->input('format', 'xlsx');
 
             // Apply institution filter for non-super-admins
-            if (!auth()->user()->hasRole('super-admin')) {
+            if (! auth()->user()->hasRole('super-admin')) {
                 $filters['institution_id'] = auth()->user()->institution_id;
             }
 
             $export = new \App\Exports\GraduatesExport($filters, $selectedFields, $includeHeaders);
-            
-            $filename = 'graduates_export_' . now()->format('Y-m-d_H-i-s') . '.' . $format;
+
+            $filename = 'graduates_export_'.now()->format('Y-m-d_H-i-s').'.'.$format;
 
             switch ($format) {
                 case 'csv':
@@ -357,16 +366,23 @@ class GraduateController extends Controller
 
         } catch (\Exception $e) {
             return back()->withErrors([
-                'export' => 'Export failed: ' . $e->getMessage()
+                'export' => 'Export failed: '.$e->getMessage(),
             ]);
         }
     }
 
     public function exportFields()
     {
-        $export = new \App\Exports\GraduatesExport();
-        return response()->json([
-            'available_fields' => $export->getAvailableFields()
-        ]);
+        try {
+            $export = new \App\Exports\GraduatesExport;
+
+            return response()->json([
+                'available_fields' => $export->getAvailableFields(),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to load export fields: '.$e->getMessage(),
+            ], 500);
+        }
     }
 }

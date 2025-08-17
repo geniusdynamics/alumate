@@ -12,9 +12,9 @@ try {
     // Get all registered routes
     $router = app('router');
     $routes = $router->getRoutes();
-    
+
     $analyticsRoutes = [];
-    
+
     foreach ($routes as $route) {
         $uri = $route->uri();
         if (strpos($uri, 'analytics') !== false) {
@@ -26,9 +26,9 @@ try {
             ];
         }
     }
-    
-    echo "📍 Found " . count($analyticsRoutes) . " analytics routes:\n\n";
-    
+
+    echo '📍 Found '.count($analyticsRoutes)." analytics routes:\n\n";
+
     foreach ($analyticsRoutes as $route) {
         echo "- {$route['method']} /{$route['uri']} -> {$route['action']}\n";
         if ($route['name']) {
@@ -36,38 +36,40 @@ try {
         }
         echo "\n";
     }
-    
+
     // Test if controllers exist
     echo "🔍 Checking Controllers:\n";
-    
+
     $controllers = [
         'App\Http\Controllers\AnalyticsController',
     ];
-    
+
     foreach ($controllers as $controller) {
         if (class_exists($controller)) {
             echo "✅ {$controller} - EXISTS\n";
-            
+
             // Check methods
             $reflection = new ReflectionClass($controller);
             $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
-            $publicMethods = array_filter($methods, function($method) {
-                return !$method->isConstructor() && !$method->isDestructor() && $method->class === $method->getDeclaringClass()->getName();
+            $publicMethods = array_filter($methods, function ($method) {
+                return ! $method->isConstructor() && ! $method->isDestructor() && $method->class === $method->getDeclaringClass()->getName();
             });
-            
-            echo "   Methods: " . implode(', ', array_map(function($m) { return $m->getName(); }, $publicMethods)) . "\n";
+
+            echo '   Methods: '.implode(', ', array_map(function ($m) {
+                return $m->getName();
+            }, $publicMethods))."\n";
         } else {
             echo "❌ {$controller} - NOT FOUND\n";
         }
     }
-    
+
     echo "\n🔍 Checking Services:\n";
-    
+
     $services = [
         'App\Services\AnalyticsService',
         'App\Services\ReportBuilderService',
     ];
-    
+
     foreach ($services as $service) {
         if (class_exists($service)) {
             echo "✅ {$service} - EXISTS\n";
@@ -75,16 +77,16 @@ try {
             echo "❌ {$service} - NOT FOUND\n";
         }
     }
-    
+
     echo "\n🔍 Checking Models:\n";
-    
+
     $models = [
         'App\Models\AnalyticsSnapshot',
         'App\Models\CustomReport',
         'App\Models\KpiDefinition',
         'App\Models\PredictionModel',
     ];
-    
+
     foreach ($models as $model) {
         if (class_exists($model)) {
             echo "✅ {$model} - EXISTS\n";
@@ -92,7 +94,7 @@ try {
             echo "❌ {$model} - NOT FOUND\n";
         }
     }
-    
+
     echo "\n✅ Route testing completed!\n";
     echo "\nYou can now visit these URLs:\n";
     echo "- http://localhost:8080/analytics/dashboard\n";
@@ -101,6 +103,6 @@ try {
     echo "- http://localhost:8080/analytics/predictions\n";
 
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo "File: " . $e->getFile() . ":" . $e->getLine() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo 'File: '.$e->getFile().':'.$e->getLine()."\n";
 }

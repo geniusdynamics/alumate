@@ -68,7 +68,7 @@ class KpiDefinition extends Model
     public function getTrendData($days = 30)
     {
         $startDate = now()->subDays($days);
-        
+
         return $this->values()
             ->where('measurement_date', '>=', $startDate)
             ->orderBy('measurement_date')
@@ -78,12 +78,12 @@ class KpiDefinition extends Model
     public function isAboveTarget()
     {
         $latestValue = $this->getLatestValue();
-        
+
         if ($latestValue === null || $this->target_value === null) {
             return null;
         }
 
-        return match($this->target_type) {
+        return match ($this->target_type) {
             'minimum' => $latestValue >= $this->target_value,
             'maximum' => $latestValue <= $this->target_value,
             'range' => $this->isInTargetRange($latestValue),
@@ -94,12 +94,12 @@ class KpiDefinition extends Model
     public function isInWarningZone()
     {
         $latestValue = $this->getLatestValue();
-        
+
         if ($latestValue === null || $this->warning_threshold === null) {
             return false;
         }
 
-        return match($this->target_type) {
+        return match ($this->target_type) {
             'minimum' => $latestValue < $this->warning_threshold,
             'maximum' => $latestValue > $this->warning_threshold,
             default => false,
@@ -113,7 +113,7 @@ class KpiDefinition extends Model
         }
 
         $aboveTarget = $this->isAboveTarget();
-        
+
         if ($aboveTarget === null) {
             return 'unknown';
         }
@@ -123,7 +123,7 @@ class KpiDefinition extends Model
 
     public function getStatusColor()
     {
-        return match($this->getStatus()) {
+        return match ($this->getStatus()) {
             'good' => 'green',
             'warning' => 'yellow',
             'poor' => 'red',
@@ -136,7 +136,7 @@ class KpiDefinition extends Model
         $date = $date ?? now()->toDateString();
         $config = $this->calculation_config;
 
-        return match($this->calculation_method) {
+        return match ($this->calculation_method) {
             'percentage' => $this->calculatePercentage($config, $date),
             'count' => $this->calculateCount($config, $date),
             'average' => $this->calculateAverage($config, $date),
@@ -166,7 +166,7 @@ class KpiDefinition extends Model
     private function calculateAverage($config, $date)
     {
         $values = $this->executeQuery($config['query'], $date, true);
-        
+
         if (empty($values)) {
             return 0;
         }
@@ -189,7 +189,7 @@ class KpiDefinition extends Model
     private function calculateSum($config, $date)
     {
         $values = $this->executeQuery($config['query'], $date, true);
-        
+
         return array_sum($values);
     }
 
@@ -197,7 +197,7 @@ class KpiDefinition extends Model
     {
         // This is a simplified implementation
         // In a real system, you would have a more sophisticated query builder
-        
+
         $model = app($queryConfig['model']);
         $query = $model::query();
 
@@ -251,13 +251,13 @@ class KpiDefinition extends Model
                     'numerator' => [
                         'model' => 'App\\Models\\Graduate',
                         'filters' => [
-                            ['field' => 'employment_status', 'operator' => '=', 'value' => 'employed']
-                        ]
+                            ['field' => 'employment_status', 'operator' => '=', 'value' => 'employed'],
+                        ],
                     ],
                     'denominator' => [
                         'model' => 'App\\Models\\Graduate',
-                        'filters' => []
-                    ]
+                        'filters' => [],
+                    ],
                 ],
                 'target_type' => 'minimum',
                 'target_value' => 80.0,
@@ -273,13 +273,13 @@ class KpiDefinition extends Model
                     'numerator' => [
                         'model' => 'App\\Models\\JobApplication',
                         'filters' => [
-                            ['field' => 'status', 'operator' => '=', 'value' => 'hired']
-                        ]
+                            ['field' => 'status', 'operator' => '=', 'value' => 'hired'],
+                        ],
                     ],
                     'denominator' => [
                         'model' => 'App\\Models\\JobApplication',
-                        'filters' => []
-                    ]
+                        'filters' => [],
+                    ],
                 ],
                 'target_type' => 'minimum',
                 'target_value' => 25.0,
@@ -296,9 +296,9 @@ class KpiDefinition extends Model
                         'model' => 'App\\Models\\Graduate',
                         'field' => 'days_to_employment',
                         'filters' => [
-                            ['field' => 'employment_status', 'operator' => '=', 'value' => 'employed']
-                        ]
-                    ]
+                            ['field' => 'employment_status', 'operator' => '=', 'value' => 'employed'],
+                        ],
+                    ],
                 ],
                 'target_type' => 'maximum',
                 'target_value' => 90.0,

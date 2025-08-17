@@ -137,7 +137,7 @@ Write-Host ""
 
 # Test server connectivity
 Write-Host "7. Server Connectivity:" -ForegroundColor Yellow
-$ports = @(8080, 5173)
+$ports = @(8080, 5100)
 foreach ($port in $ports) {
     try {
         $connection = New-Object System.Net.Sockets.TcpClient

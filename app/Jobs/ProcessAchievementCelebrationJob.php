@@ -31,13 +31,13 @@ class ProcessAchievementCelebrationJob implements ShouldQueue
             Log::info('Achievement celebration processed', [
                 'celebration_id' => $this->celebration->id,
                 'post_id' => $post->id,
-                'user_id' => $this->celebration->recipient->id
+                'user_id' => $this->celebration->recipient->id,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to process achievement celebration', [
                 'celebration_id' => $this->celebration->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             // Re-throw to trigger job retry

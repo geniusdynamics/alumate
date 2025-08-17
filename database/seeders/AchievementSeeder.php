@@ -23,9 +23,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_COMMON,
                 'criteria' => [
                     'type' => 'milestone_count',
-                    'count' => 1
+                    'count' => 1,
                 ],
-                'points' => 10
+                'points' => 10,
             ],
             [
                 'name' => 'Career Chronicler',
@@ -36,9 +36,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_UNCOMMON,
                 'criteria' => [
                     'type' => 'milestone_count',
-                    'count' => 5
+                    'count' => 5,
                 ],
-                'points' => 25
+                'points' => 25,
             ],
             [
                 'name' => 'Rising Star',
@@ -50,9 +50,9 @@ class AchievementSeeder extends Seeder
                 'criteria' => [
                     'type' => 'milestone_count',
                     'milestone_type' => 'promotion',
-                    'count' => 1
+                    'count' => 1,
                 ],
-                'points' => 30
+                'points' => 30,
             ],
             [
                 'name' => 'Career Climber',
@@ -63,9 +63,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_RARE,
                 'criteria' => [
                     'type' => 'career_progression',
-                    'promotions' => 3
+                    'promotions' => 3,
                 ],
-                'points' => 75
+                'points' => 75,
             ],
             [
                 'name' => 'Award Winner',
@@ -77,9 +77,9 @@ class AchievementSeeder extends Seeder
                 'criteria' => [
                     'type' => 'milestone_count',
                     'milestone_type' => 'award',
-                    'count' => 1
+                    'count' => 1,
                 ],
-                'points' => 50
+                'points' => 50,
             ],
 
             // Education Achievements
@@ -93,9 +93,9 @@ class AchievementSeeder extends Seeder
                 'criteria' => [
                     'type' => 'milestone_count',
                     'milestone_type' => 'certification',
-                    'count' => 1
+                    'count' => 1,
                 ],
-                'points' => 15
+                'points' => 15,
             ],
             [
                 'name' => 'Knowledge Seeker',
@@ -107,9 +107,9 @@ class AchievementSeeder extends Seeder
                 'criteria' => [
                     'type' => 'milestone_count',
                     'milestone_type' => 'certification',
-                    'count' => 3
+                    'count' => 3,
                 ],
-                'points' => 40
+                'points' => 40,
             ],
             [
                 'name' => 'Advanced Degree',
@@ -121,9 +121,9 @@ class AchievementSeeder extends Seeder
                 'criteria' => [
                     'type' => 'milestone_count',
                     'milestone_type' => 'education',
-                    'count' => 1
+                    'count' => 1,
                 ],
-                'points' => 60
+                'points' => 60,
             ],
 
             // Community Achievements
@@ -136,9 +136,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_COMMON,
                 'criteria' => [
                     'type' => 'profile_completion',
-                    'completion_percentage' => 60
+                    'completion_percentage' => 60,
                 ],
-                'points' => 5
+                'points' => 5,
             ],
             [
                 'name' => 'Connector',
@@ -149,9 +149,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_COMMON,
                 'criteria' => [
                     'type' => 'connection_count',
-                    'count' => 5
+                    'count' => 5,
                 ],
-                'points' => 20
+                'points' => 20,
             ],
             [
                 'name' => 'Social Butterfly',
@@ -162,9 +162,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_UNCOMMON,
                 'criteria' => [
                     'type' => 'connection_count',
-                    'count' => 25
+                    'count' => 25,
                 ],
-                'points' => 35
+                'points' => 35,
             ],
             [
                 'name' => 'Community Champion',
@@ -175,9 +175,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_RARE,
                 'criteria' => [
                     'type' => 'connection_count',
-                    'count' => 100
+                    'count' => 100,
                 ],
-                'points' => 80
+                'points' => 80,
             ],
             [
                 'name' => 'Conversation Starter',
@@ -188,9 +188,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_COMMON,
                 'criteria' => [
                     'type' => 'community_participation',
-                    'activity_count' => 5
+                    'activity_count' => 5,
                 ],
-                'points' => 15
+                'points' => 15,
             ],
             [
                 'name' => 'Influencer',
@@ -202,9 +202,9 @@ class AchievementSeeder extends Seeder
                 'criteria' => [
                     'type' => 'post_engagement',
                     'min_likes' => 10,
-                    'min_posts' => 3
+                    'min_posts' => 3,
                 ],
-                'points' => 45
+                'points' => 45,
             ],
 
             // Milestone Achievements
@@ -217,9 +217,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_UNCOMMON,
                 'criteria' => [
                     'type' => 'profile_completion',
-                    'completion_percentage' => 100
+                    'completion_percentage' => 100,
                 ],
-                'points' => 25
+                'points' => 25,
             ],
             [
                 'name' => 'Milestone Master',
@@ -230,9 +230,9 @@ class AchievementSeeder extends Seeder
                 'rarity' => Achievement::RARITY_RARE,
                 'criteria' => [
                     'type' => 'milestone_count',
-                    'count' => 10
+                    'count' => 10,
                 ],
-                'points' => 70
+                'points' => 70,
             ],
 
             // Special Achievements
@@ -244,10 +244,10 @@ class AchievementSeeder extends Seeder
                 'category' => Achievement::CATEGORY_SPECIAL,
                 'rarity' => Achievement::RARITY_LEGENDARY,
                 'criteria' => [
-                    'type' => 'manual_award' // This would be manually awarded
+                    'type' => 'manual_award', // This would be manually awarded
                 ],
                 'points' => 200,
-                'is_auto_awarded' => false
+                'is_auto_awarded' => false,
             ],
             [
                 'name' => 'Platform Pioneer',
@@ -257,10 +257,10 @@ class AchievementSeeder extends Seeder
                 'category' => Achievement::CATEGORY_SPECIAL,
                 'rarity' => Achievement::RARITY_EPIC,
                 'criteria' => [
-                    'type' => 'manual_award'
+                    'type' => 'manual_award',
                 ],
                 'points' => 150,
-                'is_auto_awarded' => false
+                'is_auto_awarded' => false,
             ],
             [
                 'name' => 'Anniversary Celebration',
@@ -270,11 +270,11 @@ class AchievementSeeder extends Seeder
                 'category' => Achievement::CATEGORY_SPECIAL,
                 'rarity' => Achievement::RARITY_UNCOMMON,
                 'criteria' => [
-                    'type' => 'manual_award' // Would be awarded via scheduled job
+                    'type' => 'manual_award', // Would be awarded via scheduled job
                 ],
                 'points' => 30,
-                'is_auto_awarded' => false
-            ]
+                'is_auto_awarded' => false,
+            ],
         ];
 
         foreach ($achievements as $achievementData) {

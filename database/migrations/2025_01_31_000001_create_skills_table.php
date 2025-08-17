@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('is_verified')->default(false);
             $table->timestamps();
-            
+
             $table->index(['category', 'name']);
             $table->index('is_verified');
         });

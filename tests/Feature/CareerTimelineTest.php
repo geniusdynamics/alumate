@@ -2,13 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\CareerTimeline;
 use App\Models\CareerMilestone;
+use App\Models\CareerTimeline;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class CareerTimelineTest extends TestCase
 {
@@ -23,7 +23,7 @@ class CareerTimelineTest extends TestCase
     public function test_user_can_create_career_entry()
     {
         $user = User::factory()->create();
-        
+
         $careerData = [
             'company' => 'Tech Corp',
             'title' => 'Software Engineer',
@@ -34,7 +34,7 @@ class CareerTimelineTest extends TestCase
             'achievements' => ['Built 5 major features', 'Led team of 3 developers'],
             'location' => 'San Francisco, CA',
             'industry' => 'Technology',
-            'employment_type' => 'full-time'
+            'employment_type' => 'full-time',
         ];
 
         $response = $this->actingAs($user)
@@ -43,13 +43,13 @@ class CareerTimelineTest extends TestCase
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
-                'message' => 'Career entry added successfully'
+                'message' => 'Career entry added successfully',
             ]);
 
         $this->assertDatabaseHas('career_timelines', [
             'user_id' => $user->id,
             'company' => 'Tech Corp',
-            'title' => 'Software Engineer'
+            'title' => 'Software Engineer',
         ]);
     }
 
@@ -59,13 +59,13 @@ class CareerTimelineTest extends TestCase
         $careerEntry = CareerTimeline::factory()->create([
             'user_id' => $user->id,
             'company' => 'Old Corp',
-            'title' => 'Junior Developer'
+            'title' => 'Junior Developer',
         ]);
 
         $updateData = [
             'company' => 'New Corp',
             'title' => 'Senior Developer',
-            'description' => 'Updated description'
+            'description' => 'Updated description',
         ];
 
         $response = $this->actingAs($user)
@@ -74,13 +74,13 @@ class CareerTimelineTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Career entry updated successfully'
+                'message' => 'Career entry updated successfully',
             ]);
 
         $this->assertDatabaseHas('career_timelines', [
             'id' => $careerEntry->id,
             'company' => 'New Corp',
-            'title' => 'Senior Developer'
+            'title' => 'Senior Developer',
         ]);
     }
 
@@ -95,7 +95,7 @@ class CareerTimelineTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Career entry deleted successfully'
+                'message' => 'Career entry deleted successfully',
             ]);
 
         $this->assertSoftDeleted('career_timelines', ['id' => $careerEntry->id]);
@@ -116,7 +116,7 @@ class CareerTimelineTest extends TestCase
     public function test_user_can_create_milestone()
     {
         $user = User::factory()->create();
-        
+
         $milestoneData = [
             'type' => 'promotion',
             'title' => 'Promoted to Senior Developer',
@@ -124,7 +124,7 @@ class CareerTimelineTest extends TestCase
             'date' => '2024-01-01',
             'visibility' => 'public',
             'company' => 'Tech Corp',
-            'is_featured' => true
+            'is_featured' => true,
         ];
 
         $response = $this->actingAs($user)
@@ -133,23 +133,23 @@ class CareerTimelineTest extends TestCase
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
-                'message' => 'Milestone added successfully'
+                'message' => 'Milestone added successfully',
             ]);
 
         $this->assertDatabaseHas('career_milestones', [
             'user_id' => $user->id,
             'type' => 'promotion',
-            'title' => 'Promoted to Senior Developer'
+            'title' => 'Promoted to Senior Developer',
         ]);
     }
 
     public function test_user_can_view_career_timeline()
     {
         $user = User::factory()->create();
-        
+
         // Create career entries
         CareerTimeline::factory()->count(2)->create(['user_id' => $user->id]);
-        
+
         // Create milestones
         CareerMilestone::factory()->count(3)->create(['user_id' => $user->id]);
 
@@ -165,39 +165,39 @@ class CareerTimelineTest extends TestCase
                     'milestones',
                     'progression',
                     'stats',
-                    'can_edit'
-                ]
+                    'can_edit',
+                ],
             ]);
     }
 
     public function test_career_progression_calculation()
     {
         $user = User::factory()->create();
-        
+
         // Create career entries with different durations
         CareerTimeline::factory()->create([
             'user_id' => $user->id,
             'company' => 'Company A',
             'start_date' => Carbon::now()->subYears(3),
             'end_date' => Carbon::now()->subYears(2),
-            'is_current' => false
+            'is_current' => false,
         ]);
-        
+
         CareerTimeline::factory()->create([
             'user_id' => $user->id,
             'company' => 'Company B',
             'start_date' => Carbon::now()->subYears(2),
             'end_date' => null,
-            'is_current' => true
+            'is_current' => true,
         ]);
 
         $response = $this->actingAs($user)
             ->getJson("/api/users/{$user->id}/career");
 
         $response->assertStatus(200);
-        
+
         $progression = $response->json('data.progression');
-        
+
         $this->assertArrayHasKey('total_experience_years', $progression);
         $this->assertArrayHasKey('companies_count', $progression);
         $this->assertArrayHasKey('promotions_count', $progression);
@@ -208,18 +208,18 @@ class CareerTimelineTest extends TestCase
     {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        
+
         // Create milestones with different visibility levels
         CareerMilestone::factory()->create([
             'user_id' => $user1->id,
             'visibility' => 'public',
-            'title' => 'Public Milestone'
+            'title' => 'Public Milestone',
         ]);
-        
+
         CareerMilestone::factory()->create([
             'user_id' => $user1->id,
             'visibility' => 'private',
-            'title' => 'Private Milestone'
+            'title' => 'Private Milestone',
         ]);
 
         // User2 viewing User1's timeline should only see public milestones
@@ -227,7 +227,7 @@ class CareerTimelineTest extends TestCase
             ->getJson("/api/users/{$user1->id}/career");
 
         $response->assertStatus(200);
-        
+
         $milestones = $response->json('data.milestones');
         $this->assertCount(1, $milestones);
         $this->assertEquals('Public Milestone', $milestones[0]['title']);
@@ -236,11 +236,11 @@ class CareerTimelineTest extends TestCase
     public function test_current_position_updates_previous_current()
     {
         $user = User::factory()->create();
-        
+
         // Create a current position
         $currentPosition = CareerTimeline::factory()->create([
             'user_id' => $user->id,
-            'is_current' => true
+            'is_current' => true,
         ]);
 
         // Add a new current position
@@ -249,7 +249,7 @@ class CareerTimelineTest extends TestCase
             'title' => 'New Title',
             'start_date' => '2024-01-01',
             'is_current' => true,
-            'employment_type' => 'full-time'
+            'employment_type' => 'full-time',
         ];
 
         $response = $this->actingAs($user)
@@ -265,19 +265,19 @@ class CareerTimelineTest extends TestCase
         $this->assertDatabaseHas('career_timelines', [
             'user_id' => $user->id,
             'company' => 'New Company',
-            'is_current' => true
+            'is_current' => true,
         ]);
     }
 
     public function test_career_suggestions_are_generated()
     {
         $user = User::factory()->create();
-        
+
         // Create some career history
         CareerTimeline::factory()->create([
             'user_id' => $user->id,
             'start_date' => Carbon::now()->subMonths(6),
-            'is_current' => true
+            'is_current' => true,
         ]);
 
         $response = $this->actingAs($user)
@@ -291,9 +291,9 @@ class CareerTimelineTest extends TestCase
                         'type',
                         'title',
                         'description',
-                        'priority'
-                    ]
-                ]
+                        'priority',
+                    ],
+                ],
             ]);
     }
 
@@ -310,8 +310,8 @@ class CareerTimelineTest extends TestCase
                 'data' => [
                     'milestone_types',
                     'visibility_options',
-                    'employment_types'
-                ]
+                    'employment_types',
+                ],
             ]);
     }
 }

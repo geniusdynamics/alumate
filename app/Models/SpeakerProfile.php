@@ -117,7 +117,7 @@ class SpeakerProfile extends Model
     {
         return $query->where(function ($q) use ($budget) {
             $q->whereNull('speaking_fee')
-              ->orWhere('speaking_fee', '<=', $budget);
+                ->orWhere('speaking_fee', '<=', $budget);
         });
     }
 
@@ -147,7 +147,7 @@ class SpeakerProfile extends Model
 
     public function getAvailabilityStatus(): string
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return 'inactive';
         }
 
@@ -173,13 +173,13 @@ class SpeakerProfile extends Model
             return 'Free';
         }
 
-        return '$' . number_format($this->speaking_fee, 2);
+        return '$'.number_format($this->speaking_fee, 2);
     }
 
     public function getRatingDisplay(): string
     {
         if ($this->rating > 0) {
-            return number_format($this->rating, 1) . '/5.0 (' . $this->total_engagements . ' events)';
+            return number_format($this->rating, 1).'/5.0 ('.$this->total_engagements.' events)';
         }
 
         return 'No ratings yet';

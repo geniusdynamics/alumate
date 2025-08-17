@@ -9,8 +9,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 trait HasDataTable
 {
     /**
-         * Apply search filters to the query
-         */
+     * Apply search filters to the query
+     */
     public function scopeApplySearch(Builder $query, Request $request): Builder
     {
         $search = $request->get('search');
@@ -52,14 +52,14 @@ trait HasDataTable
 
                 // Alias to avoid ambiguous columns
                 $relationTable = app($this->$relation()->getRelated()::class)->getTable();
-                $alias = $relationTable . '_' . $relation;
+                $alias = $relationTable.'_'.$relation;
 
                 $query->leftJoin(
-                    $relationTable . ' as ' . $alias,
-                    $this->getTable() . '.id',
+                    $relationTable.' as '.$alias,
+                    $this->getTable().'.id',
                     '=',
-                    $alias . '.id'
-                )->orderBy($alias . '.' . $relationColumn, $sortDirection);
+                    $alias.'.id'
+                )->orderBy($alias.'.'.$relationColumn, $sortDirection);
             } else {
                 $query->orderBy($sortColumn, $sortDirection);
             }

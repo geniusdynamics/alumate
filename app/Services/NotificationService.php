@@ -16,23 +16,23 @@ class NotificationService
     public function sendNotification(User $user, $notification): void
     {
         $preferences = $this->getUserPreferences($user);
-        
+
         // Always send database notification
         $user->notify($notification);
-        
+
         // Send email if user has email notifications enabled
         if ($preferences['email_enabled'] && $this->shouldSendEmail($notification, $preferences)) {
             $user->notify($notification->via(['mail']));
         }
-        
+
         // Send push notification if user has push enabled
         if ($preferences['push_enabled'] && $this->shouldSendPush($notification, $preferences)) {
             $this->sendPushNotification($user, $notification);
         }
-        
+
         // Broadcast real-time notification
         $this->broadcastNotification($user, $notification);
-        
+
         // Clear unread count cache
         $this->clearUnreadCountCache($user);
     }
@@ -43,13 +43,14 @@ class NotificationService
     public function markAsRead(string $notificationId, User $user): bool
     {
         $notification = $user->notifications()->find($notificationId);
-        
+
         if ($notification && is_null($notification->read_at)) {
             $notification->markAsRead();
             $this->clearUnreadCountCache($user);
+
             return true;
         }
-        
+
         return false;
     }
 
@@ -61,7 +62,7 @@ class NotificationService
         $count = $user->unreadNotifications()->count();
         $user->unreadNotifications()->update(['read_at' => now()]);
         $this->clearUnreadCountCache($user);
-        
+
         return $count;
     }
 
@@ -71,7 +72,7 @@ class NotificationService
     public function getUnreadCount(User $user): int
     {
         $cacheKey = "unread_notifications_count_{$user->id}";
-        
+
         return Cache::remember($cacheKey, 300, function () use ($user) {
             return $user->unreadNotifications()->count();
         });
@@ -93,10 +94,10 @@ class NotificationService
     public function getUserPreferences(User $user): array
     {
         $cacheKey = "notification_preferences_{$user->id}";
-        
+
         return Cache::remember($cacheKey, 3600, function () use ($user) {
             $preferences = $user->notification_preferences ?? [];
-            
+
             // Default preferences
             return array_merge([
                 'email_enabled' => true,
@@ -110,7 +111,7 @@ class NotificationService
                     'connection_accepted' => ['email' => true, 'push' => true, 'database' => true],
                     'group_invitation' => ['email' => true, 'push' => false, 'database' => true],
                     'event_reminder' => ['email' => true, 'push' => true, 'database' => true],
-                ]
+                ],
             ], $preferences);
         });
     }
@@ -156,7 +157,7 @@ class NotificationService
             'total' => $stats->total ?? 0,
             'unread' => $stats->unread ?? 0,
             'read' => $stats->read ?? 0,
-            'by_type' => $typeStats
+            'by_type' => $typeStats,
         ];
     }
 
@@ -166,7 +167,7 @@ class NotificationService
     public function sendBulkNotification(array $users, $notification): void
     {
         Notification::send($users, $notification);
-        
+
         // Clear cache for all users
         foreach ($users as $user) {
             $this->clearUnreadCountCache($user);
@@ -179,11 +180,11 @@ class NotificationService
     private function shouldSendEmail($notification, array $preferences): bool
     {
         $notificationType = $this->getNotificationType($notification);
-        
-        if (!isset($preferences['types'][$notificationType])) {
+
+        if (! isset($preferences['types'][$notificationType])) {
             return false;
         }
-        
+
         return $preferences['types'][$notificationType]['email'] ?? false;
     }
 
@@ -193,11 +194,11 @@ class NotificationService
     private function shouldSendPush($notification, array $preferences): bool
     {
         $notificationType = $this->getNotificationType($notification);
-        
-        if (!isset($preferences['types'][$notificationType])) {
+
+        if (! isset($preferences['types'][$notificationType])) {
             return false;
         }
-        
+
         return $preferences['types'][$notificationType]['push'] ?? false;
     }
 
@@ -210,7 +211,7 @@ class NotificationService
         // For now, we'll just log it
         \Log::info('Push notification sent', [
             'user_id' => $user->id,
-            'notification_type' => get_class($notification)
+            'notification_type' => get_class($notification),
         ]);
     }
 
@@ -223,7 +224,7 @@ class NotificationService
         // For now, we'll just log it
         \Log::info('Real-time notification broadcasted', [
             'user_id' => $user->id,
-            'notification_type' => get_class($notification)
+            'notification_type' => get_class($notification),
         ]);
     }
 
@@ -234,7 +235,7 @@ class NotificationService
     {
         $className = get_class($notification);
         $shortName = class_basename($className);
-        
+
         // Convert class name to snake_case
         return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', str_replace('Notification', '', $shortName)));
     }

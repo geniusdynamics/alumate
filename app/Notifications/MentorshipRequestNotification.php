@@ -25,10 +25,10 @@ class MentorshipRequestNotification extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('New Mentorship Request')
-            ->greeting('Hello ' . $notifiable->name . '!')
-            ->line($this->mentorshipRequest->mentee->name . ' has requested you as their mentor.')
-            ->line('Message: ' . $this->mentorshipRequest->message)
-            ->action('View Request', url('/mentorship/requests/' . $this->mentorshipRequest->id))
+            ->greeting('Hello '.$notifiable->name.'!')
+            ->line($this->mentorshipRequest->mentee->name.' has requested you as their mentor.')
+            ->line('Message: '.$this->mentorshipRequest->message)
+            ->action('View Request', url('/mentorship/requests/'.$this->mentorshipRequest->id))
             ->line('Thank you for being part of our mentorship community!');
     }
 

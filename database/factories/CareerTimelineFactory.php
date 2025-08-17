@@ -5,7 +5,6 @@ namespace Database\Factories;
 use App\Models\CareerTimeline;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Carbon\Carbon;
 
 class CareerTimelineFactory extends Factory
 {
@@ -35,9 +34,9 @@ class CareerTimelineFactory extends Factory
                 'Improved code coverage to 90%',
                 'Optimized database queries',
                 'Built scalable microservices',
-                'Established coding standards'
+                'Established coding standards',
             ], $this->faker->numberBetween(0, 4)),
-            'location' => $this->faker->city() . ', ' . $this->faker->stateAbbr(),
+            'location' => $this->faker->city().', '.$this->faker->stateAbbr(),
             'company_logo_url' => $this->faker->boolean(30) ? $this->faker->imageUrl(100, 100, 'business') : null,
             'industry' => $this->faker->randomElement([
                 'Technology',
@@ -49,15 +48,15 @@ class CareerTimelineFactory extends Factory
                 'Consulting',
                 'Media',
                 'Government',
-                'Non-profit'
+                'Non-profit',
             ]),
             'employment_type' => $this->faker->randomElement([
                 'full-time',
                 'part-time',
                 'contract',
                 'internship',
-                'freelance'
-            ])
+                'freelance',
+            ]),
         ];
     }
 
@@ -66,7 +65,7 @@ class CareerTimelineFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'is_current' => true,
             'end_date' => null,
-            'start_date' => $this->faker->dateTimeBetween('-2 years', 'now')
+            'start_date' => $this->faker->dateTimeBetween('-2 years', 'now'),
         ]);
     }
 
@@ -75,11 +74,11 @@ class CareerTimelineFactory extends Factory
         return $this->state(function (array $attributes) {
             $startDate = $this->faker->dateTimeBetween('-5 years', '-1 year');
             $endDate = $this->faker->dateTimeBetween($startDate, 'now');
-            
+
             return [
                 'is_current' => false,
                 'start_date' => $startDate,
-                'end_date' => $endDate
+                'end_date' => $endDate,
             ];
         });
     }
@@ -97,50 +96,50 @@ class CareerTimelineFactory extends Factory
                 'Improved customer satisfaction score by 30%',
                 'Built real-time analytics dashboard',
                 'Established agile development processes',
-                'Reduced technical debt by 40%'
-            ], $count)
+                'Reduced technical debt by 40%',
+            ], $count),
         ]);
     }
 
     public function atCompany(string $company): static
     {
         return $this->state(fn (array $attributes) => [
-            'company' => $company
+            'company' => $company,
         ]);
     }
 
     public function withTitle(string $title): static
     {
         return $this->state(fn (array $attributes) => [
-            'title' => $title
+            'title' => $title,
         ]);
     }
 
     public function inIndustry(string $industry): static
     {
         return $this->state(fn (array $attributes) => [
-            'industry' => $industry
+            'industry' => $industry,
         ]);
     }
 
     public function fullTime(): static
     {
         return $this->state(fn (array $attributes) => [
-            'employment_type' => 'full-time'
+            'employment_type' => 'full-time',
         ]);
     }
 
     public function contract(): static
     {
         return $this->state(fn (array $attributes) => [
-            'employment_type' => 'contract'
+            'employment_type' => 'contract',
         ]);
     }
 
     public function internship(): static
     {
         return $this->state(fn (array $attributes) => [
-            'employment_type' => 'internship'
+            'employment_type' => 'internship',
         ]);
     }
 }

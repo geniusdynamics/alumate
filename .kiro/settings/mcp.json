@@ -1,4 +1,27 @@
 {
   "mcpServers": {
+    "laravel-boost": {
+      "command": "D:\\DevCenter\\xampp\\php-8.3.23\\php.exe",
+      "args": [
+        "artisan",
+        "boost:mcp"
+      ],
+      "env": {
+        "FASTMCP_LOG_LEVEL": "ERROR"
+      },
+      "disabled": false,
+      "autoApprove": [
+        "application_info",
+        "database_schema",
+        "list_routes",
+        "get_config",
+        "search_docs",
+        "list_artisan_commands",
+        "tinker",
+        "read_log_entries",
+        "last_error",
+        "database-query"
+      ]
+    }
   }
 }

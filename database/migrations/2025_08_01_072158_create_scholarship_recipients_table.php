@@ -26,7 +26,7 @@ return new class extends Migration
             $table->json('updates')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['scholarship_id', 'status']);
             $table->index(['recipient_id', 'status']);
             $table->index(['award_date', 'status']);

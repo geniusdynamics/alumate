@@ -23,26 +23,26 @@ class CheckAchievementsListener implements ShouldQueue
         try {
             // Extract user from different event types
             $user = $this->getUserFromEvent($event);
-            
-            if (!$user) {
+
+            if (! $user) {
                 return;
             }
 
             // Check and award achievements
             $newAchievements = $this->achievementService->checkAndAwardAchievements($user);
 
-            if (!empty($newAchievements)) {
+            if (! empty($newAchievements)) {
                 Log::info('New achievements awarded', [
                     'user_id' => $user->id,
                     'achievement_count' => count($newAchievements),
-                    'achievements' => array_map(fn($ua) => $ua->achievement->name, $newAchievements)
+                    'achievements' => array_map(fn ($ua) => $ua->achievement->name, $newAchievements),
                 ]);
             }
 
         } catch (\Exception $e) {
             Log::error('Failed to check achievements', [
                 'event' => get_class($event),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }

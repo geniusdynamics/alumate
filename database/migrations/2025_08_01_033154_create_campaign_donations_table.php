@@ -31,7 +31,7 @@ return new class extends Migration
             $table->timestamp('processed_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['campaign_id', 'status']);
             $table->index(['donor_id']);
             $table->index(['peer_fundraiser_id']);

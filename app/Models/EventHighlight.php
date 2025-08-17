@@ -111,6 +111,7 @@ class EventHighlight extends Model
         if ($existingLike) {
             $existingLike->delete();
             $this->decrement('likes_count');
+
             return false;
         } else {
             $this->interactions()->create([
@@ -118,6 +119,7 @@ class EventHighlight extends Model
                 'type' => 'like',
             ]);
             $this->increment('likes_count');
+
             return true;
         }
     }
@@ -131,6 +133,7 @@ class EventHighlight extends Model
         ]);
 
         $this->increment('shares_count');
+
         return $share;
     }
 
@@ -181,7 +184,7 @@ class EventHighlight extends Model
 
     public function hasMedia(): bool
     {
-        return !empty($this->media_urls);
+        return ! empty($this->media_urls);
     }
 
     public function getMediaCount(): int
@@ -191,7 +194,7 @@ class EventHighlight extends Model
 
     public function getTypeLabel(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'photo' => 'Photo',
             'video' => 'Video',
             'quote' => 'Quote',

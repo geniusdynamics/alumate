@@ -8,7 +8,6 @@ use App\Models\Job;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class GraduateProfileAndJobViewingTest extends TestCase
@@ -16,8 +15,11 @@ class GraduateProfileAndJobViewingTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $graduateUser;
+
     protected $graduate;
+
     protected $profile;
 
     protected function setUp(): void

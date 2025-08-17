@@ -18,8 +18,11 @@ class ProcessGroupInvitationsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected Group $group;
+
     protected Collection $userIds;
+
     protected User $inviter;
+
     protected ?string $message;
 
     /**
@@ -42,7 +45,7 @@ class ProcessGroupInvitationsJob implements ShouldQueue
             Log::info('Processing bulk group invitations', [
                 'group_id' => $this->group->id,
                 'inviter_id' => $this->inviter->id,
-                'user_count' => $this->userIds->count()
+                'user_count' => $this->userIds->count(),
             ]);
 
             $successCount = 0;
@@ -51,29 +54,30 @@ class ProcessGroupInvitationsJob implements ShouldQueue
             foreach ($this->userIds as $userId) {
                 try {
                     $user = User::find($userId);
-                    
-                    if (!$user) {
+
+                    if (! $user) {
                         Log::warning('User not found for group invitation', [
                             'user_id' => $userId,
-                            'group_id' => $this->group->id
+                            'group_id' => $this->group->id,
                         ]);
                         $failureCount++;
+
                         continue;
                     }
 
                     $success = $groupManager->handleInvitation($this->group, $user, $this->inviter);
-                    
+
                     if ($success) {
                         $successCount++;
                         Log::debug('Successfully processed group invitation', [
                             'user_id' => $userId,
-                            'group_id' => $this->group->id
+                            'group_id' => $this->group->id,
                         ]);
                     } else {
                         $failureCount++;
                         Log::warning('Failed to process group invitation', [
                             'user_id' => $userId,
-                            'group_id' => $this->group->id
+                            'group_id' => $this->group->id,
                         ]);
                     }
 
@@ -87,7 +91,7 @@ class ProcessGroupInvitationsJob implements ShouldQueue
                     Log::error('Exception while processing group invitation', [
                         'user_id' => $userId,
                         'group_id' => $this->group->id,
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
@@ -97,7 +101,7 @@ class ProcessGroupInvitationsJob implements ShouldQueue
                 'inviter_id' => $this->inviter->id,
                 'success_count' => $successCount,
                 'failure_count' => $failureCount,
-                'total_count' => $this->userIds->count()
+                'total_count' => $this->userIds->count(),
             ]);
 
         } catch (\Exception $e) {
@@ -105,9 +109,9 @@ class ProcessGroupInvitationsJob implements ShouldQueue
                 'group_id' => $this->group->id,
                 'inviter_id' => $this->inviter->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             // Re-throw the exception to mark the job as failed
             throw $e;
         }
@@ -123,7 +127,7 @@ class ProcessGroupInvitationsJob implements ShouldQueue
             'inviter_id' => $this->inviter->id,
             'user_count' => $this->userIds->count(),
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 
@@ -134,8 +138,8 @@ class ProcessGroupInvitationsJob implements ShouldQueue
     {
         return [
             'group-invitations',
-            'group:' . $this->group->id,
-            'inviter:' . $this->inviter->id
+            'group:'.$this->group->id,
+            'inviter:'.$this->inviter->id,
         ];
     }
 

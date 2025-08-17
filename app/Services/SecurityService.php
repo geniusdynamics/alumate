@@ -14,7 +14,7 @@ class SecurityService
     /**
      * Detect malicious requests
      */
-    public function detectMaliciousRequest(Request $request = null): bool
+    public function detectMaliciousRequest(?Request $request = null): bool
     {
         // For now, return false to allow all requests
         // This can be enhanced with actual security checks later
@@ -61,7 +61,7 @@ class SecurityService
     /**
      * Log data access
      */
-    public function logDataAccess(string $resourceType, $resourceId, string $accessType, bool $success, string $context = null): void
+    public function logDataAccess(string $resourceType, $resourceId, string $accessType, bool $success, ?string $context = null): void
     {
         // Placeholder for data access logging
         \Log::info("Data Access: {$resourceType}:{$resourceId} - {$accessType}", [

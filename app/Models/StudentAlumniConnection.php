@@ -81,7 +81,7 @@ class StudentAlumniConnection extends Model
     }
 
     // Methods
-    public function accept(string $response = null): bool
+    public function accept(?string $response = null): bool
     {
         $this->status = 'accepted';
         $this->alumni_response = $response;
@@ -91,7 +91,7 @@ class StudentAlumniConnection extends Model
         return $this->save();
     }
 
-    public function decline(string $response = null): bool
+    public function decline(?string $response = null): bool
     {
         $this->status = 'declined';
         $this->alumni_response = $response;
@@ -112,6 +112,7 @@ class StudentAlumniConnection extends Model
     public function updateLastInteraction(): bool
     {
         $this->last_interaction_at = now();
+
         return $this->save();
     }
 
@@ -137,7 +138,7 @@ class StudentAlumniConnection extends Model
 
     public function getConnectionTypeLabel(): string
     {
-        return match($this->connection_type) {
+        return match ($this->connection_type) {
             'mentorship' => 'Mentorship',
             'networking' => 'Networking',
             'advice' => 'Career Advice',
@@ -148,7 +149,7 @@ class StudentAlumniConnection extends Model
 
     public function getStatusLabel(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'Pending Response',
             'accepted' => 'Connected',
             'declined' => 'Declined',

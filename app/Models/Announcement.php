@@ -46,11 +46,11 @@ class Announcement extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-                    ->where('published_at', '<=', now())
-                    ->where(function($q) {
-                        $q->whereNull('expires_at')
-                          ->orWhere('expires_at', '>', now());
-                    });
+            ->where('published_at', '<=', now())
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
     }
 
     public function scopePinned($query)
@@ -70,16 +70,16 @@ class Announcement extends Model
 
     public function scopeForUser($query, $user)
     {
-        return $query->where(function($q) use ($user) {
+        return $query->where(function ($q) use ($user) {
             $q->where('scope', 'all')
-              ->orWhere(function($scopeQuery) use ($user) {
-                  $scopeQuery->where('scope', 'role')
-                            ->whereJsonContains('target_audience', $user->roles->pluck('name')->toArray());
-              })
-              ->orWhere(function($scopeQuery) use ($user) {
-                  $scopeQuery->where('scope', 'institution')
-                            ->whereJsonContains('target_audience', $user->institution_id ?? 0);
-              });
+                ->orWhere(function ($scopeQuery) use ($user) {
+                    $scopeQuery->where('scope', 'role')
+                        ->whereJsonContains('target_audience', $user->roles->pluck('name')->toArray());
+                })
+                ->orWhere(function ($scopeQuery) use ($user) {
+                    $scopeQuery->where('scope', 'institution')
+                        ->whereJsonContains('target_audience', $user->institution_id ?? 0);
+                });
         });
     }
 

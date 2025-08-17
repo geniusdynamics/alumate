@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\SpeakerProfile;
-use App\Models\SpeakingEvent;
 use App\Models\SpeakerRequest;
+use App\Models\SpeakingEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -24,11 +24,11 @@ class SpeakerBureauController extends Controller
             $query->where(function ($q) use ($searchTerm) {
                 $q->whereHas('user', function ($userQuery) use ($searchTerm) {
                     $userQuery->where('name', 'like', "%{$searchTerm}%")
-                             ->orWhere('current_position', 'like', "%{$searchTerm}%")
-                             ->orWhere('current_company', 'like', "%{$searchTerm}%");
+                        ->orWhere('current_position', 'like', "%{$searchTerm}%")
+                        ->orWhere('current_company', 'like', "%{$searchTerm}%");
                 })
-                ->orWhere('bio', 'like', "%{$searchTerm}%")
-                ->orWhere('speaking_topics', 'like', "%{$searchTerm}%");
+                    ->orWhere('bio', 'like', "%{$searchTerm}%")
+                    ->orWhere('speaking_topics', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -80,11 +80,11 @@ class SpeakerBureauController extends Controller
                 break;
             case 'alphabetical':
                 $query->join('users', 'speaker_profiles.user_id', '=', 'users.id')
-                      ->orderBy('users.name', 'asc');
+                    ->orderBy('users.name', 'asc');
                 break;
             default: // relevance
                 $query->orderBy('average_rating', 'desc')
-                      ->orderBy('speaking_events_count', 'desc');
+                    ->orderBy('speaking_events_count', 'desc');
                 break;
         }
 
@@ -133,7 +133,7 @@ class SpeakerBureauController extends Controller
             'speakingTopics' => $speakingTopics,
             'industries' => $industries,
             'completedEvents' => $completedEvents,
-            'filters' => $request->only(['search', 'topic', 'industry', 'event_type', 'availability', 'sort'])
+            'filters' => $request->only(['search', 'topic', 'industry', 'event_type', 'availability', 'sort']),
         ]);
     }
 
@@ -154,11 +154,11 @@ class SpeakerBureauController extends Controller
                 ->where('status', 'confirmed')
                 ->orderBy('event_date', 'asc')
                 ->limit(3)
-                ->get()
+                ->get(),
         ]);
     }
 
-    public function request(Request $request, SpeakerProfile $speaker = null)
+    public function request(Request $request, ?SpeakerProfile $speaker = null)
     {
         if ($request->isMethod('post')) {
             $validated = $request->validate([
@@ -177,7 +177,7 @@ class SpeakerBureauController extends Controller
                 'contact_name' => 'required|string|max:255',
                 'contact_email' => 'required|email',
                 'contact_phone' => 'nullable|string|max:20',
-                'organization' => 'required|string|max:255'
+                'organization' => 'required|string|max:255',
             ]);
 
             $speakerRequest = SpeakerRequest::create([
@@ -198,7 +198,7 @@ class SpeakerBureauController extends Controller
                 'contact_email' => $validated['contact_email'],
                 'contact_phone' => $validated['contact_phone'],
                 'organization' => $validated['organization'],
-                'status' => 'pending'
+                'status' => 'pending',
             ]);
 
             // TODO: Send notification to speaker or admin
@@ -215,8 +215,8 @@ class SpeakerBureauController extends Controller
                 'workshop' => 'Workshop/Training',
                 'classroom' => 'Classroom Visit',
                 'career_fair' => 'Career Fair',
-                'networking' => 'Networking Event'
-            ]
+                'networking' => 'Networking Event',
+            ],
         ]);
     }
 
@@ -237,7 +237,7 @@ class SpeakerBureauController extends Controller
                 'sample_videos.*' => 'url',
                 'availability_notes' => 'nullable|string|max:500',
                 'fee_range' => 'nullable|string',
-                'special_requirements' => 'nullable|string|max:1000'
+                'special_requirements' => 'nullable|string|max:1000',
             ]);
 
             $user = Auth::user();
@@ -256,7 +256,7 @@ class SpeakerBureauController extends Controller
                 'special_requirements' => $validated['special_requirements'],
                 'status' => 'pending_review',
                 'is_available' => true,
-                'availability_status' => 'available'
+                'availability_status' => 'available',
             ]);
 
             return redirect()->route('speaker-bureau.index')
@@ -275,7 +275,7 @@ class SpeakerBureauController extends Controller
             ->paginate(12);
 
         return Inertia::render('SpeakerBureau/Events', [
-            'events' => $events
+            'events' => $events,
         ]);
     }
 }

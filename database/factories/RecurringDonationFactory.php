@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use App\Models\RecurringDonation;
 use App\Models\CampaignDonation;
 use App\Models\FundraisingCampaign;
+use App\Models\RecurringDonation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,7 +16,7 @@ class RecurringDonationFactory extends Factory
     {
         $frequency = $this->faker->randomElement(['monthly', 'quarterly', 'yearly']);
         $startDate = $this->faker->dateTimeBetween('-1 year', '-1 month');
-        
+
         return [
             'original_donation_id' => CampaignDonation::factory(),
             'campaign_id' => FundraisingCampaign::factory(),
@@ -100,7 +100,7 @@ class RecurringDonationFactory extends Factory
     private function calculateNextPaymentDate(\DateTime $startDate, string $frequency): string
     {
         $nextDate = clone $startDate;
-        
+
         return match ($frequency) {
             'monthly' => $nextDate->modify('+1 month')->format('Y-m-d'),
             'quarterly' => $nextDate->modify('+3 months')->format('Y-m-d'),
@@ -112,9 +112,9 @@ class RecurringDonationFactory extends Factory
     private function generatePaymentData(): array
     {
         return [
-            'stripe_customer_id' => 'cus_' . $this->faker->regexify('[a-zA-Z0-9]{14}'),
-            'stripe_subscription_id' => 'sub_' . $this->faker->regexify('[a-zA-Z0-9]{14}'),
-            'payment_method_id' => 'pm_' . $this->faker->regexify('[a-zA-Z0-9]{24}'),
+            'stripe_customer_id' => 'cus_'.$this->faker->regexify('[a-zA-Z0-9]{14}'),
+            'stripe_subscription_id' => 'sub_'.$this->faker->regexify('[a-zA-Z0-9]{14}'),
+            'payment_method_id' => 'pm_'.$this->faker->regexify('[a-zA-Z0-9]{24}'),
         ];
     }
 }

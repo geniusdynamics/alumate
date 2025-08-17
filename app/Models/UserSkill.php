@@ -61,10 +61,19 @@ class UserSkill extends Model
 
     public function getExperienceLevelAttribute()
     {
-        if ($this->years_experience < 1) return 'Entry Level';
-        if ($this->years_experience < 3) return 'Junior';
-        if ($this->years_experience < 5) return 'Mid Level';
-        if ($this->years_experience < 8) return 'Senior';
+        if ($this->years_experience < 1) {
+            return 'Entry Level';
+        }
+        if ($this->years_experience < 3) {
+            return 'Junior';
+        }
+        if ($this->years_experience < 5) {
+            return 'Mid Level';
+        }
+        if ($this->years_experience < 8) {
+            return 'Senior';
+        }
+
         return 'Expert';
     }
 }

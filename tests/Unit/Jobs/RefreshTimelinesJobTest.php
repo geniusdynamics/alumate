@@ -3,14 +3,14 @@
 namespace Tests\Unit\Jobs;
 
 use App\Jobs\RefreshTimelinesJob;
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
 use App\Services\TimelineService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class RefreshTimelinesJobTest extends TestCase
 {
@@ -21,7 +21,7 @@ class RefreshTimelinesJobTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->tenant = Tenant::factory()->create();
         Redis::flushall();
     }
@@ -34,8 +34,8 @@ class RefreshTimelinesJobTest extends TestCase
 
         $timelineService = Mockery::mock(TimelineService::class);
         $timelineService->shouldReceive('generateTimelineForUser')
-                       ->times(3)
-                       ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
+            ->times(3)
+            ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
 
         $this->app->instance(TimelineService::class, $timelineService);
 
@@ -51,19 +51,19 @@ class RefreshTimelinesJobTest extends TestCase
         // Create active users (updated within last 7 days)
         $activeUsers = User::factory()->count(2)->create([
             'tenant_id' => $this->tenant->id,
-            'updated_at' => now()->subDays(3)
+            'updated_at' => now()->subDays(3),
         ]);
 
         // Create inactive users (updated more than 7 days ago)
         $inactiveUsers = User::factory()->count(2)->create([
             'tenant_id' => $this->tenant->id,
-            'updated_at' => now()->subDays(10)
+            'updated_at' => now()->subDays(10),
         ]);
 
         $timelineService = Mockery::mock(TimelineService::class);
         $timelineService->shouldReceive('generateTimelineForUser')
-                       ->times(2) // Only active users
-                       ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
+            ->times(2) // Only active users
+            ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
 
         $this->app->instance(TimelineService::class, $timelineService);
 
@@ -80,12 +80,12 @@ class RefreshTimelinesJobTest extends TestCase
 
         $timelineService = Mockery::mock(TimelineService::class);
         $timelineService->shouldReceive('invalidateTimelineCache')
-                       ->once()
-                       ->with($user);
+            ->once()
+            ->with($user);
         $timelineService->shouldReceive('generateTimelineForUser')
-                       ->once()
-                       ->with($user)
-                       ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
+            ->once()
+            ->with($user)
+            ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
 
         $this->app->instance(TimelineService::class, $timelineService);
 
@@ -104,9 +104,9 @@ class RefreshTimelinesJobTest extends TestCase
         $timelineService = Mockery::mock(TimelineService::class);
         $timelineService->shouldNotReceive('invalidateTimelineCache');
         $timelineService->shouldReceive('generateTimelineForUser')
-                       ->once()
-                       ->with($user)
-                       ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
+            ->once()
+            ->with($user)
+            ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
 
         $this->app->instance(TimelineService::class, $timelineService);
 
@@ -121,19 +121,19 @@ class RefreshTimelinesJobTest extends TestCase
     public function it_logs_progress_and_completion()
     {
         Log::shouldReceive('info')
-           ->with('Starting timeline refresh', Mockery::type('array'))
-           ->once();
+            ->with('Starting timeline refresh', Mockery::type('array'))
+            ->once();
 
         Log::shouldReceive('info')
-           ->with('Timeline refresh completed', Mockery::type('array'))
-           ->once();
+            ->with('Timeline refresh completed', Mockery::type('array'))
+            ->once();
 
         $user = User::factory()->create(['tenant_id' => $this->tenant->id]);
 
         $timelineService = Mockery::mock(TimelineService::class);
         $timelineService->shouldReceive('generateTimelineForUser')
-                       ->once()
-                       ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
+            ->once()
+            ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
 
         $this->app->instance(TimelineService::class, $timelineService);
 
@@ -148,23 +148,23 @@ class RefreshTimelinesJobTest extends TestCase
         $userIds = $users->pluck('id')->toArray();
 
         $timelineService = Mockery::mock(TimelineService::class);
-        
+
         // First user succeeds
         $timelineService->shouldReceive('generateTimelineForUser')
-                       ->once()
-                       ->with($users[0])
-                       ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
-        
+            ->once()
+            ->with($users[0])
+            ->andReturn(['posts' => [], 'next_cursor' => null, 'has_more' => false]);
+
         // Second user fails
         $timelineService->shouldReceive('generateTimelineForUser')
-                       ->once()
-                       ->with($users[1])
-                       ->andThrow(new \Exception('Timeline generation failed'));
+            ->once()
+            ->with($users[1])
+            ->andThrow(new \Exception('Timeline generation failed'));
 
         Log::shouldReceive('info')->twice(); // Start and completion logs
         Log::shouldReceive('error')
-           ->with('Failed to refresh timeline for user', Mockery::type('array'))
-           ->once();
+            ->with('Failed to refresh timeline for user', Mockery::type('array'))
+            ->once();
 
         $this->app->instance(TimelineService::class, $timelineService);
 
@@ -180,15 +180,15 @@ class RefreshTimelinesJobTest extends TestCase
     {
         Log::shouldReceive('info')->once(); // Start log
         Log::shouldReceive('error')
-           ->with('Timeline refresh job failed', Mockery::type('array'))
-           ->once();
+            ->with('Timeline refresh job failed', Mockery::type('array'))
+            ->once();
 
         $timelineService = Mockery::mock(TimelineService::class);
 
         $this->app->instance(TimelineService::class, $timelineService);
 
         $job = new RefreshTimelinesJob([999]); // Non-existent user ID
-        
+
         $this->expectException(\Exception::class);
         $job->handle($timelineService);
     }

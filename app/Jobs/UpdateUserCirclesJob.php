@@ -32,17 +32,17 @@ class UpdateUserCirclesJob implements ShouldQueue
     {
         try {
             Log::info('Updating circles for user', ['user_id' => $this->user->id]);
-            
+
             $circleManager->updateCirclesForUser($this->user);
-            
+
             Log::info('Successfully updated circles for user', ['user_id' => $this->user->id]);
         } catch (\Exception $e) {
             Log::error('Failed to update circles for user', [
                 'user_id' => $this->user->id,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             // Re-throw the exception to mark the job as failed
             throw $e;
         }
@@ -56,7 +56,7 @@ class UpdateUserCirclesJob implements ShouldQueue
         Log::error('UpdateUserCirclesJob failed permanently', [
             'user_id' => $this->user->id,
             'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 
@@ -65,6 +65,6 @@ class UpdateUserCirclesJob implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['circles', 'user:' . $this->user->id];
+        return ['circles', 'user:'.$this->user->id];
     }
 }

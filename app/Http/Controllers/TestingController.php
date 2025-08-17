@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Tests\UserAcceptance\FeedbackCollector;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Tests\UserAcceptance\FeedbackCollector;
 
 class TestingController extends Controller
 {
@@ -13,7 +13,7 @@ class TestingController extends Controller
 
     public function __construct()
     {
-        $this->feedbackCollector = new FeedbackCollector();
+        $this->feedbackCollector = new FeedbackCollector;
     }
 
     /**
@@ -31,7 +31,7 @@ class TestingController extends Controller
     {
         try {
             $type = $request->input('type');
-            
+
             switch ($type) {
                 case 'general':
                     return $this->handleGeneralFeedback($request);
@@ -45,7 +45,8 @@ class TestingController extends Controller
                     return response()->json(['success' => false, 'message' => 'Invalid feedback type'], 400);
             }
         } catch (\Exception $e) {
-            Log::error('Feedback submission error: ' . $e->getMessage());
+            Log::error('Feedback submission error: '.$e->getMessage());
+
             return response()->json(['success' => false, 'message' => 'Server error occurred'], 500);
         }
     }
@@ -65,7 +66,7 @@ class TestingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -81,7 +82,7 @@ class TestingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Feedback submitted successfully',
-            'feedback_id' => $feedback['session_id']
+            'feedback_id' => $feedback['session_id'],
         ]);
     }
 
@@ -106,7 +107,7 @@ class TestingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -130,13 +131,13 @@ class TestingController extends Controller
         Log::warning('Bug report submitted', [
             'bug_id' => $bugReport['session_id'],
             'severity' => $bugData['severity'],
-            'title' => $bugData['title']
+            'title' => $bugData['title'],
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Bug report submitted successfully',
-            'bug_id' => $bugReport['session_id']
+            'bug_id' => $bugReport['session_id'],
         ]);
     }
 
@@ -163,7 +164,7 @@ class TestingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -187,13 +188,13 @@ class TestingController extends Controller
 
         Log::info('Usability feedback collected', [
             'feedback_id' => $usabilityFeedback['session_id'],
-            'overall_satisfaction' => $usabilityData['overall_satisfaction']
+            'overall_satisfaction' => $usabilityData['overall_satisfaction'],
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Usability feedback submitted successfully',
-            'feedback_id' => $usabilityFeedback['session_id']
+            'feedback_id' => $usabilityFeedback['session_id'],
         ]);
     }
 
@@ -217,7 +218,7 @@ class TestingController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -238,13 +239,13 @@ class TestingController extends Controller
 
         Log::info('Performance feedback collected', [
             'feedback_id' => $performanceFeedback['session_id'],
-            'response_time_rating' => $performanceData['response_time_rating']
+            'response_time_rating' => $performanceData['response_time_rating'],
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Performance feedback submitted successfully',
-            'feedback_id' => $performanceFeedback['session_id']
+            'feedback_id' => $performanceFeedback['session_id'],
         ]);
     }
 
@@ -254,6 +255,7 @@ class TestingController extends Controller
     public function getFeedbackSummary()
     {
         $summary = $this->feedbackCollector->getSessionSummary();
+
         return response()->json($summary);
     }
 
@@ -264,17 +266,18 @@ class TestingController extends Controller
     {
         try {
             $report = $this->feedbackCollector->generateFeedbackReport();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Feedback report generated successfully',
-                'report' => $report
+                'report' => $report,
             ]);
         } catch (\Exception $e) {
-            Log::error('Feedback report generation error: ' . $e->getMessage());
+            Log::error('Feedback report generation error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to generate feedback report'
+                'message' => 'Failed to generate feedback report',
             ], 500);
         }
     }
@@ -286,17 +289,18 @@ class TestingController extends Controller
     {
         try {
             $filename = $this->feedbackCollector->exportFeedbackToCsv();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Feedback exported to CSV successfully',
-                'filename' => $filename
+                'filename' => $filename,
             ]);
         } catch (\Exception $e) {
-            Log::error('Feedback CSV export error: ' . $e->getMessage());
+            Log::error('Feedback CSV export error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to export feedback to CSV'
+                'message' => 'Failed to export feedback to CSV',
             ], 500);
         }
     }

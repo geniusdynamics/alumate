@@ -34,7 +34,7 @@ class ProcessRecurringDonationsJob implements ShouldQueue
         foreach ($recurringDonations as $recurringDonation) {
             try {
                 $donation = $donationService->processRecurringPayment($recurringDonation);
-                
+
                 if ($donation) {
                     $processed++;
                     Log::info('Recurring donation processed successfully', [

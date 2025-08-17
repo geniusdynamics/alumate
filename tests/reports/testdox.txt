@@ -1,8 +1,6 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\DashboardIntegrationTest.php
- [ ] super admin dashboard loads
- [ ] institution admin dashboard loads
- [ ] employer dashboard loads
- [ ] graduate dashboard loads
- [ ] super admin analytics loads
- [ ] super admin reports loads
+D:\DevCenter\abuilds\alumate\tests\Feature\UserTestingServiceTest.php
+ [ ] `UserTestingService` → it can create a testing session
+ [ ] `UserTestingService` → it can record user feedback
+ [ ] `UserTestingService` → it can create an A/B test
+ [x] `UserTestingService` → it provides testing scenarios
 

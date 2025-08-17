@@ -4,33 +4,32 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Graduate;
+use App\Models\ImportHistory;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\User;
 use App\Models\Tenant;
-use App\Models\ImportHistory;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Stancl\Tenancy\Facades\Tenancy;
-use Carbon\Carbon;
 
 class InstitutionAdminDashboardController extends Controller
 {
     public function index()
     {
         $user = Auth::user();
-        
+
         // Get basic statistics
         $stats = $this->getBasicStats();
-        
+
         // Get recent activities
         $recentActivities = $this->getRecentActivities();
-        
+
         // Get employment statistics
         $employmentStats = $this->getEmploymentStats();
-        
+
         // Get course performance
         $coursePerformance = $this->getCoursePerformance();
 
@@ -64,7 +63,7 @@ class InstitutionAdminDashboardController extends Controller
     {
         $reportType = $request->get('type', 'employment');
         $dateRange = $request->get('date_range', '1_year');
-        
+
         $reports = [
             'employment' => $this->getEmploymentReport($dateRange),
             'course_performance' => $this->getCoursePerformanceReport($dateRange),
@@ -128,7 +127,7 @@ class InstitutionAdminDashboardController extends Controller
             'active_jobs' => 0, // TODO: Jobs are not directly linked to institutions
             'pending_applications' => 0, // TODO: Applications are not directly linked to institutions
             'staff_members' => User::where('institution_id', $institutionId)
-                ->whereHas('roles', function($query) {
+                ->whereHas('roles', function ($query) {
                     $query->whereIn('name', ['institution-admin', 'tutor']);
                 })->count(),
         ];
@@ -139,12 +138,12 @@ class InstitutionAdminDashboardController extends Controller
         $user = Auth::user();
         $activities = collect();
 
-        if (!$user->institution_id) {
+        if (! $user->institution_id) {
             return $activities;
         }
 
         $tenant = Tenant::find($user->institution_id);
-        if (!$tenant) {
+        if (! $tenant) {
             return $activities;
         }
 
@@ -158,6 +157,7 @@ class InstitutionAdminDashboardController extends Controller
                 ->get()
                 ->map(function ($graduate) {
                     $courseName = $graduate->course ? $graduate->course->name : 'Unknown Course';
+
                     return [
                         'type' => 'graduate_registered',
                         'message' => "New graduate {$graduate->name} registered for {$courseName}",
@@ -171,7 +171,7 @@ class InstitutionAdminDashboardController extends Controller
 
         // Get recent job applications from central database
         $recentApplications = JobApplication::with(['graduate', 'job'])
-            ->whereHas('graduate', function($q) use ($user) {
+            ->whereHas('graduate', function ($q) use ($user) {
                 $q->where('tenant_id', $user->institution_id);
             })
             ->orderBy('created_at', 'desc')
@@ -197,12 +197,12 @@ class InstitutionAdminDashboardController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->institution_id) {
+        if (! $user->institution_id) {
             return ['total' => 0, 'employed' => 0, 'unemployed' => 0, 'employment_rate' => 0];
         }
 
         $tenant = Tenant::find($user->institution_id);
-        if (!$tenant) {
+        if (! $tenant) {
             return ['total' => 0, 'employed' => 0, 'unemployed' => 0, 'employment_rate' => 0];
         }
 
@@ -232,21 +232,21 @@ class InstitutionAdminDashboardController extends Controller
             'graduates',
             'graduates as employed_count' => function ($query) {
                 $query->where('employment_status', 'employed');
-            }
+            },
         ])
-        ->get()
-        ->map(function ($course) {
-            $totalGraduates = $course->graduates_count;
-            $employedCount = $course->employed_count;
-            
-            return [
-                'id' => $course->id,
-                'name' => $course->name,
-                'total_graduates' => $totalGraduates,
-                'employed_graduates' => $employedCount,
-                'employment_rate' => $totalGraduates > 0 ? round(($employedCount / $totalGraduates) * 100, 1) : 0,
-            ];
-        });
+            ->get()
+            ->map(function ($course) {
+                $totalGraduates = $course->graduates_count;
+                $employedCount = $course->employed_count;
+
+                return [
+                    'id' => $course->id,
+                    'name' => $course->name,
+                    'total_graduates' => $totalGraduates,
+                    'employed_graduates' => $employedCount,
+                    'employment_rate' => $totalGraduates > 0 ? round(($employedCount / $totalGraduates) * 100, 1) : 0,
+                ];
+            });
     }
 
     private function getGraduatesByYear()
@@ -264,18 +264,18 @@ class InstitutionAdminDashboardController extends Controller
             'graduates',
             'graduates as employed_count' => function ($query) {
                 $query->where('employment_status', 'employed');
-            }
+            },
         ])
-        ->get()
-        ->map(function ($course) {
-            return [
-                'course' => $course->name,
-                'total' => $course->graduates_count,
-                'employed' => $course->employed_count,
-                'rate' => $course->graduates_count > 0 ? 
-                    round(($course->employed_count / $course->graduates_count) * 100, 1) : 0,
-            ];
-        });
+            ->get()
+            ->map(function ($course) {
+                return [
+                    'course' => $course->name,
+                    'total' => $course->graduates_count,
+                    'employed' => $course->employed_count,
+                    'rate' => $course->graduates_count > 0 ?
+                        round(($course->employed_count / $course->graduates_count) * 100, 1) : 0,
+                ];
+            });
     }
 
     private function getSalaryRanges()
@@ -285,10 +285,19 @@ class InstitutionAdminDashboardController extends Controller
             ->get()
             ->groupBy(function ($graduate) {
                 $salary = $graduate->current_salary;
-                if ($salary < 30000) return 'Under $30K';
-                if ($salary < 50000) return '$30K - $50K';
-                if ($salary < 75000) return '$50K - $75K';
-                if ($salary < 100000) return '$75K - $100K';
+                if ($salary < 30000) {
+                    return 'Under $30K';
+                }
+                if ($salary < 50000) {
+                    return '$30K - $50K';
+                }
+                if ($salary < 75000) {
+                    return '$50K - $75K';
+                }
+                if ($salary < 100000) {
+                    return '$75K - $100K';
+                }
+
                 return 'Over $100K';
             })
             ->map(function ($graduates, $range) {
@@ -322,20 +331,20 @@ class InstitutionAdminDashboardController extends Controller
         return Course::with(['graduates' => function ($query) {
             $query->select('course_id', 'employment_status');
         }])
-        ->get()
-        ->map(function ($course) {
-            $graduates = $course->graduates;
-            $total = $graduates->count();
-            
-            return [
-                'course' => $course->name,
-                'total_graduates' => $total,
-                'employed' => $graduates->where('employment_status.status', 'employed')->count(),
-                'unemployed' => $graduates->where('employment_status.status', 'unemployed')->count(),
-                'seeking' => $graduates->where('employment_status.status', 'seeking')->count(),
-                'average_salary' => $this->calculateAverageSalary($graduates),
-            ];
-        });
+            ->get()
+            ->map(function ($course) {
+                $graduates = $course->graduates;
+                $total = $graduates->count();
+
+                return [
+                    'course' => $course->name,
+                    'total_graduates' => $total,
+                    'employed' => $graduates->where('employment_status.status', 'employed')->count(),
+                    'unemployed' => $graduates->where('employment_status.status', 'unemployed')->count(),
+                    'seeking' => $graduates->where('employment_status.status', 'seeking')->count(),
+                    'average_salary' => $this->calculateAverageSalary($graduates),
+                ];
+            });
     }
 
     private function getJobApplicationTrends()
@@ -381,6 +390,7 @@ class InstitutionAdminDashboardController extends Controller
         // Convert salary ranges to midpoint values for calculation
         $salaryValues = $salaries->map(function ($graduate) {
             $range = $graduate->employment_status['salary_range'];
+
             return $this->getSalaryMidpoint($range);
         })->filter();
 
@@ -405,7 +415,7 @@ class InstitutionAdminDashboardController extends Controller
     private function getEmploymentReport($dateRange)
     {
         $startDate = $this->getStartDate($dateRange);
-        
+
         return [
             'title' => 'Employment Report',
             'period' => $dateRange,
@@ -426,7 +436,7 @@ class InstitutionAdminDashboardController extends Controller
     private function getCoursePerformanceReport($dateRange)
     {
         $startDate = $this->getStartDate($dateRange);
-        
+
         return [
             'title' => 'Course Performance Report',
             'period' => $dateRange,
@@ -437,25 +447,25 @@ class InstitutionAdminDashboardController extends Controller
                 'graduates as employed_count' => function ($query) use ($startDate) {
                     $query->where('created_at', '>=', $startDate)
                         ->where('employment_status', 'employed');
-                }
+                },
             ])
-            ->get()
-            ->map(function ($course) {
-                return [
-                    'course' => $course->name,
-                    'graduates' => $course->graduates_count,
-                    'employed' => $course->employed_count,
-                    'employment_rate' => $course->graduates_count > 0 ? 
-                        round(($course->employed_count / $course->graduates_count) * 100, 1) : 0,
-                ];
-            }),
+                ->get()
+                ->map(function ($course) {
+                    return [
+                        'course' => $course->name,
+                        'graduates' => $course->graduates_count,
+                        'employed' => $course->employed_count,
+                        'employment_rate' => $course->graduates_count > 0 ?
+                            round(($course->employed_count / $course->graduates_count) * 100, 1) : 0,
+                    ];
+                }),
         ];
     }
 
     private function getGraduateOutcomesReport($dateRange)
     {
         $startDate = $this->getStartDate($dateRange);
-        
+
         return [
             'title' => 'Graduate Outcomes Report',
             'period' => $dateRange,
@@ -478,7 +488,7 @@ class InstitutionAdminDashboardController extends Controller
     private function getJobPlacementReport($dateRange)
     {
         $startDate = $this->getStartDate($dateRange);
-        
+
         return [
             'title' => 'Job Placement Report',
             'period' => $dateRange,
@@ -502,7 +512,7 @@ class InstitutionAdminDashboardController extends Controller
     {
         $reportType = $request->get('type', 'employment');
         $dateRange = $request->get('date_range', '1_year');
-        
+
         $report = match ($reportType) {
             'employment' => $this->getEmploymentReport($dateRange),
             'course_performance' => $this->getCoursePerformanceReport($dateRange),
@@ -511,60 +521,60 @@ class InstitutionAdminDashboardController extends Controller
             default => $this->getEmploymentReport($dateRange),
         };
 
-        $filename = "institution_report_{$reportType}_{$dateRange}_" . now()->format('Y-m-d') . '.csv';
-        
+        $filename = "institution_report_{$reportType}_{$dateRange}_".now()->format('Y-m-d').'.csv';
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ];
 
-        $callback = function() use ($report, $reportType) {
+        $callback = function () use ($report, $reportType) {
             $file = fopen('php://output', 'w');
-            
+
             // Write headers based on report type
             switch ($reportType) {
                 case 'employment':
                     fputcsv($file, ['Status', 'Count', 'Percentage']);
                     foreach ($report['data'] as $item) {
-                        fputcsv($file, [$item['status'], $item['count'], $item['percentage'] . '%']);
+                        fputcsv($file, [$item['status'], $item['count'], $item['percentage'].'%']);
                     }
                     break;
-                    
+
                 case 'course_performance':
                     fputcsv($file, ['Course', 'Graduates', 'Employed', 'Employment Rate']);
                     foreach ($report['data'] as $item) {
-                        fputcsv($file, [$item['course'], $item['graduates'], $item['employed'], $item['employment_rate'] . '%']);
+                        fputcsv($file, [$item['course'], $item['graduates'], $item['employed'], $item['employment_rate'].'%']);
                     }
                     break;
-                    
+
                 case 'graduate_outcomes':
                     fputcsv($file, ['Name', 'Course', 'Graduation Date', 'Employment Status', 'Company', 'Position']);
                     foreach ($report['data'] as $item) {
                         fputcsv($file, [
-                            $item['name'], 
-                            $item['course'], 
-                            $item['graduation_date'], 
-                            $item['employment_status'], 
-                            $item['company'], 
-                            $item['position']
+                            $item['name'],
+                            $item['course'],
+                            $item['graduation_date'],
+                            $item['employment_status'],
+                            $item['company'],
+                            $item['position'],
                         ]);
                     }
                     break;
-                    
+
                 case 'job_placement':
                     fputcsv($file, ['Graduate', 'Course', 'Job Title', 'Company', 'Hired Date']);
                     foreach ($report['data'] as $item) {
                         fputcsv($file, [
-                            $item['graduate'], 
-                            $item['course'], 
-                            $item['job_title'], 
-                            $item['company'], 
-                            $item['hired_date']
+                            $item['graduate'],
+                            $item['course'],
+                            $item['job_title'],
+                            $item['company'],
+                            $item['hired_date'],
                         ]);
                     }
                     break;
             }
-            
+
             fclose($file);
         };
 

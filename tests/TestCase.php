@@ -2,15 +2,14 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use App\Models\User;
 use App\Models\Tenant;
-use Spatie\Permission\Models\Role;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -21,10 +20,10 @@ abstract class TestCase extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->setupDatabase();
         $this->setupRolesAndPermissions();
-        
+
         if ($this->tenancy) {
             $this->setupTenancy();
         }
@@ -32,12 +31,14 @@ abstract class TestCase extends BaseTestCase
 
     protected function setupDatabase(): void
     {
-        // Ensure we're using SQLite in memory for tests
-        config(['database.default' => 'sqlite']);
-        config(['database.connections.sqlite.database' => ':memory:']);
-        
-        // Run migrations
-        Artisan::call('migrate:fresh');
+        // Use PostgreSQL for tests since SQLite driver is not available
+        config(['database.default' => 'pgsql']);
+        config(['database.connections.pgsql.database' => 'laravel_test']);
+
+        // Only run migrations if not already run
+        if (!Schema::hasTable('migrations')) {
+            Artisan::call('migrate:fresh');
+        }
     }
 
     protected function setupRolesAndPermissions(): void
@@ -51,7 +52,7 @@ abstract class TestCase extends BaseTestCase
         // Create basic permissions
         $permissions = [
             'manage-institutions', 'manage-users', 'manage-graduates',
-            'manage-courses', 'post-jobs', 'view-applications', 'approve-employers'
+            'manage-courses', 'post-jobs', 'view-applications', 'approve-employers',
         ];
         foreach ($permissions as $permission) {
             Permission::firstOrCreate(['name' => $permission]);
@@ -67,7 +68,7 @@ abstract class TestCase extends BaseTestCase
             'address' => '123 Test Street',
             'contact_information' => ['email' => 'test@institution.edu'],
             'plan' => 'basic',
-            'status' => 'active'
+            'status' => 'active',
         ]);
 
         // Initialize tenant
@@ -78,6 +79,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = User::factory()->create($attributes);
         $user->assignRole($role);
+
         return $user;
     }
 
@@ -85,6 +87,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = $this->createUserWithRole('super-admin', $attributes);
         $this->actingAs($user);
+
         return $user;
     }
 
@@ -92,6 +95,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = $this->createUserWithRole('institution-admin', $attributes);
         $this->actingAs($user);
+
         return $user;
     }
 
@@ -99,6 +103,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = $this->createUserWithRole('employer', $attributes);
         $this->actingAs($user);
+
         return $user;
     }
 
@@ -106,6 +111,7 @@ abstract class TestCase extends BaseTestCase
     {
         $user = $this->createUserWithRole('graduate', $attributes);
         $this->actingAs($user);
+
         return $user;
     }
 
@@ -145,7 +151,7 @@ abstract class TestCase extends BaseTestCase
         if ($this->tenancy && tenancy()->initialized) {
             tenancy()->end();
         }
-        
+
         parent::tearDown();
     }
 }

@@ -2,28 +2,29 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
 use App\Models\SavedSearch;
 use App\Models\SearchAlert;
+use App\Models\User;
 use App\Services\ElasticsearchService;
 use Elasticsearch\Client;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 use Mockery;
+use Tests\TestCase;
 
 class ElasticsearchServiceTest extends TestCase
 {
     use RefreshDatabase;
 
     protected $elasticsearchClient;
+
     protected $elasticsearchService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->elasticsearchClient = Mockery::mock(Client::class);
-        
+
         // Mock the service with the mocked client
         $this->elasticsearchService = Mockery::mock(ElasticsearchService::class)->makePartial();
         $this->elasticsearchService->shouldAllowMockingProtectedMethods();
@@ -42,7 +43,7 @@ class ElasticsearchServiceTest extends TestCase
             'location' => 'San Francisco',
             'industry' => 'Technology',
             'graduation_year' => 2020,
-            'school' => 'Stanford University'
+            'school' => 'Stanford University',
         ]);
 
         $expectedDocument = [
@@ -57,7 +58,7 @@ class ElasticsearchServiceTest extends TestCase
             'school' => 'Stanford University',
             'created_at' => $user->created_at->toISOString(),
             'updated_at' => $user->updated_at->toISOString(),
-            'privacy_settings' => []
+            'privacy_settings' => [],
         ];
 
         $this->elasticsearchClient
@@ -71,7 +72,7 @@ class ElasticsearchServiceTest extends TestCase
             }))
             ->andReturn(['result' => 'created']);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $result = $service->indexUser($user);
 
         $this->assertTrue($result);
@@ -80,7 +81,7 @@ class ElasticsearchServiceTest extends TestCase
     public function test_index_user_respects_privacy_settings()
     {
         $user = User::factory()->create([
-            'privacy_settings' => ['searchable' => false]
+            'privacy_settings' => ['searchable' => false],
         ]);
 
         $this->elasticsearchClient
@@ -92,7 +93,7 @@ class ElasticsearchServiceTest extends TestCase
             }))
             ->andReturn(['result' => 'deleted']);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $result = $service->indexUser($user);
 
         $this->assertTrue($result);
@@ -104,7 +105,7 @@ class ElasticsearchServiceTest extends TestCase
         $filters = [
             'graduation_year' => ['min' => 2020, 'max' => 2023],
             'location' => 'San Francisco',
-            'industry' => ['Technology']
+            'industry' => ['Technology'],
         ];
 
         $expectedResponse = [
@@ -113,19 +114,19 @@ class ElasticsearchServiceTest extends TestCase
                     [
                         '_source' => ['id' => 1, 'name' => 'John Doe'],
                         '_score' => 1.5,
-                        'highlight' => ['name' => ['<mark>John</mark> Doe']]
-                    ]
+                        'highlight' => ['name' => ['<mark>John</mark> Doe']],
+                    ],
                 ],
-                'total' => ['value' => 1]
+                'total' => ['value' => 1],
             ],
             'aggregations' => [
                 'graduation_years' => [
                     'buckets' => [
                         ['key' => 2023, 'doc_count' => 5],
-                        ['key' => 2022, 'doc_count' => 8]
-                    ]
-                ]
-            ]
+                        ['key' => 2022, 'doc_count' => 8],
+                    ],
+                ],
+            ],
         ];
 
         $this->elasticsearchClient
@@ -133,19 +134,19 @@ class ElasticsearchServiceTest extends TestCase
             ->once()
             ->with(Mockery::on(function ($params) use ($query) {
                 $body = $params['body'];
-                
+
                 // Check if multi_match query is present
                 $hasMultiMatch = isset($body['query']['bool']['must'][0]['multi_match']);
                 $queryMatches = $hasMultiMatch && $body['query']['bool']['must'][0]['multi_match']['query'] === $query;
-                
+
                 // Check if filters are applied
                 $hasFilters = isset($body['query']['bool']['filter']) && count($body['query']['bool']['filter']) > 0;
-                
+
                 return $queryMatches && $hasFilters;
             }))
             ->andReturn($expectedResponse);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $result = $service->searchUsers($query, $filters);
 
         $this->assertIsArray($result);
@@ -157,25 +158,25 @@ class ElasticsearchServiceTest extends TestCase
     public function test_suggest_users_returns_formatted_suggestions()
     {
         $partialQuery = 'joh';
-        
+
         $expectedResponse = [
             'suggest' => [
                 'name_suggest' => [
                     [
                         'options' => [
                             ['text' => 'John Doe', '_score' => 0.9],
-                            ['text' => 'John Smith', '_score' => 0.8]
-                        ]
-                    ]
+                            ['text' => 'John Smith', '_score' => 0.8],
+                        ],
+                    ],
                 ],
                 'company_suggest' => [
                     [
                         'options' => [
-                            ['text' => 'Johnson & Co', '_score' => 0.7]
-                        ]
-                    ]
-                ]
-            ]
+                            ['text' => 'Johnson & Co', '_score' => 0.7],
+                        ],
+                    ],
+                ],
+            ],
         ];
 
         $this->elasticsearchClient
@@ -187,7 +188,7 @@ class ElasticsearchServiceTest extends TestCase
             }))
             ->andReturn($expectedResponse);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $result = $service->suggestUsers($partialQuery);
 
         $this->assertIsArray($result);
@@ -208,7 +209,7 @@ class ElasticsearchServiceTest extends TestCase
             ->once()
             ->andReturn(['hits' => ['total' => ['value' => 25]]]);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $savedSearch = $service->saveSearch($user, $query, $filters);
 
         $this->assertInstanceOf(SavedSearch::class, $savedSearch);
@@ -223,7 +224,7 @@ class ElasticsearchServiceTest extends TestCase
         $user = User::factory()->create();
         $savedSearch = SavedSearch::factory()->create(['user_id' => $user->id]);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $alert = $service->createSearchAlert($user, $savedSearch->id);
 
         $this->assertInstanceOf(SearchAlert::class, $alert);
@@ -245,7 +246,7 @@ class ElasticsearchServiceTest extends TestCase
             ->once()
             ->with(Mockery::on(function ($params) {
                 $mapping = $params['body']['mappings'];
-                
+
                 // Check if essential fields are mapped correctly
                 return isset($mapping['properties']['name']['type']) &&
                        $mapping['properties']['name']['type'] === 'text' &&
@@ -261,7 +262,7 @@ class ElasticsearchServiceTest extends TestCase
             ->twice()
             ->andReturn($indices);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $result = $service->createIndex();
 
         $this->assertTrue($result);
@@ -276,11 +277,11 @@ class ElasticsearchServiceTest extends TestCase
             ->once()
             ->with([
                 'index' => config('elasticsearch.indices.alumni.name'),
-                'id' => $user->id
+                'id' => $user->id,
             ])
             ->andReturn(['result' => 'deleted']);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $result = $service->removeUser($user);
 
         $this->assertTrue($result);
@@ -299,7 +300,7 @@ class ElasticsearchServiceTest extends TestCase
             }))
             ->andReturn(['hits' => ['total' => ['value' => 42]]]);
 
-        $service = new ElasticsearchService();
+        $service = new ElasticsearchService;
         $count = $service->getSearchResultCount($query, $filters);
 
         $this->assertEquals(42, $count);

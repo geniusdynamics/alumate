@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Carbon\Carbon;
 
 class AnalyticsSnapshot extends Model
 {
@@ -62,7 +62,7 @@ class AnalyticsSnapshot extends Model
     public static function getTrendData($type, $days = 30)
     {
         $startDate = Carbon::now()->subDays($days);
-        
+
         return static::where('type', $type)
             ->where('snapshot_date', '>=', $startDate)
             ->orderBy('snapshot_date')

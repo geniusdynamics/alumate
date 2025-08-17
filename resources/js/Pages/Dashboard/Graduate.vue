@@ -1,5 +1,6 @@
 <script setup>
 import AppLayout from '@/layouts/AppLayout.vue';
+import UserDashboardIntegration from '@/components/UserDashboardIntegration.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
@@ -50,12 +51,12 @@ const profileCompletionColor = computed(() => {
 });
 
 const quickActions = [
-    { name: 'Browse Jobs', href: 'graduate.jobs', icon: 'search', color: 'bg-indigo-600 hover:bg-indigo-700' },
-    { name: 'My Applications', href: 'graduate.applications', icon: 'document-text', color: 'bg-green-600 hover:bg-green-700' },
-    { name: 'Update Profile', href: 'graduate.profile', icon: 'user', color: 'bg-purple-600 hover:bg-purple-700' },
-    { name: 'Connect with Classmates', href: 'graduate.classmates', icon: 'users', color: 'bg-blue-600 hover:bg-blue-700' },
-    { name: 'Career Progress', href: 'graduate.career', icon: 'chart', color: 'bg-yellow-600 hover:bg-yellow-700' },
-    { name: 'Get Assistance', href: 'graduate.assistance', icon: 'support', color: 'bg-pink-600 hover:bg-pink-700' },
+    { name: 'Social Timeline', href: 'social.timeline', icon: 'chat', color: 'bg-indigo-600 hover:bg-indigo-700' },
+    { name: 'Alumni Directory', href: 'alumni.directory', icon: 'users', color: 'bg-blue-600 hover:bg-blue-700' },
+    { name: 'Job Dashboard', href: 'jobs.dashboard', icon: 'briefcase', color: 'bg-green-600 hover:bg-green-700' },
+    { name: 'Career Timeline', href: 'career.timeline', icon: 'chart', color: 'bg-purple-600 hover:bg-purple-700' },
+    { name: 'Mentorship Hub', href: 'career.mentorship-hub', icon: 'academic-cap', color: 'bg-yellow-600 hover:bg-yellow-700' },
+    { name: 'Events Discovery', href: 'events.discovery', icon: 'calendar', color: 'bg-pink-600 hover:bg-pink-700' },
 ];
 
 const applyToJob = (job) => {
@@ -91,6 +92,9 @@ const applyToJob = (job) => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                 
+                <!-- User Dashboard Integration -->
+                <UserDashboardIntegration :dashboard-data="{ statistics, recentActivities, jobRecommendations, classmateConnections }" />
+                
                 <!-- Profile Completion Alert -->
                 <div v-if="statistics.profile_completion < 100" class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
                     <div class="flex">
@@ -122,12 +126,12 @@ const applyToJob = (job) => {
                         <div>
                             <span class="rounded-lg inline-flex p-3 bg-white bg-opacity-20">
                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path v-if="action.icon === 'search'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    <path v-else-if="action.icon === 'document-text'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    <path v-else-if="action.icon === 'user'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    <path v-if="action.icon === 'chat'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                                     <path v-else-if="action.icon === 'users'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                    <path v-else-if="action.icon === 'briefcase'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                     <path v-else-if="action.icon === 'chart'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    <path v-else-if="action.icon === 'support'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z" />
+                                    <path v-else-if="action.icon === 'academic-cap'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                                    <path v-else-if="action.icon === 'calendar'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </span>
                         </div>

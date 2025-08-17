@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use App\Models\User;
+use Illuminate\Console\Command;
 
 class CheckUserRoles extends Command
 {
@@ -29,43 +29,44 @@ class CheckUserRoles extends Command
         $email = $this->argument('email');
 
         // Show all available roles first
-        $this->info("=== Available Roles ===");
+        $this->info('=== Available Roles ===');
         $allRoles = \Spatie\Permission\Models\Role::all();
         foreach ($allRoles as $role) {
             $this->line("- {$role->name}");
         }
-        $this->line("");
+        $this->line('');
 
         $user = User::where('email', $email)->first();
 
-        if (!$user) {
+        if (! $user) {
             $this->error("User with email {$email} not found");
+
             return;
         }
 
-        $this->info("=== User Details ===");
+        $this->info('=== User Details ===');
         $this->info("User found: {$user->name}");
         $this->info("Email: {$user->email}");
-        $this->info("Institution ID: " . ($user->institution_id ?? 'None'));
+        $this->info('Institution ID: '.($user->institution_id ?? 'None'));
 
         $roles = $user->roles->pluck('name')->toArray();
         if (empty($roles)) {
-            $this->warn("No roles assigned to this user");
+            $this->warn('No roles assigned to this user');
         } else {
-            $this->info("Roles: " . implode(', ', $roles));
+            $this->info('Roles: '.implode(', ', $roles));
         }
 
         $permissions = $user->getAllPermissions()->pluck('name')->toArray();
         if (empty($permissions)) {
-            $this->warn("No permissions assigned to this user");
+            $this->warn('No permissions assigned to this user');
         } else {
-            $this->info("Permissions: " . implode(', ', $permissions));
+            $this->info('Permissions: '.implode(', ', $permissions));
         }
 
         // Test role check
-        $this->line("");
-        $this->info("=== Role Checks ===");
-        $this->info("Has 'institution-admin' role: " . ($user->hasRole('institution-admin') ? 'YES' : 'NO'));
-        $this->info("Has 'institution_admin' role: " . ($user->hasRole('institution_admin') ? 'YES' : 'NO'));
+        $this->line('');
+        $this->info('=== Role Checks ===');
+        $this->info("Has 'institution-admin' role: ".($user->hasRole('institution-admin') ? 'YES' : 'NO'));
+        $this->info("Has 'institution_admin' role: ".($user->hasRole('institution_admin') ? 'YES' : 'NO'));
     }
 }

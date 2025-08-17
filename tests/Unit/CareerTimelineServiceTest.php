@@ -2,13 +2,13 @@
 
 namespace Tests\Unit;
 
-use App\Models\User;
-use App\Models\CareerTimeline;
 use App\Models\CareerMilestone;
+use App\Models\CareerTimeline;
+use App\Models\User;
 use App\Services\CareerTimelineService;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Carbon\Carbon;
 
 class CareerTimelineServiceTest extends TestCase
 {
@@ -20,7 +20,7 @@ class CareerTimelineServiceTest extends TestCase
     {
         parent::setUp();
         $this->artisan('migrate');
-        $this->service = new CareerTimelineService();
+        $this->service = new CareerTimelineService;
     }
 
     public function test_get_timeline_for_user_returns_correct_structure()
@@ -79,7 +79,7 @@ class CareerTimelineServiceTest extends TestCase
             'achievements' => ['Built API', 'Led team'],
             'location' => 'San Francisco, CA',
             'industry' => 'Technology',
-            'employment_type' => 'full-time'
+            'employment_type' => 'full-time',
         ];
 
         $entry = $this->service->addCareerEntry($data, $user);
@@ -103,7 +103,7 @@ class CareerTimelineServiceTest extends TestCase
             'company' => 'New Corp',
             'title' => 'Senior Engineer',
             'start_date' => '2024-01-01',
-            'is_current' => true
+            'is_current' => true,
         ];
 
         $newEntry = $this->service->addCareerEntry($data, $user);
@@ -123,7 +123,7 @@ class CareerTimelineServiceTest extends TestCase
             'company' => 'Tech Corp',
             'title' => 'Engineer',
             'start_date' => '2023-12-31',
-            'end_date' => '2023-01-01' // End before start
+            'end_date' => '2023-01-01', // End before start
         ];
 
         $this->expectException(\InvalidArgumentException::class);
@@ -139,7 +139,7 @@ class CareerTimelineServiceTest extends TestCase
         $data = [
             'company' => 'Tech Corp',
             'title' => 'Engineer',
-            'start_date' => now()->addYear()->format('Y-m-d')
+            'start_date' => now()->addYear()->format('Y-m-d'),
         ];
 
         $this->expectException(\InvalidArgumentException::class);
@@ -155,7 +155,7 @@ class CareerTimelineServiceTest extends TestCase
 
         $updateData = [
             'title' => 'Senior Software Engineer',
-            'description' => 'Updated description'
+            'description' => 'Updated description',
         ];
 
         $updatedEntry = $this->service->updateCareerEntry($entry->id, $updateData, $user);
@@ -194,7 +194,7 @@ class CareerTimelineServiceTest extends TestCase
             'date' => '2023-06-01',
             'visibility' => CareerMilestone::VISIBILITY_PUBLIC,
             'company' => 'Tech Corp',
-            'is_featured' => true
+            'is_featured' => true,
         ];
 
         $milestone = $this->service->addMilestone($data, $user);
@@ -216,7 +216,7 @@ class CareerTimelineServiceTest extends TestCase
             'company' => 'Company A',
             'start_date' => Carbon::parse('2020-01-01'),
             'end_date' => Carbon::parse('2021-12-31'),
-            'is_current' => false
+            'is_current' => false,
         ]);
 
         CareerTimeline::factory()->create([
@@ -224,7 +224,7 @@ class CareerTimelineServiceTest extends TestCase
             'company' => 'Company B',
             'start_date' => Carbon::parse('2022-01-01'),
             'end_date' => null,
-            'is_current' => true
+            'is_current' => true,
         ]);
 
         $progression = $this->service->calculateCareerProgression($user);
@@ -264,7 +264,7 @@ class CareerTimelineServiceTest extends TestCase
         CareerTimeline::factory()->create([
             'user_id' => $user->id,
             'start_date' => Carbon::parse('2023-06-01'),
-            'is_current' => true
+            'is_current' => true,
         ]);
 
         $suggestions = $this->service->suggestCareerGoals($user);
@@ -286,7 +286,7 @@ class CareerTimelineServiceTest extends TestCase
         CareerTimeline::factory()->create([
             'user_id' => $user->id,
             'start_date' => Carbon::parse('2018-01-01'),
-            'is_current' => true
+            'is_current' => true,
         ]);
 
         $suggestions = $this->service->suggestCareerGoals($user);
@@ -308,7 +308,7 @@ class CareerTimelineServiceTest extends TestCase
         CareerTimeline::factory()->create([
             'user_id' => $user->id,
             'start_date' => Carbon::parse('2021-01-01'),
-            'is_current' => true
+            'is_current' => true,
         ]);
 
         $suggestions = $this->service->suggestCareerGoals($user);
@@ -326,13 +326,13 @@ class CareerTimelineServiceTest extends TestCase
         // Create career entry
         CareerTimeline::factory()->create([
             'user_id' => $user->id,
-            'start_date' => Carbon::parse('2023-01-01')
+            'start_date' => Carbon::parse('2023-01-01'),
         ]);
 
         // Create milestone
         CareerMilestone::factory()->create([
             'user_id' => $user->id,
-            'date' => Carbon::parse('2023-06-01')
+            'date' => Carbon::parse('2023-06-01'),
         ]);
 
         $result = $this->service->getTimelineForUser($user);
@@ -372,7 +372,7 @@ class CareerTimelineServiceTest extends TestCase
             'company' => 'Old Company',
             'start_date' => Carbon::parse('2022-01-01'),
             'end_date' => Carbon::parse('2023-12-31'),
-            'is_current' => false
+            'is_current' => false,
         ]);
 
         // Add new job - should auto-create milestone
@@ -380,7 +380,7 @@ class CareerTimelineServiceTest extends TestCase
             'company' => 'New Company',
             'title' => 'Senior Engineer',
             'start_date' => '2024-01-01',
-            'is_current' => true
+            'is_current' => true,
         ];
 
         $this->service->addCareerEntry($data, $user);
@@ -405,7 +405,7 @@ class CareerTimelineServiceTest extends TestCase
             'title' => 'Junior Engineer',
             'start_date' => Carbon::parse('2022-01-01'),
             'end_date' => Carbon::parse('2023-12-31'),
-            'is_current' => false
+            'is_current' => false,
         ]);
 
         // Add promotion at same company
@@ -413,7 +413,7 @@ class CareerTimelineServiceTest extends TestCase
             'company' => 'Tech Corp',
             'title' => 'Senior Engineer',
             'start_date' => '2024-01-01',
-            'is_current' => true
+            'is_current' => true,
         ];
 
         $this->service->addCareerEntry($data, $user);

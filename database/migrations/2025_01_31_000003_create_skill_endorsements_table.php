@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignId('endorser_id')->constrained('users')->onDelete('cascade');
             $table->text('message')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['user_skill_id', 'endorser_id']);
             $table->index('endorser_id');
         });

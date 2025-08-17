@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Employer extends Model
 {
@@ -49,7 +49,6 @@ class Employer extends Model
         'job_posting_limit',
         'jobs_posted_this_month',
         'is_active',
-        'can_post_jobs',
         'can_search_graduates',
         'notification_preferences',
         'terms_accepted',
@@ -60,6 +59,8 @@ class Employer extends Model
         'last_job_posted_at',
         'profile_completed_at',
     ];
+
+    protected $appends = ['can_post_jobs'];
 
     protected $casts = [
         'approved' => 'boolean',
@@ -81,7 +82,6 @@ class Employer extends Model
         'job_posting_limit' => 'integer',
         'jobs_posted_this_month' => 'integer',
         'is_active' => 'boolean',
-        'can_post_jobs' => 'boolean',
         'can_search_graduates' => 'boolean',
         'notification_preferences' => 'array',
         'terms_accepted' => 'boolean',
@@ -145,6 +145,53 @@ class Employer extends Model
         );
     }
 
+    /**
+     * Get the can_post_jobs attribute based on subscription/plan logic.
+     * This accessor returns a boolean based on the employer's status and subscription.
+     */
+    public function getCanPostJobsAttribute(): bool
+    {
+        // Check if employer is active and verified
+        if (! $this->is_active || $this->verification_status !== 'verified') {
+            return false;
+        }
+
+        // Check if the database field can_post_jobs is set (subscription level check)
+        if (! $this->attributes['can_post_jobs'] ?? false) {
+            return false;
+        }
+
+        // Check subscription plan limits
+        if ($this->subscription_plan) {
+            // Basic plan has limited job postings
+            if ($this->subscription_plan === 'basic' && $this->jobs_posted_this_month >= 5) {
+                return false;
+            }
+
+            // Premium plan has higher limits
+            if ($this->subscription_plan === 'premium' && $this->jobs_posted_this_month >= 50) {
+                return false;
+            }
+
+            // Enterprise plan has unlimited postings (within reasonable limits)
+            if ($this->subscription_plan === 'enterprise' && $this->jobs_posted_this_month >= 1000) {
+                return false;
+            }
+        }
+
+        // Check if subscription is expired
+        if ($this->subscription_expires_at && $this->subscription_expires_at->isPast()) {
+            return false;
+        }
+
+        // Check monthly job posting limit
+        if ($this->job_posting_limit && $this->jobs_posted_this_month >= $this->job_posting_limit) {
+            return false;
+        }
+
+        return true;
+    }
+
     // Scopes
     public function scopeVerified($query)
     {
@@ -169,8 +216,8 @@ class Employer extends Model
     public function scopeCanPostJobs($query)
     {
         return $query->where('can_post_jobs', true)
-                    ->where('is_active', true)
-                    ->where('verification_status', 'verified');
+            ->where('is_active', true)
+            ->where('verification_status', 'verified');
     }
 
     public function scopeByIndustry($query, $industry)
@@ -296,12 +343,12 @@ class Employer extends Model
     {
         $requiredFields = [
             'company_name', 'company_address', 'company_phone', 'industry',
-            'company_description', 'contact_person_name', 'contact_person_email'
+            'company_description', 'contact_person_name', 'contact_person_email',
         ];
 
         $completedFields = 0;
         foreach ($requiredFields as $field) {
-            if (!empty($this->$field)) {
+            if (! empty($this->$field)) {
                 $completedFields++;
             }
         }
@@ -319,11 +366,11 @@ class Employer extends Model
     public function getActiveJobs($limit = null)
     {
         $query = $this->jobs()->active()->orderBy('created_at', 'desc');
-        
+
         if ($limit) {
             $query->limit($limit);
         }
-        
+
         return $query->get();
     }
 
@@ -332,14 +379,14 @@ class Employer extends Model
         return JobApplication::whereHas('job', function ($query) {
             $query->where('employer_id', $this->id);
         })
-        ->orderBy('created_at', 'desc')
-        ->limit($limit)
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get();
     }
 
     public function canPostMoreJobs()
     {
-        return $this->canPostJobs && !$this->hasReachedJobLimit;
+        return $this->canPostJobs && ! $this->hasReachedJobLimit;
     }
 
     public function getRemainingJobPosts()

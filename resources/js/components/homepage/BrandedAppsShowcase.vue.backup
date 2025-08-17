@@ -1,0 +1,503 @@
+﻿<template>
+  <section class="branded-apps-showcase" data-testid="branded-apps-showcase">
+    <div class="container mx-auto px-4">
+      <!-- Section Header -->
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-bold text-gray-900 mb-4">
+          Custom Branded Mobile Apps
+        </h2>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Engage your alumni community with fully customized mobile applications featuring your institution's branding, 
+          available on both App Store and Google Play.
+        </p>
+      </div>
+
+      <!-- Featured Apps Grid -->
+      <div class="mb-16">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-8 text-center">
+          Featured Branded Apps
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div 
+            v-for="app in featuredApps" 
+            :key="app.id"
+            class="branded-app-card bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+            data-testid="branded-app-card"
+          >
+            <!-- App Header -->
+            <div class="p-6 border-b border-gray-100">
+              <div class="flex items-center space-x-4 mb-4">
+                <img 
+                  :src="app.logo" 
+                  :alt="`${app.institutionName} logo`"
+                  class="w-12 h-12 rounded-lg object-cover"
+                />
+                <div>
+                  <h4 class="font-semibold text-gray-900">{{ app.institutionName }}</h4>
+                  <p class="text-sm text-gray-500 capitalize">{{ app.institutionType }}</p>
+                </div>
+              </div>
+              
+              <!-- App Store Links -->
+              <div class="flex space-x-3">
+                <a 
+                  v-if="app.appStoreUrl"
+                  :href="app.appStoreUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center px-3 py-2 bg-black text-white text-xs rounded-lg hover:bg-gray-800 transition-colors"
+                  @click="trackAppStoreClick(app.id, 'ios')"
+                >
+                  <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                  </svg>
+                  App Store
+                </a>
+                <a 
+                  v-if="app.playStoreUrl"
+                  :href="app.playStoreUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center px-3 py-2 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition-colors"
+                  @click="trackAppStoreClick(app.id, 'android')"
+                >
+                  <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                  </svg>
+                  Google Play
+                </a>
+              </div>
+            </div>
+
+            <!-- App Screenshots -->
+            <div class="p-6">
+              <div class="mb-4">
+                <h5 class="font-medium text-gray-900 mb-3">App Screenshots</h5>
+                <div class="grid grid-cols-3 gap-2">
+                  <div 
+                    v-for="(screenshot, index) in app.screenshots.slice(0, 3)" 
+                    :key="screenshot.id"
+                    class="relative cursor-pointer group"
+                    @click="openScreenshotModal(app, index)"
+                  >
+                    <img 
+                      :src="screenshot.url" 
+                      :alt="screenshot.title"
+                      class="w-full h-24 object-cover rounded-lg group-hover:opacity-80 transition-opacity"
+                    />
+                    <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all flex items-center justify-center">
+                      <svg class="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Engagement Stats -->
+              <div class="mb-4">
+                <h5 class="font-medium text-gray-900 mb-3">Key Metrics</h5>
+                <div class="grid grid-cols-2 gap-4">
+                  <div 
+                    v-for="stat in app.engagementStats.slice(0, 2)" 
+                    :key="stat.metric"
+                    class="text-center p-3 bg-gray-50 rounded-lg"
+                  >
+                    <div class="text-lg font-semibold text-gray-900">
+                      {{ formatMetricValue(stat.value, stat.unit) }}
+                    </div>
+                    <div class="text-xs text-gray-600 capitalize">
+                      {{ stat.metric.replace('_', ' ') }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- User Count -->
+              <div class="text-center pt-4 border-t border-gray-100">
+                <span class="text-sm text-gray-600">
+                  <strong>{{ formatNumber(app.userCount) }}</strong> active alumni users
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customization Options -->
+      <div class="mb-16">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-8 text-center">
+          Customization Options
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div 
+            v-for="option in customizationOptions" 
+            :key="option.id"
+            class="customization-card bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
+            data-testid="customization-option"
+          >
+            <div class="mb-4">
+              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-3">
+                <component :is="getCategoryIcon(option.category)" class="w-6 h-6 text-blue-600" />
+              </div>
+              <h4 class="font-semibold text-gray-900 capitalize">{{ option.category }}</h4>
+              <p class="text-sm text-gray-600 mt-1">{{ option.description }}</p>
+            </div>
+            
+            <div class="space-y-2">
+              <div 
+                v-for="detail in option.options.slice(0, 3)" 
+                :key="detail.id"
+                class="flex items-center text-sm text-gray-700"
+              >
+                <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                {{ detail.name }}
+              </div>
+              <div v-if="option.options.length > 3" class="text-xs text-gray-500">
+                +{{ option.options.length - 3 }} more options
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- App Store Integration -->
+      <div class="mb-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-8">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-6 text-center">
+          App Store Integration
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="integration-feature text-center">
+            <div class="w-16 h-16 bg-black rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+            </div>
+            <h4 class="font-semibold text-gray-900 mb-2">Apple App Store</h4>
+            <p class="text-sm text-gray-600">Full App Store optimization with your institution's branding and metadata</p>
+          </div>
+          
+          <div class="integration-feature text-center">
+            <div class="w-16 h-16 bg-green-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.61 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+              </svg>
+            </div>
+            <h4 class="font-semibold text-gray-900 mb-2">Google Play Store</h4>
+            <p class="text-sm text-gray-600">Complete Google Play integration with custom store listings and ASO</p>
+          </div>
+          
+          <div class="integration-feature text-center">
+            <div class="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"/>
+              </svg>
+            </div>
+            <h4 class="font-semibold text-gray-900 mb-2">White Label Solution</h4>
+            <p class="text-sm text-gray-600">Complete white-label branding with your institution's identity throughout</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Development Timeline -->
+      <div class="mb-16">
+        <h3 class="text-2xl font-semibold text-gray-900 mb-8 text-center">
+          Development Timeline & Process
+        </h3>
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <div class="mb-6 text-center">
+            <div class="inline-flex items-center space-x-4 text-sm text-gray-600">
+              <span><strong>Total Duration:</strong> {{ developmentTimeline.totalDuration }}</span>
+              <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+              <span><strong>Estimated Cost:</strong> {{ developmentTimeline.estimatedCost }}</span>
+              <span class="w-1 h-1 bg-gray-400 rounded-full"></span>
+              <span><strong>Maintenance:</strong> {{ developmentTimeline.maintenanceCost }}</span>
+            </div>
+          </div>
+          
+          <div class="relative">
+            <!-- Timeline Line -->
+            <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200"></div>
+            
+            <div class="space-y-8">
+              <div 
+                v-for="(phase, index) in developmentTimeline.phases" 
+                :key="phase.id"
+                class="relative flex items-start"
+                data-testid="development-phase"
+              >
+                <!-- Timeline Dot -->
+                <div class="flex-shrink-0 w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white font-semibold text-lg relative z-10">
+                  {{ index + 1 }}
+                </div>
+                
+                <!-- Phase Content -->
+                <div class="ml-6 flex-1">
+                  <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-center justify-between mb-3">
+                      <h4 class="text-lg font-semibold text-gray-900">{{ phase.name }}</h4>
+                      <span class="text-sm text-gray-500 bg-white px-3 py-1 rounded-full">{{ phase.duration }}</span>
+                    </div>
+                    <p class="text-gray-600 mb-4">{{ phase.description }}</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h5 class="font-medium text-gray-900 mb-2">Deliverables</h5>
+                        <ul class="space-y-1">
+                          <li 
+                            v-for="deliverable in phase.deliverables" 
+                            :key="deliverable"
+                            class="text-sm text-gray-600 flex items-center"
+                          >
+                            <svg class="w-3 h-3 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            {{ deliverable }}
+                          </li>
+                        </ul>
+                      </div>
+                      
+                      <div>
+                        <h5 class="font-medium text-gray-900 mb-2">Key Milestones</h5>
+                        <ul class="space-y-1">
+                          <li 
+                            v-for="milestone in phase.milestones.slice(0, 3)" 
+                            :key="milestone.id"
+                            class="text-sm text-gray-600 flex items-center"
+                          >
+                            <div class="w-2 h-2 bg-blue-400 rounded-full mr-2 flex-shrink-0"></div>
+                            {{ milestone.name }}
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="text-center bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
+        <h3 class="text-2xl font-bold mb-4">Ready to Launch Your Branded App?</h3>
+        <p class="text-blue-100 mb-6 max-w-2xl mx-auto">
+          Join leading institutions who have transformed their alumni engagement with custom mobile applications. 
+          Schedule a demo to see how your branded app could look.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button 
+            @click="requestDemo"
+            class="px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            data-testid="demo-request-button"
+          >
+            Request Demo
+          </button>
+          <button 
+            @click="downloadCaseStudies"
+            class="px-8 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition-colors"
+            data-testid="case-studies-button"
+          >
+            Download Case Studies
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screenshot Modal -->
+    <div 
+      v-if="screenshotModal.isOpen" 
+      class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+      @click="closeScreenshotModal"
+      data-testid="screenshot-modal"
+    >
+      <div class="bg-white rounded-xl max-w-4xl w-full max-h-full overflow-auto" @click.stop>
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-semibold text-gray-900">
+              {{ screenshotModal.app?.institutionName }} App Screenshots
+            </h3>
+            <button 
+              @click="closeScreenshotModal"
+              class="text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div 
+              v-for="screenshot in screenshotModal.app?.screenshots" 
+              :key="screenshot.id"
+              class="text-center"
+            >
+              <img 
+                :src="screenshot.url" 
+                :alt="screenshot.title"
+                class="w-full h-64 object-cover rounded-lg mb-2"
+              />
+              <h4 class="font-medium text-gray-900">{{ screenshot.title }}</h4>
+              <p class="text-sm text-gray-600">{{ screenshot.description }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+import type { BrandedAppsShowcaseProps, BrandedApp } from '@/types/homepage'
+
+// Props
+const props = withDefaults(defineProps<BrandedAppsShowcaseProps>(), {
+  featuredApps: () => [],
+  customizationOptions: () => [],
+  appStoreIntegration: () => ({
+    appleAppStore: true,
+    googlePlayStore: true,
+    customDomain: true,
+    whiteLabel: true,
+    institutionBranding: true,
+    reviewManagement: true,
+    analyticsIntegration: true
+  }),
+  developmentTimeline: () => ({
+    phases: [],
+    totalDuration: '12-16 weeks',
+    estimatedCost: 'Contact for quote',
+    maintenanceCost: '$500-2000/month'
+  })
+})
+
+// Emits
+const emit = defineEmits<{
+  demoRequest: []
+  caseStudiesDownload: []
+  appStoreClick: [appId: string, platform: 'ios' | 'android']
+  screenshotView: [appId: string, screenshotId: string]
+}>()
+
+// Reactive state
+const screenshotModal = ref<{
+  isOpen: boolean
+  app: BrandedApp | null
+  currentIndex: number
+}>({
+  isOpen: false,
+  app: null,
+  currentIndex: 0
+})
+
+// Methods
+const formatMetricValue = (value: number, unit: string): string => {
+  switch (unit) {
+    case 'percentage':
+      return `${value}%`
+    case 'minutes':
+      return `${value}m`
+    case 'count':
+      return formatNumber(value)
+    default:
+      return value.toString()
+  }
+}
+
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return `${(num / 1000000).toFixed(1)}M`
+  } else if (num >= 1000) {
+    return `${(num / 1000).toFixed(1)}K`
+  }
+  return num.toString()
+}
+
+const getCategoryIcon = (category: string) => {
+  const icons = {
+    branding: 'svg',
+    features: 'svg', 
+    integrations: 'svg',
+    analytics: 'svg'
+  }
+  
+  // Return a simple div for now - in a real app you'd use proper icon components
+  return 'div'
+}
+
+const openScreenshotModal = (app: BrandedApp, index: number) => {
+  screenshotModal.value = {
+    isOpen: true,
+    app,
+    currentIndex: index
+  }
+  
+  if (app.screenshots[index]) {
+    emit('screenshotView', app.id, app.screenshots[index].id)
+  }
+}
+
+const closeScreenshotModal = () => {
+  screenshotModal.value = {
+    isOpen: false,
+    app: null,
+    currentIndex: 0
+  }
+}
+
+const trackAppStoreClick = (appId: string, platform: 'ios' | 'android') => {
+  emit('appStoreClick', appId, platform)
+}
+
+const requestDemo = () => {
+  emit('demoRequest')
+}
+
+const downloadCaseStudies = () => {
+  emit('caseStudiesDownload')
+}
+</script>
+
+<style scoped>
+.branded-apps-showcase {
+  @apply py-16 bg-gray-50;
+}
+
+.branded-app-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.branded-app-card:hover {
+  transform: translateY(-2px);
+}
+
+.customization-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.customization-card:hover {
+  transform: translateY(-1px);
+}
+
+.integration-feature {
+  transition: transform 0.2s ease-in-out;
+}
+
+.integration-feature:hover {
+  transform: translateY(-2px);
+}
+
+/* Modal animations */
+.modal-enter-active, .modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.modal-enter-from, .modal-leave-to {
+  opacity: 0;
+}
+</style>

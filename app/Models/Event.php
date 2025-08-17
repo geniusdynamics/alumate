@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Carbon\Carbon;
 
 class Event extends Model
 {
@@ -70,6 +70,13 @@ class Event extends Model
         'enable_checkin',
         'status',
         'tags',
+        // Calendar integration fields
+        'user_id',
+        'location',
+        'is_virtual',
+        'attendees',
+        'event_type',
+        'external_calendar_ids',
     ];
 
     protected $casts = [
@@ -107,12 +114,21 @@ class Event extends Model
         'current_attendees' => 'integer',
         'graduation_year' => 'integer',
         'reunion_year_milestone' => 'integer',
+        // Calendar integration casts
+        'attendees' => 'array',
+        'is_virtual' => 'boolean',
+        'external_calendar_ids' => 'array',
     ];
 
     // Relationships
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'organizer_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function institution(): BelongsTo
@@ -210,13 +226,13 @@ class Event extends Model
     {
         return $query->whereNotNull('latitude')
             ->whereNotNull('longitude')
-            ->selectRaw("*, (
+            ->selectRaw('*, (
                 6371 * acos(
                     cos(radians(?)) * cos(radians(latitude)) * 
                     cos(radians(longitude) - radians(?)) + 
                     sin(radians(?)) * sin(radians(latitude))
                 )
-            ) AS distance", [$latitude, $longitude, $latitude])
+            ) AS distance', [$latitude, $longitude, $latitude])
             ->having('distance', '<', $radius)
             ->orderBy('distance');
     }
@@ -235,6 +251,7 @@ class Event extends Model
     public function isOngoing(): bool
     {
         $now = now();
+
         return $this->start_date->isPast() && $this->end_date->isFuture();
     }
 
@@ -257,7 +274,7 @@ class Event extends Model
 
     public function hasCapacity(): bool
     {
-        if (!$this->max_capacity) {
+        if (! $this->max_capacity) {
             return true;
         }
 
@@ -266,7 +283,7 @@ class Event extends Model
 
     public function getAvailableSpots(): int
     {
-        if (!$this->max_capacity) {
+        if (! $this->max_capacity) {
             return PHP_INT_MAX;
         }
 
@@ -298,19 +315,19 @@ class Event extends Model
     public function getFormattedDuration(): string
     {
         $duration = $this->start_date->diffInMinutes($this->end_date);
-        
+
         if ($duration < 60) {
-            return $duration . ' minutes';
+            return $duration.' minutes';
         }
-        
+
         $hours = floor($duration / 60);
         $minutes = $duration % 60;
-        
+
         if ($minutes === 0) {
-            return $hours . ' hour' . ($hours > 1 ? 's' : '');
+            return $hours.' hour'.($hours > 1 ? 's' : '');
         }
-        
-        return $hours . 'h ' . $minutes . 'm';
+
+        return $hours.'h '.$minutes.'m';
     }
 
     public function getLocalStartDate(): Carbon
@@ -330,7 +347,7 @@ class Event extends Model
             ->sum('guests_count') + $this->registrations()
             ->whereIn('status', ['registered', 'attended'])
             ->count();
-        
+
         $this->save();
     }
 
@@ -352,8 +369,8 @@ class Event extends Model
 
     public function canUserEdit(User $user): bool
     {
-        return $user->id === $this->organizer_id || 
-               $user->hasRole('admin') || 
+        return $user->id === $this->organizer_id ||
+               $user->hasRole('admin') ||
                ($this->institution_id && $user->hasRole('institution_admin') && $user->institution_id === $this->institution_id);
     }
 
@@ -365,16 +382,17 @@ class Event extends Model
 
     public function hasJitsiMeeting(): bool
     {
-        return $this->meeting_platform === 'jitsi' && !empty($this->jitsi_room_id);
+        return $this->meeting_platform === 'jitsi' && ! empty($this->jitsi_room_id);
     }
 
     public function getJitsiMeetingUrl(): ?string
     {
-        if (!$this->hasJitsiMeeting()) {
+        if (! $this->hasJitsiMeeting()) {
             return null;
         }
 
         $domain = config('services.jitsi.domain', 'meet.jit.si');
+
         return "https://{$domain}/{$this->jitsi_room_id}";
     }
 
@@ -403,16 +421,16 @@ class Event extends Model
 
     public function getJitsiEmbedUrl(): ?string
     {
-        if (!$this->canEmbedMeeting()) {
+        if (! $this->canEmbedMeeting()) {
             return null;
         }
 
         $domain = config('services.jitsi.domain', 'meet.jit.si');
         $config = $this->jitsi_config ?? [];
-        
+
         $params = http_build_query(array_merge([
-            'config.startWithAudioMuted' => !($config['start_with_audio'] ?? true),
-            'config.startWithVideoMuted' => !($config['start_with_video'] ?? true),
+            'config.startWithAudioMuted' => ! ($config['start_with_audio'] ?? true),
+            'config.startWithVideoMuted' => ! ($config['start_with_video'] ?? true),
             'config.enableWelcomePage' => false,
             'config.prejoinPageEnabled' => $this->waiting_room_enabled,
             'config.disableDeepLinking' => true,
@@ -428,7 +446,7 @@ class Event extends Model
         }
 
         // Generate unique room ID based on event
-        $roomId = 'alumni-' . $this->id . '-' . \Str::slug($this->title, '-');
+        $roomId = 'alumni-'.$this->id.'-'.\Str::slug($this->title, '-');
         $this->jitsi_room_id = $roomId;
         $this->save();
 
@@ -443,7 +461,7 @@ class Event extends Model
 
     public function getReunionYearsSinceGraduation(): ?int
     {
-        if (!$this->graduation_year) {
+        if (! $this->graduation_year) {
             return null;
         }
 
@@ -465,7 +483,7 @@ class Event extends Model
 
     public function getReunionMilestoneDisplay(): ?string
     {
-        if (!$this->reunion_year_milestone) {
+        if (! $this->reunion_year_milestone) {
             return null;
         }
 
@@ -490,6 +508,7 @@ class Event extends Model
     public function getCommitteeMembersByRole(string $role): array
     {
         $committees = $this->getCommitteeMembers();
+
         return array_filter($committees, function ($member) use ($role) {
             return ($member['role'] ?? '') === $role;
         });
@@ -498,6 +517,7 @@ class Event extends Model
     public function isCommitteeMember(User $user): bool
     {
         $committees = $this->getCommitteeMembers();
+
         return collect($committees)->contains('user_id', $user->id);
     }
 
@@ -505,25 +525,26 @@ class Event extends Model
     {
         $committees = $this->getCommitteeMembers();
         $member = collect($committees)->firstWhere('user_id', $user->id);
+
         return $member['role'] ?? null;
     }
 
     public function addCommitteeMember(User $user, string $role): void
     {
         $committees = $this->getCommitteeMembers();
-        
+
         // Remove existing entry if present
         $committees = array_filter($committees, function ($member) use ($user) {
             return ($member['user_id'] ?? null) !== $user->id;
         });
-        
+
         // Add new entry
         $committees[] = [
             'user_id' => $user->id,
             'role' => $role,
             'added_at' => now()->toISOString(),
         ];
-        
+
         $this->reunion_committees = array_values($committees);
         $this->save();
     }
@@ -534,7 +555,7 @@ class Event extends Model
         $committees = array_filter($committees, function ($member) use ($user) {
             return ($member['user_id'] ?? null) !== $user->id;
         });
-        
+
         $this->reunion_committees = array_values($committees);
         $this->save();
     }
@@ -553,11 +574,11 @@ class Event extends Model
     public function updateClassStatistics(): void
     {
         $registrations = $this->registrations()->whereIn('status', ['registered', 'attended'])->get();
-        
+
         $statistics = [
             'total_registered' => $registrations->count(),
             'total_attended' => $this->checkIns()->count(),
-            'attendance_rate' => $registrations->count() > 0 ? 
+            'attendance_rate' => $registrations->count() > 0 ?
                 round(($this->checkIns()->count() / $registrations->count()) * 100, 2) : 0,
             'photos_shared' => $this->reunionPhotos()->approved()->count(),
             'memories_shared' => $this->reunionMemories()->approved()->count(),
@@ -580,6 +601,7 @@ class Event extends Model
     public function getAttendanceRate(): float
     {
         $stats = $this->class_statistics ?? [];
+
         return $stats['attendance_rate'] ?? 0.0;
     }
 
@@ -603,7 +625,7 @@ class Event extends Model
             'metadata' => $metadata,
             'created_at' => now()->toISOString(),
         ];
-        
+
         $this->anniversary_milestones = $milestones;
         $this->save();
     }

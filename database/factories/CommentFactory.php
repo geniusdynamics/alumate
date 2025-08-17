@@ -52,17 +52,17 @@ class CommentFactory extends Factory
     /**
      * Create a comment with mentions.
      */
-    public function withMentions(array $usernames = null): static
+    public function withMentions(?array $usernames = null): static
     {
         return $this->state(function (array $attributes) use ($usernames) {
             $mentions = $usernames ?? [$this->faker->userName(), $this->faker->userName()];
             $content = $this->faker->paragraph();
-            
+
             // Add mentions to content
             foreach ($mentions as $username) {
                 $content .= " @{$username}";
             }
-            
+
             return [
                 'content' => $content,
                 'mentions' => $mentions,

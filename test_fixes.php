@@ -2,7 +2,6 @@
 
 require_once 'vendor/autoload.php';
 
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\DB;
 
 // Bootstrap Laravel
@@ -19,18 +18,18 @@ try {
     $totalUsers = DB::table('users')->count();
     echo "   ✅ user_type column exists\n";
     echo "   ✅ {$userTypeCount}/{$totalUsers} users have user_type populated\n";
-    
+
     // Show sample user types
     $userTypes = DB::table('users')->select('user_type', DB::raw('count(*) as count'))
         ->whereNotNull('user_type')
         ->groupBy('user_type')
         ->get();
-    
+
     foreach ($userTypes as $type) {
         echo "   📊 {$type->user_type}: {$type->count} users\n";
     }
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n";
+    echo '   ❌ Error: '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -46,13 +45,13 @@ try {
         'graduation_year' => 2024,
         'employment_status' => 'unemployed',
         'student_id' => 'TEST001',
-        'course_id' => null
+        'course_id' => null,
     ];
-    
+
     // This should not fail now
     echo "   ✅ course_id can be null in graduates table\n";
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n";
+    echo '   ❌ Error: '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -64,10 +63,10 @@ try {
         ->where('user_type', 'institution-admin')
         ->orWhere('user_type', 'tutor')
         ->count();
-    
+
     echo "   ✅ Staff query works: {$staff} staff members found\n";
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n";
+    echo '   ❌ Error: '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -75,14 +74,14 @@ echo "\n";
 // Test 4: Check if Employer model has getProfileCompletionPercentage method
 echo "4. Testing Employer model method...\n";
 try {
-    $employer = new \App\Models\Employer();
+    $employer = new \App\Models\Employer;
     if (method_exists($employer, 'getProfileCompletionPercentage')) {
         echo "   ✅ Employer::getProfileCompletionPercentage() method exists\n";
     } else {
         echo "   ❌ Method does not exist\n";
     }
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n";
+    echo '   ❌ Error: '.$e->getMessage()."\n";
 }
 
 echo "\n";
@@ -90,14 +89,14 @@ echo "\n";
 // Test 5: Check if Graduate model has getProfileCompletionPercentage method
 echo "5. Testing Graduate model method...\n";
 try {
-    $graduate = new \App\Models\Graduate();
+    $graduate = new \App\Models\Graduate;
     if (method_exists($graduate, 'getProfileCompletionPercentage')) {
         echo "   ✅ Graduate::getProfileCompletionPercentage() method exists\n";
     } else {
         echo "   ❌ Method does not exist\n";
     }
 } catch (Exception $e) {
-    echo "   ❌ Error: " . $e->getMessage() . "\n";
+    echo '   ❌ Error: '.$e->getMessage()."\n";
 }
 
 echo "\n";

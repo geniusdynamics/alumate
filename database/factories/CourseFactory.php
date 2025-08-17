@@ -19,20 +19,20 @@ class CourseFactory extends Factory
             'Business Administration', 'Accounting', 'Human Resources',
             'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering',
             'Nursing', 'Medical Assistant', 'Pharmacy Technician',
-            'Culinary Arts', 'Hospitality Management', 'Tourism Management'
+            'Culinary Arts', 'Hospitality Management', 'Tourism Management',
         ]);
 
         return [
             'institution_id' => Tenant::factory(),
             'name' => $courseName,
-            'code' => strtoupper($this->faker->lexify('???')) . $this->faker->numerify('###'),
+            'code' => strtoupper($this->faker->lexify('???')).$this->faker->numerify('###'),
             'description' => $this->faker->paragraph(3),
             'level' => $this->faker->randomElement(['certificate', 'diploma', 'advanced_diploma', 'degree', 'other']),
             'duration_months' => $this->faker->randomElement([6, 12, 18, 24, 36]),
             'study_mode' => $this->faker->randomElement(['full_time', 'part_time', 'online', 'hybrid']),
             'required_skills' => $this->faker->randomElements([
-                'Basic Computer Skills', 'Mathematics', 'English Proficiency', 
-                'Problem Solving', 'Communication Skills', 'Teamwork'
+                'Basic Computer Skills', 'Mathematics', 'English Proficiency',
+                'Problem Solving', 'Communication Skills', 'Teamwork',
             ], $this->faker->numberBetween(2, 4)),
             'skills_gained' => $this->getSkillsForCourse($courseName),
             'career_paths' => $this->getCareerPathsForCourse($courseName),
@@ -45,7 +45,7 @@ class CourseFactory extends Factory
             'average_salary' => $this->faker->numberBetween(35000, 80000),
             'prerequisites' => $this->faker->optional(0.6)->randomElements([
                 'High School Diploma', 'Basic Mathematics', 'English Proficiency',
-                'Computer Literacy', 'Previous Experience'
+                'Computer Literacy', 'Previous Experience',
             ], $this->faker->numberBetween(1, 3)),
             'learning_outcomes' => $this->faker->sentences(5),
             'department' => $this->getDepartmentForCourse($courseName),

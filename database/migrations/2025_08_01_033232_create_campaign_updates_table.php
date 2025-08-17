@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('published_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index(['campaign_id', 'published_at']);
             $table->index(['created_by']);
         });

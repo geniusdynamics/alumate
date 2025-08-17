@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\CareerTimeline;
 use App\Models\CareerMilestone;
+use App\Models\CareerTimeline;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 
 class CareerController extends Controller
 {
@@ -22,7 +21,7 @@ class CareerController extends Controller
             'description' => 'nullable|string|max:5000',
             'is_current' => 'boolean',
             'industry' => 'nullable|string|max:255',
-            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance'
+            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance',
         ]);
 
         $user = Auth::user();
@@ -50,7 +49,7 @@ class CareerController extends Controller
 
         return response()->json([
             'message' => 'Career entry added successfully.',
-            'career_entry' => $careerEntry
+            'career_entry' => $careerEntry,
         ], 201);
     }
 
@@ -72,7 +71,7 @@ class CareerController extends Controller
             'description' => 'nullable|string|max:5000',
             'is_current' => 'boolean',
             'industry' => 'nullable|string|max:255',
-            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance'
+            'employment_type' => 'nullable|string|in:full-time,part-time,contract,internship,freelance',
         ]);
 
         // If this is marked as current, update any other current positions
@@ -98,7 +97,7 @@ class CareerController extends Controller
 
         return response()->json([
             'message' => 'Career entry updated successfully.',
-            'career_entry' => $timeline
+            'career_entry' => $timeline,
         ]);
     }
 
@@ -114,7 +113,7 @@ class CareerController extends Controller
         $timeline->delete();
 
         return response()->json([
-            'message' => 'Career entry deleted successfully.'
+            'message' => 'Career entry deleted successfully.',
         ]);
     }
 
@@ -127,7 +126,7 @@ class CareerController extends Controller
             'date' => 'required|date',
             'company' => 'nullable|string|max:255',
             'organization' => 'nullable|string|max:255',
-            'visibility' => 'in:public,connections,private'
+            'visibility' => 'in:public,connections,private',
         ]);
 
         $user = Auth::user();
@@ -146,7 +145,7 @@ class CareerController extends Controller
 
         return response()->json([
             'message' => 'Career milestone added successfully.',
-            'milestone' => $milestone
+            'milestone' => $milestone,
         ], 201);
     }
 
@@ -159,7 +158,7 @@ class CareerController extends Controller
             'target_date' => 'nullable|date|after:today',
             'priority' => 'in:low,medium,high,critical',
             'success_criteria' => 'nullable|string|max:1000',
-            'progress' => 'integer|min:0|max:100'
+            'progress' => 'integer|min:0|max:100',
         ]);
 
         $user = Auth::user();
@@ -180,7 +179,7 @@ class CareerController extends Controller
 
         return response()->json([
             'message' => 'Career goal created successfully.',
-            'goal' => $goal
+            'goal' => $goal,
         ], 201);
     }
 
@@ -200,7 +199,7 @@ class CareerController extends Controller
             'target_date' => 'nullable|date',
             'priority' => 'in:low,medium,high,critical',
             'success_criteria' => 'nullable|string|max:1000',
-            'progress' => 'integer|min:0|max:100'
+            'progress' => 'integer|min:0|max:100',
         ]);
 
         // Update goal
@@ -216,7 +215,7 @@ class CareerController extends Controller
 
         return response()->json([
             'message' => 'Career goal updated successfully.',
-            'goal' => $goal
+            'goal' => $goal,
         ]);
     }
 
@@ -232,7 +231,7 @@ class CareerController extends Controller
         $goal->delete();
 
         return response()->json([
-            'message' => 'Career goal deleted successfully.'
+            'message' => 'Career goal deleted successfully.',
         ]);
     }
 
@@ -249,12 +248,12 @@ class CareerController extends Controller
         $goal->update([
             'achieved_at' => now(),
             'progress' => 100,
-            'status' => 'completed'
+            'status' => 'completed',
         ]);
 
         return response()->json([
             'message' => 'Congratulations! Goal marked as completed.',
-            'goal' => $goal
+            'goal' => $goal,
         ]);
     }
 }

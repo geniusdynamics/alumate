@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Carbon\Carbon;
 
 class Prediction extends Model
 {
@@ -46,17 +46,17 @@ class Prediction extends Model
     public function scopeForSubject($query, $subjectType, $subjectId)
     {
         return $query->where('subject_type', $subjectType)
-                    ->where('subject_id', $subjectId);
+            ->where('subject_id', $subjectId);
     }
 
     public function scopeByScore($query, $minScore, $maxScore = null)
     {
         $query->where('prediction_score', '>=', $minScore);
-        
+
         if ($maxScore !== null) {
             $query->where('prediction_score', '<=', $maxScore);
         }
-        
+
         return $query;
     }
 
@@ -73,13 +73,13 @@ class Prediction extends Model
 
     public function getFormattedScore()
     {
-        return number_format($this->getScorePercentage(), 1) . '%';
+        return number_format($this->getScorePercentage(), 1).'%';
     }
 
     public function getConfidenceLevel()
     {
         $score = $this->prediction_score;
-        
+
         if ($score >= 0.8) {
             return 'high';
         } elseif ($score >= 0.6) {
@@ -93,7 +93,7 @@ class Prediction extends Model
 
     public function getConfidenceColor()
     {
-        return match($this->getConfidenceLevel()) {
+        return match ($this->getConfidenceLevel()) {
             'high' => 'green',
             'medium' => 'blue',
             'low' => 'yellow',
@@ -103,7 +103,7 @@ class Prediction extends Model
 
     public function getConfidenceLabel()
     {
-        return match($this->getConfidenceLevel()) {
+        return match ($this->getConfidenceLevel()) {
             'high' => 'High Confidence',
             'medium' => 'Medium Confidence',
             'low' => 'Low Confidence',
@@ -116,7 +116,7 @@ class Prediction extends Model
         if ($key === null) {
             return $this->prediction_data;
         }
-        
+
         return data_get($this->prediction_data, $key, $default);
     }
 
@@ -138,7 +138,8 @@ class Prediction extends Model
     public function getTopFactor()
     {
         $factors = $this->getKeyFactors();
-        return !empty($factors) ? $factors[0] : null;
+
+        return ! empty($factors) ? $factors[0] : null;
     }
 
     public function isExpired()
@@ -148,10 +149,10 @@ class Prediction extends Model
 
     public function getDaysUntilTarget()
     {
-        if (!$this->target_date) {
+        if (! $this->target_date) {
             return null;
         }
-        
+
         return now()->diffInDays(Carbon::parse($this->target_date), false);
     }
 
@@ -172,14 +173,14 @@ class Prediction extends Model
 
     public function getFormattedAccuracy()
     {
-        return number_format($this->getAccuracyScore() * 100, 1) . '%';
+        return number_format($this->getAccuracyScore() * 100, 1).'%';
     }
 
     public function shouldUpdate()
     {
         // Check if prediction should be updated based on age and model settings
         $maxAge = $this->predictionModel->model_config['prediction_refresh_days'] ?? 7;
-        
+
         return $this->created_at->addDays($maxAge)->isPast();
     }
 
@@ -187,12 +188,12 @@ class Prediction extends Model
     {
         $score = $this->prediction_score;
         $type = $this->predictionModel->type;
-        
-        return match($type) {
+
+        return match ($type) {
             'job_placement' => $this->getJobPlacementInterpretation($score),
             'employment_success' => $this->getEmploymentSuccessInterpretation($score),
             'course_demand' => $this->getCourseDemandInterpretation($score),
-            default => 'Prediction score: ' . $this->getFormattedScore(),
+            default => 'Prediction score: '.$this->getFormattedScore(),
         };
     }
 

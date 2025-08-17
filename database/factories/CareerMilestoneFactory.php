@@ -18,7 +18,7 @@ class CareerMilestoneFactory extends Factory
             CareerMilestone::TYPE_AWARD,
             CareerMilestone::TYPE_CERTIFICATION,
             CareerMilestone::TYPE_EDUCATION,
-            CareerMilestone::TYPE_ACHIEVEMENT
+            CareerMilestone::TYPE_ACHIEVEMENT,
         ]);
 
         return [
@@ -30,12 +30,12 @@ class CareerMilestoneFactory extends Factory
             'visibility' => $this->faker->randomElement([
                 CareerMilestone::VISIBILITY_PUBLIC,
                 CareerMilestone::VISIBILITY_CONNECTIONS,
-                CareerMilestone::VISIBILITY_PRIVATE
+                CareerMilestone::VISIBILITY_PRIVATE,
             ]),
             'company' => $this->faker->boolean(60) ? $this->faker->company() : null,
-            'organization' => $this->faker->boolean(40) ? $this->faker->company() . ' Institute' : null,
+            'organization' => $this->faker->boolean(40) ? $this->faker->company().' Institute' : null,
             'metadata' => $this->getMetadataForType($type),
-            'is_featured' => $this->faker->boolean(20)
+            'is_featured' => $this->faker->boolean(20),
         ];
     }
 
@@ -43,9 +43,9 @@ class CareerMilestoneFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type' => CareerMilestone::TYPE_PROMOTION,
-            'title' => 'Promoted to ' . $this->faker->jobTitle(),
+            'title' => 'Promoted to '.$this->faker->jobTitle(),
             'description' => 'Received promotion in recognition of outstanding performance and leadership.',
-            'company' => $this->faker->company()
+            'company' => $this->faker->company(),
         ]);
     }
 
@@ -53,9 +53,9 @@ class CareerMilestoneFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'type' => CareerMilestone::TYPE_JOB_CHANGE,
-            'title' => 'Started new role at ' . $this->faker->company(),
-            'description' => 'Joined new company as ' . $this->faker->jobTitle(),
-            'company' => $this->faker->company()
+            'title' => 'Started new role at '.$this->faker->company(),
+            'description' => 'Joined new company as '.$this->faker->jobTitle(),
+            'company' => $this->faker->company(),
         ]);
     }
 
@@ -68,10 +68,10 @@ class CareerMilestoneFactory extends Factory
                 'Innovation Award',
                 'Excellence in Leadership',
                 'Outstanding Performance Award',
-                'Customer Service Excellence'
+                'Customer Service Excellence',
             ]),
             'description' => 'Recognized for exceptional contributions and achievements.',
-            'company' => $this->faker->company()
+            'company' => $this->faker->company(),
         ]);
     }
 
@@ -85,7 +85,7 @@ class CareerMilestoneFactory extends Factory
                 'Scrum Master Certification',
                 'Google Cloud Professional',
                 'Microsoft Azure Expert',
-                'Salesforce Administrator'
+                'Salesforce Administrator',
             ]),
             'description' => 'Successfully completed certification requirements and passed examination.',
             'organization' => $this->faker->randomElement([
@@ -94,8 +94,8 @@ class CareerMilestoneFactory extends Factory
                 'Scrum Alliance',
                 'Google Cloud',
                 'Microsoft',
-                'Salesforce'
-            ])
+                'Salesforce',
+            ]),
         ]);
     }
 
@@ -108,7 +108,7 @@ class CareerMilestoneFactory extends Factory
                 'Master of Science in Computer Science',
                 'Bachelor of Engineering',
                 'Professional Development Program',
-                'Executive Leadership Program'
+                'Executive Leadership Program',
             ]),
             'description' => 'Completed advanced education program with distinction.',
             'organization' => $this->faker->randomElement([
@@ -116,8 +116,8 @@ class CareerMilestoneFactory extends Factory
                 'MIT',
                 'Harvard Business School',
                 'UC Berkeley',
-                'Carnegie Mellon University'
-            ])
+                'Carnegie Mellon University',
+            ]),
         ]);
     }
 
@@ -130,65 +130,65 @@ class CareerMilestoneFactory extends Factory
                 'Increased team productivity by 40%',
                 'Completed major system migration',
                 'Established new department',
-                'Secured major client contract'
+                'Secured major client contract',
             ]),
             'description' => 'Achieved significant milestone through dedication and hard work.',
-            'company' => $this->faker->company()
+            'company' => $this->faker->company(),
         ]);
     }
 
     public function public(): static
     {
         return $this->state(fn (array $attributes) => [
-            'visibility' => CareerMilestone::VISIBILITY_PUBLIC
+            'visibility' => CareerMilestone::VISIBILITY_PUBLIC,
         ]);
     }
 
     public function private(): static
     {
         return $this->state(fn (array $attributes) => [
-            'visibility' => CareerMilestone::VISIBILITY_PRIVATE
+            'visibility' => CareerMilestone::VISIBILITY_PRIVATE,
         ]);
     }
 
     public function connectionsOnly(): static
     {
         return $this->state(fn (array $attributes) => [
-            'visibility' => CareerMilestone::VISIBILITY_CONNECTIONS
+            'visibility' => CareerMilestone::VISIBILITY_CONNECTIONS,
         ]);
     }
 
     public function featured(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_featured' => true
+            'is_featured' => true,
         ]);
     }
 
     private function getTitleForType(string $type): string
     {
-        return match($type) {
-            CareerMilestone::TYPE_PROMOTION => 'Promoted to ' . $this->faker->jobTitle(),
-            CareerMilestone::TYPE_JOB_CHANGE => 'Started new role at ' . $this->faker->company(),
+        return match ($type) {
+            CareerMilestone::TYPE_PROMOTION => 'Promoted to '.$this->faker->jobTitle(),
+            CareerMilestone::TYPE_JOB_CHANGE => 'Started new role at '.$this->faker->company(),
             CareerMilestone::TYPE_AWARD => $this->faker->randomElement([
                 'Employee of the Year',
                 'Innovation Award',
-                'Excellence Award'
+                'Excellence Award',
             ]),
             CareerMilestone::TYPE_CERTIFICATION => $this->faker->randomElement([
                 'AWS Solutions Architect',
                 'PMP Certification',
-                'Scrum Master Certification'
+                'Scrum Master Certification',
             ]),
             CareerMilestone::TYPE_EDUCATION => $this->faker->randomElement([
                 'Master of Business Administration',
                 'Master of Science',
-                'Professional Development Program'
+                'Professional Development Program',
             ]),
             CareerMilestone::TYPE_ACHIEVEMENT => $this->faker->randomElement([
                 'Led successful product launch',
                 'Increased team productivity',
-                'Completed major project'
+                'Completed major project',
             ]),
             default => 'Career Milestone'
         };
@@ -196,7 +196,7 @@ class CareerMilestoneFactory extends Factory
 
     private function getDescriptionForType(string $type): string
     {
-        return match($type) {
+        return match ($type) {
             CareerMilestone::TYPE_PROMOTION => 'Received promotion in recognition of outstanding performance.',
             CareerMilestone::TYPE_JOB_CHANGE => 'Joined new company in an exciting role.',
             CareerMilestone::TYPE_AWARD => 'Recognized for exceptional contributions and achievements.',
@@ -209,11 +209,11 @@ class CareerMilestoneFactory extends Factory
 
     private function getMetadataForType(string $type): array
     {
-        return match($type) {
+        return match ($type) {
             CareerMilestone::TYPE_CERTIFICATION => [
                 'credential_id' => $this->faker->uuid(),
                 'expiry_date' => $this->faker->dateTimeBetween('now', '+3 years')->format('Y-m-d'),
-                'score' => $this->faker->numberBetween(80, 100) . '%'
+                'score' => $this->faker->numberBetween(80, 100).'%',
             ],
             CareerMilestone::TYPE_EDUCATION => [
                 'gpa' => $this->faker->randomFloat(2, 3.0, 4.0),
@@ -222,12 +222,12 @@ class CareerMilestoneFactory extends Factory
                     'Computer Science',
                     'Business Administration',
                     'Engineering',
-                    'Data Science'
-                ])
+                    'Data Science',
+                ]),
             ],
             CareerMilestone::TYPE_AWARD => [
-                'award_value' => '$' . $this->faker->numberBetween(1000, 10000),
-                'selection_criteria' => 'Performance, Leadership, Innovation'
+                'award_value' => '$'.$this->faker->numberBetween(1000, 10000),
+                'selection_criteria' => 'Performance, Leadership, Innovation',
             ],
             default => []
         };

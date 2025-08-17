@@ -21,7 +21,7 @@ class TaxReceiptFactory extends Factory
         for ($i = 0; $i < $donationCount; $i++) {
             $amount = $this->faker->randomFloat(2, 25, 500);
             $totalAmount += $amount;
-            
+
             $donations[] = [
                 'donation_id' => $this->faker->numberBetween(1, 1000),
                 'amount' => $amount,
@@ -37,7 +37,7 @@ class TaxReceiptFactory extends Factory
             'donor_email' => $this->faker->email,
             'donor_address' => [
                 $this->faker->streetAddress,
-                $this->faker->city . ', ' . $this->faker->stateAbbr . ' ' . $this->faker->postcode,
+                $this->faker->city.', '.$this->faker->stateAbbr.' '.$this->faker->postcode,
             ],
             'total_amount' => $totalAmount,
             'currency' => 'USD',
@@ -45,7 +45,7 @@ class TaxReceiptFactory extends Factory
             'receipt_date' => $this->faker->dateTimeBetween("{$taxYear}-12-31", 'now'),
             'donations' => $donations,
             'status' => 'generated',
-            'pdf_path' => "tax-receipts/{$taxYear}/" . str_pad($this->faker->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT) . '.pdf',
+            'pdf_path' => "tax-receipts/{$taxYear}/".str_pad($this->faker->numberBetween(1, 999999), 6, '0', STR_PAD_LEFT).'.pdf',
             'generated_at' => $this->faker->dateTimeBetween("{$taxYear}-12-31", 'now'),
         ];
     }

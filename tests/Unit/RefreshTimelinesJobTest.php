@@ -42,11 +42,11 @@ class RefreshTimelinesJobTest extends TestCase
     public function test_job_handles_new_post()
     {
         $post = Post::factory()->create();
-        
+
         $timelineService = $this->createMock(TimelineService::class);
         $timelineService->expects($this->once())
-                       ->method('invalidateTimelineCacheForPost')
-                       ->with($post);
+            ->method('invalidateTimelineCacheForPost')
+            ->with($post);
 
         $job = RefreshTimelinesJob::forNewPost($post);
         $job->handle($timelineService);
@@ -56,10 +56,10 @@ class RefreshTimelinesJobTest extends TestCase
     {
         $users = User::factory()->count(2)->create();
         $userIds = $users->pluck('id')->toArray();
-        
+
         $timelineService = $this->createMock(TimelineService::class);
         $timelineService->expects($this->exactly(2))
-                       ->method('invalidateTimelineCache');
+            ->method('invalidateTimelineCache');
 
         $job = RefreshTimelinesJob::forUsers($userIds);
         $job->handle($timelineService);
@@ -70,7 +70,7 @@ class RefreshTimelinesJobTest extends TestCase
         Queue::fake();
 
         $post = Post::factory()->create();
-        
+
         RefreshTimelinesJob::forNewPost($post)->dispatch();
 
         Queue::assertPushed(RefreshTimelinesJob::class);
@@ -87,10 +87,10 @@ class RefreshTimelinesJobTest extends TestCase
     public function test_job_handles_exceptions_gracefully()
     {
         $post = Post::factory()->create();
-        
+
         $timelineService = $this->createMock(TimelineService::class);
         $timelineService->method('invalidateTimelineCacheForPost')
-                       ->willThrowException(new \Exception('Test exception'));
+            ->willThrowException(new \Exception('Test exception'));
 
         $job = RefreshTimelinesJob::forNewPost($post);
 

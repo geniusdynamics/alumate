@@ -82,14 +82,14 @@ class EventRegistration extends Model
 
     public function canCancel(): bool
     {
-        return in_array($this->status, ['registered', 'waitlisted']) && 
+        return in_array($this->status, ['registered', 'waitlisted']) &&
                $this->event->start_date->isFuture();
     }
 
     public function canCheckIn(): bool
     {
-        return $this->status === 'registered' && 
-               !$this->checked_in_at &&
+        return $this->status === 'registered' &&
+               ! $this->checked_in_at &&
                $this->event->enable_checkin;
     }
 
@@ -98,7 +98,7 @@ class EventRegistration extends Model
         return 1 + $this->guests_count;
     }
 
-    public function cancel(string $reason = null): void
+    public function cancel(?string $reason = null): void
     {
         $this->update([
             'status' => 'cancelled',

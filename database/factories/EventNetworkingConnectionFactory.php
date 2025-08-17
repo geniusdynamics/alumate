@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Event;
-use App\Models\User;
 use App\Models\EventNetworkingConnection;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventNetworkingConnectionFactory extends Factory
@@ -21,7 +21,7 @@ class EventNetworkingConnectionFactory extends Factory
                 'met_at_event',
                 'mutual_interest',
                 'follow_up',
-                'collaboration'
+                'collaboration',
             ]),
             'connection_note' => $this->faker->optional(0.7)->paragraph(),
             'shared_interests' => $this->faker->optional(0.6)->randomElements([
@@ -32,7 +32,7 @@ class EventNetworkingConnectionFactory extends Factory
                 'Finance',
                 'Healthcare',
                 'Education',
-                'Sustainability'
+                'Sustainability',
             ], $this->faker->numberBetween(1, 3)),
             'follow_up_requested' => $this->faker->boolean(30),
             'connected_at' => $this->faker->dateTimeBetween('-1 month', 'now'),

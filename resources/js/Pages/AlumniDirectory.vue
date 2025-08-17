@@ -1,165 +1,234 @@
 <template>
-  <div class="alumni-directory">
-    <div class="directory-header">
-      <h1 class="text-3xl font-bold text-gray-900 mb-6">Alumni Directory</h1>
-      
-      <!-- Search Bar -->
-      <div class="search-section mb-6">
-        <div class="relative">
-          <input
-            v-model="searchQuery"
-            @input="debouncedSearch"
-            type="text"
-            placeholder="Search alumni by name, company, location, or skills..."
-            class="w-full px-4 py-3 pl-12 pr-4 text-gray-900 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="directory-content flex gap-6">
-      <!-- Filters Sidebar -->
-      <div class="filters-sidebar w-80 flex-shrink-0">
-        <DirectoryFilters
-          :filters="availableFilters"
-          :active-filters="activeFilters"
-          @update-filters="updateFilters"
-          @clear-filters="clearFilters"
-        />
-      </div>
-
-      <!-- Alumni Grid -->
-      <div class="alumni-grid flex-1">
-        <!-- Results Header -->
-        <div class="results-header flex justify-between items-center mb-6">
-          <div class="results-info">
-            <p class="text-gray-600">
-              Showing {{ meta.from }}-{{ meta.to }} of {{ meta.total }} alumni
-            </p>
-          </div>
+  <AppLayout title="Alumni Directory">
+    <Head title="Alumni Directory" />
+    
+    <!-- Mobile Hamburger Menu -->
+    <MobileHamburgerMenu class="lg:hidden" />
+    
+    <!-- Pull to Refresh -->
+    <PullToRefresh @refresh="refreshDirectory" class="alumni-directory theme-bg-secondary">
+      <!-- Mobile Header -->
+      <div class="lg:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 safe-area-top">
+        <div class="p-4">
+          <h1 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Alumni Directory</h1>
           
-          <div class="sort-controls">
-            <select
-              v-model="sortBy"
-              @change="loadAlumni"
-              class="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="name">Sort by Name</option>
-              <option value="graduation_year">Sort by Graduation Year</option>
-              <option value="location">Sort by Location</option>
-              <option value="created_at">Sort by Join Date</option>
-            </select>
-            
-            <button
-              @click="toggleSortOrder"
-              class="ml-2 px-3 py-2 border border-gray-300 rounded-md hover:bg-gray-50"
-            >
-              {{ sortOrder === 'asc' ? '↑' : '↓' }}
-            </button>
-          </div>
+          <!-- Mobile Search Interface -->
+          <MobileSearchInterface
+            placeholder="Search alumni by name, company, location..."
+            search-type="alumni"
+            :has-filters="true"
+            :filters="activeFilters"
+            @search="handleSearch"
+            @filter-change="handleFilterChange"
+          >
+            <template #filters="{ filters, updateFilter }">
+              <DirectoryFilters
+                :filters="availableFilters"
+                :active-filters="filters"
+                @update-filters="updateFilter"
+                mobile
+              />
+            </template>
+          </MobileSearchInterface>
         </div>
-
-        <!-- Loading State -->
-        <div v-if="loading" class="loading-state">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div v-for="i in 9" :key="i" class="animate-pulse">
-              <div class="bg-gray-200 rounded-lg h-64"></div>
+      </div>
+      
+      <!-- Desktop Header -->
+      <div class="hidden lg:block directory-header mobile-container">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Alumni Directory</h1>
+        
+        <!-- Desktop Search Bar -->
+        <div class="search-section mb-6">
+          <div class="relative">
+            <input
+              v-model="searchQuery"
+              @input="debouncedSearch"
+              type="text"
+              placeholder="Search alumni by name, company, location, or skills..."
+              class="w-full px-4 py-3 pl-12 pr-4 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Alumni Cards Grid -->
-        <div v-else-if="alumni.length > 0" class="alumni-cards-grid">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <AlumniCard
-              v-for="alumnus in alumni"
-              :key="alumnus.id"
-              :alumni="alumnus"
-              @view-profile="viewProfile"
-              @connect="openConnectionModal"
-            />
-          </div>
-
-          <!-- Pagination -->
-          <div v-if="meta.last_page > 1" class="pagination mt-8">
-            <nav class="flex justify-center">
-              <div class="flex space-x-2">
-                <button
-                  v-if="meta.current_page > 1"
-                  @click="goToPage(meta.current_page - 1)"
-                  class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Previous
-                </button>
-                
-                <button
-                  v-for="page in visiblePages"
-                  :key="page"
-                  @click="goToPage(page)"
-                  :class="[
-                    'px-3 py-2 text-sm font-medium border rounded-md',
-                    page === meta.current_page
-                      ? 'text-blue-600 bg-blue-50 border-blue-500'
-                      : 'text-gray-500 bg-white border-gray-300 hover:bg-gray-50'
-                  ]"
-                >
-                  {{ page }}
-                </button>
-                
-                <button
-                  v-if="meta.current_page < meta.last_page"
-                  @click="goToPage(meta.current_page + 1)"
-                  class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Next
-                </button>
-              </div>
-            </nav>
-          </div>
+      <div class="directory-content flex gap-6 mobile-container lg:px-6">
+        <!-- Desktop Filters Sidebar -->
+        <div class="hidden lg:block filters-sidebar w-80 flex-shrink-0">
+          <DirectoryFilters
+            :filters="availableFilters"
+            :active-filters="activeFilters"
+            @update-filters="updateFilters"
+            @clear-filters="clearFilters"
+          />
         </div>
 
-        <!-- Empty State -->
-        <div v-else class="empty-state text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-          </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No alumni found</h3>
-          <p class="mt-1 text-sm text-gray-500">
-            Try adjusting your search criteria or filters.
-          </p>
+        <!-- Alumni Grid -->
+        <div class="alumni-grid flex-1">
+          <!-- Results Header -->
+          <div class="results-header flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+            <div class="results-info">
+              <p class="text-sm text-gray-600 dark:text-gray-400">
+                Showing {{ meta.from }}-{{ meta.to }} of {{ meta.total }} alumni
+              </p>
+            </div>
+            
+            <!-- Mobile Sort Controls -->
+            <div class="sort-controls flex items-center space-x-2">
+              <select
+                v-model="sortBy"
+                @change="loadAlumni"
+                class="input-mobile text-sm flex-1 sm:flex-none"
+              >
+                <option value="name">Sort by Name</option>
+                <option value="graduation_year">Sort by Graduation Year</option>
+                <option value="location">Sort by Location</option>
+                <option value="created_at">Sort by Join Date</option>
+              </select>
+              
+              <button
+                @click="toggleSortOrder"
+                class="btn-mobile-secondary p-2 flex-shrink-0"
+                :title="sortOrder === 'asc' ? 'Sort descending' : 'Sort ascending'"
+              >
+                <ArrowUpIcon v-if="sortOrder === 'asc'" class="h-4 w-4" />
+                <ArrowDownIcon v-else class="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div v-if="loading" class="loading-mobile">
+            <div class="mobile-grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              <div v-for="i in 9" :key="i" class="card-mobile">
+                <div class="flex items-center space-x-3 mb-3">
+                  <div class="skeleton-mobile-avatar"></div>
+                  <div class="flex-1">
+                    <div class="skeleton-mobile-title w-3/4"></div>
+                    <div class="skeleton-mobile-text w-1/2"></div>
+                  </div>
+                </div>
+                <div class="space-y-2">
+                  <div class="skeleton-mobile-text"></div>
+                  <div class="skeleton-mobile-text w-2/3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alumni Cards Grid -->
+          <div v-else-if="alumni.length > 0" class="alumni-cards-grid">
+            <div class="mobile-grid lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              <AlumniCard
+                v-for="alumnus in alumni"
+                :key="alumnus.id"
+                :alumni="alumnus"
+                @view-profile="viewProfile"
+                @connect="openConnectionModal"
+                mobile-optimized
+              />
+            </div>
+
+            <!-- Mobile Pagination -->
+            <div v-if="meta.last_page > 1" class="pagination mt-8">
+              <nav class="flex justify-center">
+                <div class="flex flex-wrap justify-center gap-2">
+                  <button
+                    v-if="meta.current_page > 1"
+                    @click="goToPage(meta.current_page - 1)"
+                    class="btn-mobile-secondary text-sm"
+                  >
+                    Previous
+                  </button>
+                  
+                  <button
+                    v-for="page in visiblePages"
+                    :key="page"
+                    @click="goToPage(page)"
+                    class="btn-mobile text-sm min-w-[44px]"
+                    :class="page === meta.current_page
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'"
+                  >
+                    {{ page }}
+                  </button>
+                  
+                  <button
+                    v-if="meta.current_page < meta.last_page"
+                    @click="goToPage(meta.current_page + 1)"
+                    class="btn-mobile-secondary text-sm"
+                  >
+                    Next
+                  </button>
+                </div>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div v-else class="error-mobile">
+            <UsersIcon class="error-mobile-icon" />
+            <h3 class="error-mobile-title">No alumni found</h3>
+            <p class="error-mobile-message">
+              Try adjusting your search criteria or filters.
+            </p>
+            <button
+              @click="clearFilters"
+              class="btn-mobile-primary"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Connection Request Modal -->
-    <ConnectionRequestModal
-      v-if="showConnectionModal"
-      :alumni="selectedAlumni"
-      @close="closeConnectionModal"
-      @send="sendConnectionRequest"
-    />
-  </div>
+      <!-- Connection Request Modal -->
+      <ConnectionRequestModal
+        v-if="showConnectionModal"
+        :alumni="selectedAlumni"
+        @close="closeConnectionModal"
+        @send="sendConnectionRequest"
+        mobile-optimized
+      />
+    </PullToRefresh>
+  </AppLayout>
 </template>
 
 <script>
 import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { debounce } from 'lodash'
-import { router } from '@inertiajs/vue3'
+import { Head, router } from '@inertiajs/vue3'
+import AppLayout from '@/layouts/AppLayout.vue'
+import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue'
+import PullToRefresh from '@/components/PullToRefresh.vue'
+import MobileSearchInterface from '@/components/MobileSearchInterface.vue'
 import DirectoryFilters from '../Components/DirectoryFilters.vue'
 import AlumniCard from '../Components/AlumniCard.vue'
 import ConnectionRequestModal from '../Components/ConnectionRequestModal.vue'
+import {
+  MagnifyingGlassIcon,
+  UsersIcon,
+  ArrowUpIcon,
+  ArrowDownIcon
+} from '@heroicons/vue/24/outline'
 
 export default {
   name: 'AlumniDirectory',
   components: {
+    Head,
+    AppLayout,
+    MobileHamburgerMenu,
+    PullToRefresh,
+    MobileSearchInterface,
     DirectoryFilters,
     AlumniCard,
-    ConnectionRequestModal
+    ConnectionRequestModal,
+    MagnifyingGlassIcon,
+    UsersIcon,
+    ArrowUpIcon,
+    ArrowDownIcon
   },
   setup() {
     // Reactive data
@@ -316,6 +385,19 @@ export default {
       loadAlumni()
     })
 
+    const handleSearch = (query) => {
+      searchQuery.value = query
+      loadAlumni(1)
+    }
+
+    const handleFilterChange = (filters) => {
+      updateFilters(filters)
+    }
+
+    const refreshDirectory = async () => {
+      await loadAlumni(meta.value.current_page)
+    }
+
     return {
       alumni,
       availableFilters,
@@ -337,7 +419,10 @@ export default {
       viewProfile,
       openConnectionModal,
       closeConnectionModal,
-      sendConnectionRequest
+      sendConnectionRequest,
+      handleSearch,
+      handleFilterChange,
+      refreshDirectory
     }
   }
 }

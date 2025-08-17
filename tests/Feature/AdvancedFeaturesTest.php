@@ -6,7 +6,6 @@ use App\Models\Employer;
 use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Recommendation;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,11 +16,17 @@ class AdvancedFeaturesTest extends TestCase
     use RefreshDatabase;
 
     protected $tenant;
+
     protected $graduateUser;
+
     protected $graduate;
+
     protected $employerUser;
+
     protected $employer;
+
     protected $job;
+
     protected $application;
 
     protected function setUp(): void

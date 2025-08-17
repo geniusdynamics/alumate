@@ -1,17 +1,114 @@
 <?php
 
+use App\Http\Controllers\InstitutionAdmin\SettingsController as InstitutionAdminSettingsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome');
-})->name('home');
+Route::get('/', [\App\Http\Controllers\HomepageController::class, 'index'])->name('home');
+
+// Developer Documentation
+Route::middleware('auth')->get('/developer/api-documentation', function () {
+    return Inertia::render('Developer/ApiDocumentation');
+})->name('developer.api-documentation');
+
+// PWA Offline Route
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+
+// Health Check Routes
+Route::get('/health-check/homepage', [\App\Http\Controllers\HealthCheckController::class, 'homepage'])->name('health-check.homepage');
+
+// Monitoring Dashboard Routes (Admin only)
+Route::middleware(['auth', 'role:super-admin'])->prefix('monitoring')->name('monitoring.')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\MonitoringDashboardController::class, 'index'])->name('dashboard');
+
+    // API endpoints for monitoring dashboard
+    Route::prefix('api')->name('api.')->group(function () {
+        Route::get('data', [\App\Http\Controllers\MonitoringDashboardController::class, 'data'])->name('data');
+        Route::get('uptime', [\App\Http\Controllers\MonitoringDashboardController::class, 'uptime'])->name('uptime');
+        Route::get('conversion-metrics', [\App\Http\Controllers\MonitoringDashboardController::class, 'conversionMetrics'])->name('conversion-metrics');
+        Route::get('performance-metrics', [\App\Http\Controllers\MonitoringDashboardController::class, 'performanceMetrics'])->name('performance-metrics');
+        Route::get('error-logs', [\App\Http\Controllers\MonitoringDashboardController::class, 'errorLogs'])->name('error-logs');
+        Route::get('system-health', [\App\Http\Controllers\MonitoringDashboardController::class, 'systemHealth'])->name('system-health');
+        Route::post('record-metric', [\App\Http\Controllers\MonitoringDashboardController::class, 'recordMetric'])->name('record-metric');
+        Route::post('test-alert', [\App\Http\Controllers\MonitoringDashboardController::class, 'testAlert'])->name('test-alert');
+    });
+});
+
+// Homepage Enhancement Routes
+Route::get('/homepage', [\App\Http\Controllers\HomepageController::class, 'index'])->name('homepage.index');
+Route::get('/homepage/institutional', [\App\Http\Controllers\HomepageController::class, 'institutional'])->name('homepage.institutional');
+
+// Homepage CTA and Conversion Tracking
+Route::post('/homepage/track-cta', [\App\Http\Controllers\HomepageController::class, 'trackCTAClick'])->name('homepage.track-cta');
+Route::post('/homepage/track-conversion', [\App\Http\Controllers\HomepageController::class, 'trackConversion'])->name('homepage.track-conversion');
+Route::get('/homepage/ab-test-results/{testId}', [\App\Http\Controllers\HomepageController::class, 'getABTestResults'])->name('homepage.ab-test-results');
+
+// Homepage API Routes for dynamic content
+Route::prefix('api/homepage')->name('api.homepage.')->group(function () {
+    Route::get('statistics', [\App\Http\Controllers\Api\HomepageController::class, 'getStatistics'])->name('statistics');
+    Route::get('testimonials', [\App\Http\Controllers\Api\HomepageController::class, 'getTestimonials'])->name('testimonials');
+    Route::get('trust-badges', [\App\Http\Controllers\Api\HomepageController::class, 'getTrustBadges'])->name('trust-badges');
+    Route::get('platform-preview', [\App\Http\Controllers\Api\HomepageController::class, 'getPlatformPreview'])->name('platform-preview');
+    Route::get('success-stories', [\App\Http\Controllers\Api\HomepageController::class, 'getSuccessStories'])->name('success-stories');
+    Route::get('features', [\App\Http\Controllers\Api\HomepageController::class, 'getFeatures'])->name('features');
+    Route::get('branded-apps', [\App\Http\Controllers\Api\HomepageController::class, 'getBrandedAppsData'])->name('branded-apps');
+    Route::post('calculator', [\App\Http\Controllers\Api\HomepageController::class, 'calculateValue'])->name('calculator');
+
+    // Career Calculator Routes
+    Route::post('calculator/calculate', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'calculate'])->name('calculator.calculate');
+    Route::post('calculator/email-report', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'emailReport'])->name('calculator.email-report');
+    Route::get('calculator/benchmarks', [\App\Http\Controllers\Api\CareerCalculatorController::class, 'benchmarks'])->name('calculator.benchmarks');
+
+    // Pricing Routes
+    Route::get('pricing/plans', [\App\Http\Controllers\Api\PricingController::class, 'getPlans'])->name('pricing.plans');
+    Route::get('pricing/feature-comparison', [\App\Http\Controllers\Api\PricingController::class, 'getFeatureComparison'])->name('pricing.feature-comparison');
+    Route::post('pricing/track-interaction', [\App\Http\Controllers\Api\PricingController::class, 'trackInteraction'])->name('pricing.track-interaction');
+    Route::get('pricing/statistics', [\App\Http\Controllers\Api\PricingController::class, 'getStatistics'])->name('pricing.statistics');
+    Route::post('demo-request', [\App\Http\Controllers\Api\HomepageController::class, 'requestDemo'])->name('demo-request');
+    Route::post('trial-signup', [\App\Http\Controllers\Api\HomepageController::class, 'trialSignup'])->name('trial-signup');
+    Route::post('lead-capture', [\App\Http\Controllers\Api\HomepageController::class, 'captureLeads'])->name('lead-capture');
+
+    // Lead capture statistics
+    Route::get('lead-statistics', [\App\Http\Controllers\Api\HomepageController::class, 'getLeadStatistics'])->name('lead-statistics');
+
+    // Audience Detection and Personalization Routes
+    Route::get('detect-audience', [\App\Http\Controllers\Api\HomepageController::class, 'detectAudience'])->name('detect-audience');
+    Route::get('personalized-content', [\App\Http\Controllers\Api\HomepageController::class, 'getPersonalizedContent'])->name('personalized-content');
+    Route::post('audience-preference', [\App\Http\Controllers\Api\HomepageController::class, 'storeAudiencePreference'])->name('store-audience-preference');
+    Route::get('audience-preference', [\App\Http\Controllers\Api\HomepageController::class, 'getAudiencePreference'])->name('get-audience-preference');
+
+    // A/B Testing Routes
+    Route::get('content-variations', [\App\Http\Controllers\Api\HomepageController::class, 'getContentVariations'])->name('content-variations');
+    Route::get('ab-test-variant', [\App\Http\Controllers\Api\HomepageController::class, 'getABTestVariant'])->name('ab-test-variant');
+    Route::post('ab-test-conversion', [\App\Http\Controllers\Api\HomepageController::class, 'trackABTestConversion'])->name('ab-test-conversion');
+    Route::get('active-ab-tests', [\App\Http\Controllers\Api\HomepageController::class, 'getActiveABTests'])->name('active-ab-tests');
+    Route::get('ab-test-results/{testId}', [\App\Http\Controllers\Api\HomepageController::class, 'getABTestResults'])->name('ab-test-results');
+
+    // Enterprise Metrics and ROI Routes
+    Route::get('enterprise-metrics', [\App\Http\Controllers\Api\HomepageController::class, 'getEnterpriseMetrics'])->name('enterprise-metrics');
+    Route::get('institutional-comparison', [\App\Http\Controllers\Api\HomepageController::class, 'getInstitutionalComparison'])->name('institutional-comparison');
+    Route::get('implementation-timeline', [\App\Http\Controllers\Api\HomepageController::class, 'getImplementationTimeline'])->name('implementation-timeline');
+    Route::get('success-metrics-tracking', [\App\Http\Controllers\Api\HomepageController::class, 'getSuccessMetricsTracking'])->name('success-metrics-tracking');
+
+    // Content Management Routes
+    Route::get('content-config', [\App\Http\Controllers\Api\HomepageController::class, 'getContentManagementConfig'])->name('content-config');
+    Route::get('analytics', [\App\Http\Controllers\Api\HomepageController::class, 'getPersonalizationAnalytics'])->name('analytics');
+    Route::delete('cache', [\App\Http\Controllers\Api\HomepageController::class, 'clearPersonalizationCache'])->name('clear-cache');
+});
 
 Route::get('dashboard', \App\Http\Controllers\DashboardController::class)
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
+
+// Design System Showcase Route
+Route::get('design-system', function () {
+    return Inertia::render('DesignSystem/Showcase');
+})->name('design-system.showcase');
 
 // Super Admin Management (Central only - works on central domains)
 Route::resource('super-admins', \App\Http\Controllers\SuperAdminController::class)->except(['show', 'edit', 'update']);
@@ -52,7 +149,7 @@ Route::middleware(['auth', 'role:super-admin'])->prefix('security')->name('secur
 Route::prefix('auth')->name('social.')->group(function () {
     Route::get('{provider}', [\App\Http\Controllers\SocialAuthController::class, 'redirectToProvider'])->name('redirect');
     Route::get('{provider}/callback', [\App\Http\Controllers\SocialAuthController::class, 'handleProviderCallback'])->name('callback');
-    
+
     Route::middleware('auth')->group(function () {
         Route::get('link/{provider}', [\App\Http\Controllers\SocialAuthController::class, 'linkProfile'])->name('link');
         Route::delete('unlink/{profileId}', [\App\Http\Controllers\SocialAuthController::class, 'unlinkProfile'])->name('unlink');
@@ -80,13 +177,17 @@ Route::middleware('auth')->group(function () {
     Route::post('courses/{course}/statistics', [\App\Http\Controllers\CourseController::class, 'updateStatistics'])->name('courses.statistics.update');
     Route::get('courses/export', [\App\Http\Controllers\CourseController::class, 'export'])->name('courses.export');
 
+    // Course Import/Export System
+    Route::get('courses/import', [\App\Http\Controllers\CourseImportController::class, 'create'])->name('courses.import.create');
+    Route::post('courses/import', [\App\Http\Controllers\CourseImportController::class, 'store'])->name('courses.import.store');
+
     // Graduate Management
     Route::resource('graduates', \App\Http\Controllers\GraduateController::class);
     Route::patch('graduates/{graduate}/employment', [\App\Http\Controllers\GraduateController::class, 'updateEmployment'])->name('graduates.employment.update');
     Route::patch('graduates/{graduate}/privacy', [\App\Http\Controllers\GraduateController::class, 'updatePrivacySettings'])->name('graduates.privacy.update');
     Route::get('graduates/export', [\App\Http\Controllers\GraduateController::class, 'export'])->name('graduates.export');
     Route::get('graduates/export-fields', [\App\Http\Controllers\GraduateController::class, 'exportFields'])->name('graduates.export.fields');
-    
+
     // Graduate Import/Export System
     Route::get('graduates/import/history', [\App\Http\Controllers\GraduateImportController::class, 'index'])->name('graduates.import.history');
     Route::get('graduates/import/template', [\App\Http\Controllers\GraduateImportController::class, 'template'])->name('graduates.import.template');
@@ -132,6 +233,30 @@ Route::middleware('auth')->group(function () {
         Route::get('staff', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'staffManagement'])->name('staff');
         Route::get('import-export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'importExportCenter'])->name('import-export');
         Route::post('reports/export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'exportReport'])->name('reports.export');
+
+    // Settings
+    Route::get('settings/branding', [InstitutionAdminSettingsController::class, 'showBranding'])->name('settings.branding');
+    Route::post('settings/branding', [InstitutionAdminSettingsController::class, 'updateBranding'])->name('settings.branding.update');
+    Route::get('settings/integrations', [InstitutionAdminSettingsController::class, 'showIntegrations'])->name('settings.integrations');
+    Route::post('settings/integrations', [InstitutionAdminSettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
+
+        // Graduate Management for Institution Admin
+        Route::get('graduates', [\App\Http\Controllers\GraduateController::class, 'index'])->name('graduates.index');
+        Route::get('graduates/create', [\App\Http\Controllers\GraduateController::class, 'create'])->name('graduates.create');
+        Route::post('graduates', [\App\Http\Controllers\GraduateController::class, 'store'])->name('graduates.store');
+        Route::get('graduates/{graduate}', [\App\Http\Controllers\GraduateController::class, 'show'])->name('graduates.show');
+        Route::get('graduates/{graduate}/edit', [\App\Http\Controllers\GraduateController::class, 'edit'])->name('graduates.edit');
+        Route::put('graduates/{graduate}', [\App\Http\Controllers\GraduateController::class, 'update'])->name('graduates.update');
+        Route::delete('graduates/{graduate}', [\App\Http\Controllers\GraduateController::class, 'destroy'])->name('graduates.destroy');
+
+        // Course Management for Institution Admin
+        Route::get('courses', [\App\Http\Controllers\CourseController::class, 'index'])->name('courses.index');
+        Route::get('courses/create', [\App\Http\Controllers\CourseController::class, 'create'])->name('courses.create');
+        Route::post('courses', [\App\Http\Controllers\CourseController::class, 'store'])->name('courses.store');
+        Route::get('courses/{course}', [\App\Http\Controllers\CourseController::class, 'show'])->name('courses.show');
+        Route::get('courses/{course}/edit', [\App\Http\Controllers\CourseController::class, 'edit'])->name('courses.edit');
+        Route::put('courses/{course}', [\App\Http\Controllers\CourseController::class, 'update'])->name('courses.update');
+        Route::delete('courses/{course}', [\App\Http\Controllers\CourseController::class, 'destroy'])->name('courses.destroy');
     });
 
     // Employer Dashboard (Protected)
@@ -170,7 +295,7 @@ Route::middleware('auth')->group(function () {
         Route::post('{notification}/mark-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('mark-read');
         Route::post('mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
         Route::get('unread', [\App\Http\Controllers\NotificationController::class, 'getUnread'])->name('unread');
-        
+
         // Test route for development
         Route::post('test', [\App\Http\Controllers\NotificationController::class, 'testNotification'])->name('test');
     });
@@ -191,6 +316,13 @@ Route::get('/announcements/{announcement}', [\App\Http\Controllers\AnnouncementC
 Route::get('/discussions', [\App\Http\Controllers\DiscussionController::class, 'index'])->name('discussions.index');
 Route::get('/discussions/{discussion}', [\App\Http\Controllers\DiscussionController::class, 'show'])->name('discussions.show');
 
+// Public Alumni & Stories routes (accessible without authentication)
+Route::get('/alumni', [\App\Http\Controllers\AlumniController::class, 'publicDirectory'])->name('alumni.public.directory');
+Route::get('/alumni/map', [\App\Http\Controllers\AlumniController::class, 'publicMap'])->name('alumni.public.map');
+Route::get('/stories', [\App\Http\Controllers\SuccessStoryController::class, 'publicIndex'])->name('stories.public.index');
+Route::get('/contact', [\App\Http\Controllers\ContactController::class, 'index'])->name('contact.index');
+Route::post('/contact', [\App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
+
 // Social Features Routes
 Route::middleware(['auth'])->prefix('social')->name('social.')->group(function () {
     Route::get('timeline', [\App\Http\Controllers\SocialController::class, 'timeline'])->name('timeline');
@@ -204,6 +336,7 @@ Route::middleware(['auth'])->prefix('alumni')->name('alumni.')->group(function (
     Route::get('directory', [\App\Http\Controllers\AlumniController::class, 'directory'])->name('directory');
     Route::get('recommendations', [\App\Http\Controllers\AlumniController::class, 'recommendations'])->name('recommendations');
     Route::get('connections', [\App\Http\Controllers\AlumniController::class, 'connections'])->name('connections');
+    Route::get('map', [\App\Http\Controllers\AlumniController::class, 'map'])->name('map');
 });
 
 // Career Services Routes
@@ -211,6 +344,7 @@ Route::middleware(['auth'])->prefix('career')->name('career.')->group(function (
     Route::get('timeline', [\App\Http\Controllers\CareerController::class, 'timeline'])->name('timeline');
     Route::get('goals', [\App\Http\Controllers\CareerController::class, 'goals'])->name('goals');
     Route::get('mentorship', [\App\Http\Controllers\CareerController::class, 'mentorship'])->name('mentorship');
+    Route::get('mentorship-hub', [\App\Http\Controllers\CareerController::class, 'mentorshipHub'])->name('mentorship-hub');
 });
 
 // Job Matching Routes
@@ -223,6 +357,7 @@ Route::middleware(['auth'])->prefix('jobs')->name('jobs.')->group(function () {
 // Events Routes
 Route::middleware(['auth'])->prefix('events')->name('events.')->group(function () {
     Route::get('/', [\App\Http\Controllers\EventController::class, 'index'])->name('index');
+    Route::get('discovery', [\App\Http\Controllers\EventController::class, 'discovery'])->name('discovery');
     Route::get('create', [\App\Http\Controllers\EventController::class, 'create'])->name('create');
     Route::get('my-events', [\App\Http\Controllers\EventController::class, 'myEvents'])->name('my-events');
 });
@@ -232,6 +367,25 @@ Route::middleware(['auth'])->prefix('stories')->name('stories.')->group(function
     Route::get('/', [\App\Http\Controllers\SuccessStoryController::class, 'index'])->name('index');
     Route::get('create', [\App\Http\Controllers\SuccessStoryController::class, 'create'])->name('create');
     Route::get('my-stories', [\App\Http\Controllers\SuccessStoryController::class, 'myStories'])->name('my-stories');
+});
+
+// What's New and Help Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('whats-new', function () {
+        return Inertia::render('WhatsNew');
+    })->name('whats-new');
+
+    Route::get('help', function () {
+        return Inertia::render('Help');
+    })->name('help');
+});
+
+// Training & Documentation Routes
+Route::middleware(['auth'])->prefix('training')->name('training.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\UserTrainingController::class, 'index'])->name('index');
+    Route::get('guide/{guideId}', [\App\Http\Controllers\UserTrainingController::class, 'showGuide'])->name('guide');
+    Route::get('tutorial/{tutorialId}', [\App\Http\Controllers\UserTrainingController::class, 'showVideoTutorial'])->name('tutorial');
+    Route::get('faqs', [\App\Http\Controllers\UserTrainingController::class, 'showFAQs'])->name('faqs');
 });
 
 // Student-specific routes
@@ -298,28 +452,305 @@ Route::middleware(['auth'])->prefix('api')->name('api.')->group(function () {
     Route::post('reunions/{reunion}/favorite', [\App\Http\Controllers\Api\ReunionController::class, 'favorite'])->name('reunions.favorite');
     Route::delete('reunions/{reunion}/unfavorite', [\App\Http\Controllers\Api\ReunionController::class, 'unfavorite'])->name('reunions.unfavorite');
     Route::post('reunions/{reunion}/memories', [\App\Http\Controllers\Api\ReunionController::class, 'addMemory'])->name('reunions.memories.add');
+
+    // User Flow Integration API
+    Route::get('dashboard/integrated-data', [\App\Http\Controllers\Api\UserFlowController::class, 'getDashboardData'])->name('dashboard.integrated-data');
+    Route::get('jobs/network-recommendations', [\App\Http\Controllers\Api\UserFlowController::class, 'getNetworkJobRecommendations'])->name('jobs.network-recommendations');
+    Route::get('alumni/referral-connections', [\App\Http\Controllers\Api\UserFlowController::class, 'getReferralConnections'])->name('alumni.referral-connections');
+    Route::get('events/{event}/attendees', [\App\Http\Controllers\Api\UserFlowController::class, 'getEventAttendees'])->name('events.attendees');
+    Route::get('mentors/suggestions', [\App\Http\Controllers\Api\UserFlowController::class, 'getMentorSuggestions'])->name('mentors.suggestions');
+    Route::get('skills/suggestions', [\App\Http\Controllers\Api\UserFlowController::class, 'getSkillSuggestions'])->name('skills.suggestions');
+    Route::get('social/suggested-content', [\App\Http\Controllers\Api\UserFlowController::class, 'getSuggestedSocialContent'])->name('social.suggested-content');
+
+    // Additional integration endpoints
+    Route::post('jobs/request-referral', [\App\Http\Controllers\Api\JobController::class, 'requestReferral'])->name('jobs.request-referral');
+    Route::post('conversations/start', [\App\Http\Controllers\Api\ConnectionController::class, 'startConversation'])->name('conversations.start');
+    Route::post('skills/add', [\App\Http\Controllers\Api\SkillsController::class, 'addSkill'])->name('skills.add');
+    Route::post('skills/request-endorsement', [\App\Http\Controllers\Api\SkillsController::class, 'requestEndorsement'])->name('skills.request-endorsement');
+    Route::post('events/{event}/feedback', [\App\Http\Controllers\Api\EventController::class, 'submitFeedback'])->name('events.feedback');
+
+    // Onboarding API
+    Route::prefix('onboarding')->name('onboarding.')->group(function () {
+        Route::get('state', [\App\Http\Controllers\Api\OnboardingController::class, 'getOnboardingState'])->name('state');
+        Route::get('new-features', [\App\Http\Controllers\Api\OnboardingController::class, 'getNewFeatures'])->name('new-features');
+        Route::get('profile-completion', [\App\Http\Controllers\Api\OnboardingController::class, 'getProfileCompletion'])->name('profile-completion');
+        Route::get('whats-new', [\App\Http\Controllers\Api\OnboardingController::class, 'getWhatsNewUpdates'])->name('whats-new');
+        Route::post('complete', [\App\Http\Controllers\Api\OnboardingController::class, 'completeOnboarding'])->name('complete');
+        Route::post('skip', [\App\Http\Controllers\Api\OnboardingController::class, 'skipOnboarding'])->name('skip');
+        Route::post('feature-explored', [\App\Http\Controllers\Api\OnboardingController::class, 'markFeatureExplored'])->name('feature-explored');
+        Route::post('feature-discovery-viewed', [\App\Http\Controllers\Api\OnboardingController::class, 'markFeatureDiscoveryViewed'])->name('feature-discovery-viewed');
+        Route::post('dismiss-prompt', [\App\Http\Controllers\Api\OnboardingController::class, 'dismissPrompt'])->name('dismiss-prompt');
+        Route::post('whats-new-viewed', [\App\Http\Controllers\Api\OnboardingController::class, 'markWhatsNewViewed'])->name('whats-new-viewed');
+        Route::put('preferences', [\App\Http\Controllers\Api\OnboardingController::class, 'updatePreferences'])->name('preferences');
+    });
 });
 
-require __DIR__ . '/settings.php';
-require __DIR__ . '/testing.php';
-require __DIR__ . '/auth.php';
+require __DIR__.'/settings.php';
+require __DIR__.'/testing.php';
+require __DIR__.'/user-flows.php';
+require __DIR__.'/auth.php';
 // Fundraising Campaign Routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/campaigns', function () {
         return Inertia::render('Fundraising/CampaignIndex');
     })->name('campaigns.index');
-    
+
     Route::get('/campaigns/{campaign}', function (\App\Models\FundraisingCampaign $campaign) {
         $campaign->load(['creator', 'institution', 'donations', 'updates', 'peerFundraisers']);
+
         return Inertia::render('Fundraising/CampaignShow', [
-            'campaign' => $campaign
+            'campaign' => $campaign,
         ]);
     })->name('campaigns.show');
-    
+
     Route::get('/peer-fundraisers/{peerFundraiser}', function (\App\Models\PeerFundraiser $peerFundraiser) {
         $peerFundraiser->load(['campaign', 'user', 'donations']);
+
         return Inertia::render('Fundraising/PeerFundraiserShow', [
-            'peerFundraiser' => $peerFundraiser
+            'peerFundraiser' => $peerFundraiser,
         ]);
     })->name('peer-fundraiser.show');
+});
+
+// Scholarship Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/scholarships', function () {
+        return Inertia::render('Scholarships/Index');
+    })->name('scholarships.index');
+
+    Route::get('/scholarships/{scholarship}', function (\App\Models\Scholarship $scholarship) {
+        $scholarship->load(['institution', 'applications', 'recipients']);
+
+        return Inertia::render('Scholarships/Show', [
+            'scholarship' => $scholarship,
+        ]);
+    })->name('scholarships.show');
+
+    Route::get('/scholarships/{scholarship}/apply', function (\App\Models\Scholarship $scholarship) {
+        return Inertia::render('Scholarships/Apply', [
+            'scholarship' => $scholarship,
+        ]);
+    })->name('scholarships.apply');
+});
+
+// Achievement and Recognition Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/achievements', function () {
+        return Inertia::render('Achievements/Index');
+    })->name('achievements.index');
+
+    Route::get('/achievements/{achievement}', function (\App\Models\Achievement $achievement) {
+        $achievement->load(['user', 'institution', 'recognitions']);
+
+        return Inertia::render('Achievements/Show', [
+            'achievement' => $achievement,
+        ]);
+    })->name('achievements.show');
+
+    Route::get('/leaderboard', function () {
+        return Inertia::render('Achievements/Leaderboard');
+    })->name('achievements.leaderboard');
+});
+
+// Global Search API
+Route::middleware(['auth'])->group(function () {
+    Route::get('/api/search/global', function (Request $request) {
+        $query = $request->get('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json(['success' => false, 'message' => 'Query too short']);
+        }
+
+        $results = [];
+
+        // Search Alumni
+        $alumni = \App\Models\User::where('role', 'alumni')
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                    ->orWhere('email', 'LIKE', "%{$query}%")
+                    ->orWhere('company', 'LIKE', "%{$query}%")
+                    ->orWhere('job_title', 'LIKE', "%{$query}%");
+            })
+            ->limit(5)
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'type' => 'alumni',
+                    'title' => $user->name,
+                    'subtitle' => $user->job_title.' at '.$user->company,
+                    'url' => "/alumni/profile/{$user->id}",
+                ];
+            });
+
+        // Search Jobs
+        $jobs = \App\Models\Job::where('title', 'LIKE', "%{$query}%")
+            ->orWhere('company', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->get()
+            ->map(function ($job) {
+                return [
+                    'id' => $job->id,
+                    'type' => 'job',
+                    'title' => $job->title,
+                    'subtitle' => $job->company.' • '.$job->location,
+                    'url' => "/jobs/{$job->id}",
+                ];
+            });
+
+        // Search Events
+        $events = \App\Models\Event::where('title', 'LIKE', "%{$query}%")
+            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->orWhere('location', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'type' => 'event',
+                    'title' => $event->title,
+                    'subtitle' => $event->location.' • '.$event->start_date->format('M j, Y'),
+                    'url' => "/events/{$event->id}",
+                ];
+            });
+
+        // Search Success Stories
+        $stories = \App\Models\SuccessStory::where('title', 'LIKE', "%{$query}%")
+            ->orWhere('content', 'LIKE', "%{$query}%")
+            ->limit(5)
+            ->get()
+            ->map(function ($story) {
+                return [
+                    'id' => $story->id,
+                    'type' => 'story',
+                    'title' => $story->title,
+                    'subtitle' => 'By '.$story->user->name,
+                    'url' => "/stories/{$story->id}",
+                ];
+            });
+
+        $results = collect()
+            ->merge($alumni)
+            ->merge($jobs)
+            ->merge($events)
+            ->merge($stories)
+            ->take(20)
+            ->values();
+
+        return response()->json([
+            'success' => true,
+            'results' => $results,
+            'total' => $results->count(),
+        ]);
+    });
+
+    Route::get('/api/ping', function () {
+        return response()->json(['status' => 'ok']);
+    });
+});
+
+// Homepage Content Management Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('homepage-content')->name('homepage-content.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\HomepageContentController::class, 'index'])->name('index');
+        Route::get('/content', [\App\Http\Controllers\Admin\HomepageContentController::class, 'getContent'])->name('content');
+        Route::put('/', [\App\Http\Controllers\Admin\HomepageContentController::class, 'update'])->name('update');
+        Route::post('/bulk-update', [\App\Http\Controllers\Admin\HomepageContentController::class, 'bulkUpdate'])->name('bulk-update');
+        Route::post('/{contentId}/request-approval', [\App\Http\Controllers\Admin\HomepageContentController::class, 'requestApproval'])->name('request-approval');
+        Route::post('/{contentId}/approve', [\App\Http\Controllers\Admin\HomepageContentController::class, 'approve'])->name('approve');
+        Route::post('/{contentId}/reject', [\App\Http\Controllers\Admin\HomepageContentController::class, 'reject'])->name('reject');
+        Route::post('/{contentId}/publish', [\App\Http\Controllers\Admin\HomepageContentController::class, 'publish'])->name('publish');
+        Route::get('/{contentId}/history', [\App\Http\Controllers\Admin\HomepageContentController::class, 'history'])->name('history');
+        Route::post('/{contentId}/revert', [\App\Http\Controllers\Admin\HomepageContentController::class, 'revert'])->name('revert');
+        Route::post('/preview', [\App\Http\Controllers\Admin\HomepageContentController::class, 'preview'])->name('preview');
+        Route::get('/export', [\App\Http\Controllers\Admin\HomepageContentController::class, 'export'])->name('export');
+        Route::post('/import', [\App\Http\Controllers\Admin\HomepageContentController::class, 'import'])->name('import');
+    });
+});
+
+// A/B Testing Management Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('ab-tests')->name('ab-tests.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\ABTestController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\ABTestController::class, 'store'])->name('store');
+        Route::get('/{test}', [\App\Http\Controllers\ABTestController::class, 'show'])->name('show');
+        Route::put('/{test}', [\App\Http\Controllers\ABTestController::class, 'update'])->name('update');
+        Route::delete('/{test}', [\App\Http\Controllers\ABTestController::class, 'destroy'])->name('destroy');
+        Route::post('/{test}/start', [\App\Http\Controllers\ABTestController::class, 'start'])->name('start');
+        Route::post('/{test}/stop', [\App\Http\Controllers\ABTestController::class, 'stop'])->name('stop');
+        Route::get('/{test}/results', [\App\Http\Controllers\ABTestController::class, 'results'])->name('results');
+        Route::get('/{test}/export', [\App\Http\Controllers\ABTestController::class, 'export'])->name('export');
+    });
+});
+
+// Lead Management Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('lead-management')->name('lead-management.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LeadManagementController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Admin\LeadManagementController::class, 'store'])->name('store');
+        Route::get('/{lead}', [\App\Http\Controllers\Admin\LeadManagementController::class, 'show'])->name('show');
+        Route::put('/{lead}', [\App\Http\Controllers\Admin\LeadManagementController::class, 'update'])->name('update');
+        Route::post('/{lead}/qualify', [\App\Http\Controllers\Admin\LeadManagementController::class, 'qualify'])->name('qualify');
+        Route::post('/{lead}/follow-up', [\App\Http\Controllers\Admin\LeadManagementController::class, 'createFollowUp'])->name('follow-up');
+        Route::post('/{lead}/activity', [\App\Http\Controllers\Admin\LeadManagementController::class, 'addActivity'])->name('activity');
+        Route::post('/{lead}/behavior', [\App\Http\Controllers\Admin\LeadManagementController::class, 'updateBehavior'])->name('behavior');
+        Route::get('/analytics/data', [\App\Http\Controllers\Admin\LeadManagementController::class, 'analytics'])->name('analytics');
+        Route::post('/bulk-sync', [\App\Http\Controllers\Admin\LeadManagementController::class, 'bulkSync'])->name('bulk-sync');
+        Route::get('/export', [\App\Http\Controllers\Admin\LeadManagementController::class, 'export'])->name('export');
+
+        // Lead scoring rules
+        Route::get('/scoring-rules', [\App\Http\Controllers\Admin\LeadManagementController::class, 'getScoringRules'])->name('scoring-rules');
+        Route::post('/scoring-rules', [\App\Http\Controllers\Admin\LeadManagementController::class, 'storeScoringRule'])->name('scoring-rules.store');
+
+        // CRM integrations
+        Route::get('/crm-integrations', [\App\Http\Controllers\Admin\LeadManagementController::class, 'getCrmIntegrations'])->name('crm-integrations');
+        Route::post('/crm-integrations', [\App\Http\Controllers\Admin\LeadManagementController::class, 'storeCrmIntegration'])->name('crm-integrations.store');
+        Route::post('/crm-integrations/{integration}/test', [\App\Http\Controllers\Admin\LeadManagementController::class, 'testCrmConnection'])->name('crm-integrations.test');
+    });
+});
+
+// Landing Page Builder Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('landing-pages')->name('landing-pages.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LandingPageController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\LandingPageController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\LandingPageController::class, 'store'])->name('store');
+        Route::get('/{landingPage}', [\App\Http\Controllers\Admin\LandingPageController::class, 'show'])->name('show');
+        Route::get('/{landingPage}/edit', [\App\Http\Controllers\Admin\LandingPageController::class, 'edit'])->name('edit');
+        Route::put('/{landingPage}', [\App\Http\Controllers\Admin\LandingPageController::class, 'update'])->name('update');
+        Route::post('/{landingPage}/publish', [\App\Http\Controllers\Admin\LandingPageController::class, 'publish'])->name('publish');
+        Route::post('/{landingPage}/unpublish', [\App\Http\Controllers\Admin\LandingPageController::class, 'unpublish'])->name('unpublish');
+        Route::post('/{landingPage}/duplicate', [\App\Http\Controllers\Admin\LandingPageController::class, 'duplicate'])->name('duplicate');
+        Route::delete('/{landingPage}', [\App\Http\Controllers\Admin\LandingPageController::class, 'destroy'])->name('destroy');
+        Route::get('/{landingPage}/analytics', [\App\Http\Controllers\Admin\LandingPageController::class, 'analytics'])->name('analytics');
+
+        // API endpoints for builder
+        Route::get('/api/templates', [\App\Http\Controllers\Admin\LandingPageController::class, 'getTemplates'])->name('api.templates');
+        Route::get('/api/components', [\App\Http\Controllers\Admin\LandingPageController::class, 'getComponents'])->name('api.components');
+    });
+});
+
+// Public Landing Page Routes
+Route::prefix('landing')->name('landing-page.')->group(function () {
+    Route::get('/{slug}', [\App\Http\Controllers\LandingPagePublicController::class, 'show'])->name('show');
+    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPagePublicController::class, 'submitForm'])->name('submit');
+    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPagePublicController::class, 'trackEvent'])->name('track');
+});
+// Analytics Dashboard Routes (Admin only)
+Route::middleware(['auth', 'role:admin|super_admin'])->prefix('analytics')->name('analytics.')->group(function () {
+    Route::get('dashboard', function () {
+        return Inertia::render('Analytics/Dashboard');
+    })->name('dashboard');
+
+    Route::get('career-outcomes', function () {
+        return Inertia::render('Analytics/CareerOutcomes');
+    })->name('career-outcomes');
+});
+
+// Performance Monitoring Admin Route
+Route::middleware(['auth', 'role:super-admin'])->group(function () {
+    Route::get('/admin/performance', function () {
+        return Inertia::render('Admin/PerformanceMonitoring');
+    })->name('admin.performance');
 });

@@ -13,6 +13,7 @@ use Spatie\Permission\Models\Permission;
 class RoleController extends Controller
 {
     use Exportable;
+
     /**
      * Display a listing of the resource.
      */
@@ -34,21 +35,21 @@ class RoleController extends Controller
     public function export(Request $request)
     {
         $this->authorize('viewAny', Role::class);
-        
+
         $query = Role::query();
-        
+
         // Apply search filter if provided
         if ($request->has('search') && $request->search) {
             $query->quickSearch($request->search, ['name']);
         }
-        
+
         $format = $request->get('format', 'csv');
-        $filename = 'roles_' . date('Y-m-d_H-i-s') . '.' . $format;
-        
+        $filename = 'roles_'.date('Y-m-d_H-i-s').'.'.$format;
+
         if ($format === 'json') {
             return $this->exportToJson($query, $filename);
         }
-        
+
         return $this->exportToCsv($query, ['id', 'name', 'created_at', 'updated_at'], $filename);
     }
 

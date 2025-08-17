@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\PaymentTransaction;
 use App\Models\CampaignDonation;
+use App\Models\PaymentTransaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class PaymentTransactionFactory extends Factory
@@ -59,16 +59,16 @@ class PaymentTransactionFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'transaction_type' => 'refund',
-            'gateway_transaction_id' => 'refund_' . $this->faker->uuid,
+            'gateway_transaction_id' => 'refund_'.$this->faker->uuid,
         ]);
     }
 
     private function generateGatewayId(string $gateway): string
     {
         return match ($gateway) {
-            'stripe' => 'pi_' . $this->faker->regexify('[a-zA-Z0-9]{24}'),
-            'paypal' => 'PAY-' . $this->faker->regexify('[A-Z0-9]{17}'),
-            'bank_transfer' => 'bt_' . $this->faker->uuid,
+            'stripe' => 'pi_'.$this->faker->regexify('[a-zA-Z0-9]{24}'),
+            'paypal' => 'PAY-'.$this->faker->regexify('[A-Z0-9]{17}'),
+            'bank_transfer' => 'bt_'.$this->faker->uuid,
             default => $this->faker->uuid,
         };
     }
@@ -80,7 +80,7 @@ class PaymentTransactionFactory extends Factory
                 'id' => $this->generateGatewayId($gateway),
                 'object' => 'payment_intent',
                 'status' => 'succeeded',
-                'payment_method' => 'pm_' . $this->faker->regexify('[a-zA-Z0-9]{24}'),
+                'payment_method' => 'pm_'.$this->faker->regexify('[a-zA-Z0-9]{24}'),
             ],
             'paypal' => [
                 'id' => $this->generateGatewayId($gateway),

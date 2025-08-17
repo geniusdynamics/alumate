@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\TaxReceipt;
 use App\Services\DonationProcessingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
@@ -58,7 +58,7 @@ class TaxReceiptController extends Controller
     {
         $validated = $request->validate([
             'donor_id' => 'required|exists:users,id',
-            'tax_year' => 'required|integer|min:2020|max:' . (date('Y') + 1),
+            'tax_year' => 'required|integer|min:2020|max:'.(date('Y') + 1),
         ]);
 
         // Check if receipt already exists
@@ -78,7 +78,7 @@ class TaxReceiptController extends Controller
             $validated['tax_year']
         );
 
-        if (!$receipt) {
+        if (! $receipt) {
             return response()->json([
                 'message' => 'No eligible donations found for the specified year',
             ], 404);
@@ -94,7 +94,7 @@ class TaxReceiptController extends Controller
     {
         $this->authorize('view', $taxReceipt);
 
-        if (!$taxReceipt->pdf_path || !Storage::disk('private')->exists($taxReceipt->pdf_path)) {
+        if (! $taxReceipt->pdf_path || ! Storage::disk('private')->exists($taxReceipt->pdf_path)) {
             abort(404, 'Tax receipt PDF not found');
         }
 
@@ -104,7 +104,7 @@ class TaxReceiptController extends Controller
             Storage::disk('private')->path($taxReceipt->pdf_path),
             [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="Tax_Receipt_' . $taxReceipt->tax_year . '_' . $taxReceipt->receipt_number . '.pdf"',
+                'Content-Disposition' => 'attachment; filename="Tax_Receipt_'.$taxReceipt->tax_year.'_'.$taxReceipt->receipt_number.'.pdf"',
             ]
         );
     }
@@ -124,7 +124,7 @@ class TaxReceiptController extends Controller
         $this->authorize('create', TaxReceipt::class);
 
         $validated = $request->validate([
-            'tax_year' => 'required|integer|min:2020|max:' . (date('Y') + 1),
+            'tax_year' => 'required|integer|min:2020|max:'.(date('Y') + 1),
             'donor_ids' => 'nullable|array',
             'donor_ids.*' => 'exists:users,id',
         ]);
@@ -155,11 +155,12 @@ class TaxReceiptController extends Controller
 
                 if ($existingReceipt) {
                     $skipped++;
+
                     continue;
                 }
 
                 $receipt = $this->donationService->generateTaxReceipt($donorId, $taxYear);
-                
+
                 if ($receipt) {
                     $generated++;
                 } else {
@@ -185,7 +186,7 @@ class TaxReceiptController extends Controller
     {
         $this->authorize('view', $taxReceipt);
 
-        if (!$taxReceipt->donor_email) {
+        if (! $taxReceipt->donor_email) {
             return response()->json([
                 'message' => 'No email address available for this donor',
             ], 400);

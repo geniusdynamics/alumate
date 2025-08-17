@@ -2,11 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Job;
-use App\Models\Graduate;
 use App\Models\Course;
+use App\Models\Graduate;
+use App\Models\Job;
 use App\Models\SavedSearch;
-use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Builder;
 
 class SearchService
@@ -18,9 +17,9 @@ class SearchService
             ->notExpired();
 
         $this->applyJobFilters($query, $criteria);
-        
+
         $results = $query->paginate($perPage);
-        
+
         // Calculate match scores for each job if user is a graduate
         if (auth()->check() && auth()->user()->hasRole('graduate')) {
             $graduate = auth()->user()->graduate;
@@ -29,9 +28,10 @@ class SearchService
                     $matchData = $job->calculateMatchScore($graduate);
                     $job->match_score = $matchData['score'];
                     $job->match_factors = $matchData['factors'];
+
                     return $job;
                 });
-                
+
                 // Sort by match score
                 $sorted = $results->getCollection()->sortByDesc('match_score');
                 $results->setCollection($sorted);
@@ -48,20 +48,21 @@ class SearchService
             ->where('allow_employer_contact', true);
 
         $this->applyGraduateFilters($query, $criteria);
-        
+
         $results = $query->paginate($perPage);
-        
+
         // Calculate match scores if searching for a specific job
-        if (!empty($criteria['job_id'])) {
+        if (! empty($criteria['job_id'])) {
             $job = Job::find($criteria['job_id']);
             if ($job) {
                 $results->getCollection()->transform(function ($graduate) use ($job) {
                     $matchData = $job->calculateMatchScore($graduate);
                     $graduate->match_score = $matchData['score'];
                     $graduate->match_factors = $matchData['factors'];
+
                     return $graduate;
                 });
-                
+
                 // Sort by match score
                 $sorted = $results->getCollection()->sortByDesc('match_score');
                 $results->setCollection($sorted);
@@ -77,7 +78,7 @@ class SearchService
             ->active();
 
         $this->applyCourseFilters($query, $criteria);
-        
+
         return $query->paginate($perPage);
     }
 
@@ -94,7 +95,7 @@ class SearchService
 
         // Secondary match: skill-based
         $skillJobs = collect();
-        if (!empty($graduate->skills)) {
+        if (! empty($graduate->skills)) {
             $skillJobs = (clone $baseQuery)
                 ->where('course_id', '!=', $graduate->course_id)
                 ->where(function ($query) use ($graduate) {
@@ -107,11 +108,12 @@ class SearchService
 
         // Combine and score all jobs
         $allJobs = $courseJobs->merge($skillJobs)->unique('id');
-        
+
         $scoredJobs = $allJobs->map(function ($job) use ($graduate) {
             $matchData = $job->calculateMatchScore($graduate);
             $job->match_score = $matchData['score'];
             $job->match_factors = $matchData['factors'];
+
             return $job;
         });
 
@@ -131,7 +133,7 @@ class SearchService
 
         // Secondary match: skill-based
         $skillGraduates = collect();
-        if (!empty($job->required_skills)) {
+        if (! empty($job->required_skills)) {
             $skillGraduates = (clone $baseQuery)
                 ->where('course_id', '!=', $job->course_id)
                 ->where(function ($query) use ($job) {
@@ -144,11 +146,12 @@ class SearchService
 
         // Combine and score all graduates
         $allGraduates = $courseGraduates->merge($skillGraduates)->unique('id');
-        
+
         $scoredGraduates = $allGraduates->map(function ($graduate) use ($job) {
             $matchData = $job->calculateMatchScore($graduate);
             $graduate->match_score = $matchData['score'];
             $graduate->match_factors = $matchData['factors'];
+
             return $graduate;
         });
 
@@ -162,19 +165,19 @@ class SearchService
             ->notExpired();
 
         // Apply graduate preferences
-        if (!empty($preferences['location'])) {
+        if (! empty($preferences['location'])) {
             $query->where('location', 'like', "%{$preferences['location']}%");
         }
 
-        if (!empty($preferences['salary_min'])) {
+        if (! empty($preferences['salary_min'])) {
             $query->where('salary_min', '>=', $preferences['salary_min']);
         }
 
-        if (!empty($preferences['job_type'])) {
+        if (! empty($preferences['job_type'])) {
             $query->where('job_type', $preferences['job_type']);
         }
 
-        if (!empty($preferences['work_arrangement'])) {
+        if (! empty($preferences['work_arrangement'])) {
             $query->where('work_arrangement', $preferences['work_arrangement']);
         }
 
@@ -184,13 +187,13 @@ class SearchService
         $scoredJobs = $jobs->map(function ($job) use ($graduate, $preferences) {
             $matchData = $job->calculateMatchScore($graduate);
             $compatibilityScore = $this->calculateCompatibilityScore($job, $graduate, $preferences);
-            
+
             $job->match_score = $matchData['score'];
             $job->match_factors = $matchData['factors'];
             $job->compatibility_score = $compatibilityScore['score'];
             $job->compatibility_factors = $compatibilityScore['factors'];
             $job->overall_score = ($matchData['score'] * 0.7) + ($compatibilityScore['score'] * 0.3);
-            
+
             return $job;
         });
 
@@ -203,7 +206,7 @@ class SearchService
         $factors = [];
 
         // Location preference (20% weight)
-        if (!empty($preferences['location'])) {
+        if (! empty($preferences['location'])) {
             if (stripos($job->location, $preferences['location']) !== false) {
                 $score += 20;
                 $factors['location_match'] = true;
@@ -211,7 +214,7 @@ class SearchService
         }
 
         // Salary expectation (25% weight)
-        if (!empty($preferences['salary_min']) && $job->salary_min) {
+        if (! empty($preferences['salary_min']) && $job->salary_min) {
             if ($job->salary_min >= $preferences['salary_min']) {
                 $score += 25;
                 $factors['salary_match'] = true;
@@ -222,7 +225,7 @@ class SearchService
         }
 
         // Job type preference (15% weight)
-        if (!empty($preferences['job_type'])) {
+        if (! empty($preferences['job_type'])) {
             if ($job->job_type === $preferences['job_type']) {
                 $score += 15;
                 $factors['job_type_match'] = true;
@@ -230,7 +233,7 @@ class SearchService
         }
 
         // Work arrangement preference (15% weight)
-        if (!empty($preferences['work_arrangement'])) {
+        if (! empty($preferences['work_arrangement'])) {
             if ($job->work_arrangement === $preferences['work_arrangement']) {
                 $score += 15;
                 $factors['work_arrangement_match'] = true;
@@ -244,7 +247,7 @@ class SearchService
 
         return [
             'score' => round($score, 2),
-            'factors' => $factors
+            'factors' => $factors,
         ];
     }
 
@@ -268,44 +271,44 @@ class SearchService
 
     private function applyJobFilters(Builder $query, array $criteria)
     {
-        if (!empty($criteria['keywords'])) {
+        if (! empty($criteria['keywords'])) {
             $query->where(function ($q) use ($criteria) {
                 $q->where('title', 'like', "%{$criteria['keywords']}%")
-                  ->orWhere('description', 'like', "%{$criteria['keywords']}%");
+                    ->orWhere('description', 'like', "%{$criteria['keywords']}%");
             });
         }
 
-        if (!empty($criteria['location'])) {
+        if (! empty($criteria['location'])) {
             $query->where('location', 'like', "%{$criteria['location']}%");
         }
 
-        if (!empty($criteria['course_id'])) {
+        if (! empty($criteria['course_id'])) {
             $query->where('course_id', $criteria['course_id']);
         }
 
-        if (!empty($criteria['job_type'])) {
+        if (! empty($criteria['job_type'])) {
             $query->where('job_type', $criteria['job_type']);
         }
 
-        if (!empty($criteria['experience_level'])) {
+        if (! empty($criteria['experience_level'])) {
             $query->where('experience_level', $criteria['experience_level']);
         }
 
-        if (!empty($criteria['salary_min'])) {
+        if (! empty($criteria['salary_min'])) {
             $query->where(function ($q) use ($criteria) {
                 $q->where('salary_min', '>=', $criteria['salary_min'])
-                  ->orWhere('salary_max', '>=', $criteria['salary_min']);
+                    ->orWhere('salary_max', '>=', $criteria['salary_min']);
             });
         }
 
-        if (!empty($criteria['salary_max'])) {
+        if (! empty($criteria['salary_max'])) {
             $query->where(function ($q) use ($criteria) {
                 $q->where('salary_max', '<=', $criteria['salary_max'])
-                  ->orWhere('salary_min', '<=', $criteria['salary_max']);
+                    ->orWhere('salary_min', '<=', $criteria['salary_max']);
             });
         }
 
-        if (!empty($criteria['skills'])) {
+        if (! empty($criteria['skills'])) {
             $query->where(function ($q) use ($criteria) {
                 foreach ($criteria['skills'] as $skill) {
                     $q->orWhereJsonContains('required_skills', $skill);
@@ -313,11 +316,11 @@ class SearchService
             });
         }
 
-        if (!empty($criteria['work_arrangement'])) {
+        if (! empty($criteria['work_arrangement'])) {
             $query->where('work_arrangement', $criteria['work_arrangement']);
         }
 
-        if (!empty($criteria['employer_verified'])) {
+        if (! empty($criteria['employer_verified'])) {
             $query->whereHas('employer', function ($q) {
                 $q->where('verification_status', 'verified');
             });
@@ -326,7 +329,7 @@ class SearchService
         // Sort options
         $sortBy = $criteria['sort_by'] ?? 'created_at';
         $sortOrder = $criteria['sort_order'] ?? 'desc';
-        
+
         switch ($sortBy) {
             case 'salary':
                 $query->orderBy('salary_max', $sortOrder);
@@ -344,18 +347,18 @@ class SearchService
 
     private function applyGraduateFilters(Builder $query, array $criteria)
     {
-        if (!empty($criteria['keywords'])) {
+        if (! empty($criteria['keywords'])) {
             $query->where(function ($q) use ($criteria) {
                 $q->where('name', 'like', "%{$criteria['keywords']}%")
-                  ->orWhere('current_job_title', 'like', "%{$criteria['keywords']}%");
+                    ->orWhere('current_job_title', 'like', "%{$criteria['keywords']}%");
             });
         }
 
-        if (!empty($criteria['course_id'])) {
+        if (! empty($criteria['course_id'])) {
             $query->where('course_id', $criteria['course_id']);
         }
 
-        if (!empty($criteria['graduation_year'])) {
+        if (! empty($criteria['graduation_year'])) {
             if (is_array($criteria['graduation_year'])) {
                 $query->whereBetween('graduation_year', $criteria['graduation_year']);
             } else {
@@ -363,11 +366,11 @@ class SearchService
             }
         }
 
-        if (!empty($criteria['employment_status'])) {
+        if (! empty($criteria['employment_status'])) {
             $query->where('employment_status', $criteria['employment_status']);
         }
 
-        if (!empty($criteria['skills'])) {
+        if (! empty($criteria['skills'])) {
             $query->where(function ($q) use ($criteria) {
                 foreach ($criteria['skills'] as $skill) {
                     $q->orWhereJsonContains('skills', $skill);
@@ -375,51 +378,51 @@ class SearchService
             });
         }
 
-        if (!empty($criteria['min_gpa'])) {
+        if (! empty($criteria['min_gpa'])) {
             $query->where('gpa', '>=', $criteria['min_gpa']);
         }
 
-        if (!empty($criteria['max_gpa'])) {
+        if (! empty($criteria['max_gpa'])) {
             $query->where('gpa', '<=', $criteria['max_gpa']);
         }
 
-        if (!empty($criteria['location'])) {
+        if (! empty($criteria['location'])) {
             $query->where('address', 'like', "%{$criteria['location']}%");
         }
 
-        if (!empty($criteria['profile_completion_min'])) {
+        if (! empty($criteria['profile_completion_min'])) {
             $query->where('profile_completion_percentage', '>=', $criteria['profile_completion_min']);
         }
 
         // Sort options
         $sortBy = $criteria['sort_by'] ?? 'profile_completion_percentage';
         $sortOrder = $criteria['sort_order'] ?? 'desc';
-        
+
         $query->orderBy($sortBy, $sortOrder);
     }
 
     private function applyCourseFilters(Builder $query, array $criteria)
     {
-        if (!empty($criteria['keywords'])) {
+        if (! empty($criteria['keywords'])) {
             $query->where(function ($q) use ($criteria) {
                 $q->where('name', 'like', "%{$criteria['keywords']}%")
-                  ->orWhere('description', 'like', "%{$criteria['keywords']}%");
+                    ->orWhere('description', 'like', "%{$criteria['keywords']}%");
             });
         }
 
-        if (!empty($criteria['level'])) {
+        if (! empty($criteria['level'])) {
             $query->where('level', $criteria['level']);
         }
 
-        if (!empty($criteria['duration_min'])) {
+        if (! empty($criteria['duration_min'])) {
             $query->where('duration_months', '>=', $criteria['duration_min']);
         }
 
-        if (!empty($criteria['duration_max'])) {
+        if (! empty($criteria['duration_max'])) {
             $query->where('duration_months', '<=', $criteria['duration_max']);
         }
 
-        if (!empty($criteria['skills'])) {
+        if (! empty($criteria['skills'])) {
             $query->where(function ($q) use ($criteria) {
                 foreach ($criteria['skills'] as $skill) {
                     $q->orWhereJsonContains('skills_gained', $skill);
@@ -427,18 +430,18 @@ class SearchService
             });
         }
 
-        if (!empty($criteria['min_employment_rate'])) {
+        if (! empty($criteria['min_employment_rate'])) {
             $query->where('employment_rate', '>=', $criteria['min_employment_rate']);
         }
 
-        if (!empty($criteria['featured_only'])) {
+        if (! empty($criteria['featured_only'])) {
             $query->where('is_featured', true);
         }
 
         // Sort options
         $sortBy = $criteria['sort_by'] ?? 'employment_rate';
         $sortOrder = $criteria['sort_order'] ?? 'desc';
-        
+
         $query->orderBy($sortBy, $sortOrder);
     }
 
@@ -451,7 +454,7 @@ class SearchService
                 ->distinct()
                 ->pluck('title')
                 ->take(5);
-            
+
             $suggestions['jobs'] = $jobTitles->map(function ($title) {
                 return ['type' => 'job', 'text' => $title];
             });
@@ -478,7 +481,7 @@ class SearchService
                 ->distinct()
                 ->pluck('location')
                 ->take(5);
-            
+
             $suggestions['locations'] = $locations->map(function ($location) {
                 return ['type' => 'location', 'text' => $location];
             });
@@ -503,11 +506,11 @@ class SearchService
     public function getUserSavedSearches($userId, $type = null)
     {
         $query = SavedSearch::where('user_id', $userId)->active();
-        
+
         if ($type) {
             $query->where('search_type', $type);
         }
-        
+
         return $query->orderBy('created_at', 'desc')->get();
     }
 

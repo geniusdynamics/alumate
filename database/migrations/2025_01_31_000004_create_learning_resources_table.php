@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('rating', 3, 2)->default(0);
             $table->integer('rating_count')->default(0);
             $table->timestamps();
-            
+
             $table->index(['type', 'rating']);
             $table->index('created_by');
         });

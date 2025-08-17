@@ -72,7 +72,7 @@ class EventHighlightInteraction extends Model
 
     public function getTypeLabel(): string
     {
-        return match($this->type) {
+        return match ($this->type) {
             'like' => 'Like',
             'share' => 'Share',
             'comment' => 'Comment',

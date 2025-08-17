@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\EventCheckIn;
 use App\Models\Event;
+use App\Models\EventCheckIn;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,7 +14,7 @@ class EventCheckInFactory extends Factory
     public function definition(): array
     {
         $methods = ['manual', 'qr_code', 'nfc', 'geofence'];
-        
+
         return [
             'event_id' => Event::factory(),
             'user_id' => User::factory(),
@@ -68,7 +68,7 @@ class EventCheckInFactory extends Factory
         ]);
     }
 
-    public function withLocation(float $lat = null, float $lng = null): static
+    public function withLocation(?float $lat = null, ?float $lng = null): static
     {
         return $this->state(fn (array $attributes) => [
             'location_data' => [

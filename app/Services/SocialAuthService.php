@@ -4,10 +4,10 @@ namespace App\Services;
 
 use App\Models\SocialProfile;
 use App\Models\User;
-use Laravel\Socialite\Contracts\User as SocialiteUser;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Exception;
+use Laravel\Socialite\Contracts\User as SocialiteUser;
 
 class SocialAuthService
 {
@@ -25,13 +25,14 @@ class SocialAuthService
             if ($socialProfile) {
                 // Update existing social profile
                 $this->updateSocialProfile($socialProfile, $socialUser);
+
                 return $socialProfile->user;
             }
 
             // Check if user exists by email
             $user = User::where('email', $socialUser->getEmail())->first();
 
-            if (!$user) {
+            if (! $user) {
                 // Create new user
                 $user = $this->createUserFromSocialData($socialUser);
             }
@@ -54,12 +55,12 @@ class SocialAuthService
             ->first();
 
         if ($existingProfile && $existingProfile->user_id !== $user->id) {
-            throw new Exception('This ' . $provider . ' account is already linked to another user.');
+            throw new Exception('This '.$provider.' account is already linked to another user.');
         }
 
         // Check if user already has this provider linked
         $userProfile = $user->socialProfiles()->where('provider', $provider)->first();
-        
+
         if ($userProfile) {
             // Update existing profile
             return $this->updateSocialProfile($userProfile, $socialUser);
@@ -75,7 +76,7 @@ class SocialAuthService
     public function unlinkProfile(int $profileId): bool
     {
         $profile = SocialProfile::findOrFail($profileId);
-        
+
         return $profile->delete();
     }
 
@@ -86,7 +87,7 @@ class SocialAuthService
     {
         $name = $socialUser->getName() ?: 'User';
         $email = $socialUser->getEmail();
-        
+
         // Generate unique username from name or email
         $username = $this->generateUniqueUsername($name, $email);
 
@@ -176,7 +177,7 @@ class SocialAuthService
     {
         // Try to use name first
         $baseUsername = Str::slug(Str::lower($name));
-        
+
         // If name is empty or invalid, use email prefix
         if (empty($baseUsername) || strlen($baseUsername) < 3) {
             $baseUsername = Str::before($email, '@');
@@ -185,7 +186,7 @@ class SocialAuthService
 
         // Ensure minimum length
         if (strlen($baseUsername) < 3) {
-            $baseUsername = 'user' . rand(1000, 9999);
+            $baseUsername = 'user'.rand(1000, 9999);
         }
 
         $username = $baseUsername;
@@ -193,7 +194,7 @@ class SocialAuthService
 
         // Make sure username is unique
         while (User::where('username', $username)->exists()) {
-            $username = $baseUsername . $counter;
+            $username = $baseUsername.$counter;
             $counter++;
         }
 

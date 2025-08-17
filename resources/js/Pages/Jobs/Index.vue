@@ -109,7 +109,7 @@ const bulkAction = (action) => {
     if (selectedJobs.value.length === 0) return;
     
     let confirmMessage = '';
-    let additionalData = {};
+    const additionalData = {};
     
     switch (action) {
         case 'pause':

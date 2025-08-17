@@ -80,7 +80,7 @@ class JobPosting extends Model
      */
     public function isActive(): bool
     {
-        return $this->is_active && 
+        return $this->is_active &&
                ($this->expires_at === null || $this->expires_at->isFuture());
     }
 
@@ -101,10 +101,10 @@ class JobPosting extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
-                    ->where(function ($q) {
-                        $q->whereNull('expires_at')
-                          ->orWhere('expires_at', '>', now());
-                    });
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            });
     }
 
     /**

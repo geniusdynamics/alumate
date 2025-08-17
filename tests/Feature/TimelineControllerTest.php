@@ -31,15 +31,15 @@ class TimelineControllerTest extends TestCase
         $response = $this->getJson('/api/timeline');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'posts',
-                        'next_cursor',
-                        'has_more'
-                    ],
-                    'message'
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'posts',
+                    'next_cursor',
+                    'has_more',
+                ],
+                'message',
+            ]);
 
         $this->assertTrue($response->json('success'));
         $this->assertCount(3, $response->json('data.posts'));
@@ -59,7 +59,7 @@ class TimelineControllerTest extends TestCase
     public function test_can_get_timeline_with_cursor()
     {
         $posts = Post::factory()->count(3)->create(['visibility' => 'public']);
-        
+
         // Get first page
         $firstResponse = $this->getJson('/api/timeline?limit=1');
         $cursor = $firstResponse->json('data.next_cursor');
@@ -78,15 +78,15 @@ class TimelineControllerTest extends TestCase
         $response = $this->getJson('/api/timeline/refresh');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'posts',
-                        'next_cursor',
-                        'has_more'
-                    ],
-                    'message'
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'posts',
+                    'next_cursor',
+                    'has_more',
+                ],
+                'message',
+            ]);
 
         $this->assertTrue($response->json('success'));
         $this->assertEquals('Timeline refreshed successfully', $response->json('message'));
@@ -95,7 +95,7 @@ class TimelineControllerTest extends TestCase
     public function test_can_load_more_posts()
     {
         Post::factory()->count(3)->create(['visibility' => 'public']);
-        
+
         // Get first page to get cursor
         $firstResponse = $this->getJson('/api/timeline?limit=1');
         $cursor = $firstResponse->json('data.next_cursor');
@@ -112,7 +112,7 @@ class TimelineControllerTest extends TestCase
         $response = $this->getJson('/api/timeline/load-more');
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['cursor']);
+            ->assertJsonValidationErrors(['cursor']);
     }
 
     public function test_can_get_circle_posts()
@@ -124,7 +124,7 @@ class TimelineControllerTest extends TestCase
         // Create circle posts
         Post::factory()->count(2)->create([
             'visibility' => 'circles',
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
 
         $response = $this->getJson('/api/timeline/circles');
@@ -143,7 +143,7 @@ class TimelineControllerTest extends TestCase
         // Create group posts
         Post::factory()->count(2)->create([
             'visibility' => 'groups',
-            'group_ids' => [$group->id]
+            'group_ids' => [$group->id],
         ]);
 
         $response = $this->getJson('/api/timeline/groups');
@@ -179,19 +179,19 @@ class TimelineControllerTest extends TestCase
         // Create posts with different visibility
         $publicPost = Post::factory()->create(['visibility' => 'public']);
         $privatePost = Post::factory()->create(['visibility' => 'private']);
-        
+
         // Create circle post but user is not in circle
         $circle = Circle::factory()->create();
         $circlePost = Post::factory()->create([
             'visibility' => 'circles',
-            'circle_ids' => [$circle->id]
+            'circle_ids' => [$circle->id],
         ]);
 
         $response = $this->getJson('/api/timeline');
 
         $response->assertStatus(200);
         $postIds = collect($response->json('data.posts'))->pluck('id')->toArray();
-        
+
         $this->assertContains($publicPost->id, $postIds);
         $this->assertNotContains($privatePost->id, $postIds);
         $this->assertNotContains($circlePost->id, $postIds);
@@ -201,14 +201,14 @@ class TimelineControllerTest extends TestCase
     {
         $ownPost = Post::factory()->create([
             'user_id' => $this->user->id,
-            'visibility' => 'private'
+            'visibility' => 'private',
         ]);
 
         $response = $this->getJson('/api/timeline');
 
         $response->assertStatus(200);
         $postIds = collect($response->json('data.posts'))->pluck('id')->toArray();
-        
+
         $this->assertContains($ownPost->id, $postIds);
     }
 
@@ -227,19 +227,19 @@ class TimelineControllerTest extends TestCase
         // Create posts at different times
         $olderPost = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHours(2)
+            'created_at' => now()->subHours(2),
         ]);
 
         $newerPost = Post::factory()->create([
             'visibility' => 'public',
-            'created_at' => now()->subHour()
+            'created_at' => now()->subHour(),
         ]);
 
         $response = $this->getJson('/api/timeline');
 
         $response->assertStatus(200);
         $posts = $response->json('data.posts');
-        
+
         // Newer post should come first (higher relevance score)
         $this->assertEquals($newerPost->id, $posts[0]['id']);
         $this->assertEquals($olderPost->id, $posts[1]['id']);

@@ -31,7 +31,7 @@ class ScholarshipRecipientController extends Controller
         $recipient->load([
             'scholarship',
             'application.applicant',
-            'recipient'
+            'recipient',
         ]);
 
         return response()->json([
@@ -72,7 +72,7 @@ class ScholarshipRecipientController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update recipient: ' . $e->getMessage(),
+                'message' => 'Failed to update recipient: '.$e->getMessage(),
             ], 500);
         }
     }

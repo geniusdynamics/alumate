@@ -19,7 +19,7 @@ class TrackUserActivity
         // Only track activity for authenticated users
         if (Auth::check()) {
             $user = Auth::user();
-            
+
             // Update last activity timestamp
             $user->updateLastActivity();
 
@@ -36,7 +36,7 @@ class TrackUserActivity
     private function logActivity(Request $request, $user): void
     {
         $route = $request->route();
-        if (!$route) {
+        if (! $route) {
             return;
         }
 

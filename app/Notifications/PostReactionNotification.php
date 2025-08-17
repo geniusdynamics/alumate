@@ -6,8 +6,8 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Messages\DatabaseMessage;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class PostReactionNotification extends Notification implements ShouldQueue
@@ -15,7 +15,9 @@ class PostReactionNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected Post $post;
+
     protected User $reactor;
+
     protected string $reactionType;
 
     public function __construct(Post $post, User $reactor, string $reactionType)
@@ -47,7 +49,7 @@ class PostReactionNotification extends Notification implements ShouldQueue
             'reactor_avatar' => $this->reactor->avatar_url,
             'reaction_type' => $this->reactionType,
             'post_content' => substr($this->post->content, 0, 100),
-            'created_at' => now()->toISOString()
+            'created_at' => now()->toISOString(),
         ];
     }
 
@@ -73,12 +75,12 @@ class PostReactionNotification extends Notification implements ShouldQueue
     public function toMail($notifiable): MailMessage
     {
         $reactionText = $this->getReactionText();
-        
+
         return (new MailMessage)
             ->subject("{$this->reactor->name} {$reactionText} your post")
             ->greeting("Hi {$notifiable->name}!")
             ->line("{$this->reactor->name} {$reactionText} your post:")
-            ->line('"' . substr($this->post->content, 0, 100) . '"')
+            ->line('"'.substr($this->post->content, 0, 100).'"')
             ->action('View Post', url("/posts/{$this->post->id}"))
             ->line('Thank you for being part of our alumni community!');
     }

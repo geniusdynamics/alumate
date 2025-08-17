@@ -73,8 +73,8 @@ class MajorGiftProspect extends Model
     public function scopeClosingSoon($query, $days = 30)
     {
         return $query->where('expected_close_date', '<=', now()->addDays($days))
-                    ->where('expected_close_date', '>=', now())
-                    ->whereNotIn('stage', ['closed_won', 'closed_lost']);
+            ->where('expected_close_date', '>=', now())
+            ->whereNotIn('stage', ['closed_won', 'closed_lost']);
     }
 
     public function scopeHighProbability($query, $threshold = 0.7)
@@ -110,14 +110,14 @@ class MajorGiftProspect extends Model
 
     public function getIsOverdueAttribute()
     {
-        return $this->expected_close_date && 
-               $this->expected_close_date < now() && 
-               !in_array($this->stage, ['closed_won', 'closed_lost']);
+        return $this->expected_close_date &&
+               $this->expected_close_date < now() &&
+               ! in_array($this->stage, ['closed_won', 'closed_lost']);
     }
 
     public function getDaysUntilCloseAttribute()
     {
-        if (!$this->expected_close_date) {
+        if (! $this->expected_close_date) {
             return null;
         }
 
@@ -126,7 +126,7 @@ class MajorGiftProspect extends Model
 
     public function getProbabilityLabelAttribute()
     {
-        return match(true) {
+        return match (true) {
             $this->probability >= 0.8 => 'Very High',
             $this->probability >= 0.6 => 'High',
             $this->probability >= 0.4 => 'Medium',

@@ -2,13 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\Job;
-use App\Models\Graduate;
-use App\Models\JobGraduateMatch;
 use App\Models\Course;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use App\Models\Graduate;
+use App\Models\Job;
+use App\Models\JobGraduateMatch;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class MatchingService
 {
@@ -31,7 +30,7 @@ class MatchingService
         }
 
         // Skills Match (30% weight)
-        if (!empty($job->required_skills) && !empty($graduate->skills)) {
+        if (! empty($job->required_skills) && ! empty($graduate->skills)) {
             $skillsMatch = $this->calculateSkillsMatch($job->required_skills, $graduate->skills);
             $matchScore += $skillsMatch['score'] * 0.3;
             $factors['skills_match'] = $skillsMatch;
@@ -78,7 +77,7 @@ class MatchingService
 
         // Check for partial matches (similar skills)
         foreach ($requiredSkills as $required) {
-            if (!in_array($required, $exactMatches)) {
+            if (! in_array($required, $exactMatches)) {
                 foreach ($graduateSkills as $graduate) {
                     if ($this->areSkillsSimilar($required, $graduate)) {
                         $partialMatches[] = ['required' => $required, 'graduate' => $graduate];
@@ -109,7 +108,7 @@ class MatchingService
         $compatibility = 0;
 
         // Check skill overlap
-        if (!empty($jobCourse->skills_gained) && !empty($graduateCourse->skills_gained)) {
+        if (! empty($jobCourse->skills_gained) && ! empty($graduateCourse->skills_gained)) {
             $jobSkills = array_map('strtolower', $jobCourse->skills_gained);
             $gradSkills = array_map('strtolower', $graduateCourse->skills_gained);
             $overlap = array_intersect($jobSkills, $gradSkills);
@@ -117,7 +116,7 @@ class MatchingService
         }
 
         // Check career path overlap
-        if (!empty($jobCourse->career_paths) && !empty($graduateCourse->career_paths)) {
+        if (! empty($jobCourse->career_paths) && ! empty($graduateCourse->career_paths)) {
             $jobPaths = array_map('strtolower', $jobCourse->career_paths);
             $gradPaths = array_map('strtolower', $graduateCourse->career_paths);
             $pathOverlap = array_intersect($jobPaths, $gradPaths);
@@ -135,7 +134,7 @@ class MatchingService
     public function calculateExperienceMatch(Job $job, Graduate $graduate)
     {
         $requiredYears = $job->min_experience_years ?? 0;
-        
+
         // Estimate graduate experience
         $graduateExperience = 0;
         if ($graduate->employment_status === 'employed' && $graduate->employment_start_date) {
@@ -225,7 +224,7 @@ class MatchingService
         $jobMin = $job->salary_min;
         $jobMax = $job->salary_max;
 
-        if (!$jobMin && !$jobMax) {
+        if (! $jobMin && ! $jobMax) {
             return 50; // Neutral if no salary info
         }
 
@@ -237,6 +236,7 @@ class MatchingService
         // Calculate based on salary improvement potential
         if ($jobMax && $jobMax > $currentSalary) {
             $improvement = (($jobMax - $currentSalary) / $currentSalary) * 100;
+
             return min(100, 50 + $improvement);
         }
 
@@ -295,7 +295,7 @@ class MatchingService
 
         foreach ($candidates as $graduate) {
             $matchData = $this->calculateJobGraduateMatch($job, $graduate);
-            
+
             if ($matchData['overall_score'] >= 30) { // Minimum threshold
                 $matches[] = [
                     'graduate' => $graduate,
@@ -324,7 +324,7 @@ class MatchingService
 
         foreach ($jobs as $job) {
             $matchData = $this->calculateJobGraduateMatch($job, $graduate);
-            
+
             if ($matchData['overall_score'] >= 30) { // Minimum threshold
                 $matches[] = [
                     'job' => $job,
@@ -392,7 +392,7 @@ class MatchingService
     public function markMatchAsRecommended(JobGraduateMatch $match)
     {
         $match->update(['is_recommended' => true]);
-        
+
         // Send notification to graduate
         $match->graduate->user->notifications()->create([
             'type' => 'job_recommendation',
@@ -411,12 +411,14 @@ class MatchingService
     public function markMatchAsViewed(JobGraduateMatch $match)
     {
         $match->update(['is_viewed' => true]);
+
         return $match;
     }
 
     public function markMatchAsApplied(JobGraduateMatch $match)
     {
         $match->update(['is_applied' => true]);
+
         return $match;
     }
 

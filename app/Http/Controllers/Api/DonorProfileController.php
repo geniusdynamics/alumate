@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\DonorProfile;
 use App\Models\User;
 use App\Services\DonorCrmService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class DonorProfileController extends Controller
@@ -29,8 +29,8 @@ class DonorProfileController extends Controller
         ]);
 
         $filters = $request->only([
-            'tier', 'officer_id', 'capacity_min', 'capacity_max', 
-            'giving_interests', 'needs_contact'
+            'tier', 'officer_id', 'capacity_min', 'capacity_max',
+            'giving_interests', 'needs_contact',
         ]);
 
         $profiles = $this->donorCrmService->searchDonors($filters);
@@ -49,7 +49,7 @@ class DonorProfileController extends Controller
             'meta' => [
                 'total' => $profiles->count(),
                 'filters_applied' => array_filter($filters),
-            ]
+            ],
         ]);
     }
 
@@ -76,7 +76,7 @@ class DonorProfileController extends Controller
 
         return response()->json([
             'data' => $profile->load(['user', 'assignedOfficer']),
-            'message' => 'Donor profile created successfully'
+            'message' => 'Donor profile created successfully',
         ], 201);
     }
 
@@ -85,22 +85,22 @@ class DonorProfileController extends Controller
         $profile = $donorProfile->load([
             'user',
             'assignedOfficer',
-            'interactions' => function($query) {
+            'interactions' => function ($query) {
                 $query->latest()->limit(10);
             },
-            'stewardshipPlans' => function($query) {
+            'stewardshipPlans' => function ($query) {
                 $query->active();
             },
-            'majorGiftProspects' => function($query) {
+            'majorGiftProspects' => function ($query) {
                 $query->active();
-            }
+            },
         ]);
 
         $insights = $this->donorCrmService->generateDonorInsights($profile);
 
         return response()->json([
             'data' => $profile,
-            'insights' => $insights
+            'insights' => $insights,
         ]);
     }
 
@@ -126,7 +126,7 @@ class DonorProfileController extends Controller
 
         return response()->json([
             'data' => $profile->load(['user', 'assignedOfficer']),
-            'message' => 'Donor profile updated successfully'
+            'message' => 'Donor profile updated successfully',
         ]);
     }
 
@@ -135,7 +135,7 @@ class DonorProfileController extends Controller
         $donorProfile->delete();
 
         return response()->json([
-            'message' => 'Donor profile deleted successfully'
+            'message' => 'Donor profile deleted successfully',
         ]);
     }
 
@@ -145,7 +145,7 @@ class DonorProfileController extends Controller
         $dashboard = $this->donorCrmService->getDonorDashboard($officer);
 
         return response()->json([
-            'data' => $dashboard
+            'data' => $dashboard,
         ]);
     }
 
@@ -155,7 +155,7 @@ class DonorProfileController extends Controller
         $contacts = $this->donorCrmService->getContactsNeedingAttention($officer);
 
         return response()->json([
-            'data' => $contacts
+            'data' => $contacts,
         ]);
     }
 
@@ -176,7 +176,7 @@ class DonorProfileController extends Controller
         );
 
         return response()->json([
-            'message' => "Updated {$updated} donor profiles successfully"
+            'message' => "Updated {$updated} donor profiles successfully",
         ]);
     }
 }

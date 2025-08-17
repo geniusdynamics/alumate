@@ -13,7 +13,9 @@ class SearchAlertNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected SavedSearch $savedSearch;
+
     protected int $newResultsCount;
+
     protected array $sampleResults;
 
     /**
@@ -44,7 +46,7 @@ class SearchAlertNotification extends Notification implements ShouldQueue
             ->greeting("Hello {$notifiable->name}!")
             ->line("We found {$this->newResultsCount} new alumni matching your saved search \"{$this->savedSearch->name}\".");
 
-        if (!empty($this->savedSearch->query)) {
+        if (! empty($this->savedSearch->query)) {
             $message->line("Search query: \"{$this->savedSearch->query}\"");
         }
 
@@ -52,14 +54,14 @@ class SearchAlertNotification extends Notification implements ShouldQueue
             $message->line("Filters: {$this->savedSearch->filter_description}");
         }
 
-        if (!empty($this->sampleResults)) {
-            $message->line("Here are some of the new results:");
-            
+        if (! empty($this->sampleResults)) {
+            $message->line('Here are some of the new results:');
+
             foreach (array_slice($this->sampleResults, 0, 3) as $result) {
                 $name = $result['name'] ?? 'Unknown';
                 $company = $result['company'] ?? '';
                 $title = $result['title'] ?? '';
-                
+
                 $resultLine = "• $name";
                 if ($title && $company) {
                     $resultLine .= " - $title at $company";
@@ -68,14 +70,14 @@ class SearchAlertNotification extends Notification implements ShouldQueue
                 } elseif ($company) {
                     $resultLine .= " - $company";
                 }
-                
+
                 $message->line($resultLine);
             }
         }
 
         $message->action('View All Results', route('search.results', [
             'query' => $this->savedSearch->query,
-            'filters' => $this->savedSearch->filters
+            'filters' => $this->savedSearch->filters,
         ]));
 
         $message->line('You can manage your search alerts in your account settings.');
@@ -94,7 +96,7 @@ class SearchAlertNotification extends Notification implements ShouldQueue
             'saved_search_name' => $this->savedSearch->name,
             'new_results_count' => $this->newResultsCount,
             'sample_results' => $this->sampleResults,
-            'message' => "Found {$this->newResultsCount} new alumni matching your saved search \"{$this->savedSearch->name}\""
+            'message' => "Found {$this->newResultsCount} new alumni matching your saved search \"{$this->savedSearch->name}\"",
         ];
     }
 }

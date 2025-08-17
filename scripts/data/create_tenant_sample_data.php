@@ -1,24 +1,24 @@
 <?php
 
-require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__.'/../../vendor/autoload.php';
 
+use App\Models\Course;
+use App\Models\Employer;
+use App\Models\Graduate;
+use App\Models\Job;
+use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use App\Models\User;
-use App\Models\Tenant;
-use App\Models\Course;
-use App\Models\Graduate;
-use App\Models\Employer;
-use App\Models\Job;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 // Bootstrap Laravel
-$app = Application::configure(basePath: __DIR__ . '/../..')
+$app = Application::configure(basePath: __DIR__.'/../..')
     ->withRouting(
-        web: __DIR__ . '/../../routes/web.php',
-        commands: __DIR__ . '/../../routes/console.php',
+        web: __DIR__.'/../../routes/web.php',
+        commands: __DIR__.'/../../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
@@ -36,7 +36,7 @@ echo "Creating tenant-aware sample data for Graduate Tracking System...\n";
 try {
     // Create central system admin user
     $adminUser = User::firstOrCreate([
-        'email' => 'admin@system.com'
+        'email' => 'admin@system.com',
     ], [
         'name' => 'System Administrator',
         'password' => Hash::make('password'),
@@ -46,7 +46,7 @@ try {
 
     // Ensure Super Admin role exists and assign it
     $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
-    if (!$adminUser->hasRole('Super Admin')) {
+    if (! $adminUser->hasRole('Super Admin')) {
         $adminUser->assignRole('Super Admin');
     }
 
@@ -72,7 +72,7 @@ try {
 
         // Create institution admin for this tenant
         $adminUser = User::firstOrCreate([
-            'email' => "admin@{$tenant->id}.edu"
+            'email' => "admin@{$tenant->id}.edu",
         ], [
             'name' => "{$tenant->name} Administrator",
             'password' => Hash::make('password'),
@@ -81,7 +81,7 @@ try {
         ]);
 
         $institutionAdminRole = Role::firstOrCreate(['name' => 'Institution Admin']);
-        if (!$adminUser->hasRole('Institution Admin')) {
+        if (! $adminUser->hasRole('Institution Admin')) {
             $adminUser->assignRole('Institution Admin');
         }
 
@@ -110,16 +110,16 @@ try {
         $createdCourses = [];
         foreach ($courses as $courseData) {
             $course = Course::firstOrCreate([
-                'code' => $courseData['code']
+                'code' => $courseData['code'],
             ], array_merge($courseData, [
-                    'description' => "Sample course: {$courseData['name']}",
-                    'skills_gained' => json_encode(['Communication', 'Problem Solving', 'Teamwork']),
-                    'career_paths' => json_encode(['Analyst', 'Specialist', 'Manager']),
-                    'is_active' => true,
-                ]));
+                'description' => "Sample course: {$courseData['name']}",
+                'skills_gained' => json_encode(['Communication', 'Problem Solving', 'Teamwork']),
+                'career_paths' => json_encode(['Analyst', 'Specialist', 'Manager']),
+                'is_active' => true,
+            ]));
             $createdCourses[] = $course;
         }
-        echo "✓ Created " . count($createdCourses) . " courses\n";
+        echo '✓ Created '.count($createdCourses)." courses\n";
 
         // Create sample graduates for this tenant
         $graduateData = [
@@ -141,22 +141,22 @@ try {
         foreach ($graduateData as $index => $gradData) {
             // Create user for graduate
             $graduateUser = User::firstOrCreate([
-                'email' => $gradData['email']
+                'email' => $gradData['email'],
             ], [
-                'name' => $gradData['first_name'] . ' ' . $gradData['last_name'],
+                'name' => $gradData['first_name'].' '.$gradData['last_name'],
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'status' => 'active',
             ]);
 
             $graduateRole = Role::firstOrCreate(['name' => 'Graduate']);
-            if (!$graduateUser->hasRole('Graduate')) {
+            if (! $graduateUser->hasRole('Graduate')) {
                 $graduateUser->assignRole('Graduate');
             }
 
             // Create graduate record
             $graduate = Graduate::firstOrCreate([
-                'student_id' => $gradData['student_id']
+                'student_id' => $gradData['student_id'],
             ], [
                 'tenant_id' => $tenant->id,
                 'user_id' => $graduateUser->id,
@@ -166,13 +166,13 @@ try {
                 'course_id' => $createdCourses[$index % count($createdCourses)]->id,
                 'graduation_year' => 2023,
                 'employment_status' => 'seeking',
-                'phone' => '+1-555-' . str_pad($index + 1, 4, '0', STR_PAD_LEFT),
+                'phone' => '+1-555-'.str_pad($index + 1, 4, '0', STR_PAD_LEFT),
                 'date_of_birth' => '1995-01-01',
                 'gender' => ['male', 'female'][rand(0, 1)],
             ]);
             $createdGraduates[] = $graduate;
         }
-        echo "✓ Created " . count($createdGraduates) . " graduates\n";
+        echo '✓ Created '.count($createdGraduates)." graduates\n";
 
         // End tenant context
         tenancy()->end();
@@ -187,7 +187,7 @@ try {
     $createdEmployers = [];
     foreach ($employers as $employerData) {
         $employerUser = User::firstOrCreate([
-            'email' => strtolower(str_replace(' ', '', $employerData['company_name'])) . '@company.com'
+            'email' => strtolower(str_replace(' ', '', $employerData['company_name'])).'@company.com',
         ], [
             'name' => $employerData['company_name'],
             'password' => Hash::make('password'),
@@ -196,12 +196,12 @@ try {
         ]);
 
         $employerRole = Role::firstOrCreate(['name' => 'Employer']);
-        if (!$employerUser->hasRole('Employer')) {
+        if (! $employerUser->hasRole('Employer')) {
             $employerUser->assignRole('Employer');
         }
 
         $employer = Employer::firstOrCreate([
-            'user_id' => $employerUser->id
+            'user_id' => $employerUser->id,
         ], [
             'company_name' => $employerData['company_name'],
             'industry' => $employerData['industry'],
@@ -213,7 +213,7 @@ try {
         ]);
         $createdEmployers[] = $employer;
     }
-    echo "\n✓ Created " . count($createdEmployers) . " employers\n";
+    echo "\n✓ Created ".count($createdEmployers)." employers\n";
 
     // Create sample jobs
     $jobs = [
@@ -235,20 +235,20 @@ try {
     foreach ($jobs as $index => $jobData) {
         $job = Job::firstOrCreate([
             'title' => $jobData['title'],
-            'employer_id' => $createdEmployers[$index % count($createdEmployers)]->id
+            'employer_id' => $createdEmployers[$index % count($createdEmployers)]->id,
         ], array_merge($jobData, [
-                'requirements' => 'Bachelor degree required',
-                'responsibilities' => 'Various responsibilities...',
-                'salary_min' => 50000,
-                'salary_max' => 80000,
-                'application_deadline' => now()->addDays(30),
-                'status' => 'active',
-                'is_published' => true,
-                'published_at' => now(),
-            ]));
+            'requirements' => 'Bachelor degree required',
+            'responsibilities' => 'Various responsibilities...',
+            'salary_min' => 50000,
+            'salary_max' => 80000,
+            'application_deadline' => now()->addDays(30),
+            'status' => 'active',
+            'is_published' => true,
+            'published_at' => now(),
+        ]));
         $createdJobs[] = $job;
     }
-    echo "✓ Created " . count($createdJobs) . " jobs\n";
+    echo '✓ Created '.count($createdJobs)." jobs\n";
 
     echo "\n🎉 Sample data created successfully!\n";
     echo "\nYou can now login with:\n";
@@ -261,12 +261,12 @@ try {
     }
 
     foreach ($createdEmployers as $employer) {
-        $email = strtolower(str_replace(' ', '', $employer->company_name)) . '@company.com';
+        $email = strtolower(str_replace(' ', '', $employer->company_name)).'@company.com';
         echo "- {$employer->company_name}: {$email} / password\n";
     }
 
 } catch (Exception $e) {
-    echo "❌ Error: " . $e->getMessage() . "\n";
-    echo "Stack trace: " . $e->getTraceAsString() . "\n";
+    echo '❌ Error: '.$e->getMessage()."\n";
+    echo 'Stack trace: '.$e->getTraceAsString()."\n";
     exit(1);
 }

@@ -37,12 +37,19 @@ class JobApplication extends Model
     ];
 
     const STATUS_PENDING = 'pending';
+
     const STATUS_REVIEWING = 'reviewing';
+
     const STATUS_INTERVIEWING = 'interviewing';
+
     const STATUS_OFFERED = 'offered';
+
     const STATUS_ACCEPTED = 'accepted';
+
     const STATUS_REJECTED = 'rejected';
+
     const STATUS_WITHDRAWN = 'withdrawn';
+
     const STATUS_HIRED = 'hired';
 
     /**
@@ -83,7 +90,7 @@ class JobApplication extends Model
      */
     public function isActive(): bool
     {
-        return !in_array($this->status, [
+        return ! in_array($this->status, [
             self::STATUS_ACCEPTED,
             self::STATUS_REJECTED,
             self::STATUS_WITHDRAWN,

@@ -7,9 +7,9 @@ trait Searchable
     /**
      * Apply quick search to a query based on given columns.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|null $search
-     * @param array $columns
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  string|null  $search
+     * @param  array  $columns
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeQuickSearch($query, $search = null, $columns = [])
@@ -21,7 +21,7 @@ trait Searchable
                 }
             });
         }
+
         return $query;
     }
 }
-

@@ -100,8 +100,8 @@ class EventFeedback extends Model
 
     public function hasDetailedFeedback(): bool
     {
-        return !empty($this->feedback_text) || 
-               !empty($this->feedback_categories) || 
-               !empty($this->improvement_suggestions);
+        return ! empty($this->feedback_text) ||
+               ! empty($this->feedback_categories) ||
+               ! empty($this->improvement_suggestions);
     }
 }

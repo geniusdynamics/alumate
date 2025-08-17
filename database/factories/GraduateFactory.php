@@ -2,8 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Models\Graduate;
 use App\Models\Course;
+use App\Models\Graduate;
 use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -37,13 +37,13 @@ class GraduateFactory extends Factory
                 'allow_employer_contact' => $this->faker->boolean(85),
             ],
             'skills' => $this->faker->randomElements([
-                'PHP', 'JavaScript', 'Python', 'Java', 'C++', 'HTML/CSS', 'React', 'Vue.js', 
-                'Node.js', 'Laravel', 'Django', 'Spring Boot', 'MySQL', 'PostgreSQL', 
-                'MongoDB', 'Git', 'Docker', 'AWS', 'Azure'
+                'PHP', 'JavaScript', 'Python', 'Java', 'C++', 'HTML/CSS', 'React', 'Vue.js',
+                'Node.js', 'Laravel', 'Django', 'Spring Boot', 'MySQL', 'PostgreSQL',
+                'MongoDB', 'Git', 'Docker', 'AWS', 'Azure',
             ], $this->faker->numberBetween(3, 8)),
             'certifications' => $this->faker->optional(0.4)->randomElements([
                 'AWS Certified Developer', 'Google Cloud Professional', 'Microsoft Azure Fundamentals',
-                'Cisco CCNA', 'CompTIA Security+', 'Oracle Certified Professional'
+                'Cisco CCNA', 'CompTIA Security+', 'Oracle Certified Professional',
             ], $this->faker->numberBetween(1, 3)),
             'allow_employer_contact' => $this->faker->boolean(85),
             'job_search_active' => $this->faker->boolean(70),

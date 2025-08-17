@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Models\PredictionModel;
+use App\Models\Course;
 use App\Models\Graduate;
 use App\Models\JobApplication;
-use App\Models\Course;
+use App\Models\PredictionModel;
 use Illuminate\Console\Command;
 
 class GeneratePredictions extends Command
@@ -23,15 +23,16 @@ class GeneratePredictions extends Command
         $retrain = $this->option('retrain');
         $limit = (int) $this->option('limit');
 
-        $this->info("Generating predictive analytics...");
+        $this->info('Generating predictive analytics...');
 
         try {
             $models = PredictionModel::active()
-                ->when($modelType, fn($query) => $query->where('type', $modelType))
+                ->when($modelType, fn ($query) => $query->where('type', $modelType))
                 ->get();
 
             if ($models->isEmpty()) {
-                $this->warn("No active prediction models found.");
+                $this->warn('No active prediction models found.');
+
                 return 0;
             }
 
@@ -39,25 +40,27 @@ class GeneratePredictions extends Command
 
             foreach ($models as $model) {
                 $this->line("Processing model: {$model->name}");
-                
+
                 // Retrain model if requested or needed
                 if ($retrain || $model->needsRetraining()) {
-                    $this->info("  → Retraining model...");
+                    $this->info('  → Retraining model...');
                     $accuracy = $model->train();
-                    $this->info("  → Model retrained with accuracy: " . number_format($accuracy * 100, 2) . '%');
+                    $this->info('  → Model retrained with accuracy: '.number_format($accuracy * 100, 2).'%');
                 }
 
                 // Generate predictions
                 $predictions = $this->generateModelPredictions($model, $limit);
                 $totalPredictions += $predictions;
-                
+
                 $this->info("  → Generated {$predictions} predictions");
             }
 
-            $this->info("Generated {$totalPredictions} total predictions across " . $models->count() . " models");
+            $this->info("Generated {$totalPredictions} total predictions across ".$models->count().' models');
+
             return 0;
         } catch (\Exception $e) {
-            $this->error("Failed to generate predictions: " . $e->getMessage());
+            $this->error('Failed to generate predictions: '.$e->getMessage());
+
             return 1;
         }
     }
@@ -65,9 +68,10 @@ class GeneratePredictions extends Command
     private function generateModelPredictions(PredictionModel $model, $limit)
     {
         $subjects = $this->getSubjectsForModel($model, $limit);
-        
+
         if ($subjects->isEmpty()) {
             $this->warn("  → No subjects found for model: {$model->name}");
+
             return 0;
         }
 
@@ -85,8 +89,9 @@ class GeneratePredictions extends Command
                     ->where('prediction_date', '>=', now()->subDays(7))
                     ->first();
 
-                if ($existingPrediction && !$existingPrediction->shouldUpdate()) {
+                if ($existingPrediction && ! $existingPrediction->shouldUpdate()) {
                     $bar->advance();
+
                     continue;
                 }
 
@@ -94,7 +99,7 @@ class GeneratePredictions extends Command
                 $generated++;
             } catch (\Exception $e) {
                 $errors++;
-                \Log::error("Failed to generate prediction for {$model->type} model: " . $e->getMessage());
+                \Log::error("Failed to generate prediction for {$model->type} model: ".$e->getMessage());
             }
 
             $bar->advance();
@@ -112,7 +117,7 @@ class GeneratePredictions extends Command
 
     private function getSubjectsForModel(PredictionModel $model, $limit)
     {
-        return match($model->type) {
+        return match ($model->type) {
             'job_placement' => $this->getJobPlacementSubjects($limit),
             'employment_success' => $this->getEmploymentSuccessSubjects($limit),
             'course_demand' => $this->getCourseDemandSubjects($limit),
@@ -138,7 +143,7 @@ class GeneratePredictions extends Command
             ->orderBy('created_at', 'desc')
             ->limit($limit)
             ->get()
-            ->map(fn($application) => $application->graduate)
+            ->map(fn ($application) => $application->graduate)
             ->unique('id')
             ->values();
     }

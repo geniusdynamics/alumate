@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Course;
 use App\Models\Graduate;
 use App\Models\Job;
 use App\Models\JobApplication;
-use App\Models\Course;
-use App\Models\User;
 use App\Models\Tenant;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Stancl\Tenancy\Facades\Tenancy;
 
@@ -21,13 +20,13 @@ class GraduateDashboardController extends Controller
         $user = Auth::user();
 
         // Get user's institution (tenant)
-        if (!$user->institution_id) {
+        if (! $user->institution_id) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Please select your institution first.');
         }
 
         $tenant = Tenant::find($user->institution_id);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Institution not found.');
         }
@@ -45,14 +44,14 @@ class GraduateDashboardController extends Controller
             // Try to find existing graduate record
             $graduate = Graduate::where('user_id', $user->id)->first();
 
-            if (!$graduate) {
+            if (! $graduate) {
                 // Create graduate record if it doesn't exist
                 $graduate = Graduate::create([
                     'tenant_id' => $tenant->id,
                     'user_id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'student_id' => 'STU' . str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                    'student_id' => 'STU'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
                     'graduation_year' => now()->year,
                     'employment_status' => 'unemployed',
                     'course_id' => null, // Will be set later when user selects a course
@@ -72,17 +71,17 @@ class GraduateDashboardController extends Controller
 
         // Get dashboard statistics
         $statistics = $this->getDashboardStatistics($graduate);
-        
+
         // Get recent activities
         $recentActivities = $this->getRecentActivities($graduate);
-        
+
         // Get job recommendations
         $jobRecommendations = $this->getJobRecommendations($graduate);
-        
+
         // Get classmate connections
         $classmateConnections = $this->getClassmateConnections($graduate);
 
-        if (!$graduate) {
+        if (! $graduate) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Unable to access graduate profile.');
         }
@@ -110,7 +109,7 @@ class GraduateDashboardController extends Controller
             'current_job_title' => 'Software Developer',
             'current_company' => 'Tech Corp',
             'graduation_year' => 2023,
-            'profile_completion_percentage' => 85.5
+            'profile_completion_percentage' => 85.5,
         ];
 
         // Add mock relationships to the graduate object
@@ -132,9 +131,9 @@ class GraduateDashboardController extends Controller
         $graduate = (object) [
             'id' => $user->id,
             'skills' => ['PHP', 'Laravel', 'Vue.js', 'JavaScript'],
-            'course_id' => 1
+            'course_id' => 1,
         ];
-        
+
         $query = Job::with(['employer', 'course', 'applications'])
             ->where('status', 'active')
             ->where('application_deadline', '>', now())
@@ -142,14 +141,14 @@ class GraduateDashboardController extends Controller
 
         // Apply filters
         if ($request->filled('search')) {
-            $query->where(function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%'.$request->search.'%')
+                    ->orWhere('description', 'like', '%'.$request->search.'%');
             });
         }
 
         if ($request->filled('location')) {
-            $query->where('location', 'like', '%' . $request->location . '%');
+            $query->where('location', 'like', '%'.$request->location.'%');
         }
 
         if ($request->filled('job_type')) {
@@ -180,7 +179,7 @@ class GraduateDashboardController extends Controller
         }
 
         $jobs = $query->orderBy('created_at', 'desc')->paginate(12);
-        
+
         $courses = Course::active()->orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Graduate/JobBrowsing', [
@@ -188,8 +187,8 @@ class GraduateDashboardController extends Controller
             'courses' => $courses,
             'graduate' => $graduate,
             'filters' => $request->only([
-                'search', 'location', 'job_type', 'experience_level', 
-                'salary_min', 'course_id'
+                'search', 'location', 'job_type', 'experience_level',
+                'salary_min', 'course_id',
             ]),
         ]);
     }
@@ -203,7 +202,7 @@ class GraduateDashboardController extends Controller
         $graduate = (object) [
             'id' => $user->id,
             'name' => $user->name,
-            'email' => $user->email
+            'email' => $user->email,
         ];
 
         // Mock applications data
@@ -215,9 +214,9 @@ class GraduateDashboardController extends Controller
                 'job' => (object) [
                     'title' => 'Software Developer',
                     'employer' => (object) ['company_name' => 'Tech Corp'],
-                    'course' => (object) ['name' => 'Computer Science']
-                ]
-            ]
+                    'course' => (object) ['name' => 'Computer Science'],
+                ],
+            ],
         ]);
 
         // Apply filters
@@ -226,11 +225,11 @@ class GraduateDashboardController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->whereHas('job', function($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                  ->orWhereHas('employer', function($empQuery) use ($request) {
-                      $empQuery->where('company_name', 'like', '%' . $request->search . '%');
-                  });
+            $query->whereHas('job', function ($q) use ($request) {
+                $q->where('title', 'like', '%'.$request->search.'%')
+                    ->orWhereHas('employer', function ($empQuery) use ($request) {
+                        $empQuery->where('company_name', 'like', '%'.$request->search.'%');
+                    });
             });
         }
 
@@ -246,8 +245,8 @@ class GraduateDashboardController extends Controller
     {
         $user = Auth::user();
         $graduate = $user->graduate;
-        
-        if (!$graduate) {
+
+        if (! $graduate) {
             return redirect()->route('graduates.create');
         }
 
@@ -258,8 +257,8 @@ class GraduateDashboardController extends Controller
 
         // Apply filters
         if ($request->filled('search')) {
-            $query->whereHas('user', function($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
+            $query->whereHas('user', function ($q) use ($request) {
+                $q->where('name', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -301,7 +300,7 @@ class GraduateDashboardController extends Controller
             'current_job_title' => 'Software Developer',
             'current_company' => 'Tech Corp',
             'graduation_year' => 2023,
-            'profile_completion_percentage' => 85.5
+            'profile_completion_percentage' => 85.5,
         ];
 
         $careerHistory = $this->getCareerHistory($graduate);
@@ -324,8 +323,8 @@ class GraduateDashboardController extends Controller
     {
         $user = Auth::user();
         $graduate = $user->graduate;
-        
-        if (!$graduate) {
+
+        if (! $graduate) {
             return redirect()->route('graduates.create');
         }
 
@@ -396,9 +395,9 @@ class GraduateDashboardController extends Controller
     {
         $query = Job::with(['employer', 'course'])
             ->where('status', 'active')
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->where('application_deadline', '>', now())
-                  ->orWhereNull('application_deadline');
+                    ->orWhereNull('application_deadline');
             });
 
         // Match by course
@@ -408,9 +407,9 @@ class GraduateDashboardController extends Controller
 
         // Match by skills
         if ($graduate->skills) {
-            $query->where(function($q) use ($graduate) {
+            $query->where(function ($q) use ($graduate) {
                 $q->whereJsonOverlaps('required_skills', $graduate->skills)
-                  ->orWhereJsonOverlaps('preferred_skills', $graduate->skills);
+                    ->orWhereJsonOverlaps('preferred_skills', $graduate->skills);
             });
         }
 
@@ -440,7 +439,7 @@ class GraduateDashboardController extends Controller
         // This would typically come from a career history table
         // For now, return employment status history
         $history = [];
-        
+
         if ($graduate->employment_status && isset($graduate->employment_status['status'])) {
             $history[] = [
                 'date' => $graduate->updated_at,

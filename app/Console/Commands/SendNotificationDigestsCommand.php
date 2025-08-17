@@ -28,14 +28,16 @@ class SendNotificationDigestsCommand extends Command
         $userId = $this->option('user');
 
         // Validate frequency
-        if (!in_array($frequency, ['daily', 'weekly'])) {
+        if (! in_array($frequency, ['daily', 'weekly'])) {
             $this->error('Frequency must be either "daily" or "weekly"');
+
             return self::FAILURE;
         }
 
         // Validate user ID if provided
-        if ($userId && !is_numeric($userId)) {
+        if ($userId && ! is_numeric($userId)) {
             $this->error('User ID must be a number');
+
             return self::FAILURE;
         }
 
@@ -43,17 +45,17 @@ class SendNotificationDigestsCommand extends Command
 
         try {
             SendNotificationDigestJob::dispatch($frequency, $userId ? (int) $userId : null);
-            
+
             if ($userId) {
                 $this->info("Digest job dispatched for user {$userId}");
             } else {
                 $this->info("Digest job dispatched for all users with {$frequency} preference");
             }
-            
+
             return self::SUCCESS;
         } catch (\Exception $e) {
             $this->error("Failed to dispatch digest job: {$e->getMessage()}");
-            
+
             return self::FAILURE;
         }
     }

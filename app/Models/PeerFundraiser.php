@@ -47,10 +47,10 @@ class PeerFundraiser extends Model
 
     public function getProgressPercentageAttribute(): float
     {
-        if (!$this->goal_amount || $this->goal_amount <= 0) {
+        if (! $this->goal_amount || $this->goal_amount <= 0) {
             return 0;
         }
-        
+
         return min(100, ($this->raised_amount / $this->goal_amount) * 100);
     }
 

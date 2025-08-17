@@ -18,9 +18,9 @@ class ScholarshipFactory extends Factory
     {
         $applicationDeadline = fake()->dateTimeBetween('+1 month', '+6 months');
         $awardDate = fake()->dateTimeBetween($applicationDeadline, '+8 months');
-        
+
         return [
-            'name' => fake()->words(3, true) . ' Scholarship',
+            'name' => fake()->words(3, true).' Scholarship',
             'description' => fake()->paragraphs(3, true),
             'amount' => fake()->randomFloat(2, 500, 10000),
             'type' => fake()->randomElement(['one_time', 'recurring', 'endowment']),

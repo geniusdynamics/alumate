@@ -32,18 +32,45 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
+        <!-- PWA Meta Tags -->
+        <meta name="theme-color" content="#3b82f6">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="Alumni Platform">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="application-name" content="Alumni Platform">
+
+        <!-- PWA Manifest -->
+        <link rel="manifest" href="/manifest.json">
+
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
         @routes
-        @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
+        @vite(['resources/js/app.ts', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">
         @inertia
+
+        <!-- Service Worker Registration -->
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(function(registration) {
+                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                        })
+                        .catch(function(error) {
+                            console.log('ServiceWorker registration failed: ', error);
+                        });
+                });
+            }
+        </script>
     </body>
 </html>

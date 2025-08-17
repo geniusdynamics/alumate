@@ -3,8 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\Event;
-use App\Models\User;
 use App\Models\EventConnectionRecommendation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class EventConnectionRecommendationFactory extends Factory
@@ -14,7 +14,7 @@ class EventConnectionRecommendationFactory extends Factory
     public function definition(): array
     {
         $matchScore = $this->faker->numberBetween(50, 95);
-        
+
         return [
             'event_id' => Event::factory(),
             'user_id' => User::factory(),
@@ -25,7 +25,7 @@ class EventConnectionRecommendationFactory extends Factory
             'status' => $this->faker->randomElement(['pending', 'viewed', 'connected', 'dismissed']),
             'recommended_at' => $this->faker->dateTimeBetween('-1 week', 'now'),
             'viewed_at' => function (array $attributes) {
-                return in_array($attributes['status'], ['viewed', 'connected', 'dismissed']) 
+                return in_array($attributes['status'], ['viewed', 'connected', 'dismissed'])
                     ? $this->faker->dateTimeBetween($attributes['recommended_at'], 'now')
                     : null;
             },
@@ -81,7 +81,7 @@ class EventConnectionRecommendationFactory extends Factory
                 'Same institution',
                 'Same graduation year',
                 'Similar industry',
-                'Mutual connections'
+                'Mutual connections',
             ],
         ]);
     }
@@ -96,10 +96,10 @@ class EventConnectionRecommendationFactory extends Factory
             'Mutual connections',
             'Similar interests',
             'Complementary skills',
-            'Similar career path'
+            'Similar career path',
         ];
 
-        $numReasons = match(true) {
+        $numReasons = match (true) {
             $matchScore >= 90 => $this->faker->numberBetween(4, 6),
             $matchScore >= 80 => $this->faker->numberBetween(3, 5),
             $matchScore >= 70 => $this->faker->numberBetween(2, 4),
@@ -114,7 +114,7 @@ class EventConnectionRecommendationFactory extends Factory
         $attributes = [];
 
         if ($this->faker->boolean(60)) {
-            $attributes['institution'] = $this->faker->company() . ' University';
+            $attributes['institution'] = $this->faker->company().' University';
         }
 
         if ($this->faker->boolean(40)) {
@@ -128,7 +128,7 @@ class EventConnectionRecommendationFactory extends Factory
                 'Healthcare',
                 'Education',
                 'Marketing',
-                'Consulting'
+                'Consulting',
             ]);
         }
 

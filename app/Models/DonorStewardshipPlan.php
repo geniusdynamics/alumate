@@ -79,13 +79,13 @@ class DonorStewardshipPlan extends Model
     public function scopeUpcomingAsk($query, $days = 30)
     {
         return $query->where('target_ask_date', '<=', now()->addDays($days))
-                    ->where('target_ask_date', '>=', now());
+            ->where('target_ask_date', '>=', now());
     }
 
     // Helper methods
     public function getPriorityLabelAttribute()
     {
-        return match($this->priority) {
+        return match ($this->priority) {
             1 => 'High',
             2 => 'Medium',
             3 => 'Low',
@@ -95,7 +95,7 @@ class DonorStewardshipPlan extends Model
 
     public function getProgressPercentageAttribute()
     {
-        if (!$this->milestones || empty($this->milestones)) {
+        if (! $this->milestones || empty($this->milestones)) {
             return 0;
         }
 
@@ -112,7 +112,7 @@ class DonorStewardshipPlan extends Model
 
     public function getDaysUntilAskAttribute()
     {
-        if (!$this->target_ask_date) {
+        if (! $this->target_ask_date) {
             return null;
         }
 
