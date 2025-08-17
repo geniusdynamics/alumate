@@ -356,7 +356,7 @@ Write-Host "✓ Laravel Server: http://127.0.0.1:8080 (starting...)" -Foreground
 Write-Host "`nBoth servers will run independently." -ForegroundColor White
 Write-Host "Close individual server windows to stop them." -ForegroundColor White
 
-Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "title Laravel Server - Alumni Platform "&" echo Starting Laravel Server... "&" D:\DevCenter\xampp\php-8.3.23\php.exe artisan serve --host=127.0.0.1 --port=8080" -WindowStyle Normal
+Start-Process -FilePath "cmd.exe" -ArgumentList @("/k", "title Laravel Server - Alumni Platform `&`& echo Starting Laravel Server... `&`& D:\DevCenter\xampp\php-8.3.23\php.exe artisan serve --host=127.0.0.1 --port=8080") -WindowStyle Normal
 
 # Give Laravel a moment to start
 Start-Sleep -Seconds 3
