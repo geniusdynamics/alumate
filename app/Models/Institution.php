@@ -33,6 +33,11 @@ class Institution extends Model
         'is_active',
         'verified_at',
         'status',
+        'logo_path',
+        'primary_color',
+        'secondary_color',
+        'feature_flags',
+        'integration_settings',
     ];
 
     protected $casts = [
@@ -41,6 +46,8 @@ class Institution extends Model
         'trial_ends_at' => 'datetime',
         'verified_at' => 'datetime',
         'is_active' => 'boolean',
+        'feature_flags' => 'array',
+        'integration_settings' => 'array',
     ];
 
     /**

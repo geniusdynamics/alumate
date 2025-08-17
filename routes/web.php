@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InstitutionAdmin\SettingsController as InstitutionAdminSettingsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -232,6 +233,12 @@ Route::middleware('auth')->group(function () {
         Route::get('staff', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'staffManagement'])->name('staff');
         Route::get('import-export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'importExportCenter'])->name('import-export');
         Route::post('reports/export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'exportReport'])->name('reports.export');
+
+    // Settings
+    Route::get('settings/branding', [InstitutionAdminSettingsController::class, 'showBranding'])->name('settings.branding');
+    Route::post('settings/branding', [InstitutionAdminSettingsController::class, 'updateBranding'])->name('settings.branding.update');
+    Route::get('settings/integrations', [InstitutionAdminSettingsController::class, 'showIntegrations'])->name('settings.integrations');
+    Route::post('settings/integrations', [InstitutionAdminSettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
 
         // Graduate Management for Institution Admin
         Route::get('graduates', [\App\Http\Controllers\GraduateController::class, 'index'])->name('graduates.index');
