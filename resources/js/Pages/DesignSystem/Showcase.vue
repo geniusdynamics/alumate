@@ -405,7 +405,7 @@
               <div class="space-y-4">
                 <Button aria-label="Close modal">
                   <span class="sr-only">Close</span>
-                  <XMarkIcon class="h-4 w-4" />
+                  <XIcon class="h-4 w-4" />
                 </Button>
                 
                 <div role="alert" class="p-4 bg-destructive/10 border border-destructive/20 rounded text-destructive">
@@ -495,7 +495,7 @@ import {
   UsersIcon, 
   CalendarIcon, 
   BriefcaseIcon,
-  XMarkIcon 
+  XIcon
 } from '@heroicons/vue/24/outline'
 
 const activeSection = ref('colors')

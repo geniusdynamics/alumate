@@ -175,9 +175,8 @@ const generateReport = async () => {
     generating.value = false
   }
 }
-</script>
-
-<style scoped>
+</script><st
+yle scoped>
 .modal-overlay {
   @apply fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50;
 }

@@ -25,13 +25,13 @@ This document outlines the tasks and sub-tasks required to build the enhanced an
   - [x] Add drill-down views to see detailed outcome stats for a specific course.
 
 ### Task 1.3: Employer Engagement Dashboard
-- [ ] **Backend: Data Tracking**
-  - [ ] Track employer engagement metrics (job posts, hires, profile views).
-  - [ ] Create a new API endpoint for employer engagement data.
-- [ ] **Frontend: Dashboard UI**
-  - [ ] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/EmployerEngagement.vue`.
-  - [ ] Add a link to the new page.
-  - [ ] Build UI to show top engaging employers, most in-demand skills from job posts, and hiring trends by industry.
+- [x] **Backend: Data Tracking**
+  - [x] Track employer engagement metrics (job posts, hires, profile views).
+  - [x] Create a new API endpoint for employer engagement data.
+- [x] **Frontend: Dashboard UI**
+  - [x] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/EmployerEngagement.vue`.
+  - [x] Add a link to the new page.
+  - [x] Build UI to show top engaging employers, most in-demand skills from job posts, and hiring trends by industry.
 
 ### Task 1.4: Community Health Dashboard
 - [ ] **Backend: Engagement Metrics**

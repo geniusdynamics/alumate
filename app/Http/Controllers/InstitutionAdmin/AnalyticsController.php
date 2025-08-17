@@ -60,4 +60,20 @@ class AnalyticsController extends Controller
 
         return response()->json($snapshot->data);
     }
+
+    /**
+     * Get community health analytics data.
+     */
+    public function getCommunityHealth(Request $request): JsonResponse
+    {
+        $snapshot = AnalyticsSnapshot::where('type', 'community_health')
+            ->latest('date')
+            ->first();
+
+        if (!$snapshot) {
+            return response()->json(['message' => 'No community health data available yet.'], 404);
+        }
+
+        return response()->json($snapshot->data);
+    }
 }
