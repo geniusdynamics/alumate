@@ -610,6 +610,69 @@ class AnalyticsService
         ->toArray();
     }
 
+    public function getEmployerEngagementMetrics(array $filters = []): array
+    {
+        return [
+            'top_engaging_employers' => $this->getTopEngagingEmployers($filters),
+            'most_in_demand_skills' => $this->getMostInDemandSkills($filters),
+            'hiring_trends_by_industry' => $this->getHiringTrendsByIndustry($filters),
+        ];
+    }
+
+    private function getTopEngagingEmployers(array $filters): array
+    {
+        return DB::table('employers')
+            ->leftJoin('jobs', 'employers.id', '=', 'jobs.employer_id')
+            ->leftJoin('job_applications', 'jobs.id', '=', 'job_applications.job_id')
+            ->select(
+                'employers.company_name',
+                DB::raw('COUNT(DISTINCT jobs.id) as jobs_posted'),
+                DB::raw('COUNT(DISTINCT job_applications.id) as total_applications'),
+                DB::raw("SUM(CASE WHEN job_applications.status = 'hired' THEN 1 ELSE 0 END) as total_hires")
+            )
+            ->groupBy('employers.company_name')
+            ->orderByDesc('total_hires')
+            ->orderByDesc('jobs_posted')
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
+    private function getMostInDemandSkills(array $filters): array
+    {
+        // This assumes skills are stored in a JSON column in the jobs table
+        return DB::table('jobs')
+            ->select('required_skills')
+            ->whereNotNull('required_skills')
+            ->get()
+            ->pluck('required_skills')
+            ->map(fn ($skills) => json_decode($skills, true))
+            ->flatten()
+            ->countBy()
+            ->sortDesc()
+            ->take(10)
+            ->map(fn ($count, $skill) => ['skill' => $skill, 'count' => $count])
+            ->values()
+            ->toArray();
+    }
+
+    private function getHiringTrendsByIndustry(array $filters): array
+    {
+        return DB::table('employers')
+            ->leftJoin('jobs', 'employers.id', '=', 'jobs.employer_id')
+            ->leftJoin('job_applications', function ($join) {
+                $join->on('jobs.id', '=', 'job_applications.job_id')
+                     ->where('job_applications.status', '=', 'hired');
+            })
+            ->select('employers.industry', DB::raw('COUNT(job_applications.id) as hires'))
+            ->whereNotNull('employers.industry')
+            ->groupBy('employers.industry')
+            ->orderByDesc('hires')
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
     private function getEmploymentRateByCourse(array $filters): array
     {
         return DB::table('courses')
