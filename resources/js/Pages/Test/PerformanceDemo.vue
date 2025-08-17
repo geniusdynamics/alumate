@@ -155,14 +155,14 @@
           </button>
         </div>
         
-        <div v-if="realTimeMetrics.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div v-if="metrics.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div 
-            v-for="metric in realTimeMetrics.slice(-8)" 
-            :key="metric.timestamp"
+            v-for="(metric, index) in metrics.slice(-4)" 
+            :key="index"
             class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
           >
-            <div class="font-semibold">{{ metric.name }}</div>
-            <div class="text-lg">{{ formatMetricValue(metric.name, metric.value) }}</div>
+            <div class="font-semibold">Load Time</div>
+            <div class="text-lg">{{ Math.round(metric.loadTime) }}ms</div>
             <div class="text-xs text-gray-500">{{ formatTimestamp(metric.timestamp) }}</div>
           </div>
         </div>
@@ -204,7 +204,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { usePerformanceMonitoring, useRealTimePerformance } from '../../Composables/usePerformanceMonitoring'
+import { usePerformanceMonitoring } from '../../Composables/usePerformanceMonitoring'
 import PerformanceDashboard from '../../Components/Performance/PerformanceDashboard.vue'
 import LoadingOptimizer from '../../Components/Performance/LoadingOptimizer.vue'
 import { 
@@ -226,13 +226,13 @@ const {
   getPerformanceRecommendations
 } = usePerformanceMonitoring('PerformanceDemo')
 
-// Real-time monitoring
+// Performance monitoring composable
 const {
-  realTimeMetrics,
   isMonitoring,
+  metrics,
   startMonitoring,
   stopMonitoring
-} = useRealTimePerformance()
+} = usePerformanceMonitoring()
 
 // Demo data
 const users = ref([])
@@ -363,7 +363,7 @@ const formatMetricValue = (name: string, value: number): string => {
 }
 
 const formatTimestamp = (timestamp: number): string => {
-  return new Date(timestamp).toLocaleTimeString()
+  return new Date(timestamp || Date.now()).toLocaleTimeString()
 }
 
 const getRecommendationClass = (priority: string): string => {

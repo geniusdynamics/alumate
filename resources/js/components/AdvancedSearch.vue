@@ -76,7 +76,7 @@
             class="filter-toggle"
             :class="{ active: showFilters }"
           >
-            <FilterIcon class="w-4 h-4" />
+            <FunnelIcon class="w-4 h-4" />
             Filters
           </button>
           
@@ -173,7 +173,7 @@
     <!-- No Results -->
     <div v-if="hasSearched && searchResults.total === 0" class="no-results">
       <div class="no-results-icon">
-        <SearchIcon class="w-12 h-12 text-gray-400" />
+        <MagnifyingGlassIcon class="w-12 h-12 text-gray-400" />
       </div>
       <h3 class="no-results-title">No results found</h3>
       <p class="no-results-message">
@@ -202,8 +202,8 @@ import PostResult from './SearchResults/PostResult.vue'
 import JobResult from './SearchResults/JobResult.vue'
 import EventResult from './SearchResults/EventResult.vue'
 import {
-  SearchIcon,
-  FilterIcon,
+  MagnifyingGlassIcon,
+  FunnelIcon,
   BookmarkIcon
 } from '@heroicons/vue/24/outline'
 import LoadingSpinner from './LoadingSpinner.vue'

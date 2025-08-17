@@ -7,6 +7,15 @@ import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    server: {
+        host: '127.0.0.1',
+        port: 5100,
+        cors: true,
+        hmr: {
+            host: '127.0.0.1',
+            port: 5100,
+        },
+    },
     define: {
         // Handle any global defines if needed
         __VUE_OPTIONS_API__: true,
@@ -88,6 +97,10 @@ export default defineConfig({
             external: (id) => {
                 // Externalize problematic packages
                 if (id.includes('vue-leaflet')) {
+                    return true;
+                }
+                // Externalize laravel-echo to prevent identifier conflicts
+                if (id.includes('laravel-echo')) {
                     return true;
                 }
                 return false;
@@ -192,7 +205,9 @@ export default defineConfig({
             // Exclude large libraries that should be loaded on demand
             'chart.js',
             'elasticsearch',
-            'pdf-lib'
+            'pdf-lib',
+            // Exclude laravel-echo to prevent identifier conflicts
+            'laravel-echo'
         ]
     },
     // Tree shaking configuration
@@ -201,23 +216,4 @@ export default defineConfig({
         // Remove console.log in production
         drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
     },
-    // Server configuration for development
-    server: {
-        host: '127.0.0.1', // Use 127.0.0.1 to match Laravel
-        port: 5100,
-        strictPort: true,
-        hmr: {
-            overlay: false,
-            port: 5100,
-            host: '127.0.0.1'
-        },
-        cors: {
-            origin: ['http://127.0.0.1:8080', 'http://localhost:8080'],
-            credentials: true
-        },
-        origin: 'http://127.0.0.1:5100',
-        watch: {
-            usePolling: true
-        }
-    }
 });

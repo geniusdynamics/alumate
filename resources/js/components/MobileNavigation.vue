@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { graduateMenuItems, employerMenuItems, institutionAdminMenuItems, superAdminMenuItems, personalMenuItems } from '@/lib/navigation'
 import { HomeIcon, UsersIcon, BriefcaseIcon, Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
 
@@ -116,7 +116,7 @@ const closeMenu = () => {
             </DialogContent>
         </Dialog>
     </div>
-</script>
+</template>
 
 <style scoped>
 .safe-area-bottom {
