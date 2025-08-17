@@ -693,6 +693,37 @@ class AnalyticsService
         return $benchmarks;
     }
 
+    public function getMarketTrends(array $filters = []): array
+    {
+        $topSkills = DB::table('jobs')
+            ->select('required_skills')
+            ->whereNotNull('required_skills')
+            ->get()
+            ->pluck('required_skills')
+            ->map(fn ($skills) => json_decode($skills, true))
+            ->flatten()
+            ->filter()
+            ->countBy()
+            ->sortDesc()
+            ->take(10)
+            ->map(fn ($count, $skill) => ['skill' => $skill, 'count' => $count])
+            ->values();
+
+        $topIndustries = DB::table('employers')
+            ->select('industry', DB::raw('COUNT(jobs.id) as jobs_count'))
+            ->join('jobs', 'employers.id', '=', 'jobs.employer_id')
+            ->whereNotNull('employers.industry')
+            ->groupBy('employers.industry')
+            ->orderByDesc('jobs_count')
+            ->limit(10)
+            ->get();
+
+        return [
+            'top_skills' => $topSkills,
+            'top_industries' => $topIndustries,
+        ];
+    }
+
     private function getHiringTrendsByIndustry(array $filters): array
     {
         return DB::table('employers')

@@ -56,6 +56,10 @@ class SuperAdminDashboardController extends Controller
             ->latest('date')
             ->first();
 
+        $marketTrends = \App\Models\AnalyticsSnapshot::where('type', 'market_trends')
+            ->latest('date')
+            ->first();
+
         $analytics = [
             'user_growth' => $this->getUserGrowthData($startDate),
             'institution_performance' => $this->getInstitutionPerformance(),
@@ -63,6 +67,7 @@ class SuperAdminDashboardController extends Controller
             'job_market_analysis' => $this->getJobMarketAnalysis($startDate),
             'system_usage' => $this->getSystemUsageData($startDate),
             'platform_benchmarks' => $platformBenchmarks ? $platformBenchmarks->data : [],
+            'market_trends' => $marketTrends ? $marketTrends->data : [],
         ];
 
         return Inertia::render('SuperAdmin/Analytics', [

@@ -45,12 +45,12 @@ This document outlines the tasks and sub-tasks required to build the enhanced an
 ## Phase 2: Enhanced Analytics for Super Admins
 
 ### Task 2.1: Platform-Wide Benchmarking Dashboard
-- [ ] **Backend: Cross-Tenant Aggregation**
-  - [ ] Create a system to securely and anonymously aggregate key metrics across all tenants.
-  - [ ] Create a new Super Admin API endpoint for benchmark data.
-- [ ] **Frontend: Dashboard UI**
-  - [ ] Enhance the existing Super Admin analytics page.
-  - [ ] Add charts to compare metrics (employment rate, salary) across institutions (anonymized).
+- [x] **Backend: Cross-Tenant Aggregation**
+  - [x] Create a system to securely and anonymously aggregate key metrics across all tenants.
+  - [x] Create a new Super Admin API endpoint for benchmark data.
+- [x] **Frontend: Dashboard UI**
+  - [x] Enhance the existing Super Admin analytics page.
+  - [x] Add charts to compare metrics (employment rate, salary) across institutions (anonymized).
 
 ### Task 2.2: Market Trends Dashboard
 - [ ] **Backend: Ecosystem-Wide Analysis**
