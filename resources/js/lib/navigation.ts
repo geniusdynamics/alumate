@@ -1,4 +1,4 @@
-import { Home, Users, Settings, Shield, Bell, MessageCircle, UserPlus, Briefcase, Calendar, Star, Target, BarChart3, FileText, PieChart, Database, Heart, GraduationCap, Trophy, Building, BookOpen, GitMerge, UserCheck, Palette, Plug } from 'lucide-vue-next';
+import { Home, Users, Settings, Shield, Bell, MessageCircle, UserPlus, Briefcase, Calendar, Star, Target, BarChart3, FileText, PieChart, Database, Heart, GraduationCap, Trophy, Building, BookOpen, GitMerge, UserCheck, Palette, Plug, DollarSign } from 'lucide-vue-next';
 
 // --- Icon Aliases ---
 const ChartBarIcon = BarChart3;
@@ -44,6 +44,7 @@ export const institutionAdminMenuItems = [
     { title: 'Role Management', icon: Shield, href: route('roles.index'), active: route().current('roles.*'), permission: 'view roles' },
     { title: 'Fundraising', icon: Heart, href: route('campaigns.index'), active: route().current('campaigns.*'), permission: 'view fundraising' },
     { title: 'Analytics', icon: ChartBarIcon, href: route('institution-admin.analytics'), active: route().current('institution-admin.analytics') },
+    { title: 'Course ROI', icon: DollarSign, href: route('institution-admin.analytics.course-roi'), active: route().current('institution-admin.analytics.course-roi') },
     { title: 'Branding', icon: Palette, href: route('institution-admin.settings.branding'), active: route().current('institution-admin.settings.branding') },
     { title: 'Integrations', icon: Plug, href: route('institution-admin.settings.integrations'), active: route().current('institution-admin.settings.integrations') },
     { title: 'Institution Settings', icon: Settings, href: route('institution.edit'), active: route().current('institution.edit'), permission: 'manage institution' },

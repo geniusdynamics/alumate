@@ -626,6 +626,11 @@ class InstitutionAdminDashboardController extends Controller
             ->toArray();
     }
 
+    public function courseRoi()
+    {
+        return Inertia::render('InstitutionAdmin/Analytics/CourseROI');
+    }
+
     private function getStartDate($dateRange)
     {
         return match ($dateRange) {

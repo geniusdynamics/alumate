@@ -580,6 +580,36 @@ class AnalyticsService
         );
     }
 
+    public function getCourseRoiMetrics(array $filters = []): array
+    {
+        // This is a simplified ROI calculation. A real-world one would be more complex.
+        $courses = DB::table('courses')
+            ->leftJoin('graduates', 'courses.id', '=', 'graduates.course_id')
+            ->select(
+                'courses.name as course_name',
+                'courses.cost', // Assuming a 'cost' field exists on the courses table
+                DB::raw('COUNT(graduates.id) as total_graduates'),
+                DB::raw("AVG(graduates.current_salary) as average_salary")
+            )
+            ->groupBy('courses.name', 'courses.cost')
+            ->get();
+
+        return $courses->map(function ($course) {
+            $cost = $course->cost ?? 50000; // Default cost if not set
+            $roi = ($course->average_salary && $cost > 0) ? (($course->average_salary * 5) - $cost) / $cost * 100 : 0; // 5-year ROI
+
+            return [
+                'course_name' => $course->course_name,
+                'average_salary' => (int) $course->average_salary,
+                'total_graduates' => $course->total_graduates,
+                'estimated_roi_percentage' => round($roi),
+            ];
+        })
+        ->sortByDesc('estimated_roi_percentage')
+        ->values()
+        ->toArray();
+    }
+
     private function getEmploymentRateByCourse(array $filters): array
     {
         return DB::table('courses')

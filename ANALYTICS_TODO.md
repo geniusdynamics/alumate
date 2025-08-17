@@ -5,14 +5,14 @@ This document outlines the tasks and sub-tasks required to build the enhanced an
 ## Phase 1: Enhanced Analytics for Institution Admins
 
 ### Task 1.1: Graduate Outcome Analysis Dashboard
-- [ ] **Backend: Data Aggregation**
-  - [ ] Create a new service or job to periodically calculate and cache graduate outcome statistics (time-to-employment, salary progression, etc.).
-  - [ ] Create a new API endpoint to serve this aggregated data.
-- [ ] **Frontend: Dashboard UI**
-  - [ ] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/GraduateOutcomes.vue`.
-  - [ ] Add a link to the new page in the Institution Admin navigation menu.
-  - [ ] Build UI components for visualizing data (charts for salary progression, tables for top employers, maps for geographic distribution).
-  - [ ] Add filters to the dashboard (by graduation year, course, demographics).
+- [x] **Backend: Data Aggregation**
+  - [x] Create a new service or job to periodically calculate and cache graduate outcome statistics (time-to-employment, salary progression, etc.).
+  - [x] Create a new API endpoint to serve this aggregated data.
+- [x] **Frontend: Dashboard UI**
+  - [x] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/GraduateOutcomes.vue`.
+  - [x] Add a link to the new page in the Institution Admin navigation menu.
+  - [x] Build UI components for visualizing data (charts for salary progression, tables for top employers, maps for geographic distribution).
+  - [x] Add filters to the dashboard (by graduation year, course, demographics).
 
 ### Task 1.2: Course & Program ROI Dashboard
 - [ ] **Backend: Data Correlation**
