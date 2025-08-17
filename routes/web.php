@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InstitutionAdmin\AnalyticsController as InstitutionAdminAnalyticsController;
 use App\Http\Controllers\InstitutionAdmin\SettingsController as InstitutionAdminSettingsController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
@@ -239,6 +240,11 @@ Route::middleware('auth')->group(function () {
     Route::post('settings/branding', [InstitutionAdminSettingsController::class, 'updateBranding'])->name('settings.branding.update');
     Route::get('settings/integrations', [InstitutionAdminSettingsController::class, 'showIntegrations'])->name('settings.integrations');
     Route::post('settings/integrations', [InstitutionAdminSettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
+
+    // Analytics API
+    Route::prefix('api/analytics')->name('api.analytics.')->group(function () {
+        Route::get('graduate-outcomes', [InstitutionAdminAnalyticsController::class, 'getGraduateOutcomes'])->name('graduate-outcomes');
+    });
 
         // Graduate Management for Institution Admin
         Route::get('graduates', [\App\Http\Controllers\GraduateController::class, 'index'])->name('graduates.index');

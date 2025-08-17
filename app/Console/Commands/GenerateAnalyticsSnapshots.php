@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class GenerateAnalyticsSnapshots extends Command
 {
     protected $signature = 'analytics:generate-snapshots 
-                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly)}
+                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes)}
                             {--date= : Specific date to generate snapshot for (YYYY-MM-DD)}
                             {--force : Force regeneration even if snapshot exists}';
 
@@ -41,6 +41,9 @@ class GenerateAnalyticsSnapshots extends Command
                     break;
                 case 'monthly':
                     $this->generateMonthlySnapshots($date, $force);
+                    break;
+                case 'graduate_outcomes':
+                    $this->generateGraduateOutcomesSnapshots($date, $force);
                     break;
                 default:
                     $this->error("Invalid snapshot type: {$type}");
@@ -116,6 +119,21 @@ class GenerateAnalyticsSnapshots extends Command
 
         $bar->finish();
         $this->newLine();
+    }
+
+    private function generateGraduateOutcomesSnapshots($date = null, $force = false)
+    {
+        $this->info('Generating graduate outcome snapshots...');
+        $snapshotDate = $date ? Carbon::parse($date) : now();
+        $dateString = $snapshotDate->toDateString();
+
+        if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('graduate_outcomes', $dateString)) {
+            $this->info('Snapshot for today already exists. Use --force to regenerate.');
+            return;
+        }
+
+        $this->analyticsService->generateGraduateOutcomeSnapshot($dateString);
+        $this->info('Graduate outcome snapshot generated for '.$dateString);
     }
 
     private function generateMonthlySnapshots($date = null, $force = false)

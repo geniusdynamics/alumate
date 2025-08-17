@@ -497,4 +497,105 @@ class AnalyticsService
             'sunday' => rand(50, 150),
         ];
     }
+
+    /**
+     * Get graduate outcome metrics for the institution admin dashboard.
+     */
+    public function getGraduateOutcomeMetrics(array $filters = []): array
+    {
+        $cacheKey = 'graduate_outcome_metrics_' . md5(serialize($filters));
+
+        // Cache for 1 hour
+        return Cache::remember($cacheKey, 3600, function () use ($filters) {
+            return [
+                'time_to_employment' => $this->getTimeToEmployment($filters),
+                'salary_progression' => $this->getSalaryProgression($filters),
+                'top_employers' => $this->getTopEmployers($filters),
+                'employment_by_location' => $this->getEmploymentByLocation($filters),
+                'employment_rate_by_course' => $this->getEmploymentRateByCourse($filters),
+            ];
+        });
+    }
+
+    private function getTimeToEmployment(array $filters): array
+    {
+        // This metric would require graduates to have a graduation date and an employment start date.
+        // For now, we'll simulate this data.
+        return [
+            'average_days' => rand(60, 120),
+            'median_days' => rand(50, 110),
+            'under_3_months_percentage' => rand(40, 60),
+            'under_6_months_percentage' => rand(70, 85),
+        ];
+    }
+
+    private function getSalaryProgression(array $filters): array
+    {
+        // This requires historical salary data, which is not currently in the model.
+        // We will simulate this for the demo.
+        return [
+            'year_1' => ['average' => rand(45000, 55000), 'median' => rand(42000, 52000)],
+            'year_3' => ['average' => rand(60000, 75000), 'median' => rand(58000, 72000)],
+            'year_5' => ['average' => rand(80000, 100000), 'median' => rand(78000, 95000)],
+        ];
+    }
+
+    private function getTopEmployers(array $filters): array
+    {
+        return DB::table('graduates')
+            ->select('current_company', DB::raw('COUNT(*) as hires'))
+            ->whereNotNull('current_company')
+            ->where('employment_status', 'employed')
+            ->groupBy('current_company')
+            ->orderByDesc('hires')
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
+    private function getEmploymentByLocation(array $filters): array
+    {
+        // This assumes location data is stored in a structured way.
+        // For now, we'll use the existing 'location' field if available.
+        return DB::table('users')
+            ->select('location', DB::raw('COUNT(*) as count'))
+            ->whereNotNull('location')
+            ->groupBy('location')
+            ->orderByDesc('count')
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
+    public function generateGraduateOutcomeSnapshot(string $date): void
+    {
+        $metrics = $this->getGraduateOutcomeMetrics(['date' => $date]);
+
+        \App\Models\AnalyticsSnapshot::updateOrCreate(
+            [
+                'type' => 'graduate_outcomes',
+                'date' => $date,
+            ],
+            ['data' => $metrics]
+        );
+    }
+
+    private function getEmploymentRateByCourse(array $filters): array
+    {
+        return DB::table('courses')
+            ->leftJoin('graduates', 'courses.id', '=', 'graduates.course_id')
+            ->select(
+                'courses.name as course_name',
+                DB::raw('COUNT(graduates.id) as total_graduates'),
+                DB::raw("SUM(CASE WHEN graduates.employment_status = 'employed' THEN 1 ELSE 0 END) as employed_graduates")
+            )
+            ->groupBy('courses.name')
+            ->orderByDesc('employed_graduates')
+            ->get()
+            ->map(function ($row) {
+                $row->employment_rate = $row->total_graduates > 0 ? ($row->employed_graduates / $row->total_graduates) * 100 : 0;
+                return $row;
+            })
+            ->toArray();
+    }
 }
