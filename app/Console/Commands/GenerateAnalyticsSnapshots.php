@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class GenerateAnalyticsSnapshots extends Command
 {
     protected $signature = 'analytics:generate-snapshots 
-                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes)}
+                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes, course_roi)}
                             {--date= : Specific date to generate snapshot for (YYYY-MM-DD)}
                             {--force : Force regeneration even if snapshot exists}';
 
@@ -44,6 +44,9 @@ class GenerateAnalyticsSnapshots extends Command
                     break;
                 case 'graduate_outcomes':
                     $this->generateGraduateOutcomesSnapshots($date, $force);
+                    break;
+                case 'course_roi':
+                    $this->generateCourseRoiSnapshots($date, $force);
                     break;
                 default:
                     $this->error("Invalid snapshot type: {$type}");
@@ -134,6 +137,26 @@ class GenerateAnalyticsSnapshots extends Command
 
         $this->analyticsService->generateGraduateOutcomeSnapshot($dateString);
         $this->info('Graduate outcome snapshot generated for '.$dateString);
+    }
+
+    private function generateCourseRoiSnapshots($date = null, $force = false)
+    {
+        $this->info('Generating course ROI snapshots...');
+        $snapshotDate = $date ? Carbon::parse($date) : now();
+        $dateString = $snapshotDate->toDateString();
+
+        if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('course_roi', $dateString)) {
+            $this->info('Snapshot for today already exists. Use --force to regenerate.');
+            return;
+        }
+
+        $metrics = $this->analyticsService->getCourseRoiMetrics();
+        \App\Models\AnalyticsSnapshot::updateOrCreate(
+            ['type' => 'course_roi', 'date' => $dateString],
+            ['data' => $metrics]
+        );
+
+        $this->info('Course ROI snapshot generated for '.$dateString);
     }
 
     private function generateMonthlySnapshots($date = null, $force = false)

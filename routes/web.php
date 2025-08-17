@@ -234,6 +234,7 @@ Route::middleware('auth')->group(function () {
         Route::get('staff', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'staffManagement'])->name('staff');
         Route::get('import-export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'importExportCenter'])->name('import-export');
         Route::post('reports/export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'exportReport'])->name('reports.export');
+    Route::get('analytics/course-roi', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'courseRoi'])->name('analytics.course-roi');
 
     // Settings
     Route::get('settings/branding', [InstitutionAdminSettingsController::class, 'showBranding'])->name('settings.branding');
@@ -244,6 +245,7 @@ Route::middleware('auth')->group(function () {
     // Analytics API
     Route::prefix('api/analytics')->name('api.analytics.')->group(function () {
         Route::get('graduate-outcomes', [InstitutionAdminAnalyticsController::class, 'getGraduateOutcomes'])->name('graduate-outcomes');
+        Route::get('course-roi', [InstitutionAdminAnalyticsController::class, 'getCourseRoi'])->name('course-roi');
     });
 
         // Graduate Management for Institution Admin

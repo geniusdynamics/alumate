@@ -54,4 +54,35 @@ class DashboardTest extends TestCase
                 ->has('analytics.employmentByLocation')
             );
     }
+
+    /** @test */
+    public function institution_admin_can_view_course_roi_page()
+    {
+        $this->actingAs($this->institutionAdmin)
+            ->get(route('institution-admin.analytics.course-roi'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('InstitutionAdmin/Analytics/CourseROI')
+            );
+    }
+
+    /** @test */
+    public function course_roi_api_returns_correct_data()
+    {
+        $this->actingAs($this->institutionAdmin);
+
+        // You might want to create some courses and graduates here to test the actual calculation
+
+        $response = $this->getJson(route('institution-admin.api.analytics.course-roi'));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                '*' => [
+                    'course_name',
+                    'average_salary',
+                    'total_graduates',
+                    'estimated_roi_percentage',
+                ]
+            ]);
+    }
 }

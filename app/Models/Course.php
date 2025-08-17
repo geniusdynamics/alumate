@@ -17,6 +17,7 @@ class Course extends Model
         'description',
         'level',
         'duration_months',
+        'cost',
         'study_mode',
         'required_skills',
         'skills_gained',
@@ -35,6 +36,7 @@ class Course extends Model
 
     protected $casts = [
         'duration_months' => 'integer',
+        'cost' => 'decimal:2',
         'required_skills' => 'array',
         'skills_gained' => 'array',
         'career_paths' => 'array',

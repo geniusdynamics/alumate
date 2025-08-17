@@ -28,4 +28,20 @@ class AnalyticsController extends Controller
 
         return response()->json($snapshot->data);
     }
+
+    /**
+     * Get course ROI analytics data.
+     */
+    public function getCourseRoi(Request $request): JsonResponse
+    {
+        $snapshot = AnalyticsSnapshot::where('type', 'course_roi')
+            ->latest('date')
+            ->first();
+
+        if (!$snapshot) {
+            return response()->json(['message' => 'No course ROI data available yet.'], 404);
+        }
+
+        return response()->json($snapshot->data);
+    }
 }
