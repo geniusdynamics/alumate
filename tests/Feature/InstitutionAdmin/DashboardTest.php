@@ -111,4 +111,33 @@ class DashboardTest extends TestCase
                 'hiring_trends_by_industry',
             ]);
     }
+
+    /** @test */
+    public function institution_admin_can_view_community_health_page()
+    {
+        $this->actingAs($this->institutionAdmin)
+            ->get(route('institution-admin.analytics.community-health'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('InstitutionAdmin/Analytics/CommunityHealth')
+            );
+    }
+
+    /** @test */
+    public function community_health_api_returns_correct_data()
+    {
+        $this->actingAs($this->institutionAdmin);
+
+        $response = $this->getJson(route('institution-admin.api.analytics.community-health'));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'daily_active_users',
+                'post_activity',
+                'engagement_trends',
+                'group_participation',
+                'events_attended',
+                'connections_made',
+            ]);
+    }
 }

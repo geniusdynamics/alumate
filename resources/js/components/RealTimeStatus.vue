@@ -220,45 +220,37 @@ onUnmounted(() => {
 }
 
 .real-time-status.top-right {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
+  @apply fixed top-4 right-4;
 }
 
 .real-time-status.top-left {
-  position: fixed;
-  top: 1rem;
-  left: 1rem;
+  @apply fixed top-4 left-4;
 }
 
 .real-time-status.bottom-right {
-  position: fixed;
-  bottom: 1rem;
-  right: 1rem;
+  @apply fixed bottom-4 right-4;
 }
 
 .real-time-status.bottom-left {
-  position: fixed;
-  bottom: 1rem;
-  left: 1rem;
+  @apply fixed bottom-4 left-4;
 }
 
 /* Animation for connection status changes */
 @keyframes pulse-green {
   0%, 100% {
-    background-color: rgb(34 197 94);
+    @apply bg-green-500;
   }
   50% {
-    background-color: rgb(74 222 128);
+    @apply bg-green-400;
   }
 }
 
 @keyframes pulse-red {
   0%, 100% {
-    background-color: rgb(239 68 68);
+    @apply bg-red-500;
   }
   50% {
-    background-color: rgb(248 113 113);
+    @apply bg-red-400;
   }
 }
 

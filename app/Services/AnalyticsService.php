@@ -656,6 +656,20 @@ class AnalyticsService
             ->toArray();
     }
 
+    public function getCommunityHealthMetrics(array $filters = []): array
+    {
+        $dateRange = $this->getDateRange($filters);
+
+        return [
+            'daily_active_users' => $this->getDailyActiveUsers($dateRange),
+            'post_activity' => $this->getPostActivity($dateRange),
+            'engagement_trends' => $this->getEngagementTrends($dateRange),
+            'group_participation' => $this->getGroupParticipation($dateRange),
+            'events_attended' => $this->getEventsAttended($dateRange),
+            'connections_made' => $this->getConnectionsMade($dateRange),
+        ];
+    }
+
     private function getHiringTrendsByIndustry(array $filters): array
     {
         return DB::table('employers')
