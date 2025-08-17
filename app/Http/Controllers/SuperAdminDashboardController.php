@@ -52,12 +52,17 @@ class SuperAdminDashboardController extends Controller
         $timeframe = $request->get('timeframe', '30'); // days
         $startDate = Carbon::now()->subDays($timeframe);
 
+        $platformBenchmarks = \App\Models\AnalyticsSnapshot::where('type', 'platform_benchmarks')
+            ->latest('date')
+            ->first();
+
         $analytics = [
             'user_growth' => $this->getUserGrowthData($startDate),
             'institution_performance' => $this->getInstitutionPerformance(),
             'employment_trends' => $this->getEmploymentTrends($startDate),
             'job_market_analysis' => $this->getJobMarketAnalysis($startDate),
             'system_usage' => $this->getSystemUsageData($startDate),
+            'platform_benchmarks' => $platformBenchmarks ? $platformBenchmarks->data : [],
         ];
 
         return Inertia::render('SuperAdmin/Analytics', [

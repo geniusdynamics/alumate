@@ -34,13 +34,13 @@ This document outlines the tasks and sub-tasks required to build the enhanced an
   - [x] Build UI to show top engaging employers, most in-demand skills from job posts, and hiring trends by industry.
 
 ### Task 1.4: Community Health Dashboard
-- [ ] **Backend: Engagement Metrics**
-  - [ ] Aggregate data on user logins, post creation, comments, event registrations, and mentorship connections.
-  - [ ] Create an API endpoint for these community health metrics.
-- [ ] **Frontend: Dashboard UI**
-  - [ ] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/CommunityHealth.vue`.
-  - [ ] Add a link to the new page.
-  - [ ] Build UI with charts and stats for user activity, popular topics, and event attendance.
+- [x] **Backend: Engagement Metrics**
+  - [x] Aggregate data on user logins, post creation, comments, event registrations, and mentorship connections.
+  - [x] Create an API endpoint for these community health metrics.
+- [x] **Frontend: Dashboard UI**
+  - [x] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/CommunityHealth.vue`.
+  - [x] Add a link to the new page.
+  - [x] Build UI with charts and stats for user activity, popular topics, and event attendance.
 
 ## Phase 2: Enhanced Analytics for Super Admins
 
