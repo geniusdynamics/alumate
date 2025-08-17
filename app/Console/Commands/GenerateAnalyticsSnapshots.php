@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class GenerateAnalyticsSnapshots extends Command
 {
     protected $signature = 'analytics:generate-snapshots 
-                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes, course_roi, employer_engagement, community_health)}
+                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes, course_roi, employer_engagement, community_health, platform_benchmarks)}
                             {--date= : Specific date to generate snapshot for (YYYY-MM-DD)}
                             {--force : Force regeneration even if snapshot exists}';
 
@@ -53,6 +53,9 @@ class GenerateAnalyticsSnapshots extends Command
                     break;
                 case 'community_health':
                     $this->generateCommunityHealthSnapshots($date, $force);
+                    break;
+                case 'platform_benchmarks':
+                    $this->generatePlatformBenchmarksSnapshots($date, $force);
                     break;
                 default:
                     $this->error("Invalid snapshot type: {$type}");
@@ -203,6 +206,26 @@ class GenerateAnalyticsSnapshots extends Command
         );
 
         $this->info('Community health snapshot generated for '.$dateString);
+    }
+
+    private function generatePlatformBenchmarksSnapshots($date = null, $force = false)
+    {
+        $this->info('Generating platform benchmarks snapshots...');
+        $snapshotDate = $date ? Carbon::parse($date) : now();
+        $dateString = $snapshotDate->toDateString();
+
+        if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('platform_benchmarks', $dateString)) {
+            $this->info('Snapshot for today already exists. Use --force to regenerate.');
+            return;
+        }
+
+        $metrics = $this->analyticsService->getPlatformBenchmarks();
+        \App\Models\AnalyticsSnapshot::updateOrCreate(
+            ['type' => 'platform_benchmarks', 'date' => $dateString],
+            ['data' => $metrics]
+        );
+
+        $this->info('Platform benchmarks snapshot generated for '.$dateString);
     }
 
     private function generateMonthlySnapshots($date = null, $force = false)

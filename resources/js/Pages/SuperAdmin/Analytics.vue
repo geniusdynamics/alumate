@@ -109,41 +109,37 @@
                 </div>
             </div>
 
-            <!-- Institution Performance -->
+            <!-- Platform Benchmarking -->
             <div class="bg-white rounded-lg shadow mb-8">
                 <div class="px-6 py-4 border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900">Institution Performance</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Platform Benchmarking</h3>
+                    <p class="text-sm text-gray-500">Anonymized comparison of key metrics across all institutions.</p>
                 </div>
                 <div class="p-6">
-                    <div class="overflow-x-auto">
+                    <div class="h-80 flex items-center justify-center text-gray-500">
+                        Chart placeholder - Employment Rate vs. Average Salary by Institution
+                    </div>
+                    <div class="overflow-x-auto mt-6">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Graduates</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employed</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Institution (Anonymized)</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employment Rate</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Active Jobs</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Average Salary (Year 1)</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <tr v-for="institution in analytics?.institutions || []" :key="institution.id">
+                                <tr v-for="(benchmark, index) in analytics?.platform_benchmarks || []" :key="benchmark.institution_id">
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {{ institution.name }}
+                                        Institution {{ index + 1 }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ institution.total_graduates || 0 }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ institution.employed_graduates || 0 }}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        <span :class="getEmploymentRateColor(institution.employment_rate)">
-                                            {{ Math.round(institution.employment_rate || 0) }}%
+                                        <span :class="getEmploymentRateColor(benchmark.employment_rate)">
+                                            {{ Math.round(benchmark.employment_rate || 0) }}%
                                         </span>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {{ institution.active_jobs || 0 }}
+                                        ${{ (benchmark.average_salary || 0).toLocaleString() }}
                                     </td>
                                 </tr>
                             </tbody>
