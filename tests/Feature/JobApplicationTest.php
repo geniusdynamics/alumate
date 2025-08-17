@@ -8,6 +8,7 @@ use App\Models\JobApplication;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class JobApplicationTest extends TestCase
@@ -47,6 +48,8 @@ class JobApplicationTest extends TestCase
         $this->employerUser->assignRole('Employer');
         $this->employer = \App\Models\Employer::factory()->create(['user_id' => $this->employerUser->id]);
         $this->job = Job::factory()->create(['employer_id' => $this->employer->id]);
+
+        Notification::fake();
     }
 
     /** @test */
@@ -97,5 +100,71 @@ class JobApplicationTest extends TestCase
         $response->assertInertia(function ($page) {
             $this->assertCount(1, $page->component('MyApplications/Index')->prop('applications'));
         });
+    }
+
+    /** @test */
+    public function a_graduate_cannot_apply_for_the_same_job_twice()
+    {
+        $this->actingAs($this->graduateUser);
+
+        // First application
+        JobApplication::factory()->create([
+            'job_id' => $this->job->id,
+            'graduate_id' => $this->graduate->id,
+        ]);
+
+        // Second attempt
+        $response = $this->post(route('jobs.apply', $this->job), [
+            'cover_letter' => 'This is a second cover letter.',
+        ]);
+
+        $response->assertSessionHasErrors();
+        $this->assertCount(1, JobApplication::where('job_id', $this->job->id)->get());
+    }
+
+    /** @test */
+    public function a_graduate_cannot_apply_for_an_expired_job()
+    {
+        $this->actingAs($this->graduateUser);
+
+        $this->job->update(['application_deadline' => now()->subDay()]);
+
+        $response = $this->post(route('jobs.apply', $this->job), [
+            'cover_letter' => 'Applying for an expired job.',
+        ]);
+
+        $response->assertSessionHasErrors();
+        $this->assertDatabaseMissing('job_applications', ['job_id' => $this->job->id]);
+    }
+
+    /** @test */
+    public function job_application_status_is_validated_on_update()
+    {
+        $this->actingAs($this->employerUser);
+        $application = JobApplication::factory()->create(['job_id' => $this->job->id]);
+
+        $response = $this->putJson(route('job-applications.update', $application), [
+            'status' => 'invalid_status',
+        ]);
+
+        $response->assertStatus(422); // Validation error
+    }
+
+    /** @test */
+    public function notifications_are_sent_when_application_status_changes()
+    {
+        $this->actingAs($this->employerUser);
+        $application = JobApplication::factory()->create([
+            'job_id' => $this->job->id,
+            'graduate_id' => $this->graduate->id,
+        ]);
+
+        $this->putJson(route('job-applications.update', $application), [
+            'status' => 'shortlisted',
+        ]);
+
+        Notification::assertSentTo(
+            [$this->graduateUser], \App\Notifications\JobApplicationNotification::class
+        );
     }
 }
