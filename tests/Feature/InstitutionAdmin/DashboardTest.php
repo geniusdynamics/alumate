@@ -85,4 +85,30 @@ class DashboardTest extends TestCase
                 ]
             ]);
     }
+
+    /** @test */
+    public function institution_admin_can_view_employer_engagement_page()
+    {
+        $this->actingAs($this->institutionAdmin)
+            ->get(route('institution-admin.analytics.employer-engagement'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('InstitutionAdmin/Analytics/EmployerEngagement')
+            );
+    }
+
+    /** @test */
+    public function employer_engagement_api_returns_correct_data()
+    {
+        $this->actingAs($this->institutionAdmin);
+
+        $response = $this->getJson(route('institution-admin.api.analytics.employer-engagement'));
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'top_engaging_employers',
+                'most_in_demand_skills',
+                'hiring_trends_by_industry',
+            ]);
+    }
 }

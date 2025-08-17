@@ -45,6 +45,7 @@ export const institutionAdminMenuItems = [
     { title: 'Fundraising', icon: Heart, href: route('campaigns.index'), active: route().current('campaigns.*'), permission: 'view fundraising' },
     { title: 'Analytics', icon: ChartBarIcon, href: route('institution-admin.analytics'), active: route().current('institution-admin.analytics') },
     { title: 'Course ROI', icon: DollarSign, href: route('institution-admin.analytics.course-roi'), active: route().current('institution-admin.analytics.course-roi') },
+    { title: 'Employer Engagement', icon: Briefcase, href: route('institution-admin.analytics.employer-engagement'), active: route().current('institution-admin.analytics.employer-engagement') },
     { title: 'Branding', icon: Palette, href: route('institution-admin.settings.branding'), active: route().current('institution-admin.settings.branding') },
     { title: 'Integrations', icon: Plug, href: route('institution-admin.settings.integrations'), active: route().current('institution-admin.settings.integrations') },
     { title: 'Institution Settings', icon: Settings, href: route('institution.edit'), active: route().current('institution.edit'), permission: 'manage institution' },

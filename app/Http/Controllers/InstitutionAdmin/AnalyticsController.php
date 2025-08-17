@@ -44,4 +44,20 @@ class AnalyticsController extends Controller
 
         return response()->json($snapshot->data);
     }
+
+    /**
+     * Get employer engagement analytics data.
+     */
+    public function getEmployerEngagement(Request $request): JsonResponse
+    {
+        $snapshot = AnalyticsSnapshot::where('type', 'employer_engagement')
+            ->latest('date')
+            ->first();
+
+        if (!$snapshot) {
+            return response()->json(['message' => 'No employer engagement data available yet.'], 404);
+        }
+
+        return response()->json($snapshot->data);
+    }
 }

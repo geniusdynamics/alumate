@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class GenerateAnalyticsSnapshots extends Command
 {
     protected $signature = 'analytics:generate-snapshots 
-                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes, course_roi)}
+                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes, course_roi, employer_engagement)}
                             {--date= : Specific date to generate snapshot for (YYYY-MM-DD)}
                             {--force : Force regeneration even if snapshot exists}';
 
@@ -47,6 +47,9 @@ class GenerateAnalyticsSnapshots extends Command
                     break;
                 case 'course_roi':
                     $this->generateCourseRoiSnapshots($date, $force);
+                    break;
+                case 'employer_engagement':
+                    $this->generateEmployerEngagementSnapshots($date, $force);
                     break;
                 default:
                     $this->error("Invalid snapshot type: {$type}");
@@ -157,6 +160,26 @@ class GenerateAnalyticsSnapshots extends Command
         );
 
         $this->info('Course ROI snapshot generated for '.$dateString);
+    }
+
+    private function generateEmployerEngagementSnapshots($date = null, $force = false)
+    {
+        $this->info('Generating employer engagement snapshots...');
+        $snapshotDate = $date ? Carbon::parse($date) : now();
+        $dateString = $snapshotDate->toDateString();
+
+        if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('employer_engagement', $dateString)) {
+            $this->info('Snapshot for today already exists. Use --force to regenerate.');
+            return;
+        }
+
+        $metrics = $this->analyticsService->getEmployerEngagementMetrics();
+        \App\Models\AnalyticsSnapshot::updateOrCreate(
+            ['type' => 'employer_engagement', 'date' => $dateString],
+            ['data' => $metrics]
+        );
+
+        $this->info('Employer engagement snapshot generated for '.$dateString);
     }
 
     private function generateMonthlySnapshots($date = null, $force = false)

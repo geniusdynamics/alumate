@@ -631,6 +631,11 @@ class InstitutionAdminDashboardController extends Controller
         return Inertia::render('InstitutionAdmin/Analytics/CourseROI');
     }
 
+    public function employerEngagement()
+    {
+        return Inertia::render('InstitutionAdmin/Analytics/EmployerEngagement');
+    }
+
     private function getStartDate($dateRange)
     {
         return match ($dateRange) {

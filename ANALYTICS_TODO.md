@@ -15,14 +15,14 @@ This document outlines the tasks and sub-tasks required to build the enhanced an
   - [x] Add filters to the dashboard (by graduation year, course, demographics).
 
 ### Task 1.2: Course & Program ROI Dashboard
-- [ ] **Backend: Data Correlation**
-  - [ ] Enhance the analytics service to correlate course data with graduate employment and salary data.
-  - [ ] Create a new API endpoint to serve course ROI metrics.
-- [ ] **Frontend: Dashboard UI**
-  - [ ] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/CourseROI.vue`.
-  - [ ] Add a link to the new page.
-  - [ ] Build UI to display a list of courses ranked by graduate employment rate and average salary.
-  - [ ] Add drill-down views to see detailed outcome stats for a specific course.
+- [x] **Backend: Data Correlation**
+  - [x] Enhance the analytics service to correlate course data with graduate employment and salary data.
+  - [x] Create a new API endpoint to serve course ROI metrics.
+- [x] **Frontend: Dashboard UI**
+  - [x] Create a new Vue page at `resources/js/Pages/InstitutionAdmin/Analytics/CourseROI.vue`.
+  - [x] Add a link to the new page.
+  - [x] Build UI to display a list of courses ranked by graduate employment rate and average salary.
+  - [x] Add drill-down views to see detailed outcome stats for a specific course.
 
 ### Task 1.3: Employer Engagement Dashboard
 - [ ] **Backend: Data Tracking**
