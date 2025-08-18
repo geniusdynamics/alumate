@@ -61,9 +61,9 @@ This document outlines the tasks and sub-tasks required to build the enhanced an
   - [x] Build UI to visualize top skills and industries.
 
 ### Task 2.3: System Growth & Health Dashboard
-- [ ] **Backend: Business Metrics**
-  - [ ] Track platform-wide metrics (new users, new institutions, revenue if applicable).
-  - [ ] Create a Super Admin API endpoint for these metrics.
-- [ ] **Frontend: Dashboard UI**
-  - [ ] Add a new section to the Super Admin dashboard for key business metrics.
-  - [ ] Build UI with charts for user growth and other KPIs.
+- [x] **Backend: Business Metrics**
+  - [x] Track platform-wide metrics (new users, new institutions, revenue if applicable).
+  - [x] Create a Super Admin API endpoint for these metrics.
+- [x] **Frontend: Dashboard UI**
+  - [x] Add a new section to the Super Admin dashboard for key business metrics.
+  - [x] Build UI with charts for user growth and other KPIs.
