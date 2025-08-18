@@ -15,15 +15,15 @@
         <!-- System Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <DarkStatCard
-                title="Total Users"
-                :value="systemStats.total_users"
+                title="New Users (30 Days)"
+                :value="systemStats.new_users"
                 icon="UsersIcon"
                 color="blue"
                 change="+12%"
             />
             <DarkStatCard
-                title="Revenue"
-                :value="'$45,678'"
+                title="New Institutions (30 Days)"
+                :value="systemStats.new_institutions"
                 icon="CurrencyDollarIcon"
                 color="green"
                 change="+8.2%"
@@ -98,7 +98,31 @@
             </div>
         </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- User Growth Chart -->
+                 <div class="bg-white rounded-lg shadow lg:col-span-2">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h2 class="text-lg font-medium text-gray-900">User Growth (Last 30 Days)</h2>
+                    </div>
+                    <div class="p-6">
+                        <div class="h-64 flex items-end justify-center space-x-2">
+                             <div
+                                v-for="day in systemStats.user_growth_data"
+                                :key="day.date"
+                                class="flex flex-col items-center"
+                            >
+                                <div
+                                    class="bg-blue-500 rounded-t"
+                                    :style="{ height: (day.count * 10) + 'px', width: '10px' }"
+                                ></div>
+                                <div class="text-xs text-gray-600 mt-1 transform -rotate-45 origin-top-left">
+                                    {{ day.date.substring(5) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Institution Performance -->
                 <div class="bg-white rounded-lg shadow">
                     <div class="px-6 py-4 border-b border-gray-200">

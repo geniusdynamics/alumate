@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 class GenerateAnalyticsSnapshots extends Command
 {
     protected $signature = 'analytics:generate-snapshots 
-                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes, course_roi, employer_engagement, community_health, platform_benchmarks)}
+                            {--type=daily : Type of snapshot to generate (daily, weekly, monthly, graduate_outcomes, course_roi, employer_engagement, community_health, platform_benchmarks, market_trends, system_growth)}
                             {--date= : Specific date to generate snapshot for (YYYY-MM-DD)}
                             {--force : Force regeneration even if snapshot exists}';
 
@@ -56,6 +56,12 @@ class GenerateAnalyticsSnapshots extends Command
                     break;
                 case 'platform_benchmarks':
                     $this->generatePlatformBenchmarksSnapshots($date, $force);
+                    break;
+                case 'market_trends':
+                    $this->generateMarketTrendsSnapshots($date, $force);
+                    break;
+                case 'system_growth':
+                    $this->generateSystemGrowthSnapshots($date, $force);
                     break;
                 default:
                     $this->error("Invalid snapshot type: {$type}");
@@ -226,6 +232,46 @@ class GenerateAnalyticsSnapshots extends Command
         );
 
         $this->info('Platform benchmarks snapshot generated for '.$dateString);
+    }
+
+    private function generateMarketTrendsSnapshots($date = null, $force = false)
+    {
+        $this->info('Generating market trends snapshots...');
+        $snapshotDate = $date ? Carbon::parse($date) : now();
+        $dateString = $snapshotDate->toDateString();
+
+        if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('market_trends', $dateString)) {
+            $this->info('Snapshot for today already exists. Use --force to regenerate.');
+            return;
+        }
+
+        $metrics = $this->analyticsService->getMarketTrends();
+        \App\Models\AnalyticsSnapshot::updateOrCreate(
+            ['type' => 'market_trends', 'date' => $dateString],
+            ['data' => $metrics]
+        );
+
+        $this->info('Market trends snapshot generated for '.$dateString);
+    }
+
+    private function generateSystemGrowthSnapshots($date = null, $force = false)
+    {
+        $this->info('Generating system growth snapshots...');
+        $snapshotDate = $date ? Carbon::parse($date) : now();
+        $dateString = $snapshotDate->toDateString();
+
+        if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('system_growth', $dateString)) {
+            $this->info('Snapshot for today already exists. Use --force to regenerate.');
+            return;
+        }
+
+        $metrics = $this->analyticsService->getSystemGrowthMetrics();
+        \App\Models\AnalyticsSnapshot::updateOrCreate(
+            ['type' => 'system_growth', 'date' => $dateString],
+            ['data' => $metrics]
+        );
+
+        $this->info('System growth snapshot generated for '.$dateString);
     }
 
     private function generateMonthlySnapshots($date = null, $force = false)

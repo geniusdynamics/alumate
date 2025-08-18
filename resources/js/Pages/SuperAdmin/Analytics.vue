@@ -109,6 +109,36 @@
                 </div>
             </div>
 
+            <!-- Market Trends -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Top In-Demand Skills</h3>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-2">
+                            <li v-for="skill in analytics?.market_trends?.top_skills || []" :key="skill.skill" class="flex justify-between items-center text-sm">
+                                <span>{{ skill.skill }}</span>
+                                <span class="font-semibold">{{ skill.count }} mentions</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Top Hiring Industries</h3>
+                    </div>
+                    <div class="p-6">
+                         <ul class="space-y-2">
+                            <li v-for="industry in analytics?.market_trends?.top_industries || []" :key="industry.industry" class="flex justify-between items-center text-sm">
+                                <span>{{ industry.industry }}</span>
+                                <span class="font-semibold">{{ industry.jobs_count }} jobs</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             <!-- Platform Benchmarking -->
             <div class="bg-white rounded-lg shadow mb-8">
                 <div class="px-6 py-4 border-b border-gray-200">
