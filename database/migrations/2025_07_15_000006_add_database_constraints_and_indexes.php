@@ -58,24 +58,26 @@ return new class extends Migration
             $table->unique(['code', 'institution_id']);
         });
 
-        // Add check constraints for data integrity
-        // Note: graduates table constraints are handled in tenant migrations
+        // Add check constraints for data integrity, skipping for SQLite
+        if (DB::getDriverName() !== 'sqlite') {
+            // Note: graduates table constraints are handled in tenant migrations
 
-        Schema::table('jobs', function (Blueprint $table) {
-            DB::statement('ALTER TABLE jobs ADD CONSTRAINT chk_salary_range CHECK (salary_min <= salary_max OR salary_min IS NULL OR salary_max IS NULL)');
-            DB::statement('ALTER TABLE jobs ADD CONSTRAINT chk_experience_years CHECK (min_experience_years >= 0)');
-        });
+            Schema::table('jobs', function (Blueprint $table) {
+                DB::statement('ALTER TABLE jobs ADD CONSTRAINT chk_salary_range CHECK (salary_min <= salary_max OR salary_min IS NULL OR salary_max IS NULL)');
+                DB::statement('ALTER TABLE jobs ADD CONSTRAINT chk_experience_years CHECK (min_experience_years >= 0)');
+            });
 
-        Schema::table('job_applications', function (Blueprint $table) {
-            DB::statement('ALTER TABLE job_applications ADD CONSTRAINT chk_employer_rating CHECK (employer_rating >= 1 AND employer_rating <= 5 OR employer_rating IS NULL)');
-            DB::statement('ALTER TABLE job_applications ADD CONSTRAINT chk_match_score CHECK (match_score >= 0 AND match_score <= 100 OR match_score IS NULL)');
-        });
+            Schema::table('job_applications', function (Blueprint $table) {
+                DB::statement('ALTER TABLE job_applications ADD CONSTRAINT chk_employer_rating CHECK (employer_rating >= 1 AND employer_rating <= 5 OR employer_rating IS NULL)');
+                DB::statement('ALTER TABLE job_applications ADD CONSTRAINT chk_match_score CHECK (match_score >= 0 AND match_score <= 100 OR match_score IS NULL)');
+            });
 
-        Schema::table('employers', function (Blueprint $table) {
-            DB::statement('ALTER TABLE employers ADD CONSTRAINT chk_employer_rating CHECK (employer_rating >= 0 AND employer_rating <= 5 OR employer_rating IS NULL)');
-            DB::statement('ALTER TABLE employers ADD CONSTRAINT chk_employee_count CHECK (employee_count >= 0 OR employee_count IS NULL)');
-            DB::statement('ALTER TABLE employers ADD CONSTRAINT chk_job_limits CHECK (jobs_posted_this_month >= 0 AND job_posting_limit >= 0)');
-        });
+            Schema::table('employers', function (Blueprint $table) {
+                DB::statement('ALTER TABLE employers ADD CONSTRAINT chk_employer_rating CHECK (employer_rating >= 0 AND employer_rating <= 5 OR employer_rating IS NULL)');
+                DB::statement('ALTER TABLE employers ADD CONSTRAINT chk_employee_count CHECK (employee_count >= 0 OR employee_count IS NULL)');
+                DB::statement('ALTER TABLE employers ADD CONSTRAINT chk_job_limits CHECK (jobs_posted_this_month >= 0 AND job_posting_limit >= 0)');
+            });
+        }
     }
 
     /**
@@ -83,15 +85,17 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Drop check constraints
-        // Note: graduates table constraints are handled in tenant migrations
-        DB::statement('ALTER TABLE jobs DROP CONSTRAINT IF EXISTS chk_salary_range');
-        DB::statement('ALTER TABLE jobs DROP CONSTRAINT IF EXISTS chk_experience_years');
-        DB::statement('ALTER TABLE job_applications DROP CONSTRAINT IF EXISTS chk_employer_rating');
-        DB::statement('ALTER TABLE job_applications DROP CONSTRAINT IF EXISTS chk_match_score');
-        DB::statement('ALTER TABLE employers DROP CONSTRAINT IF EXISTS chk_employer_rating');
-        DB::statement('ALTER TABLE employers DROP CONSTRAINT IF EXISTS chk_employee_count');
-        DB::statement('ALTER TABLE employers DROP CONSTRAINT IF EXISTS chk_job_limits');
+        // Drop check constraints, skipping for SQLite
+        if (DB::getDriverName() !== 'sqlite') {
+            // Note: graduates table constraints are handled in tenant migrations
+            DB::statement('ALTER TABLE jobs DROP CONSTRAINT IF EXISTS chk_salary_range');
+            DB::statement('ALTER TABLE jobs DROP CONSTRAINT IF EXISTS chk_experience_years');
+            DB::statement('ALTER TABLE job_applications DROP CONSTRAINT IF EXISTS chk_employer_rating');
+            DB::statement('ALTER TABLE job_applications DROP CONSTRAINT IF EXISTS chk_match_score');
+            DB::statement('ALTER TABLE employers DROP CONSTRAINT IF EXISTS chk_employer_rating');
+            DB::statement('ALTER TABLE employers DROP CONSTRAINT IF EXISTS chk_employee_count');
+            DB::statement('ALTER TABLE employers DROP CONSTRAINT IF EXISTS chk_job_limits');
+        }
 
         // Drop unique constraints
         Schema::table('courses', function (Blueprint $table) {
