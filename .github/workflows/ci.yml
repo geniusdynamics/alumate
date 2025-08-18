@@ -49,6 +49,7 @@ jobs:
       - name: Setup Environment
         run: |
           cp .env.example .env
+          touch database/database.sqlite
           php artisan key:generate
           php artisan ziggy:generate
 
