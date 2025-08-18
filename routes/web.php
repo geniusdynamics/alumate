@@ -234,6 +234,9 @@ Route::middleware('auth')->group(function () {
         Route::get('staff', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'staffManagement'])->name('staff');
         Route::get('import-export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'importExportCenter'])->name('import-export');
         Route::post('reports/export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'exportReport'])->name('reports.export');
+    Route::get('analytics/course-roi', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'courseRoi'])->name('analytics.course-roi');
+    Route::get('analytics/employer-engagement', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'employerEngagement'])->name('analytics.employer-engagement');
+    Route::get('analytics/community-health', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'communityHealth'])->name('analytics.community-health');
 
     // Settings
     Route::get('settings/branding', [InstitutionAdminSettingsController::class, 'showBranding'])->name('settings.branding');
@@ -244,6 +247,9 @@ Route::middleware('auth')->group(function () {
     // Analytics API
     Route::prefix('api/analytics')->name('api.analytics.')->group(function () {
         Route::get('graduate-outcomes', [InstitutionAdminAnalyticsController::class, 'getGraduateOutcomes'])->name('graduate-outcomes');
+        Route::get('course-roi', [InstitutionAdminAnalyticsController::class, 'getCourseRoi'])->name('course-roi');
+        Route::get('employer-engagement', [InstitutionAdminAnalyticsController::class, 'getEmployerEngagement'])->name('employer-engagement');
+        Route::get('community-health', [InstitutionAdminAnalyticsController::class, 'getCommunityHealth'])->name('community-health');
     });
 
         // Graduate Management for Institution Admin

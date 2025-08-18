@@ -580,6 +580,191 @@ class AnalyticsService
         );
     }
 
+    public function getCourseRoiMetrics(array $filters = []): array
+    {
+        // This is a simplified ROI calculation. A real-world one would be more complex.
+        $courses = DB::table('courses')
+            ->leftJoin('graduates', 'courses.id', '=', 'graduates.course_id')
+            ->select(
+                'courses.name as course_name',
+                'courses.cost', // Assuming a 'cost' field exists on the courses table
+                DB::raw('COUNT(graduates.id) as total_graduates'),
+                DB::raw("AVG(graduates.current_salary) as average_salary")
+            )
+            ->groupBy('courses.name', 'courses.cost')
+            ->get();
+
+        return $courses->map(function ($course) {
+            $cost = $course->cost ?? 50000; // Default cost if not set
+            $roi = ($course->average_salary && $cost > 0) ? (($course->average_salary * 5) - $cost) / $cost * 100 : 0; // 5-year ROI
+
+            return [
+                'course_name' => $course->course_name,
+                'average_salary' => (int) $course->average_salary,
+                'total_graduates' => $course->total_graduates,
+                'estimated_roi_percentage' => round($roi),
+            ];
+        })
+        ->sortByDesc('estimated_roi_percentage')
+        ->values()
+        ->toArray();
+    }
+
+    public function getEmployerEngagementMetrics(array $filters = []): array
+    {
+        return [
+            'top_engaging_employers' => $this->getTopEngagingEmployers($filters),
+            'most_in_demand_skills' => $this->getMostInDemandSkills($filters),
+            'hiring_trends_by_industry' => $this->getHiringTrendsByIndustry($filters),
+        ];
+    }
+
+    private function getTopEngagingEmployers(array $filters): array
+    {
+        return DB::table('employers')
+            ->leftJoin('jobs', 'employers.id', '=', 'jobs.employer_id')
+            ->leftJoin('job_applications', 'jobs.id', '=', 'job_applications.job_id')
+            ->select(
+                'employers.company_name',
+                DB::raw('COUNT(DISTINCT jobs.id) as jobs_posted'),
+                DB::raw('COUNT(DISTINCT job_applications.id) as total_applications'),
+                DB::raw("SUM(CASE WHEN job_applications.status = 'hired' THEN 1 ELSE 0 END) as total_hires")
+            )
+            ->groupBy('employers.company_name')
+            ->orderByDesc('total_hires')
+            ->orderByDesc('jobs_posted')
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
+    private function getMostInDemandSkills(array $filters): array
+    {
+        // This assumes skills are stored in a JSON column in the jobs table
+        return DB::table('jobs')
+            ->select('required_skills')
+            ->whereNotNull('required_skills')
+            ->get()
+            ->pluck('required_skills')
+            ->map(fn ($skills) => json_decode($skills, true))
+            ->flatten()
+            ->countBy()
+            ->sortDesc()
+            ->take(10)
+            ->map(fn ($count, $skill) => ['skill' => $skill, 'count' => $count])
+            ->values()
+            ->toArray();
+    }
+
+    public function getCommunityHealthMetrics(array $filters = []): array
+    {
+        $dateRange = $this->getDateRange($filters);
+
+        return [
+            'daily_active_users' => $this->getDailyActiveUsers($dateRange),
+            'post_activity' => $this->getPostActivity($dateRange),
+            'engagement_trends' => $this->getEngagementTrends($dateRange),
+            'group_participation' => $this->getGroupParticipation($dateRange),
+            'events_attended' => $this->getEventsAttended($dateRange),
+            'connections_made' => $this->getConnectionsMade($dateRange),
+        ];
+    }
+
+    public function getPlatformBenchmarks(array $filters = []): array
+    {
+        $tenants = \App\Models\Tenant::all();
+        $benchmarks = [];
+
+        foreach ($tenants as $tenant) {
+            tenancy()->initialize($tenant);
+
+            $metrics = $this->getGraduateOutcomeMetrics($filters);
+
+            // Anonymize the data
+            $benchmarks[] = [
+                'institution_id' => $tenant->id, // Anonymized ID
+                'employment_rate' => $metrics['employment_rate_by_course'][0]['employment_rate'] ?? 0, // Simplified for example
+                'average_salary' => $metrics['salary_progression']['year_1']['average'] ?? 0,
+            ];
+        }
+
+        tenancy()->end();
+
+        return $benchmarks;
+    }
+
+    public function getMarketTrends(array $filters = []): array
+    {
+        $topSkills = DB::table('jobs')
+            ->select('required_skills')
+            ->whereNotNull('required_skills')
+            ->get()
+            ->pluck('required_skills')
+            ->map(fn ($skills) => json_decode($skills, true))
+            ->flatten()
+            ->filter()
+            ->countBy()
+            ->sortDesc()
+            ->take(10)
+            ->map(fn ($count, $skill) => ['skill' => $skill, 'count' => $count])
+            ->values();
+
+        $topIndustries = DB::table('employers')
+            ->select('industry', DB::raw('COUNT(jobs.id) as jobs_count'))
+            ->join('jobs', 'employers.id', '=', 'jobs.employer_id')
+            ->whereNotNull('employers.industry')
+            ->groupBy('employers.industry')
+            ->orderByDesc('jobs_count')
+            ->limit(10)
+            ->get();
+
+        return [
+            'top_skills' => $topSkills,
+            'top_industries' => $topIndustries,
+        ];
+    }
+
+    public function getSystemGrowthMetrics(array $filters = []): array
+    {
+        $dateRange = $this->getDateRange($filters);
+
+        return [
+            'new_users' => $this->getNewUsers($dateRange),
+            'new_institutions' => \App\Models\Tenant::whereBetween('created_at', $dateRange)->count(),
+            'user_growth_data' => $this->getUserGrowthData($dateRange),
+        ];
+    }
+
+    private function getUserGrowthData(array $dateRange): array
+    {
+        return \App\Models\User::select(
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->whereBetween('created_at', $dateRange)
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->toArray();
+    }
+
+    private function getHiringTrendsByIndustry(array $filters): array
+    {
+        return DB::table('employers')
+            ->leftJoin('jobs', 'employers.id', '=', 'jobs.employer_id')
+            ->leftJoin('job_applications', function ($join) {
+                $join->on('jobs.id', '=', 'job_applications.job_id')
+                     ->where('job_applications.status', '=', 'hired');
+            })
+            ->select('employers.industry', DB::raw('COUNT(job_applications.id) as hires'))
+            ->whereNotNull('employers.industry')
+            ->groupBy('employers.industry')
+            ->orderByDesc('hires')
+            ->limit(10)
+            ->get()
+            ->toArray();
+    }
+
     private function getEmploymentRateByCourse(array $filters): array
     {
         return DB::table('courses')

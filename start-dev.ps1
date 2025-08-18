@@ -191,6 +191,100 @@ function Show-LogFile {
     }
     Write-Host ""
 }
+Write-Host "========================================" -ForegroundColor Green
+Write-Host ""
+
+# Kill any existing processes first
+Write-Host "[0/5] Cleaning up existing processes..." -ForegroundColor Yellow
+try {
+    Stop-Job -Name 'ViteServer' -ErrorAction SilentlyContinue
+    Remove-Job -Name 'ViteServer' -ErrorAction SilentlyContinue
+    Stop-Job -Name 'LaravelServer' -ErrorAction SilentlyContinue
+    Remove-Job -Name 'LaravelServer' -ErrorAction SilentlyContinue
+    taskkill /F /IM php.exe 2>$null | Out-Null
+    taskkill /F /IM node.exe 2>$null | Out-Null
+    Write-Host "✓ Existing processes cleaned up" -ForegroundColor Green
+} catch {
+    Write-Host "✓ No existing processes to clean up" -ForegroundColor Green
+}
+
+# Check if PHP is available
+Write-Host "[1/5] Checking PHP installation..." -ForegroundColor Yellow
+try {
+    $phpVersion = & "D:\DevCenter\xampp\php-8.3.23\php.exe" --version 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ PHP is available" -ForegroundColor Green
+    } else {
+        throw "PHP not found"
+    }
+} catch {
+    Write-Host "❌ PHP not found at D:\DevCenter\xampp\php-8.3.23\php.exe" -ForegroundColor Red
+    exit 1
+}
+
+# Check if Node.js is available
+Write-Host "[2/5] Checking Node.js installation..." -ForegroundColor Yellow
+try {
+    $nodeVersion = node --version 2>$null
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "✓ Node.js is available: $nodeVersion" -ForegroundColor Green
+    } else {
+        throw "Node.js not found"
+    }
+} catch {
+    Write-Host "❌ Node.js not found. Please install Node.js" -ForegroundColor Red
+    exit 1
+}
+
+# Clear Laravel caches
+Write-Host "[3/5] Clearing Laravel caches..." -ForegroundColor Yellow
+try {
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan config:clear 2>$null
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan route:clear 2>$null
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan view:clear 2>$null
+    & "D:\DevCenter\xampp\php-8.3.23\php.exe" artisan cache:clear 2>$null
+    Write-Host "✓ Laravel caches cleared" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️  Warning: Could not clear some caches" -ForegroundColor Yellow
+}
+
+# Start Vite and Laravel in separate persistent windows
+Write-Host "[4/4] Starting development servers..." -ForegroundColor Green
+
+# Start Vite dev server in separate window
+Write-Host "Starting Vite development server in separate window..." -ForegroundColor Green
+Start-Process -FilePath "cmd.exe" -ArgumentList "/k", "title Vite Dev Server - Alumni Platform && echo Starting Vite Dev Server... && npm run dev" -WindowStyle Normal
+Write-Host "✓ Vite server starting in separate window..." -ForegroundColor Green
+
+# Wait for Vite to initialize with better error handling
+Write-Host "Waiting for Vite to initialize on http://127.0.0.1:5100 ..." -ForegroundColor Yellow
+$waited = 0
+$timeout = 60
+$viteReady = $false
+
+do {
+    try {
+        $response = Invoke-WebRequest -Uri "http://127.0.0.1:5100/@vite/client" -UseBasicParsing -TimeoutSec 3 -ErrorAction Stop
+        if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) {
+            Write-Host "✓ Vite is ready after $waited seconds" -ForegroundColor Green
+            $viteReady = $true
+            break
+        }
+    } catch {
+        # Vite not ready yet, continue waiting
+    }
+    
+    if ($waited -ge $timeout) {
+        Write-Host "⚠ Vite did not become ready within $timeout seconds" -ForegroundColor Yellow
+        Write-Host "⚠ Check the Vite window for errors" -ForegroundColor Yellow
+        Write-Host "⚠ Continuing with Laravel anyway..." -ForegroundColor Yellow
+        break
+    }
+
+    $waited += 3
+    Write-Host "   ... waiting ($waited/$timeout seconds)" -ForegroundColor Gray
+    Start-Sleep -Seconds 3
+} while ($true)
 
 # Main script execution starts here
 Write-Host "`n========================================" -ForegroundColor $Colors.Info
@@ -328,9 +422,8 @@ Write-Host "✓ URLs opened in browser" -ForegroundColor $Colors.Success
 Write-Host "🔍 Performing initial server health checks..." -ForegroundColor $Colors.Warning
 Start-Sleep -Seconds 3
 
-# Check if servers are responding
-$viteHealthy = Test-ServerHealth -Port $VitePort -ServerName "Vite"
-$laravelHealthy = Test-ServerHealth -Port $LaravelPort -ServerName "Laravel"
+# Monitor the servers
+Write-Host "`nPress Ctrl+C to stop monitoring..." -ForegroundColor Yellow
 
 Write-Host ""
 Write-Host "🎉 Development environment setup complete!" -ForegroundColor $Colors.Success

@@ -30,7 +30,12 @@ class SuperAdminDashboardController extends Controller
     public function index()
     {
         // System-wide analytics
-        $systemStats = $this->getSystemStats();
+        $systemGrowth = \App\Models\AnalyticsSnapshot::where('type', 'system_growth')
+            ->latest('date')
+            ->first();
+
+        $systemStats = $systemGrowth ? $systemGrowth->data : $this->getSystemStats();
+
         $institutionStats = $this->getInstitutionStats();
         $employerStats = $this->getEmployerStats();
         $jobStats = $this->getJobStats();
@@ -52,12 +57,22 @@ class SuperAdminDashboardController extends Controller
         $timeframe = $request->get('timeframe', '30'); // days
         $startDate = Carbon::now()->subDays($timeframe);
 
+        $platformBenchmarks = \App\Models\AnalyticsSnapshot::where('type', 'platform_benchmarks')
+            ->latest('date')
+            ->first();
+
+        $marketTrends = \App\Models\AnalyticsSnapshot::where('type', 'market_trends')
+            ->latest('date')
+            ->first();
+
         $analytics = [
             'user_growth' => $this->getUserGrowthData($startDate),
             'institution_performance' => $this->getInstitutionPerformance(),
             'employment_trends' => $this->getEmploymentTrends($startDate),
             'job_market_analysis' => $this->getJobMarketAnalysis($startDate),
             'system_usage' => $this->getSystemUsageData($startDate),
+            'platform_benchmarks' => $platformBenchmarks ? $platformBenchmarks->data : [],
+            'market_trends' => $marketTrends ? $marketTrends->data : [],
         ];
 
         return Inertia::render('SuperAdmin/Analytics', [

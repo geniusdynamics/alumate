@@ -1,8 +1,0 @@
-[Mon 08/18/2025 10:12:47.72] Development server startup initiated 
-[Mon 08/18/2025 10:12:48.17] Cleaned up existing processes 
-[Mon 08/18/2025 10:12:50.29] PHP installation verified 
-[Mon 08/18/2025 10:12:50.41] Node.js installation verified: v24.3.0 
-[Mon 08/18/2025 10:12:50.46] WARNING: Port 5100 conflict detected 
-[Mon 08/18/2025 10:12:50.52] Clearing Laravel caches 
-[Mon 08/18/2025 10:13:30.34] Laravel caches cleared 
-[Mon 08/18/2025 10:13:30.34] Starting Vite server 

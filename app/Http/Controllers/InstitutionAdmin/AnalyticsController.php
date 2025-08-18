@@ -28,4 +28,52 @@ class AnalyticsController extends Controller
 
         return response()->json($snapshot->data);
     }
+
+    /**
+     * Get course ROI analytics data.
+     */
+    public function getCourseRoi(Request $request): JsonResponse
+    {
+        $snapshot = AnalyticsSnapshot::where('type', 'course_roi')
+            ->latest('date')
+            ->first();
+
+        if (!$snapshot) {
+            return response()->json(['message' => 'No course ROI data available yet.'], 404);
+        }
+
+        return response()->json($snapshot->data);
+    }
+
+    /**
+     * Get employer engagement analytics data.
+     */
+    public function getEmployerEngagement(Request $request): JsonResponse
+    {
+        $snapshot = AnalyticsSnapshot::where('type', 'employer_engagement')
+            ->latest('date')
+            ->first();
+
+        if (!$snapshot) {
+            return response()->json(['message' => 'No employer engagement data available yet.'], 404);
+        }
+
+        return response()->json($snapshot->data);
+    }
+
+    /**
+     * Get community health analytics data.
+     */
+    public function getCommunityHealth(Request $request): JsonResponse
+    {
+        $snapshot = AnalyticsSnapshot::where('type', 'community_health')
+            ->latest('date')
+            ->first();
+
+        if (!$snapshot) {
+            return response()->json(['message' => 'No community health data available yet.'], 404);
+        }
+
+        return response()->json($snapshot->data);
+    }
 }
