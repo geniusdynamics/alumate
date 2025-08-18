@@ -30,7 +30,12 @@ class SuperAdminDashboardController extends Controller
     public function index()
     {
         // System-wide analytics
-        $systemStats = $this->getSystemStats();
+        $systemGrowth = \App\Models\AnalyticsSnapshot::where('type', 'system_growth')
+            ->latest('date')
+            ->first();
+
+        $systemStats = $systemGrowth ? $systemGrowth->data : $this->getSystemStats();
+
         $institutionStats = $this->getInstitutionStats();
         $employerStats = $this->getEmployerStats();
         $jobStats = $this->getJobStats();

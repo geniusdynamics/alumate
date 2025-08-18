@@ -53,12 +53,12 @@ This document outlines the tasks and sub-tasks required to build the enhanced an
   - [x] Add charts to compare metrics (employment rate, salary) across institutions (anonymized).
 
 ### Task 2.2: Market Trends Dashboard
-- [ ] **Backend: Ecosystem-Wide Analysis**
-  - [ ] Aggregate data on in-demand skills and top industries across all employers on the platform.
-  - [ ] Create a new Super Admin API endpoint for market trends.
-- [ ] **Frontend: Dashboard UI**
-  - [ ] Add a new section to the Super Admin analytics page for market trends.
-  - [ ] Build UI to visualize top skills and industries.
+- [x] **Backend: Ecosystem-Wide Analysis**
+  - [x] Aggregate data on in-demand skills and top industries across all employers on the platform.
+  - [x] Create a new Super Admin API endpoint for market trends.
+- [x] **Frontend: Dashboard UI**
+  - [x] Add a new section to the Super Admin analytics page for market trends.
+  - [x] Build UI to visualize top skills and industries.
 
 ### Task 2.3: System Growth & Health Dashboard
 - [ ] **Backend: Business Metrics**

@@ -724,6 +724,30 @@ class AnalyticsService
         ];
     }
 
+    public function getSystemGrowthMetrics(array $filters = []): array
+    {
+        $dateRange = $this->getDateRange($filters);
+
+        return [
+            'new_users' => $this->getNewUsers($dateRange),
+            'new_institutions' => \App\Models\Tenant::whereBetween('created_at', $dateRange)->count(),
+            'user_growth_data' => $this->getUserGrowthData($dateRange),
+        ];
+    }
+
+    private function getUserGrowthData(array $dateRange): array
+    {
+        return \App\Models\User::select(
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as count')
+        )
+            ->whereBetween('created_at', $dateRange)
+            ->groupBy('date')
+            ->orderBy('date')
+            ->get()
+            ->toArray();
+    }
+
     private function getHiringTrendsByIndustry(array $filters): array
     {
         return DB::table('employers')

@@ -22,13 +22,25 @@ class SuperAdminDashboardTest extends TestCase
     }
 
     /** @test */
-    public function super_admin_can_view_dashboard()
+    public function super_admin_can_view_dashboard_with_system_growth_data()
     {
+        \App\Models\AnalyticsSnapshot::factory()->create([
+            'type' => 'system_growth',
+            'date' => now()->toDateString(),
+            'data' => [
+                'new_users' => 10,
+                'new_institutions' => 2,
+                'user_growth_data' => [['date' => '2025-08-17', 'count' => 5]],
+            ]
+        ]);
+
         $this->actingAs($this->superAdmin)
             ->get(route('super-admin.dashboard'))
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('SuperAdmin/Dashboard')
+                ->has('systemStats.new_users')
+                ->where('systemStats.new_users', 10)
             );
     }
 
