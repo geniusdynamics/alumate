@@ -26,6 +26,7 @@ Object.defineProperty(window, 'navigator', {
 // Mock performance API
 Object.defineProperty(window, 'performance', {
   value: {
+    now: vi.fn(() => Date.now()),
     getEntriesByType: vi.fn(() => [{
       loadEventEnd: 1000,
       loadEventStart: 100,

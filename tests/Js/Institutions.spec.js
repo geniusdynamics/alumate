@@ -4,10 +4,15 @@ import Create from '@/Pages/Institutions/Create.vue';
 import Edit from '@/Pages/Institutions/Edit.vue';
 import CreateInstitutionForm from '@/Pages/Institutions/Partials/CreateInstitutionForm.vue';
 import UpdateInstitutionForm from '@/Pages/Institutions/Partials/UpdateInstitutionForm.vue';
+import { vi } from 'vitest';
 
 describe('Institutions components', () => {
     it('renders Index component', () => {
-        const wrapper = mount(Index);
+        const wrapper = mount(Index, {
+            props: {
+                institutions: [],
+            }
+        });
         expect(wrapper.html()).toContain('Institutions');
     });
 
@@ -29,7 +34,16 @@ describe('Institutions components', () => {
     });
 
     it('renders CreateInstitutionForm component', () => {
-        const wrapper = mount(CreateInstitutionForm);
+        const wrapper = mount(CreateInstitutionForm, {
+             props: {
+                form: {
+                    hasErrors: false,
+                    errors: {},
+                    post: vi.fn(),
+                    processing: false,
+                }
+            },
+        });
         expect(wrapper.html()).toContain('Create Institution');
     });
 
@@ -40,6 +54,12 @@ describe('Institutions components', () => {
                     id: 'test',
                     name: 'Test Institution',
                 },
+                 form: {
+                    hasErrors: false,
+                    errors: {},
+                    put: vi.fn(),
+                    processing: false,
+                }
             },
         });
         expect(wrapper.html()).toContain('Update Institution');
