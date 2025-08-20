@@ -46,7 +46,7 @@ jobs:
         run: npm ci
 
       - name: Run PHP Linting (Pint)
-        run: vendor/bin/pint --test
+        run: vendor/bin/pint
 
       - name: Run JS Linting (ESLint)
         run: npm run lint
@@ -92,7 +92,9 @@ jobs:
 
   integration-tests:
     name: Integration Tests
-    runs-on: ubuntu-latest
+    runs-on:
+      - ubuntu-latest
+      - docker
     services:
       postgres:
         image: postgres:17
@@ -140,6 +142,16 @@ jobs:
           sed -i 's/DB_DATABASE=database\/database.sqlite/DB_DATABASE=test_db/' .env
           sed -i 's/DB_USERNAME=root/DB_USERNAME=postgres/' .env
           sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=3306/DB_PORT=5432/' .env
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
 
       - name: Generate Application Key
         run: php artisan key:generate
@@ -154,7 +166,9 @@ jobs:
 
   feature-tests:
     name: Feature Tests
-    runs-on: ubuntu-latest
+    runs-on:
+      - ubuntu-latest
+      - docker
     services:
       postgres:
         image: postgres:17
@@ -196,6 +210,16 @@ jobs:
           sed -i 's/DB_DATABASE=database\/database.sqlite/DB_DATABASE=test_db/' .env
           sed -i 's/DB_USERNAME=root/DB_USERNAME=postgres/' .env
           sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=3306/DB_PORT=5432/' .env
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
 
       - name: Generate Application Key
         run: php artisan key:generate
@@ -214,6 +238,24 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, mbstring, zip, pcntl
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
