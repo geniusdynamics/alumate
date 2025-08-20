@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <section class="integration-ecosystem py-16 bg-white">
     <div class="container mx-auto px-4">
       <!-- Section Header -->
@@ -86,7 +86,7 @@
                 <span :class="[
                   'font-semibold',
                   integration.pricing.type === 'free' ? 'text-green-600' :
-                  integration.pricing.type === 'paid' ? 'text-blue-600' :
+                  integration.pricing.type === 'paid' ? `$${integration.pricing.cost}/${integration.pricing.billingPeriod}` :
                   'text-purple-600'
                 ]">
                   {{ integration.pricing.type === 'free' ? 'Free' : 
@@ -506,7 +506,7 @@
             >
               View Documentation
             </a>
-            <button class="flex-1 border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <button class="flex-1 border border-white text-white py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200">
               Contact Support
             </button>
           </div>
@@ -607,7 +607,7 @@
             >
               View Full Documentation
             </a>
-            <button class="border border-gray-300 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <button class="border border-white text-white py-3 px-6 rounded-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
               Download Postman Collection
             </button>
           </div>
@@ -717,10 +717,13 @@
           </div>
 
           <div class="text-center">
-            <button class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 mr-4">
-              Register for Training
+            <button 
+              @click="openTrainingModal(program)"
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            >
+              View Program Details
             </button>
-            <button class="border border-gray-300 text-gray-700 py-3 px-6 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <button class="border border-white text-white py-2 px-4 rounded-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
               Download Syllabus
             </button>
           </div>
@@ -740,7 +743,9 @@ import type {
 
 interface Props extends /* @vue-ignore */ IntegrationEcosystemProps {}
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  integrations: () => []
+})
 
 const selectedCategory = ref<string>('all')
 const selectedIntegration = ref<PlatformIntegration | null>(null)
@@ -748,8 +753,14 @@ const selectedTrainingProgram = ref<TrainingProgram | null>(null)
 const showApiDocsModal = ref(false)
 
 const integrationCategories = computed(() => {
-  const categories = ['all', ...new Set(props.integrations.map(i => i.category))]
-  return categories
+  console.log('props.integrations:', props.integrations);
+  const categories = ['all'];
+  props.integrations.forEach(i => {
+    if (i && i.category) {
+      categories.push(i.category);
+    }
+  });
+  return [...new Set(categories)];
 })
 
 const filteredIntegrations = computed(() => {

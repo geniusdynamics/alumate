@@ -116,7 +116,7 @@ const closeMenu = () => {
             </DialogContent>
         </Dialog>
     </div>
-</script>
+</template>
 
 <style scoped>
 .safe-area-bottom {

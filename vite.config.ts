@@ -5,6 +5,7 @@ import path from 'path';
 import AutoImport from 'unplugin-auto-import/vite';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
     define: {
@@ -66,7 +67,7 @@ export default defineConfig({
                         'SuccessStoryCard': 'resources/js/components/SuccessStories/SuccessStoryCard.vue',
                         'Skeleton': 'resources/js/components/ui/skeleton/Skeleton.vue',
                     }
-                    
+
                     if (componentMappings[componentName]) {
                         return componentMappings[componentName]
                     }
@@ -90,8 +91,20 @@ export default defineConfig({
                 if (id.includes('vue-leaflet')) {
                     return true;
                 }
+                if (id.includes('laravel-echo')) {
+                    return true;
+                }
                 return false;
             },
+            plugins: [
+                // Add visualizer plugin to analyze bundle
+                visualizer({
+                    filename: 'dist/stats.html',
+                    open: false,
+                    gzipSize: true,
+                    brotliSize: true,
+                }),
+            ],
             output: {
                 manualChunks: (id) => {
                     // Vendor chunks
@@ -162,12 +175,6 @@ export default defineConfig({
         assetsInlineLimit: 4096, // Inline assets smaller than 4kb
         cssCodeSplit: true, // Split CSS into separate files
         sourcemap: process.env.NODE_ENV === 'development',
-        // Handle CSS imports properly
-        cssPreprocessorOptions: {
-            css: {
-                charset: false
-            }
-        },
         minify: 'terser',
         terserOptions: {
             compress: {

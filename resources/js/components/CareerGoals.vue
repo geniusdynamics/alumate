@@ -128,8 +128,7 @@ import {
   BriefcaseIcon,
   TrophyIcon,
   UserGroupIcon,
-  CertificateIcon,
-  TrendingUpIcon
+  ArrowTrendingUpIcon as TrendingUpIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
@@ -170,7 +169,7 @@ const getSuggestionIcon = (type) => {
     'specialization': TrophyIcon,
     'leadership': UserGroupIcon,
     'career_move': BriefcaseIcon,
-    'certification': CertificateIcon,
+    'certification': AcademicCapIcon,
     'networking': UserGroupIcon
   }
   return icons[type] || TrendingUpIcon

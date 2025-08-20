@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const props = defineProps<{
   settings: {
@@ -55,15 +55,15 @@ function submit() {
           <CardDescription>Connect your institution's portal to other services.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs default-value="email" class="w-full">
-            <TabsList class="grid w-full grid-cols-4">
-              <TabsTrigger value="email">Email</TabsTrigger>
-              <TabsTrigger value="calendar">Calendar</TabsTrigger>
-              <TabsTrigger value="sso">SSO</TabsTrigger>
-              <TabsTrigger value="crm">CRM</TabsTrigger>
-            </TabsList>
+          <div default-value="email" class="w-full">
+            <div class="grid w-full grid-cols-4">
+              <button value="email">Email</button>
+              <button value="calendar">Calendar</button>
+              <button value="sso">SSO</button>
+              <button value="crm">CRM</button>
+            </div>
 
-            <TabsContent value="email" class="mt-6">
+            <div value="email" class="mt-6">
               <div class="space-y-4">
                 <div>
                   <Label for="email-api-key">API Key (e.g., Mailgun, SendGrid)</Label>
@@ -74,9 +74,9 @@ function submit() {
                   <Input id="email-from" type="email" v-model="form.integrations.email.fromEmail" class="mt-1" />
                 </div>
               </div>
-            </TabsContent>
+            </div>
 
-            <TabsContent value="calendar" class="mt-6">
+            <div value="calendar" class="mt-6">
                <div class="space-y-4">
                 <div>
                   <Label for="calendar-type">Calendar Type</Label>
@@ -87,9 +87,9 @@ function submit() {
                   <Input id="calendar-api-key" v-model="form.integrations.calendar.apiKey" class="mt-1" />
                 </div>
               </div>
-            </TabsContent>
+            </div>
 
-            <TabsContent value="sso" class="mt-6">
+            <div value="sso" class="mt-6">
                <div class="space-y-4">
                  <div>
                   <Label for="sso-type">SSO Provider</Label>
@@ -104,9 +104,9 @@ function submit() {
                   <Input id="sso-client-secret" type="password" v-model="form.integrations.sso.clientSecret" class="mt-1" />
                 </div>
               </div>
-            </TabsContent>
+            </div>
 
-            <TabsContent value="crm" class="mt-6">
+            <div value="crm" class="mt-6">
                <div class="space-y-4">
                  <div>
                   <Label for="crm-type">CRM Provider</Label>
@@ -121,8 +121,8 @@ function submit() {
                   <Input id="crm-api-url" v-model="form.integrations.crm.apiUrl" class="mt-1" />
                 </div>
               </div>
-            </TabsContent>
-          </Tabs>
+            </div>
+          </div>
         </CardContent>
       </Card>
 

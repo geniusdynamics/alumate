@@ -1,8 +1,8 @@
 <template>
   <div class="timeline-container">
     <!-- Pull to refresh indicator -->
-    <div 
-      v-if="isPullingToRefresh" 
+    <div
+      v-if="isPullingToRefresh"
       class="pull-to-refresh-indicator"
       :class="{ 'active': pullDistance > 50 }"
     >
@@ -18,7 +18,7 @@
     </div>
 
     <!-- Timeline posts -->
-    <div 
+    <div
       ref="timelineContainer"
       class="timeline-posts"
       @touchstart="handleTouchStart"
@@ -72,7 +72,7 @@
           </svg>
           <h3 class="text-lg font-medium mb-2">No posts yet</h3>
           <p class="text-sm mb-4">Be the first to share something with your community!</p>
-          <button 
+          <button
             @click="$emit('create-post')"
             class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
@@ -83,8 +83,8 @@
     </div>
 
     <!-- Real-time update notification -->
-    <div 
-      v-if="hasNewPosts" 
+    <div
+      v-if="hasNewPosts"
       class="new-posts-notification"
       @click="loadNewPosts"
     >
@@ -266,7 +266,7 @@ const setupWebSocket = () => {
 
     websocketConnection.onmessage = (event) => {
       const data = JSON.parse(event.data)
-      
+
       if (data.type === 'new_post') {
         handleNewPostNotification(data.post)
       } else if (data.type === 'post_updated') {
@@ -315,7 +315,7 @@ const checkForNewPosts = async () => {
       if (data.data.posts.length > 0) {
         const latestPost = data.data.posts[0]
         const currentLatest = posts.value[0]
-        
+
         if (!currentLatest || latestPost.id !== currentLatest.id) {
           newPostsCount.value++
           hasNewPosts.value = true
@@ -359,7 +359,7 @@ const handleEngagementUpdate = (postId, engagement) => {
       post.engagement_counts = {}
     }
     post.engagement_counts[engagement.type] = (post.engagement_counts[engagement.type] || 0) + 1
-    
+
     emit('post-updated', post)
   }
 }
@@ -403,7 +403,7 @@ const handleTouchEnd = () => {
   if (isPullingToRefresh.value && pullDistance.value > 50) {
     loadTimeline(true)
   }
-  
+
   pullDistance.value = 0
   isPullingToRefresh.value = false
 }
