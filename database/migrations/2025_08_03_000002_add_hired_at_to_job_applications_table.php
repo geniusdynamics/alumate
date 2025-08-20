@@ -19,17 +19,19 @@ return new class extends Migration
             }
         });
 
-        // Add 'hired' to the status enum if it doesn't exist
-        DB::statement('
-            ALTER TABLE job_applications
-            DROP CONSTRAINT IF EXISTS job_applications_status_check
-        ');
+        // Add 'hired' to the status enum if it doesn't exist, skipping for SQLite
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement('
+                ALTER TABLE job_applications
+                DROP CONSTRAINT IF EXISTS job_applications_status_check
+            ');
 
-        DB::statement("
-            ALTER TABLE job_applications
-            ADD CONSTRAINT job_applications_status_check
-            CHECK (status IN ('pending', 'reviewing', 'interviewing', 'offered', 'accepted', 'rejected', 'withdrawn', 'hired'))
-        ");
+            DB::statement("
+                ALTER TABLE job_applications
+                ADD CONSTRAINT job_applications_status_check
+                CHECK (status IN ('pending', 'reviewing', 'interviewing', 'offered', 'accepted', 'rejected', 'withdrawn', 'hired'))
+            ");
+        }
 
         // Update existing records where status is 'accepted' to 'hired' and set hired_at
         DB::statement("
