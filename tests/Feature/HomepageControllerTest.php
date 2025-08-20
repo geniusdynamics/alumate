@@ -6,8 +6,6 @@ use App\Services\HomepageService;
 use Illuminate\Http\Request;
 use Inertia\Testing\AssertableInertia as Assert;
 
-uses(Tests\TestCase::class);
-
 beforeEach(function () {
     // Create mocks
     $this->homepageService = Mockery::mock(HomepageService::class);

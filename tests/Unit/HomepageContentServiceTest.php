@@ -5,8 +5,6 @@ use App\Models\User;
 use App\Services\HomepageContentService;
 use Illuminate\Support\Facades\Cache;
 
-uses(Tests\TestCase::class);
-
 beforeEach(function () {
     $this->service = new HomepageContentService;
 });
