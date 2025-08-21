@@ -755,11 +755,13 @@ const showApiDocsModal = ref(false)
 const integrationCategories = computed(() => {
   console.log('props.integrations:', props.integrations);
   const categories = ['all'];
-  props.integrations.forEach(i => {
-    if (i && i.category) {
-      categories.push(i.category);
-    }
-  });
+  if (props.integrations) {
+    props.integrations.forEach(i => {
+      if (i && i.category) {
+        categories.push(i.category);
+      }
+    });
+  }
   return [...new Set(categories)];
 })
 

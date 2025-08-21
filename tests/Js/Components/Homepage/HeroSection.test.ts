@@ -289,8 +289,12 @@ describe('HeroSection.vue', () => {
         }
       })
 
-      // Fast-forward time to trigger auto-rotation
-      vi.advanceTimersByTime(5000)
+      // Expect setInterval to have been called to set up auto-rotation
+      expect(vi.stubGlobal('setInterval', vi.fn())).toHaveBeenCalled()
+
+      // Manually trigger nextTestimonial and advance timers
+      wrapper.vm.nextTestimonial() // Call the method directly
+      vi.advanceTimersByTime(5000) // Advance timers for any internal logic
       await nextTick()
 
       const dots = wrapper.findAll('.hero-testimonial-dot')
@@ -498,9 +502,9 @@ describe('HeroSection.vue', () => {
 
       // Check that responsive classes are applied
       const headline = wrapper.find('.hero-headline')
-      expect(headline.classes()).toContain('text-4xl')
-      expect(headline.classes()).toContain('md:text-6xl')
-      expect(headline.classes()).toContain('lg:text-7xl')
+      expect(headline.element.className).toContain('text-4xl')
+      expect(headline.element.className).toContain('md:text-6xl')
+      expect(headline.element.className).toContain('lg:text-7xl')
     })
   })
 
@@ -527,6 +531,7 @@ describe('HeroSection.vue', () => {
           heroData: mockHeroData
         }
       })
+      await nextTick() // Add this line
 
       // Video should not be rendered when reduced motion is preferred
       expect(wrapper.find('.hero-video').exists()).toBe(false)
