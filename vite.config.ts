@@ -36,8 +36,8 @@ export default defineConfig({
                 './resources/js/services/**',
                 './resources/js/utils/**',
                 './resources/js/layouts/**',
-                './resources/js/stores/**',
-                './resources/js/composables/**',
+                './resources/js/stores/**'
+                // Removed './resources/js/composables/**' to prevent conflicts
             ],
             viteOptimizeDeps: true,
             dts: true,
@@ -45,34 +45,43 @@ export default defineConfig({
             dirsScanOptions: {
                 types: true,
             },
-            // Exclude problematic auto-form index exports to prevent duplicates
+            // Exclude problematic files to prevent duplicates
             exclude: [
                 /\/auto-form\/index\.ts$/,
                 /\/form\/index\.ts$/,
-                /\/sidebar\/index\.ts$/
+                /\/sidebar\/index\.ts$/,
+                /\/composables\//,        // Exclude all composables from auto-import
+                /\/useDebounce\.js$/,     // Exclude to prevent conflict with @vueuse/core
+                /\/useAppearance\.ts$/,   // Exclude to prevent conflict with useTheme.js
+                /\/initializeTheme/      // Exclude initializeTheme functions
             ]
         }),
         Components({
             dts: true,
-            dirs: ['resources/js/components/**', 'resources/js/layouts/**'],
+            // More specific directory scanning to avoid conflicts
+            dirs: [
+                'resources/js/components/Auth/**',
+                'resources/js/components/Forms/**', 
+                'resources/js/components/Navigation/**',
+                'resources/js/layouts/GuestLayout.vue',
+                'resources/js/layouts/AppLayout.vue'
+            ],
             deep: true,
-            resolvers: [
-                // Custom resolver to handle remaining naming conflicts
-                (componentName) => {
-                    // Handle specific component conflicts by prioritizing certain directories
-                    const componentMappings = {
-                        'InputError': 'resources/js/components/InputError.vue',
-                        'AppHeader': 'resources/js/components/layout/AppHeader.vue',
-                        'GuidedTour': 'resources/js/components/onboarding/GuidedTour.vue',
-                        'SuccessStoryCard': 'resources/js/components/SuccessStories/SuccessStoryCard.vue',
-                        'Skeleton': 'resources/js/components/ui/skeleton/Skeleton.vue',
-                    }
-
-                    if (componentMappings[componentName]) {
-                        return componentMappings[componentName]
-                    }
-                }
-            ]
+            // Include patterns to be more specific
+            include: [/\.vue$/],
+            // Exclude all problematic components and directories
+            exclude: [
+                /\/Analytics\//,
+                /\/Testing\//,
+                /\/SuccessStories\//,
+                /\/onboarding\//,
+                /\/layout\/AppHeader\.vue$/,
+                /\/ui\//,
+                /\/AdminLayout\.vue$/,
+                /\/InputError\.vue$/,
+                /\/components\/.*\/index\.vue$/
+            ],
+            resolvers: []
         }),
     ],
     resolve: {

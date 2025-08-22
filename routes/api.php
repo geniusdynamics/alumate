@@ -229,7 +229,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Events routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('events', EventsController::class);
+    Route::apiResource('events', EventsController::class)->names([
+        'index' => 'api.events.index',
+        'store' => 'api.events.store',
+        'show' => 'api.events.show',
+        'update' => 'api.events.update',
+        'destroy' => 'api.events.destroy'
+    ]);
     Route::post('events/{event}/register', [EventsController::class, 'register']);
     Route::delete('events/{event}/register', [EventsController::class, 'cancelRegistration']);
     Route::post('events/{event}/checkin', [EventsController::class, 'checkIn']);
