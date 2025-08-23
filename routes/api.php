@@ -462,28 +462,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/mentors/same-course', [StudentMentorshipController::class, 'getMentorsFromSameCourse']);
     Route::get('student/mentors/career-specific', [StudentMentorshipController::class, 'getCareerSpecificMentors']);
     Route::post('student/mentorship/request', [StudentMentorshipController::class, 'requestMentorship']);
-    Route::get('student/mentorships', [StudentMentorshipController::class, 'getStudentMentorships']);
 });
 
-// Developer API Documentation routes
+// Developer API routes
 Route::middleware('auth:sanctum')->prefix('developer')->name('developer.')->group(function () {
-    // API Documentation
-    Route::get('documentation', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiDocumentation']);
-    
     // API Key Management
-    Route::post('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'generateApiKey']);
-    Route::get('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiKeys']);
-    Route::delete('api-keys/{tokenId}', [\App\Http\Controllers\Api\DeveloperController::class, 'revokeApiKey']);
+    Route::post('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'generateApiKey'])->name('api-keys.generate');
+    Route::get('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiKeys'])->name('api-keys.index');
+    Route::delete('api-keys/{keyId}', [\App\Http\Controllers\Api\DeveloperController::class, 'revokeApiKey'])->name('api-keys.revoke');
     
     // Webhook Management
-    Route::post('webhooks', [\App\Http\Controllers\Api\DeveloperController::class, 'createWebhook']);
-    Route::get('webhooks', [\App\Http\Controllers\Api\DeveloperController::class, 'getWebhooks']);
-    Route::post('webhooks/{webhookId}/test', [\App\Http\Controllers\Api\DeveloperController::class, 'testWebhook']);
-    Route::delete('webhooks/{webhookId}', [\App\Http\Controllers\Api\DeveloperController::class, 'deleteWebhook']);
-    Route::get('webhook-events', [\App\Http\Controllers\Api\DeveloperController::class, 'getWebhookEvents']);
+    Route::get('webhook-events', [\App\Http\Controllers\Api\DeveloperController::class, 'getWebhookEvents'])->name('webhook-events');
+    Route::post('webhooks/{webhookId}/test', [\App\Http\Controllers\Api\DeveloperController::class, 'testWebhook'])->name('webhooks.test');
     
-    // Tools
-    Route::get('postman-collection', [\App\Http\Controllers\Api\DeveloperController::class, 'generatePostmanCollection']);
+    // Documentation & Tools
+    Route::get('documentation', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiDocumentation'])->name('documentation');
+    Route::post('postman-collection', [\App\Http\Controllers\Api\DeveloperController::class, 'generatePostmanCollection'])->name('postman-collection');
+    Route::post('sdk-generator', [\App\Http\Controllers\Api\DeveloperController::class, 'generateSdk'])->name('sdk-generator');
 });
 
 // Speaker Bureau routes

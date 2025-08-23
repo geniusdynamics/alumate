@@ -9,7 +9,7 @@
               API Documentation
             </h1>
             <p class="mt-2 text-gray-600 dark:text-gray-400">
-              Comprehensive guide to the Alumni Platform API v1.0
+              Comprehensive guide to the Alumni Platform API v1.0 - Complete with examples, SDKs, and testing tools
             </p>
           </div>
           <div class="flex items-center space-x-4">
@@ -181,6 +181,14 @@
             </div>
           </section>
 
+          <!-- API Tester -->
+          <section id="api-tester" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              API Tester
+            </h2>
+            <ApiTester />
+          </section>
+
           <!-- Endpoints -->
           <section id="endpoints" class="mb-12">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
@@ -190,94 +198,25 @@
             <!-- Endpoint Categories -->
             <div class="space-y-8">
               <div
-                v-for="category in endpointCategories"
-                :key="category.name"
-                :id="category.id"
-                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                v-for="(category, categoryId) in apiEndpointsData"
+                :key="categoryId"
+                :id="categoryId"
               >
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                <div class="mb-6">
+                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                     {{ category.name }}
                   </h3>
-                  <p class="text-gray-600 dark:text-gray-400 mt-1">
+                  <p class="text-gray-600 dark:text-gray-400">
                     {{ category.description }}
                   </p>
                 </div>
-
-                <div class="divide-y divide-gray-200 dark:divide-gray-700">
-                  <div
+                
+                <div class="space-y-4">
+                  <ApiEndpointCard
                     v-for="endpoint in category.endpoints"
-                    :key="endpoint.path"
-                    class="p-6"
-                  >
-                    <div class="flex items-start gap-4">
-                      <span
-                        :class="[
-                          'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium',
-                          getMethodColor(endpoint.method)
-                        ]"
-                      >
-                        {{ endpoint.method }}
-                      </span>
-                      <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2">
-                          <code class="text-sm font-mono text-gray-900 dark:text-white">
-                            {{ endpoint.path }}
-                          </code>
-                          <button
-                            @click="tryEndpoint(endpoint)"
-                            class="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
-                          >
-                            Try it
-                          </button>
-                        </div>
-                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                          {{ endpoint.description }}
-                        </p>
-
-                        <!-- Parameters -->
-                        <div v-if="endpoint.parameters" class="mb-4">
-                          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Parameters
-                          </h4>
-                          <div class="space-y-2">
-                            <div
-                              v-for="param in endpoint.parameters"
-                              :key="param.name"
-                              class="flex items-start gap-3 text-sm"
-                            >
-                              <code class="text-blue-600 dark:text-blue-400 font-mono">
-                                {{ param.name }}
-                              </code>
-                              <span
-                                :class="[
-                                  'px-1.5 py-0.5 rounded text-xs font-medium',
-                                  param.required
-                                    ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300'
-                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                                ]"
-                              >
-                                {{ param.required ? 'required' : 'optional' }}
-                              </span>
-                              <span class="text-gray-600 dark:text-gray-400">
-                                {{ param.description }}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Example Response -->
-                        <div v-if="endpoint.example" class="mb-4">
-                          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Example Response
-                          </h4>
-                          <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                            <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto"><code>{{ JSON.stringify(endpoint.example, null, 2) }}</code></pre>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                    :key="`${endpoint.method}-${endpoint.path}`"
+                    :endpoint="endpoint"
+                  />
                 </div>
               </div>
             </div>
@@ -417,49 +356,135 @@
             </div>
           </section>
 
+          <!-- Webhook Tester -->
+          <section id="webhook-tester" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Webhook Tester
+            </h2>
+            <WebhookTester />
+          </section>
+
+          <!-- Postman Collection -->
+          <section id="postman" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Postman Collection Generator
+            </h2>
+            <PostmanGenerator />
+          </section>
+
           <!-- SDKs -->
           <section id="sdks" class="mb-12">
             <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              SDKs & Libraries
+              SDKs & Code Generation
             </h2>
+            <SdkGenerator />
+          </section>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div
-                v-for="sdk in sdks"
-                :key="sdk.language"
-                class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6"
-              >
-                <div class="flex items-center gap-3 mb-4">
-                  <div class="w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                    <component :is="sdk.icon" class="w-6 h-6 text-gray-600 dark:text-gray-400" />
-                  </div>
-                  <div>
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                      {{ sdk.language }}
-                    </h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                      {{ sdk.description }}
-                    </p>
+          <!-- Integration Examples -->
+          <section id="integration-examples" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Integration Examples
+            </h2>
+            <IntegrationExamples />
+          </section>
+
+          <!-- Rate Limits -->
+          <section id="rate-limits" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Rate Limits
+            </h2>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <p class="text-gray-600 dark:text-gray-400 mb-6">
+                The Alumni Platform API implements rate limiting to ensure fair usage and system stability. 
+                Different endpoint categories have different limits.
+              </p>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div
+                  v-for="(limit, category) in rateLimits"
+                  :key="category"
+                  class="border border-gray-200 dark:border-gray-600 rounded-lg p-4"
+                >
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 capitalize">
+                    {{ category.replace('_', ' ') }}
+                  </h3>
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {{ limit.description }}
+                  </p>
+                  <div class="space-y-2">
+                    <div class="flex justify-between">
+                      <span class="text-sm text-gray-700 dark:text-gray-300">Per Minute:</span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-white">{{ limit.requests_per_minute }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-sm text-gray-700 dark:text-gray-300">Per Hour:</span>
+                      <span class="text-sm font-medium text-gray-900 dark:text-white">{{ limit.requests_per_hour }}</span>
+                    </div>
                   </div>
                 </div>
+              </div>
+              
+              <div class="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                  Rate Limit Headers
+                </h4>
+                <p class="text-sm text-blue-700 dark:text-blue-300 mb-3">
+                  All API responses include rate limit information in the headers:
+                </p>
+                <div class="bg-blue-100 dark:bg-blue-900/40 rounded p-3">
+                  <pre class="text-xs text-blue-800 dark:text-blue-200"><code>X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 59
+X-RateLimit-Reset: 1640995200</code></pre>
+                </div>
+              </div>
+            </div>
+          </section>
 
-                <div class="space-y-3">
-                  <div>
-                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Installation
-                    </h4>
-                    <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
-                      <code class="text-sm text-gray-800 dark:text-gray-200">{{ sdk.install }}</code>
-                    </div>
+          <!-- Error Codes -->
+          <section id="error-codes" class="mb-12">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Error Codes
+            </h2>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+              <p class="text-gray-600 dark:text-gray-400 mb-6">
+                The Alumni Platform API uses conventional HTTP response codes to indicate the success or failure of an API request.
+              </p>
+              
+              <div class="space-y-4">
+                <div
+                  v-for="(error, code) in errorCodes"
+                  :key="code"
+                  class="border border-gray-200 dark:border-gray-600 rounded-lg p-4"
+                >
+                  <div class="flex items-center gap-3 mb-3">
+                    <span
+                      :class="[
+                        'inline-flex items-center px-2 py-1 rounded text-sm font-medium',
+                        parseInt(code) < 400 
+                          ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
+                          : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+                      ]"
+                    >
+                      {{ code }}
+                    </span>
+                    <span class="font-medium text-gray-900 dark:text-white">
+                      {{ error.code }}
+                    </span>
                   </div>
-
+                  
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                    {{ error.description }}
+                  </p>
+                  
                   <div>
-                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Example Usage
-                    </h4>
-                    <div class="bg-gray-50 dark:bg-gray-900 rounded p-3">
-                      <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto"><code>{{ sdk.example }}</code></pre>
-                    </div>
+                    <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Common Causes:
+                    </h5>
+                    <ul class="text-sm text-gray-600 dark:text-gray-400 list-disc list-inside space-y-1">
+                      <li v-for="cause in error.common_causes" :key="cause">{{ cause }}</li>
+                    </ul>
                   </div>
                 </div>
               </div>
@@ -475,6 +500,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
+import ApiTester from '@/Components/Developer/ApiTester.vue'
+import ApiEndpointCard from '@/Components/Developer/ApiEndpointCard.vue'
+import PostmanGenerator from '@/Components/Developer/PostmanGenerator.vue'
+import SdkGenerator from '@/Components/Developer/SdkGenerator.vue'
+import WebhookTester from '@/Components/Developer/WebhookTester.vue'
+import IntegrationExamples from '@/Components/Developer/IntegrationExamples.vue'
+import { completeApiEndpoints, enhancedWebhookEvents, enhancedSdkExamples, rateLimits, errorCodes } from '@/Data/completeApiDocumentation.js'
 
 // Reactive data
 const isDark = ref(false)
@@ -497,15 +529,24 @@ const webhookForm = ref({
 // Navigation sections
 const sections = [
   { id: 'quick-start', title: 'Quick Start' },
+  { id: 'api-tester', title: 'API Tester' },
   { id: 'endpoints', title: 'API Endpoints', subsections: [
+    { id: 'authentication', title: 'Authentication' },
     { id: 'social', title: 'Social Features' },
+    { id: 'alumni', title: 'Alumni Directory' },
     { id: 'career', title: 'Career Development' },
-    { id: 'events', title: 'Events' },
+    { id: 'events', title: 'Events & Networking' },
     { id: 'fundraising', title: 'Fundraising' },
-    { id: 'analytics', title: 'Analytics' }
+    { id: 'analytics', title: 'Analytics' },
+    { id: 'webhooks-endpoints', title: 'Webhooks API' }
   ]},
-  { id: 'webhooks', title: 'Webhooks' },
-  { id: 'sdks', title: 'SDKs & Libraries' }
+  { id: 'webhooks', title: 'Webhook Management' },
+  { id: 'webhook-tester', title: 'Webhook Tester' },
+  { id: 'postman', title: 'Postman Collection' },
+  { id: 'sdks', title: 'SDKs & Code Generation' },
+  { id: 'integration-examples', title: 'Integration Examples' },
+  { id: 'rate-limits', title: 'Rate Limits' },
+  { id: 'error-codes', title: 'Error Codes' }
 ]
 
 // Example code
@@ -513,107 +554,17 @@ const authExample = `curl -H "Authorization: Bearer YOUR_API_TOKEN" \\
      -H "Content-Type: application/json" \\
      https://your-domain.com/api/user`
 
-// Endpoint categories
-const endpointCategories = [
-  {
-    id: 'social',
-    name: 'Social Features',
-    description: 'Posts, timeline, connections, and social interactions',
-    endpoints: [
-      {
-        method: 'GET',
-        path: '/api/timeline',
-        description: 'Get personalized timeline',
-        parameters: [
-          { name: 'page', required: false, description: 'Page number for pagination' },
-          { name: 'per_page', required: false, description: 'Items per page (max 50)' }
-        ],
-        example: {
-          success: true,
-          data: [
-            {
-              id: 123,
-              content: 'Excited to share my new role!',
-              user: { id: 1, name: 'John Doe' },
-              created_at: '2024-01-15T10:30:00Z'
-            }
-          ]
-        }
-      },
-      {
-        method: 'POST',
-        path: '/api/posts',
-        description: 'Create a new post',
-        parameters: [
-          { name: 'content', required: true, description: 'Post content' },
-          { name: 'visibility', required: false, description: 'Post visibility (public, circles, groups)' }
-        ]
-      }
-    ]
-  },
-  {
-    id: 'career',
-    name: 'Career Development',
-    description: 'Job matching, mentorship, and career tracking',
-    endpoints: [
-      {
-        method: 'GET',
-        path: '/api/jobs/recommendations',
-        description: 'Get personalized job recommendations',
-        parameters: [
-          { name: 'industry', required: false, description: 'Filter by industry' },
-          { name: 'location', required: false, description: 'Filter by location' }
-        ]
-      }
-    ]
-  }
-]
+// Use complete API endpoints data
+const apiEndpointsData = completeApiEndpoints
 
-// SDKs
-const sdks = [
-  {
-    language: 'JavaScript',
-    description: 'For Node.js and browser applications',
-    install: 'npm install @alumni-platform/api-client',
-    example: `import { AlumniPlatformAPI } from '@alumni-platform/api-client';
-
-const api = new AlumniPlatformAPI({
-  baseURL: 'https://your-domain.com/api',
-  token: 'your-access-token'
-});
-
-const timeline = await api.posts.getTimeline();`,
-    icon: 'CodeBracketIcon'
-  },
-  {
-    language: 'PHP',
-    description: 'For Laravel and PHP applications',
-    install: 'composer require alumni-platform/api-client',
-    example: `use AlumniPlatform\\ApiClient\\Client;
-
-$client = new Client([
-    'base_uri' => 'https://your-domain.com/api',
-    'token' => 'your-access-token'
-]);
-
-$alumni = $client->alumni()->search(['industry' => 'tech']);`,
-    icon: 'CodeBracketIcon'
-  },
-  {
-    language: 'Python',
-    description: 'For Python applications',
-    install: 'pip install alumni-platform-api',
-    example: `from alumni_platform import AlumniPlatformAPI
-
-api = AlumniPlatformAPI(
-    base_url='https://your-domain.com/api',
-    token='your-access-token'
-)
-
-jobs = api.jobs.get_recommendations()`,
-    icon: 'CodeBracketIcon'
-  }
-]
+// Use enhanced SDK examples
+const sdks = Object.values(enhancedSdkExamples).map(sdk => ({
+  language: sdk.name,
+  description: sdk.description,
+  install: sdk.installation,
+  example: sdk.example,
+  icon: 'CodeBracketIcon'
+}))
 
 // Methods
 const toggleTheme = () => {
@@ -722,14 +673,8 @@ const loadWebhooks = async () => {
 
 const loadAvailableEvents = async () => {
   try {
-    const response = await fetch('/api/webhooks/events', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('api_token')}`,
-        'Accept': 'application/json'
-      }
-    })
-    const data = await response.json()
-    availableEvents.value = data.data
+    // Use enhanced webhook events from documentation data
+    availableEvents.value = enhancedWebhookEvents
   } catch (err) {
     console.error('Failed to load available events:', err)
   }
