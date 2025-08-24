@@ -253,7 +253,7 @@ import { router } from '@inertiajs/vue3'
 import {
   XMarkIcon,
   ArrowLeftIcon,
-  MailIcon,
+  EnvelopeIcon,
   CalendarIcon,
   ShieldCheckIcon,
   UsersIcon,

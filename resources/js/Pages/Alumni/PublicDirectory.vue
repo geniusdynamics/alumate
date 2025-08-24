@@ -230,18 +230,12 @@
 import { reactive, ref } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import { debounce } from 'lodash'
+import type { AlumniProfile, DirectoryResponse, CourseOption, InstitutionOption } from '@/types'
 
 interface Props {
-  alumni: {
-    data: any[]
-    total: number
-    from: number
-    to: number
-    prev_page_url?: string
-    next_page_url?: string
-  }
-  courses: any[]
-  institutions: any[]
+  alumni: DirectoryResponse
+  courses: CourseOption[]
+  institutions: InstitutionOption[]
   graduationYears: number[]
   filters: Record<string, any>
   auth_required: boolean

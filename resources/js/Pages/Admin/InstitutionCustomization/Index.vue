@@ -520,15 +520,97 @@ interface Institution {
   banner_url?: string
   primary_color?: string
   secondary_color?: string
-  settings?: any
-  feature_flags?: any
-  integration_settings?: any
+  settings?: InstitutionSettings
+  feature_flags?: Record<string, boolean>
+  integration_settings?: IntegrationSetting[]
+}
+
+interface InstitutionSettings {
+  branding?: BrandingSettings
+  custom_fields?: CustomField[]
+  workflows?: Workflow[]
+  reporting?: ReportingSettings
+}
+
+interface BrandingSettings {
+  font_family?: string
+  theme_style?: string
+  custom_css?: string
+}
+
+interface CustomField {
+  name: string
+  type: 'text' | 'textarea' | 'select' | 'checkbox' | 'radio' | 'date' | 'number'
+  required: boolean
+  section: 'profile' | 'education' | 'experience' | 'contact'
+  options: string[]
+  optionsText?: string
+}
+
+interface Workflow {
+  name: string
+  trigger: 'user_registration' | 'profile_update' | 'job_application' | 'event_signup'
+  actions: WorkflowAction[]
+  conditions: WorkflowCondition[]
+  enabled: boolean
+}
+
+interface WorkflowAction {
+  type: 'send_email' | 'create_task' | 'update_field' | 'send_notification'
+  config: string | Record<string, unknown>
+}
+
+interface WorkflowCondition {
+  field: string
+  operator: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than'
+  value: string | number
+}
+
+interface ReportingSettings {
+  default_metrics?: string[]
+  data_retention_days?: number
+}
+
+interface IntegrationSetting {
+  name: string
+  enabled: boolean
+  config: Record<string, unknown>
+}
+
+interface IntegrationConfig {
+  enabled: boolean
+  provider: string
+  config: Record<string, unknown>
+  configJson: string
+}
+
+interface AvailableFeature {
+  key: string
+  label: string
+  description: string
+  enabled: boolean
+}
+
+interface IntegrationOption {
+  name: string
+  label: string
+  description: string
+  providers: string[]
+  config_fields: ConfigField[]
+}
+
+interface ConfigField {
+  key: string
+  label: string
+  type: 'text' | 'password' | 'url' | 'select'
+  required: boolean
+  options?: string[]
 }
 
 const props = defineProps<{
   institution: Institution
-  availableFeatures: Record<string, any>
-  integrationOptions: Record<string, any>
+  availableFeatures: Record<string, AvailableFeature>
+  integrationOptions: Record<string, IntegrationOption>
 }>()
 
 // Reactive state
@@ -568,7 +650,7 @@ const integrations = reactive(
       configJson: JSON.stringify(existing?.config || {}, null, 2)
     }
     return acc
-  }, {} as Record<string, any>)
+  }, {} as Record<string, IntegrationConfig>)
 )
 
 // Computed
@@ -638,8 +720,8 @@ const removeCustomField = (index: number) => {
   customFields.value.splice(index, 1)
 }
 
-const updateFieldOptions = (field: any) => {
-  field.options = field.optionsText.split('\n').filter(option => option.trim())
+const updateFieldOptions = (field: CustomField) => {
+  field.options = field.optionsText?.split('\n').filter(option => option.trim()) || []
 }
 
 const saveCustomFields = async () => {
@@ -670,14 +752,14 @@ const removeWorkflow = (index: number) => {
   workflows.value.splice(index, 1)
 }
 
-const addWorkflowAction = (workflow: any) => {
+const addWorkflowAction = (workflow: Workflow) => {
   workflow.actions.push({
     type: 'send_email',
     config: ''
   })
 }
 
-const removeWorkflowAction = (workflow: any, actionIndex: number) => {
+const removeWorkflowAction = (workflow: Workflow, actionIndex: number) => {
   workflow.actions.splice(actionIndex, 1)
 }
 

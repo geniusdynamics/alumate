@@ -25,23 +25,24 @@ class TenantFactory extends Factory
                 'website' => $this->faker->url,
             ]),
             'plan' => $this->faker->randomElement(['basic', 'premium', 'enterprise']),
-            'data' => [
+            'data' => json_encode([
                 'name' => $institutionName, // Also store in data for compatibility
                 'established' => $this->faker->numberBetween(1800, 2020),
                 'type' => strtolower($institutionType),
                 'accreditation' => $this->faker->words(3, true),
-            ],
+            ]),
         ];
     }
 
     public function university(): static
     {
         return $this->state(function (array $attributes) {
+            $data = json_decode($attributes['data'] ?? '{}', true);
+            $data['type'] = 'university';
+            
             return [
                 'name' => $this->faker->company.' University',
-                'data' => array_merge($attributes['data'] ?? [], [
-                    'type' => 'university',
-                ]),
+                'data' => json_encode($data),
             ];
         });
     }
@@ -49,11 +50,12 @@ class TenantFactory extends Factory
     public function college(): static
     {
         return $this->state(function (array $attributes) {
+            $data = json_decode($attributes['data'] ?? '{}', true);
+            $data['type'] = 'college';
+            
             return [
                 'name' => $this->faker->company.' College',
-                'data' => array_merge($attributes['data'] ?? [], [
-                    'type' => 'college',
-                ]),
+                'data' => json_encode($data),
             ];
         });
     }

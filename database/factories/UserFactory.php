@@ -32,14 +32,14 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'institution_id' => null,
-            'profile_data' => [
+            'profile_data' => json_encode([
                 'bio' => fake()->optional()->paragraph(),
                 'location' => fake()->optional()->city(),
                 'website' => fake()->optional()->url(),
                 'linkedin' => fake()->optional()->url(),
                 'twitter' => fake()->optional()->userName(),
-            ],
-            'preferences' => [
+            ]),
+            'preferences' => json_encode([
                 'notifications' => [
                     'email' => true,
                     'sms' => false,
@@ -54,7 +54,7 @@ class UserFactory extends Factory
                     'theme' => 'light',
                     'compact_mode' => false,
                 ],
-            ],
+            ]),
             'status' => 'active',
             'is_suspended' => false,
             'suspended_at' => null,
@@ -175,7 +175,7 @@ class UserFactory extends Factory
     {
         return $this->state([
             'phone' => fake()->phoneNumber(),
-            'profile_data' => [
+            'profile_data' => json_encode([
                 'bio' => fake()->paragraph(),
                 'location' => fake()->city().', '.fake()->country(),
                 'website' => fake()->url(),
@@ -191,7 +191,7 @@ class UserFactory extends Factory
                     'Machine Learning', 'DevOps', 'UI/UX Design',
                     'Project Management', 'Cybersecurity',
                 ], rand(2, 5)),
-            ],
+            ]),
         ]);
     }
 
@@ -222,7 +222,7 @@ class UserFactory extends Factory
     public function withPreferences(array $preferences): static
     {
         return $this->state([
-            'preferences' => array_merge([
+            'preferences' => json_encode(array_merge([
                 'notifications' => [
                     'email' => true,
                     'sms' => false,
@@ -237,7 +237,7 @@ class UserFactory extends Factory
                     'theme' => 'light',
                     'compact_mode' => false,
                 ],
-            ], $preferences),
+            ], $preferences)),
         ]);
     }
 }

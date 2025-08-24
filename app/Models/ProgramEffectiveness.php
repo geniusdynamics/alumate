@@ -71,9 +71,9 @@ class ProgramEffectiveness extends Model
         ];
 
         $trend = 'stable';
-        if ($rates[2] > $rates[0] + 5) {
+        if ($rates[2] > $rates[0] + 3) {
             $trend = 'improving';
-        } elseif ($rates[2] < $rates[0] - 5) {
+        } elseif ($rates[2] < $rates[0] - 3) {
             $trend = 'declining';
         }
 

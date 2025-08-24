@@ -30,12 +30,12 @@ class PostFactory extends Factory
             'user_id' => User::factory(),
             'tenant_id' => Tenant::factory(),
             'content' => $this->faker->paragraph(3),
-            'media_urls' => [],
+            'media_urls' => json_encode([]),
             'post_type' => $this->faker->randomElement(['text', 'media', 'career_update', 'achievement']),
             'visibility' => $this->faker->randomElement(['public', 'circles', 'groups', 'connections']),
-            'circle_ids' => [],
-            'group_ids' => [],
-            'metadata' => [],
+            'circle_ids' => json_encode([]),
+            'group_ids' => json_encode([]),
+            'metadata' => json_encode([]),
             'created_at' => $this->faker->dateTimeBetween('-1 month', 'now'),
             'updated_at' => now(),
         ];
@@ -47,7 +47,7 @@ class PostFactory extends Factory
     public function withCircles(array $circleIds): static
     {
         return $this->state(fn (array $attributes) => [
-            'circle_ids' => $circleIds,
+            'circle_ids' => json_encode($circleIds),
             'visibility' => 'circles',
         ]);
     }
@@ -58,7 +58,7 @@ class PostFactory extends Factory
     public function withGroups(array $groupIds): static
     {
         return $this->state(fn (array $attributes) => [
-            'group_ids' => $groupIds,
+            'group_ids' => json_encode($groupIds),
             'visibility' => 'groups',
         ]);
     }
@@ -69,10 +69,10 @@ class PostFactory extends Factory
     public function withMedia(): static
     {
         return $this->state(fn (array $attributes) => [
-            'media_urls' => [
+            'media_urls' => json_encode([
                 $this->faker->imageUrl(640, 480, 'posts'),
                 $this->faker->imageUrl(640, 480, 'posts'),
-            ],
+            ]),
             'post_type' => 'media',
         ]);
     }
@@ -85,13 +85,13 @@ class PostFactory extends Factory
         return $this->state(fn (array $attributes) => [
             'post_type' => 'career_update',
             'content' => 'Excited to announce my new role as '.$this->faker->jobTitle.' at '.$this->faker->company.'!',
-            'metadata' => [
+            'metadata' => json_encode([
                 'career_update' => [
                     'type' => 'new_job',
                     'company' => $this->faker->company,
                     'title' => $this->faker->jobTitle,
                 ],
-            ],
+            ]),
         ]);
     }
 
@@ -108,12 +108,12 @@ class PostFactory extends Factory
                 'published an article about '.$this->faker->word,
                 'spoke at a conference about '.$this->faker->word,
             ]),
-            'metadata' => [
+            'metadata' => json_encode([
                 'achievement' => [
                     'type' => $this->faker->randomElement(['certification', 'award', 'publication', 'speaking']),
                     'title' => $this->faker->sentence(3),
                 ],
-            ],
+            ]),
         ]);
     }
 
@@ -124,8 +124,8 @@ class PostFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'visibility' => 'public',
-            'circle_ids' => [],
-            'group_ids' => [],
+            'circle_ids' => json_encode([]),
+            'group_ids' => json_encode([]),
         ]);
     }
 

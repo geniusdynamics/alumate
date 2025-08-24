@@ -233,7 +233,7 @@ import {
   PencilIcon,
   ArrowPathIcon,
   ExclamationTriangleIcon,
-  MailIcon,
+  EnvelopeIcon,
   CalendarIcon,
   ShieldCheckIcon,
   UsersIcon,
@@ -253,7 +253,7 @@ const showTestResults = ref(false)
 const testResults = ref(null)
 
 const iconComponents = {
-  mail: MailIcon,
+  mail: EnvelopeIcon,
   calendar: CalendarIcon,
   'shield-check': ShieldCheckIcon,
   users: UsersIcon,

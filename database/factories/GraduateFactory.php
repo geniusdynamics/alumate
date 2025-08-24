@@ -30,21 +30,21 @@ class GraduateFactory extends Factory
             'current_salary' => $this->faker->optional(0.6)->numberBetween(30000, 120000),
             'employment_start_date' => $this->faker->optional(0.6)->dateTimeBetween('-2 years', 'now'),
             'profile_completion_percentage' => $this->faker->numberBetween(40, 100),
-            'profile_completion_fields' => $this->faker->randomElements(['name', 'email', 'phone', 'address', 'course_id'], $this->faker->numberBetween(3, 5)),
-            'privacy_settings' => [
+            'profile_completion_fields' => json_encode($this->faker->randomElements(['name', 'email', 'phone', 'address', 'course_id'], $this->faker->numberBetween(3, 5))),
+            'privacy_settings' => json_encode([
                 'show_contact_info' => $this->faker->boolean(80),
                 'show_employment_status' => $this->faker->boolean(90),
                 'allow_employer_contact' => $this->faker->boolean(85),
-            ],
-            'skills' => $this->faker->randomElements([
+            ]),
+            'skills' => json_encode($this->faker->randomElements([
                 'PHP', 'JavaScript', 'Python', 'Java', 'C++', 'HTML/CSS', 'React', 'Vue.js',
                 'Node.js', 'Laravel', 'Django', 'Spring Boot', 'MySQL', 'PostgreSQL',
                 'MongoDB', 'Git', 'Docker', 'AWS', 'Azure',
-            ], $this->faker->numberBetween(3, 8)),
-            'certifications' => $this->faker->optional(0.4)->randomElements([
+            ], $this->faker->numberBetween(3, 8))),
+            'certifications' => json_encode($this->faker->optional(0.4)->randomElements([
                 'AWS Certified Developer', 'Google Cloud Professional', 'Microsoft Azure Fundamentals',
                 'Cisco CCNA', 'CompTIA Security+', 'Oracle Certified Professional',
-            ], $this->faker->numberBetween(1, 3)),
+            ], $this->faker->numberBetween(1, 3))),
             'allow_employer_contact' => $this->faker->boolean(85),
             'job_search_active' => $this->faker->boolean(70),
             'last_profile_update' => $this->faker->dateTimeBetween('-6 months', 'now'),
