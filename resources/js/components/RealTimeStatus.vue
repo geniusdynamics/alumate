@@ -215,24 +215,20 @@ onUnmounted(() => {
 }
 
 /* Position classes for floating status */
-.real-time-status.fixed {
-  z-index: 1000;
-}
-
 .real-time-status.top-right {
-  @apply fixed top-4 right-4;
+  @apply fixed top-4 right-4 z-50;
 }
 
 .real-time-status.top-left {
-  @apply fixed top-4 left-4;
+  @apply fixed top-4 left-4 z-50;
 }
 
 .real-time-status.bottom-right {
-  @apply fixed bottom-4 right-4;
+  @apply fixed bottom-4 right-4 z-50;
 }
 
 .real-time-status.bottom-left {
-  @apply fixed bottom-4 left-4;
+  @apply fixed bottom-4 left-4 z-50;
 }
 
 /* Animation for connection status changes */

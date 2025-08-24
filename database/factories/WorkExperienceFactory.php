@@ -44,7 +44,7 @@ class WorkExperienceFactory extends Factory
             'start_date' => $startDate,
             'end_date' => $endDate,
             'is_current' => $isCurrent,
-            'skills_used' => $this->faker->randomElements([
+            'skills_used' => json_encode($this->faker->randomElements([
                 'JavaScript',
                 'Python',
                 'Java',
@@ -71,8 +71,8 @@ class WorkExperienceFactory extends Factory
                 'Writing',
                 'Design',
                 'Research',
-            ], $this->faker->numberBetween(2, 8)),
-            'achievements' => $this->faker->optional(0.6)->sentences(rand(2, 4)),
+            ], $this->faker->numberBetween(2, 8))),
+            'achievements' => json_encode($this->faker->optional(0.6)->sentences(rand(2, 4))),
         ];
     }
 
@@ -142,7 +142,7 @@ class WorkExperienceFactory extends Factory
                     'Chief Technology Officer',
                     'Chief Executive Officer',
                 ]),
-                'skills_used' => array_merge(
+                'skills_used' => json_encode(array_merge(
                     $this->faker->randomElements([
                         'Team Leadership',
                         'Strategic Planning',
@@ -160,7 +160,7 @@ class WorkExperienceFactory extends Factory
                         'Marketing',
                         'Sales',
                     ], rand(1, 3))
-                ),
+                )),
             ];
         });
     }

@@ -28,8 +28,8 @@ class JobFactory extends Factory
             'title' => $title,
             'description' => $this->faker->paragraphs(3, true),
             'location' => $this->faker->city().', '.$this->faker->state(),
-            'required_skills' => $this->getSkillsForJob($title),
-            'preferred_qualifications' => $this->faker->sentences(3),
+            'required_skills' => json_encode($this->getSkillsForJob($title)),
+            'preferred_qualifications' => json_encode($this->faker->sentences(3)),
             'experience_level' => $this->faker->randomElement(['entry', 'junior', 'mid', 'senior', 'executive']),
             'min_experience_years' => $this->faker->numberBetween(0, 8),
             'salary_min' => $this->faker->numberBetween(35000, 80000),
@@ -48,23 +48,23 @@ class JobFactory extends Factory
             'job_start_date' => $this->faker->optional(0.6)->dateTimeBetween('now', '+3 months'),
             'job_end_date' => $this->faker->optional(0.3)->dateTimeBetween('+3 months', '+1 year'),
             'employer_verified_required' => $this->faker->boolean(80),
-            'matching_criteria' => [
+            'matching_criteria' => json_encode([
                 'course_match_weight' => 40,
                 'skills_match_weight' => 30,
                 'experience_weight' => 20,
                 'location_weight' => 10,
-            ],
+            ]),
             'view_count' => $this->faker->numberBetween(10, 500),
             'match_score' => $this->faker->optional(0.6)->randomFloat(2, 60, 95),
             'contact_email' => $this->faker->companyEmail(),
             'contact_phone' => $this->faker->optional(0.7)->phoneNumber(),
             'contact_person' => $this->faker->name(),
-            'benefits' => $this->faker->randomElements([
+            'benefits' => json_encode($this->faker->randomElements([
                 'Health Insurance', 'Dental Insurance', 'Vision Insurance',
                 'Retirement Plan', 'Flexible Hours', 'Remote Work Options',
                 'Professional Development', 'Paid Time Off', 'Performance Bonuses',
                 'Stock Options', 'Gym Membership', 'Free Meals',
-            ], $this->faker->numberBetween(3, 8)),
+            ], $this->faker->numberBetween(3, 8))),
             'company_culture' => $this->faker->paragraph(2),
         ];
     }

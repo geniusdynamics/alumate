@@ -222,15 +222,9 @@ import AnalyticsTable from '@/Components/Analytics/AnalyticsTable.vue'
 import ExportModal from '@/Components/Analytics/ExportModal.vue'
 import CustomReportModal from '@/Components/Analytics/CustomReportModal.vue'
 import Icon from '@/Components/Icon.vue'
+import type { AnalyticsData, ExportConfig, ReportConfig } from '@/types'
 
 // Types
-interface AnalyticsData {
-  engagement_metrics: any
-  alumni_activity: any
-  community_health: any
-  platform_usage: any
-}
-
 interface SummaryMetric {
   key: string
   title: string
@@ -374,7 +368,7 @@ const refreshEngagementData = async () => {
   }
 }
 
-const handleExport = async (exportConfig: any) => {
+const handleExport = async (exportConfig: ExportConfig) => {
   try {
     const response = await axios.get('/api/analytics/export', {
       params: {
@@ -400,7 +394,7 @@ const handleExport = async (exportConfig: any) => {
   }
 }
 
-const handleCustomReport = async (reportConfig: any) => {
+const handleCustomReport = async (reportConfig: ReportConfig) => {
   try {
     const response = await axios.post('/api/analytics/custom-report', {
       ...reportConfig,

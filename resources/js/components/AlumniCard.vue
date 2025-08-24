@@ -42,7 +42,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
         </svg>
-        <span>{{ primaryEducation.institution.name }}</span>
+        <span>{{ primaryEducation.institution?.name ?? 'Unknown Institution' }}</span>
         <span v-if="primaryEducation.graduation_year" class="ml-2 text-gray-500">
           '{{ primaryEducation.graduation_year.toString().slice(-2) }}
         </span>
@@ -91,7 +91,7 @@
       <div class="text-sm text-gray-600">
         <span class="font-medium">Shared communities:</span>
         <span class="ml-1">
-          {{ sharedCommunities.slice(0, 2).map(c => c.name).join(', ') }}
+          {{ sharedCommunities.slice(0, 2).map(c => c.name ?? 'Unnamed Community').join(', ') }}
           <span v-if="sharedCommunities.length > 2" class="text-gray-500">
             +{{ sharedCommunities.length - 2 }} more
           </span>
@@ -137,100 +137,83 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
 import { computed } from 'vue'
+import type { AlumniProfile } from '@/types'
 
-export default {
-  name: 'AlumniCard',
-  props: {
-    alumni: {
-      type: Object,
-      required: true
-    }
-  },
-  emits: ['view-profile', 'connect'],
-  setup(props) {
-    // Computed properties
-    const currentPosition = computed(() => {
-      if (!props.alumni.work_experiences || props.alumni.work_experiences.length === 0) {
-        return null
-      }
-      
-      return props.alumni.work_experiences.find(exp => exp.is_current) || 
-             props.alumni.work_experiences[0]
-    })
-
-    const primaryEducation = computed(() => {
-      if (!props.alumni.educations || props.alumni.educations.length === 0) {
-        return null
-      }
-      
-      // Return the most recent education or the first one
-      return props.alumni.educations.sort((a, b) => 
-        (b.graduation_year || 0) - (a.graduation_year || 0)
-      )[0]
-    })
-
-    const displaySkills = computed(() => {
-      if (!props.alumni.skills || !Array.isArray(props.alumni.skills)) {
-        return []
-      }
-      
-      return props.alumni.skills.slice(0, 3)
-    })
-
-    const remainingSkillsCount = computed(() => {
-      if (!props.alumni.skills || !Array.isArray(props.alumni.skills)) {
-        return 0
-      }
-      
-      return Math.max(0, props.alumni.skills.length - 3)
-    })
-
-    const sharedConnections = computed(() => {
-      return props.alumni.mutual_connections || []
-    })
-
-    const sharedCommunities = computed(() => {
-      const communities = []
-      
-      if (props.alumni.shared_circles) {
-        communities.push(...props.alumni.shared_circles)
-      }
-      
-      if (props.alumni.shared_groups) {
-        communities.push(...props.alumni.shared_groups)
-      }
-      
-      return communities
-    })
-
-    const connectionStatus = computed(() => {
-      return props.alumni.connection_status || 'none'
-    })
-
-    const canConnect = computed(() => {
-      return connectionStatus.value === 'none'
-    })
-
-    const isOnline = computed(() => {
-      // This would typically come from a real-time presence system
-      return props.alumni.is_online || false
-    })
-
-    return {
-      currentPosition,
-      primaryEducation,
-      displaySkills,
-      remainingSkillsCount,
-      sharedConnections,
-      sharedCommunities,
-      connectionStatus,
-      canConnect,
-      isOnline
-    }
-  }
+// Props
+interface Props {
+  alumni: AlumniProfile
 }
+
+const props = defineProps<Props>()
+
+// Emits
+defineEmits<{
+  'view-profile': [alumni: AlumniProfile]
+  'connect': [alumni: AlumniProfile]
+}>()
+
+// Computed properties with proper null safety
+const currentPosition = computed(() => {
+  if (!props.alumni.work_experiences?.length) {
+    return null
+  }
+  
+  return props.alumni.work_experiences.find(exp => exp.is_current) ?? 
+         props.alumni.work_experiences[0] ?? null
+})
+
+const primaryEducation = computed(() => {
+  if (!props.alumni.educations?.length) {
+    return null
+  }
+  
+  // Return the most recent education or the first one
+  return props.alumni.educations
+    .sort((a, b) => (b.graduation_year ?? 0) - (a.graduation_year ?? 0))[0] ?? null
+})
+
+const displaySkills = computed(() => {
+  return props.alumni.skills?.slice(0, 3) ?? []
+})
+
+const remainingSkillsCount = computed(() => {
+  const skillsLength = props.alumni.skills?.length ?? 0
+  return Math.max(0, skillsLength - 3)
+})
+
+const sharedConnections = computed(() => {
+  return props.alumni.mutual_connections ?? []
+})
+
+const sharedCommunities = computed(() => {
+  const communities = []
+  
+  if (props.alumni.shared_circles?.length) {
+    communities.push(...props.alumni.shared_circles)
+  }
+  
+  if (props.alumni.shared_groups?.length) {
+    communities.push(...props.alumni.shared_groups)
+  }
+  
+  return communities
+})
+
+const connectionStatus = computed(() => {
+  // Type assertion needed if this property doesn't exist in AlumniProfile interface
+  return (props.alumni as any).connection_status ?? 'none'
+})
+
+const canConnect = computed(() => {
+  return connectionStatus.value === 'none'
+})
+
+const isOnline = computed(() => {
+  // Type assertion needed if this property doesn't exist in AlumniProfile interface
+  return (props.alumni as any).is_online ?? false
+})
 </script>
 
 <style scoped>

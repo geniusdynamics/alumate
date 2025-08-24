@@ -40,11 +40,11 @@ class UserTestingSessionFactory extends Factory
         return [
             'user_id' => User::factory(),
             'scenario' => $this->faker->randomElement($scenarios),
-            'metadata' => [
+            'metadata' => json_encode([
                 'browser' => $this->faker->userAgent(),
                 'screen_resolution' => $this->faker->randomElement(['1920x1080', '1366x768', '1440x900']),
                 'device_type' => $this->faker->randomElement(['desktop', 'tablet', 'mobile']),
-            ],
+            ]),
             'status' => $status,
             'started_at' => $startedAt,
             'completed_at' => $completedAt,

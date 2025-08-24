@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { defineComponent, mount } from '@vue/test-utils'
 
 // Mock performance API before importing the service
 const mockPerformance = {
@@ -224,6 +225,7 @@ describe('Loading Performance', () => {
       global.fetch = mockFetch
 
       await performanceService.reportMetrics()
+      vi.advanceTimersByTime(1000) // Add this line
 
       expect(mockFetch).toHaveBeenCalledWith('/api/performance/metrics', {
         method: 'POST',
@@ -242,6 +244,7 @@ describe('Loading Performance', () => {
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
       await performanceService.reportMetrics()
+      vi.advanceTimersByTime(1000) // Add this line
 
       expect(consoleSpy).toHaveBeenCalledWith('Failed to report performance metrics:', expect.any(Error))
       
@@ -264,11 +267,24 @@ describe('Lazy Loading Performance', () => {
     // Test lazy loading behavior
     const { useLazyImage } = await import('@/composables/useLazyLoading')
     
-    const { isLoaded, currentSrc } = useLazyImage('test-image.jpg')
+    const { useLazyImage } = await import('@/composables/useLazyLoading')
+    const { imageRef, isLoaded, currentSrc } = useLazyImage('test-image.jpg')
     
+    // Create a dummy component that uses useLazyImage.
+    const TestComponent = defineComponent({
+      setup() {
+        const { imageRef, isLoaded, currentSrc } = useLazyImage('test-image.jpg')
+        return { imageRef, isLoaded, currentSrc }
+      },
+      template: '<img ref="imageRef" :src="currentSrc" />'
+    })
+
+    const wrapper = mount(TestComponent)
+
     expect(isLoaded.value).toBe(false)
     expect(currentSrc.value).toBe('')
     expect(mockIntersectionObserver).toHaveBeenCalled()
+    expect(mockObserve).toHaveBeenCalledWith(wrapper.vm.imageRef)
   })
 
   it('should implement progressive image loading', async () => {
@@ -286,7 +302,24 @@ describe('Lazy Loading Performance', () => {
     global.Image = vi.fn(() => mockImage) as any
 
     const { useLazyImage } = await import('@/composables/useLazyLoading')
-    const { isLoaded, isError } = useLazyImage('test-image.jpg')
+    const { imageRef, isLoaded, isError } = useLazyImage('test-image.jpg')
+
+    // Create a dummy component that uses useLazyImage.
+    const TestComponent = defineComponent({
+      setup() {
+        const { imageRef, isLoaded, isError } = useLazyImage('test-image.jpg')
+        return { imageRef, isLoaded, isError }
+      },
+      template: '<img ref="imageRef" :src="currentSrc" />'
+    })
+
+    const wrapper = mount(TestComponent)
+
+    // Simulate intersection
+    const observer = (global.IntersectionObserver as any).mock.instances[0]
+    observer.simulateEntries([{ isIntersecting: true, target: wrapper.vm.imageRef }])
+
+    await nextTick() // Allow Vue to react to changes
 
     // Simulate successful image load
     if (mockOnload) {

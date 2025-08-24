@@ -68,7 +68,7 @@ class LearningResourceFactory extends Factory
             'description' => $this->faker->paragraph(3),
             'type' => $type,
             'url' => $this->faker->url(),
-            'skill_ids' => [Skill::factory()->create()->id], // Will be overridden in tests
+            'skill_ids' => json_encode([Skill::factory()->create()->id]), // Will be overridden in tests
             'created_by' => User::factory(),
             'rating' => $this->faker->randomFloat(2, 1, 5),
             'rating_count' => $this->faker->numberBetween(1, 100),
@@ -136,7 +136,7 @@ class LearningResourceFactory extends Factory
     public function forSkills(array $skillIds): static
     {
         return $this->state(fn (array $attributes) => [
-            'skill_ids' => $skillIds,
+            'skill_ids' => json_encode($skillIds),
         ]);
     }
 }

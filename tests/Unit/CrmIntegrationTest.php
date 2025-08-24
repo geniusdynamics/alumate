@@ -7,8 +7,6 @@ use App\Services\CRM\FrappeCrmClient;
 use App\Services\CRM\TwentyCrmClient;
 use App\Services\CRM\ZohoCrmClient;
 
-uses(Tests\TestCase::class);
-
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);

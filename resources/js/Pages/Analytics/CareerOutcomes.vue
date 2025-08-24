@@ -150,6 +150,15 @@ import IndustryPlacement from '@/Components/Analytics/IndustryPlacement.vue'
 import DemographicOutcomes from '@/Components/Analytics/DemographicOutcomes.vue'
 import CareerPathAnalysis from '@/Components/Analytics/CareerPathAnalysis.vue'
 import TrendAnalysis from '@/Components/Analytics/TrendAnalysis.vue'
+import type { 
+  AnalyticsOverview, 
+  ProgramEffectiveness as ProgramEffectivenessData, 
+  SalaryAnalysis as SalaryAnalysisData, 
+  IndustryPlacement as IndustryPlacementData, 
+  DemographicOutcome,
+  CareerPaths,
+  TrendData
+} from '@/types'
 
 interface FilterOptions {
   graduation_years: string[]
@@ -162,23 +171,41 @@ interface FilterOptions {
 }
 
 interface Analytics {
-  overview: any
-  program_effectiveness: any[]
-  salary_analysis: any
-  industry_placement: any[]
-  demographic_outcomes: any[]
-  career_paths: any
-  trends: any[]
+  overview: AnalyticsOverview
+  program_effectiveness: ProgramEffectivenessData[]
+  salary_analysis: SalaryAnalysisData
+  industry_placement: IndustryPlacementData[]
+  demographic_outcomes: DemographicOutcome[]
+  career_paths: CareerPaths
+  trends: TrendData[]
 }
 
 const loading = ref(true)
 const analytics = ref<Analytics>({
-  overview: {},
+  overview: {
+    total_graduates: 0,
+    employment_rate: 0,
+    average_salary: 0,
+    time_to_employment: 0
+  },
   program_effectiveness: [],
-  salary_analysis: {},
+  salary_analysis: {
+    median_salary: 0,
+    salary_range: {
+      min: 0,
+      max: 0,
+      percentile_25: 0,
+      percentile_75: 0
+    },
+    by_industry: [],
+    by_experience: []
+  } as SalaryAnalysisData,
   industry_placement: [],
   demographic_outcomes: [],
-  career_paths: {},
+  career_paths: {
+    common_progressions: [],
+    industry_transitions: []
+  },
   trends: []
 })
 

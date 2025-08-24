@@ -240,7 +240,7 @@ const personaFilters = computed((): PersonaFilter[] => {
     })
   } else {
     const institutionalTestimonials = testimonials.value as InstitutionTestimonial[]
-    const institutionTypes = [...new Set(institutionalTestimonials.map(t => t.institution.type))]
+      const institutionTypes = [...new Set(institutionalTestimonials.filter(t => t.institution).map(t => t.institution.type))]
     
     institutionTypes.forEach(type => {
       const count = institutionalTestimonials.filter(t => t.institution.type === type).length

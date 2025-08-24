@@ -94,8 +94,8 @@ class SocialPlatformIntegrationTest extends TestCase
         $finalPosts = $finalTimelineResponse->json('data.posts.data');
         $this->assertCount(0, $finalPosts);
     }
-}  
-  public function test_alumni_directory_and_connection_integration()
+
+    public function test_alumni_directory_and_connection_integration()
     {
         // Create additional users
         $alumni = User::factory()->count(5)->create();

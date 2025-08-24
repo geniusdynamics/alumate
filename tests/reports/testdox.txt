@@ -1,6 +1,11 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\UserTestingServiceTest.php
- [ ] `UserTestingService` → it can create a testing session
- [ ] `UserTestingService` → it can record user feedback
- [ ] `UserTestingService` → it can create an A/B test
- [x] `UserTestingService` → it provides testing scenarios
+Career Outcome Models (Tests\Unit\CareerOutcomeModels)
+ [x] Salary progression annualized salary calculation
+ [x] Salary progression formatted salary
+ [x] Career path type display
+ [x] Career path job stability score
+ [x] Industry placement salary growth
+ [x] Program effectiveness employment trend
+ [x] Program effectiveness salary growth rate
+ [x] Program effectiveness performance grade
+ [x] Career path static methods
 

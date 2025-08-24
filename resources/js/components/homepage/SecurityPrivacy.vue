@@ -310,7 +310,28 @@ import type { SecurityPrivacyProps, SecurityCertification } from '@/types/homepa
 
 interface Props extends /* @vue-ignore */ SecurityPrivacyProps {}
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  privacyHighlights: () => [],
+  securityCertifications: () => [],
+  verificationProcess: () => ({
+    title: '',
+    description: '',
+    steps: [],
+    benefits: [],
+    requirements: []
+  }),
+  dataProtection: () => ({
+    title: '',
+    description: '',
+    principles: [],
+    userRights: [],
+    contactInfo: {
+      email: '',
+      hours: ''
+    }
+  }),
+  complianceInfo: () => []
+})
 
 const selectedCertification = ref<SecurityCertification | null>(null)
 

@@ -142,38 +142,8 @@
         </div>
       </div>
 
-      <!-- Real-time Metrics -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
-        <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold">Real-time Performance Metrics</h3>
-          <button 
-            @click="isMonitoring ? stopMonitoring() : startMonitoring()"
-            :class="isMonitoring ? 'btn-danger' : 'btn-primary'"
-            class="btn"
-          >
-            {{ isMonitoring ? 'Stop Monitoring' : 'Start Monitoring' }}
-          </button>
-        </div>
-        
-        <div v-if="realTimeMetrics.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div 
-            v-for="metric in realTimeMetrics.slice(-8)"
-            :key="metric.timestamp"
-            class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
-          >
-            <div class="font-semibold">{{ metric.name }}</div>
-            <div class="text-lg">{{ formatMetricValue(metric.name, metric.value) }}</div>
-            <div class="text-xs text-gray-500">{{ formatTimestamp(metric.timestamp) }}</div>
-          </div>
-        </div>
-        
-        <div v-else class="text-center py-8 text-gray-500">
-          {{ isMonitoring ? 'Waiting for metrics...' : 'Start monitoring to see real-time metrics' }}
-        </div>
-      </div>
-
       <!-- Performance Recommendations -->
-      <div v-if="performanceData.recommendations.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div v-if="performanceData.recommendations.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8">
         <h3 class="text-lg font-semibold mb-4">Performance Recommendations</h3>
         <div class="space-y-3">
           <div 
@@ -204,7 +174,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { usePerformanceMonitoring, useRealTimePerformance } from '../../Composables/usePerformanceMonitoring'
+import { usePerformanceMonitoring } from '../../Composables/usePerformanceMonitoring'
 import PerformanceDashboard from '../../Components/Performance/PerformanceDashboard.vue'
 import LoadingOptimizer from '../../Components/Performance/LoadingOptimizer.vue'
 import { 
@@ -225,14 +195,6 @@ const {
   trackSearch,
   getPerformanceRecommendations
 } = usePerformanceMonitoring('PerformanceDemo')
-
-// Real-time monitoring
-const {
-  realTimeMetrics,
-  isMonitoring,
-  startMonitoring,
-  stopMonitoring
-} = useRealTimePerformance()
 
 // Demo data
 const users = ref([])

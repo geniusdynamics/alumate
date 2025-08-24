@@ -71,6 +71,7 @@ The Vue.js Page Builder System will provide a comprehensive drag-and-drop interf
 2. WHEN configuring fields THEN the system SHALL offer validation rules, conditional logic, and formatting options
 3. WHEN forms are submitted THEN the system SHALL integrate with CRM systems and trigger appropriate workflows
 4. IF form validation fails THEN the system SHALL display clear error messages and preserve user input
+5. Potential for Using and integrating GrapeJS to reduce complexity of Build, and utilize our defined componets, and templates, or even be able to make additional with grapeJs
 
 ### Requirement 7
 
@@ -82,6 +83,8 @@ The Vue.js Page Builder System will provide a comprehensive drag-and-drop interf
 2. WHEN selecting templates THEN the system SHALL load them into the page builder for customization
 3. WHEN customizing templates THEN the system SHALL allow modification of all elements while maintaining design integrity
 4. IF templates are modified significantly THEN the system SHALL offer to save custom versions for future use
+5. USing the Integrated component library system documents here .kiro\specs\component-library-system
+As well as template creation System docs here .kiro\specs\template-creation-system
 
 ### Requirement 8
 

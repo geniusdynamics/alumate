@@ -5,8 +5,6 @@ use App\Models\LeadScoringRule;
 use App\Models\User;
 use App\Services\LeadManagementService;
 
-uses(Tests\TestCase::class);
-
 beforeEach(function () {
     $this->service = new LeadManagementService;
 });

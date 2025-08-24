@@ -488,14 +488,14 @@ import { Textarea } from '@/Components/ui/textarea'
 import { Checkbox } from '@/Components/ui/checkbox'
 import { Badge } from '@/Components/ui/badge'
 import ThemeToggle from '@/Components/ThemeToggle.vue'
-import { 
+import {
   PlusIcon, 
   UserIcon, 
   HomeIcon, 
   UsersIcon, 
   CalendarIcon, 
   BriefcaseIcon,
-  XIcon
+  XMarkIcon as XIcon
 } from '@heroicons/vue/24/outline'
 
 const activeSection = ref('colors')

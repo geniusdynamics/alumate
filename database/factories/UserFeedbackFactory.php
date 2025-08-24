@@ -32,11 +32,11 @@ class UserFeedbackFactory extends Factory
             'type' => $type,
             'content' => $content,
             'rating' => $type === 'general_feedback' ? $this->faker->numberBetween(1, 5) : null,
-            'metadata' => [
+            'metadata' => json_encode([
                 'page' => $this->faker->url(),
                 'userAgent' => $this->faker->userAgent(),
                 'timestamp' => $this->faker->dateTimeThisMonth()->toISOString(),
-            ],
+            ]),
             'status' => $this->faker->randomElement(['pending', 'reviewed', 'resolved', 'dismissed']),
         ];
     }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="9" assertions="21" errors="0" failures="0" skipped="0" time="9.294301">
+    <testsuite name="Unit" tests="9" assertions="21" errors="0" failures="0" skipped="0" time="9.294301">
+      <testsuite name="Tests\Unit\CareerOutcomeModelsTest" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)" tests="9" assertions="21" errors="0" failures="0" skipped="0" time="9.294301">
+        <testcase name="Salary progression annualized salary calculation" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Salary progression annualized salary calculation" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="7.140961"/>
+        <testcase name="Salary progression formatted salary" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Salary progression formatted salary" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="1" time="0.225796"/>
+        <testcase name="Career path type display" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Career path type display" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="0.457202"/>
+        <testcase name="Career path job stability score" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Career path job stability score" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="4" time="0.248956"/>
+        <testcase name="Industry placement salary growth" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Industry placement salary growth" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="0.227530"/>
+        <testcase name="Program effectiveness employment trend" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Program effectiveness employment trend" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="3" time="0.242774"/>
+        <testcase name="Program effectiveness salary growth rate" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Program effectiveness salary growth rate" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="0.218102"/>
+        <testcase name="Program effectiveness performance grade" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Program effectiveness performance grade" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="1" time="0.285516"/>
+        <testcase name="Career path static methods" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Career path static methods" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="4" time="0.247463"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

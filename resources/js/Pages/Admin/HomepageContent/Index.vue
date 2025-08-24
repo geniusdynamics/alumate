@@ -220,7 +220,7 @@ interface HomepageContent {
   key: string
   value: string
   audience: string
-  metadata?: any
+  metadata?: Record<string, unknown>
   status: string
   created_by: number
   approved_by?: number
@@ -262,7 +262,7 @@ const importData = ref('')
 
 const editForm = ref({
   value: '',
-  metadata: null as any,
+  metadata: null as Record<string, unknown> | null,
   change_notes: ''
 })
 

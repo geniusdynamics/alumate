@@ -96,6 +96,11 @@ describe('ExitIntentPopup', () => {
         props: {
           audience: 'institutional',
           specialOffer: mockSpecialOffer
+        },
+        global: {
+          stubs: {
+            Teleport: false
+          }
         }
       })
     })
@@ -137,6 +142,11 @@ describe('ExitIntentPopup', () => {
         props: {
           audience: 'individual',
           specialOffer: mockSpecialOffer
+        },
+        global: {
+          stubs: {
+            Teleport: false
+          }
         }
       })
     })
@@ -184,6 +194,11 @@ describe('ExitIntentPopup', () => {
         props: {
           audience: 'individual',
           specialOffer: mockSpecialOffer
+        },
+        global: {
+          stubs: {
+            Teleport: false
+          }
         }
       })
     })
@@ -252,6 +267,11 @@ describe('ExitIntentPopup', () => {
         props: {
           audience: 'individual',
           specialOffer: mockSpecialOffer
+        },
+        global: {
+          stubs: {
+            Teleport: false
+          }
         }
       })
     })
@@ -294,6 +314,11 @@ describe('ExitIntentPopup', () => {
         props: {
           audience: 'individual',
           specialOffer: mockSpecialOffer
+        },
+        global: {
+          stubs: {
+            Teleport: false
+          }
         }
       })
     })
@@ -334,6 +359,11 @@ describe('ExitIntentPopup', () => {
         props: {
           audience: 'individual',
           specialOffer: mockSpecialOffer
+        },
+        global: {
+          stubs: {
+            Teleport: false
+          }
         }
       })
     })
@@ -370,6 +400,11 @@ describe('ExitIntentPopup', () => {
         props: {
           audience: 'individual',
           specialOffer: mockSpecialOffer
+        },
+        global: {
+          stubs: {
+            Teleport: false
+          }
         }
       })
     })

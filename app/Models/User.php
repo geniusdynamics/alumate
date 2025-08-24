@@ -523,6 +523,17 @@ class User extends Authenticatable
         $this->tokens()->delete();
     }
 
+    // Developer API relationships
+    public function apiKeys()
+    {
+        return $this->hasMany(ApiKey::class);
+    }
+
+    public function webhooks()
+    {
+        return $this->hasMany(Webhook::class);
+    }
+
     public function getActivitySummary(int $days = 30): array
     {
         $startDate = now()->subDays($days);

@@ -10,6 +10,11 @@ import type {
 } from '@/types/homepage'
 
 export class ConversionTrackingService {
+  private onlineListener: () => void;
+  private offlineListener: () => void;
+  private visibilityChangeListener: () => void;
+  private beforeUnloadListener: () => void;
+  private batchIntervalId: NodeJS.Timeout;
   private sessionId: string
   private userId?: string
   private audience: AudienceType
@@ -120,31 +125,32 @@ export class ConversionTrackingService {
   }
 
   private setupEventListeners(): void {
-    // Online/offline status
-    window.addEventListener('online', () => {
+    this.onlineListener = () => {
       this.isOnline = true
       this.flushEventQueue()
-    })
+    };
+    window.addEventListener('online', this.onlineListener);
 
-    window.addEventListener('offline', () => {
+    this.offlineListener = () => {
       this.isOnline = false
-    })
+    };
+    window.addEventListener('offline', this.offlineListener);
 
-    // Page visibility changes
-    document.addEventListener('visibilitychange', () => {
+    this.visibilityChangeListener = () => {
       if (document.visibilityState === 'hidden') {
         this.flushEventQueue()
       }
-    })
+    };
+    document.addEventListener('visibilitychange', this.visibilityChangeListener);
 
-    // Before page unload
-    window.addEventListener('beforeunload', () => {
+    this.beforeUnloadListener = () => {
       this.flushEventQueue(true)
-    })
+    };
+    window.addEventListener('beforeunload', this.beforeUnloadListener);
   }
 
   private startBatchProcessing(): void {
-    setInterval(() => {
+    this.batchIntervalId = setInterval(() => {
       if (this.eventQueue.length > 0) {
         this.flushEventQueue()
       }
@@ -485,9 +491,10 @@ export class ConversionTrackingService {
 
   public destroy(): void {
     this.flushEventQueue(true)
-    window.removeEventListener('online', () => {})
-    window.removeEventListener('offline', () => {})
-    document.removeEventListener('visibilitychange', () => {})
-    window.removeEventListener('beforeunload', () => {})
+    window.removeEventListener('online', this.onlineListener)
+    window.removeEventListener('offline', this.offlineListener)
+    document.removeEventListener('visibilitychange', this.visibilityChangeListener)
+    window.removeEventListener('beforeunload', this.beforeUnloadListener)
+    clearInterval(this.batchIntervalId)
   }
 }
