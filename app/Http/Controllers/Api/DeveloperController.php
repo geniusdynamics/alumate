@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
 use App\Models\ApiKey;
 use App\Models\Webhook;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class DeveloperController extends Controller
 {
@@ -20,24 +20,24 @@ class DeveloperController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'permissions' => 'array',
-            'permissions.*' => 'string|in:read,write,admin'
+            'permissions.*' => 'string|in:read,write,admin',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $apiKey = ApiKey::create([
             'user_id' => $request->user()->id,
             'name' => $request->name,
-            'key' => 'ap_' . Str::random(40),
+            'key' => 'ap_'.Str::random(40),
             'permissions' => $request->permissions ?? ['read'],
             'last_used_at' => null,
-            'expires_at' => now()->addYear()
+            'expires_at' => now()->addYear(),
         ]);
 
         return response()->json([
@@ -48,9 +48,9 @@ class DeveloperController extends Controller
                 'key' => $apiKey->key,
                 'permissions' => $apiKey->permissions,
                 'created_at' => $apiKey->created_at,
-                'expires_at' => $apiKey->expires_at
+                'expires_at' => $apiKey->expires_at,
             ],
-            'message' => 'API key generated successfully'
+            'message' => 'API key generated successfully',
         ], 201);
     }
 
@@ -66,7 +66,7 @@ class DeveloperController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $apiKeys
+            'data' => $apiKeys,
         ]);
     }
 
@@ -80,7 +80,7 @@ class DeveloperController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'API key revoked successfully'
+            'message' => 'API key revoked successfully',
         ]);
     }
 
@@ -93,73 +93,73 @@ class DeveloperController extends Controller
             [
                 'event' => 'post.created',
                 'name' => 'Post Created',
-                'description' => 'Triggered when a user creates a new post'
+                'description' => 'Triggered when a user creates a new post',
             ],
             [
                 'event' => 'post.updated',
                 'name' => 'Post Updated',
-                'description' => 'Triggered when a user updates an existing post'
+                'description' => 'Triggered when a user updates an existing post',
             ],
             [
                 'event' => 'post.deleted',
                 'name' => 'Post Deleted',
-                'description' => 'Triggered when a user deletes a post'
+                'description' => 'Triggered when a user deletes a post',
             ],
             [
                 'event' => 'user.connected',
                 'name' => 'User Connected',
-                'description' => 'Triggered when users connect with each other'
+                'description' => 'Triggered when users connect with each other',
             ],
             [
                 'event' => 'user.disconnected',
                 'name' => 'User Disconnected',
-                'description' => 'Triggered when users disconnect from each other'
+                'description' => 'Triggered when users disconnect from each other',
             ],
             [
                 'event' => 'event.registered',
                 'name' => 'Event Registration',
-                'description' => 'Triggered when a user registers for an event'
+                'description' => 'Triggered when a user registers for an event',
             ],
             [
                 'event' => 'event.cancelled',
                 'name' => 'Event Registration Cancelled',
-                'description' => 'Triggered when a user cancels event registration'
+                'description' => 'Triggered when a user cancels event registration',
             ],
             [
                 'event' => 'donation.completed',
                 'name' => 'Donation Completed',
-                'description' => 'Triggered when a donation is successfully processed'
+                'description' => 'Triggered when a donation is successfully processed',
             ],
             [
                 'event' => 'donation.refunded',
                 'name' => 'Donation Refunded',
-                'description' => 'Triggered when a donation is refunded'
+                'description' => 'Triggered when a donation is refunded',
             ],
             [
                 'event' => 'mentorship.requested',
                 'name' => 'Mentorship Requested',
-                'description' => 'Triggered when a user requests mentorship'
+                'description' => 'Triggered when a user requests mentorship',
             ],
             [
                 'event' => 'mentorship.accepted',
                 'name' => 'Mentorship Accepted',
-                'description' => 'Triggered when a mentorship request is accepted'
+                'description' => 'Triggered when a mentorship request is accepted',
             ],
             [
                 'event' => 'job.applied',
                 'name' => 'Job Application',
-                'description' => 'Triggered when a user applies for a job'
+                'description' => 'Triggered when a user applies for a job',
             ],
             [
                 'event' => 'achievement.earned',
                 'name' => 'Achievement Earned',
-                'description' => 'Triggered when a user earns an achievement'
-            ]
+                'description' => 'Triggered when a user earns an achievement',
+            ],
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $events
+            'data' => $events,
         ]);
     }
 
@@ -175,21 +175,21 @@ class DeveloperController extends Controller
             'data' => [
                 'message' => 'This is a test webhook delivery',
                 'webhook_id' => $webhook->id,
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ],
-            'timestamp' => now()->toISOString()
+            'timestamp' => now()->toISOString(),
         ];
 
         // In a real implementation, this would queue a job to deliver the webhook
         // For now, we'll just return success
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Test webhook queued for delivery',
             'data' => [
                 'webhook_id' => $webhook->id,
-                'test_payload' => $testPayload
-            ]
+                'test_payload' => $testPayload,
+            ],
         ]);
     }
 
@@ -202,37 +202,37 @@ class DeveloperController extends Controller
             'success' => true,
             'data' => [
                 'version' => '1.0',
-                'base_url' => config('app.url') . '/api',
+                'base_url' => config('app.url').'/api',
                 'authentication' => [
                     'type' => 'Bearer Token',
-                    'header' => 'Authorization: Bearer YOUR_TOKEN'
+                    'header' => 'Authorization: Bearer YOUR_TOKEN',
                 ],
                 'rate_limits' => [
                     'general' => [
                         'requests_per_minute' => 60,
-                        'requests_per_hour' => 1000
+                        'requests_per_hour' => 1000,
                     ],
                     'social' => [
                         'requests_per_minute' => 30,
-                        'requests_per_hour' => 500
+                        'requests_per_hour' => 500,
                     ],
                     'search' => [
                         'requests_per_minute' => 20,
-                        'requests_per_hour' => 200
+                        'requests_per_hour' => 200,
                     ],
                     'upload' => [
                         'requests_per_minute' => 10,
-                        'requests_per_hour' => 100
-                    ]
+                        'requests_per_hour' => 100,
+                    ],
                 ],
                 'supported_formats' => ['json'],
                 'pagination' => [
                     'default_per_page' => 15,
                     'max_per_page' => 100,
                     'page_parameter' => 'page',
-                    'per_page_parameter' => 'per_page'
-                ]
-            ]
+                    'per_page_parameter' => 'per_page',
+                ],
+            ],
         ]);
     }
 
@@ -248,14 +248,14 @@ class DeveloperController extends Controller
             'include_auth' => 'boolean',
             'include_examples' => 'boolean',
             'endpoints' => 'array',
-            'endpoints.*' => 'string'
+            'endpoints.*' => 'string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -264,7 +264,7 @@ class DeveloperController extends Controller
             'info' => [
                 'name' => $request->name,
                 'description' => $request->description ?? 'Alumni Platform API Collection',
-                'schema' => 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'
+                'schema' => 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json',
             ],
             'auth' => $request->include_auth ? [
                 'type' => 'bearer',
@@ -272,29 +272,29 @@ class DeveloperController extends Controller
                     [
                         'key' => 'token',
                         'value' => '{{apiToken}}',
-                        'type' => 'string'
-                    ]
-                ]
+                        'type' => 'string',
+                    ],
+                ],
             ] : null,
             'variable' => [
                 [
                     'key' => 'baseUrl',
                     'value' => $request->base_url,
-                    'type' => 'string'
+                    'type' => 'string',
                 ],
                 [
                     'key' => 'apiToken',
                     'value' => 'your-api-token-here',
-                    'type' => 'string'
-                ]
+                    'type' => 'string',
+                ],
             ],
-            'item' => [] // This would be populated with actual endpoints
+            'item' => [], // This would be populated with actual endpoints
         ];
 
         return response()->json([
             'success' => true,
             'data' => $collection,
-            'message' => 'Postman collection generated successfully'
+            'message' => 'Postman collection generated successfully',
         ]);
     }
 
@@ -309,14 +309,14 @@ class DeveloperController extends Controller
             'base_url' => 'required|url',
             'version' => 'string|max:20',
             'endpoints' => 'array',
-            'endpoints.*' => 'string'
+            'endpoints.*' => 'string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -332,7 +332,7 @@ class DeveloperController extends Controller
         return response()->json([
             'success' => true,
             'data' => $sdkStructure,
-            'message' => 'SDK generated successfully'
+            'message' => 'SDK generated successfully',
         ]);
     }
 
@@ -347,10 +347,10 @@ class DeveloperController extends Controller
                     'files' => [
                         ['path' => 'package.json', 'content' => $this->generatePackageJson($packageName, $version)],
                         ['path' => 'src/index.js', 'content' => $this->generateJavaScriptClient($baseUrl)],
-                        ['path' => 'README.md', 'content' => $this->generateReadme($packageName, $language)]
+                        ['path' => 'README.md', 'content' => $this->generateReadme($packageName, $language)],
                     ],
                     'installation' => "npm install {$packageName}",
-                    'example' => $this->generateJavaScriptExample($packageName, $baseUrl)
+                    'example' => $this->generateJavaScriptExample($packageName, $baseUrl),
                 ];
 
             case 'php':
@@ -358,10 +358,10 @@ class DeveloperController extends Controller
                     'files' => [
                         ['path' => 'composer.json', 'content' => $this->generateComposerJson($packageName, $version)],
                         ['path' => 'src/Client.php', 'content' => $this->generatePhpClient($baseUrl)],
-                        ['path' => 'README.md', 'content' => $this->generateReadme($packageName, $language)]
+                        ['path' => 'README.md', 'content' => $this->generateReadme($packageName, $language)],
                     ],
                     'installation' => "composer require {$packageName}",
-                    'example' => $this->generatePhpExample($packageName, $baseUrl)
+                    'example' => $this->generatePhpExample($packageName, $baseUrl),
                 ];
 
             case 'python':
@@ -369,10 +369,10 @@ class DeveloperController extends Controller
                     'files' => [
                         ['path' => 'setup.py', 'content' => $this->generateSetupPy($packageName, $version)],
                         ['path' => 'alumni_platform/__init__.py', 'content' => $this->generatePythonClient($baseUrl)],
-                        ['path' => 'README.md', 'content' => $this->generateReadme($packageName, $language)]
+                        ['path' => 'README.md', 'content' => $this->generateReadme($packageName, $language)],
                     ],
                     'installation' => "pip install {$packageName}",
-                    'example' => $this->generatePythonExample($packageName, $baseUrl)
+                    'example' => $this->generatePythonExample($packageName, $baseUrl),
                 ];
 
             default:
@@ -388,8 +388,8 @@ class DeveloperController extends Controller
             'description' => 'Alumni Platform API Client',
             'main' => 'src/index.js',
             'dependencies' => [
-                'axios' => '^1.6.0'
-            ]
+                'axios' => '^1.6.0',
+            ],
         ], JSON_PRETTY_PRINT);
     }
 
@@ -411,13 +411,13 @@ class DeveloperController extends Controller
             'description' => 'Alumni Platform API Client for PHP',
             'require' => [
                 'php' => '^8.1',
-                'guzzlehttp/guzzle' => '^7.0'
+                'guzzlehttp/guzzle' => '^7.0',
             ],
             'autoload' => [
                 'psr-4' => [
-                    'AlumniPlatform\\' => 'src/'
-                ]
-            ]
+                    'AlumniPlatform\\' => 'src/',
+                ],
+            ],
         ], JSON_PRETTY_PRINT);
     }
 

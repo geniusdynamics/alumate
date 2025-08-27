@@ -10,9 +10,13 @@ class DemographicOutcome extends Model
     use HasFactory;
 
     const TYPE_GENDER = 'gender';
+
     const TYPE_ETHNICITY = 'ethnicity';
+
     const TYPE_AGE_GROUP = 'age_group';
+
     const TYPE_SOCIOECONOMIC = 'socioeconomic';
+
     const TYPE_FIRST_GENERATION = 'first_generation';
 
     protected $fillable = [
@@ -94,12 +98,13 @@ class DemographicOutcome extends Model
 
     public function getTopIndustriesAttribute()
     {
-        if (!$this->industry_distribution) {
+        if (! $this->industry_distribution) {
             return [];
         }
 
         // Sort industries by percentage and return top 5
         arsort($this->industry_distribution);
+
         return array_slice($this->industry_distribution, 0, 5, true);
     }
 

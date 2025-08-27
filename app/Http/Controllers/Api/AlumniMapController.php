@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AlumniMapService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -24,12 +24,12 @@ class AlumniMapController extends Controller
     {
         $request->validate([
             'filters' => 'array',
-            'filters.graduation_year' => 'nullable|integer|min:1900|max:' . (date('Y') + 10),
+            'filters.graduation_year' => 'nullable|integer|min:1900|max:'.(date('Y') + 10),
             'filters.school_id' => 'nullable|integer|exists:schools,id',
             'filters.industry' => 'nullable|string|max:100',
             'filters.country' => 'nullable|string|max:100',
             'filters.region' => 'nullable|string|max:100',
-            'privacy_filter' => ['nullable', Rule::in(['all', 'public', 'alumni_only'])]
+            'privacy_filter' => ['nullable', Rule::in(['all', 'public', 'alumni_only'])],
         ]);
 
         try {
@@ -55,21 +55,21 @@ class AlumniMapController extends Controller
                         'location' => $alumnus->location,
                         'latitude' => (float) $alumnus->latitude,
                         'longitude' => (float) $alumnus->longitude,
-                        'location_privacy' => $alumnus->location_privacy ?? 'alumni_only'
+                        'location_privacy' => $alumnus->location_privacy ?? 'alumni_only',
                     ];
-                })
+                }),
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to get alumni map data', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
-                'filters' => $request->input('filters', [])
+                'filters' => $request->input('filters', []),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load alumni map data'
+                'message' => 'Failed to load alumni map data',
             ], 500);
         }
     }
@@ -87,7 +87,7 @@ class AlumniMapController extends Controller
             'bounds.west' => 'required|numeric|between:-180,180',
             'zoom_level' => 'required|integer|min:1|max:20',
             'filters' => 'array',
-            'privacy_filter' => ['nullable', Rule::in(['all', 'public', 'alumni_only'])]
+            'privacy_filter' => ['nullable', Rule::in(['all', 'public', 'alumni_only'])],
         ]);
 
         try {
@@ -106,7 +106,7 @@ class AlumniMapController extends Controller
 
             return response()->json([
                 'success' => true,
-                'clusters' => $clusters
+                'clusters' => $clusters,
             ]);
 
         } catch (\Exception $e) {
@@ -114,12 +114,12 @@ class AlumniMapController extends Controller
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
                 'bounds' => $request->input('bounds'),
-                'zoom_level' => $request->input('zoom_level')
+                'zoom_level' => $request->input('zoom_level'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load alumni clusters'
+                'message' => 'Failed to load alumni clusters',
             ], 500);
         }
     }
@@ -134,18 +134,18 @@ class AlumniMapController extends Controller
 
             return response()->json([
                 'success' => true,
-                'stats' => $stats
+                'stats' => $stats,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to get alumni map stats', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to load statistics'
+                'message' => 'Failed to load statistics',
             ], 500);
         }
     }
@@ -158,7 +158,7 @@ class AlumniMapController extends Controller
         $request->validate([
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
-            'radius_km' => 'nullable|integer|min:1|max:1000'
+            'radius_km' => 'nullable|integer|min:1|max:1000',
         ]);
 
         try {
@@ -184,9 +184,9 @@ class AlumniMapController extends Controller
                         'location' => $alumnus->location,
                         'latitude' => (float) $alumnus->latitude,
                         'longitude' => (float) $alumnus->longitude,
-                        'distance' => round($alumnus->distance, 2)
+                        'distance' => round($alumnus->distance, 2),
                     ];
-                })
+                }),
             ]);
 
         } catch (\Exception $e) {
@@ -194,12 +194,12 @@ class AlumniMapController extends Controller
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
                 'latitude' => $request->input('latitude'),
-                'longitude' => $request->input('longitude')
+                'longitude' => $request->input('longitude'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to find nearby alumni'
+                'message' => 'Failed to find nearby alumni',
             ], 500);
         }
     }
@@ -210,7 +210,7 @@ class AlumniMapController extends Controller
     public function updateLocationPrivacy(Request $request): JsonResponse
     {
         $request->validate([
-            'location_privacy' => ['required', Rule::in(['public', 'alumni_only', 'private'])]
+            'location_privacy' => ['required', Rule::in(['public', 'alumni_only', 'private'])],
         ]);
 
         try {
@@ -219,29 +219,29 @@ class AlumniMapController extends Controller
 
             $success = $this->alumniMapService->updateLocationPrivacy($user, $privacyLevel);
 
-            if (!$success) {
+            if (! $success) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid privacy level'
+                    'message' => 'Invalid privacy level',
                 ], 400);
             }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Location privacy updated successfully',
-                'location_privacy' => $privacyLevel
+                'location_privacy' => $privacyLevel,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to update location privacy', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
-                'privacy_level' => $request->input('location_privacy')
+                'privacy_level' => $request->input('location_privacy'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update location privacy'
+                'message' => 'Failed to update location privacy',
             ], 500);
         }
     }
@@ -254,7 +254,7 @@ class AlumniMapController extends Controller
         $request->validate([
             'address' => 'required|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
-            'longitude' => 'nullable|numeric|between:-180,180'
+            'longitude' => 'nullable|numeric|between:-180,180',
         ]);
 
         try {
@@ -264,7 +264,7 @@ class AlumniMapController extends Controller
             $longitude = $request->input('longitude');
 
             // If coordinates not provided, try to geocode the address
-            if (!$latitude || !$longitude) {
+            if (! $latitude || ! $longitude) {
                 $coordinates = $this->geocodeAddress($address);
                 if ($coordinates) {
                     $latitude = $coordinates['latitude'];
@@ -272,7 +272,7 @@ class AlumniMapController extends Controller
                 } else {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Unable to geocode the provided address'
+                        'message' => 'Unable to geocode the provided address',
                     ], 400);
                 }
             }
@@ -282,7 +282,7 @@ class AlumniMapController extends Controller
                 'location' => $address,
                 'latitude' => $latitude,
                 'longitude' => $longitude,
-                'location_updated_at' => now()
+                'location_updated_at' => now(),
             ]);
 
             return response()->json([
@@ -291,20 +291,20 @@ class AlumniMapController extends Controller
                 'location' => [
                     'address' => $address,
                     'latitude' => $latitude,
-                    'longitude' => $longitude
-                ]
+                    'longitude' => $longitude,
+                ],
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to update user location', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
-                'address' => $request->input('address')
+                'address' => $request->input('address'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update location'
+                'message' => 'Failed to update location',
             ], 500);
         }
     }
@@ -316,7 +316,7 @@ class AlumniMapController extends Controller
     {
         $request->validate([
             'lat' => 'required|numeric|between:-90,90',
-            'lng' => 'required|numeric|between:-180,180'
+            'lng' => 'required|numeric|between:-180,180',
         ]);
 
         try {
@@ -325,28 +325,28 @@ class AlumniMapController extends Controller
 
             $address = $this->reverseGeocodeCoordinates($latitude, $longitude);
 
-            if (!$address) {
+            if (! $address) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Unable to reverse geocode coordinates'
+                    'message' => 'Unable to reverse geocode coordinates',
                 ], 400);
             }
 
             return response()->json([
                 'success' => true,
-                'address' => $address
+                'address' => $address,
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to reverse geocode', [
                 'error' => $e->getMessage(),
                 'latitude' => $request->input('lat'),
-                'longitude' => $request->input('lng')
+                'longitude' => $request->input('lng'),
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to reverse geocode coordinates'
+                'message' => 'Failed to reverse geocode coordinates',
             ], 500);
         }
     }
@@ -359,21 +359,21 @@ class AlumniMapController extends Controller
         try {
             $response = Http::timeout(10)
                 ->withHeaders([
-                    'User-Agent' => 'Alumni Platform Map Service'
+                    'User-Agent' => 'Alumni Platform Map Service',
                 ])
                 ->get('https://nominatim.openstreetmap.org/search', [
                     'q' => $address,
                     'format' => 'json',
                     'limit' => 1,
-                    'addressdetails' => 1
+                    'addressdetails' => 1,
                 ]);
 
             if ($response->successful() && $response->json()) {
                 $data = $response->json();
-                if (!empty($data)) {
+                if (! empty($data)) {
                     return [
                         'latitude' => (float) $data[0]['lat'],
-                        'longitude' => (float) $data[0]['lon']
+                        'longitude' => (float) $data[0]['lon'],
                     ];
                 }
             }
@@ -383,8 +383,9 @@ class AlumniMapController extends Controller
         } catch (\Exception $e) {
             Log::error('Geocoding failed', [
                 'error' => $e->getMessage(),
-                'address' => $address
+                'address' => $address,
             ]);
+
             return null;
         }
     }
@@ -397,13 +398,13 @@ class AlumniMapController extends Controller
         try {
             $response = Http::timeout(10)
                 ->withHeaders([
-                    'User-Agent' => 'Alumni Platform Map Service'
+                    'User-Agent' => 'Alumni Platform Map Service',
                 ])
                 ->get('https://nominatim.openstreetmap.org/reverse', [
                     'lat' => $latitude,
                     'lon' => $longitude,
                     'format' => 'json',
-                    'addressdetails' => 1
+                    'addressdetails' => 1,
                 ]);
 
             if ($response->successful() && $response->json()) {
@@ -419,8 +420,9 @@ class AlumniMapController extends Controller
             Log::error('Reverse geocoding failed', [
                 'error' => $e->getMessage(),
                 'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
             ]);
+
             return null;
         }
     }

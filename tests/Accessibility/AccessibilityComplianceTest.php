@@ -30,14 +30,14 @@ class AccessibilityComplianceTest extends TestCase
 
         // Check for proper navigation structure
         $content = $response->getContent();
-        
+
         // Navigation should have proper ARIA labels
         $this->assertStringContainsString('role="navigation"', $content);
         $this->assertStringContainsString('aria-label="Main navigation"', $content);
-        
+
         // Navigation items should be keyboard accessible
         $this->assertStringContainsString('tabindex="0"', $content);
-        
+
         // Skip links should be present
         $this->assertStringContainsString('Skip to main content', $content);
     }
@@ -53,11 +53,11 @@ class AccessibilityComplianceTest extends TestCase
 
         // Forms should have proper labels
         $this->assertStringContainsString('<label', $content);
-        
+
         // Required fields should be marked
         $this->assertStringContainsString('required', $content);
         $this->assertStringContainsString('aria-required="true"', $content);
-        
+
         // Error messages should be associated with fields
         $this->assertStringContainsString('aria-describedby', $content);
     }
@@ -76,9 +76,9 @@ class AccessibilityComplianceTest extends TestCase
         $response->assertStatus(200);
 
         $postData = $response->json('data.post');
-        
+
         // Check that media has alt text or proper handling
-        if (!empty($postData['media_urls'])) {
+        if (! empty($postData['media_urls'])) {
             foreach ($postData['media_urls'] as $media) {
                 // Media should have alt text or be marked as decorative
                 $this->assertTrue(
@@ -100,7 +100,7 @@ class AccessibilityComplianceTest extends TestCase
         // Check for CSS custom properties that ensure proper contrast
         $this->assertStringContainsString('--color-text-primary', $content);
         $this->assertStringContainsString('--color-background-primary', $content);
-        
+
         // Check for high contrast mode support
         $this->assertStringContainsString('prefers-contrast', $content);
     }
@@ -115,10 +115,10 @@ class AccessibilityComplianceTest extends TestCase
 
         // Interactive elements should be keyboard accessible
         $this->assertStringContainsString('tabindex', $content);
-        
+
         // Focus indicators should be present
         $this->assertStringContainsString('focus:', $content);
-        
+
         // Keyboard event handlers should be present
         $this->assertStringContainsString('@keydown', $content);
     }
@@ -135,10 +135,10 @@ class AccessibilityComplianceTest extends TestCase
         $this->assertStringContainsString('role="main"', $content);
         $this->assertStringContainsString('role="banner"', $content);
         $this->assertStringContainsString('role="contentinfo"', $content);
-        
+
         // Screen reader only content should be present
         $this->assertStringContainsString('sr-only', $content);
-        
+
         // Live regions for dynamic content
         $this->assertStringContainsString('aria-live', $content);
     }
@@ -153,7 +153,7 @@ class AccessibilityComplianceTest extends TestCase
 
         // Proper heading hierarchy
         $this->assertStringContainsString('<h1', $content);
-        
+
         // Semantic HTML elements
         $this->assertStringContainsString('<main', $content);
         $this->assertStringContainsString('<nav', $content);
@@ -198,10 +198,10 @@ class AccessibilityComplianceTest extends TestCase
         $response->assertStatus(200);
 
         $data = $response->json('data');
-        
+
         // Timeline posts should have proper structure for screen readers
         $this->assertArrayHasKey('posts', $data);
-        
+
         $posts = $data['posts']['data'];
         foreach ($posts as $post) {
             // Each post should have required accessibility information
@@ -290,7 +290,7 @@ class AccessibilityComplianceTest extends TestCase
         $this->assertArrayHasKey('meta', $data['posts']);
 
         $meta = $data['posts']['meta'];
-        
+
         // Pagination metadata should be complete for accessibility
         $this->assertArrayHasKey('current_page', $meta);
         $this->assertArrayHasKey('last_page', $meta);
@@ -352,7 +352,7 @@ class AccessibilityComplianceTest extends TestCase
 
         // Mobile navigation should be accessible
         $this->assertStringContainsString('aria-expanded', $content);
-        
+
         // Touch targets should be appropriately sized
         $this->assertStringContainsString('min-h-', $content);
     }
@@ -392,7 +392,7 @@ class AccessibilityComplianceTest extends TestCase
 
         // HTML should have lang attribute
         $this->assertStringContainsString('lang="', $content);
-        
+
         // Direction should be specified for RTL support
         $this->assertStringContainsString('dir="', $content);
     }

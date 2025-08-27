@@ -8,7 +8,7 @@ beforeEach(function () {
     // Create a tenant and set it as current
     $this->tenant = Tenant::factory()->create();
     tenancy()->initialize($this->tenant);
-    
+
     // Create an admin user
     $this->admin = User::factory()->create();
     $this->admin->assignRole('Institution Admin');
@@ -20,10 +20,9 @@ test('admin can view integrations index', function () {
     $response = $this->get(route('admin.integrations.index'));
 
     $response->assertOk();
-    $response->assertInertia(fn ($page) => 
-        $page->component('Admin/Integrations/Index')
-            ->has('integrations')
-            ->has('integrationTypes')
+    $response->assertInertia(fn ($page) => $page->component('Admin/Integrations/Index')
+        ->has('integrations')
+        ->has('integrationTypes')
     );
 });
 
@@ -70,10 +69,9 @@ test('admin can view integration details', function () {
     $response = $this->get(route('admin.integrations.show', $integration));
 
     $response->assertOk();
-    $response->assertInertia(fn ($page) => 
-        $page->component('Admin/Integrations/Show')
-            ->has('integration')
-            ->where('integration.id', $integration->id)
+    $response->assertInertia(fn ($page) => $page->component('Admin/Integrations/Show')
+        ->has('integration')
+        ->where('integration.id', $integration->id)
     );
 });
 
@@ -126,7 +124,7 @@ test('integration validation works', function () {
 test('non admin cannot access integrations', function () {
     $user = User::factory()->create();
     $user->assignRole('Graduate');
-    
+
     $this->actingAs($user);
 
     $response = $this->get(route('admin.integrations.index'));

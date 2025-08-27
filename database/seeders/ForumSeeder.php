@@ -2,13 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Forum;
-use App\Models\ForumTopic;
 use App\Models\ForumPost;
 use App\Models\ForumTag;
+use App\Models\ForumTopic;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class ForumSeeder extends Seeder
 {
@@ -151,10 +150,10 @@ class ForumSeeder extends Seeder
 
         foreach ($createdForums as $forum) {
             $topics = $sampleTopics[$forum->name] ?? [];
-            
+
             foreach ($topics as $topicTitle) {
                 $user = $users->random();
-                
+
                 $topic = ForumTopic::create([
                     'forum_id' => $forum->id,
                     'user_id' => $user->id,
@@ -217,11 +216,11 @@ class ForumSeeder extends Seeder
     {
         $responses = [
             "Great question! I've had similar experiences and here's what I learned...",
-            "Thanks for bringing this up. In my experience, the key is to focus on...",
+            'Thanks for bringing this up. In my experience, the key is to focus on...',
             "I completely agree with this perspective. I'd also add that...",
             "This is really insightful. I've found that the best approach is to...",
             "Excellent point! I've been in a similar situation and what worked for me was...",
-            "I appreciate you sharing this. From my professional experience...",
+            'I appreciate you sharing this. From my professional experience...',
             "This resonates with me. I think it's important to consider...",
             "Really valuable discussion. I'd like to add my perspective on...",
         ];

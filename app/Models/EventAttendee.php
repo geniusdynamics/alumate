@@ -14,12 +14,12 @@ class EventAttendee extends Model
         'user_id',
         'status',
         'rsvp_date',
-        'checked_in_at'
+        'checked_in_at',
     ];
 
     protected $casts = [
         'rsvp_date' => 'datetime',
-        'checked_in_at' => 'datetime'
+        'checked_in_at' => 'datetime',
     ];
 
     /**

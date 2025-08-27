@@ -16,11 +16,11 @@ class Connection extends Model
         'recipient_id',
         'status',
         'message',
-        'connected_at'
+        'connected_at',
     ];
 
     protected $casts = [
-        'connected_at' => 'datetime'
+        'connected_at' => 'datetime',
     ];
 
     /**

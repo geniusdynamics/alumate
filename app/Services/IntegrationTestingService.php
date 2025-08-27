@@ -59,7 +59,7 @@ class IntegrationTestingService
 
             return [
                 'success' => false,
-                'error' => 'Test failed: ' . $e->getMessage(),
+                'error' => 'Test failed: '.$e->getMessage(),
             ];
         }
     }
@@ -101,7 +101,7 @@ class IntegrationTestingService
 
         } catch (\Exception $e) {
             $integration->markSyncFailed($e->getMessage());
-            
+
             Log::error('Integration sync exception', [
                 'integration_id' => $integration->id,
                 'error' => $e->getMessage(),
@@ -110,7 +110,7 @@ class IntegrationTestingService
 
             return [
                 'success' => false,
-                'error' => 'Sync failed: ' . $e->getMessage(),
+                'error' => 'Sync failed: '.$e->getMessage(),
             ];
         }
     }
@@ -140,13 +140,13 @@ class IntegrationTestingService
         $apiKey = $credentials['api_key'] ?? $config['api_key'] ?? null;
         $serverPrefix = $config['server_prefix'] ?? null;
 
-        if (!$apiKey || !$serverPrefix) {
+        if (! $apiKey || ! $serverPrefix) {
             return ['success' => false, 'error' => 'API key and server prefix are required'];
         }
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
+                'Authorization' => 'Bearer '.$apiKey,
             ])->get("https://{$serverPrefix}.api.mailchimp.com/3.0/ping");
 
             if ($response->successful()) {
@@ -159,13 +159,13 @@ class IntegrationTestingService
 
             return [
                 'success' => false,
-                'error' => 'Mailchimp API error: ' . $response->body(),
+                'error' => 'Mailchimp API error: '.$response->body(),
             ];
 
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Connection failed: ' . $e->getMessage(),
+                'error' => 'Connection failed: '.$e->getMessage(),
             ];
         }
     }
@@ -178,13 +178,13 @@ class IntegrationTestingService
         $apiKey = $credentials['api_key'] ?? $config['api_key'] ?? null;
         $accessToken = $credentials['access_token'] ?? $config['access_token'] ?? null;
 
-        if (!$apiKey || !$accessToken) {
+        if (! $apiKey || ! $accessToken) {
             return ['success' => false, 'error' => 'API key and access token are required'];
         }
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $accessToken,
+                'Authorization' => 'Bearer '.$accessToken,
                 'X-API-Key' => $apiKey,
             ])->get('https://api.cc.email/v3/account/summary');
 
@@ -198,13 +198,13 @@ class IntegrationTestingService
 
             return [
                 'success' => false,
-                'error' => 'Constant Contact API error: ' . $response->body(),
+                'error' => 'Constant Contact API error: '.$response->body(),
             ];
 
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Connection failed: ' . $e->getMessage(),
+                'error' => 'Connection failed: '.$e->getMessage(),
             ];
         }
     }
@@ -246,15 +246,15 @@ class IntegrationTestingService
         $required = ['entity_id', 'sso_url', 'certificate'];
         $missing = array_diff($required, array_keys($config));
 
-        if (!empty($missing)) {
+        if (! empty($missing)) {
             return [
                 'success' => false,
-                'error' => 'Missing required fields: ' . implode(', ', $missing),
+                'error' => 'Missing required fields: '.implode(', ', $missing),
             ];
         }
 
         // Validate certificate format
-        if (!str_contains($config['certificate'], 'BEGIN CERTIFICATE')) {
+        if (! str_contains($config['certificate'], 'BEGIN CERTIFICATE')) {
             return [
                 'success' => false,
                 'error' => 'Invalid certificate format',
@@ -264,7 +264,7 @@ class IntegrationTestingService
         // Test SSO URL accessibility
         try {
             $response = Http::timeout(10)->get($config['sso_url']);
-            
+
             return [
                 'success' => true,
                 'message' => 'SAML configuration is valid',
@@ -275,7 +275,7 @@ class IntegrationTestingService
             return [
                 'success' => true,
                 'message' => 'SAML configuration is valid (SSO URL not tested)',
-                'warning' => 'Could not test SSO URL accessibility: ' . $e->getMessage(),
+                'warning' => 'Could not test SSO URL accessibility: '.$e->getMessage(),
             ];
         }
     }
@@ -288,10 +288,10 @@ class IntegrationTestingService
         $required = ['client_id', 'client_secret', 'discovery_url'];
         $missing = array_diff($required, array_keys($config));
 
-        if (!empty($missing)) {
+        if (! empty($missing)) {
             return [
                 'success' => false,
-                'error' => 'Missing required fields: ' . implode(', ', $missing),
+                'error' => 'Missing required fields: '.implode(', ', $missing),
             ];
         }
 
@@ -300,7 +300,7 @@ class IntegrationTestingService
 
             if ($response->successful()) {
                 $discovery = $response->json();
-                
+
                 return [
                     'success' => true,
                     'message' => 'OIDC configuration is valid',
@@ -316,7 +316,7 @@ class IntegrationTestingService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Discovery URL test failed: ' . $e->getMessage(),
+                'error' => 'Discovery URL test failed: '.$e->getMessage(),
             ];
         }
     }
@@ -345,13 +345,13 @@ class IntegrationTestingService
         $instanceUrl = $config['instance_url'] ?? null;
         $clientId = $credentials['client_id'] ?? $config['client_id'] ?? null;
 
-        if (!$instanceUrl || !$clientId) {
+        if (! $instanceUrl || ! $clientId) {
             return ['success' => false, 'error' => 'Instance URL and Client ID are required'];
         }
 
         try {
             // Test basic connectivity to Salesforce instance
-            $response = Http::timeout(10)->get($instanceUrl . '/services/data/');
+            $response = Http::timeout(10)->get($instanceUrl.'/services/data/');
 
             if ($response->successful()) {
                 return [
@@ -369,7 +369,7 @@ class IntegrationTestingService
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Connection test failed: ' . $e->getMessage(),
+                'error' => 'Connection test failed: '.$e->getMessage(),
             ];
         }
     }
@@ -381,13 +381,13 @@ class IntegrationTestingService
     {
         $apiKey = $credentials['api_key'] ?? $config['api_key'] ?? null;
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return ['success' => false, 'error' => 'API key is required'];
         }
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
+                'Authorization' => 'Bearer '.$apiKey,
             ])->get('https://api.hubapi.com/account-info/v3/details');
 
             if ($response->successful()) {
@@ -400,13 +400,13 @@ class IntegrationTestingService
 
             return [
                 'success' => false,
-                'error' => 'HubSpot API error: ' . $response->body(),
+                'error' => 'HubSpot API error: '.$response->body(),
             ];
 
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Connection failed: ' . $e->getMessage(),
+                'error' => 'Connection failed: '.$e->getMessage(),
             ];
         }
     }
@@ -484,10 +484,10 @@ class IntegrationTestingService
         $required = ['client_id', 'client_secret'];
         $missing = array_diff($required, array_keys($config));
 
-        if (!empty($missing)) {
+        if (! empty($missing)) {
             return [
                 'success' => false,
-                'error' => 'Missing required fields: ' . implode(', ', $missing),
+                'error' => 'Missing required fields: '.implode(', ', $missing),
             ];
         }
 
@@ -502,14 +502,14 @@ class IntegrationTestingService
         $baseUrl = $config['base_url'] ?? null;
         $apiKey = $credentials['api_key'] ?? $config['api_key'] ?? null;
 
-        if (!$baseUrl || !$apiKey) {
+        if (! $baseUrl || ! $apiKey) {
             return ['success' => false, 'error' => 'Base URL and API key are required'];
         }
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $apiKey,
-            ])->get($baseUrl . '/api/users/self');
+                'Authorization' => 'Bearer '.$apiKey,
+            ])->get($baseUrl.'/api/users/self');
 
             if ($response->successful()) {
                 return [
@@ -521,13 +521,13 @@ class IntegrationTestingService
 
             return [
                 'success' => false,
-                'error' => 'Mautic API error: ' . $response->body(),
+                'error' => 'Mautic API error: '.$response->body(),
             ];
 
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Connection failed: ' . $e->getMessage(),
+                'error' => 'Connection failed: '.$e->getMessage(),
             ];
         }
     }
@@ -537,7 +537,7 @@ class IntegrationTestingService
         $apiToken = $credentials['api_token'] ?? $config['api_token'] ?? null;
         $companyDomain = $config['company_domain'] ?? null;
 
-        if (!$apiToken || !$companyDomain) {
+        if (! $apiToken || ! $companyDomain) {
             return ['success' => false, 'error' => 'API token and company domain are required'];
         }
 
@@ -556,13 +556,13 @@ class IntegrationTestingService
 
             return [
                 'success' => false,
-                'error' => 'Pipedrive API error: ' . $response->body(),
+                'error' => 'Pipedrive API error: '.$response->body(),
             ];
 
         } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'Connection failed: ' . $e->getMessage(),
+                'error' => 'Connection failed: '.$e->getMessage(),
             ];
         }
     }

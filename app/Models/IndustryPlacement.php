@@ -49,7 +49,7 @@ class IndustryPlacement extends Model
     // Accessors
     public function getSalaryGrowthAttribute()
     {
-        if (!$this->avg_starting_salary || !$this->avg_current_salary) {
+        if (! $this->avg_starting_salary || ! $this->avg_current_salary) {
             return null;
         }
 
@@ -58,6 +58,6 @@ class IndustryPlacement extends Model
 
     public function getFormattedRetentionRateAttribute()
     {
-        return $this->retention_rate ? $this->retention_rate . '%' : 'N/A';
+        return $this->retention_rate ? $this->retention_rate.'%' : 'N/A';
     }
 }

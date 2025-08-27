@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\ForumService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ForumModerationController extends Controller
@@ -20,9 +20,9 @@ class ForumModerationController extends Controller
     public function moderate(Request $request, string $type, int $id): JsonResponse
     {
         $user = Auth::user();
-        
+
         // Check if user has moderation permissions
-        if (!$user->hasRole(['admin', 'moderator'])) {
+        if (! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Insufficient permissions for moderation.',
@@ -41,7 +41,7 @@ class ForumModerationController extends Controller
             $user
         );
 
-        if (!$success) {
+        if (! $success) {
             return response()->json([
                 'success' => false,
                 'message' => 'Content not found or action failed.',
@@ -66,9 +66,9 @@ class ForumModerationController extends Controller
     public function getPending(): JsonResponse
     {
         $user = Auth::user();
-        
+
         // Check if user has moderation permissions
-        if (!$user->hasRole(['admin', 'moderator'])) {
+        if (! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Insufficient permissions for moderation.',
@@ -84,7 +84,7 @@ class ForumModerationController extends Controller
                     return [
                         'id' => $topic->id,
                         'title' => $topic->title,
-                        'content' => substr($topic->content, 0, 200) . '...',
+                        'content' => substr($topic->content, 0, 200).'...',
                         'created_at' => $topic->created_at,
                         'user' => [
                             'id' => $topic->user->id,
@@ -100,7 +100,7 @@ class ForumModerationController extends Controller
                 'posts' => $pendingContent['posts']->map(function ($post) {
                     return [
                         'id' => $post->id,
-                        'content' => substr($post->content, 0, 200) . '...',
+                        'content' => substr($post->content, 0, 200).'...',
                         'created_at' => $post->created_at,
                         'user' => [
                             'id' => $post->user->id,

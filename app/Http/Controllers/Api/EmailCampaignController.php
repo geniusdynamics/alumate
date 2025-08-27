@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\EmailAutomationRule;
 use App\Models\EmailCampaign;
 use App\Models\EmailTemplate;
-use App\Models\EmailAutomationRule;
 use App\Services\EmailMarketingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class EmailCampaignController extends Controller
@@ -43,7 +43,7 @@ class EmailCampaignController extends Controller
                 'sent' => EmailCampaign::where('tenant_id', tenant()->id)->where('status', 'sent')->count(),
                 'scheduled' => EmailCampaign::where('tenant_id', tenant()->id)->where('status', 'scheduled')->count(),
                 'draft' => EmailCampaign::where('tenant_id', tenant()->id)->where('status', 'draft')->count(),
-            ]
+            ],
         ]);
     }
 
@@ -67,12 +67,12 @@ class EmailCampaignController extends Controller
 
             return response()->json([
                 'message' => 'Campaign created successfully',
-                'campaign' => $campaign->load(['creator', 'recipients'])
+                'campaign' => $campaign->load(['creator', 'recipients']),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to create campaign',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -90,7 +90,7 @@ class EmailCampaignController extends Controller
                     ->selectRaw('status, count(*) as count')
                     ->groupBy('status')
                     ->pluck('count', 'status'),
-            ]
+            ],
         ]);
     }
 
@@ -98,9 +98,9 @@ class EmailCampaignController extends Controller
     {
         $this->authorize('update', $campaign);
 
-        if (!$campaign->canBeEdited()) {
+        if (! $campaign->canBeEdited()) {
             return response()->json([
-                'message' => 'Campaign cannot be edited in current status'
+                'message' => 'Campaign cannot be edited in current status',
             ], 422);
         }
 
@@ -118,7 +118,7 @@ class EmailCampaignController extends Controller
 
         return response()->json([
             'message' => 'Campaign updated successfully',
-            'campaign' => $campaign->fresh(['creator', 'recipients'])
+            'campaign' => $campaign->fresh(['creator', 'recipients']),
         ]);
     }
 
@@ -126,16 +126,16 @@ class EmailCampaignController extends Controller
     {
         $this->authorize('delete', $campaign);
 
-        if (!$campaign->canBeEdited()) {
+        if (! $campaign->canBeEdited()) {
             return response()->json([
-                'message' => 'Campaign cannot be deleted in current status'
+                'message' => 'Campaign cannot be deleted in current status',
             ], 422);
         }
 
         $campaign->delete();
 
         return response()->json([
-            'message' => 'Campaign deleted successfully'
+            'message' => 'Campaign deleted successfully',
         ]);
     }
 
@@ -143,9 +143,9 @@ class EmailCampaignController extends Controller
     {
         $this->authorize('update', $campaign);
 
-        if (!$campaign->canBeSent()) {
+        if (! $campaign->canBeSent()) {
             return response()->json([
-                'message' => 'Campaign cannot be sent in current status'
+                'message' => 'Campaign cannot be sent in current status',
             ], 422);
         }
 
@@ -155,17 +155,17 @@ class EmailCampaignController extends Controller
             if ($success) {
                 return response()->json([
                     'message' => 'Campaign sent successfully',
-                    'campaign' => $campaign->fresh()
+                    'campaign' => $campaign->fresh(),
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'Failed to send campaign'
+                    'message' => 'Failed to send campaign',
                 ], 500);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to send campaign',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -187,17 +187,17 @@ class EmailCampaignController extends Controller
             if ($success) {
                 return response()->json([
                     'message' => 'Campaign scheduled successfully',
-                    'campaign' => $campaign->fresh()
+                    'campaign' => $campaign->fresh(),
                 ]);
             } else {
                 return response()->json([
-                    'message' => 'Failed to schedule campaign'
+                    'message' => 'Failed to schedule campaign',
                 ], 500);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to schedule campaign',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -218,12 +218,12 @@ class EmailCampaignController extends Controller
             return response()->json([
                 'message' => 'A/B test variant created successfully',
                 'parent_campaign' => $campaign->fresh(),
-                'variant_campaign' => $variantCampaign
+                'variant_campaign' => $variantCampaign,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to create A/B test variant',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -236,7 +236,7 @@ class EmailCampaignController extends Controller
             'user_id' => 'nullable|exists:users,id',
         ]);
 
-        $user = $validated['user_id'] 
+        $user = $validated['user_id']
             ? \App\Models\User::find($validated['user_id'])
             : auth()->user();
 
@@ -253,8 +253,8 @@ class EmailCampaignController extends Controller
                 'recipient' => [
                     'name' => $user->name,
                     'email' => $user->email,
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 
@@ -274,7 +274,7 @@ class EmailCampaignController extends Controller
                     'location' => $user->location,
                 ];
             }),
-            'count' => $recipients->count()
+            'count' => $recipients->count(),
         ]);
     }
 
@@ -286,7 +286,7 @@ class EmailCampaignController extends Controller
             ->get();
 
         return response()->json([
-            'templates' => $templates
+            'templates' => $templates,
         ]);
     }
 
@@ -298,7 +298,7 @@ class EmailCampaignController extends Controller
             ->get();
 
         return response()->json([
-            'automation_rules' => $rules
+            'automation_rules' => $rules,
         ]);
     }
 
@@ -320,12 +320,12 @@ class EmailCampaignController extends Controller
 
             return response()->json([
                 'message' => 'Automation rule created successfully',
-                'rule' => $rule->load('template')
+                'rule' => $rule->load('template'),
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to create automation rule',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

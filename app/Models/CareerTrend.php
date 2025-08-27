@@ -10,13 +10,19 @@ class CareerTrend extends Model
     use HasFactory;
 
     const TREND_SALARY = 'salary';
+
     const TREND_INDUSTRY_SHIFT = 'industry_shift';
+
     const TREND_SKILL_DEMAND = 'skill_demand';
+
     const TREND_EMPLOYMENT_RATE = 'employment_rate';
+
     const TREND_JOB_SATISFACTION = 'job_satisfaction';
 
     const DIRECTION_INCREASING = 'increasing';
+
     const DIRECTION_DECREASING = 'decreasing';
+
     const DIRECTION_STABLE = 'stable';
 
     protected $fillable = [
@@ -62,12 +68,12 @@ class CareerTrend extends Model
     // Accessors
     public function getTrendStrengthAttribute()
     {
-        if (!$this->growth_rate) {
+        if (! $this->growth_rate) {
             return 'weak';
         }
 
         $absRate = abs($this->growth_rate);
-        
+
         return match (true) {
             $absRate >= 20 => 'very_strong',
             $absRate >= 10 => 'strong',
@@ -89,12 +95,13 @@ class CareerTrend extends Model
 
     public function getFormattedGrowthRateAttribute()
     {
-        if (!$this->growth_rate) {
+        if (! $this->growth_rate) {
             return 'N/A';
         }
 
         $sign = $this->growth_rate > 0 ? '+' : '';
-        return $sign . $this->growth_rate . '%';
+
+        return $sign.$this->growth_rate.'%';
     }
 
     public function getPeriodLengthAttribute()
@@ -111,17 +118,23 @@ class CareerTrend extends Model
 
         // Simple significance calculation
         $significance = 0;
-        
-        if ($dataPoints >= 12) $significance += 30; // Sufficient data points
-        if ($periodLength >= 12) $significance += 30; // Sufficient time period
-        if ($growthRate >= 5) $significance += 40; // Meaningful change
-        
+
+        if ($dataPoints >= 12) {
+            $significance += 30;
+        } // Sufficient data points
+        if ($periodLength >= 12) {
+            $significance += 30;
+        } // Sufficient time period
+        if ($growthRate >= 5) {
+            $significance += 40;
+        } // Meaningful change
+
         return min(100, $significance);
     }
 
     public function getDataPointsForChart()
     {
-        if (!$this->trend_data) {
+        if (! $this->trend_data) {
             return [];
         }
 
@@ -131,7 +144,7 @@ class CareerTrend extends Model
             $formatted[] = [
                 'date' => $date,
                 'value' => $value,
-                'formatted_date' => \Carbon\Carbon::parse($date)->format('M Y')
+                'formatted_date' => \Carbon\Carbon::parse($date)->format('M Y'),
             ];
         }
 

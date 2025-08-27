@@ -9,7 +9,6 @@ use App\Models\Conversation;
 use App\Models\ConversationParticipant;
 use App\Models\Message;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
@@ -43,7 +42,7 @@ class MessagingService
     /**
      * Create a group conversation
      */
-    public function createGroupConversation(User $creator, array $participantIds, string $title = null, string $description = null): Conversation
+    public function createGroupConversation(User $creator, array $participantIds, ?string $title = null, ?string $description = null): Conversation
     {
         return DB::transaction(function () use ($creator, $participantIds, $title, $description) {
             $conversation = Conversation::create([
@@ -73,7 +72,7 @@ class MessagingService
     /**
      * Create a circle-based conversation
      */
-    public function createCircleConversation(User $creator, int $circleId, string $title = null): Conversation
+    public function createCircleConversation(User $creator, int $circleId, ?string $title = null): Conversation
     {
         return DB::transaction(function () use ($creator, $circleId, $title) {
             $conversation = Conversation::create([
@@ -98,12 +97,12 @@ class MessagingService
     /**
      * Send a message in a conversation
      */
-    public function sendMessage(User $sender, int $conversationId, string $content, string $type = 'text', array $attachments = null, int $replyToId = null): Message
+    public function sendMessage(User $sender, int $conversationId, string $content, string $type = 'text', ?array $attachments = null, ?int $replyToId = null): Message
     {
         $conversation = Conversation::findOrFail($conversationId);
 
         // Check if user is a participant
-        if (!$conversation->hasParticipant($sender)) {
+        if (! $conversation->hasParticipant($sender)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -135,7 +134,7 @@ class MessagingService
         $message = Message::findOrFail($messageId);
 
         // Check if user is a participant in the conversation
-        if (!$message->conversation->hasParticipant($user)) {
+        if (! $message->conversation->hasParticipant($user)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -161,7 +160,7 @@ class MessagingService
         $conversation = Conversation::findOrFail($conversationId);
 
         // Check if user is a participant
-        if (!$conversation->hasParticipant($user)) {
+        if (! $conversation->hasParticipant($user)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -193,7 +192,7 @@ class MessagingService
         $conversation = Conversation::findOrFail($conversationId);
 
         // Check if user is a participant
-        if (!$conversation->hasParticipant($user)) {
+        if (! $conversation->hasParticipant($user)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -219,7 +218,7 @@ class MessagingService
         $conversation = Conversation::findOrFail($conversationId);
 
         // Check if user is a participant
-        if (!$conversation->hasParticipant($user)) {
+        if (! $conversation->hasParticipant($user)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -232,15 +231,15 @@ class MessagingService
     /**
      * Search messages
      */
-    public function searchMessages(User $user, string $query, int $conversationId = null, int $perPage = 20): LengthAwarePaginator
+    public function searchMessages(User $user, string $query, ?int $conversationId = null, int $perPage = 20): LengthAwarePaginator
     {
         $messagesQuery = Message::whereHas('conversation', function ($q) use ($user) {
             $q->whereHas('participants', function ($participantQuery) use ($user) {
                 $participantQuery->where('user_id', $user->id);
             });
         })
-        ->where('content', 'LIKE', "%{$query}%")
-        ->with(['user', 'conversation']);
+            ->where('content', 'LIKE', "%{$query}%")
+            ->with(['user', 'conversation']);
 
         if ($conversationId) {
             $messagesQuery->where('conversation_id', $conversationId);
@@ -276,11 +275,12 @@ class MessagingService
             ->where('user_id', $admin->id)
             ->first();
 
-        if (!$adminParticipant || !in_array($adminParticipant->role, ['admin', 'moderator'])) {
+        if (! $adminParticipant || ! in_array($adminParticipant->role, ['admin', 'moderator'])) {
             throw new \Exception('User does not have permission to add participants');
         }
 
         $user = User::findOrFail($userId);
+
         return $conversation->addParticipant($user, $role);
     }
 
@@ -296,11 +296,12 @@ class MessagingService
             ->where('user_id', $admin->id)
             ->first();
 
-        if (!$adminParticipant || !in_array($adminParticipant->role, ['admin', 'moderator'])) {
+        if (! $adminParticipant || ! in_array($adminParticipant->role, ['admin', 'moderator'])) {
             throw new \Exception('User does not have permission to remove participants');
         }
 
         $user = User::findOrFail($userId);
+
         return $conversation->removeParticipant($user);
     }
 
@@ -327,7 +328,7 @@ class MessagingService
         $conversation = Conversation::findOrFail($conversationId);
 
         // Check if user is a participant
-        if (!$conversation->hasParticipant($user)) {
+        if (! $conversation->hasParticipant($user)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -349,7 +350,7 @@ class MessagingService
         $conversation = Conversation::findOrFail($conversationId);
 
         // Check if user is a participant
-        if (!$conversation->hasParticipant($user)) {
+        if (! $conversation->hasParticipant($user)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -360,9 +361,11 @@ class MessagingService
         if ($participant) {
             if ($participant->is_muted) {
                 $participant->unmute();
+
                 return false; // Now unmuted
             } else {
                 $participant->mute();
+
                 return true; // Now muted
             }
         }
@@ -378,7 +381,7 @@ class MessagingService
         $conversation = Conversation::findOrFail($conversationId);
 
         // Check if user is a participant
-        if (!$conversation->hasParticipant($user)) {
+        if (! $conversation->hasParticipant($user)) {
             throw new \Exception('User is not a participant in this conversation');
         }
 
@@ -389,9 +392,11 @@ class MessagingService
         if ($participant) {
             if ($participant->is_pinned) {
                 $participant->unpin();
+
                 return false; // Now unpinned
             } else {
                 $participant->pin();
+
                 return true; // Now pinned
             }
         }
@@ -424,7 +429,7 @@ class MessagingService
                 ->where('user_id', $user->id)
                 ->first();
 
-            if (!$participant || !in_array($participant->role, ['admin', 'moderator'])) {
+            if (! $participant || ! in_array($participant->role, ['admin', 'moderator'])) {
                 throw new \Exception('User does not have permission to delete this message');
             }
         }

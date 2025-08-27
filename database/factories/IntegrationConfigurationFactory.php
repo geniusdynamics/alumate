@@ -37,7 +37,7 @@ class IntegrationConfigurationFactory extends Factory
 
         return [
             'institution_id' => Tenant::factory(),
-            'name' => $this->faker->company . ' ' . ucfirst($type),
+            'name' => $this->faker->company.' '.ucfirst($type),
             'type' => $type,
             'provider' => $provider,
             'configuration' => $this->getConfigurationForProvider($type, $provider),
@@ -90,16 +90,16 @@ class IntegrationConfigurationFactory extends Factory
                 'saml2' => [
                     'entity_id' => $this->faker->url,
                     'sso_url' => $this->faker->url,
-                    'certificate' => '-----BEGIN CERTIFICATE-----' . $this->faker->sha256 . '-----END CERTIFICATE-----',
+                    'certificate' => '-----BEGIN CERTIFICATE-----'.$this->faker->sha256.'-----END CERTIFICATE-----',
                 ],
                 'oidc' => [
-                    'discovery_url' => $this->faker->url . '/.well-known/openid_configuration',
+                    'discovery_url' => $this->faker->url.'/.well-known/openid_configuration',
                 ],
                 default => [],
             },
             IntegrationConfiguration::TYPE_CRM => match ($provider) {
                 'salesforce' => [
-                    'instance_url' => 'https://' . $this->faker->word . '.salesforce.com',
+                    'instance_url' => 'https://'.$this->faker->word.'.salesforce.com',
                 ],
                 'hubspot' => [
                     'portal_id' => $this->faker->randomNumber(8),

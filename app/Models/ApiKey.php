@@ -16,17 +16,17 @@ class ApiKey extends Model
         'key',
         'permissions',
         'last_used_at',
-        'expires_at'
+        'expires_at',
     ];
 
     protected $casts = [
         'permissions' => 'array',
         'last_used_at' => 'datetime',
-        'expires_at' => 'datetime'
+        'expires_at' => 'datetime',
     ];
 
     protected $hidden = [
-        'key'
+        'key',
     ];
 
     public function user(): BelongsTo

@@ -36,10 +36,10 @@ class VideoCall extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($call) {
             if (empty($call->room_id)) {
-                $call->room_id = 'room_' . Str::uuid();
+                $call->room_id = 'room_'.Str::uuid();
             }
         });
     }
@@ -88,9 +88,9 @@ class VideoCall extends Model
     {
         return $query->where(function ($q) use ($userId) {
             $q->where('host_user_id', $userId)
-              ->orWhereHas('participants', function ($participantQuery) use ($userId) {
-                  $participantQuery->where('user_id', $userId);
-              });
+                ->orWhereHas('participants', function ($participantQuery) use ($userId) {
+                    $participantQuery->where('user_id', $userId);
+                });
         });
     }
 
@@ -114,6 +114,7 @@ class VideoCall extends Model
         if ($this->started_at && $this->ended_at) {
             return $this->ended_at->diffInMinutes($this->started_at);
         }
+
         return null;
     }
 

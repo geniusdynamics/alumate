@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\MessagingService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class ConversationController extends Controller
@@ -93,7 +93,7 @@ class ConversationController extends Controller
     {
         try {
             $validated = $request->validate([
-                'user_id' => 'required|integer|exists:users,id|different:' . $request->user()->id,
+                'user_id' => 'required|integer|exists:users,id|different:'.$request->user()->id,
             ]);
 
             $otherUser = \App\Models\User::findOrFail($validated['user_id']);
@@ -126,7 +126,7 @@ class ConversationController extends Controller
         try {
             $validated = $request->validate([
                 'participant_ids' => 'required|array|min:1|max:50',
-                'participant_ids.*' => 'integer|exists:users,id|different:' . $request->user()->id,
+                'participant_ids.*' => 'integer|exists:users,id|different:'.$request->user()->id,
                 'title' => 'sometimes|string|max:255',
                 'description' => 'sometimes|string|max:1000',
             ]);

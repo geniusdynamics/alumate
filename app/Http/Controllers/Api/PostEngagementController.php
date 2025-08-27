@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PostEngagement as PostEngagementEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostEngagement;
-use App\Events\PostEngagement as PostEngagementEvent;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -19,17 +19,17 @@ class PostEngagementController extends Controller
     public function like(Request $request, Post $post): JsonResponse
     {
         $user = Auth::user();
-        
+
         try {
             DB::beginTransaction();
-            
+
             // Check if user already liked the post
             $existingLike = PostEngagement::where([
                 'post_id' => $post->id,
                 'user_id' => $user->id,
-                'type' => 'like'
+                'type' => 'like',
             ])->first();
-            
+
             if ($existingLike) {
                 // Unlike the post
                 $existingLike->delete();
@@ -44,21 +44,21 @@ class PostEngagementController extends Controller
                 ]);
                 $action = 'liked';
             }
-            
+
             // Broadcast the engagement event
             broadcast(new PostEngagementEvent($post, $user, 'like', ['action' => $action]));
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'action' => $action,
                 'message' => $action === 'liked' ? 'Post liked successfully' : 'Post unliked successfully',
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to process like action',
@@ -66,7 +66,7 @@ class PostEngagementController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Add a comment to a post
      */
@@ -76,12 +76,12 @@ class PostEngagementController extends Controller
             'content' => 'required|string|max:1000',
             'parent_id' => 'nullable|exists:post_engagements,id',
         ]);
-        
+
         $user = Auth::user();
-        
+
         try {
             DB::beginTransaction();
-            
+
             $comment = PostEngagement::create([
                 'post_id' => $post->id,
                 'user_id' => $user->id,
@@ -91,10 +91,10 @@ class PostEngagementController extends Controller
                     'parent_id' => $request->parent_id,
                 ],
             ]);
-            
+
             // Load the comment with user relationship
             $comment->load('user');
-            
+
             // Broadcast the engagement event
             broadcast(new PostEngagementEvent($post, $user, 'comment', [
                 'id' => $comment->id,
@@ -102,9 +102,9 @@ class PostEngagementController extends Controller
                 'parent_id' => $request->parent_id,
                 'created_at' => $comment->created_at,
             ]));
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Comment added successfully',
@@ -121,10 +121,10 @@ class PostEngagementController extends Controller
                     'created_at' => $comment->created_at,
                 ],
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add comment',
@@ -132,7 +132,7 @@ class PostEngagementController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Share a post
      */
@@ -144,26 +144,26 @@ class PostEngagementController extends Controller
             'circle_ids' => 'nullable|array',
             'circle_ids.*' => 'exists:circles,id',
         ]);
-        
+
         $user = Auth::user();
-        
+
         try {
             DB::beginTransaction();
-            
+
             // Check if user already shared this post
             $existingShare = PostEngagement::where([
                 'post_id' => $post->id,
                 'user_id' => $user->id,
-                'type' => 'share'
+                'type' => 'share',
             ])->first();
-            
+
             if ($existingShare) {
                 return response()->json([
                     'success' => false,
                     'message' => 'You have already shared this post',
                 ], 400);
             }
-            
+
             // Create share engagement
             $share = PostEngagement::create([
                 'post_id' => $post->id,
@@ -175,7 +175,7 @@ class PostEngagementController extends Controller
                     'circle_ids' => $request->circle_ids ?? [],
                 ],
             ]);
-            
+
             // Create a new post for the share (if user added a message)
             if ($request->message) {
                 $sharedPost = Post::create([
@@ -187,16 +187,16 @@ class PostEngagementController extends Controller
                     'shared_post_id' => $post->id,
                 ]);
             }
-            
+
             // Broadcast the engagement event
             broadcast(new PostEngagementEvent($post, $user, 'share', [
                 'message' => $request->message,
                 'visibility' => $request->visibility ?? 'connections',
                 'shared_post_id' => $sharedPost->id ?? null,
             ]));
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Post shared successfully',
@@ -207,10 +207,10 @@ class PostEngagementController extends Controller
                     'created_at' => $share->created_at,
                 ],
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to share post',
@@ -218,7 +218,7 @@ class PostEngagementController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Add a reaction to a post
      */
@@ -227,19 +227,19 @@ class PostEngagementController extends Controller
         $request->validate([
             'type' => 'required|in:like,love,celebrate,support,insightful,funny',
         ]);
-        
+
         $user = Auth::user();
-        
+
         try {
             DB::beginTransaction();
-            
+
             // Remove any existing reaction from this user
             PostEngagement::where([
                 'post_id' => $post->id,
                 'user_id' => $user->id,
-                'type' => 'reaction'
+                'type' => 'reaction',
             ])->delete();
-            
+
             // Add the new reaction
             $reaction = PostEngagement::create([
                 'post_id' => $post->id,
@@ -249,14 +249,14 @@ class PostEngagementController extends Controller
                     'reaction_type' => $request->type,
                 ],
             ]);
-            
+
             // Broadcast the engagement event
             broadcast(new PostEngagementEvent($post, $user, 'reaction', [
                 'type' => $request->type,
             ]));
-            
+
             DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Reaction added successfully',
@@ -266,10 +266,10 @@ class PostEngagementController extends Controller
                     'created_at' => $reaction->created_at,
                 ],
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to add reaction',
@@ -277,7 +277,7 @@ class PostEngagementController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * Get engagement statistics for a post
      */
@@ -298,7 +298,7 @@ class PostEngagementController extends Controller
                     ->where('type', 'reaction')
                     ->count(),
             ];
-            
+
             // Get reaction breakdown
             $reactionBreakdown = PostEngagement::where('post_id', $post->id)
                 ->where('type', 'reaction')
@@ -306,13 +306,13 @@ class PostEngagementController extends Controller
                 ->groupBy('reaction_type')
                 ->pluck('count', 'reaction_type')
                 ->toArray();
-            
+
             return response()->json([
                 'success' => true,
                 'stats' => $stats,
                 'reaction_breakdown' => $reactionBreakdown,
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

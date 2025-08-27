@@ -21,8 +21,11 @@ class SocialTimelineTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected User $user;
+
     protected User $otherUser;
+
     protected Circle $circle;
+
     protected Group $group;
 
     protected function setUp(): void
@@ -31,14 +34,14 @@ class SocialTimelineTest extends TestCase
 
         $this->user = User::factory()->create();
         $this->otherUser = User::factory()->create();
-        
+
         $this->circle = Circle::factory()->create();
         $this->group = Group::factory()->create();
-        
+
         // Add users to circle and group
         $this->user->circles()->attach($this->circle->id);
         $this->otherUser->circles()->attach($this->circle->id);
-        
+
         $this->user->groups()->attach($this->group->id);
         $this->otherUser->groups()->attach($this->group->id);
     }
@@ -96,7 +99,7 @@ class SocialTimelineTest extends TestCase
         $this->assertNotEmpty($post->media_urls);
         $this->assertEquals('media', $post->post_type);
 
-        Storage::disk('public')->assertExists('posts/' . $file->hashName());
+        Storage::disk('public')->assertExists('posts/'.$file->hashName());
     }
 
     public function test_user_can_create_career_update_post()
@@ -252,7 +255,7 @@ class SocialTimelineTest extends TestCase
     public function test_user_can_remove_engagement()
     {
         $post = Post::factory()->create(['user_id' => $this->otherUser->id]);
-        
+
         // First, create an engagement
         PostEngagementModel::factory()->create([
             'post_id' => $post->id,

@@ -7,7 +7,6 @@ use App\Models\Course;
 use App\Models\Graduate;
 use App\Models\Institution;
 use App\Models\User;
-use App\Services\AlumniMapService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -229,7 +228,7 @@ class AlumniController extends Controller
                     'location' => $alumnus->location,
                     'latitude' => (float) $alumnus->latitude,
                     'longitude' => (float) $alumnus->longitude,
-                    'location_privacy' => $alumnus->location_privacy ?? 'alumni_only'
+                    'location_privacy' => $alumnus->location_privacy ?? 'alumni_only',
                 ];
             });
 
@@ -238,7 +237,7 @@ class AlumniController extends Controller
             'total_alumni' => $alumni->count(),
             'by_country' => $alumni->groupBy('country')->map->count()->sortDesc()->take(10),
             'by_region' => $alumni->groupBy('region')->map->count()->sortDesc()->take(10),
-            'by_industry' => $alumni->whereNotNull('current_industry')->groupBy('current_industry')->map->count()->sortDesc()->take(10)
+            'by_industry' => $alumni->whereNotNull('current_industry')->groupBy('current_industry')->map->count()->sortDesc()->take(10),
         ];
 
         // Get filter options
@@ -253,7 +252,7 @@ class AlumniController extends Controller
             $userLocation = [
                 'latitude' => (float) $user->latitude,
                 'longitude' => (float) $user->longitude,
-                'privacy' => $user->location_privacy ?? 'alumni_only'
+                'privacy' => $user->location_privacy ?? 'alumni_only',
             ];
         }
 
@@ -264,7 +263,7 @@ class AlumniController extends Controller
             'industries' => $industries,
             'countries' => $countries,
             'graduationYears' => $graduationYears,
-            'userLocation' => $userLocation
+            'userLocation' => $userLocation,
         ]);
     }
 
@@ -354,7 +353,7 @@ class AlumniController extends Controller
         $query = Graduate::with(['user', 'course', 'institution'])
             ->whereHas('user', function ($q) {
                 $q->where('is_active', true)
-                  ->where('profile_visibility', 'public');
+                    ->where('profile_visibility', 'public');
             });
 
         // Apply filters
@@ -436,7 +435,7 @@ class AlumniController extends Controller
             'total_alumni' => $alumni->count(),
             'by_country' => $alumni->groupBy('country')->map->count()->sortDesc()->take(10),
             'by_region' => $alumni->groupBy('region')->map->count()->sortDesc()->take(10),
-            'by_industry' => $alumni->whereNotNull('current_industry')->groupBy('current_industry')->map->count()->sortDesc()->take(10)
+            'by_industry' => $alumni->whereNotNull('current_industry')->groupBy('current_industry')->map->count()->sortDesc()->take(10),
         ];
 
         // Get filter options

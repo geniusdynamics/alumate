@@ -43,7 +43,7 @@ class ScreenSharingSession extends Model
 
     public function isActive(): bool
     {
-        return $this->started_at && !$this->ended_at;
+        return $this->started_at && ! $this->ended_at;
     }
 
     public function end(): void
@@ -55,8 +55,10 @@ class ScreenSharingSession extends Model
     {
         if ($this->started_at) {
             $endTime = $this->ended_at ?? now();
+
             return $endTime->diffInMinutes($this->started_at);
         }
+
         return null;
     }
 }

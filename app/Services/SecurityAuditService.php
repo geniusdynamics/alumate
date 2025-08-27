@@ -3,9 +3,6 @@
 namespace App\Services;
 
 use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SecurityAuditService
 {
@@ -101,7 +98,7 @@ class SecurityAuditService
             'transfer_mechanism' => $isEuCountry ? 'adequacy_decision' : 'standard_contractual_clauses',
             'adequacy_decision' => $isEuCountry,
             'safeguards' => ['encryption', 'access_controls', 'audit_logging'],
-            'requires_consent' => !$isEuCountry,
+            'requires_consent' => ! $isEuCountry,
         ];
     }
 

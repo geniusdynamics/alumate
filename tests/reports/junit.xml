@@ -1,18 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="9" assertions="21" errors="0" failures="0" skipped="0" time="9.294301">
-    <testsuite name="Unit" tests="9" assertions="21" errors="0" failures="0" skipped="0" time="9.294301">
-      <testsuite name="Tests\Unit\CareerOutcomeModelsTest" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)" tests="9" assertions="21" errors="0" failures="0" skipped="0" time="9.294301">
-        <testcase name="Salary progression annualized salary calculation" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Salary progression annualized salary calculation" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="7.140961"/>
-        <testcase name="Salary progression formatted salary" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Salary progression formatted salary" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="1" time="0.225796"/>
-        <testcase name="Career path type display" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Career path type display" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="0.457202"/>
-        <testcase name="Career path job stability score" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Career path job stability score" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="4" time="0.248956"/>
-        <testcase name="Industry placement salary growth" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Industry placement salary growth" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="0.227530"/>
-        <testcase name="Program effectiveness employment trend" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Program effectiveness employment trend" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="3" time="0.242774"/>
-        <testcase name="Program effectiveness salary growth rate" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Program effectiveness salary growth rate" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="2" time="0.218102"/>
-        <testcase name="Program effectiveness performance grade" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Program effectiveness performance grade" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="1" time="0.285516"/>
-        <testcase name="Career path static methods" file="Career Outcome Models (Tests\Unit\CareerOutcomeModels)::Career path static methods" class="Tests\Unit\CareerOutcomeModelsTest" classname="Tests.Unit.CareerOutcomeModelsTest" assertions="4" time="0.247463"/>
-      </testsuite>
-    </testsuite>
+  <testsuite name="Tests\Unit\ComponentAnalyticModelTest" file="tests\Unit\ComponentAnalyticModelTest.php" tests="1" assertions="0" errors="1" failures="0" skipped="0" time="0.093288">
+    <testcase name="record view creates view event" file="tests\Unit\ComponentAnalyticModelTest.php::record view creates view event" class="Tests\Unit\ComponentAnalyticModelTest" classname="Tests.Unit.ComponentAnalyticModelTest" assertions="0" time="0.093288">
+      <error type="Illuminate\Contracts\Container\BindingResolutionException">record view creates view eventIlluminate\Contracts\Container\BindingResolutionException: Target class [config] does not exist.&#13;
+at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
+at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
+at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
+at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
+at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:315
+at vendor\stancl\tenancy\src\Database\Concerns\CentralConnection.php:11
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1928
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1708
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1606
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1642
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:347
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
+at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
+at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:151
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
+at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
+at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:157
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
+at tests\Unit\ComponentAnalyticModelTest.php:63
+Caused by
+ReflectionException: Class "config" does not exist
+
+at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
+at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
+at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
+at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
+at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:315
+at vendor\stancl\tenancy\src\Database\Concerns\CentralConnection.php:11
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1928
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1708
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1606
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1642
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:347
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
+at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
+at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:151
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
+at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
+at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:157
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
+at tests\Unit\ComponentAnalyticModelTest.php:63</error>
+    </testcase>
   </testsuite>
 </testsuites>

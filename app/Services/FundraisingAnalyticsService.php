@@ -7,8 +7,6 @@ use App\Models\DonorProfile;
 use App\Models\FundraisingCampaign;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 
 class FundraisingAnalyticsService
 {
@@ -18,16 +16,16 @@ class FundraisingAnalyticsService
     public function getGivingPatternAnalysis(array $filters = []): array
     {
         $query = CampaignDonation::query()->completed();
-        
+
         // Apply filters
         if (isset($filters['date_from'])) {
             $query->where('processed_at', '>=', $filters['date_from']);
         }
-        
+
         if (isset($filters['date_to'])) {
             $query->where('processed_at', '<=', $filters['date_to']);
         }
-        
+
         if (isset($filters['institution_id'])) {
             $query->whereHas('campaign', function ($q) use ($filters) {
                 $q->where('institution_id', $filters['institution_id']);
@@ -35,7 +33,7 @@ class FundraisingAnalyticsService
         }
 
         $donations = $query->with(['campaign', 'donor'])->get();
-        
+
         return [
             'total_donations' => $donations->count(),
             'total_amount' => $donations->sum('amount'),
@@ -59,10 +57,10 @@ class FundraisingAnalyticsService
         $startDate = $campaign->start_date;
         $endDate = $campaign->end_date ?? now();
         $daysActive = $startDate->diffInDays($endDate);
-        
+
         // Calculate acquisition costs (estimated based on campaign type)
         $estimatedAcquisitionCost = $this->estimateAcquisitionCost($campaign);
-        
+
         return [
             'campaign_id' => $campaign->id,
             'campaign_title' => $campaign->title,
@@ -78,16 +76,16 @@ class FundraisingAnalyticsService
             ],
             'roi_metrics' => [
                 'estimated_cost' => $estimatedAcquisitionCost,
-                'roi_percentage' => $estimatedAcquisitionCost > 0 ? 
+                'roi_percentage' => $estimatedAcquisitionCost > 0 ?
                     (($campaign->raised_amount - $estimatedAcquisitionCost) / $estimatedAcquisitionCost) * 100 : 0,
-                'cost_per_donor' => $campaign->donor_count > 0 ? 
+                'cost_per_donor' => $campaign->donor_count > 0 ?
                     $estimatedAcquisitionCost / $campaign->donor_count : 0,
-                'cost_per_dollar_raised' => $campaign->raised_amount > 0 ? 
+                'cost_per_dollar_raised' => $campaign->raised_amount > 0 ?
                     $estimatedAcquisitionCost / $campaign->raised_amount : 0,
             ],
             'engagement_metrics' => [
                 'peer_fundraisers_count' => $campaign->peerFundraisers()->count(),
-                'peer_fundraising_percentage' => $campaign->raised_amount > 0 ? 
+                'peer_fundraising_percentage' => $campaign->raised_amount > 0 ?
                     ($campaign->peerFundraisers()->sum('raised_amount') / $campaign->raised_amount) * 100 : 0,
                 'social_shares' => $this->getSocialShareCount($campaign),
                 'page_views' => $this->getPageViewCount($campaign),
@@ -102,20 +100,20 @@ class FundraisingAnalyticsService
     public function getDonorAnalytics(array $filters = []): array
     {
         $query = DonorProfile::query()->with(['user', 'donations']);
-        
+
         // Apply filters
         if (isset($filters['institution_id'])) {
             $query->whereHas('user', function ($q) use ($filters) {
                 $q->where('institution_id', $filters['institution_id']);
             });
         }
-        
+
         if (isset($filters['donor_tier'])) {
             $query->where('donor_tier', $filters['donor_tier']);
         }
 
         $donors = $query->get();
-        
+
         return [
             'total_donors' => $donors->count(),
             'donor_tiers' => $this->analyzeDonorTiers($donors),
@@ -137,7 +135,7 @@ class FundraisingAnalyticsService
         $donors = DonorProfile::query()
             ->with(['user', 'donations', 'interactions'])
             ->get();
-            
+
         return [
             'giving_likelihood' => $this->predictGivingLikelihood($donors),
             'upgrade_potential' => $this->predictUpgradePotential($donors),
@@ -170,15 +168,15 @@ class FundraisingAnalyticsService
     {
         $sorted = $values->sort()->values();
         $count = $sorted->count();
-        
+
         if ($count === 0) {
             return 0;
         }
-        
+
         if ($count % 2 === 0) {
             return ($sorted[$count / 2 - 1] + $sorted[$count / 2]) / 2;
         }
-        
+
         return $sorted[intval($count / 2)];
     }
 
@@ -188,10 +186,10 @@ class FundraisingAnalyticsService
             ->map(function ($donorDonations) {
                 return $donorDonations->count();
             });
-            
+
         return [
-            'one_time_donors' => $donorFrequency->filter(fn($count) => $count === 1)->count(),
-            'repeat_donors' => $donorFrequency->filter(fn($count) => $count > 1)->count(),
+            'one_time_donors' => $donorFrequency->filter(fn ($count) => $count === 1)->count(),
+            'repeat_donors' => $donorFrequency->filter(fn ($count) => $count > 1)->count(),
             'average_gifts_per_donor' => $donorFrequency->avg(),
             'most_frequent_donor_gifts' => $donorFrequency->max(),
         ];
@@ -207,16 +205,16 @@ class FundraisingAnalyticsService
                 'amount' => $monthDonations->sum('amount'),
             ];
         });
-        
+
         $quarterlyData = $donations->groupBy(function ($donation) {
-            return 'Q' . $donation->processed_at->quarter . ' ' . $donation->processed_at->year;
+            return 'Q'.$donation->processed_at->quarter.' '.$donation->processed_at->year;
         })->map(function ($quarterDonations) {
             return [
                 'count' => $quarterDonations->count(),
                 'amount' => $quarterDonations->sum('amount'),
             ];
         });
-        
+
         return [
             'monthly' => $monthlyData,
             'quarterly' => $quarterlyData,
@@ -232,24 +230,24 @@ class FundraisingAnalyticsService
         })->map(function ($yearDonations) {
             return $yearDonations->pluck('donor_id')->unique();
         });
-        
+
         $retentionRates = [];
         $years = $donorsByYear->keys()->sort();
-        
+
         for ($i = 0; $i < $years->count() - 1; $i++) {
             $currentYear = $years[$i];
             $nextYear = $years[$i + 1];
-            
+
             $currentYearDonors = $donorsByYear[$currentYear];
             $nextYearDonors = $donorsByYear[$nextYear];
-            
+
             $retained = $currentYearDonors->intersect($nextYearDonors)->count();
-            $retentionRate = $currentYearDonors->count() > 0 ? 
+            $retentionRate = $currentYearDonors->count() > 0 ?
                 ($retained / $currentYearDonors->count()) * 100 : 0;
-                
+
             $retentionRates["{$currentYear}-{$nextYear}"] = $retentionRate;
         }
-        
+
         return [
             'retention_rates' => $retentionRates,
             'average_retention_rate' => collect($retentionRates)->avg(),
@@ -259,13 +257,13 @@ class FundraisingAnalyticsService
     private function analyzeGiftSizeDistribution(Collection $donations): array
     {
         $amounts = $donations->pluck('amount');
-        
+
         return [
-            'under_100' => $amounts->filter(fn($amount) => $amount < 100)->count(),
-            '100_to_500' => $amounts->filter(fn($amount) => $amount >= 100 && $amount < 500)->count(),
-            '500_to_1000' => $amounts->filter(fn($amount) => $amount >= 500 && $amount < 1000)->count(),
-            '1000_to_5000' => $amounts->filter(fn($amount) => $amount >= 1000 && $amount < 5000)->count(),
-            '5000_plus' => $amounts->filter(fn($amount) => $amount >= 5000)->count(),
+            'under_100' => $amounts->filter(fn ($amount) => $amount < 100)->count(),
+            '100_to_500' => $amounts->filter(fn ($amount) => $amount >= 100 && $amount < 500)->count(),
+            '500_to_1000' => $amounts->filter(fn ($amount) => $amount >= 500 && $amount < 1000)->count(),
+            '1000_to_5000' => $amounts->filter(fn ($amount) => $amount >= 1000 && $amount < 5000)->count(),
+            '5000_plus' => $amounts->filter(fn ($amount) => $amount >= 5000)->count(),
         ];
     }
 
@@ -273,13 +271,13 @@ class FundraisingAnalyticsService
     {
         $recurring = $donations->where('is_recurring', true);
         $oneTime = $donations->where('is_recurring', false);
-        
+
         return [
             'recurring_count' => $recurring->count(),
             'recurring_amount' => $recurring->sum('amount'),
             'one_time_count' => $oneTime->count(),
             'one_time_amount' => $oneTime->sum('amount'),
-            'recurring_percentage' => $donations->count() > 0 ? 
+            'recurring_percentage' => $donations->count() > 0 ?
                 ($recurring->count() / $donations->count()) * 100 : 0,
         ];
     }
@@ -306,10 +304,10 @@ class FundraisingAnalyticsService
             'project' => 1500,
             default => 500,
         };
-        
+
         // Scale based on goal amount
         $scaleFactor = min(5, $campaign->goal_amount / 10000);
-        
+
         return $baseCost * $scaleFactor;
     }
 
@@ -332,15 +330,15 @@ class FundraisingAnalyticsService
         $donations = $campaign->donations()->completed()
             ->orderBy('processed_at')
             ->get();
-            
+
         $timeline = [];
         $runningTotal = 0;
-        
+
         foreach ($donations as $donation) {
             $runningTotal += $donation->amount;
             $date = $donation->processed_at->format('Y-m-d');
-            
-            if (!isset($timeline[$date])) {
+
+            if (! isset($timeline[$date])) {
                 $timeline[$date] = [
                     'date' => $date,
                     'daily_amount' => 0,
@@ -348,12 +346,12 @@ class FundraisingAnalyticsService
                     'cumulative_amount' => 0,
                 ];
             }
-            
+
             $timeline[$date]['daily_amount'] += $donation->amount;
             $timeline[$date]['daily_count']++;
             $timeline[$date]['cumulative_amount'] = $runningTotal;
         }
-        
+
         return array_values($timeline);
     }
 
@@ -374,21 +372,28 @@ class FundraisingAnalyticsService
         $scores = $donors->map(function ($donor) {
             return $donor->engagement_score;
         });
-        
+
         return [
             'average_score' => $scores->avg(),
-            'high_engagement' => $scores->filter(fn($score) => $score >= 80)->count(),
-            'medium_engagement' => $scores->filter(fn($score) => $score >= 50 && $score < 80)->count(),
-            'low_engagement' => $scores->filter(fn($score) => $score < 50)->count(),
+            'high_engagement' => $scores->filter(fn ($score) => $score >= 80)->count(),
+            'medium_engagement' => $scores->filter(fn ($score) => $score >= 50 && $score < 80)->count(),
+            'low_engagement' => $scores->filter(fn ($score) => $score < 50)->count(),
         ];
     }
 
     private function analyzeGivingCapacity(Collection $donors): array
     {
         return $donors->groupBy(function ($donor) {
-            if ($donor->capacity_rating >= 10000) return 'major';
-            if ($donor->capacity_rating >= 5000) return 'mid-level';
-            if ($donor->capacity_rating >= 1000) return 'regular';
+            if ($donor->capacity_rating >= 10000) {
+                return 'major';
+            }
+            if ($donor->capacity_rating >= 5000) {
+                return 'mid-level';
+            }
+            if ($donor->capacity_rating >= 1000) {
+                return 'regular';
+            }
+
             return 'small';
         })->map(function ($capacityDonors) {
             return [
@@ -404,7 +409,7 @@ class FundraisingAnalyticsService
         $preferences = $donors->pluck('preferred_contact_methods')
             ->flatten()
             ->countBy();
-            
+
         return $preferences->toArray();
     }
 
@@ -424,14 +429,14 @@ class FundraisingAnalyticsService
         $indicators = $donors->pluck('wealth_indicators')
             ->flatten()
             ->countBy();
-            
+
         return $indicators->toArray();
     }
 
     private function analyzeStewardshipPipeline(Collection $donors): array
     {
         return [
-            'needs_contact' => $donors->filter(fn($donor) => $donor->next_contact_due)->count(),
+            'needs_contact' => $donors->filter(fn ($donor) => $donor->next_contact_due)->count(),
             'overdue_contact' => $donors->filter(function ($donor) {
                 return $donor->next_contact_date && $donor->next_contact_date < now()->subDays(7);
             })->count(),
@@ -442,7 +447,7 @@ class FundraisingAnalyticsService
     private function identifyMajorGiftProspects(Collection $donors): Collection
     {
         return $donors->filter(function ($donor) {
-            return $donor->capacity_rating >= 10000 && 
+            return $donor->capacity_rating >= 10000 &&
                    $donor->inclination_score >= 70 &&
                    $donor->engagement_score >= 60;
         })->sortByDesc('capacity_rating')->take(20);
@@ -453,16 +458,16 @@ class FundraisingAnalyticsService
         // Simplified predictive model
         return $donors->map(function ($donor) {
             $score = 0;
-            
+
             // Recent giving history
             $recentGifts = $donor->donations()
                 ->where('created_at', '>=', now()->subYear())
                 ->count();
             $score += min(40, $recentGifts * 10);
-            
+
             // Engagement score
             $score += $donor->engagement_score * 0.3;
-            
+
             // Capacity vs current giving
             if ($donor->capacity_rating > 0 && $donor->lifetime_giving > 0) {
                 $utilizationRate = $donor->lifetime_giving / $donor->capacity_rating;
@@ -470,7 +475,7 @@ class FundraisingAnalyticsService
                     $score += 20; // High potential
                 }
             }
-            
+
             return [
                 'donor_id' => $donor->user_id,
                 'likelihood_score' => min(100, $score),
@@ -501,9 +506,9 @@ class FundraisingAnalyticsService
                 ->first()
                 ?->created_at
                 ?->diffInDays(now()) ?? 999;
-                
+
             $riskScore = min(100, $daysSinceLastGift / 3.65); // Risk increases over time
-            
+
             return [
                 'donor_id' => $donor->user_id,
                 'days_since_last_gift' => $daysSinceLastGift,
@@ -518,13 +523,13 @@ class FundraisingAnalyticsService
         return $donors->map(function ($donor) {
             $averageGift = $donor->donations()->avg('amount') ?? 0;
             $largestGift = $donor->donations()->max('amount') ?? 0;
-            
+
             // Suggest 1.5x average or 1.2x largest, whichever is higher
             $suggestedAsk = max($averageGift * 1.5, $largestGift * 1.2);
-            
+
             // Cap at capacity rating
             $suggestedAsk = min($suggestedAsk, $donor->capacity_rating * 0.1);
-            
+
             return [
                 'donor_id' => $donor->user_id,
                 'suggested_ask' => round($suggestedAsk, 2),
@@ -538,7 +543,7 @@ class FundraisingAnalyticsService
         // Analyze historical giving patterns to suggest optimal contact timing
         return $donors->map(function ($donor) {
             $donations = $donor->donations()->get();
-            
+
             if ($donations->isEmpty()) {
                 return [
                     'donor_id' => $donor->user_id,
@@ -547,14 +552,14 @@ class FundraisingAnalyticsService
                     'confidence' => 'low',
                 ];
             }
-            
-            $monthCounts = $donations->groupBy(fn($d) => $d->created_at->month)->map->count();
-            $dayOfWeekCounts = $donations->groupBy(fn($d) => $d->created_at->dayOfWeek)->map->count();
-            
+
+            $monthCounts = $donations->groupBy(fn ($d) => $d->created_at->month)->map->count();
+            $dayOfWeekCounts = $donations->groupBy(fn ($d) => $d->created_at->dayOfWeek)->map->count();
+
             return [
                 'donor_id' => $donor->user_id,
-                'best_month' => $monthCounts->keys()->sortByDesc(fn($month) => $monthCounts[$month])->first(),
-                'best_day_of_week' => $dayOfWeekCounts->keys()->sortByDesc(fn($day) => $dayOfWeekCounts[$day])->first(),
+                'best_month' => $monthCounts->keys()->sortByDesc(fn ($month) => $monthCounts[$month])->first(),
+                'best_day_of_week' => $dayOfWeekCounts->keys()->sortByDesc(fn ($day) => $dayOfWeekCounts[$day])->first(),
                 'confidence' => $donations->count() >= 5 ? 'high' : 'medium',
             ];
         })->values()->toArray();
@@ -568,7 +573,7 @@ class FundraisingAnalyticsService
                 ->get()
                 ->pluck('campaign.type')
                 ->countBy();
-                
+
             return [
                 'donor_id' => $donor->user_id,
                 'preferred_types' => $campaignTypes->sortDesc()->keys()->take(3)->toArray(),
@@ -590,17 +595,17 @@ class FundraisingAnalyticsService
     private function getOverviewMetrics(array $filters): array
     {
         $query = CampaignDonation::query()->completed();
-        
+
         if (isset($filters['date_from'])) {
             $query->where('processed_at', '>=', $filters['date_from']);
         }
-        
+
         if (isset($filters['date_to'])) {
             $query->where('processed_at', '<=', $filters['date_to']);
         }
-        
+
         $donations = $query->get();
-        
+
         return [
             'total_raised' => $donations->sum('amount'),
             'total_donations' => $donations->count(),
@@ -613,11 +618,11 @@ class FundraisingAnalyticsService
     private function getAllCampaignPerformance(array $filters): array
     {
         $query = FundraisingCampaign::query();
-        
+
         if (isset($filters['institution_id'])) {
             $query->where('institution_id', $filters['institution_id']);
         }
-        
+
         return $query->get()->map(function ($campaign) {
             return $this->getCampaignPerformanceMetrics($campaign);
         })->toArray();
@@ -626,17 +631,17 @@ class FundraisingAnalyticsService
     private function getFundraisingTrends(array $filters): array
     {
         $query = CampaignDonation::query()->completed();
-        
+
         if (isset($filters['date_from'])) {
             $query->where('processed_at', '>=', $filters['date_from']);
         }
-        
+
         if (isset($filters['date_to'])) {
             $query->where('processed_at', '<=', $filters['date_to']);
         }
-        
+
         $donations = $query->get();
-        
+
         $monthlyTrends = $donations->groupBy(function ($donation) {
             return $donation->processed_at->format('Y-m');
         })->map(function ($monthDonations) {
@@ -646,7 +651,7 @@ class FundraisingAnalyticsService
                 'unique_donors' => $monthDonations->pluck('donor_id')->unique()->count(),
             ];
         });
-        
+
         return [
             'monthly_trends' => $monthlyTrends,
             'growth_rate' => $this->calculateGrowthRate($monthlyTrends),
@@ -657,37 +662,37 @@ class FundraisingAnalyticsService
     private function calculateGrowthRate(Collection $monthlyTrends): float
     {
         $values = $monthlyTrends->pluck('amount')->values();
-        
+
         if ($values->count() < 2) {
             return 0;
         }
-        
+
         $firstValue = $values->first();
         $lastValue = $values->last();
-        
+
         if ($firstValue == 0) {
             return 0;
         }
-        
+
         return (($lastValue - $firstValue) / $firstValue) * 100;
     }
 
     private function forecastNextMonth(Collection $monthlyTrends): array
     {
         $values = $monthlyTrends->pluck('amount')->values();
-        
+
         if ($values->count() < 3) {
             return [
                 'forecasted_amount' => $values->last() ?? 0,
                 'confidence' => 'low',
             ];
         }
-        
+
         // Simple linear trend forecast
         $recentValues = $values->slice(-3);
         $trend = ($recentValues->last() - $recentValues->first()) / 2;
         $forecast = $values->last() + $trend;
-        
+
         return [
             'forecasted_amount' => max(0, $forecast),
             'confidence' => 'medium',

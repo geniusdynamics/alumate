@@ -234,7 +234,7 @@ Route::middleware('auth:sanctum')->group(function () {
         'store' => 'api.events.store',
         'show' => 'api.events.show',
         'update' => 'api.events.update',
-        'destroy' => 'api.events.destroy'
+        'destroy' => 'api.events.destroy',
     ]);
     Route::post('events/{event}/register', [EventsController::class, 'register']);
     Route::delete('events/{event}/register', [EventsController::class, 'cancelRegistration']);
@@ -470,11 +470,11 @@ Route::middleware('auth:sanctum')->prefix('developer')->name('developer.')->grou
     Route::post('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'generateApiKey'])->name('api-keys.generate');
     Route::get('api-keys', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiKeys'])->name('api-keys.index');
     Route::delete('api-keys/{keyId}', [\App\Http\Controllers\Api\DeveloperController::class, 'revokeApiKey'])->name('api-keys.revoke');
-    
+
     // Webhook Management
     Route::get('webhook-events', [\App\Http\Controllers\Api\DeveloperController::class, 'getWebhookEvents'])->name('webhook-events');
     Route::post('webhooks/{webhookId}/test', [\App\Http\Controllers\Api\DeveloperController::class, 'testWebhook'])->name('webhooks.test');
-    
+
     // Documentation & Tools
     Route::get('documentation', [\App\Http\Controllers\Api\DeveloperController::class, 'getApiDocumentation'])->name('documentation');
     Route::post('postman-collection', [\App\Http\Controllers\Api\DeveloperController::class, 'generatePostmanCollection'])->name('postman-collection');

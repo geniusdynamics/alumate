@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamp('last_message_at')->nullable();
             $table->boolean('is_archived')->default(false);
             $table->timestamps();
-            
+
             // Indexes for performance
             $table->index(['type', 'created_at']);
             $table->index(['circle_id', 'created_at']);

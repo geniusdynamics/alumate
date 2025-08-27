@@ -447,6 +447,7 @@ class IntegrationConfigurationController extends Controller
     protected function getProviderConfig(string $type, string $provider): ?array
     {
         $configs = $this->getProviderConfigs();
+
         return $configs[$type][$provider] ?? null;
     }
 }

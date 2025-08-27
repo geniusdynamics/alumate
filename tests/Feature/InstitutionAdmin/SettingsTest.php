@@ -15,6 +15,7 @@ class SettingsTest extends TestCase
     use RefreshDatabase;
 
     protected User $institutionAdmin;
+
     protected Institution $institution;
 
     protected function setUp(): void

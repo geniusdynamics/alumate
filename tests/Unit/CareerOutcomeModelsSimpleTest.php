@@ -2,17 +2,17 @@
 
 namespace Tests\Unit;
 
-use App\Models\SalaryProgression;
 use App\Models\CareerPath;
 use App\Models\IndustryPlacement;
 use App\Models\ProgramEffectiveness;
+use App\Models\SalaryProgression;
 use PHPUnit\Framework\TestCase;
 
 class CareerOutcomeModelsSimpleTest extends TestCase
 {
     public function test_salary_progression_annualized_salary_calculation()
     {
-        $salaryProgression = new SalaryProgression();
+        $salaryProgression = new SalaryProgression;
         $salaryProgression->salary = 80000;
         $salaryProgression->salary_type = 'annual';
 
@@ -25,7 +25,7 @@ class CareerOutcomeModelsSimpleTest extends TestCase
 
     public function test_salary_progression_formatted_salary()
     {
-        $salaryProgression = new SalaryProgression();
+        $salaryProgression = new SalaryProgression;
         $salaryProgression->salary = 75000;
         $salaryProgression->currency = 'USD';
 
@@ -34,7 +34,7 @@ class CareerOutcomeModelsSimpleTest extends TestCase
 
     public function test_career_path_type_display()
     {
-        $careerPath = new CareerPath();
+        $careerPath = new CareerPath;
         $careerPath->path_type = CareerPath::PATH_LINEAR;
 
         $this->assertEquals('Linear Career Progression', $careerPath->path_type_display);
@@ -45,7 +45,7 @@ class CareerOutcomeModelsSimpleTest extends TestCase
 
     public function test_industry_placement_salary_growth()
     {
-        $placement = new IndustryPlacement();
+        $placement = new IndustryPlacement;
         $placement->avg_starting_salary = 60000;
         $placement->avg_current_salary = 75000;
 
@@ -57,7 +57,7 @@ class CareerOutcomeModelsSimpleTest extends TestCase
 
     public function test_program_effectiveness_employment_trend()
     {
-        $effectiveness = new ProgramEffectiveness();
+        $effectiveness = new ProgramEffectiveness;
         $effectiveness->employment_rate_6_months = 80;
         $effectiveness->employment_rate_1_year = 85;
         $effectiveness->employment_rate_2_years = 90;
@@ -73,7 +73,7 @@ class CareerOutcomeModelsSimpleTest extends TestCase
 
     public function test_program_effectiveness_salary_growth_rate()
     {
-        $effectiveness = new ProgramEffectiveness();
+        $effectiveness = new ProgramEffectiveness;
         $effectiveness->avg_starting_salary = 50000;
         $effectiveness->avg_salary_2_years = 60000;
 
@@ -86,7 +86,7 @@ class CareerOutcomeModelsSimpleTest extends TestCase
     public function test_career_path_static_methods()
     {
         $pathTypes = CareerPath::getPathTypes();
-        
+
         $this->assertIsArray($pathTypes);
         $this->assertArrayHasKey(CareerPath::PATH_LINEAR, $pathTypes);
         $this->assertArrayHasKey(CareerPath::PATH_PIVOT, $pathTypes);
@@ -104,7 +104,7 @@ class CareerOutcomeModelsSimpleTest extends TestCase
 
     public function test_industry_placement_formatted_retention_rate()
     {
-        $placement = new IndustryPlacement();
+        $placement = new IndustryPlacement;
         $placement->retention_rate = 85.5;
 
         $this->assertEquals('85.50%', $placement->formatted_retention_rate);

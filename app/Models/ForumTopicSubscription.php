@@ -36,7 +36,7 @@ class ForumTopicSubscription extends Model
 
     public function hasUnreadPosts(): bool
     {
-        if (!$this->last_read_at) {
+        if (! $this->last_read_at) {
             return $this->topic->posts()->approved()->exists();
         }
 

@@ -13,12 +13,12 @@ class OnboardingEvent extends Model
         'user_id',
         'event_type',
         'data',
-        'timestamp'
+        'timestamp',
     ];
 
     protected $casts = [
         'data' => 'array',
-        'timestamp' => 'datetime'
+        'timestamp' => 'datetime',
     ];
 
     public function user()

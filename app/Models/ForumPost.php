@@ -42,7 +42,7 @@ class ForumPost extends Model
             if ($post->parent_id) {
                 $parent = static::find($post->parent_id);
                 $post->depth = $parent->depth + 1;
-                $post->thread_path = $parent->thread_path . '.' . $parent->id;
+                $post->thread_path = $parent->thread_path.'.'.$parent->id;
             } else {
                 $post->depth = 0;
                 $post->thread_path = '';
@@ -53,7 +53,7 @@ class ForumPost extends Model
             // Update topic stats
             $post->topic->increment('posts_count');
             $post->topic->updateLastPost($post);
-            
+
             // Update forum stats
             $post->topic->forum->incrementStats('posts');
         });
@@ -116,7 +116,7 @@ class ForumPost extends Model
 
     public function scopeInThread($query, $threadPath)
     {
-        return $query->where('thread_path', 'like', $threadPath . '%');
+        return $query->where('thread_path', 'like', $threadPath.'%');
     }
 
     public function getThreadReplies()
@@ -126,7 +126,7 @@ class ForumPost extends Model
         }
 
         return static::where('topic_id', $this->topic_id)
-            ->where('thread_path', 'like', $this->id . '%')
+            ->where('thread_path', 'like', $this->id.'%')
             ->where('is_approved', true)
             ->orderBy('thread_path')
             ->orderBy('created_at')

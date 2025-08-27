@@ -24,7 +24,7 @@ return new class extends Migration
             $table->json('metadata')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             // Indexes
             $table->index(['user_id', 'created_at']);
             $table->index(['post_type', 'visibility']);

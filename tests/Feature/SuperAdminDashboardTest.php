@@ -31,7 +31,7 @@ class SuperAdminDashboardTest extends TestCase
                 'new_users' => 10,
                 'new_institutions' => 2,
                 'user_growth_data' => [['date' => '2025-08-17', 'count' => 5]],
-            ]
+            ],
         ]);
 
         $this->actingAs($this->superAdmin)
@@ -52,8 +52,8 @@ class SuperAdminDashboardTest extends TestCase
             'type' => 'platform_benchmarks',
             'date' => now()->toDateString(),
             'data' => [
-                ['institution_id' => 'tenant1', 'employment_rate' => 85, 'average_salary' => 60000]
-            ]
+                ['institution_id' => 'tenant1', 'employment_rate' => 85, 'average_salary' => 60000],
+            ],
         ]);
 
         \App\Models\AnalyticsSnapshot::factory()->create([
@@ -61,7 +61,7 @@ class SuperAdminDashboardTest extends TestCase
             'date' => now()->toDateString(),
             'data' => [
                 'top_skills' => [['skill' => 'PHP', 'count' => 10]],
-            ]
+            ],
         ]);
 
         $this->actingAs($this->superAdmin)

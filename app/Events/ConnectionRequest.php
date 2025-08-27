@@ -3,9 +3,7 @@
 namespace App\Events;
 
 use App\Models\User;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -16,9 +14,13 @@ class ConnectionRequest implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $fromUser;
+
     public $toUser;
+
     public $connectionId;
+
     public $status;
+
     public $message;
 
     /**
@@ -41,16 +43,16 @@ class ConnectionRequest implements ShouldBroadcast
     public function broadcastOn(): array
     {
         $channels = [];
-        
+
         // Broadcast to the recipient user
-        $channels[] = new PrivateChannel('user.' . $this->toUser->id . '.notifications');
-        
+        $channels[] = new PrivateChannel('user.'.$this->toUser->id.'.notifications');
+
         // Broadcast to the sender for status updates
-        $channels[] = new PrivateChannel('user.' . $this->fromUser->id . '.connections');
-        
+        $channels[] = new PrivateChannel('user.'.$this->fromUser->id.'.connections');
+
         // Broadcast connection status updates
-        $channels[] = new PrivateChannel('connection.' . $this->connectionId);
-        
+        $channels[] = new PrivateChannel('connection.'.$this->connectionId);
+
         return $channels;
     }
 

@@ -2,19 +2,15 @@
 
 namespace App\Services;
 
-use App\Models\CareerOutcomeSnapshot;
-use App\Models\SalaryProgression;
-use App\Models\IndustryPlacement;
 use App\Models\CareerPath;
-use App\Models\ProgramEffectiveness;
-use App\Models\DemographicOutcome;
 use App\Models\CareerTrend;
+use App\Models\DemographicOutcome;
+use App\Models\IndustryPlacement;
+use App\Models\ProgramEffectiveness;
+use App\Models\SalaryProgression;
 use App\Models\User;
-use App\Models\CareerTimeline;
-use App\Models\EducationHistory;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 
 class CareerOutcomeAnalyticsService
 {
@@ -68,7 +64,7 @@ class CareerOutcomeAnalyticsService
 
         // Calculate tracking rate
         $trackedUsers = $users->filter(function ($user) {
-            return $user->careerTimelines()->exists() || 
+            return $user->careerTimelines()->exists() ||
                    SalaryProgression::where('user_id', $user->id)->exists();
         });
 
@@ -114,7 +110,7 @@ class CareerOutcomeAnalyticsService
     {
         $graduates = User::whereHas('educationHistories', function ($query) use ($program, $graduationYear) {
             $query->where('degree', 'like', "%{$program}%")
-                  ->where('end_year', $graduationYear);
+                ->where('end_year', $graduationYear);
         })->with(['careerTimelines', 'salaryProgressions'])->get();
 
         if ($graduates->isEmpty()) {
@@ -199,7 +195,7 @@ class CareerOutcomeAnalyticsService
     {
         $graduates = User::whereHas('educationHistories', function ($query) use ($program, $graduationYear) {
             $query->where('degree', 'like', "%{$program}%")
-                  ->where('end_year', $graduationYear);
+                ->where('end_year', $graduationYear);
         })->whereHas('careerTimelines', function ($query) use ($industry) {
             $query->where('industry', $industry);
         })->with(['careerTimelines', 'salaryProgressions'])->get();
@@ -210,7 +206,7 @@ class CareerOutcomeAnalyticsService
 
         $placementCount = $graduates->count();
         $currentPositions = $graduates->flatMap->careerTimelines->where('is_current', true);
-        
+
         // Calculate salary statistics
         $startingSalaries = $this->getStartingSalariesForIndustry($graduates, $industry);
         $currentSalaries = $this->getCurrentSalariesForIndustry($graduates, $industry);
@@ -306,7 +302,7 @@ class CareerOutcomeAnalyticsService
     public function generateSnapshot(string $periodType, Carbon $periodStart, Carbon $periodEnd, array $filters = []): array
     {
         $graduates = $this->getGraduatesForPeriod($periodStart, $periodEnd, $filters);
-        
+
         if ($graduates->isEmpty()) {
             return [];
         }
@@ -463,7 +459,7 @@ class CareerOutcomeAnalyticsService
     private function calculateEmploymentRates(Collection $graduates, string $graduationYear): array
     {
         $graduationDate = Carbon::createFromDate($graduationYear, 6, 1); // Assume June graduation
-        
+
         return [
             '6_months' => $this->getEmploymentRateAtDate($graduates, $graduationDate->copy()->addMonths(6)),
             '1_year' => $this->getEmploymentRateAtDate($graduates, $graduationDate->copy()->addYear()),
@@ -478,7 +474,7 @@ class CareerOutcomeAnalyticsService
                 ->where('start_date', '<=', $date)
                 ->where(function ($query) use ($date) {
                     $query->whereNull('end_date')
-                          ->orWhere('end_date', '>=', $date);
+                        ->orWhere('end_date', '>=', $date);
                 })
                 ->exists();
         });
@@ -489,7 +485,7 @@ class CareerOutcomeAnalyticsService
     private function calculateSalaryProgression(Collection $graduates, string $graduationYear): array
     {
         $graduationDate = Carbon::createFromDate($graduationYear, 6, 1);
-        
+
         return [
             'starting' => $this->getAverageSalaryAtDate($graduates, $graduationDate->copy()->addMonths(6)),
             '1_year' => $this->getAverageSalaryAtDate($graduates, $graduationDate->copy()->addYear()),

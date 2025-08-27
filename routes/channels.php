@@ -62,16 +62,16 @@ Broadcast::channel('connection.{connectionId}', function ($user, $connectionId) 
 Broadcast::channel('event.{eventId}', function ($user, $eventId) {
     // Check if user has access to the event (public events or user is attendee)
     $event = \App\Models\Event::find($eventId);
-    
-    if (!$event) {
+
+    if (! $event) {
         return false;
     }
-    
+
     // Public events are accessible to all authenticated users
     if ($event->visibility === 'public') {
         return true;
     }
-    
+
     // Private events require attendance or ownership
     return $event->attendees()->where('user_id', $user->id)->exists() ||
            $event->organizer_id === $user->id;
@@ -81,16 +81,16 @@ Broadcast::channel('event.{eventId}', function ($user, $eventId) {
 Broadcast::channel('job.{jobId}', function ($user, $jobId) {
     // Check if user has access to the job posting
     $job = \App\Models\Job::find($jobId);
-    
-    if (!$job) {
+
+    if (! $job) {
         return false;
     }
-    
+
     // Public jobs are accessible to all authenticated users
     if ($job->visibility === 'public') {
         return true;
     }
-    
+
     // Private jobs require specific access
     return $job->posted_by === $user->id ||
            $job->applications()->where('user_id', $user->id)->exists();
@@ -100,11 +100,11 @@ Broadcast::channel('job.{jobId}', function ($user, $jobId) {
 Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
     // Check if user is part of the chat
     $chat = \App\Models\Chat::find($chatId);
-    
-    if (!$chat) {
+
+    if (! $chat) {
         return false;
     }
-    
+
     return $chat->participants()->where('user_id', $user->id)->exists();
 });
 
@@ -132,11 +132,11 @@ Broadcast::channel('alumni-map', function ($user) {
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
     // Check if user is a participant in the conversation
     $conversation = \App\Models\Conversation::find($conversationId);
-    
-    if (!$conversation) {
+
+    if (! $conversation) {
         return false;
     }
-    
+
     return $conversation->hasParticipant($user);
 });
 

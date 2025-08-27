@@ -21,10 +21,15 @@ class UserJourneyTest extends TestCase
     use RefreshDatabase, WithFaker;
 
     protected User $alumnus;
+
     protected User $mentor;
+
     protected User $employer;
+
     protected Circle $circle;
+
     protected Group $group;
+
     protected Company $company;
 
     protected function setUp(): void
@@ -66,7 +71,7 @@ class UserJourneyTest extends TestCase
         // Add users to circles and groups
         $this->alumnus->circles()->attach($this->circle->id);
         $this->mentor->circles()->attach($this->circle->id);
-        
+
         $this->alumnus->groups()->attach($this->group->id);
         $this->mentor->groups()->attach($this->group->id);
     }

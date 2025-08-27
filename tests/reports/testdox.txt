@@ -1,11 +1,3 @@
-Career Outcome Models (Tests\Unit\CareerOutcomeModels)
- [x] Salary progression annualized salary calculation
- [x] Salary progression formatted salary
- [x] Career path type display
- [x] Career path job stability score
- [x] Industry placement salary growth
- [x] Program effectiveness employment trend
- [x] Program effectiveness salary growth rate
- [x] Program effectiveness performance grade
- [x] Career path static methods
+D:\DevCenter\abuilds\alumate\tests\Unit\ComponentAnalyticModelTest.php
+ [ ] record view creates view event
 

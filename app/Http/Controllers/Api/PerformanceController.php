@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class PerformanceController extends Controller
@@ -32,33 +32,33 @@ class PerformanceController extends Controller
             'session.viewport' => 'required|array',
             'session.screen' => 'required|array',
             'session.connection' => 'nullable|array',
-            'timestamp' => 'required|integer'
+            'timestamp' => 'required|integer',
         ]);
 
         try {
             // Store metrics in database for analysis
             $this->storeMetricsInDatabase($validated);
-            
+
             // Cache recent metrics for real-time monitoring
             $this->cacheRecentMetrics($validated);
-            
+
             // Check for performance issues and alert if necessary
             $this->checkPerformanceThresholds($validated['metrics']);
-            
+
             return response()->json([
                 'success' => true,
-                'message' => 'Performance metrics stored successfully'
+                'message' => 'Performance metrics stored successfully',
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to store performance metrics', [
                 'error' => $e->getMessage(),
-                'metrics_count' => count($validated['metrics'])
+                'metrics_count' => count($validated['metrics']),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to store performance metrics'
+                'message' => 'Failed to store performance metrics',
             ], 500);
         }
     }
@@ -71,7 +71,7 @@ class PerformanceController extends Controller
         $validated = $request->validate([
             'period' => ['nullable', Rule::in(['1h', '24h', '7d', '30d'])],
             'metric' => 'nullable|string|max:100',
-            'page' => 'nullable|string|max:500'
+            'page' => 'nullable|string|max:500',
         ]);
 
         $period = $validated['period'] ?? '24h';
@@ -80,22 +80,22 @@ class PerformanceController extends Controller
 
         try {
             $analytics = $this->getPerformanceAnalytics($period, $metric, $page);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $analytics
+                'data' => $analytics,
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to get performance analytics', [
                 'error' => $e->getMessage(),
                 'period' => $period,
-                'metric' => $metric
+                'metric' => $metric,
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get performance analytics'
+                'message' => 'Failed to get performance analytics',
             ], 500);
         }
     }
@@ -113,21 +113,21 @@ class PerformanceController extends Controller
 
         try {
             $recommendations = $this->generatePerformanceRecommendations($period);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $recommendations
+                'data' => $recommendations,
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to get performance recommendations', [
                 'error' => $e->getMessage(),
-                'period' => $period
+                'period' => $period,
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get performance recommendations'
+                'message' => 'Failed to get performance recommendations',
             ], 500);
         }
     }
@@ -147,22 +147,22 @@ class PerformanceController extends Controller
 
         try {
             $performance = $this->getPagePerformanceData($url, $period);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $performance
+                'data' => $performance,
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to get page performance', [
                 'error' => $e->getMessage(),
                 'url' => $url,
-                'period' => $period
+                'period' => $period,
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get page performance'
+                'message' => 'Failed to get page performance',
             ], 500);
         }
     }
@@ -174,20 +174,20 @@ class PerformanceController extends Controller
     {
         try {
             $metrics = Cache::get('performance_metrics_realtime', []);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $metrics
+                'data' => $metrics,
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to get real-time metrics', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get real-time metrics'
+                'message' => 'Failed to get real-time metrics',
             ], 500);
         }
     }
@@ -213,7 +213,7 @@ class PerformanceController extends Controller
             'userAgent' => 'required|string',
             'url' => 'required|string',
             'viewport' => 'nullable|array',
-            'connection' => 'nullable|string'
+            'connection' => 'nullable|string',
         ]);
 
         try {
@@ -227,7 +227,7 @@ class PerformanceController extends Controller
                 'user_id' => auth()->id(),
                 'tenant_id' => tenant('id'),
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ]);
 
             // Store individual metrics
@@ -243,17 +243,17 @@ class PerformanceController extends Controller
                             'metadata' => json_encode([
                                 'session_id' => $validated['sessionId'],
                                 'viewport' => $validated['viewport'] ?? null,
-                                'connection' => $validated['connection'] ?? null
+                                'connection' => $validated['connection'] ?? null,
                             ]),
                             'timestamp' => $validated['startTime'],
                             'created_at' => now(),
-                            'updated_at' => now()
+                            'updated_at' => now(),
                         ];
                     }
                 }
             }
 
-            if (!empty($metricsData)) {
+            if (! empty($metricsData)) {
                 DB::table('performance_metrics')->insert($metricsData);
             }
 
@@ -261,19 +261,19 @@ class PerformanceController extends Controller
                 'success' => true,
                 'data' => [
                     'session_id' => $sessionId,
-                    'metrics_count' => count($metricsData)
-                ]
+                    'metrics_count' => count($metricsData),
+                ],
             ]);
 
         } catch (\Exception $e) {
             Log::error('Failed to store performance session', [
                 'error' => $e->getMessage(),
-                'session_id' => $validated['sessionId']
+                'session_id' => $validated['sessionId'],
             ]);
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to store performance session'
+                'message' => 'Failed to store performance session',
             ], 500);
         }
     }
@@ -285,7 +285,7 @@ class PerformanceController extends Controller
     {
         $validated = $request->validate([
             'period' => ['nullable', Rule::in(['1h', '24h', '7d', '30d'])],
-            'page' => 'nullable|string|max:500'
+            'page' => 'nullable|string|max:500',
         ]);
 
         $period = $validated['period'] ?? '24h';
@@ -293,21 +293,21 @@ class PerformanceController extends Controller
 
         try {
             $vitals = $this->getCoreWebVitalsData($period, $page);
-            
+
             return response()->json([
                 'success' => true,
-                'data' => $vitals
+                'data' => $vitals,
             ]);
-            
+
         } catch (\Exception $e) {
             Log::error('Failed to get Core Web Vitals', [
                 'error' => $e->getMessage(),
-                'period' => $period
+                'period' => $period,
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get Core Web Vitals'
+                'message' => 'Failed to get Core Web Vitals',
             ], 500);
         }
     }
@@ -340,7 +340,7 @@ class PerformanceController extends Controller
             'user_id' => auth()->id(),
             'tenant_id' => tenant('id'),
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
         ]);
 
         // Store individual metrics
@@ -354,12 +354,12 @@ class PerformanceController extends Controller
                 'metadata' => json_encode($metric),
                 'timestamp' => $metric['timestamp'],
                 'created_at' => now(),
-                'updated_at' => now()
+                'updated_at' => now(),
             ];
         }
 
         // Batch insert metrics
-        if (!empty($metricsData)) {
+        if (! empty($metricsData)) {
             DB::table('performance_metrics')->insert($metricsData);
         }
     }
@@ -373,14 +373,14 @@ class PerformanceController extends Controller
         $cacheDuration = 300; // 5 minutes
 
         $recentMetrics = Cache::get($cacheKey, []);
-        
+
         // Add new metrics
         foreach ($data['metrics'] as $metric) {
             $recentMetrics[] = [
                 'name' => $metric['name'],
                 'value' => $metric['value'],
                 'url' => $metric['url'],
-                'timestamp' => $metric['timestamp']
+                'timestamp' => $metric['timestamp'],
             ];
         }
 
@@ -406,7 +406,7 @@ class PerformanceController extends Controller
         foreach ($metrics as $metric) {
             $name = $metric['name'];
             $value = $metric['value'];
-            
+
             if (isset($thresholds[$name]) && $value > $thresholds[$name]) {
                 Log::warning('Performance threshold exceeded', [
                     'metric' => $name,
@@ -414,7 +414,7 @@ class PerformanceController extends Controller
                     'threshold' => $thresholds[$name],
                     'url' => $metric['url'],
                     'user_id' => auth()->id(),
-                    'tenant_id' => tenant('id')
+                    'tenant_id' => tenant('id'),
                 ]);
 
                 // You could also send alerts to monitoring services here
@@ -428,7 +428,7 @@ class PerformanceController extends Controller
      */
     private function getPerformanceAnalytics(string $period, ?string $metric, ?string $page): array
     {
-        $hours = match($period) {
+        $hours = match ($period) {
             '1h' => 1,
             '24h' => 24,
             '7d' => 168,
@@ -459,8 +459,8 @@ class PerformanceController extends Controller
             PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY pm.value) as median_value,
             PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY pm.value) as p95_value
         ')
-        ->groupBy('pm.name')
-        ->get();
+            ->groupBy('pm.name')
+            ->get();
 
         // Get time series data
         $timeSeries = $query->selectRaw('
@@ -469,10 +469,10 @@ class PerformanceController extends Controller
             AVG(pm.value) as avg_value,
             COUNT(*) as count
         ')
-        ->groupBy('pm.name', 'hour')
-        ->orderBy('hour')
-        ->get()
-        ->groupBy('name');
+            ->groupBy('pm.name', 'hour')
+            ->orderBy('hour')
+            ->get()
+            ->groupBy('name');
 
         // Get top slow pages
         $slowPages = DB::table('performance_metrics as pm')
@@ -497,7 +497,7 @@ class PerformanceController extends Controller
             'statistics' => $stats,
             'timeSeries' => $timeSeries,
             'slowPages' => $slowPages,
-            'generatedAt' => now()->toISOString()
+            'generatedAt' => now()->toISOString(),
         ];
     }
 
@@ -506,7 +506,7 @@ class PerformanceController extends Controller
      */
     private function getCoreWebVitalsData(string $period, ?string $page): array
     {
-        $hours = match($period) {
+        $hours = match ($period) {
             '1h' => 1,
             '24h' => 24,
             '7d' => 168,
@@ -531,9 +531,9 @@ class PerformanceController extends Controller
             PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY pm.value) as p75_value,
             PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY pm.value) as p95_value
         ')
-        ->groupBy('pm.name')
-        ->get()
-        ->keyBy('name');
+            ->groupBy('pm.name')
+            ->get()
+            ->keyBy('name');
 
         // Calculate scores based on Core Web Vitals thresholds
         $thresholds = [
@@ -541,7 +541,7 @@ class PerformanceController extends Controller
             'FID' => ['good' => 100, 'poor' => 300],
             'CLS' => ['good' => 0.1, 'poor' => 0.25],
             'FCP' => ['good' => 1800, 'poor' => 3000],
-            'TTFB' => ['good' => 800, 'poor' => 1800]
+            'TTFB' => ['good' => 800, 'poor' => 1800],
         ];
 
         $scores = [];
@@ -549,7 +549,7 @@ class PerformanceController extends Controller
             if (isset($thresholds[$name])) {
                 $p75 = $vital->p75_value;
                 $threshold = $thresholds[$name];
-                
+
                 if ($p75 <= $threshold['good']) {
                     $score = 'good';
                 } elseif ($p75 <= $threshold['poor']) {
@@ -557,7 +557,7 @@ class PerformanceController extends Controller
                 } else {
                     $score = 'poor';
                 }
-                
+
                 $scores[$name] = $score;
             }
         }
@@ -567,7 +567,7 @@ class PerformanceController extends Controller
             'vitals' => $vitals,
             'scores' => $scores,
             'thresholds' => $thresholds,
-            'generatedAt' => now()->toISOString()
+            'generatedAt' => now()->toISOString(),
         ];
     }
 
@@ -576,7 +576,7 @@ class PerformanceController extends Controller
      */
     private function generatePerformanceRecommendations(string $period): array
     {
-        $hours = match($period) {
+        $hours = match ($period) {
             '1h' => 1,
             '24h' => 24,
             '7d' => 168,
@@ -588,11 +588,11 @@ class PerformanceController extends Controller
 
         // Get Core Web Vitals data
         $vitals = $this->getCoreWebVitalsData($period, null);
-        
+
         // Check each vital and generate recommendations
         foreach ($vitals['vitals'] as $name => $vital) {
             $score = $vitals['scores'][$name] ?? 'good';
-            
+
             if ($score === 'poor' || $score === 'needs-improvement') {
                 $recommendations[] = [
                     'id' => "cwv-{$name}",
@@ -602,7 +602,7 @@ class PerformanceController extends Controller
                     'impact' => $score === 'poor' ? 'High user experience improvement' : 'Moderate user experience improvement',
                     'metric' => $name,
                     'currentValue' => $vital->p75_value,
-                    'targetValue' => $vitals['thresholds'][$name]['good']
+                    'targetValue' => $vitals['thresholds'][$name]['good'],
                 ];
             }
         }
@@ -625,7 +625,7 @@ class PerformanceController extends Controller
                 'impact' => 'Faster page loads and better user experience',
                 'metric' => 'ApiRequest',
                 'currentValue' => $slowApis->avg_value,
-                'targetValue' => 2000
+                'targetValue' => 2000,
             ];
         }
 
@@ -647,7 +647,7 @@ class PerformanceController extends Controller
                 'impact' => 'Faster initial page loads',
                 'metric' => 'ResourceLoad',
                 'currentValue' => $slowResources->avg_value,
-                'targetValue' => 1000
+                'targetValue' => 1000,
             ];
         }
 
@@ -668,14 +668,14 @@ class PerformanceController extends Controller
                 'impact' => 'Better performance on low-end devices',
                 'metric' => 'MemoryUsage',
                 'currentValue' => $largeDom->avg_memory,
-                'targetValue' => 50000000
+                'targetValue' => 50000000,
             ];
         }
 
         return [
             'recommendations' => $recommendations,
             'period' => $period,
-            'generatedAt' => now()->toISOString()
+            'generatedAt' => now()->toISOString(),
         ];
     }
 
@@ -684,7 +684,7 @@ class PerformanceController extends Controller
      */
     private function getPagePerformanceData(string $url, string $period): array
     {
-        $hours = match($period) {
+        $hours = match ($period) {
             '1h' => 1,
             '24h' => 24,
             '7d' => 168,
@@ -746,7 +746,7 @@ class PerformanceController extends Controller
             'metrics' => $metrics,
             'timeSeries' => $timeSeries,
             'sessions' => $sessions,
-            'generatedAt' => now()->toISOString()
+            'generatedAt' => now()->toISOString(),
         ];
     }
 
@@ -755,7 +755,7 @@ class PerformanceController extends Controller
      */
     private function getVitalRecommendation(string $vital): string
     {
-        return match($vital) {
+        return match ($vital) {
             'LCP' => 'Optimize images, remove unused CSS/JS, use CDN, and improve server response times.',
             'FID' => 'Reduce JavaScript execution time, remove non-critical third-party scripts, and use web workers.',
             'CLS' => 'Set size attributes on images and videos, avoid inserting content above existing content.',

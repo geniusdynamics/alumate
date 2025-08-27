@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('type'); // like, comment, share, reaction
             $table->json('data')->nullable(); // Additional data for the engagement
             $table->timestamp('created_at')->useCurrent();
-            
+
             // Indexes
             $table->index(['post_id', 'type']);
             $table->index(['user_id', 'type']);

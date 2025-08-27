@@ -2,8 +2,8 @@
 
 namespace AlumniPlatform\ApiClient\Tests;
 
-use AlumniPlatform\ApiClient\Client;
 use AlumniPlatform\ApiClient\AlumniPlatformException;
+use AlumniPlatform\ApiClient\Client;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Handler\MockHandler;
@@ -14,16 +14,17 @@ use PHPUnit\Framework\TestCase;
 class ClientTest extends TestCase
 {
     private Client $client;
+
     private MockHandler $mockHandler;
 
     protected function setUp(): void
     {
-        $this->mockHandler = new MockHandler();
+        $this->mockHandler = new MockHandler;
         $handlerStack = HandlerStack::create($this->mockHandler);
-        
+
         $this->client = new Client([
             'base_uri' => 'https://api.example.com',
-            'token' => 'test-token'
+            'token' => 'test-token',
         ]);
 
         // Use reflection to inject the mock handler
@@ -47,7 +48,7 @@ class ClientTest extends TestCase
     {
         $timelineData = [
             'data' => [['id' => 1, 'content' => 'Test post']],
-            'meta' => ['current_page' => 1, 'per_page' => 20]
+            'meta' => ['current_page' => 1, 'per_page' => 20],
         ];
         $this->mockHandler->append(new Response(200, [], json_encode($timelineData)));
 
@@ -116,7 +117,7 @@ class ClientTest extends TestCase
     {
         $payload = '{"event":"user.created","data":{"id":1}}';
         $secret = 'webhook-secret';
-        $signature = 'sha256=' . hash_hmac('sha256', $payload, $secret);
+        $signature = 'sha256='.hash_hmac('sha256', $payload, $secret);
 
         $result = Client::verifyWebhookSignature($payload, $signature, $secret);
 

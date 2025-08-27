@@ -146,7 +146,7 @@ class Message extends Model
      */
     public function hasAttachments(): bool
     {
-        return !empty($this->attachments);
+        return ! empty($this->attachments);
     }
 
     /**
@@ -174,7 +174,7 @@ class Message extends Model
      */
     public function isReply(): bool
     {
-        return !is_null($this->reply_to_id);
+        return ! is_null($this->reply_to_id);
     }
 
     /**

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\HomepageNavigationItem;
+use Illuminate\Database\Seeder;
 
 class HomepageNavigationSeeder extends Seeder
 {
@@ -28,21 +28,21 @@ class HomepageNavigationSeeder extends Seeder
             'title' => 'Alumni Directory',
             'url' => route('alumni.public.directory', [], false),
             'order' => 1,
-            'type' => 'link'
+            'type' => 'link',
         ]);
         HomepageNavigationItem::create([
             'parent_id' => $alumni->id,
             'title' => 'Alumni Map',
             'url' => route('alumni.public.map', [], false),
             'order' => 2,
-            'type' => 'link'
+            'type' => 'link',
         ]);
         HomepageNavigationItem::create([
             'parent_id' => $alumni->id,
             'title' => 'Success Stories',
             'url' => route('stories.public.index', [], false),
             'order' => 3,
-            'type' => 'link'
+            'type' => 'link',
         ]);
 
         // Children of About
@@ -51,21 +51,21 @@ class HomepageNavigationSeeder extends Seeder
             'title' => 'Features',
             'url' => '#features',
             'order' => 1,
-            'type' => 'link'
+            'type' => 'link',
         ]);
         HomepageNavigationItem::create([
             'parent_id' => $about->id,
             'title' => 'Pricing',
             'url' => '#pricing',
             'order' => 2,
-            'type' => 'link'
+            'type' => 'link',
         ]);
         HomepageNavigationItem::create([
             'parent_id' => $about->id,
             'title' => 'Contact',
             'url' => '/contact',
             'order' => 3,
-            'type' => 'link'
+            'type' => 'link',
         ]);
     }
 }

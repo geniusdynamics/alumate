@@ -18,31 +18,31 @@ class ContactController extends Controller
                 'business_hours' => [
                     'monday_friday' => '9:00 AM - 6:00 PM',
                     'saturday' => '10:00 AM - 4:00 PM',
-                    'sunday' => 'Closed'
-                ]
+                    'sunday' => 'Closed',
+                ],
             ],
             'departments' => [
                 [
                     'name' => 'General Support',
                     'email' => 'support@alumni-platform.com',
-                    'description' => 'General questions and technical support'
+                    'description' => 'General questions and technical support',
                 ],
                 [
                     'name' => 'Institution Partnerships',
                     'email' => 'partnerships@alumni-platform.com',
-                    'description' => 'Institutional partnerships and onboarding'
+                    'description' => 'Institutional partnerships and onboarding',
                 ],
                 [
                     'name' => 'Employer Services',
                     'email' => 'employers@alumni-platform.com',
-                    'description' => 'Employer registration and job posting support'
+                    'description' => 'Employer registration and job posting support',
                 ],
                 [
                     'name' => 'Alumni Relations',
                     'email' => 'alumni@alumni-platform.com',
-                    'description' => 'Alumni engagement and success stories'
-                ]
-            ]
+                    'description' => 'Alumni engagement and success stories',
+                ],
+            ],
         ]);
     }
 
@@ -59,7 +59,7 @@ class ContactController extends Controller
         ]);
 
         // Determine recipient email based on department
-        $recipientEmail = match($request->department) {
+        $recipientEmail = match ($request->department) {
             'partnerships' => 'partnerships@alumni-platform.com',
             'employers' => 'employers@alumni-platform.com',
             'alumni' => 'alumni@alumni-platform.com',
@@ -78,7 +78,7 @@ class ContactController extends Controller
                 'department' => $request->department,
             ], function ($message) use ($request, $recipientEmail) {
                 $message->to($recipientEmail)
-                    ->subject('Contact Form: ' . $request->subject)
+                    ->subject('Contact Form: '.$request->subject)
                     ->replyTo($request->email, $request->name);
             });
 

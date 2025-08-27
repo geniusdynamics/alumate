@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\SavedSearch;
 use App\Models\SearchAlert;
 use App\Models\User;
-use App\Models\SavedSearch;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class SearchAlertFactory extends Factory

@@ -2,17 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\User;
-use App\Models\TwoFactorAuth;
 use App\Models\FailedLoginAttempt;
 use App\Models\SecurityEvent;
 use App\Models\SessionSecurity;
+use App\Models\TwoFactorAuth;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 // Note: Google2FA package may not be installed, using fallback for secret generation
 // If needed, install with: composer require pragmarx/google2fa
@@ -31,13 +30,13 @@ class SecurityService
     {
         // Generate secret key (fallback if Google2FA not available)
         $secret = $this->generateSecretKey();
-        
+
         // Generate recovery codes
         $recoveryCodes = [];
         for ($i = 0; $i < 8; $i++) {
             $recoveryCodes[] = Str::random(10);
         }
-        
+
         $twoFactor = TwoFactorAuth::updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -49,10 +48,10 @@ class SecurityService
                 'backup_contact' => $options['backup_contact'] ?? $user->email,
             ]
         );
-        
+
         // Update user's two_factor_enabled flag
         $user->update(['two_factor_enabled' => true]);
-        
+
         // Log security event
         $this->logSecurityEvent(
             SecurityEvent::TYPE_TWO_FACTOR_ENABLED,
@@ -61,17 +60,17 @@ class SecurityService
             ['method' => 'google_authenticator'],
             $user->id
         );
-        
+
         return $twoFactor;
     }
-    
+
     /**
      * Disable two-factor authentication for a user
      */
     public function disableTwoFactorAuth(User $user): bool
     {
         $twoFactor = TwoFactorAuth::where('user_id', $user->id)->first();
-        
+
         if ($twoFactor) {
             $twoFactor->update([
                 'enabled' => false,
@@ -79,10 +78,10 @@ class SecurityService
                 'recovery_codes' => null,
             ]);
         }
-        
+
         // Update user's two_factor_enabled flag
         $user->update(['two_factor_enabled' => false]);
-        
+
         // Log security event
         $this->logSecurityEvent(
             SecurityEvent::TYPE_TWO_FACTOR_DISABLED,
@@ -91,32 +90,32 @@ class SecurityService
             [],
             $user->id
         );
-        
+
         return true;
     }
-    
+
     /**
      * Handle failed login attempt
      */
-    public function handleFailedLogin(string $email, string $ip, Request $request = null): FailedLoginAttempt
+    public function handleFailedLogin(string $email, string $ip, ?Request $request = null): FailedLoginAttempt
     {
         $userAgent = $request ? $request->userAgent() : null;
-        
+
         $attempt = FailedLoginAttempt::where('email', $email)
             ->where('ip_address', $ip)
             ->first();
-            
+
         if ($attempt) {
             $attempt->increment('attempts');
             $attempt->update([
                 'last_attempt_at' => now(),
                 'user_agent' => $userAgent,
             ]);
-            
+
             // Block after 5 attempts for 15 minutes
             if ($attempt->attempts >= 5) {
                 $attempt->update([
-                    'blocked_until' => now()->addMinutes(15)
+                    'blocked_until' => now()->addMinutes(15),
                 ]);
             }
         } else {
@@ -128,7 +127,7 @@ class SecurityService
                 'last_attempt_at' => now(),
             ]);
         }
-        
+
         // Log security event
         $this->logSecurityEvent(
             SecurityEvent::TYPE_FAILED_LOGIN,
@@ -138,13 +137,13 @@ class SecurityService
                 'email' => $email,
                 'ip_address' => $ip,
                 'user_agent' => $userAgent,
-                'attempts' => $attempt->attempts
+                'attempts' => $attempt->attempts,
             ]
         );
-        
+
         return $attempt;
     }
-    
+
     /**
      * Check security policy for user action
      */
@@ -153,36 +152,36 @@ class SecurityService
         // Basic security policy checks
         switch ($action) {
             case 'login':
-                return !$user->is_suspended;
-                
+                return ! $user->is_suspended;
+
             case 'admin_access':
                 return $user->hasRole('super-admin') || $user->hasRole('institution-admin');
-                
+
             case 'user_management':
                 return $user->can('manage-users');
-                
+
             case 'data_export':
-                return $user->can('export-data') && !$this->hasRecentSuspiciousActivity($user);
-                
+                return $user->can('export-data') && ! $this->hasRecentSuspiciousActivity($user);
+
             case 'sensitive_data_access':
-                return $user->two_factor_enabled && !$this->hasRecentSuspiciousActivity($user);
-                
+                return $user->two_factor_enabled && ! $this->hasRecentSuspiciousActivity($user);
+
             default:
                 return true;
         }
     }
-    
+
     /**
      * Handle successful login
      */
-    public function handleSuccessfulLogin(User $user, Request $request = null): void
+    public function handleSuccessfulLogin(User $user, ?Request $request = null): void
     {
         $ip = $request ? $request->ip() : request()->ip();
         $userAgent = $request ? $request->userAgent() : request()->userAgent();
-        
+
         // Clear failed login attempts
         FailedLoginAttempt::where('email', $user->email)->delete();
-        
+
         // Track session
         SessionSecurity::create([
             'session_id' => session()->getId(),
@@ -192,7 +191,7 @@ class SecurityService
             'last_activity' => now(),
             'expires_at' => now()->addHours(config('session.lifetime', 120) / 60),
         ]);
-        
+
         // Update user last login
         $user->update(['last_login_at' => now()]);
     }
@@ -203,7 +202,7 @@ class SecurityService
     public function detectMaliciousRequest(?Request $request = null): bool
     {
         $request = $request ?: request();
-        
+
         // Check for common SQL injection patterns
         $inputs = array_merge($request->all(), $request->headers->all());
         $maliciousPatterns = [
@@ -218,7 +217,7 @@ class SecurityService
             '/<script[^>]*>/i',
             '/javascript:/i',
         ];
-        
+
         foreach ($inputs as $input) {
             if (is_string($input)) {
                 foreach ($maliciousPatterns as $pattern) {
@@ -234,12 +233,13 @@ class SecurityService
                                 'request_path' => $request->path(),
                             ]
                         );
+
                         return true;
                     }
                 }
             }
         }
-        
+
         return false;
     }
 
@@ -258,14 +258,14 @@ class SecurityService
             'user_agent' => request()->userAgent(),
             'occurred_at' => now(),
         ]);
-        
+
         // Also log to Laravel logs
         Log::info("Security Event: {$type}", array_merge($metadata, [
             'severity' => $severity,
             'description' => $description,
             'user_id' => $userId,
         ]));
-        
+
         return $event;
     }
 
@@ -294,12 +294,13 @@ class SecurityService
     {
         $key = "rate_limit:{$identifier}";
         $attempts = Cache::get($key, 0);
-        
+
         if ($attempts >= $maxAttempts) {
             return true;
         }
-        
+
         Cache::put($key, $attempts + 1, now()->addMinutes($minutes));
+
         return false;
     }
 
@@ -316,7 +317,7 @@ class SecurityService
             'ip' => request()->ip(),
         ]);
     }
-    
+
     /**
      * Validate session security
      */
@@ -325,11 +326,11 @@ class SecurityService
         $session = SessionSecurity::where('session_id', $sessionId)
             ->where('expires_at', '>', now())
             ->first();
-            
-        if (!$session) {
+
+        if (! $session) {
             return false;
         }
-        
+
         // Check IP address consistency
         if ($session->ip_address !== $ipAddress) {
             $this->logSecurityEvent(
@@ -342,15 +343,16 @@ class SecurityService
                     'current_ip' => $ipAddress,
                 ]
             );
+
             return false;
         }
-        
+
         // Update last activity
         $session->update(['last_activity' => now()]);
-        
+
         return true;
     }
-    
+
     /**
      * Generate security report
      */
@@ -380,34 +382,34 @@ class SecurityService
             'security_score' => $this->calculateSecurityScore(),
             'generated_at' => now(),
         ];
-        
+
         return $report;
     }
-    
+
     /**
      * Calculate overall security score
      */
     public function calculateSecurityScore(): float
     {
         $score = 100.0;
-        
+
         // Deduct points for recent critical events
         $criticalEvents = SecurityEvent::where('severity', SecurityEvent::SEVERITY_CRITICAL)
             ->where('occurred_at', '>=', now()->subDays(30))
             ->count();
         $score -= min(50, $criticalEvents * 10);
-        
+
         // Deduct points for failed login attempts
         $failedLogins = FailedLoginAttempt::where('last_attempt_at', '>=', now()->subDays(7))
             ->sum('attempts');
         $score -= min(20, $failedLogins * 0.5);
-        
+
         // Deduct points for unresolved security events
         $unresolvedEvents = SecurityEvent::where('resolved', false)
             ->whereIn('severity', [SecurityEvent::SEVERITY_HIGH, SecurityEvent::SEVERITY_CRITICAL])
             ->count();
         $score -= min(15, $unresolvedEvents * 3);
-        
+
         // Bonus points for 2FA adoption
         $totalUsers = User::count();
         $twoFactorUsers = User::where('two_factor_enabled', true)->count();
@@ -415,10 +417,10 @@ class SecurityService
             $adoptionRate = ($twoFactorUsers / $totalUsers) * 100;
             $score += min(15, $adoptionRate * 0.15);
         }
-        
+
         return max(0.0, min(100.0, round($score, 2)));
     }
-    
+
     /**
      * Detect suspicious activity
      */
@@ -429,7 +431,7 @@ class SecurityService
             ->groupBy('ip_address')
             ->havingRaw('COUNT(DISTINCT email) >= 5')
             ->pluck('ip_address');
-            
+
         if ($suspiciousIps->isNotEmpty()) {
             foreach ($suspiciousIps as $ip) {
                 $this->logSecurityEvent(
@@ -439,13 +441,14 @@ class SecurityService
                     ['ip_address' => $ip]
                 );
             }
+
             return true;
         }
-        
+
         // Check for rapid succession of events
         $recentEvents = SecurityEvent::where('occurred_at', '>=', now()->subMinutes(10))
             ->count();
-            
+
         if ($recentEvents > 20) {
             $this->logSecurityEvent(
                 SecurityEvent::TYPE_SUSPICIOUS_ACTIVITY,
@@ -453,12 +456,13 @@ class SecurityService
                 'High volume of security events detected',
                 ['event_count' => $recentEvents]
             );
+
             return true;
         }
-        
+
         return false;
     }
-    
+
     /**
      * Cleanup expired sessions
      */
@@ -466,7 +470,7 @@ class SecurityService
     {
         $deletedCount = SessionSecurity::where('expires_at', '<', now())
             ->delete();
-            
+
         if ($deletedCount > 0) {
             $this->logSecurityEvent(
                 SecurityEvent::TYPE_SESSION_CLEANUP,
@@ -475,10 +479,10 @@ class SecurityService
                 ['deleted_count' => $deletedCount]
             );
         }
-        
+
         return $deletedCount;
     }
-    
+
     /**
      * Check if user has recent suspicious activity
      */
@@ -488,20 +492,20 @@ class SecurityService
         $recentFailedLogins = FailedLoginAttempt::where('email', $user->email)
             ->where('last_attempt_at', '>=', now()->subHours(24))
             ->sum('attempts');
-            
+
         if ($recentFailedLogins > 3) {
             return true;
         }
-        
+
         // Check for recent suspicious security events
         $suspiciousEvents = SecurityEvent::where('user_id', $user->id)
             ->where('event_type', SecurityEvent::TYPE_SUSPICIOUS_ACTIVITY)
             ->where('occurred_at', '>=', now()->subHours(24))
             ->count();
-            
+
         return $suspiciousEvents > 0;
     }
-    
+
     /**
      * Generate a secret key for two-factor authentication
      * Fallback implementation when Google2FA is not available
@@ -511,11 +515,11 @@ class SecurityService
         // Generate a 16-character base32 secret
         $base32chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
         $secret = '';
-        
+
         for ($i = 0; $i < 16; $i++) {
             $secret .= $base32chars[random_int(0, 31)];
         }
-        
+
         return $secret;
     }
 }

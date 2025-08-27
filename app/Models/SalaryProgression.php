@@ -54,7 +54,7 @@ class SalaryProgression extends Model
     // Accessors
     public function getFormattedSalaryAttribute()
     {
-        return number_format($this->salary, 0) . ' ' . $this->currency;
+        return number_format($this->salary, 0).' '.$this->currency;
     }
 
     public function getAnnualizedSalaryAttribute()

@@ -3,17 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\ElasticsearchService;
-use App\Models\User;
-use App\Models\Post;
-use App\Models\Job;
-use App\Models\Event;
 use App\Models\SavedSearch;
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Services\ElasticsearchService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
 {
@@ -35,7 +32,7 @@ class SearchController extends Controller
             'filters.types' => 'array',
             'filters.types.*' => 'in:user,post,job,event',
             'filters.location' => 'string|max:100',
-            'filters.graduation_year' => 'integer|min:1900|max:' . (date('Y') + 10),
+            'filters.graduation_year' => 'integer|min:1900|max:'.(date('Y') + 10),
             'filters.industry' => 'array',
             'filters.skills' => 'array',
             'filters.date_range' => 'array',
@@ -43,13 +40,13 @@ class SearchController extends Controller
             'filters.date_range.to' => 'date|after_or_equal:filters.date_range.from',
             'filters.sort' => 'in:relevance,date,name,engagement',
             'size' => 'integer|min:1|max:100',
-            'from' => 'integer|min:0'
+            'from' => 'integer|min:0',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Invalid search parameters',
-                'details' => $validator->errors()
+                'details' => $validator->errors(),
             ], 400);
         }
 
@@ -80,20 +77,20 @@ class SearchController extends Controller
                     'current_page' => floor($from / $size) + 1,
                     'per_page' => $size,
                     'total' => $results['total'],
-                    'total_pages' => ceil($results['total'] / $size)
-                ]
+                    'total_pages' => ceil($results['total'] / $size),
+                ],
             ]);
         } catch (\Exception $e) {
             Log::error('Search failed', [
                 'query' => $query,
                 'filters' => $filters,
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
                 'error' => 'Search temporarily unavailable. Please try again.',
-                'fallback' => $this->getFallbackResults($query, $filters, $size, $from)
+                'fallback' => $this->getFallbackResults($query, $filters, $size, $from),
             ], 500);
         }
     }
@@ -105,13 +102,13 @@ class SearchController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'q' => 'required|string|min:2|max:100',
-            'size' => 'integer|min:1|max:10'
+            'size' => 'integer|min:1|max:10',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Invalid suggestion parameters',
-                'details' => $validator->errors()
+                'details' => $validator->errors(),
             ], 400);
         }
 
@@ -124,12 +121,12 @@ class SearchController extends Controller
             return response()->json([
                 'success' => true,
                 'query' => $query,
-                'suggestions' => $suggestions
+                'suggestions' => $suggestions,
             ]);
         } catch (\Exception $e) {
             Log::error('Suggestions failed', [
                 'query' => $query,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             // Fallback to database suggestions
@@ -139,7 +136,7 @@ class SearchController extends Controller
                 'success' => true,
                 'query' => $query,
                 'suggestions' => $fallbackSuggestions,
-                'fallback' => true
+                'fallback' => true,
             ]);
         }
     }
@@ -154,13 +151,13 @@ class SearchController extends Controller
             'query' => 'required|string|max:255',
             'filters' => 'array',
             'email_alerts' => 'boolean',
-            'alert_frequency' => 'in:immediate,daily,weekly'
+            'alert_frequency' => 'in:immediate,daily,weekly',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Invalid search data',
-                'details' => $validator->errors()
+                'details' => $validator->errors(),
             ], 400);
         }
 
@@ -171,22 +168,22 @@ class SearchController extends Controller
                 'query' => $request->input('query'),
                 'filters' => $request->input('filters', []),
                 'email_alerts' => $request->input('email_alerts', false),
-                'alert_frequency' => $request->input('alert_frequency', 'daily')
+                'alert_frequency' => $request->input('alert_frequency', 'daily'),
             ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Search saved successfully',
-                'search' => $savedSearch
+                'search' => $savedSearch,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to save search', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
-                'error' => 'Failed to save search. Please try again.'
+                'error' => 'Failed to save search. Please try again.',
             ], 500);
         }
     }
@@ -203,16 +200,16 @@ class SearchController extends Controller
 
             return response()->json([
                 'success' => true,
-                'searches' => $savedSearches
+                'searches' => $savedSearches,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to get saved searches', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
-                'error' => 'Failed to load saved searches'
+                'error' => 'Failed to load saved searches',
             ], 500);
         }
     }
@@ -232,35 +229,35 @@ class SearchController extends Controller
             'query' => 'string|max:255',
             'filters' => 'array',
             'email_alerts' => 'boolean',
-            'alert_frequency' => 'in:immediate,daily,weekly'
+            'alert_frequency' => 'in:immediate,daily,weekly',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'error' => 'Invalid search data',
-                'details' => $validator->errors()
+                'details' => $validator->errors(),
             ], 400);
         }
 
         try {
             $savedSearch->update($request->only([
-                'name', 'query', 'filters', 'email_alerts', 'alert_frequency'
+                'name', 'query', 'filters', 'email_alerts', 'alert_frequency',
             ]));
 
             return response()->json([
                 'success' => true,
                 'message' => 'Search updated successfully',
-                'search' => $savedSearch->fresh()
+                'search' => $savedSearch->fresh(),
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to update saved search', [
                 'search_id' => $savedSearch->id,
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
-                'error' => 'Failed to update search. Please try again.'
+                'error' => 'Failed to update search. Please try again.',
             ], 500);
         }
     }
@@ -280,17 +277,17 @@ class SearchController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Search deleted successfully'
+                'message' => 'Search deleted successfully',
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to delete saved search', [
                 'search_id' => $savedSearch->id,
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
-                'error' => 'Failed to delete search. Please try again.'
+                'error' => 'Failed to delete search. Please try again.',
             ], 500);
         }
     }
@@ -317,23 +314,23 @@ class SearchController extends Controller
             // Update last run time and result count
             $savedSearch->update([
                 'last_run_at' => now(),
-                'last_result_count' => $results['total']
+                'last_result_count' => $results['total'],
             ]);
 
             return response()->json([
                 'success' => true,
                 'search' => $savedSearch->fresh(),
-                'results' => $results
+                'results' => $results,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to run saved search', [
                 'search_id' => $savedSearch->id,
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
-                'error' => 'Failed to run search. Please try again.'
+                'error' => 'Failed to run search. Please try again.',
             ], 500);
         }
     }
@@ -353,7 +350,7 @@ class SearchController extends Controller
                     'product manager',
                     'data scientist',
                     'marketing',
-                    'startup'
+                    'startup',
                 ],
                 'search_trends' => [
                     ['date' => '2024-01-01', 'count' => 12],
@@ -363,22 +360,22 @@ class SearchController extends Controller
                 'popular_filters' => [
                     'location' => ['San Francisco', 'New York', 'Remote'],
                     'industry' => ['Technology', 'Finance', 'Healthcare'],
-                    'graduation_year' => ['2020', '2019', '2021']
-                ]
+                    'graduation_year' => ['2020', '2019', '2021'],
+                ],
             ];
 
             return response()->json([
                 'success' => true,
-                'analytics' => $analytics
+                'analytics' => $analytics,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to get search analytics', [
                 'error' => $e->getMessage(),
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
 
             return response()->json([
-                'error' => 'Failed to load analytics'
+                'error' => 'Failed to load analytics',
             ], 500);
         }
     }
@@ -394,7 +391,7 @@ class SearchController extends Controller
                 'query' => $query,
                 'filters' => $filters,
                 'user_id' => Auth::id(),
-                'timestamp' => now()
+                'timestamp' => now(),
             ]);
         } catch (\Exception $e) {
             // Don't fail the search if logging fails
@@ -414,7 +411,7 @@ class SearchController extends Controller
                 'query' => $query,
                 'filters' => $filters,
                 'result_count' => $resultCount,
-                'user_id' => Auth::id()
+                'user_id' => Auth::id(),
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to track search analytics', ['error' => $e->getMessage()]);
@@ -442,7 +439,7 @@ class SearchController extends Controller
                     'type' => 'user',
                     'score' => 1.0,
                     'source' => $user->toArray(),
-                    'highlight' => []
+                    'highlight' => [],
                 ];
             }
         }
@@ -451,7 +448,7 @@ class SearchController extends Controller
             'hits' => $results,
             'total' => count($results),
             'aggregations' => [],
-            'took' => 0
+            'took' => 0,
         ];
     }
 
@@ -471,7 +468,7 @@ class SearchController extends Controller
             $suggestions[] = [
                 'text' => $name,
                 'score' => 1.0,
-                'type' => 'name'
+                'type' => 'name',
             ];
         }
 

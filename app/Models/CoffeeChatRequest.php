@@ -54,7 +54,7 @@ class CoffeeChatRequest extends Model
     {
         return $query->where(function ($q) use ($userId) {
             $q->where('requester_id', $userId)
-              ->orWhere('recipient_id', $userId);
+                ->orWhere('recipient_id', $userId);
         });
     }
 

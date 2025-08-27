@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ForumPost;
-use App\Models\ForumTopic;
 use App\Models\ForumPostLike;
-use Illuminate\Http\Request;
+use App\Models\ForumTopic;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ForumPostController extends Controller
@@ -18,8 +18,8 @@ class ForumPostController extends Controller
     public function store(Request $request, ForumTopic $topic): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$topic->forum->canUserAccess($user)) {
+
+        if (! $topic->forum->canUserAccess($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied.',
@@ -53,7 +53,7 @@ class ForumPostController extends Controller
             'user_id' => $user->id,
             'content' => $validated['content'],
             'parent_id' => $validated['parent_id'],
-            'is_approved' => !$topic->forum->requires_approval,
+            'is_approved' => ! $topic->forum->requires_approval,
         ]);
 
         $post->load('user');
@@ -84,8 +84,8 @@ class ForumPostController extends Controller
     public function show(ForumPost $post): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$post->topic->forum->canUserAccess($user)) {
+
+        if (! $post->topic->forum->canUserAccess($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied.',
@@ -134,8 +134,8 @@ class ForumPostController extends Controller
     public function update(Request $request, ForumPost $post): JsonResponse
     {
         $user = Auth::user();
-        
-        if ($post->user_id !== $user->id && !$user->hasRole(['admin', 'moderator'])) {
+
+        if ($post->user_id !== $user->id && ! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to edit this post.',
@@ -169,8 +169,8 @@ class ForumPostController extends Controller
     public function destroy(ForumPost $post): JsonResponse
     {
         $user = Auth::user();
-        
-        if ($post->user_id !== $user->id && !$user->hasRole(['admin', 'moderator'])) {
+
+        if ($post->user_id !== $user->id && ! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to delete this post.',
@@ -191,8 +191,8 @@ class ForumPostController extends Controller
     public function toggleLike(ForumPost $post): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$post->topic->forum->canUserAccess($user)) {
+
+        if (! $post->topic->forum->canUserAccess($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied.',
@@ -234,9 +234,9 @@ class ForumPostController extends Controller
     {
         $user = Auth::user();
         $topic = $post->topic;
-        
+
         // Only topic creator or moderators can mark solutions
-        if ($topic->user_id !== $user->id && !$user->hasRole(['admin', 'moderator'])) {
+        if ($topic->user_id !== $user->id && ! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to mark solution.',

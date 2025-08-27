@@ -19,9 +19,9 @@ class ForumAnalyticsController extends Controller
     public function getStatistics(): JsonResponse
     {
         $user = Auth::user();
-        
+
         // Check if user has admin permissions
-        if (!$user->hasRole(['admin', 'moderator'])) {
+        if (! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Insufficient permissions to view analytics.',

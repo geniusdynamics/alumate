@@ -17,8 +17,11 @@ class SocialPlatformIntegrationTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected User $otherUser;
+
     protected Circle $circle;
+
     protected Group $group;
 
     protected function setUp(): void
@@ -99,7 +102,7 @@ class SocialPlatformIntegrationTest extends TestCase
     {
         // Create additional users
         $alumni = User::factory()->count(5)->create();
-        
+
         // Add them to the same circle
         foreach ($alumni as $user) {
             $user->circles()->attach($this->circle->id);
@@ -321,7 +324,7 @@ class SocialPlatformIntegrationTest extends TestCase
         // Step 1: Create post that should trigger notifications
         $post = Post::factory()->create([
             'user_id' => $this->otherUser->id,
-            'content' => 'Hello @' . $this->user->username . '!',
+            'content' => 'Hello @'.$this->user->username.'!',
             'visibility' => 'public',
         ]);
 
@@ -351,7 +354,7 @@ class SocialPlatformIntegrationTest extends TestCase
     {
         // Create activity data
         Post::factory()->count(5)->create(['user_id' => $this->user->id]);
-        
+
         // Create connections
         $connections = User::factory()->count(3)->create();
         foreach ($connections as $connection) {
@@ -367,7 +370,7 @@ class SocialPlatformIntegrationTest extends TestCase
 
         $analyticsResponse->assertStatus(200);
         $analytics = $analyticsResponse->json('data');
-        
+
         $this->assertArrayHasKey('posts_count', $analytics);
         $this->assertArrayHasKey('connections_count', $analytics);
         $this->assertArrayHasKey('engagement_rate', $analytics);
@@ -378,7 +381,7 @@ class SocialPlatformIntegrationTest extends TestCase
 
         $insightsResponse->assertStatus(200);
         $insights = $insightsResponse->json('data');
-        
+
         $this->assertArrayHasKey('trending_topics', $insights);
         $this->assertArrayHasKey('active_users', $insights);
     }

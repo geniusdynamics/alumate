@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\CoffeeChatRequest;
 use App\Services\CoffeeChatService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class CoffeeChatController extends Controller
@@ -14,22 +14,22 @@ class CoffeeChatController extends Controller
     public function __construct(
         private CoffeeChatService $coffeeChatService
     ) {}
-    
+
     /**
      * Get coffee chat suggestions for the authenticated user.
      */
     public function suggestions(Request $request): JsonResponse
     {
         $user = Auth::user();
-        
+
         $criteria = $request->validate([
             'industry' => 'nullable|string',
             'location' => 'nullable|string',
             'interests' => 'nullable|array',
         ]);
-        
+
         $suggestions = $this->coffeeChatService->suggestMatches($user, $criteria);
-        
+
         return response()->json([
             'success' => true,
             'data' => $suggestions->map(function ($suggestedUser) {
@@ -46,7 +46,7 @@ class CoffeeChatController extends Controller
             }),
         ]);
     }
-    
+
     /**
      * Create a coffee chat request.
      */
@@ -59,72 +59,72 @@ class CoffeeChatController extends Controller
             'message' => 'nullable|string|max:500',
             'type' => 'nullable|in:direct_request,ai_matched,open_invitation',
         ]);
-        
+
         $validated['requester_id'] = Auth::id();
-        
+
         // Check if there's already a pending request between these users
         $existingRequest = CoffeeChatRequest::where(function ($query) use ($validated) {
             $query->where('requester_id', $validated['requester_id'])
-                  ->where('recipient_id', $validated['recipient_id']);
+                ->where('recipient_id', $validated['recipient_id']);
         })->orWhere(function ($query) use ($validated) {
             $query->where('requester_id', $validated['recipient_id'])
-                  ->where('recipient_id', $validated['requester_id']);
+                ->where('recipient_id', $validated['requester_id']);
         })->pending()->first();
-        
+
         if ($existingRequest) {
             return response()->json([
                 'success' => false,
                 'message' => 'There is already a pending coffee chat request between you and this user.',
             ], 400);
         }
-        
+
         $coffeeChatRequest = $this->coffeeChatService->createRequest($validated);
-        
+
         return response()->json([
             'success' => true,
             'data' => $coffeeChatRequest->load(['requester', 'recipient']),
             'message' => 'Coffee chat request sent successfully.',
         ], 201);
     }
-    
+
     /**
      * Respond to a coffee chat request.
      */
     public function respond(Request $request, CoffeeChatRequest $coffeeChatRequest): JsonResponse
     {
         $user = Auth::user();
-        
+
         if ($coffeeChatRequest->recipient_id !== $user->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'You can only respond to requests sent to you.',
             ], 403);
         }
-        
-        if (!$coffeeChatRequest->isPending()) {
+
+        if (! $coffeeChatRequest->isPending()) {
             return response()->json([
                 'success' => false,
                 'message' => 'This request has already been responded to.',
             ], 400);
         }
-        
+
         $validated = $request->validate([
             'action' => 'required|in:accept,decline',
             'selected_time' => 'required_if:action,accept|date|after:now',
         ]);
-        
+
         if ($validated['action'] === 'accept') {
             // Verify the selected time is one of the proposed times
             $proposedTimes = collect($coffeeChatRequest->proposed_times);
-            if (!$proposedTimes->contains($validated['selected_time'])) {
+            if (! $proposedTimes->contains($validated['selected_time'])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Selected time must be one of the proposed times.',
                 ], 400);
             }
-            
+
             $call = $this->coffeeChatService->acceptRequest($coffeeChatRequest, $validated['selected_time']);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -135,7 +135,7 @@ class CoffeeChatController extends Controller
             ]);
         } else {
             $this->coffeeChatService->declineRequest($coffeeChatRequest);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $coffeeChatRequest->fresh(['requester', 'recipient']),
@@ -143,7 +143,7 @@ class CoffeeChatController extends Controller
             ]);
         }
     }
-    
+
     /**
      * Get coffee chat requests for the authenticated user.
      */
@@ -151,39 +151,39 @@ class CoffeeChatController extends Controller
     {
         $user = Auth::user();
         $type = $request->get('type', 'sent'); // sent, received, all
-        
+
         $requests = $this->coffeeChatService->getRequestsForUser($user, $type);
-        
+
         return response()->json([
             'success' => true,
             'data' => $requests,
         ]);
     }
-    
+
     /**
      * Get received coffee chat requests for the authenticated user.
      */
     public function receivedRequests(Request $request): JsonResponse
     {
         $user = Auth::user();
-        
+
         $requests = $this->coffeeChatService->getRequestsForUser($user, 'received');
-        
+
         return response()->json([
             'success' => true,
             'data' => $requests,
         ]);
     }
-    
+
     /**
      * Get AI-generated coffee chat matches.
      */
     public function aiMatches(): JsonResponse
     {
         $user = Auth::user();
-        
+
         $matches = $this->coffeeChatService->generateAIMatches($user);
-        
+
         return response()->json([
             'success' => true,
             'data' => $matches->map(function ($match) {

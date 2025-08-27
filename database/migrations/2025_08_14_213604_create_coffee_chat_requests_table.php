@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->json('matching_criteria')->nullable(); // Industry, location, interests for AI matching
             $table->timestamps();
-            
+
             $table->index(['status']);
             $table->index(['requester_id']);
             $table->index(['recipient_id']);

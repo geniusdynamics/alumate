@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AnalyticsService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Validation\Rule;
 
 class AnalyticsController extends Controller
 {
@@ -23,20 +22,20 @@ class AnalyticsController extends Controller
     public function getEngagementMetrics(Request $request): JsonResponse
     {
         $filters = $this->validateFilters($request);
-        
+
         try {
             $metrics = $this->analyticsService->getEngagementMetrics($filters);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $metrics,
-                'message' => 'Engagement metrics retrieved successfully'
+                'message' => 'Engagement metrics retrieved successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve engagement metrics',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -47,20 +46,20 @@ class AnalyticsController extends Controller
     public function getAlumniActivity(Request $request): JsonResponse
     {
         $filters = $this->validateFilters($request);
-        
+
         try {
             $activity = $this->analyticsService->getAlumniActivity($filters);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $activity,
-                'message' => 'Alumni activity data retrieved successfully'
+                'message' => 'Alumni activity data retrieved successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve alumni activity data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -71,20 +70,20 @@ class AnalyticsController extends Controller
     public function getCommunityHealth(Request $request): JsonResponse
     {
         $filters = $this->validateFilters($request);
-        
+
         try {
             $health = $this->analyticsService->getCommunityHealth($filters);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $health,
-                'message' => 'Community health indicators retrieved successfully'
+                'message' => 'Community health indicators retrieved successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve community health indicators',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -95,20 +94,20 @@ class AnalyticsController extends Controller
     public function getPlatformUsage(Request $request): JsonResponse
     {
         $filters = $this->validateFilters($request);
-        
+
         try {
             $usage = $this->analyticsService->getPlatformUsage($filters);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $usage,
-                'message' => 'Platform usage statistics retrieved successfully'
+                'message' => 'Platform usage statistics retrieved successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve platform usage statistics',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -119,7 +118,7 @@ class AnalyticsController extends Controller
     public function getDashboardData(Request $request): JsonResponse
     {
         $filters = $this->validateFilters($request);
-        
+
         try {
             $data = [
                 'engagement_metrics' => $this->analyticsService->getEngagementMetrics($filters),
@@ -127,17 +126,17 @@ class AnalyticsController extends Controller
                 'community_health' => $this->analyticsService->getCommunityHealth($filters),
                 'platform_usage' => $this->analyticsService->getPlatformUsage($filters),
             ];
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $data,
-                'message' => 'Dashboard data retrieved successfully'
+                'message' => 'Dashboard data retrieved successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve dashboard data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -160,17 +159,17 @@ class AnalyticsController extends Controller
                 $validated['metrics'],
                 $validated['filters'] ?? []
             );
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $report,
-                'message' => 'Custom report generated successfully'
+                'message' => 'Custom report generated successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate custom report',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -207,16 +206,16 @@ class AnalyticsController extends Controller
 
             // Export the data
             $exportedData = $this->analyticsService->exportData($data, $validated['format']);
-            
+
             // Set appropriate headers
             $headers = $this->getExportHeaders($validated['format'], $validated['data_type']);
-            
+
             return Response::make($exportedData, 200, $headers);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to export data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -267,7 +266,7 @@ class AnalyticsController extends Controller
         return response()->json([
             'success' => true,
             'data' => $metrics,
-            'message' => 'Available metrics retrieved successfully'
+            'message' => 'Available metrics retrieved successfully',
         ]);
     }
 
@@ -277,12 +276,12 @@ class AnalyticsController extends Controller
     public function getAnalyticsSummary(Request $request): JsonResponse
     {
         $filters = $this->validateFilters($request);
-        
+
         try {
             $engagement = $this->analyticsService->getEngagementMetrics($filters);
             $activity = $this->analyticsService->getAlumniActivity($filters);
             $health = $this->analyticsService->getCommunityHealth($filters);
-            
+
             $summary = [
                 'key_metrics' => [
                     'total_users' => $engagement['total_users'],
@@ -297,17 +296,17 @@ class AnalyticsController extends Controller
                 ],
                 'alerts' => $this->generateAlerts($engagement, $health),
             ];
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $summary,
-                'message' => 'Analytics summary retrieved successfully'
+                'message' => 'Analytics summary retrieved successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve analytics summary',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -321,7 +320,7 @@ class AnalyticsController extends Controller
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'institution_id' => 'nullable|exists:institutions,id',
-            'graduation_year' => 'nullable|integer|min:1900|max:' . (date('Y') + 10),
+            'graduation_year' => 'nullable|integer|min:1900|max:'.(date('Y') + 10),
             'location' => 'nullable|string|max:255',
             'program' => 'nullable|string|max:255',
         ]);
@@ -332,8 +331,8 @@ class AnalyticsController extends Controller
      */
     private function getExportHeaders(string $format, string $dataType): array
     {
-        $filename = $dataType . '_' . date('Y-m-d_H-i-s');
-        
+        $filename = $dataType.'_'.date('Y-m-d_H-i-s');
+
         return match ($format) {
             'csv' => [
                 'Content-Type' => 'text/csv',
@@ -359,10 +358,10 @@ class AnalyticsController extends Controller
         if (count($data) < 2) {
             return 'stable';
         }
-        
+
         $first = reset($data);
         $last = end($data);
-        
+
         if (is_array($first) && isset($first['count'])) {
             $firstValue = $first['count'];
             $lastValue = $last['count'];
@@ -370,9 +369,9 @@ class AnalyticsController extends Controller
             $firstValue = $first;
             $lastValue = $last;
         }
-        
+
         $change = (($lastValue - $firstValue) / $firstValue) * 100;
-        
+
         if ($change > 5) {
             return 'increasing';
         } elseif ($change < -5) {
@@ -388,7 +387,7 @@ class AnalyticsController extends Controller
     private function generateAlerts(array $engagement, array $health): array
     {
         $alerts = [];
-        
+
         // Low engagement alert
         if ($engagement['engagement_rate'] < 10) {
             $alerts[] = [
@@ -398,7 +397,7 @@ class AnalyticsController extends Controller
                 'value' => $engagement['engagement_rate'],
             ];
         }
-        
+
         // Low network density alert
         if ($health['network_density'] < 5) {
             $alerts[] = [
@@ -408,7 +407,7 @@ class AnalyticsController extends Controller
                 'value' => $health['network_density'],
             ];
         }
-        
+
         // High growth alert
         if ($health['platform_growth_rate'] > 50) {
             $alerts[] = [
@@ -418,7 +417,7 @@ class AnalyticsController extends Controller
                 'value' => $health['platform_growth_rate'],
             ];
         }
-        
+
         return $alerts;
     }
 }

@@ -126,14 +126,14 @@ class Conversation extends Model
     public function getUnreadCountForUser(User $user): int
     {
         $participant = $this->participantDetails()->where('user_id', $user->id)->first();
-        
-        if (!$participant) {
+
+        if (! $participant) {
             return 0;
         }
 
         $lastReadAt = $participant->last_read_at;
-        
-        if (!$lastReadAt) {
+
+        if (! $lastReadAt) {
             return $this->messages()->count();
         }
 
@@ -153,7 +153,7 @@ class Conversation extends Model
     /**
      * Get conversation display name
      */
-    public function getDisplayName(User $currentUser = null): string
+    public function getDisplayName(?User $currentUser = null): string
     {
         if ($this->title) {
             return $this->title;
@@ -163,7 +163,7 @@ class Conversation extends Model
             $otherParticipant = $this->participants()
                 ->where('user_id', '!=', $currentUser->id)
                 ->first();
-            
+
             return $otherParticipant ? $otherParticipant->name : 'Unknown User';
         }
 

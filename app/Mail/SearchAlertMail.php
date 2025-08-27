@@ -29,7 +29,7 @@ class SearchAlertMail extends Mailable
     {
         $searchName = $this->alertData['search']->name;
         $newResultsCount = $this->alertData['new_results_count'];
-        
+
         return new Envelope(
             subject: "New results for your saved search: {$searchName} ({$newResultsCount} new)",
         );

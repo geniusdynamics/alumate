@@ -24,7 +24,7 @@ class ForumTag extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($tag) {
             if (empty($tag->slug)) {
                 $tag->slug = Str::slug($tag->name);

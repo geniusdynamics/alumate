@@ -58,6 +58,7 @@ class ProgramEffectiveness extends Model
     public function scopeRecent($query, int $years = 5)
     {
         $cutoffYear = now()->year - $years;
+
         return $query->where('graduation_year', '>=', $cutoffYear);
     }
 
@@ -67,7 +68,7 @@ class ProgramEffectiveness extends Model
         $rates = [
             $this->employment_rate_6_months,
             $this->employment_rate_1_year,
-            $this->employment_rate_2_years
+            $this->employment_rate_2_years,
         ];
 
         $trend = 'stable';
@@ -82,7 +83,7 @@ class ProgramEffectiveness extends Model
 
     public function getSalaryGrowthRateAttribute()
     {
-        if (!$this->avg_starting_salary || !$this->avg_salary_2_years) {
+        if (! $this->avg_starting_salary || ! $this->avg_salary_2_years) {
             return null;
         }
 

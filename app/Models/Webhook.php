@@ -20,16 +20,16 @@ class Webhook extends Model
         'description',
         'headers',
         'timeout',
-        'retry_attempts'
+        'retry_attempts',
     ];
 
     protected $casts = [
         'events' => 'array',
-        'headers' => 'array'
+        'headers' => 'array',
     ];
 
     protected $hidden = [
-        'secret'
+        'secret',
     ];
 
     public function user(): BelongsTo

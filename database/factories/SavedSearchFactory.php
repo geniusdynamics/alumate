@@ -19,7 +19,7 @@ class SavedSearchFactory extends Factory
             'filters' => [
                 'location' => $this->faker->city(),
                 'graduation_year' => $this->faker->numberBetween(2010, 2023),
-                'industry' => $this->faker->randomElement(['Technology', 'Finance', 'Healthcare', 'Education'])
+                'industry' => $this->faker->randomElement(['Technology', 'Finance', 'Healthcare', 'Education']),
             ],
             'result_count' => $this->faker->numberBetween(5, 100),
             'is_active' => $this->faker->boolean(80),

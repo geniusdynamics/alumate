@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('ended_at')->nullable();
             $table->json('session_data')->nullable(); // Screen dimensions, quality settings
             $table->timestamps();
-            
+
             $table->index(['call_id']);
             $table->index(['presenter_user_id']);
         });

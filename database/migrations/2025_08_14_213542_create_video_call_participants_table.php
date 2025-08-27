@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('left_at')->nullable();
             $table->json('connection_quality')->nullable(); // bandwidth, latency metrics
             $table->timestamps();
-            
+
             $table->unique(['call_id', 'user_id']);
             $table->index(['call_id']);
             $table->index(['user_id']);

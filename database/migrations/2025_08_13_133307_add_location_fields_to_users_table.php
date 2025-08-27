@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('country')->nullable()->after('longitude');
             $table->string('region')->nullable()->after('country');
             $table->enum('location_privacy', ['public', 'alumni_only', 'private'])
-                  ->default('alumni_only')
-                  ->after('region');
+                ->default('alumni_only')
+                ->after('region');
             $table->timestamp('location_updated_at')->nullable()->after('location_privacy');
-            
+
             // Add indexes for location-based queries
             $table->index(['latitude', 'longitude']);
             $table->index(['country']);
@@ -40,14 +40,14 @@ return new class extends Migration
             $table->dropIndex(['country']);
             $table->dropIndex(['region']);
             $table->dropIndex(['location_privacy']);
-            
+
             $table->dropColumn([
                 'latitude',
                 'longitude',
                 'country',
                 'region',
                 'location_privacy',
-                'location_updated_at'
+                'location_updated_at',
             ]);
         });
     }

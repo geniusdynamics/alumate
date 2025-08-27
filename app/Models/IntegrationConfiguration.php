@@ -50,11 +50,17 @@ class IntegrationConfiguration extends Model
 
     // Integration types
     public const TYPE_EMAIL_MARKETING = 'email_marketing';
+
     public const TYPE_CALENDAR = 'calendar';
+
     public const TYPE_SSO = 'sso';
+
     public const TYPE_CRM = 'crm';
+
     public const TYPE_PAYMENT = 'payment';
+
     public const TYPE_ANALYTICS = 'analytics';
+
     public const TYPE_WEBHOOK = 'webhook';
 
     // Relationships
@@ -160,11 +166,12 @@ class IntegrationConfiguration extends Model
 
     public function needsSync(): bool
     {
-        if (!$this->last_sync_at) {
+        if (! $this->last_sync_at) {
             return true;
         }
 
         $syncInterval = $this->sync_settings['interval_hours'] ?? 24;
+
         return $this->last_sync_at->diffInHours(now()) >= $syncInterval;
     }
 
@@ -278,7 +285,7 @@ class IntegrationConfiguration extends Model
 
     public function getWebhookUrl(): ?string
     {
-        if (!$this->webhook_settings || !$this->webhook_settings['enabled']) {
+        if (! $this->webhook_settings || ! $this->webhook_settings['enabled']) {
             return null;
         }
 
@@ -291,11 +298,11 @@ class IntegrationConfiguration extends Model
     public function generateWebhookToken(): string
     {
         $token = bin2hex(random_bytes(32));
-        
+
         $webhookSettings = $this->webhook_settings ?? [];
         $webhookSettings['token'] = $token;
         $webhookSettings['enabled'] = true;
-        
+
         $this->webhook_settings = $webhookSettings;
         $this->save();
 

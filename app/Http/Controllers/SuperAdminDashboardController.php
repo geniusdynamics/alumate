@@ -486,9 +486,9 @@ class SuperAdminDashboardController extends Controller
                 ->orderBy('date')
                 ->get(),
             'feature_usage' => [
-            'job_applications' => JobApplication::where('created_at', '>=', $startDate)->count(),
-            'profile_updates' => Graduate::where('last_profile_update', '>=', $startDate)->count(),
-            'job_posts' => Job::where('created_at', '>=', $startDate)->count(),
+                'job_applications' => JobApplication::where('created_at', '>=', $startDate)->count(),
+                'profile_updates' => Graduate::where('last_profile_update', '>=', $startDate)->count(),
+                'job_posts' => Job::where('created_at', '>=', $startDate)->count(),
             ],
         ];
     }

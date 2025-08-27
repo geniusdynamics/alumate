@@ -36,7 +36,7 @@ class Forum extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($forum) {
             if (empty($forum->slug)) {
                 $forum->slug = Str::slug($forum->name);
@@ -80,7 +80,7 @@ class Forum extends Model
 
     public function canUserAccess(User $user): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
@@ -94,7 +94,7 @@ class Forum extends Model
 
     public function incrementStats(string $type): void
     {
-        $this->increment($type . '_count');
+        $this->increment($type.'_count');
         $this->update(['last_activity_at' => now()]);
     }
 }

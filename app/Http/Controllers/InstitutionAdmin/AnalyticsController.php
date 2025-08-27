@@ -20,7 +20,7 @@ class AnalyticsController extends Controller
             ->latest('date')
             ->first();
 
-        if (!$snapshot) {
+        if (! $snapshot) {
             // Optionally, generate one on the fly if none exists
             // Or return an empty state
             return response()->json(['message' => 'No analytics data available yet.'], 404);
@@ -38,7 +38,7 @@ class AnalyticsController extends Controller
             ->latest('date')
             ->first();
 
-        if (!$snapshot) {
+        if (! $snapshot) {
             return response()->json(['message' => 'No course ROI data available yet.'], 404);
         }
 
@@ -54,7 +54,7 @@ class AnalyticsController extends Controller
             ->latest('date')
             ->first();
 
-        if (!$snapshot) {
+        if (! $snapshot) {
             return response()->json(['message' => 'No employer engagement data available yet.'], 404);
         }
 
@@ -70,7 +70,7 @@ class AnalyticsController extends Controller
             ->latest('date')
             ->first();
 
-        if (!$snapshot) {
+        if (! $snapshot) {
             return response()->json(['message' => 'No community health data available yet.'], 404);
         }
 

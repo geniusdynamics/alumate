@@ -118,9 +118,10 @@ class FundraisingAnalyticsController extends Controller
         }
 
         $campaigns = $query->get();
-        
+
         $roiMetrics = $campaigns->map(function ($campaign) {
             $performance = $this->analyticsService->getCampaignPerformanceMetrics($campaign);
+
             return [
                 'campaign_id' => $campaign->id,
                 'campaign_title' => $campaign->title,
@@ -153,7 +154,7 @@ class FundraisingAnalyticsController extends Controller
         ]);
 
         $analytics = $this->analyticsService->getDonorAnalytics($filters);
-        
+
         $engagementData = [
             'engagement_scores' => $analytics['engagement_scores'],
             'donor_tiers' => $analytics['donor_tiers'],
@@ -176,7 +177,7 @@ class FundraisingAnalyticsController extends Controller
         ]);
 
         $dashboard = $this->analyticsService->getFundraisingDashboard($filters);
-        
+
         return response()->json([
             'trends' => $dashboard['trends'],
             'giving_patterns' => $dashboard['giving_patterns'],

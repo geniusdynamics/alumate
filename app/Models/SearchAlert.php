@@ -16,13 +16,13 @@ class SearchAlert extends Model
         'frequency',
         'is_active',
         'last_sent_at',
-        'next_send_at'
+        'next_send_at',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'last_sent_at' => 'datetime',
-        'next_send_at' => 'datetime'
+        'next_send_at' => 'datetime',
     ];
 
     /**

@@ -18,13 +18,13 @@ class SavedSearch extends Model
         'filters',
         'result_count',
         'is_active',
-        'last_executed_at'
+        'last_executed_at',
     ];
 
     protected $casts = [
         'filters' => 'array',
         'is_active' => 'boolean',
-        'last_executed_at' => 'datetime'
+        'last_executed_at' => 'datetime',
     ];
 
     /**
