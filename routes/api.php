@@ -39,6 +39,19 @@ Route::get('/ping', function () {
     ]);
 });
 
+// Statistics API routes
+Route::prefix('statistics')->group(function () {
+    Route::get('health', [App\Http\Controllers\Api\StatisticsController::class, 'health']);
+    Route::get('platform-metrics', [App\Http\Controllers\Api\StatisticsController::class, 'platformMetrics']);
+    Route::post('batch', [App\Http\Controllers\Api\StatisticsController::class, 'batch']);
+    Route::get('{id}', [App\Http\Controllers\Api\StatisticsController::class, 'show']);
+    
+    // Admin routes
+    Route::middleware(['auth:sanctum', 'can:manage-statistics'])->group(function () {
+        Route::delete('cache', [App\Http\Controllers\Api\StatisticsController::class, 'clearCache']);
+    });
+});
+
 // Homepage Navigation
 Route::get('/homepage-navigation', [\App\Http\Controllers\Api\HomepageNavigationController::class, 'index']);
 

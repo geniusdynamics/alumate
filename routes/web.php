@@ -794,3 +794,24 @@ Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin
         Route::post('/{integration}/webhook-token', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'generateWebhookToken'])->name('webhook-token');
     });
 });
+// Component Library Demo Routes
+Route::middleware('auth')->prefix('component-library')->name('component-library.')->group(function () {
+    Route::get('/hero-demo', function () {
+        return Inertia::render('ComponentLibrary/HeroDemo');
+    })->name('hero-demo');
+});
+
+// Component Library Demo Routes
+Route::middleware(['auth'])->prefix('component-library')->name('component-library.')->group(function () {
+    Route::get('hero-demo', function () {
+        return Inertia::render('ComponentLibrary/HeroDemo');
+    })->name('hero-demo');
+    
+    Route::get('statistics-demo', function () {
+        return Inertia::render('ComponentLibrary/StatisticsDemo');
+    })->name('statistics-demo');
+    
+    Route::get('background-media-demo', function () {
+        return Inertia::render('ComponentLibrary/BackgroundMediaDemo');
+    })->name('background-media-demo');
+});

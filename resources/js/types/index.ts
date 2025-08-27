@@ -507,3 +507,18 @@ declare global {
     }
 }
 
+// Component Library Types
+export type {
+  ComponentCategory,
+  AudienceType,
+  BackgroundMediaType,
+  MediaAsset,
+  GradientConfig,
+  BackgroundMedia,
+  CTAButton,
+  StatisticCounter,
+  HeroComponentConfig,
+  ComponentInstance,
+  Component,
+  HeroSampleData
+} from './components'

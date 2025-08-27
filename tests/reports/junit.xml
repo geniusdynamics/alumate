@@ -1,81 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Unit\ComponentAnalyticModelTest" file="tests\Unit\ComponentAnalyticModelTest.php" tests="1" assertions="0" errors="1" failures="0" skipped="0" time="0.093288">
-    <testcase name="record view creates view event" file="tests\Unit\ComponentAnalyticModelTest.php::record view creates view event" class="Tests\Unit\ComponentAnalyticModelTest" classname="Tests.Unit.ComponentAnalyticModelTest" assertions="0" time="0.093288">
-      <error type="Illuminate\Contracts\Container\BindingResolutionException">record view creates view eventIlluminate\Contracts\Container\BindingResolutionException: Target class [config] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:315
-at vendor\stancl\tenancy\src\Database\Concerns\CentralConnection.php:11
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1928
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1708
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1606
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1642
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:347
-at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
-at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
-at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:151
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
-at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
-at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:157
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
-at tests\Unit\ComponentAnalyticModelTest.php:63
+  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="11" assertions="23" errors="1" failures="1" skipped="1" time="14.105167">
+    <testsuite name="Feature" tests="11" assertions="23" errors="1" failures="1" skipped="1" time="14.105167">
+      <testsuite name="Tests\Feature\ComponentLibrary\AnimatedCounterTest" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php" tests="11" assertions="23" errors="1" failures="1" skipped="1" time="14.105167">
+        <testcase name="`Statistics API` → it returns health check status" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it returns health check status" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="2" time="10.575512"/>
+        <testcase name="`Statistics API` → it returns platform metrics" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it returns platform metrics" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="0" time="0.263901">
+          <error type="Illuminate\Database\QueryException">`Statistics API` → it returns platform metricsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "profile_completed" of relation "users" does not exist
+LINE 1: ...sert into "users" ("created_at", "email", "name", "profile_c...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("created_at", "email", "name", "profile_completed", "role", "tenant_id", "updated_at") values (2025-08-27 15:27:59, alumni1@test.com, Test Alumni 1, 1, alumni, 1, 2025-08-27 15:27:59), (2025-08-27 15:27:59, alumni2@test.com, Test Alumni 2, 1, alumni, 1, 2025-08-27 15:27:59), (2025-08-27 15:27:59, student@test.com, Test Student, 0, student, 1, 2025-08-27 15:27:59))&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:521
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3747
+at tests\Feature\ComponentLibrary\AnimatedCounterTest.php:152
+at tests\Feature\ComponentLibrary\AnimatedCounterTest.php:28
 Caused by
-ReflectionException: Class "config" does not exist
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "profile_completed" of relation "users" does not exist
+LINE 1: ...sert into "users" ("created_at", "email", "name", "profile_c...
+                                                             ^
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:315
-at vendor\stancl\tenancy\src\Database\Concerns\CentralConnection.php:11
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1928
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1708
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1606
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1642
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:347
-at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
-at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
-at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:151
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:506
-at vendor\laravel\framework\src\Illuminate\Collections\Arr.php:754
-at vendor\laravel\framework\src\Illuminate\Collections\Collection.php:809
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:501
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:455
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:439
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\GuardsAttributes.php:157
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:438
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:409
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:298
-at tests\Unit\ComponentAnalyticModelTest.php:63</error>
-    </testcase>
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:568
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:557
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:521
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3747
+at tests\Feature\ComponentLibrary\AnimatedCounterTest.php:152
+at tests\Feature\ComponentLibrary\AnimatedCounterTest.php:28</error>
+        </testcase>
+        <testcase name="`Statistics API` → it returns single statistic by id" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it returns single statistic by id" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="2" time="0.365125"/>
+        <testcase name="`Statistics API` → it returns 404 for non-existent statistic" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it returns 404 for non-existent statistic" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="2" time="0.314514"/>
+        <testcase name="`Statistics API` → it returns batch statistics" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it returns batch statistics" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="3" time="0.416722"/>
+        <testcase name="`Statistics API` → it validates batch request parameters" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it validates batch request parameters" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="3" time="0.293170"/>
+        <testcase name="`Statistics API` → it handles partial failures in batch requests" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it handles partial failures in batch requests" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="4" time="0.363571"/>
+        <testcase name="`Statistics API` → it caches statistics data" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it caches statistics data" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="4" time="0.279173"/>
+        <testcase name="`Statistics API` → it clears cache when requested" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics API` → it clears cache when requested" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="2" time="0.687990">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">`Statistics API` → it clears cache when requestedFailed asserting that an array contains 500.&#13;
+at tests\Feature\ComponentLibrary\AnimatedCounterTest.php:129</failure>
+        </testcase>
+        <testcase name="`Statistics Service Integration` → it handles database connection errors gracefully" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics Service Integration` → it handles database connection errors gracefully" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="0" time="0.296614">
+          <skipped/>
+        </testcase>
+        <testcase name="`Statistics Service Integration` → it returns fallback values for database statistics when query fails" file="tests\Feature\ComponentLibrary\AnimatedCounterTest.php::`Statistics Service Integration` → it returns fallback values for database statistics when query fails" class="Tests\Feature\ComponentLibrary\AnimatedCounterTest" classname="Tests.Feature.ComponentLibrary.AnimatedCounterTest" assertions="1" time="0.248873"/>
+      </testsuite>
+    </testsuite>
   </testsuite>
 </testsuites>
