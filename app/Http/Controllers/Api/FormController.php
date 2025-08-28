@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\CrmIntegrationService;
 use App\Services\GdprComplianceService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class FormController extends Controller
 {
@@ -18,6 +18,7 @@ class FormController extends Controller
         private CrmIntegrationService $crmService,
         private GdprComplianceService $gdprService
     ) {}
+
     /**
      * Handle form submission
      */
@@ -27,55 +28,55 @@ class FormController extends Controller
             // Get form configuration
             $formConfig = $request->input('_form_config', []);
             $formData = $request->except(['_form_config', '_crm_config']);
-            
+
             // Validate form data based on configuration
             $validator = $this->validateFormData($formData, $formConfig);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
-            
+
             // Process form submission
             $submissionId = $this->processFormSubmission($formData, $formConfig, $request);
-            
+
             // Handle CRM integration if configured
             if ($request->has('_crm_config')) {
                 $this->handleCrmIntegration($formData, $request->input('_crm_config'));
             }
-            
+
             // Send notifications if configured
             if (isset($formConfig['notifications']) && $formConfig['notifications']['enabled']) {
                 $this->sendFormNotifications($formData, $formConfig);
             }
-            
+
             // Track form submission
             $this->trackFormSubmission($formData, $formConfig, $request);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Form submitted successfully',
-                'submission_id' => $submissionId
+                'submission_id' => $submissionId,
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Form submission error: ' . $e->getMessage(), [
+            Log::error('Form submission error: '.$e->getMessage(), [
                 'form_data' => $formData ?? null,
                 'form_config' => $formConfig ?? null,
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing your form submission'
+                'message' => 'An error occurred while processing your form submission',
             ], 500);
         }
     }
-    
+
     /**
      * Handle auto-save functionality
      */
@@ -85,37 +86,37 @@ class FormController extends Controller
             $formData = $request->input('formData', []);
             $formConfig = $request->input('formConfig', []);
             $userId = auth()->id();
-            
+
             // Create cache key for auto-save
-            $cacheKey = "form_autosave_{$userId}_" . md5(json_encode($formConfig));
-            
+            $cacheKey = "form_autosave_{$userId}_".md5(json_encode($formConfig));
+
             // Store form data in cache for 24 hours
             Cache::put($cacheKey, [
                 'form_data' => $formData,
                 'form_config' => $formConfig,
                 'timestamp' => now()->toISOString(),
-                'user_id' => $userId
+                'user_id' => $userId,
             ], now()->addHours(24));
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Form data auto-saved successfully',
-                'cache_key' => $cacheKey
+                'cache_key' => $cacheKey,
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Auto-save error: ' . $e->getMessage(), [
+            Log::error('Auto-save error: '.$e->getMessage(), [
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to auto-save form data'
+                'message' => 'Failed to auto-save form data',
             ], 500);
         }
     }
-    
+
     /**
      * Send form notifications
      */
@@ -124,14 +125,14 @@ class FormController extends Controller
         try {
             $formData = $request->input('formData', []);
             $notifications = $request->input('notifications', []);
-            
-            if (!$notifications['enabled']) {
+
+            if (! $notifications['enabled']) {
                 return response()->json([
                     'success' => true,
-                    'message' => 'Notifications disabled'
+                    'message' => 'Notifications disabled',
                 ]);
             }
-            
+
             // Send email notifications
             if (isset($notifications['recipients'])) {
                 foreach ($notifications['recipients'] as $recipient) {
@@ -139,30 +140,30 @@ class FormController extends Controller
                         $this->formatNotificationMessage($formData, $notifications),
                         function ($message) use ($recipient, $notifications) {
                             $message->to($recipient)
-                                   ->subject($notifications['subject'] ?? 'New Form Submission');
+                                ->subject($notifications['subject'] ?? 'New Form Submission');
                         }
                     );
                 }
             }
-            
+
             return response()->json([
                 'success' => true,
-                'message' => 'Notifications sent successfully'
+                'message' => 'Notifications sent successfully',
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error('Notification sending error: ' . $e->getMessage(), [
+            Log::error('Notification sending error: '.$e->getMessage(), [
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send notifications'
+                'message' => 'Failed to send notifications',
             ], 500);
         }
     }
-    
+
     /**
      * Validate form data based on configuration
      */
@@ -170,16 +171,16 @@ class FormController extends Controller
     {
         $rules = [];
         $messages = [];
-        
+
         if (isset($formConfig['fields'])) {
             foreach ($formConfig['fields'] as $field) {
                 $fieldRules = [];
-                
+
                 // Required validation
                 if ($field['required'] ?? false) {
                     $fieldRules[] = 'required';
                 }
-                
+
                 // Type-specific validation
                 switch ($field['type']) {
                     case 'email':
@@ -194,39 +195,39 @@ class FormController extends Controller
                     case 'number':
                         $fieldRules[] = 'numeric';
                         if (isset($field['min'])) {
-                            $fieldRules[] = 'min:' . $field['min'];
+                            $fieldRules[] = 'min:'.$field['min'];
                         }
                         if (isset($field['max'])) {
-                            $fieldRules[] = 'max:' . $field['max'];
+                            $fieldRules[] = 'max:'.$field['max'];
                         }
                         break;
                 }
-                
-                if (!empty($fieldRules)) {
+
+                if (! empty($fieldRules)) {
                     $rules[$field['name']] = $fieldRules;
                 }
-                
+
                 // Custom error messages
                 if ($field['required'] ?? false) {
-                    $messages[$field['name'] . '.required'] = $field['label'] . ' is required';
+                    $messages[$field['name'].'.required'] = $field['label'].' is required';
                 }
                 if ($field['type'] === 'email') {
-                    $messages[$field['name'] . '.email'] = $field['label'] . ' must be a valid email address';
+                    $messages[$field['name'].'.email'] = $field['label'].' must be a valid email address';
                 }
             }
         }
-        
+
         return Validator::make($formData, $rules, $messages);
     }
-    
+
     /**
      * Process form submission
      */
     private function processFormSubmission(array $formData, array $formConfig, Request $request): string
     {
         // Generate submission ID
-        $submissionId = 'form_' . uniqid() . '_' . time();
-        
+        $submissionId = 'form_'.uniqid().'_'.time();
+
         // Store submission data (in a real app, you'd save to database)
         Cache::put("form_submission_{$submissionId}", [
             'id' => $submissionId,
@@ -235,12 +236,12 @@ class FormController extends Controller
             'user_id' => auth()->id(),
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
-            'submitted_at' => now()->toISOString()
+            'submitted_at' => now()->toISOString(),
         ], now()->addDays(30));
-        
+
         return $submissionId;
     }
-    
+
     /**
      * Handle individual signup form submission
      */
@@ -248,19 +249,19 @@ class FormController extends Controller
     {
         try {
             $formData = $request->validated();
-            
+
             // Process form submission
             $submissionId = $this->processFormSubmission($formData, ['template_id' => 'individual-signup'], $request);
-            
+
             // Handle CRM integration
             $crmResult = $this->handleAdvancedCrmIntegration($formData, 'individual-signup');
-            
+
             // Send notifications
             $this->sendTemplateNotifications($formData, 'individual-signup');
-            
+
             // Track submission
             $this->trackFormSubmission($formData, ['template_id' => 'individual-signup'], $request);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Registration submitted successfully! Welcome to our alumni network.',
@@ -269,19 +270,19 @@ class FormController extends Controller
                 'next_steps' => [
                     'Check your email for a confirmation message',
                     'Complete your profile setup',
-                    'Explore networking opportunities'
-                ]
+                    'Explore networking opportunities',
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error("Individual signup form submission error: " . $e->getMessage(), [
+            Log::error('Individual signup form submission error: '.$e->getMessage(), [
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing your registration. Please try again.'
+                'message' => 'An error occurred while processing your registration. Please try again.',
             ], 500);
         }
     }
@@ -293,22 +294,22 @@ class FormController extends Controller
     {
         try {
             $formData = $request->validated();
-            
+
             // Process form submission
             $submissionId = $this->processFormSubmission($formData, ['template_id' => 'institution-demo-request'], $request);
-            
+
             // Handle CRM integration
             $crmResult = $this->handleAdvancedCrmIntegration($formData, 'institution-demo-request');
-            
+
             // Send notifications
             $this->sendTemplateNotifications($formData, 'institution-demo-request');
-            
+
             // Track submission
             $this->trackFormSubmission($formData, ['template_id' => 'institution-demo-request'], $request);
-            
+
             // Calculate priority score for sales team
             $priorityScore = $this->calculateLeadScore($formData, 'institution-demo-request');
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Demo request submitted successfully! Our team will contact you soon.',
@@ -318,19 +319,19 @@ class FormController extends Controller
                 'next_steps' => [
                     'Our sales team will review your request within 24 hours',
                     'You will receive a calendar link to schedule your demo',
-                    'Prepare any specific questions about your use case'
-                ]
+                    'Prepare any specific questions about your use case',
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error("Institution demo request form submission error: " . $e->getMessage(), [
+            Log::error('Institution demo request form submission error: '.$e->getMessage(), [
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing your demo request. Please try again.'
+                'message' => 'An error occurred while processing your demo request. Please try again.',
             ], 500);
         }
     }
@@ -342,22 +343,22 @@ class FormController extends Controller
     {
         try {
             $formData = $request->validated();
-            
+
             // Process form submission
             $submissionId = $this->processFormSubmission($formData, ['template_id' => 'contact-general'], $request);
-            
+
             // Handle CRM integration
             $crmResult = $this->handleAdvancedCrmIntegration($formData, 'contact-general');
-            
+
             // Send notifications
             $this->sendTemplateNotifications($formData, 'contact-general');
-            
+
             // Track submission
             $this->trackFormSubmission($formData, ['template_id' => 'contact-general'], $request);
-            
+
             // Generate ticket number for tracking
-            $ticketNumber = 'TICKET-' . strtoupper(substr($submissionId, -8));
-            
+            $ticketNumber = 'TICKET-'.strtoupper(substr($submissionId, -8));
+
             return response()->json([
                 'success' => true,
                 'message' => 'Your message has been sent successfully!',
@@ -368,19 +369,19 @@ class FormController extends Controller
                 'next_steps' => [
                     'You will receive an email confirmation shortly',
                     'Our team will respond based on your priority level',
-                    'Keep your ticket number for reference: ' . $ticketNumber
-                ]
+                    'Keep your ticket number for reference: '.$ticketNumber,
+                ],
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error("Contact form submission error: " . $e->getMessage(), [
+            Log::error('Contact form submission error: '.$e->getMessage(), [
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while sending your message. Please try again.'
+                'message' => 'An error occurred while sending your message. Please try again.',
             ], 500);
         }
     }
@@ -393,40 +394,40 @@ class FormController extends Controller
         try {
             $formData = $request->validated();
             $formConfig = $request->input('_form_config', []);
-            
+
             // Process form submission
             $submissionId = $this->processFormSubmission($formData, $formConfig, $request);
-            
+
             // Handle CRM integration if configured
             if (isset($formConfig['crm_integration']) && $formConfig['crm_integration']['enabled']) {
                 $crmResult = $this->handleDynamicCrmIntegration($formData, $formConfig);
             }
-            
+
             // Send notifications if configured
             if (isset($formConfig['notifications']) && $formConfig['notifications']['enabled']) {
                 $this->sendDynamicFormNotifications($formData, $formConfig);
             }
-            
+
             // Track submission
             $this->trackFormSubmission($formData, $formConfig, $request);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => $formConfig['success_message'] ?? 'Form submitted successfully!',
                 'submission_id' => $submissionId,
-                'crm_result' => $crmResult ?? null
+                'crm_result' => $crmResult ?? null,
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error("Dynamic form submission error: " . $e->getMessage(), [
+            Log::error('Dynamic form submission error: '.$e->getMessage(), [
                 'form_config' => $formConfig ?? null,
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing your form submission. Please try again.'
+                'message' => 'An error occurred while processing your form submission. Please try again.',
             ], 500);
         }
     }
@@ -440,7 +441,7 @@ class FormController extends Controller
             'email' => 'required|email',
             'first_name' => 'nullable|string|max:50',
             'newsletter_interests' => 'nullable|array',
-            'email_frequency' => 'nullable|in:weekly,monthly,quarterly'
+            'email_frequency' => 'nullable|in:weekly,monthly,quarterly',
         ]);
     }
 
@@ -453,9 +454,9 @@ class FormController extends Controller
             'attendee_name' => 'required|string',
             'email' => 'required|email',
             'phone' => 'required|regex:/^[\+]?[1-9][\d]{0,15}$/',
-            'graduation_year' => 'required|integer|min:1950|max:' . (date('Y') + 5),
+            'graduation_year' => 'required|integer|min:1950|max:'.(date('Y') + 5),
             'guest_count' => 'nullable|integer|min:0|max:5',
-            'dietary_restrictions' => 'nullable|string|max:500'
+            'dietary_restrictions' => 'nullable|string|max:500',
         ]);
     }
 
@@ -467,46 +468,46 @@ class FormController extends Controller
         try {
             // Validate form data
             $validator = Validator::make($request->all(), $validationRules);
-            
+
             if ($validator->fails()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Validation failed',
-                    'errors' => $validator->errors()
+                    'errors' => $validator->errors(),
                 ], 422);
             }
 
             $formData = $validator->validated();
-            
+
             // Process form submission
             $submissionId = $this->processFormSubmission($formData, ['template_id' => $templateId], $request);
-            
+
             // Handle CRM integration based on template
             $crmResult = $this->handleAdvancedCrmIntegration($formData, $templateId);
-            
+
             // Send template-specific notifications
             $this->sendTemplateNotifications($formData, $templateId);
-            
+
             // Track form submission
             $this->trackFormSubmission($formData, ['template_id' => $templateId], $request);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => $this->getSuccessMessage($templateId),
                 'submission_id' => $submissionId,
-                'crm_result' => $crmResult
+                'crm_result' => $crmResult,
             ]);
-            
+
         } catch (\Exception $e) {
-            Log::error("Form submission error for template {$templateId}: " . $e->getMessage(), [
+            Log::error("Form submission error for template {$templateId}: ".$e->getMessage(), [
                 'template_id' => $templateId,
                 'user_id' => auth()->id(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return response()->json([
                 'success' => false,
-                'message' => 'An error occurred while processing your form submission'
+                'message' => 'An error occurred while processing your form submission',
             ], 500);
         }
     }
@@ -518,44 +519,44 @@ class FormController extends Controller
     {
         try {
             $crmConfig = $this->getCrmConfigForTemplate($templateId);
-            
-            if (!$crmConfig['enabled']) {
+
+            if (! $crmConfig['enabled']) {
                 return ['success' => true, 'message' => 'CRM integration disabled'];
             }
 
             // Map form data to CRM fields
             $mappedData = $this->mapFormDataToCrm($formData, $crmConfig['mapping']);
-            
+
             // Calculate lead score
             $leadScore = $this->calculateLeadScore($formData, $templateId);
-            
+
             // Add template-specific data
             $crmData = array_merge($mappedData, [
                 'lead_score' => $leadScore,
                 'source' => 'form_submission',
                 'template_id' => $templateId,
                 'tags' => $crmConfig['tags'],
-                'submitted_at' => now()->toISOString()
+                'submitted_at' => now()->toISOString(),
             ]);
 
             // Send to CRM (mock implementation)
             $crmResponse = $this->sendToCrm($crmData, $crmConfig);
-            
+
             Log::info('CRM integration successful', [
                 'template_id' => $templateId,
                 'provider' => $crmConfig['provider'],
                 'lead_score' => $leadScore,
-                'crm_response' => $crmResponse
+                'crm_response' => $crmResponse,
             ]);
-            
+
             return $crmResponse;
-            
+
         } catch (\Exception $e) {
-            Log::error('CRM integration failed: ' . $e->getMessage(), [
+            Log::error('CRM integration failed: '.$e->getMessage(), [
                 'template_id' => $templateId,
-                'form_data_keys' => array_keys($formData)
+                'form_data_keys' => array_keys($formData),
             ]);
-            
+
             return ['success' => false, 'error' => $e->getMessage()];
         }
     }
@@ -579,9 +580,9 @@ class FormController extends Controller
                     'current_job_title' => 'jobtitle',
                     'graduation_year' => 'hs_graduation_year',
                     'major' => 'hs_field_of_study',
-                    'industry' => 'industry'
+                    'industry' => 'industry',
                 ],
-                'tags' => ['alumni', 'individual', 'signup', 'qualified']
+                'tags' => ['alumni', 'individual', 'signup', 'qualified'],
             ],
             'institution-demo-request' => [
                 'enabled' => true,
@@ -597,9 +598,9 @@ class FormController extends Controller
                     'alumni_count' => 'Alumni_Count__c',
                     'budget_range' => 'Budget_Range__c',
                     'implementation_timeline' => 'Timeline__c',
-                    'current_challenges' => 'Description'
+                    'current_challenges' => 'Description',
                 ],
-                'tags' => ['institution', 'demo-request', 'qualified-lead', 'high-priority']
+                'tags' => ['institution', 'demo-request', 'qualified-lead', 'high-priority'],
             ],
             'contact-general' => [
                 'enabled' => true,
@@ -613,9 +614,9 @@ class FormController extends Controller
                     'subject' => 'subject',
                     'message' => 'content',
                     'inquiry_category' => 'hs_ticket_category',
-                    'priority_level' => 'hs_ticket_priority'
+                    'priority_level' => 'hs_ticket_priority',
                 ],
-                'tags' => ['contact_form', 'support_inquiry']
+                'tags' => ['contact_form', 'support_inquiry'],
             ],
             'newsletter-signup' => [
                 'enabled' => true,
@@ -623,9 +624,9 @@ class FormController extends Controller
                 'endpoint' => '/api/crm/hubspot/contacts',
                 'mapping' => [
                     'email' => 'email',
-                    'first_name' => 'firstname'
+                    'first_name' => 'firstname',
                 ],
-                'tags' => ['newsletter', 'subscriber']
+                'tags' => ['newsletter', 'subscriber'],
             ],
             'event-registration' => [
                 'enabled' => true,
@@ -635,10 +636,10 @@ class FormController extends Controller
                     'attendee_name' => 'name',
                     'email' => 'email',
                     'phone' => 'phone',
-                    'graduation_year' => 'hs_graduation_year'
+                    'graduation_year' => 'hs_graduation_year',
                 ],
-                'tags' => ['event_registration', 'attendee']
-            ]
+                'tags' => ['event_registration', 'attendee'],
+            ],
         ];
 
         return $configs[$templateId] ?? ['enabled' => false];
@@ -650,50 +651,50 @@ class FormController extends Controller
     private function calculateLeadScore(array $formData, string $templateId): int
     {
         $baseScore = 0;
-        
+
         // Template-specific base scores
         $baseScores = [
             'individual-signup' => 60,
             'institution-demo-request' => 85,
             'contact-general' => 30,
             'newsletter-signup' => 25,
-            'event-registration' => 40
+            'event-registration' => 40,
         ];
-        
+
         $score = $baseScores[$templateId] ?? 0;
-        
+
         // Score based on completeness
         $totalFields = count($formData);
-        $completedFields = count(array_filter($formData, function($value) {
-            return !empty($value);
+        $completedFields = count(array_filter($formData, function ($value) {
+            return ! empty($value);
         }));
-        
+
         $completenessScore = ($completedFields / $totalFields) * 20;
         $score += $completenessScore;
-        
+
         // Template-specific scoring
         switch ($templateId) {
             case 'institution-demo-request':
                 if (isset($formData['decision_role']) && $formData['decision_role'] === 'decision_maker') {
                     $score += 25;
                 }
-                if (isset($formData['budget_range']) && !str_contains($formData['budget_range'], '<')) {
+                if (isset($formData['budget_range']) && ! str_contains($formData['budget_range'], '<')) {
                     $score += 20;
                 }
                 if (isset($formData['implementation_timeline']) && in_array($formData['implementation_timeline'], ['immediate', '1-3months'])) {
                     $score += 15;
                 }
                 break;
-                
+
             case 'individual-signup':
-                if (!empty($formData['current_company'])) {
+                if (! empty($formData['current_company'])) {
                     $score += 15;
                 }
-                if (!empty($formData['current_job_title'])) {
+                if (! empty($formData['current_job_title'])) {
                     $score += 10;
                 }
                 break;
-                
+
             case 'contact-general':
                 if (isset($formData['priority_level']) && $formData['priority_level'] === 'urgent') {
                     $score += 20;
@@ -703,7 +704,7 @@ class FormController extends Controller
                 }
                 break;
         }
-        
+
         return min(max($score, 0), 100); // Clamp between 0-100
     }
 
@@ -713,13 +714,13 @@ class FormController extends Controller
     private function mapFormDataToCrm(array $formData, array $mapping): array
     {
         $mappedData = [];
-        
+
         foreach ($mapping as $formField => $crmField) {
             if (isset($formData[$formField])) {
                 $mappedData[$crmField] = $formData[$formField];
             }
         }
-        
+
         return $mappedData;
     }
 
@@ -732,13 +733,13 @@ class FormController extends Controller
         Log::info('Sending data to CRM', [
             'provider' => $config['provider'],
             'endpoint' => $config['endpoint'],
-            'data_keys' => array_keys($data)
+            'data_keys' => array_keys($data),
         ]);
-        
+
         return [
             'success' => true,
-            'lead_id' => 'lead_' . uniqid(),
-            'provider' => $config['provider']
+            'lead_id' => 'lead_'.uniqid(),
+            'provider' => $config['provider'],
         ];
     }
 
@@ -749,24 +750,24 @@ class FormController extends Controller
     {
         try {
             $notificationConfig = $this->getNotificationConfigForTemplate($templateId);
-            
-            if (!$notificationConfig['enabled']) {
+
+            if (! $notificationConfig['enabled']) {
                 return;
             }
-            
+
             $recipients = $this->determineNotificationRecipients($formData, $templateId);
             $subject = $this->processTemplateString($notificationConfig['subject'], $formData);
             $message = $this->formatTemplateNotificationMessage($formData, $templateId);
-            
+
             foreach ($recipients as $recipient) {
                 Mail::raw($message, function ($mail) use ($recipient, $subject) {
                     $mail->to($recipient)->subject($subject);
                 });
             }
-            
+
         } catch (\Exception $e) {
-            Log::error('Template notification failed: ' . $e->getMessage(), [
-                'template_id' => $templateId
+            Log::error('Template notification failed: '.$e->getMessage(), [
+                'template_id' => $templateId,
             ]);
         }
     }
@@ -780,28 +781,28 @@ class FormController extends Controller
             'individual-signup' => [
                 'enabled' => true,
                 'subject' => 'New Alumni Registration: {{first_name}} {{last_name}}',
-                'recipients' => ['alumni@company.com']
+                'recipients' => ['alumni@company.com'],
             ],
             'institution-demo-request' => [
                 'enabled' => true,
                 'subject' => 'High Priority Demo Request: {{institution_name}} ({{alumni_count}} alumni)',
-                'recipients' => ['sales@company.com', 'demos@company.com']
+                'recipients' => ['sales@company.com', 'demos@company.com'],
             ],
             'contact-general' => [
                 'enabled' => true,
                 'subject' => '[{{priority_level|upper}}] {{inquiry_category|title}}: {{subject}}',
-                'recipients' => [] // Dynamic routing
+                'recipients' => [], // Dynamic routing
             ],
             'newsletter-signup' => [
                 'enabled' => true,
                 'subject' => 'New Newsletter Subscription',
-                'recipients' => ['marketing@company.com']
+                'recipients' => ['marketing@company.com'],
             ],
             'event-registration' => [
                 'enabled' => true,
                 'subject' => 'New Event Registration: {{attendee_name}}',
-                'recipients' => ['events@company.com']
-            ]
+                'recipients' => ['events@company.com'],
+            ],
         ];
 
         return $configs[$templateId] ?? ['enabled' => false];
@@ -814,7 +815,7 @@ class FormController extends Controller
     {
         $config = $this->getNotificationConfigForTemplate($templateId);
         $recipients = $config['recipients'] ?? [];
-        
+
         // Dynamic routing for contact forms
         if ($templateId === 'contact-general' && isset($formData['inquiry_category'])) {
             $routingMap = [
@@ -826,12 +827,12 @@ class FormController extends Controller
                 'privacy' => ['privacy@company.com', 'legal@company.com'],
                 'bug_report' => ['support@company.com', 'dev@company.com'],
                 'feature_request' => ['product@company.com'],
-                'general' => ['info@company.com']
+                'general' => ['info@company.com'],
             ];
-            
+
             $categoryRecipients = $routingMap[$formData['inquiry_category']] ?? ['info@company.com'];
             $recipients = array_merge($recipients, $categoryRecipients);
-            
+
             // Priority-based routing
             if (isset($formData['priority_level'])) {
                 if ($formData['priority_level'] === 'urgent') {
@@ -842,7 +843,7 @@ class FormController extends Controller
                 }
             }
         }
-        
+
         return array_unique($recipients);
     }
 
@@ -851,11 +852,11 @@ class FormController extends Controller
      */
     private function processTemplateString(string $template, array $data): string
     {
-        return preg_replace_callback('/\{\{(\w+)(?:\|(\w+))?\}\}/', function($matches) use ($data) {
+        return preg_replace_callback('/\{\{(\w+)(?:\|(\w+))?\}\}/', function ($matches) use ($data) {
             $key = $matches[1];
             $filter = $matches[2] ?? null;
             $value = $data[$key] ?? '';
-            
+
             if ($filter) {
                 switch ($filter) {
                     case 'upper':
@@ -869,7 +870,7 @@ class FormController extends Controller
                         break;
                 }
             }
-            
+
             return $value;
         }, $template);
     }
@@ -880,18 +881,18 @@ class FormController extends Controller
     private function formatTemplateNotificationMessage(array $formData, string $templateId): string
     {
         $message = "New form submission received:\n";
-        $message .= "Template: " . ucwords(str_replace('-', ' ', $templateId)) . "\n\n";
-        
+        $message .= 'Template: '.ucwords(str_replace('-', ' ', $templateId))."\n\n";
+
         foreach ($formData as $key => $value) {
             if (is_array($value)) {
                 $value = implode(', ', $value);
             }
-            $message .= ucfirst(str_replace('_', ' ', $key)) . ": {$value}\n";
+            $message .= ucfirst(str_replace('_', ' ', $key)).": {$value}\n";
         }
-        
-        $message .= "\nSubmitted at: " . now()->format('Y-m-d H:i:s');
-        $message .= "\nUser ID: " . (auth()->id() ?? 'Guest');
-        
+
+        $message .= "\nSubmitted at: ".now()->format('Y-m-d H:i:s');
+        $message .= "\nUser ID: ".(auth()->id() ?? 'Guest');
+
         return $message;
     }
 
@@ -905,12 +906,12 @@ class FormController extends Controller
             'institution-demo-request' => 'Thank you for your interest! Our team will contact you within 24 hours to schedule your personalized demo.',
             'contact-general' => 'Thank you for contacting us! Your inquiry has been received and routed to the appropriate team.',
             'newsletter-signup' => 'Thank you for subscribing! Check your email to confirm your subscription.',
-            'event-registration' => 'Registration successful! You will receive a confirmation email shortly.'
+            'event-registration' => 'Registration successful! You will receive a confirmation email shortly.',
         ];
-        
+
         return $messages[$templateId] ?? 'Form submitted successfully!';
     }
-    
+
     /**
      * Send form notifications
      */
@@ -918,46 +919,46 @@ class FormController extends Controller
     {
         try {
             $notifications = $formConfig['notifications'] ?? [];
-            
-            if (!($notifications['enabled'] ?? false)) {
+
+            if (! ($notifications['enabled'] ?? false)) {
                 return;
             }
-            
+
             $message = $this->formatNotificationMessage($formData, $notifications);
-            $subject = $notifications['subject'] ?? 'New Form Submission: ' . ($formConfig['title'] ?? 'Form');
-            
+            $subject = $notifications['subject'] ?? 'New Form Submission: '.($formConfig['title'] ?? 'Form');
+
             foreach ($notifications['recipients'] ?? [] as $recipient) {
                 Mail::raw($message, function ($mail) use ($recipient, $subject) {
                     $mail->to($recipient)->subject($subject);
                 });
             }
-            
+
         } catch (\Exception $e) {
-            Log::error('Form notification failed: ' . $e->getMessage());
+            Log::error('Form notification failed: '.$e->getMessage());
             // Don't fail the form submission if notifications fail
         }
     }
-    
+
     /**
      * Format notification message
      */
     private function formatNotificationMessage(array $formData, array $notifications): string
     {
         $message = "New form submission received:\n\n";
-        
+
         foreach ($formData as $key => $value) {
             if (is_array($value)) {
                 $value = implode(', ', $value);
             }
-            $message .= ucfirst(str_replace('_', ' ', $key)) . ": {$value}\n";
+            $message .= ucfirst(str_replace('_', ' ', $key)).": {$value}\n";
         }
-        
-        $message .= "\nSubmitted at: " . now()->format('Y-m-d H:i:s');
-        $message .= "\nUser ID: " . auth()->id();
-        
+
+        $message .= "\nSubmitted at: ".now()->format('Y-m-d H:i:s');
+        $message .= "\nUser ID: ".auth()->id();
+
         return $message;
     }
-    
+
     /**
      * Track form submission for analytics
      */
@@ -972,15 +973,40 @@ class FormController extends Controller
                 'user_id' => auth()->id(),
                 'submission_time' => now()->toISOString(),
                 'ip_address' => $request->ip(),
-                'user_agent' => $request->userAgent()
+                'user_agent' => $request->userAgent(),
             ];
-            
+
             // In a real implementation, you would send this to your analytics service
             Log::info('Form submission tracked', $trackingData);
-            
+
         } catch (\Exception $e) {
-            Log::error('Form tracking failed: ' . $e->getMessage());
+            Log::error('Form tracking failed: '.$e->getMessage());
             // Don't fail the form submission if tracking fails
         }
+    }
+
+    /**
+     * Get estimated response time based on priority level and inquiry category.
+     */
+    private function getEstimatedResponseTime(array $formData): string
+    {
+        $priority = $formData['priority_level'] ?? 'medium';
+        $category = $formData['inquiry_category'] ?? 'general';
+
+        // High priority or urgent categories get faster response
+        if ($priority === 'urgent' || in_array($category, ['technical_support', 'bug_report', 'account_issues'])) {
+            return 'Within 4 hours during business hours';
+        }
+
+        if ($priority === 'high' || in_array($category, ['sales', 'demo_request', 'billing'])) {
+            return 'Within 24 hours';
+        }
+
+        if ($priority === 'medium') {
+            return 'Within 2-3 business days';
+        }
+
+        // Low priority
+        return 'Within 5 business days';
     }
 }

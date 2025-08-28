@@ -7,7 +7,6 @@ use App\Models\Tenant;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class ComponentThemeService
@@ -27,9 +26,14 @@ class ComponentThemeService
         $cacheKey = "theme_css_{$theme->id}";
         Cache::put($cacheKey, $cssVariables, now()->addHours(24));
 
+        // Store compiled CSS file
+        $cssFilePath = "themes/{$theme->tenant_id}/theme_{$theme->id}.css";
+        Storage::disk('public')->put($cssFilePath, $theme->compileToCss());
+
         return [
             'css_variables' => $cssVariables,
             'affected_components' => $affectedComponents,
+            'css_file_path' => $cssFilePath,
             'cache_key' => $cacheKey,
         ];
     }
@@ -37,33 +41,34 @@ class ComponentThemeService
     /**
      * Create theme with inheritance from default theme
      */
-    public function createThemeWithInheritance(string $tenantId, array $themeData, ?ComponentTheme $parentTheme = null): ComponentTheme
-    {
-        // Get default theme if no parent specified
+    public function createThemeWithInheritance(
+        $tenantId,
+        string $name,
+        array $config,
+        ?ComponentTheme $parentTheme = null
+    ): ComponentTheme {
+        // Get or create default theme if no parent specified
         if (! $parentTheme) {
-            $parentTheme = $this->getDefaultTheme($tenantId);
+            $parentTheme = $this->getOrCreateDefaultTheme($tenantId);
         }
 
         // Merge configuration with parent theme
-        $mergedConfig = $this->mergeThemeConfigs(
-            $parentTheme ? $parentTheme->config : [],
-            $themeData['config'] ?? []
-        );
+        $mergedConfig = $this->mergeThemeConfigs($parentTheme->config, $config);
 
         // Validate the merged configuration
         $this->validateThemeConfig($mergedConfig);
 
-        // Create the theme
+        // Create the new theme
         $theme = ComponentTheme::create([
             'tenant_id' => $tenantId,
-            'name' => $themeData['name'],
-            'slug' => str($themeData['name'])->slug(),
+            'name' => $name,
+            'slug' => str($name)->slug(),
             'config' => $mergedConfig,
-            'is_default' => $themeData['is_default'] ?? false,
+            'is_default' => false,
         ]);
 
-        // Clear theme cache
-        $this->clearThemeCache($tenantId);
+        // Clear related caches
+        $this->clearThemeCaches($tenantId);
 
         return $theme;
     }
@@ -73,107 +78,84 @@ class ComponentThemeService
      */
     public function validateThemeConfig(array $config): bool
     {
-        $validator = Validator::make($config, [
-            // Color scheme validation
-            'colors' => 'required|array',
-            'colors.primary' => ['required', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-            'colors.secondary' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-            'colors.accent' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-            'colors.background' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-            'colors.text' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-            'colors.success' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-            'colors.warning' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-            'colors.error' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
-
-            // Typography validation
-            'typography' => 'required|array',
-            'typography.font_family' => 'required|string|max:100',
-            'typography.heading_font' => 'nullable|string|max:100',
-            'typography.font_sizes' => 'nullable|array',
-            'typography.font_sizes.xs' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'typography.font_sizes.sm' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'typography.font_sizes.base' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'typography.font_sizes.lg' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'typography.font_sizes.xl' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'typography.font_sizes.heading' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'typography.line_height' => 'nullable|numeric|min:1|max:3',
-            'typography.font_weight' => 'nullable|array',
-
-            // Spacing validation
-            'spacing' => 'required|array',
-            'spacing.xs' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'spacing.sm' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'spacing.base' => ['required', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'spacing.lg' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'spacing.xl' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'spacing.section_padding' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-
-            // Border validation
-            'borders' => 'nullable|array',
-            'borders.radius' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?(px|rem|em)$/'],
-            'borders.width' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?px$/'],
-
-            // Shadow validation
-            'shadows' => 'nullable|array',
-            'shadows.sm' => 'nullable|string',
-            'shadows.md' => 'nullable|string',
-            'shadows.lg' => 'nullable|string',
-
-            // Animation validation
-            'animations' => 'nullable|array',
-            'animations.duration' => ['nullable', 'string', 'regex:/^\d+(\.\d+)?s$/'],
-            'animations.easing' => 'nullable|string|in:ease,ease-in,ease-out,ease-in-out,linear',
-        ]);
-
-        if ($validator->fails()) {
-            throw new ValidationException($validator);
+        // Basic structure validation
+        if (! isset($config['colors']) || ! is_array($config['colors'])) {
+            throw ValidationException::withMessages(['colors' => 'Colors configuration is required']);
         }
 
-        // Additional accessibility validation
-        $this->validateAccessibility($config);
+        if (! isset($config['typography']) || ! is_array($config['typography'])) {
+            throw ValidationException::withMessages(['typography' => 'Typography configuration is required']);
+        }
+
+        if (! isset($config['spacing']) || ! is_array($config['spacing'])) {
+            throw ValidationException::withMessages(['spacing' => 'Spacing configuration is required']);
+        }
+
+        // Validate required fields
+        if (! isset($config['colors']['primary'])) {
+            throw ValidationException::withMessages(['colors.primary' => 'Primary color is required']);
+        }
+
+        if (! isset($config['typography']['font_family'])) {
+            throw ValidationException::withMessages(['typography.font_family' => 'Font family is required']);
+        }
+
+        if (! isset($config['spacing']['base'])) {
+            throw ValidationException::withMessages(['spacing.base' => 'Base spacing is required']);
+        }
+
+        // Validate color formats
+        foreach ($config['colors'] as $key => $color) {
+            if ($color && ! $this->isValidHexColor($color)) {
+                throw ValidationException::withMessages(["colors.{$key}" => 'Invalid hex color format']);
+            }
+        }
+
+        // Custom validation for accessibility
+        $this->validateAccessibilitySimple($config);
 
         return true;
     }
 
     /**
-     * Validate accessibility requirements
+     * Check if a string is a valid hex color
      */
-    protected function validateAccessibility(array $config): void
+    private function isValidHexColor(string $color): bool
     {
-        $errors = [];
+        return preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $color) === 1;
+    }
 
-        // Check color contrast ratios
-        if (isset($config['colors']['primary']) && isset($config['colors']['background'])) {
-            $contrast = $this->calculateColorContrast($config['colors']['primary'], $config['colors']['background']);
+    /**
+     * Validate accessibility requirements (simplified)
+     */
+    private function validateAccessibilitySimple(array $config): void
+    {
+        if (! isset($config['colors'])) {
+            return;
+        }
+
+        $colors = $config['colors'];
+
+        // Check contrast ratios
+        if (isset($colors['primary']) && isset($colors['background'])) {
+            $contrast = $this->calculateContrastRatio($colors['primary'], $colors['background']);
             if ($contrast < 3.0) {
-                $errors[] = 'Primary color contrast ratio must be at least 3:1 for accessibility';
+                throw ValidationException::withMessages(['colors.primary' => 'Primary color must have sufficient contrast with background (minimum 3:1 ratio)']);
             }
         }
 
-        if (isset($config['colors']['text']) && isset($config['colors']['background'])) {
-            $contrast = $this->calculateColorContrast($config['colors']['text'], $config['colors']['background']);
+        if (isset($colors['text']) && isset($colors['background'])) {
+            $contrast = $this->calculateContrastRatio($colors['text'], $colors['background']);
             if ($contrast < 4.5) {
-                $errors[] = 'Text color contrast ratio must be at least 4.5:1 for WCAG AA compliance';
+                throw ValidationException::withMessages(['colors.text' => 'Text color must meet WCAG AA standards (minimum 4.5:1 contrast ratio)']);
             }
-        }
-
-        // Check font size minimums
-        if (isset($config['typography']['font_sizes']['base'])) {
-            $baseFontSize = (float) str_replace(['px', 'rem', 'em'], '', $config['typography']['font_sizes']['base']);
-            if (str_contains($config['typography']['font_sizes']['base'], 'px') && $baseFontSize < 14) {
-                $errors[] = 'Base font size should be at least 14px for accessibility';
-            }
-        }
-
-        if (! empty($errors)) {
-            throw ValidationException::withMessages(['accessibility' => $errors]);
         }
     }
 
     /**
      * Implement multi-tenant theme isolation and access control
      */
-    public function getThemesForTenant(string $tenantId, bool $includeDefault = true): Collection
+    public function getThemesForTenant($tenantId, bool $includeDefault = true): Collection
     {
         $query = ComponentTheme::forTenant($tenantId);
 
@@ -189,76 +171,51 @@ class ComponentThemeService
     /**
      * Ensure tenant can only access their themes
      */
-    public function validateTenantAccess(ComponentTheme $theme, string $tenantId): bool
+    public function validateTenantAccess(ComponentTheme $theme, $tenantId): bool
     {
-        if ($theme->tenant_id !== $tenantId) {
-            throw new \InvalidArgumentException('Theme does not belong to the specified tenant');
-        }
-
-        return true;
+        return $theme->tenant_id === $tenantId;
     }
 
     /**
      * Generate theme preview with sample components
      */
-    public function generateThemePreview(ComponentTheme $theme, array $options = []): array
+    public function generateThemePreview(ComponentTheme $theme, array $components = []): array
     {
         $previewHtml = $theme->generatePreviewHtml();
-        $cssVariables = $theme->generateCssVariables();
 
         // Generate component-specific previews
-        $componentPreviews = $this->generateComponentPreviews($theme, $options);
+        $componentPreviews = [];
+        foreach ($components as $componentType) {
+            $componentPreviews[$componentType] = $this->generateComponentPreview($theme, $componentType);
+        }
+
+        // Generate responsive previews
+        $responsivePreviews = $this->generateResponsivePreviews($theme);
 
         return [
             'html' => $previewHtml,
-            'css' => $cssVariables,
-            'components' => $componentPreviews,
+            'css' => $theme->generateCssVariables(),
+            'component_previews' => $componentPreviews,
+            'responsive_previews' => $responsivePreviews,
             'accessibility_report' => $theme->checkAccessibility(),
         ];
     }
 
     /**
-     * Generate previews for different component types
+     * Compile theme CSS with optimization
      */
-    protected function generateComponentPreviews(ComponentTheme $theme, array $options = []): array
+    public function compileThemeCss(ComponentTheme $theme, bool $minify = false): string
     {
-        $config = $theme->getMergedConfig();
-        $previews = [];
+        $css = $theme->compileToCss();
 
-        // Hero component preview
-        $previews['hero'] = $this->generateHeroPreview($config);
-
-        // Form component preview
-        $previews['form'] = $this->generateFormPreview($config);
-
-        // Button component preview
-        $previews['button'] = $this->generateButtonPreview($config);
-
-        // Card component preview
-        $previews['card'] = $this->generateCardPreview($config);
-
-        return $previews;
-    }
-
-    /**
-     * Compile theme to optimized CSS
-     */
-    public function compileThemeCss(ComponentTheme $theme, array $options = []): string
-    {
-        $css = $theme->generateCssVariables();
-
-        // Add responsive breakpoints
-        $css .= $this->generateResponsiveCss($theme->getMergedConfig());
-
-        // Add component-specific styles
-        $css .= $this->generateComponentStyles($theme->getMergedConfig());
-
-        // Minify CSS if requested
-        if ($options['minify'] ?? false) {
+        if ($minify) {
             $css = $this->minifyCss($css);
         }
 
-        return $css;
+        // Add theme metadata as comment
+        $metadata = "/* Theme: {$theme->name} | Generated: ".now()->toISOString()." */\n";
+
+        return $metadata.$css;
     }
 
     /**
@@ -266,93 +223,72 @@ class ComponentThemeService
      */
     public function backupTheme(ComponentTheme $theme): string
     {
-        $backupData = [
-            'theme' => $theme->toArray(),
+        $backup = [
+            'theme_data' => $theme->toArray(),
             'created_at' => now()->toISOString(),
             'version' => '1.0',
         ];
 
-        $filename = "theme_backup_{$theme->id}_{$theme->slug}_".now()->format('Y-m-d_H-i-s').'.json';
-        $path = "theme-backups/{$theme->tenant_id}/{$filename}";
+        $backupPath = "theme_backups/{$theme->tenant_id}/theme_{$theme->id}_".now()->format('Y-m-d_H-i-s').'.json';
 
-        Storage::disk('local')->put($path, json_encode($backupData, JSON_PRETTY_PRINT));
+        Storage::disk('local')->put($backupPath, json_encode($backup, JSON_PRETTY_PRINT));
 
-        return $path;
+        return $backupPath;
     }
 
     /**
      * Restore theme from backup
      */
-    public function restoreTheme(string $backupPath, string $tenantId): ComponentTheme
+    public function restoreTheme(string $backupPath, $tenantId): ComponentTheme
     {
         if (! Storage::disk('local')->exists($backupPath)) {
-            throw new \InvalidArgumentException('Backup file not found');
+            throw new \Exception('Backup file not found');
         }
 
         $backupData = json_decode(Storage::disk('local')->get($backupPath), true);
 
-        if (! isset($backupData['theme'])) {
-            throw new \InvalidArgumentException('Invalid backup file format');
+        if (! $backupData || ! isset($backupData['theme_data'])) {
+            throw new \Exception('Invalid backup file format');
         }
 
-        $themeData = $backupData['theme'];
+        $themeData = $backupData['theme_data'];
 
-        // Validate tenant access
-        if ($themeData['tenant_id'] !== $tenantId) {
-            throw new \InvalidArgumentException('Backup does not belong to the specified tenant');
-        }
+        // Ensure tenant isolation
+        $themeData['tenant_id'] = $tenantId;
+        unset($themeData['id'], $themeData['created_at'], $themeData['updated_at']);
 
         // Validate configuration
         $this->validateThemeConfig($themeData['config']);
 
         // Create restored theme
-        $restoredTheme = ComponentTheme::create([
-            'tenant_id' => $tenantId,
-            'name' => $themeData['name'].' (Restored)',
-            'slug' => str($themeData['name'].' restored')->slug(),
-            'config' => $themeData['config'],
-            'is_default' => false, // Never restore as default
-        ]);
+        $restoredTheme = ComponentTheme::create($themeData);
 
-        // Clear theme cache
-        $this->clearThemeCache($tenantId);
+        // Clear caches
+        $this->clearThemeCaches($tenantId);
 
         return $restoredTheme;
     }
 
     /**
-     * Get default theme for tenant
+     * Get or create default theme for tenant
      */
-    public function getDefaultTheme(string $tenantId): ?ComponentTheme
+    public function getOrCreateDefaultTheme($tenantId): ComponentTheme
     {
-        return ComponentTheme::forTenant($tenantId)
+        $defaultTheme = ComponentTheme::forTenant($tenantId)
             ->where('is_default', true)
             ->first();
+
+        if (! $defaultTheme) {
+            $defaultTheme = ComponentTheme::createDefaultTheme($tenantId);
+        }
+
+        return $defaultTheme;
     }
 
     /**
-     * Set theme as default for tenant
+     * Merge theme configurations with proper inheritance
      */
-    public function setAsDefault(ComponentTheme $theme): bool
-    {
-        // Remove default flag from other themes
-        ComponentTheme::forTenant($theme->tenant_id)
-            ->where('is_default', true)
-            ->update(['is_default' => false]);
-
-        // Set this theme as default
-        $theme->update(['is_default' => true]);
-
-        // Clear cache
-        $this->clearThemeCache($theme->tenant_id);
-
-        return true;
-    }
-
-    /**
-     * Merge theme configurations with inheritance
-     */
-    protected function mergeThemeConfigs(array $parentConfig, array $childConfig): array
+    private function mergeThemeConfigs(array $parentConfig, array $childConfig): array
     {
         $merged = $parentConfig;
 
@@ -368,9 +304,41 @@ class ComponentThemeService
     }
 
     /**
-     * Calculate color contrast ratio
+     * Generate component-specific preview
      */
-    protected function calculateColorContrast(string $color1, string $color2): float
+    private function generateComponentPreview(ComponentTheme $theme, string $componentType): string
+    {
+        $css = $theme->generateCssVariables();
+
+        $templates = [
+            'hero' => '<div class="hero-preview" style="background: var(--color-primary); color: white; padding: var(--spacing-lg);"><h1 style="font-family: var(--font-heading);">Hero Section</h1><p>Sample hero content</p></div>',
+            'button' => '<button style="background: var(--color-primary); color: white; padding: var(--spacing-sm) var(--spacing-base); border-radius: var(--border-radius);">Sample Button</button>',
+            'form' => '<form style="padding: var(--spacing-base);"><input type="text" placeholder="Sample Input" style="padding: var(--spacing-sm); border-radius: var(--border-radius);"><button type="submit" style="background: var(--color-primary); color: white; padding: var(--spacing-sm) var(--spacing-base);">Submit</button></form>',
+        ];
+
+        $template = $templates[$componentType] ?? '<div>Component preview not available</div>';
+
+        return "<style>{$css}</style>{$template}";
+    }
+
+    /**
+     * Generate responsive previews for different screen sizes
+     */
+    private function generateResponsivePreviews(ComponentTheme $theme): array
+    {
+        $css = $theme->generateCssVariables();
+
+        return [
+            'desktop' => ['width' => '1200px', 'css' => $css],
+            'tablet' => ['width' => '768px', 'css' => $css],
+            'mobile' => ['width' => '375px', 'css' => $css],
+        ];
+    }
+
+    /**
+     * Calculate color contrast ratio for accessibility
+     */
+    private function calculateContrastRatio(string $color1, string $color2): float
     {
         $rgb1 = $this->hexToRgb($color1);
         $rgb2 = $this->hexToRgb($color2);
@@ -387,7 +355,7 @@ class ComponentThemeService
     /**
      * Convert hex color to RGB
      */
-    protected function hexToRgb(string $hex): array
+    private function hexToRgb(string $hex): array
     {
         $hex = ltrim($hex, '#');
 
@@ -405,7 +373,7 @@ class ComponentThemeService
     /**
      * Calculate relative luminance
      */
-    protected function getRelativeLuminance(array $rgb): float
+    private function getRelativeLuminance(array $rgb): float
     {
         $r = $rgb['r'] / 255;
         $g = $rgb['g'] / 255;
@@ -419,117 +387,128 @@ class ComponentThemeService
     }
 
     /**
-     * Clear theme cache for tenant
+     * Minify CSS for production
      */
-    protected function clearThemeCache(string $tenantId): void
-    {
-        Cache::forget("themes_tenant_{$tenantId}");
-        Cache::forget("default_theme_{$tenantId}");
-
-        // Clear individual theme caches
-        $themes = ComponentTheme::forTenant($tenantId)->get();
-        foreach ($themes as $theme) {
-            Cache::forget("theme_css_{$theme->id}");
-        }
-    }
-
-    /**
-     * Generate responsive CSS
-     */
-    protected function generateResponsiveCss(array $config): string
-    {
-        $css = "\n/* Responsive Styles */\n";
-
-        // Mobile styles
-        $css .= "@media (max-width: 768px) {\n";
-        $css .= "  :root {\n";
-        if (isset($config['spacing']['base'])) {
-            $css .= "    --spacing-base: calc({$config['spacing']['base']} * 0.8);\n";
-        }
-        if (isset($config['typography']['font_sizes']['base'])) {
-            $css .= "    --font-size-base: calc({$config['typography']['font_sizes']['base']} * 0.9);\n";
-        }
-        $css .= "  }\n";
-        $css .= "}\n";
-
-        return $css;
-    }
-
-    /**
-     * Generate component-specific styles
-     */
-    protected function generateComponentStyles(array $config): string
-    {
-        $css = "\n/* Component Styles */\n";
-
-        $css .= ".component-hero {\n";
-        $css .= "  background-color: var(--color-primary);\n";
-        $css .= "  color: white;\n";
-        $css .= "  padding: var(--spacing-xl, 3rem) var(--spacing-base);\n";
-        $css .= "}\n";
-
-        $css .= ".component-button {\n";
-        $css .= "  background-color: var(--color-primary);\n";
-        $css .= "  color: white;\n";
-        $css .= "  padding: var(--spacing-sm) var(--spacing-base);\n";
-        $css .= "  border: none;\n";
-        $css .= "  border-radius: var(--border-radius);\n";
-        $css .= "  font-family: var(--font-family);\n";
-        $css .= "  cursor: pointer;\n";
-        $css .= "  transition: all var(--animation-duration) var(--animation-easing);\n";
-        $css .= "}\n";
-
-        $css .= ".component-button:hover {\n";
-        $css .= "  background-color: var(--color-secondary);\n";
-        $css .= "  transform: translateY(-2px);\n";
-        $css .= "}\n";
-
-        return $css;
-    }
-
-    /**
-     * Generate hero component preview
-     */
-    protected function generateHeroPreview(array $config): string
-    {
-        return '<div class="component-hero"><h1>Hero Section</h1><p>Sample hero content</p></div>';
-    }
-
-    /**
-     * Generate form component preview
-     */
-    protected function generateFormPreview(array $config): string
-    {
-        return '<form class="component-form"><input type="text" placeholder="Sample Input"><button type="submit" class="component-button">Submit</button></form>';
-    }
-
-    /**
-     * Generate button component preview
-     */
-    protected function generateButtonPreview(array $config): string
-    {
-        return '<button class="component-button">Sample Button</button>';
-    }
-
-    /**
-     * Generate card component preview
-     */
-    protected function generateCardPreview(array $config): string
-    {
-        return '<div class="component-card"><h3>Card Title</h3><p>Card content goes here</p></div>';
-    }
-
-    /**
-     * Minify CSS
-     */
-    protected function minifyCss(string $css): string
+    private function minifyCss(string $css): string
     {
         // Remove comments
-        $css = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $css);
+        $css = preg_replace('/\/\*.*?\*\//s', '', $css);
 
-        // Remove whitespace
-        $css = str_replace(["\r\n", "\r", "\n", "\t", '  ', '    ', '    '], '', $css);
+        // Remove unnecessary whitespace
+        $css = preg_replace('/\s+/', ' ', $css);
+
+        // Remove whitespace around specific characters
+        $css = preg_replace('/\s*([{}:;,>+~])\s*/', '$1', $css);
 
         return trim($css);
+    }
+
+    /**
+     * Clear theme-related caches
+     */
+    private function clearThemeCaches($tenantId): void
+    {
+        $themes = ComponentTheme::forTenant($tenantId)->get();
+
+        foreach ($themes as $theme) {
+            Cache::forget("theme_css_{$theme->id}");
+            Cache::forget("theme_preview_{$theme->id}");
+        }
+
+        Cache::forget("tenant_themes_{$tenantId}");
+    }
+
+    /**
+     * Get theme usage statistics
+     */
+    public function getThemeUsageStats(ComponentTheme $theme): array
+    {
+        $componentsCount = $theme->components()->count();
+        $lastUsed = $theme->components()->latest('updated_at')->first()?->updated_at;
+
+        return [
+            'components_using_theme' => $componentsCount,
+            'last_used' => $lastUsed,
+            'is_active' => $componentsCount > 0,
+            'accessibility_score' => $this->calculateAccessibilityScore($theme),
+        ];
+    }
+
+    /**
+     * Calculate accessibility score for theme
+     */
+    private function calculateAccessibilityScore(ComponentTheme $theme): int
+    {
+        $issues = $theme->checkAccessibility();
+        $maxScore = 100;
+        $deductionPerIssue = 20;
+
+        return max(0, $maxScore - (count($issues) * $deductionPerIssue));
+    }
+
+    /**
+     * Duplicate theme with modifications
+     */
+    public function duplicateTheme(ComponentTheme $originalTheme, string $newName, array $configOverrides = []): ComponentTheme
+    {
+        $newConfig = array_merge($originalTheme->config, $configOverrides);
+
+        // Validate new configuration
+        $this->validateThemeConfig($newConfig);
+
+        $duplicatedTheme = ComponentTheme::create([
+            'tenant_id' => $originalTheme->tenant_id,
+            'name' => $newName,
+            'slug' => str($newName)->slug(),
+            'config' => $newConfig,
+            'is_default' => false,
+        ]);
+
+        // Clear caches
+        $this->clearThemeCaches($originalTheme->tenant_id);
+
+        return $duplicatedTheme;
+    }
+
+    /**
+     * Export theme configuration
+     */
+    public function exportTheme(ComponentTheme $theme): array
+    {
+        return [
+            'name' => $theme->name,
+            'config' => $theme->config,
+            'metadata' => [
+                'exported_at' => now()->toISOString(),
+                'version' => '1.0',
+                'accessibility_score' => $this->calculateAccessibilityScore($theme),
+            ],
+        ];
+    }
+
+    /**
+     * Import theme configuration
+     */
+    public function importTheme(array $themeData, $tenantId, string $name): ComponentTheme
+    {
+        if (! isset($themeData['config'])) {
+            throw new \Exception('Invalid theme data: missing configuration');
+        }
+
+        // Validate configuration
+        $this->validateThemeConfig($themeData['config']);
+
+        $importedTheme = ComponentTheme::create([
+            'tenant_id' => $tenantId,
+            'name' => $name,
+            'slug' => str($name)->slug(),
+            'config' => $themeData['config'],
+            'is_default' => false,
+        ]);
+
+        // Clear caches
+        $this->clearThemeCaches($tenantId);
+
+        return $importedTheme;
     }
 }

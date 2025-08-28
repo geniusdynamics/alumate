@@ -294,7 +294,7 @@ class ComponentTheme extends Model
     /**
      * Create a default theme for a tenant
      */
-    public static function createDefaultTheme(int $tenantId, string $name = 'Default Theme'): self
+    public static function createDefaultTheme($tenantId, string $name = 'Default Theme'): self
     {
         $defaultConfig = [
             'colors' => [

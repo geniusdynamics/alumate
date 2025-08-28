@@ -27,9 +27,9 @@ class ComponentThemeFactory extends Factory
             'slug' => str($name)->slug(),
             'config' => [
                 'colors' => [
-                    'primary' => '#'.dechex(rand(0, 16777215)),
-                    'secondary' => '#'.dechex(rand(0, 16777215)),
-                    'accent' => '#'.dechex(rand(0, 16777215)),
+                    'primary' => '#'.str_pad(dechex(rand(0, 16777215)), 6, '0', STR_PAD_LEFT),
+                    'secondary' => '#'.str_pad(dechex(rand(0, 16777215)), 6, '0', STR_PAD_LEFT),
+                    'accent' => '#'.str_pad(dechex(rand(0, 16777215)), 6, '0', STR_PAD_LEFT),
                     'background' => '#ffffff',
                     'text' => '#333333',
                 ],

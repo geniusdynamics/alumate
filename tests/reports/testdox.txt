@@ -1,23 +1,25 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\ComponentLibrary\FormComponentTest.php
- [ ] it can render form demo page
- [x] it can handle form submission endpoint
- [x] it validates required form fields
- [x] it can handle auto-save endpoint
- [ ] `Individual Signup Form Template` → it can submit valid individual signup form
- [x] `Individual Signup Form Template` → it validates required fields for individual signup
- [ ] `Individual Signup Form Template` → it validates email uniqueness for individual signup
- [ ] `Institution Demo Request Form Template` → it can submit valid institution demo request form
- [x] `Institution Demo Request Form Template` → it validates required fields for institution demo request
- [x] `Institution Demo Request Form Template` → it validates enum values for institution demo request
- [ ] `Contact Form Template` → it can submit valid contact form
- [x] `Contact Form Template` → it validates message length for contact form
- [x] `Contact Form Template` → it validates subject length for contact form
- [x] `Newsletter Signup Form Template` → it can submit valid newsletter signup form
- [x] `Newsletter Signup Form Template` → it validates email for newsletter signup
- [x] `Event Registration Form Template` → it can submit valid event registration form
- [x] `Event Registration Form Template` → it validates guest count limits for event registration
- [ ] `CRM Integration` → it calculates lead scores correctly for different templates
- [x] `CRM Integration` → it handles CRM integration failures gracefully
- [ ] `Template Validation` → it validates phone number format across templates
- [x] `Template Validation` → it validates graduation year ranges
+Component Theme Service (Tests\Unit\Services\ComponentThemeService)
+ [x] Applies theme with css variable generation
+ [x] Applies theme to specific components
+ [x] Creates theme with default parent inheritance
+ [x] Creates theme with specific parent inheritance
+ [x] Validates valid theme configuration
+ [x] Throws validation exception for invalid colors
+ [x] Validates accessibility requirements
+ [x] Gets themes for specific tenant only
+ [x] Validates tenant access to themes
+ [x] Excludes default themes when requested
+ [x] Generates comprehensive theme preview
+ [x] Compiles theme css without minification
+ [x] Compiles and minifies theme css
+ [x] Creates theme backup
+ [x] Restores theme from backup
+ [x] Throws exception for invalid backup file
+ [x] Gets existing default theme
+ [x] Creates default theme when none exists
+ [x] Calculates theme usage statistics
+ [x] Duplicates theme with modifications
+ [x] Exports theme configuration
+ [x] Imports theme configuration
+ [x] Throws exception for invalid import data
 
