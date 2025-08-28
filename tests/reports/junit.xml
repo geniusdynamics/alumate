@@ -1,804 +1,430 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="36" assertions="1" errors="35" failures="1" skipped="0" time="49.562199">
-    <testsuite name="Feature" tests="36" assertions="1" errors="35" failures="1" skipped="0" time="49.562199">
-      <testsuite name="Tests\Feature\Feature\FormValidationTest" file="tests\Feature\Feature\FormValidationTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="49.562199">
-        <testcase name="example" file="tests\Feature\Feature\FormValidationTest.php::example" class="Tests\Feature\Feature\FormValidationTest" classname="Tests.Feature.Feature.FormValidationTest" assertions="1" time="49.562199">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">exampleExpected response status code [200] but received 500.
+  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="21" assertions="66" errors="1" failures="6" skipped="0" time="20.479521">
+    <testsuite name="Feature" tests="21" assertions="66" errors="1" failures="6" skipped="0" time="20.479521">
+      <testsuite name="Tests\Feature\ComponentLibrary\FormComponentTest" file="tests\Feature\ComponentLibrary\FormComponentTest.php" tests="21" assertions="66" errors="1" failures="6" skipped="0" time="20.479521">
+        <testcase name="it can render form demo page" file="tests\Feature\ComponentLibrary\FormComponentTest.php::it can render form demo page" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="1" time="12.639912">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">it can render form demo pageExpected response status code [200] but received 500.
 Failed asserting that 500 is identical to 200.&#13;
 &#13;
 The following exception occurred during the last request:
 
-ParseError: Unclosed '{' on line 12 in D:\DevCenter\abuilds\alumate\app\Http\Controllers\Admin\InstitutionCustomizationController.php:278
+PDOException: SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block in D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
 Stack trace:
-#0 D:\DevCenter\abuilds\alumate\vendor\composer\ClassLoader.php(427): Composer\Autoload\{closure}('D:\\DevCenter\\ab...')
-#1 [internal function]: Composer\Autoload\ClassLoader-&gt;loadClass('App\\Http\\Contro...')
-#2 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\RouteSignatureParameters.php(46): method_exists('App\\Http\\Contro...', 'index')
-#3 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\RouteSignatureParameters.php(26): Illuminate\Routing\RouteSignatureParameters::fromClassMethodString('App\\Http\\Contro...')
-#4 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Route.php(545): Illuminate\Routing\RouteSignatureParameters::fromAction(Array, Array)
-#5 D:\DevCenter\abuilds\alumate\vendor\tightenco\ziggy\src\Ziggy.php(173): Illuminate\Routing\Route-&gt;signatureParameters(Array)
-#6 D:\DevCenter\abuilds\alumate\vendor\tightenco\ziggy\src\Ziggy.php(122): Tighten\Ziggy\Ziggy-&gt;resolveBindings(Array)
-#7 D:\DevCenter\abuilds\alumate\vendor\tightenco\ziggy\src\Ziggy.php(32): Tighten\Ziggy\Ziggy-&gt;nameKeyedRoutes()
-#8 D:\DevCenter\abuilds\alumate\app\Http\Middleware\HandleInertiaRequests.php(67): Tighten\Ziggy\Ziggy-&gt;__construct()
-#9 D:\DevCenter\abuilds\alumate\vendor\inertiajs\inertia-laravel\src\Middleware.php(93): App\Http\Middleware\HandleInertiaRequests-&gt;share(Object(Illuminate\Http\Request))
-#10 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Inertia\Middleware-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#11 D:\DevCenter\abuilds\alumate\app\Http\Middleware\HandleAppearance.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#12 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): App\Http\Middleware\HandleAppearance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#13 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(50): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#14 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#15 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken.php(87): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#16 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\VerifyCsrfToken-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#17 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\View\Middleware\ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#18 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\View\Middleware\ShareErrorsFromSession-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#19 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(120): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#20 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(63): Illuminate\Session\Middleware\StartSession-&gt;handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
-#21 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Session\Middleware\StartSession-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#22 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#23 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#24 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\EncryptCookies.php(74): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#25 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Cookie\Middleware\EncryptCookies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#26 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(126): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#27 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
-#28 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
-#29 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
-#30 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
-#31 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(200): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
-#32 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(169): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
-#33 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#34 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#35 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#36 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#37 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#38 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#39 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#40 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#41 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(109): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#42 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#43 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(48): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#44 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#45 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#46 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#47 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#48 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#49 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePathEncoding.php(26): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#50 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\ValidatePathEncoding-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
-#51 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(126): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
-#52 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(175): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
-#53 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(144): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
-#54 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
-#55 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase-&gt;call('GET', '/', Array, Array, Array, Array)
-#56 D:\DevCenter\abuilds\alumate\tests\Feature\Feature\FormValidationTest.php(4): Illuminate\Foundation\Testing\TestCase-&gt;get('/')
-#57 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\Feature\FormValidationTest-&gt;{closure}()
-#58 [internal function]: P\Tests\Feature\Feature\FormValidationTest-&gt;Pest\Factories\{closure}()
-#59 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
-#60 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\Feature\FormValidationTest-&gt;Pest\Concerns\{closure}()
-#61 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
-#62 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\Feature\FormValidationTest-&gt;__callClosure(Object(Closure), Array)
-#63 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\Feature\FormValidationTest-&gt;__runTest(Object(Closure))
-#64 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(1240): P\Tests\Feature\Feature\FormValidationTest-&gt;__pest_evaluable_example()
-#65 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(514): PHPUnit\Framework\TestCase-&gt;runTest()
-#66 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
-#67 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(361): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\Feature\FormValidationTest))
-#68 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
-#69 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
-#70 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
-#71 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
-#72 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\TextUI\Application.php(210): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
-#73 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
-#74 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
-#75 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\bin\pest(192): {closure}()
-#76 {main}
+#0 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php(409): PDOStatement-&gt;execute()
+#1 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php(809): Illuminate\Database\Connection-&gt;Illuminate\Database\{closure}('select "roles"....', Array)
+#2 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php(776): Illuminate\Database\Connection-&gt;runQueryCallback('select "roles"....', Array, Object(Closure))
+#3 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php(395): Illuminate\Database\Connection-&gt;run('select "roles"....', Array, Object(Closure))
+#4 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3131): Illuminate\Database\Connection-&gt;select('select "roles"....', Array, true)
+#5 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3116): Illuminate\Database\Query\Builder-&gt;runSelect()
+#6 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3706): Illuminate\Database\Query\Builder-&gt;Illuminate\Database\Query\{closure}()
+#7 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3115): Illuminate\Database\Query\Builder-&gt;onceWithColumns(Array, Object(Closure))
+#8 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php(872): Illuminate\Database\Query\Builder-&gt;get(Array)
+#9 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\BelongsToMany.php(910): Illuminate\Database\Eloquent\Builder-&gt;getModels()
+#10 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\BelongsToMany.php(894): Illuminate\Database\Eloquent\Relations\BelongsToMany-&gt;get()
+#11 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\HasAttributes.php(634): Illuminate\Database\Eloquent\Relations\BelongsToMany-&gt;getResults()
+#12 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\HasAttributes.php(572): Illuminate\Database\Eloquent\Model-&gt;getRelationshipFromMethod('roles')
+#13 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\HasAttributes.php(493): Illuminate\Database\Eloquent\Model-&gt;getRelationValue('roles')
+#14 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php(2405): Illuminate\Database\Eloquent\Model-&gt;getAttribute('roles')
+#15 D:\DevCenter\abuilds\alumate\app\Http\Middleware\HandleInertiaRequests.php(52): Illuminate\Database\Eloquent\Model-&gt;__get('roles')
+#16 D:\DevCenter\abuilds\alumate\vendor\inertiajs\inertia-laravel\src\Middleware.php(93): App\Http\Middleware\HandleInertiaRequests-&gt;share(Object(Illuminate\Http\Request))
+#17 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Inertia\Middleware-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#18 D:\DevCenter\abuilds\alumate\app\Http\Middleware\HandleAppearance.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#19 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): App\Http\Middleware\HandleAppearance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#20 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(50): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#21 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Auth\Middleware\Authenticate.php(63): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#23 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Auth\Middleware\Authenticate-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken.php(87): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#25 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\VerifyCsrfToken-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\View\Middleware\ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#27 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\View\Middleware\ShareErrorsFromSession-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#28 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(120): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#29 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(63): Illuminate\Session\Middleware\StartSession-&gt;handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
+#30 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Session\Middleware\StartSession-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#31 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#32 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\EncryptCookies.php(74): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#34 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Cookie\Middleware\EncryptCookies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#35 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(126): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#36 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#37 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#38 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#39 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#40 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(200): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#41 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(169): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#42 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#43 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#44 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#46 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#47 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#49 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#50 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(109): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#51 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#52 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(48): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#53 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#54 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#55 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#56 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#57 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#58 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePathEncoding.php(26): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#59 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\ValidatePathEncoding-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#60 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(126): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#61 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(175): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#62 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(144): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#63 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#64 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase-&gt;call('GET', '/component-libr...', Array, Array, Array, Array)
+#65 D:\DevCenter\abuilds\alumate\tests\Feature\ComponentLibrary\FormComponentTest.php(12): Illuminate\Foundation\Testing\TestCase-&gt;get('/component-libr...')
+#66 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;{closure}()
+#67 [internal function]: P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;Pest\Factories\{closure}()
+#68 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
+#69 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;Pest\Concerns\{closure}()
+#70 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#71 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;__callClosure(Object(Closure), Array)
+#72 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;__runTest(Object(Closure))
+#73 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(1240): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;__pest_evaluable_it_can_render_form_demo_page()
+#74 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(514): PHPUnit\Framework\TestCase-&gt;runTest()
+#75 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#76 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(361): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\ComponentLibrary\FormComponentTest))
+#77 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#78 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#79 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#80 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#81 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\TextUI\Application.php(210): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#82 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
+#83 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
+#84 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\bin\pest(192): {closure}()
+#85 {main}
+
+Next Illuminate\Database\QueryException: SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, SQL: select "roles".*, "model_has_roles"."model_id" as "pivot_model_id", "model_has_roles"."role_id" as "pivot_role_id", "model_has_roles"."model_type" as "pivot_model_type" from "roles" inner join "model_has_roles" on "roles"."id" = "model_has_roles"."role_id" where "model_has_roles"."model_id" = 1 and "model_has_roles"."model_type" = App\Models\User) in D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php:822
+Stack trace:
+#0 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php(776): Illuminate\Database\Connection-&gt;runQueryCallback('select "roles"....', Array, Object(Closure))
+#1 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Connection.php(395): Illuminate\Database\Connection-&gt;run('select "roles"....', Array, Object(Closure))
+#2 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3131): Illuminate\Database\Connection-&gt;select('select "roles"....', Array, true)
+#3 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3116): Illuminate\Database\Query\Builder-&gt;runSelect()
+#4 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3706): Illuminate\Database\Query\Builder-&gt;Illuminate\Database\Query\{closure}()
+#5 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php(3115): Illuminate\Database\Query\Builder-&gt;onceWithColumns(Array, Object(Closure))
+#6 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php(872): Illuminate\Database\Query\Builder-&gt;get(Array)
+#7 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\BelongsToMany.php(910): Illuminate\Database\Eloquent\Builder-&gt;getModels()
+#8 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\BelongsToMany.php(894): Illuminate\Database\Eloquent\Relations\BelongsToMany-&gt;get()
+#9 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\HasAttributes.php(634): Illuminate\Database\Eloquent\Relations\BelongsToMany-&gt;getResults()
+#10 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\HasAttributes.php(572): Illuminate\Database\Eloquent\Model-&gt;getRelationshipFromMethod('roles')
+#11 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Concerns\HasAttributes.php(493): Illuminate\Database\Eloquent\Model-&gt;getRelationValue('roles')
+#12 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php(2405): Illuminate\Database\Eloquent\Model-&gt;getAttribute('roles')
+#13 D:\DevCenter\abuilds\alumate\app\Http\Middleware\HandleInertiaRequests.php(52): Illuminate\Database\Eloquent\Model-&gt;__get('roles')
+#14 D:\DevCenter\abuilds\alumate\vendor\inertiajs\inertia-laravel\src\Middleware.php(93): App\Http\Middleware\HandleInertiaRequests-&gt;share(Object(Illuminate\Http\Request))
+#15 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Inertia\Middleware-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#16 D:\DevCenter\abuilds\alumate\app\Http\Middleware\HandleAppearance.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#17 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): App\Http\Middleware\HandleAppearance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#18 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Middleware\SubstituteBindings.php(50): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#19 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Routing\Middleware\SubstituteBindings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#20 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Auth\Middleware\Authenticate.php(63): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#21 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Auth\Middleware\Authenticate-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#22 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken.php(87): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#23 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\VerifyCsrfToken-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#24 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\View\Middleware\ShareErrorsFromSession.php(48): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#25 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\View\Middleware\ShareErrorsFromSession-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#26 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(120): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#27 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Session\Middleware\StartSession.php(63): Illuminate\Session\Middleware\StartSession-&gt;handleStatefulRequest(Object(Illuminate\Http\Request), Object(Illuminate\Session\Store), Object(Closure))
+#28 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Session\Middleware\StartSession-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#29 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse.php(36): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#30 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#31 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Cookie\Middleware\EncryptCookies.php(74): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#32 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Cookie\Middleware\EncryptCookies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#33 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(126): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#34 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(807): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#35 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(786): Illuminate\Routing\Router-&gt;runRouteWithinStack(Object(Illuminate\Routing\Route), Object(Illuminate\Http\Request))
+#36 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(750): Illuminate\Routing\Router-&gt;runRoute(Object(Illuminate\Http\Request), Object(Illuminate\Routing\Route))
+#37 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Routing\Router.php(739): Illuminate\Routing\Router-&gt;dispatchToRoute(Object(Illuminate\Http\Request))
+#38 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(200): Illuminate\Routing\Router-&gt;dispatch(Object(Illuminate\Http\Request))
+#39 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(169): Illuminate\Foundation\Http\Kernel-&gt;Illuminate\Foundation\Http\{closure}(Object(Illuminate\Http\Request))
+#40 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#41 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull.php(31): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#42 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#43 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TransformsRequest.php(21): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#44 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\TrimStrings.php(51): Illuminate\Foundation\Http\Middleware\TransformsRequest-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#45 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\TrimStrings-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#46 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePostSize.php(27): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#47 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\ValidatePostSize-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#48 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance.php(109): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#49 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\PreventRequestsDuringMaintenance-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#50 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\HandleCors.php(48): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#51 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\HandleCors-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#52 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\TrustProxies.php(58): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#53 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\TrustProxies-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#54 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks.php(22): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#55 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Foundation\Http\Middleware\InvokeDeferredCallbacks-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#56 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Http\Middleware\ValidatePathEncoding.php(26): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#57 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(208): Illuminate\Http\Middleware\ValidatePathEncoding-&gt;handle(Object(Illuminate\Http\Request), Object(Closure))
+#58 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Pipeline\Pipeline.php(126): Illuminate\Pipeline\Pipeline-&gt;Illuminate\Pipeline\{closure}(Object(Illuminate\Http\Request))
+#59 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(175): Illuminate\Pipeline\Pipeline-&gt;then(Object(Closure))
+#60 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Http\Kernel.php(144): Illuminate\Foundation\Http\Kernel-&gt;sendRequestThroughRouter(Object(Illuminate\Http\Request))
+#61 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(607): Illuminate\Foundation\Http\Kernel-&gt;handle(Object(Illuminate\Http\Request))
+#62 D:\DevCenter\abuilds\alumate\vendor\laravel\framework\src\Illuminate\Foundation\Testing\Concerns\MakesHttpRequests.php(368): Illuminate\Foundation\Testing\TestCase-&gt;call('GET', '/component-libr...', Array, Array, Array, Array)
+#63 D:\DevCenter\abuilds\alumate\tests\Feature\ComponentLibrary\FormComponentTest.php(12): Illuminate\Foundation\Testing\TestCase-&gt;get('/component-libr...')
+#64 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Factories\TestCaseMethodFactory.php(168): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;{closure}()
+#65 [internal function]: P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;Pest\Factories\{closure}()
+#66 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(419): call_user_func_array(Object(Closure), Array)
+#67 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Support\ExceptionTrace.php(26): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;Pest\Concerns\{closure}()
+#68 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(419): Pest\Support\ExceptionTrace::ensure(Object(Closure))
+#69 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Concerns\Testable.php(321): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;__callClosure(Object(Closure), Array)
+#70 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Factories\TestCaseFactory.php(169) : eval()'d code(17): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;__runTest(Object(Closure))
+#71 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(1240): P\Tests\Feature\ComponentLibrary\FormComponentTest-&gt;__pest_evaluable_it_can_render_form_demo_page()
+#72 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(514): PHPUnit\Framework\TestCase-&gt;runTest()
+#73 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestRunner\TestRunner.php(87): PHPUnit\Framework\TestCase-&gt;runBare()
+#74 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestCase.php(361): PHPUnit\Framework\TestRunner-&gt;run(Object(P\Tests\Feature\ComponentLibrary\FormComponentTest))
+#75 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestCase-&gt;run()
+#76 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#77 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\Framework\TestSuite.php(369): PHPUnit\Framework\TestSuite-&gt;run()
+#78 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\TextUI\TestRunner.php(64): PHPUnit\Framework\TestSuite-&gt;run()
+#79 D:\DevCenter\abuilds\alumate\vendor\phpunit\phpunit\src\TextUI\Application.php(210): PHPUnit\TextUI\TestRunner-&gt;run(Object(PHPUnit\TextUI\Configuration\Configuration), Object(PHPUnit\Runner\ResultCache\DefaultResultCache), Object(PHPUnit\Framework\TestSuite))
+#80 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\src\Kernel.php(103): PHPUnit\TextUI\Application-&gt;run(Array)
+#81 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\bin\pest(184): Pest\Kernel-&gt;handle(Array, Array)
+#82 D:\DevCenter\abuilds\alumate\vendor\pestphp\pest\bin\pest(192): {closure}()
+#83 {main}
 
 ----------------------------------------------------------------------------------
 
-Unclosed '{' on line 12&#13;
+SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, SQL: select "roles".*, "model_has_roles"."model_id" as "pivot_model_id", "model_has_roles"."role_id" as "pivot_role_id", "model_has_roles"."model_type" as "pivot_model_type" from "roles" inner join "model_has_roles" on "roles"."id" = "model_has_roles"."role_id" where "model_has_roles"."model_id" = 1 and "model_has_roles"."model_type" = App\Models\User)&#13;
 &#13;
 at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
 at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
-at tests\Feature\Feature\FormValidationTest.php:6</failure>
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Feature\ComponentLibrary\FormComponentTest.php:14</failure>
         </testcase>
-      </testsuite>
-      <testsuite name="Tests\Feature\FormValidationTest" file="tests\Feature\FormValidationTest.php" tests="35" assertions="0" errors="35" failures="0" skipped="0" time="0.000000">
-        <testcase name="`Form Validation Service` → it validates form with progressive enhancement" file="tests\Feature\FormValidationTest.php::`Form Validation Service` → it validates form with progressive enhancement" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Form Validation Service` → it validates form with progressive enhancementIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
+        <testcase name="it can handle form submission endpoint" file="tests\Feature\ComponentLibrary\FormComponentTest.php::it can handle form submission endpoint" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="2" time="0.556337"/>
+        <testcase name="it validates required form fields" file="tests\Feature\ComponentLibrary\FormComponentTest.php::it validates required form fields" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="4" time="0.250992"/>
+        <testcase name="it can handle auto-save endpoint" file="tests\Feature\ComponentLibrary\FormComponentTest.php::it can handle auto-save endpoint" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="2" time="0.270403"/>
+        <testcase name="`Individual Signup Form Template` → it can submit valid individual signup form" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Individual Signup Form Template` → it can submit valid individual signup form" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="1" time="0.527547">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">`Individual Signup Form Template` → it can submit valid individual signup formExpected response status code [200] but received 422.
+Failed asserting that 422 is identical to 200.&#13;
+&#13;
+The following errors occurred during the last request:
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
+{
+    "success": false,
+    "message": "Validation failed. Please check your input and try again.",
+    "errors": {
+        "email": [
+            "The email address must be a valid email address."
+        ],
+        "submit_time": [
+            "The submit time must be at least 3 characters."
+        ],
+        "user_agent": [
+            "The user agent field is required."
+        ],
+        "terms_consent": [
+            "The terms of service consent field is required."
+        ]
+    },
+    "error_count": 4
+}&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Feature\ComponentLibrary\FormComponentTest.php:121</failure>
         </testcase>
-        <testcase name="`Form Validation Service` → it detects spam submissions" file="tests\Feature\FormValidationTest.php::`Form Validation Service` → it detects spam submissions" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Form Validation Service` → it detects spam submissionsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
+        <testcase name="`Individual Signup Form Template` → it validates required fields for individual signup" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Individual Signup Form Template` → it validates required fields for individual signup" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="8" time="0.400671"/>
+        <testcase name="`Individual Signup Form Template` → it validates email uniqueness for individual signup" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Individual Signup Form Template` → it validates email uniqueness for individual signup" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="0" time="0.441172">
+          <error type="Illuminate\Database\QueryException">`Individual Signup Form Template` → it validates email uniqueness for individual signupIlluminate\Database\QueryException: SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "updated_at", "created_at") values (Gust Kunze, cummerata.savion@example.net, (520) 549-9736, 2025-08-28 04:15:10, $2y$04$288bGtYsg79l4DOtZVfPgO1YVj2a1TU9.9mrofuWb/YylvbkTevdS, YjkE4ZQIox, ?, "{\"bio\":null,\"location\":null,\"website\":null,\"linkedin\":null,\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, 2025-08-24 07:16:15, 0, Europe/London, fr, 2025-08-28 04:15:10, 2025-08-28 04:15:10) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at tests\Feature\ComponentLibrary\FormComponentTest.php:158
 Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
+PDOException: SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at tests\Feature\ComponentLibrary\FormComponentTest.php:158</error>
         </testcase>
-        <testcase name="`Form Validation Service` → it applies rate limiting correctly" file="tests\Feature\FormValidationTest.php::`Form Validation Service` → it applies rate limiting correctly" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Form Validation Service` → it applies rate limiting correctlyIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
+        <testcase name="`Institution Demo Request Form Template` → it can submit valid institution demo request form" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Institution Demo Request Form Template` → it can submit valid institution demo request form" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="1" time="0.523366">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">`Institution Demo Request Form Template` → it can submit valid institution demo request formExpected response status code [200] but received 422.
+Failed asserting that 422 is identical to 200.&#13;
+&#13;
+The following errors occurred during the last request:
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
+{
+    "success": false,
+    "message": "Validation failed. Please check your input and try again.",
+    "errors": {
+        "submit_time": [
+            "The submit time must be at least 3 characters."
+        ],
+        "user_agent": [
+            "The user agent field is required."
+        ],
+        "follow_up_consent": [
+            "The follow-up consent field is required."
+        ],
+        "data_sharing_consent": [
+            "The data sharing consent field is required."
+        ],
+        "primary_goals.0": [
+            "Please select valid primary goals from the available options."
+        ]
+    },
+    "error_count": 5
+}&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Feature\ComponentLibrary\FormComponentTest.php:207</failure>
         </testcase>
-        <testcase name="`Form Validation Service` → it preserves user input on validation failure" file="tests\Feature\FormValidationTest.php::`Form Validation Service` → it preserves user input on validation failure" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Form Validation Service` → it preserves user input on validation failureIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
+        <testcase name="`Institution Demo Request Form Template` → it validates required fields for institution demo request" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Institution Demo Request Form Template` → it validates required fields for institution demo request" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="13" time="0.297569"/>
+        <testcase name="`Institution Demo Request Form Template` → it validates enum values for institution demo request" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Institution Demo Request Form Template` → it validates enum values for institution demo request" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="8" time="0.300894"/>
+        <testcase name="`Contact Form Template` → it can submit valid contact form" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Contact Form Template` → it can submit valid contact form" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="1" time="0.604889">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">`Contact Form Template` → it can submit valid contact formExpected response status code [200] but received 422.
+Failed asserting that 422 is identical to 200.&#13;
+&#13;
+The following errors occurred during the last request:
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
+{
+    "success": false,
+    "message": "Validation failed. Please check your input and try again.",
+    "errors": {
+        "submit_time": [
+            "The submit time must be at least 3 characters."
+        ],
+        "user_agent": [
+            "The user agent field is required."
+        ]
+    },
+    "error_count": 2
+}&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Feature\ComponentLibrary\FormComponentTest.php:303</failure>
         </testcase>
-        <testcase name="`Spam Protection Rule` → it allows legitimate user agents" file="tests\Feature\FormValidationTest.php::`Spam Protection Rule` → it allows legitimate user agents" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Spam Protection Rule` → it allows legitimate user agentsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
+        <testcase name="`Contact Form Template` → it validates message length for contact form" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Contact Form Template` → it validates message length for contact form" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="3" time="0.332412"/>
+        <testcase name="`Contact Form Template` → it validates subject length for contact form" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Contact Form Template` → it validates subject length for contact form" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="3" time="0.296949"/>
+        <testcase name="`Newsletter Signup Form Template` → it can submit valid newsletter signup form" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Newsletter Signup Form Template` → it can submit valid newsletter signup form" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="2" time="0.311495"/>
+        <testcase name="`Newsletter Signup Form Template` → it validates email for newsletter signup" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Newsletter Signup Form Template` → it validates email for newsletter signup" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="3" time="0.322642"/>
+        <testcase name="`Event Registration Form Template` → it can submit valid event registration form" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Event Registration Form Template` → it can submit valid event registration form" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="2" time="0.351733"/>
+        <testcase name="`Event Registration Form Template` → it validates guest count limits for event registration" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Event Registration Form Template` → it validates guest count limits for event registration" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="3" time="0.362971"/>
+        <testcase name="`CRM Integration` → it calculates lead scores correctly for different templates" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`CRM Integration` → it calculates lead scores correctly for different templates" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="1" time="0.401284">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">`CRM Integration` → it calculates lead scores correctly for different templatesExpected response status code [200] but received 422.
+Failed asserting that 422 is identical to 200.&#13;
+&#13;
+The following errors occurred during the last request:
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
+{
+    "success": false,
+    "message": "Validation failed. Please check your input and try again.",
+    "errors": {
+        "submit_time": [
+            "The submit time must be at least 3 characters."
+        ],
+        "user_agent": [
+            "The user agent field is required."
+        ],
+        "budget_range": [
+            "The selected budget range is invalid."
+        ],
+        "follow_up_consent": [
+            "The follow-up consent field is required."
+        ],
+        "data_sharing_consent": [
+            "The data sharing consent field is required."
+        ],
+        "primary_goals.0": [
+            "Please select valid primary goals from the available options."
+        ],
+        "urgency_reason": [
+            "Please explain the reason for immediate implementation needs."
+        ]
+    },
+    "error_count": 7
+}&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Feature\ComponentLibrary\FormComponentTest.php:459</failure>
         </testcase>
-        <testcase name="`Spam Protection Rule` → it blocks suspicious user agents" file="tests\Feature\FormValidationTest.php::`Spam Protection Rule` → it blocks suspicious user agents" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Spam Protection Rule` → it blocks suspicious user agentsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
+        <testcase name="`CRM Integration` → it handles CRM integration failures gracefully" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`CRM Integration` → it handles CRM integration failures gracefully" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="2" time="0.396882"/>
+        <testcase name="`Template Validation` → it validates phone number format across templates" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Template Validation` → it validates phone number format across templates" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="3" time="0.501998">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">`Template Validation` → it validates phone number format across templatesFailed to find a validation error in the response for key: 'phone'&#13;
+&#13;
+Response has the following JSON validation errors:&#13;
+&#13;
+{
+    "email": [
+        "The email address must be a valid email address."
+    ],
+    "submit_time": [
+        "The submit time must be at least 3 characters."
+    ],
+    "user_agent": [
+        "The user agent field is required."
+    ],
+    "terms_consent": [
+        "The terms of service consent field is required."
+    ]
+}&#13;
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Spam Protection Rule` → it blocks fake user agents" file="tests\Feature\FormValidationTest.php::`Spam Protection Rule` → it blocks fake user agents" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Spam Protection Rule` → it blocks fake user agentsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
+Failed asserting that an array has the key 'phone'.&#13;
+&#13;
+The following errors occurred during the last request:
 
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
+{
+    "success": false,
+    "message": "Validation failed. Please check your input and try again.",
+    "errors": {
+        "email": [
+            "The email address must be a valid email address."
+        ],
+        "submit_time": [
+            "The submit time must be at least 3 characters."
+        ],
+        "user_agent": [
+            "The user agent field is required."
+        ],
+        "terms_consent": [
+            "The terms of service consent field is required."
+        ]
+    },
+    "error_count": 4
+}&#13;
+&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:1105
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:1033
+at tests\Feature\ComponentLibrary\FormComponentTest.php:503</failure>
         </testcase>
-        <testcase name="`Spam Protection Rule` → it blocks user agents with suspicious characters" file="tests\Feature\FormValidationTest.php::`Spam Protection Rule` → it blocks user agents with suspicious characters" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Spam Protection Rule` → it blocks user agents with suspicious charactersIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Phone Number Rule` → it validates US phone numbers" file="tests\Feature\FormValidationTest.php::`Phone Number Rule` → it validates US phone numbers" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Phone Number Rule` → it validates US phone numbersIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Phone Number Rule` → it validates international phone numbers" file="tests\Feature\FormValidationTest.php::`Phone Number Rule` → it validates international phone numbers" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Phone Number Rule` → it validates international phone numbersIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Phone Number Rule` → it rejects invalid phone numbers" file="tests\Feature\FormValidationTest.php::`Phone Number Rule` → it rejects invalid phone numbers" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Phone Number Rule` → it rejects invalid phone numbersIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Phone Number Rule` → it rejects fake phone numbers" file="tests\Feature\FormValidationTest.php::`Phone Number Rule` → it rejects fake phone numbers" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Phone Number Rule` → it rejects fake phone numbersIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Phone Number Rule` → it rejects emergency numbers" file="tests\Feature\FormValidationTest.php::`Phone Number Rule` → it rejects emergency numbers" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Phone Number Rule` → it rejects emergency numbersIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Institutional Domain Rule` → it allows educational domains" file="tests\Feature\FormValidationTest.php::`Institutional Domain Rule` → it allows educational domains" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Institutional Domain Rule` → it allows educational domainsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Institutional Domain Rule` → it allows academic domains" file="tests\Feature\FormValidationTest.php::`Institutional Domain Rule` → it allows academic domains" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Institutional Domain Rule` → it allows academic domainsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Institutional Domain Rule` → it rejects personal email domains" file="tests\Feature\FormValidationTest.php::`Institutional Domain Rule` → it rejects personal email domains" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Institutional Domain Rule` → it rejects personal email domainsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Institutional Domain Rule` → it allows domains with institutional keywords" file="tests\Feature\FormValidationTest.php::`Institutional Domain Rule` → it allows domains with institutional keywords" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Institutional Domain Rule` → it allows domains with institutional keywordsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Rate Limit Validation Rule` → it allows submissions within rate limit" file="tests\Feature\FormValidationTest.php::`Rate Limit Validation Rule` → it allows submissions within rate limit" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Rate Limit Validation Rule` → it allows submissions within rate limitIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Rate Limit Validation Rule` → it blocks submissions exceeding rate limit" file="tests\Feature\FormValidationTest.php::`Rate Limit Validation Rule` → it blocks submissions exceeding rate limit" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Rate Limit Validation Rule` → it blocks submissions exceeding rate limitIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Rate Limit Validation Rule` → it creates strict rate limits" file="tests\Feature\FormValidationTest.php::`Rate Limit Validation Rule` → it creates strict rate limits" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Rate Limit Validation Rule` → it creates strict rate limitsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Content Filter Rule` → it allows clean content" file="tests\Feature\FormValidationTest.php::`Content Filter Rule` → it allows clean content" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Content Filter Rule` → it allows clean contentIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Content Filter Rule` → it blocks profanity" file="tests\Feature\FormValidationTest.php::`Content Filter Rule` → it blocks profanity" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Content Filter Rule` → it blocks profanityIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Content Filter Rule` → it blocks spam keywords" file="tests\Feature\FormValidationTest.php::`Content Filter Rule` → it blocks spam keywords" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Content Filter Rule` → it blocks spam keywordsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Content Filter Rule` → it blocks excessive URLs" file="tests\Feature\FormValidationTest.php::`Content Filter Rule` → it blocks excessive URLs" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Content Filter Rule` → it blocks excessive URLsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Content Filter Rule` → it blocks XSS attempts" file="tests\Feature\FormValidationTest.php::`Content Filter Rule` → it blocks XSS attempts" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Content Filter Rule` → it blocks XSS attemptsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Content Filter Rule` → it blocks SQL injection attempts" file="tests\Feature\FormValidationTest.php::`Content Filter Rule` → it blocks SQL injection attempts" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Content Filter Rule` → it blocks SQL injection attemptsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Email Domain Validation Rule` → it allows legitimate email domains" file="tests\Feature\FormValidationTest.php::`Email Domain Validation Rule` → it allows legitimate email domains" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Email Domain Validation Rule` → it allows legitimate email domainsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Email Domain Validation Rule` → it blocks disposable email domains" file="tests\Feature\FormValidationTest.php::`Email Domain Validation Rule` → it blocks disposable email domains" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Email Domain Validation Rule` → it blocks disposable email domainsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Email Domain Validation Rule` → it allows disposable emails when configured" file="tests\Feature\FormValidationTest.php::`Email Domain Validation Rule` → it allows disposable emails when configured" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Email Domain Validation Rule` → it allows disposable emails when configuredIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Email Domain Validation Rule` → it suggests corrections for typos" file="tests\Feature\FormValidationTest.php::`Email Domain Validation Rule` → it suggests corrections for typos" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Email Domain Validation Rule` → it suggests corrections for typosIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Email Domain Validation Rule` → it validates domain format" file="tests\Feature\FormValidationTest.php::`Email Domain Validation Rule` → it validates domain format" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Email Domain Validation Rule` → it validates domain formatIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Progressive Enhancement Features` → it handles missing user agent gracefully" file="tests\Feature\FormValidationTest.php::`Progressive Enhancement Features` → it handles missing user agent gracefully" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Progressive Enhancement Features` → it handles missing user agent gracefullyIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Progressive Enhancement Features` → it detects honeypot field usage" file="tests\Feature\FormValidationTest.php::`Progressive Enhancement Features` → it detects honeypot field usage" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Progressive Enhancement Features` → it detects honeypot field usageIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Progressive Enhancement Features` → it sanitizes input data" file="tests\Feature\FormValidationTest.php::`Progressive Enhancement Features` → it sanitizes input data" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Progressive Enhancement Features` → it sanitizes input dataIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
-        <testcase name="`Progressive Enhancement Features` → it tracks submission patterns" file="tests\Feature\FormValidationTest.php::`Progressive Enhancement Features` → it tracks submission patterns" class="Tests\Feature\FormValidationTest" classname="Tests.Feature.FormValidationTest" assertions="0" time="0.000000">
-          <error type="Illuminate\Contracts\Container\BindingResolutionException">`Progressive Enhancement Features` → it tracks submission patternsIlluminate\Contracts\Container\BindingResolutionException: Target class [App\Services\FormValidationService] does not exist.&#13;
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15
-Caused by
-ReflectionException: Class "App\Services\FormValidationService" does not exist
-
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:1017
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:890
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1077
-at vendor\laravel\framework\src\Illuminate\Container\Container.php:821
-at vendor\laravel\framework\src\Illuminate\Foundation\Application.php:1057
-at vendor\laravel\framework\src\Illuminate\Foundation\helpers.php:124
-at tests\Feature\FormValidationTest.php:15</error>
-        </testcase>
+        <testcase name="`Template Validation` → it validates graduation year ranges" file="tests\Feature\ComponentLibrary\FormComponentTest.php::`Template Validation` → it validates graduation year ranges" class="Tests\Feature\ComponentLibrary\FormComponentTest" classname="Tests.Feature.ComponentLibrary.FormComponentTest" assertions="3" time="0.387405"/>
       </testsuite>
     </testsuite>
   </testsuite>

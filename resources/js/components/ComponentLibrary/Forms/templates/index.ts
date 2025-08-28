@@ -1038,6 +1038,10 @@ export const eventRegistrationTemplate: FormTemplate = {
   }
 }
 
+// Alias exports for backward compatibility
+export const leadCaptureTemplate = individualSignupTemplate
+export const demoRequestTemplate = institutionDemoRequestTemplate
+
 export const formTemplates: FormTemplate[] = [
   individualSignupTemplate,
   institutionDemoRequestTemplate,

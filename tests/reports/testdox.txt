@@ -1,40 +1,23 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\Feature\FormValidationTest.php
- [ ] example
-
-D:\DevCenter\abuilds\alumate\tests\Feature\FormValidationTest.php
- [ ] `Form Validation Service` → it validates form with progressive enhancement
- [ ] `Form Validation Service` → it detects spam submissions
- [ ] `Form Validation Service` → it applies rate limiting correctly
- [ ] `Form Validation Service` → it preserves user input on validation failure
- [ ] `Spam Protection Rule` → it allows legitimate user agents
- [ ] `Spam Protection Rule` → it blocks suspicious user agents
- [ ] `Spam Protection Rule` → it blocks fake user agents
- [ ] `Spam Protection Rule` → it blocks user agents with suspicious characters
- [ ] `Phone Number Rule` → it validates US phone numbers
- [ ] `Phone Number Rule` → it validates international phone numbers
- [ ] `Phone Number Rule` → it rejects invalid phone numbers
- [ ] `Phone Number Rule` → it rejects fake phone numbers
- [ ] `Phone Number Rule` → it rejects emergency numbers
- [ ] `Institutional Domain Rule` → it allows educational domains
- [ ] `Institutional Domain Rule` → it allows academic domains
- [ ] `Institutional Domain Rule` → it rejects personal email domains
- [ ] `Institutional Domain Rule` → it allows domains with institutional keywords
- [ ] `Rate Limit Validation Rule` → it allows submissions within rate limit
- [ ] `Rate Limit Validation Rule` → it blocks submissions exceeding rate limit
- [ ] `Rate Limit Validation Rule` → it creates strict rate limits
- [ ] `Content Filter Rule` → it allows clean content
- [ ] `Content Filter Rule` → it blocks profanity
- [ ] `Content Filter Rule` → it blocks spam keywords
- [ ] `Content Filter Rule` → it blocks excessive URLs
- [ ] `Content Filter Rule` → it blocks XSS attempts
- [ ] `Content Filter Rule` → it blocks SQL injection attempts
- [ ] `Email Domain Validation Rule` → it allows legitimate email domains
- [ ] `Email Domain Validation Rule` → it blocks disposable email domains
- [ ] `Email Domain Validation Rule` → it allows disposable emails when configured
- [ ] `Email Domain Validation Rule` → it suggests corrections for typos
- [ ] `Email Domain Validation Rule` → it validates domain format
- [ ] `Progressive Enhancement Features` → it handles missing user agent gracefully
- [ ] `Progressive Enhancement Features` → it detects honeypot field usage
- [ ] `Progressive Enhancement Features` → it sanitizes input data
- [ ] `Progressive Enhancement Features` → it tracks submission patterns
+D:\DevCenter\abuilds\alumate\tests\Feature\ComponentLibrary\FormComponentTest.php
+ [ ] it can render form demo page
+ [x] it can handle form submission endpoint
+ [x] it validates required form fields
+ [x] it can handle auto-save endpoint
+ [ ] `Individual Signup Form Template` → it can submit valid individual signup form
+ [x] `Individual Signup Form Template` → it validates required fields for individual signup
+ [ ] `Individual Signup Form Template` → it validates email uniqueness for individual signup
+ [ ] `Institution Demo Request Form Template` → it can submit valid institution demo request form
+ [x] `Institution Demo Request Form Template` → it validates required fields for institution demo request
+ [x] `Institution Demo Request Form Template` → it validates enum values for institution demo request
+ [ ] `Contact Form Template` → it can submit valid contact form
+ [x] `Contact Form Template` → it validates message length for contact form
+ [x] `Contact Form Template` → it validates subject length for contact form
+ [x] `Newsletter Signup Form Template` → it can submit valid newsletter signup form
+ [x] `Newsletter Signup Form Template` → it validates email for newsletter signup
+ [x] `Event Registration Form Template` → it can submit valid event registration form
+ [x] `Event Registration Form Template` → it validates guest count limits for event registration
+ [ ] `CRM Integration` → it calculates lead scores correctly for different templates
+ [x] `CRM Integration` → it handles CRM integration failures gracefully
+ [ ] `Template Validation` → it validates phone number format across templates
+ [x] `Template Validation` → it validates graduation year ranges
 

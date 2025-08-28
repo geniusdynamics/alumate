@@ -121,8 +121,12 @@ class DemoUsersSeeder extends Seeder
             ['name' => 'Computer Science'],
             [
                 'description' => 'Bachelor of Computer Science',
-                'duration' => 4,
-                'level' => 'undergraduate',
+                'code' => 'CS-001',
+                'level' => 'degree',
+                'duration_months' => 48,
+                'study_mode' => 'full_time',
+                'institution_id' => 'tech-institute',
+                'is_active' => true,
             ]
         );
 

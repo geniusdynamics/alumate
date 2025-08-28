@@ -14,6 +14,7 @@ declare global {
   const AriaManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']
   const BundleAnalyzer: typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']
   const CDNService: typeof import('./resources/js/services/CDNService')['default']
+  const CRMIntegrationService: typeof import('./resources/js/services/CRMIntegrationService')['CRMIntegrationService']
   const ColorContrastManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']
   const ConversionTrackingService: typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']
   const EffectScope: typeof import('vue')['EffectScope']
@@ -66,6 +67,7 @@ declare global {
   const createStatisticEndpoint: typeof import('./resources/js/services/StatisticsService')['createStatisticEndpoint']
   const createTemplatePromise: typeof import('@vueuse/core')['createTemplatePromise']
   const createUnrefFn: typeof import('@vueuse/core')['createUnrefFn']
+  const crmIntegrationService: typeof import('./resources/js/services/CRMIntegrationService')['crmIntegrationService']
   const customRef: typeof import('vue')['customRef']
   const debouncedRef: typeof import('@vueuse/core')['debouncedRef']
   const debouncedWatch: typeof import('@vueuse/core')['debouncedWatch']
@@ -76,6 +78,7 @@ declare global {
   const effectScope: typeof import('vue')['effectScope']
   const extendRef: typeof import('@vueuse/core')['extendRef']
   const fileUploadService: typeof import('./resources/js/services/fileUploadService')['default']
+  const formSubmissionUtils: typeof import('./resources/js/services/CRMIntegrationService')['formSubmissionUtils']
   const formatStatisticValue: typeof import('./resources/js/services/StatisticsService')['formatStatisticValue']
   const generateResponsiveImageSources: typeof import('./resources/js/utils/mediaOptimization')['generateResponsiveImageSources']
   const generateVideoSources: typeof import('./resources/js/utils/mediaOptimization')['generateVideoSources']
@@ -424,6 +427,9 @@ declare global {
   export type { CDNConfig, ImageOptions } from './resources/js/services/CDNService'
   import('./resources/js/services/CDNService')
   // @ts-ignore
+  export type { CRMIntegrationService, CRMProvider, LeadData, CRMResponse, NotificationConfig } from './resources/js/services/CRMIntegrationService'
+  import('./resources/js/services/CRMIntegrationService')
+  // @ts-ignore
   export type { ConversionTrackingService } from './resources/js/services/ConversionTrackingService'
   import('./resources/js/services/ConversionTrackingService')
   // @ts-ignore
@@ -474,6 +480,7 @@ declare module 'vue' {
     readonly AriaManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']>
     readonly BundleAnalyzer: UnwrapRef<typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']>
     readonly CDNService: UnwrapRef<typeof import('./resources/js/services/CDNService')['default']>
+    readonly CRMIntegrationService: UnwrapRef<typeof import('./resources/js/services/CRMIntegrationService')['CRMIntegrationService']>
     readonly ColorContrastManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']>
     readonly ConversionTrackingService: UnwrapRef<typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
@@ -525,6 +532,7 @@ declare module 'vue' {
     readonly createStatisticEndpoint: UnwrapRef<typeof import('./resources/js/services/StatisticsService')['createStatisticEndpoint']>
     readonly createTemplatePromise: UnwrapRef<typeof import('@vueuse/core')['createTemplatePromise']>
     readonly createUnrefFn: UnwrapRef<typeof import('@vueuse/core')['createUnrefFn']>
+    readonly crmIntegrationService: UnwrapRef<typeof import('./resources/js/services/CRMIntegrationService')['crmIntegrationService']>
     readonly customRef: UnwrapRef<typeof import('vue')['customRef']>
     readonly debouncedRef: UnwrapRef<typeof import('@vueuse/core')['debouncedRef']>
     readonly debouncedWatch: UnwrapRef<typeof import('@vueuse/core')['debouncedWatch']>
@@ -535,6 +543,7 @@ declare module 'vue' {
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly extendRef: UnwrapRef<typeof import('@vueuse/core')['extendRef']>
     readonly fileUploadService: UnwrapRef<typeof import('./resources/js/services/fileUploadService')['default']>
+    readonly formSubmissionUtils: UnwrapRef<typeof import('./resources/js/services/CRMIntegrationService')['formSubmissionUtils']>
     readonly formatStatisticValue: UnwrapRef<typeof import('./resources/js/services/StatisticsService')['formatStatisticValue']>
     readonly generateResponsiveImageSources: UnwrapRef<typeof import('./resources/js/utils/mediaOptimization')['generateResponsiveImageSources']>
     readonly generateVideoSources: UnwrapRef<typeof import('./resources/js/utils/mediaOptimization')['generateVideoSources']>
