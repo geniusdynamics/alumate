@@ -39,6 +39,14 @@ Route::get('/ping', function () {
     ]);
 });
 
+// CRM Webhook routes (no auth required for webhooks)
+Route::prefix('webhooks/crm')->group(function () {
+    Route::post('hubspot', [App\Http\Controllers\Api\CrmWebhookController::class, 'hubspot']);
+    Route::post('salesforce', [App\Http\Controllers\Api\CrmWebhookController::class, 'salesforce']);
+    Route::post('pipedrive', [App\Http\Controllers\Api\CrmWebhookController::class, 'pipedrive']);
+    Route::post('{provider}', [App\Http\Controllers\Api\CrmWebhookController::class, 'generic']);
+});
+
 // Statistics API routes
 Route::prefix('statistics')->group(function () {
     Route::get('health', [App\Http\Controllers\Api\StatisticsController::class, 'health']);
@@ -827,4 +835,18 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin')->group(function () {
     Route::apiResource('ab-tests', App\Http\Controllers\Api\Admin\ABTestController::class);
     Route::get('ab-tests-analytics', [App\Http\Controllers\Api\Admin\ABTestController::class, 'analytics']);
+});
+
+// Form Component Routes
+Route::prefix('forms')->group(function () {
+    Route::post('/submit', [App\Http\Controllers\Api\FormController::class, 'submit']);
+    Route::post('/autosave', [App\Http\Controllers\Api\FormController::class, 'autoSave']);
+    Route::post('/notifications', [App\Http\Controllers\Api\FormController::class, 'sendNotifications']);
+    
+    // Template-specific form submission routes
+    Route::post('/individual-signup', [App\Http\Controllers\Api\FormController::class, 'submitIndividualSignup']);
+    Route::post('/institution-demo-request', [App\Http\Controllers\Api\FormController::class, 'submitInstitutionDemoRequest']);
+    Route::post('/contact', [App\Http\Controllers\Api\FormController::class, 'submitContactForm']);
+    Route::post('/newsletter-signup', [App\Http\Controllers\Api\FormController::class, 'submitNewsletterSignup']);
+    Route::post('/event-registration', [App\Http\Controllers\Api\FormController::class, 'submitEventRegistration']);
 });

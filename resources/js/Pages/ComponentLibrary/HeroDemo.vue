@@ -130,8 +130,9 @@
       </div>
     </div>
   </div>
-</template><
-script setup lang="ts">
+</template>
+
+<script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { HeroIndividual, HeroInstitution, HeroEmployer, getHeroConfigForAudience } from '@/components/ComponentLibrary/Hero'
 import { validateHeroConfig } from '@/utils/heroConfigValidator'

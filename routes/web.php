@@ -814,4 +814,8 @@ Route::middleware(['auth'])->prefix('component-library')->name('component-librar
     Route::get('background-media-demo', function () {
         return Inertia::render('ComponentLibrary/BackgroundMediaDemo');
     })->name('background-media-demo');
+    
+    Route::get('forms', function () {
+        return Inertia::render('ComponentLibrary/FormDemo');
+    })->name('forms');
 });
