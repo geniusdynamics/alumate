@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Unit\Services\ComponentThemeServiceTest" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)" tests="23" assertions="82" errors="0" failures="0" skipped="0" time="20.813920">
-    <testcase name="Applies theme with css variable generation" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Applies theme with css variable generation" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="7" time="12.129401"/>
-    <testcase name="Applies theme to specific components" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Applies theme to specific components" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="1" time="0.533210"/>
-    <testcase name="Creates theme with default parent inheritance" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Creates theme with default parent inheritance" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="3" time="0.283941"/>
-    <testcase name="Creates theme with specific parent inheritance" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Creates theme with specific parent inheritance" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="3" time="0.348789"/>
-    <testcase name="Validates valid theme configuration" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Validates valid theme configuration" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="1" time="0.453434"/>
-    <testcase name="Throws validation exception for invalid colors" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Throws validation exception for invalid colors" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="1" time="0.305601"/>
-    <testcase name="Validates accessibility requirements" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Validates accessibility requirements" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="1" time="0.265544"/>
-    <testcase name="Gets themes for specific tenant only" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Gets themes for specific tenant only" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="4" time="0.398813"/>
-    <testcase name="Validates tenant access to themes" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Validates tenant access to themes" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="2" time="0.432598"/>
-    <testcase name="Excludes default themes when requested" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Excludes default themes when requested" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="2" time="0.386072"/>
-    <testcase name="Generates comprehensive theme preview" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Generates comprehensive theme preview" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="10" time="0.447506"/>
-    <testcase name="Compiles theme css without minification" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Compiles theme css without minification" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="3" time="0.465353"/>
-    <testcase name="Compiles and minifies theme css" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Compiles and minifies theme css" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="1" time="0.634181"/>
-    <testcase name="Creates theme backup" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Creates theme backup" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="5" time="0.410145"/>
-    <testcase name="Restores theme from backup" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Restores theme from backup" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="4" time="0.567118"/>
-    <testcase name="Throws exception for invalid backup file" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Throws exception for invalid backup file" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="2" time="0.286690"/>
-    <testcase name="Gets existing default theme" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Gets existing default theme" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="1" time="0.273513"/>
-    <testcase name="Creates default theme when none exists" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Creates default theme when none exists" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="5" time="0.518328"/>
-    <testcase name="Calculates theme usage statistics" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Calculates theme usage statistics" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="9" time="0.308468"/>
-    <testcase name="Duplicates theme with modifications" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Duplicates theme with modifications" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="4" time="0.344479"/>
-    <testcase name="Exports theme configuration" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Exports theme configuration" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="8" time="0.415638"/>
-    <testcase name="Imports theme configuration" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Imports theme configuration" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="3" time="0.318889"/>
-    <testcase name="Throws exception for invalid import data" file="Component Theme Service (Tests\Unit\Services\ComponentThemeService)::Throws exception for invalid import data" class="Tests\Unit\Services\ComponentThemeServiceTest" classname="Tests.Unit.Services.ComponentThemeServiceTest" assertions="2" time="0.286209"/>
+  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="2" assertions="5" errors="1" failures="1" skipped="0" time="0.880430">
+    <testsuite name="Unit" tests="2" assertions="5" errors="1" failures="1" skipped="0" time="0.880430">
+      <testsuite name="Tests\Unit\TestimonialModelTest" file="tests\Unit\TestimonialModelTest.php" tests="2" assertions="5" errors="1" failures="1" skipped="0" time="0.880430">
+        <testcase name="`Testimonial Model` → it can create a testimonial with required fields" file="tests\Unit\TestimonialModelTest.php::`Testimonial Model` → it can create a testimonial with required fields" class="Tests\Unit\TestimonialModelTest" classname="Tests.Unit.TestimonialModelTest" assertions="0" time="0.034149">
+          <error type="Error">`Testimonial Model` → it can create a testimonial with required fieldsError: Call to a member function connection() on null&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1962
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1928
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1708
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1606
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1642
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1595
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2517
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2533
+at tests\Unit\TestimonialModelTest.php:10</error>
+        </testcase>
+        <testcase name="`Testimonial Model` → it has correct default values" file="tests\Unit\TestimonialModelTest.php::`Testimonial Model` → it has correct default values" class="Tests\Unit\TestimonialModelTest" classname="Tests.Unit.TestimonialModelTest" assertions="5" time="0.846282">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">`Testimonial Model` → it has correct default valuesFailed asserting that '0.0000' is identical to 0.0.&#13;
+at tests\Unit\TestimonialModelTest.php:37</failure>
+        </testcase>
+      </testsuite>
+    </testsuite>
   </testsuite>
 </testsuites>

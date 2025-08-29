@@ -464,6 +464,31 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/courses', [StudentProfileController::class, 'courses']);
 });
 
+// Testimonial Management routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('testimonials', App\Http\Controllers\Api\TestimonialController::class);
+    
+    // Testimonial rotation and display
+    Route::get('testimonials-rotation', [App\Http\Controllers\Api\TestimonialController::class, 'rotation']);
+    
+    // Moderation actions
+    Route::post('testimonials/{testimonial}/approve', [App\Http\Controllers\Api\TestimonialController::class, 'approve']);
+    Route::post('testimonials/{testimonial}/reject', [App\Http\Controllers\Api\TestimonialController::class, 'reject']);
+    Route::post('testimonials/{testimonial}/archive', [App\Http\Controllers\Api\TestimonialController::class, 'archive']);
+    Route::post('testimonials/{testimonial}/featured', [App\Http\Controllers\Api\TestimonialController::class, 'setFeatured']);
+    
+    // Analytics and tracking
+    Route::post('testimonials/{testimonial}/track-click', [App\Http\Controllers\Api\TestimonialController::class, 'trackClick']);
+    Route::get('testimonials-analytics', [App\Http\Controllers\Api\TestimonialController::class, 'analytics']);
+    
+    // Filtering and options
+    Route::get('testimonials-filter-options', [App\Http\Controllers\Api\TestimonialController::class, 'filterOptions']);
+    
+    // Import/Export
+    Route::get('testimonials-export', [App\Http\Controllers\Api\TestimonialController::class, 'export']);
+    Route::post('testimonials-import', [App\Http\Controllers\Api\TestimonialController::class, 'import']);
+});
+
 // Student-Alumni Story Discovery routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('student/alumni-stories', [StudentAlumniStoryController::class, 'index']);

@@ -453,3 +453,211 @@ export interface ComponentLibraryBridgeInterface {
   generatePreviewImage(component: Component): Promise<string>;
   validateGrapeJSCompatibility(component: Component): { valid: boolean; errors: string[] };
 }
+
+// Testimonial Component Types
+export type TestimonialLayout = 'single' | 'carousel' | 'grid' | 'masonry';
+
+export interface TestimonialAuthor {
+  id: string;
+  name: string;
+  title?: string;
+  company?: string;
+  graduationYear?: number;
+  industry?: string;
+  photo?: MediaAsset;
+  location?: string;
+  linkedinUrl?: string;
+  // Filtering attributes
+  audienceType?: AudienceType;
+  tags?: string[];
+}
+
+export interface TestimonialContent {
+  id: string;
+  quote: string;
+  rating?: number; // 1-5 star rating
+  type: 'text' | 'video';
+  
+  // Video testimonial specific
+  videoAsset?: MediaAsset & {
+    transcript?: string;
+    captions?: string; // WebVTT file URL
+    chapters?: Array<{
+      time: number;
+      title: string;
+    }>;
+    duration?: number; // Video duration in seconds
+    // Multiple quality sources
+    qualities?: Array<{
+      label: string;
+      src: string;
+      type: string;
+      bandwidth?: number;
+      width?: number;
+      height?: number;
+    }>;
+    // Bandwidth-aware loading
+    adaptiveBitrate?: boolean;
+    // Analytics metadata
+    engagementMetrics?: {
+      averageWatchTime?: number;
+      completionRate?: number;
+      dropOffPoints?: number[];
+    };
+  };
+  
+  // Content metadata
+  featured?: boolean;
+  verified?: boolean;
+  dateCreated: string;
+  lastUpdated?: string;
+  
+  // Analytics
+  viewCount?: number;
+  shareCount?: number;
+  likeCount?: number;
+}
+
+export interface Testimonial {
+  id: string;
+  author: TestimonialAuthor;
+  content: TestimonialContent;
+  
+  // Filtering and categorization
+  category?: string;
+  tags?: string[];
+  audienceType?: AudienceType;
+  industry?: string;
+  graduationYear?: number;
+  
+  // Display settings
+  featured?: boolean;
+  approved?: boolean;
+  priority?: number; // For ordering
+  
+  // A/B testing
+  abTestVariant?: string;
+  
+  // Accessibility
+  ariaLabel?: string;
+}
+
+export interface TestimonialFilterConfig {
+  audienceType?: AudienceType[];
+  industry?: string[];
+  graduationYear?: {
+    min?: number;
+    max?: number;
+    ranges?: Array<{ label: string; min: number; max: number }>;
+  };
+  tags?: string[];
+  rating?: {
+    min?: number;
+    max?: number;
+  };
+  type?: ('text' | 'video')[];
+  featured?: boolean;
+  verified?: boolean;
+}
+
+export interface TestimonialCarouselConfig {
+  autoplay?: boolean;
+  autoplaySpeed?: number; // milliseconds
+  pauseOnHover?: boolean;
+  showDots?: boolean;
+  showArrows?: boolean;
+  infinite?: boolean;
+  slidesToShow?: number;
+  slidesToScroll?: number;
+  responsive?: Array<{
+    breakpoint: number;
+    settings: {
+      slidesToShow: number;
+      slidesToScroll: number;
+    };
+  }>;
+  // Touch/swipe settings
+  swipe?: boolean;
+  touchThreshold?: number;
+  // Accessibility
+  ariaLabel?: string;
+  announceSlideChanges?: boolean;
+}
+
+export interface TestimonialGridConfig {
+  columns?: {
+    desktop: number;
+    tablet: number;
+    mobile: number;
+  };
+  gap?: 'sm' | 'md' | 'lg';
+  masonry?: boolean;
+  equalHeight?: boolean;
+}
+
+export interface TestimonialComponentConfig {
+  // Layout settings
+  layout: TestimonialLayout;
+  
+  // Testimonials data
+  testimonials: Testimonial[];
+  
+  // Display settings
+  showAuthorPhoto?: boolean;
+  showAuthorTitle?: boolean;
+  showAuthorCompany?: boolean;
+  showGraduationYear?: boolean;
+  showRating?: boolean;
+  showDate?: boolean;
+  
+  // Filtering
+  enableFiltering?: boolean;
+  filterConfig?: TestimonialFilterConfig;
+  defaultFilters?: Partial<TestimonialFilterConfig>;
+  
+  // Layout-specific configurations
+  carouselConfig?: TestimonialCarouselConfig;
+  gridConfig?: TestimonialGridConfig;
+  
+  // Styling
+  theme?: 'default' | 'minimal' | 'modern' | 'classic' | 'card';
+  colorScheme?: 'default' | 'primary' | 'secondary' | 'accent';
+  
+  // Performance
+  lazyLoad?: boolean;
+  itemsPerPage?: number; // For pagination
+  enableInfiniteScroll?: boolean;
+  
+  // Accessibility
+  ariaLabel?: string;
+  announceUpdates?: boolean;
+  respectReducedMotion?: boolean;
+  
+  // Video testimonial settings
+  videoSettings?: {
+    autoplay?: boolean;
+    muted?: boolean;
+    showControls?: boolean;
+    showCaptions?: boolean;
+    preload?: 'none' | 'metadata' | 'auto';
+  };
+  
+  // Analytics
+  trackingEnabled?: boolean;
+  trackViews?: boolean;
+  trackInteractions?: boolean;
+  
+  // A/B Testing
+  abTest?: ABTestConfig;
+}
+
+// Video Settings Interface
+export interface VideoSettings {
+  autoplay?: boolean;
+  muted?: boolean;
+  showControls?: boolean;
+  showCaptions?: boolean;
+  preload?: 'none' | 'metadata' | 'auto';
+  loop?: boolean;
+  playsinline?: boolean;
+}
