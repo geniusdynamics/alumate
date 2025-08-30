@@ -1,9 +1,19 @@
-D:\DevCenter\abuilds\alumate\tests\Unit\ComponentLibrary\MediaOptimizationTest.php
- [x] it can generate responsive image sources with WebP support
- [x] it can configure video background with mobile optimization
- [x] it can configure gradient background with fallback
- [x] it validates mobile-specific video handling
- [x] it supports CDN integration configuration
- [x] it validates bandwidth considerations for video quality
- [x] it validates accessibility features for media components
+D:\DevCenter\abuilds\alumate\tests\Unit\ComponentConfiguratorTest.php
+ [x] it can validate configuration schema structure
+ [x] it can validate configuration schema for hero components
+ [x] it can handle configuration presets
+ [x] it can validate required fields for different component categories
+ [x] it can handle color validation
+ [x] it can handle font family configuration
+ [x] it can handle spacing configuration
+ [x] it can handle layout configuration
+ [x] it can handle responsive settings
+ [x] it can handle animation settings
+ [x] it can handle custom CSS configuration
+ [x] it can handle configuration export format
+ [x] it can handle configuration import validation
+ [x] it can handle configuration versioning and history
+ [x] it can handle tenant-specific configuration isolation
+ [x] it can handle configuration field validation rules
+ [x] it can handle accessibility configuration options
 
