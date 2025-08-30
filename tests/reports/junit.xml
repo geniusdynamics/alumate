@@ -1,25 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\DevCenter\abuilds\alumate\phpunit.xml" tests="2" assertions="5" errors="1" failures="1" skipped="0" time="0.880430">
-    <testsuite name="Unit" tests="2" assertions="5" errors="1" failures="1" skipped="0" time="0.880430">
-      <testsuite name="Tests\Unit\TestimonialModelTest" file="tests\Unit\TestimonialModelTest.php" tests="2" assertions="5" errors="1" failures="1" skipped="0" time="0.880430">
-        <testcase name="`Testimonial Model` → it can create a testimonial with required fields" file="tests\Unit\TestimonialModelTest.php::`Testimonial Model` → it can create a testimonial with required fields" class="Tests\Unit\TestimonialModelTest" classname="Tests.Unit.TestimonialModelTest" assertions="0" time="0.034149">
-          <error type="Error">`Testimonial Model` → it can create a testimonial with required fieldsError: Call to a member function connection() on null&#13;
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1962
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1928
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1708
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1606
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1642
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1595
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2517
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2533
-at tests\Unit\TestimonialModelTest.php:10</error>
-        </testcase>
-        <testcase name="`Testimonial Model` → it has correct default values" file="tests\Unit\TestimonialModelTest.php::`Testimonial Model` → it has correct default values" class="Tests\Unit\TestimonialModelTest" classname="Tests.Unit.TestimonialModelTest" assertions="5" time="0.846282">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">`Testimonial Model` → it has correct default valuesFailed asserting that '0.0000' is identical to 0.0.&#13;
-at tests\Unit\TestimonialModelTest.php:37</failure>
-        </testcase>
-      </testsuite>
-    </testsuite>
+  <testsuite name="Tests\Unit\ComponentLibrary\MediaOptimizationTest" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php" tests="7" assertions="44" errors="0" failures="0" skipped="0" time="0.023905">
+    <testcase name="it can generate responsive image sources with WebP support" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php::it can generate responsive image sources with WebP support" class="Tests\Unit\ComponentLibrary\MediaOptimizationTest" classname="Tests.Unit.ComponentLibrary.MediaOptimizationTest" assertions="6" time="0.019765"/>
+    <testcase name="it can configure video background with mobile optimization" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php::it can configure video background with mobile optimization" class="Tests\Unit\ComponentLibrary\MediaOptimizationTest" classname="Tests.Unit.ComponentLibrary.MediaOptimizationTest" assertions="8" time="0.001146"/>
+    <testcase name="it can configure gradient background with fallback" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php::it can configure gradient background with fallback" class="Tests\Unit\ComponentLibrary\MediaOptimizationTest" classname="Tests.Unit.ComponentLibrary.MediaOptimizationTest" assertions="7" time="0.000660"/>
+    <testcase name="it validates mobile-specific video handling" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php::it validates mobile-specific video handling" class="Tests\Unit\ComponentLibrary\MediaOptimizationTest" classname="Tests.Unit.ComponentLibrary.MediaOptimizationTest" assertions="5" time="0.000575"/>
+    <testcase name="it supports CDN integration configuration" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php::it supports CDN integration configuration" class="Tests\Unit\ComponentLibrary\MediaOptimizationTest" classname="Tests.Unit.ComponentLibrary.MediaOptimizationTest" assertions="7" time="0.000590"/>
+    <testcase name="it validates bandwidth considerations for video quality" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php::it validates bandwidth considerations for video quality" class="Tests\Unit\ComponentLibrary\MediaOptimizationTest" classname="Tests.Unit.ComponentLibrary.MediaOptimizationTest" assertions="5" time="0.000581"/>
+    <testcase name="it validates accessibility features for media components" file="tests\Unit\ComponentLibrary\MediaOptimizationTest.php::it validates accessibility features for media components" class="Tests\Unit\ComponentLibrary\MediaOptimizationTest" classname="Tests.Unit.ComponentLibrary.MediaOptimizationTest" assertions="6" time="0.000588"/>
   </testsuite>
 </testsuites>

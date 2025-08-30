@@ -1,377 +1,380 @@
-import { ref, onMounted, onUnmounted } from 'vue'
-import { ConversionTrackingService } from '@/services/ConversionTrackingService'
-import { ABTestingService } from '@/services/ABTestingService'
-import { HeatMapService } from '@/services/HeatMapService'
-import type { 
-  AudienceType, 
-  CTAClickEvent, 
-  ConversionMetrics,
-  ABTestResult,
-  HeatMapData
-} from '@/types/homepage'
+import { ref, computed } from 'vue'
+import { useAnalytics } from './useAnalytics'
+import type { CTATrackingParams, CTAConversionEvent } from '@/types/components'
 
-export function useConversionTracking(audience: AudienceType, userId?: string) {
-  // Services
-  let conversionService: ConversionTrackingService | null = null
-  let abTestingService: ABTestingService | null = null
-  let heatMapService: HeatMapService | null = null
+interface ConversionData {
+  eventName: string
+  category: string
+  action: string
+  label?: string
+  value?: number
+  customProperties?: Record<string, any>
+  timestamp: number
+  sessionId: string
+  userId?: string
+  ctaId?: string
+  ctaType?: string
+  ctaVariant?: string
+  pageUrl: string
+  referrer?: string
+  utmParams?: CTATrackingParams
+}
 
-  // Reactive state
-  const isInitialized = ref(false)
-  const sessionId = ref('')
-  const activeTests = ref<Record<string, string>>({})
-  const conversionMetrics = ref<ConversionMetrics | null>(null)
+interface ConversionGoal {
+  id: string
+  name: string
+  description: string
+  targetValue?: number
+  conversionWindow?: number // in milliseconds
+  attributionModel?: 'first-click' | 'last-click' | 'linear' | 'time-decay'
+}
 
-  // Initialize services
-  const initialize = async () => {
+const conversionQueue = ref<ConversionData[]>([])
+const conversionGoals = ref<Map<string, ConversionGoal>>(new Map())
+const sessionId = ref<string>(generateSessionId())
+
+export function useConversionTracking() {
+  const { trackEvent } = useAnalytics()
+
+  /**
+   * Track a conversion event
+   */
+  const trackConversion = (
+    eventName: string,
+    conversionEvent: CTAConversionEvent,
+    additionalData?: Record<string, any>
+  ) => {
+    const conversionData: ConversionData = {
+      eventName,
+      category: conversionEvent.category,
+      action: conversionEvent.action,
+      label: conversionEvent.label,
+      value: conversionEvent.value,
+      customProperties: {
+        ...conversionEvent.customProperties,
+        ...additionalData
+      },
+      timestamp: Date.now(),
+      sessionId: sessionId.value,
+      userId: getUserId(),
+      pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+      referrer: typeof document !== 'undefined' ? document.referrer : '',
+      utmParams: extractUtmParams()
+    }
+
+    // Add to queue
+    conversionQueue.value.push(conversionData)
+
+    // Track with analytics
+    trackEvent(eventName, {
+      category: conversionData.category,
+      action: conversionData.action,
+      label: conversionData.label,
+      value: conversionData.value,
+      session_id: conversionData.sessionId,
+      user_id: conversionData.userId,
+      page_url: conversionData.pageUrl,
+      referrer: conversionData.referrer,
+      utm_params: conversionData.utmParams,
+      ...conversionData.customProperties
+    })
+
+    // Store in localStorage for persistence
+    storeConversionData(conversionData)
+
+    // Check for goal completion
+    checkGoalCompletion(conversionData)
+  }
+
+  /**
+   * Track CTA click with conversion attribution
+   */
+  const trackCTAClick = (
+    ctaId: string,
+    ctaType: string,
+    ctaText: string,
+    destinationUrl: string,
+    trackingParams?: CTATrackingParams,
+    variant?: string
+  ) => {
+    const clickData = {
+      cta_id: ctaId,
+      cta_type: ctaType,
+      cta_text: ctaText,
+      cta_variant: variant,
+      destination_url: destinationUrl,
+      tracking_params: trackingParams,
+      click_timestamp: Date.now()
+    }
+
+    trackEvent('cta_click', clickData)
+
+    // Store click attribution data
+    storeClickAttribution(clickData)
+  }
+
+  /**
+   * Track CTA impression
+   */
+  const trackCTAImpression = (
+    ctaId: string,
+    ctaType: string,
+    variant?: string,
+    context?: Record<string, any>
+  ) => {
+    trackEvent('cta_impression', {
+      cta_id: ctaId,
+      cta_type: ctaType,
+      cta_variant: variant,
+      impression_timestamp: Date.now(),
+      ...context
+    })
+  }
+
+  /**
+   * Set up conversion goals
+   */
+  const defineConversionGoal = (goal: ConversionGoal) => {
+    conversionGoals.value.set(goal.id, goal)
+  }
+
+  /**
+   * Get conversion funnel data
+   */
+  const getConversionFunnel = (goalId: string, timeRange?: { start: Date; end: Date }) => {
+    const goal = conversionGoals.value.get(goalId)
+    if (!goal) return null
+
+    const conversions = conversionQueue.value.filter(conversion => {
+      const matchesGoal = conversion.eventName === goal.name
+      const inTimeRange = !timeRange || (
+        conversion.timestamp >= timeRange.start.getTime() &&
+        conversion.timestamp <= timeRange.end.getTime()
+      )
+      return matchesGoal && inTimeRange
+    })
+
+    return {
+      goal,
+      totalConversions: conversions.length,
+      conversionRate: calculateConversionRate(conversions),
+      averageValue: calculateAverageValue(conversions),
+      conversions
+    }
+  }
+
+  /**
+   * Get attribution data for a conversion
+   */
+  const getAttributionData = (conversionId: string) => {
+    const clickAttribution = getStoredClickAttribution()
+    const conversion = conversionQueue.value.find(c => 
+      c.timestamp.toString() === conversionId
+    )
+
+    if (!conversion) return null
+
+    // Find relevant clicks within attribution window
+    const attributionWindow = 30 * 24 * 60 * 60 * 1000 // 30 days
+    const relevantClicks = clickAttribution.filter(click => 
+      click.click_timestamp <= conversion.timestamp &&
+      click.click_timestamp >= (conversion.timestamp - attributionWindow)
+    )
+
+    return {
+      conversion,
+      attributedClicks: relevantClicks,
+      attributionModel: 'last-click', // Default model
+      primaryAttribution: relevantClicks[relevantClicks.length - 1] // Last click
+    }
+  }
+
+  /**
+   * Calculate conversion metrics
+   */
+  const getConversionMetrics = (timeRange?: { start: Date; end: Date }) => {
+    const filteredConversions = timeRange 
+      ? conversionQueue.value.filter(c => 
+          c.timestamp >= timeRange.start.getTime() &&
+          c.timestamp <= timeRange.end.getTime()
+        )
+      : conversionQueue.value
+
+    const totalConversions = filteredConversions.length
+    const totalValue = filteredConversions.reduce((sum, c) => sum + (c.value || 0), 0)
+    const averageValue = totalConversions > 0 ? totalValue / totalConversions : 0
+
+    // Group by category
+    const byCategory = filteredConversions.reduce((acc, conversion) => {
+      if (!acc[conversion.category]) {
+        acc[conversion.category] = []
+      }
+      acc[conversion.category].push(conversion)
+      return acc
+    }, {} as Record<string, ConversionData[]>)
+
+    // Group by CTA type
+    const byCTAType = filteredConversions.reduce((acc, conversion) => {
+      const ctaType = conversion.ctaType || 'unknown'
+      if (!acc[ctaType]) {
+        acc[ctaType] = []
+      }
+      acc[ctaType].push(conversion)
+      return acc
+    }, {} as Record<string, ConversionData[]>)
+
+    return {
+      totalConversions,
+      totalValue,
+      averageValue,
+      byCategory,
+      byCTAType,
+      conversionRate: calculateOverallConversionRate()
+    }
+  }
+
+  /**
+   * Clear conversion data
+   */
+  const clearConversionData = () => {
+    conversionQueue.value = []
     try {
-      // Generate session ID
-      sessionId.value = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-      // Initialize conversion tracking service
-      conversionService = new ConversionTrackingService(audience, userId)
-
-      // Initialize A/B testing service
-      abTestingService = new ABTestingService(userId, sessionId.value, audience)
-      
-      // Get active test assignments
-      activeTests.value = abTestingService.getTestAssignments()
-
-      // Initialize heat map service
-      heatMapService = new HeatMapService(sessionId.value, audience, userId)
-
-      isInitialized.value = true
-
-      // Track initial page view
-      trackPageView('homepage')
-
+      localStorage.removeItem('conversion_data')
+      localStorage.removeItem('click_attribution')
     } catch (error) {
-      console.error('Failed to initialize conversion tracking:', error)
+      console.warn('Failed to clear conversion data from localStorage:', error)
     }
   }
-
-  // Conversion tracking methods
-  const trackPageView = (page: string, additionalData?: Record<string, any>) => {
-    if (!conversionService) return
-    conversionService.trackPageView(page, additionalData)
-  }
-
-  const trackSectionView = (section: string, timeSpent?: number, scrollDepth?: number) => {
-    if (!conversionService) return
-    conversionService.trackSectionView(section, timeSpent, scrollDepth)
-  }
-
-  const trackCTAClick = (event: CTAClickEvent) => {
-    if (!conversionService) return
-    
-    // Track conversion
-    conversionService.trackCTAClick(event)
-
-    // Track A/B test conversions if applicable
-    if (abTestingService) {
-      Object.keys(activeTests.value).forEach(testId => {
-        // Map actions to conversion goals
-        const actionGoalMap: Record<string, string> = {
-          'demo': 'demo_request',
-          'trial': 'trial_signup',
-          'register': 'registration',
-          'contact': 'contact_sales',
-          'calculator-complete': 'calculator_completion'
-        }
-
-        const goalId = actionGoalMap[event.action]
-        if (goalId) {
-          abTestingService.trackConversion(testId, goalId)
-        }
-      })
-    }
-  }
-
-  const trackFormSubmission = (formType: string, success: boolean, formData?: Record<string, any>) => {
-    if (!conversionService) return
-    conversionService.trackFormSubmission(formType, success, formData)
-  }
-
-  const trackCalculatorUsage = (step: number, completed: boolean, calculatorData?: Record<string, any>) => {
-    if (!conversionService) return
-    conversionService.trackCalculatorUsage(step, completed, calculatorData)
-  }
-
-  const trackScrollDepth = (percentage: number, section?: string) => {
-    if (!conversionService) return
-    conversionService.trackScrollDepth(percentage, section)
-  }
-
-  const trackTimeOnSection = (section: string, duration: number) => {
-    if (!conversionService) return
-    conversionService.trackTimeOnSection(section, duration)
-  }
-
-  const trackCustomEvent = (eventType: string, data: Record<string, any>) => {
-    if (!conversionService) return
-    conversionService.trackUserBehavior(eventType, data)
-
-    // Also track in heat map service if relevant
-    if (heatMapService && (eventType.includes('click') || eventType.includes('hover'))) {
-      heatMapService.trackCustomEvent(eventType, data)
-    }
-  }
-
-  // A/B testing methods
-  const getVariant = (testId: string) => {
-    if (!abTestingService) return null
-    return abTestingService.getVariant(testId)
-  }
-
-  const getComponentOverrides = (testId: string) => {
-    if (!abTestingService) return []
-    return abTestingService.getComponentOverrides(testId)
-  }
-
-  const isInTest = (testId: string) => {
-    if (!abTestingService) return false
-    return abTestingService.isInTest(testId)
-  }
-
-  const isInVariant = (testId: string, variantId: string) => {
-    if (!abTestingService) return false
-    return abTestingService.isInVariant(testId, variantId)
-  }
-
-  const getTestResults = async (testId: string) => {
-    if (!abTestingService) return null
-    return await abTestingService.getTestResults(testId)
-  }
-
-  // Heat map methods
-  const startHeatMapRecording = () => {
-    if (!heatMapService) return
-    heatMapService.startRecording()
-  }
-
-  const stopHeatMapRecording = () => {
-    if (!heatMapService) return
-    heatMapService.stopRecording()
-  }
-
-  const getHeatMapData = (): HeatMapData | null => {
-    if (!heatMapService) return null
-    return heatMapService.getHeatMapData()
-  }
-
-  const generateHeatMapReport = async () => {
-    if (!heatMapService) return null
-    return await heatMapService.generateHeatMapReport()
-  }
-
-  // Analytics and reporting methods
-  const getConversionMetrics = async () => {
-    if (!conversionService) return null
-    const metrics = conversionService.getConversionMetrics()
-    conversionMetrics.value = metrics
-    return metrics
-  }
-
-  const generateConversionReport = async (timeRange?: { start: Date; end: Date }) => {
-    try {
-      const response = await fetch('/api/analytics/conversion-report', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Session-ID': sessionId.value
-        },
-        body: JSON.stringify({
-          audience,
-          userId,
-          sessionId: sessionId.value,
-          timeRange
-        })
-      })
-
-      if (response.ok) {
-        return await response.json()
-      }
-    } catch (error) {
-      console.error('Failed to generate conversion report:', error)
-    }
-    return null
-  }
-
-  const exportAnalyticsData = async (format: 'csv' | 'json' = 'json') => {
-    try {
-      const response = await fetch(`/api/analytics/export?format=${format}`, {
-        headers: {
-          'X-Session-ID': sessionId.value
-        }
-      })
-
-      if (response.ok) {
-        const blob = await response.blob()
-        const url = window.URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `analytics-data-${Date.now()}.${format}`
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        window.URL.revokeObjectURL(url)
-        return true
-      }
-    } catch (error) {
-      console.error('Failed to export analytics data:', error)
-    }
-    return false
-  }
-
-  // Utility methods
-  const updateAudience = (newAudience: AudienceType) => {
-    if (conversionService) {
-      conversionService.updateAudience(newAudience)
-    }
-    
-    // Reinitialize A/B testing service with new audience
-    if (abTestingService) {
-      abTestingService.destroy()
-      abTestingService = new ABTestingService(userId, sessionId.value, newAudience)
-      activeTests.value = abTestingService.getTestAssignments()
-    }
-  }
-
-  const setUserId = (newUserId: string) => {
-    if (conversionService) {
-      conversionService.setUserId(newUserId)
-    }
-  }
-
-  const getSessionId = () => {
-    return sessionId.value
-  }
-
-  // Integration with third-party tools
-  const integrateGoogleAnalytics = (trackingId: string) => {
-    if (typeof window !== 'undefined' && !window.gtag) {
-      // Load Google Analytics
-      const script = document.createElement('script')
-      script.async = true
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${trackingId}`
-      document.head.appendChild(script)
-
-      window.dataLayer = window.dataLayer || []
-      window.gtag = function() {
-        window.dataLayer.push(arguments)
-      }
-      window.gtag('js', new Date())
-      window.gtag('config', trackingId)
-    }
-  }
-
-  const integrateHotjar = (hotjarId: string) => {
-    if (heatMapService) {
-      heatMapService.integrateHotjar(hotjarId)
-    }
-  }
-
-  const integrateMixpanel = (token: string) => {
-    if (typeof window !== 'undefined' && !window.mixpanel) {
-      // Load Mixpanel
-      const script = document.createElement('script')
-      script.src = 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js'
-      script.onload = () => {
-        window.mixpanel.init(token)
-      }
-      document.head.appendChild(script)
-    }
-  }
-
-  // Performance monitoring
-  const trackPerformanceMetrics = () => {
-    if (typeof window !== 'undefined' && 'performance' in window) {
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
-      
-      if (navigation) {
-        trackCustomEvent('performance_metrics', {
-          loadTime: navigation.loadEventEnd - navigation.loadEventStart,
-          domContentLoaded: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
-          firstContentfulPaint: performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0,
-          largestContentfulPaint: performance.getEntriesByName('largest-contentful-paint')[0]?.startTime || 0
-        })
-      }
-    }
-  }
-
-  // Lifecycle
-  onMounted(() => {
-    initialize()
-    
-    // Track performance metrics after page load
-    if (document.readyState === 'complete') {
-      trackPerformanceMetrics()
-    } else {
-      window.addEventListener('load', trackPerformanceMetrics)
-    }
-  })
-
-  onUnmounted(() => {
-    // Cleanup services
-    if (conversionService) {
-      conversionService.destroy()
-    }
-    
-    if (abTestingService) {
-      abTestingService.destroy()
-    }
-    
-    if (heatMapService) {
-      heatMapService.destroy()
-    }
-  })
 
   return {
-    // State
-    isInitialized,
-    sessionId,
-    activeTests,
-    conversionMetrics,
-
-    // Conversion tracking
-    trackPageView,
-    trackSectionView,
+    trackConversion,
     trackCTAClick,
-    trackFormSubmission,
-    trackCalculatorUsage,
-    trackScrollDepth,
-    trackTimeOnSection,
-    trackCustomEvent,
-
-    // A/B testing
-    getVariant,
-    getComponentOverrides,
-    isInTest,
-    isInVariant,
-    getTestResults,
-
-    // Heat mapping
-    startHeatMapRecording,
-    stopHeatMapRecording,
-    getHeatMapData,
-    generateHeatMapReport,
-
-    // Analytics and reporting
+    trackCTAImpression,
+    defineConversionGoal,
+    getConversionFunnel,
+    getAttributionData,
     getConversionMetrics,
-    generateConversionReport,
-    exportAnalyticsData,
-
-    // Utility
-    updateAudience,
-    setUserId,
-    getSessionId,
-
-    // Integrations
-    integrateGoogleAnalytics,
-    integrateHotjar,
-    integrateMixpanel,
-
-    // Performance
-    trackPerformanceMetrics
+    clearConversionData,
+    conversionQueue: computed(() => conversionQueue.value),
+    sessionId: computed(() => sessionId.value)
   }
+}
+
+// Helper functions
+function generateSessionId(): string {
+  return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+}
+
+function getUserId(): string | undefined {
+  // Try to get user ID from various sources
+  if (typeof window !== 'undefined') {
+    // Check for authenticated user data
+    const userMeta = document.querySelector('meta[name="user-id"]')
+    if (userMeta) {
+      return userMeta.getAttribute('content') || undefined
+    }
+
+    // Check localStorage
+    try {
+      const userData = localStorage.getItem('user_data')
+      if (userData) {
+        const parsed = JSON.parse(userData)
+        return parsed.id || parsed.user_id
+      }
+    } catch (error) {
+      // Ignore parsing errors
+    }
+  }
+
+  return undefined
+}
+
+function extractUtmParams(): CTATrackingParams | undefined {
+  if (typeof window === 'undefined') return undefined
+
+  const urlParams = new URLSearchParams(window.location.search)
+  const utmParams: CTATrackingParams = {}
+
+  const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']
+  let hasUtmParams = false
+
+  utmKeys.forEach(key => {
+    const value = urlParams.get(key)
+    if (value) {
+      utmParams[key] = value
+      hasUtmParams = true
+    }
+  })
+
+  return hasUtmParams ? utmParams : undefined
+}
+
+function storeConversionData(conversion: ConversionData) {
+  try {
+    const stored = JSON.parse(localStorage.getItem('conversion_data') || '[]')
+    stored.push(conversion)
+    
+    // Keep only last 1000 conversions
+    if (stored.length > 1000) {
+      stored.splice(0, stored.length - 1000)
+    }
+    
+    localStorage.setItem('conversion_data', JSON.stringify(stored))
+  } catch (error) {
+    console.warn('Failed to store conversion data:', error)
+  }
+}
+
+function storeClickAttribution(clickData: any) {
+  try {
+    const stored = JSON.parse(localStorage.getItem('click_attribution') || '[]')
+    stored.push(clickData)
+    
+    // Keep only last 500 clicks
+    if (stored.length > 500) {
+      stored.splice(0, stored.length - 500)
+    }
+    
+    localStorage.setItem('click_attribution', JSON.stringify(stored))
+  } catch (error) {
+    console.warn('Failed to store click attribution data:', error)
+  }
+}
+
+function getStoredClickAttribution(): any[] {
+  try {
+    return JSON.parse(localStorage.getItem('click_attribution') || '[]')
+  } catch (error) {
+    console.warn('Failed to retrieve click attribution data:', error)
+    return []
+  }
+}
+
+function checkGoalCompletion(conversion: ConversionData) {
+  // Check if this conversion completes any defined goals
+  conversionGoals.value.forEach((goal, goalId) => {
+    if (conversion.eventName === goal.name) {
+      // Goal completed - could trigger additional tracking or notifications
+      console.log(`Conversion goal "${goal.name}" completed:`, conversion)
+    }
+  })
+}
+
+function calculateConversionRate(conversions: ConversionData[]): number {
+  // This would need impression data to calculate properly
+  // For now, return a placeholder
+  return conversions.length > 0 ? 0.05 : 0 // 5% placeholder rate
+}
+
+function calculateAverageValue(conversions: ConversionData[]): number {
+  if (conversions.length === 0) return 0
+  
+  const totalValue = conversions.reduce((sum, c) => sum + (c.value || 0), 0)
+  return totalValue / conversions.length
+}
+
+function calculateOverallConversionRate(): number {
+  // This would need impression data to calculate properly
+  // For now, return a placeholder based on conversion count
+  return conversionQueue.value.length > 0 ? 0.03 : 0 // 3% placeholder rate
 }

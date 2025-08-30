@@ -661,3 +661,496 @@ export interface VideoSettings {
   loop?: boolean;
   playsinline?: boolean;
 }
+
+// Statistics Component Types
+export type StatisticsDisplayType = 'counters' | 'progress' | 'charts' | 'mixed';
+export type StatisticsFormat = 'number' | 'currency' | 'percentage' | 'duration';
+export type ChartType = 'bar' | 'before-after' | 'competitive';
+
+export interface StatisticsTrend {
+  direction: 'up' | 'down' | 'neutral';
+  value: number | string;
+  label?: string;
+}
+
+export interface StatisticsSegment {
+  threshold: number;
+  width: number;
+  color?: string;
+  label?: string;
+}
+
+export interface StatisticsMilestone {
+  value: number;
+  label: string;
+  showLabel?: boolean;
+}
+
+export interface StatisticsDataSource {
+  id: string;
+  endpoint: string;
+  method?: 'GET' | 'POST';
+  headers?: Record<string, string>;
+  params?: Record<string, any>;
+  transform?: (data: any) => any;
+  refreshInterval?: number;
+  retryAttempts?: number;
+  retryDelay?: number;
+}
+
+export interface StatisticsItem {
+  id: string;
+  value: number | string;
+  label: string;
+  description?: string;
+  prefix?: string;
+  suffix?: string;
+  format?: StatisticsFormat;
+  type?: 'counter' | 'progress' | 'chart';
+  source?: 'manual' | 'api';
+  apiEndpoint?: string;
+  color?: string;
+  icon?: string;
+  
+  // Counter-specific
+  trend?: StatisticsTrend;
+  
+  // Progress-specific
+  target?: number;
+  segments?: StatisticsSegment[];
+  milestones?: StatisticsMilestone[];
+  
+  // Chart-specific
+  chartType?: ChartType;
+  chartData?: ChartDataItem[];
+  showLegend?: boolean;
+  legend?: ChartLegendItem[];
+  dataSource?: string;
+}
+
+export interface StatisticsComponentConfig {
+  title?: string;
+  description?: string;
+  displayType: StatisticsDisplayType;
+  layout: 'grid' | 'row' | 'column';
+  theme: 'default' | 'minimal' | 'modern' | 'card';
+  spacing: 'compact' | 'default' | 'spacious';
+  
+  // Size configurations
+  counterSize: 'sm' | 'md' | 'lg' | 'xl';
+  progressSize: 'sm' | 'md' | 'lg';
+  chartSize: 'sm' | 'md' | 'lg';
+  
+  // Display options
+  showLabels: boolean;
+  showValues: boolean;
+  showTargets: boolean;
+  
+  // Grid configuration
+  gridColumns: {
+    desktop: number;
+    tablet: number;
+    mobile: number;
+  };
+  
+  // Animation settings
+  animation: {
+    enabled: boolean;
+    trigger: 'immediate' | 'scroll' | 'hover';
+    duration: number;
+    delay: number;
+    stagger: number;
+    easing: string;
+  };
+  
+  // Real-time data
+  realTimeData: {
+    enabled: boolean;
+    sources: string[];
+    refreshInterval: number;
+  };
+  
+  // Accessibility
+  accessibility: {
+    ariaLabel?: string;
+    announceUpdates: boolean;
+    respectReducedMotion: boolean;
+  };
+  
+  // Data refresh
+  dataRefresh: {
+    enabled: boolean;
+    interval: number;
+    retryAttempts: number;
+  };
+  
+  // Error handling
+  errorHandling: {
+    showErrors: boolean;
+    errorMessage: string;
+    allowRetry: boolean;
+  };
+}
+
+export interface ChartDataItem {
+  id?: string;
+  label: string;
+  value: number;
+  beforeValue?: number;
+  afterValue?: number;
+  color?: string;
+  highlighted?: boolean;
+  description?: string;
+}
+
+export interface ChartLegendItem {
+  label: string;
+  color: string;
+}
+
+// Media Component Types
+export type MediaType = 'image-gallery' | 'video-embed' | 'interactive-demo';
+export type MediaLayout = 'grid' | 'masonry' | 'carousel' | 'single' | 'full-width' | 'contained' | 'wide' | 'column' | 'row';
+
+export interface MediaOptimization {
+  webpSupport: boolean;
+  avifSupport: boolean;
+  lazyLoading: boolean;
+  responsiveImages: boolean;
+  cdnEnabled: boolean;
+  compressionLevel: 'low' | 'medium' | 'high';
+  maxWidth?: number;
+  maxHeight?: number;
+}
+
+export interface MediaAccessibility {
+  ariaLabel?: string;
+  ariaDescribedBy?: string;
+  altTextRequired: boolean;
+  captionsRequired: boolean;
+  keyboardNavigation: boolean;
+  screenReaderSupport: boolean;
+  highContrastMode: boolean;
+  focusManagement: boolean;
+}
+
+export interface MediaPerformance {
+  lazyLoading: boolean;
+  preloading: boolean;
+  caching: boolean;
+  compressionEnabled: boolean;
+  cdnDelivery: boolean;
+  bandwidthAdaptive: boolean;
+  mobileOptimization: boolean;
+}
+
+export interface LightboxConfig {
+  enabled: boolean;
+  showThumbnails: boolean;
+  showCaptions: boolean;
+  showCounter: boolean;
+  enableZoom: boolean;
+  enableFullscreen: boolean;
+  autoplay: boolean;
+  autoplaySpeed: number;
+  keyboardControls: boolean;
+  touchGestures: boolean;
+  closeOnBackdropClick: boolean;
+  showCloseButton: boolean;
+  showNavigationArrows: boolean;
+  theme: 'dark' | 'light' | 'auto';
+}
+
+export interface TouchGestureConfig {
+  swipeEnabled: boolean;
+  pinchZoomEnabled: boolean;
+  doubleTapZoomEnabled: boolean;
+  swipeThreshold: number;
+  pinchSensitivity: number;
+  gestureDelay: number;
+}
+
+export interface MediaComponentConfig {
+  type: MediaType;
+  title?: string;
+  description?: string;
+  
+  // Layout and styling
+  layout: MediaLayout;
+  theme: 'default' | 'minimal' | 'modern' | 'card';
+  spacing: 'compact' | 'default' | 'spacious';
+  titleSize?: 'sm' | 'md' | 'lg';
+  textAlignment?: 'left' | 'center' | 'right';
+  
+  // Grid configuration
+  gridColumns?: {
+    desktop: number;
+    tablet: number;
+    mobile: number;
+  };
+  gridGap?: 'sm' | 'md' | 'lg';
+  
+  // Media assets
+  mediaAssets: MediaAsset[];
+  
+  // Optimization settings
+  optimization: MediaOptimization;
+  
+  // Performance settings
+  performance: MediaPerformance;
+  
+  // Accessibility settings
+  accessibility: MediaAccessibility;
+  
+  // Lightbox configuration
+  lightbox?: LightboxConfig;
+  
+  // Touch gesture configuration
+  touchGestures?: TouchGestureConfig;
+  
+  // Video-specific settings
+  videoSettings?: VideoSettings;
+  
+  // Interactive demo settings
+  demoSettings?: {
+    autoStart: boolean;
+    showControls: boolean;
+    enableInteraction: boolean;
+    mobileCompatible: boolean;
+    touchSupport: boolean;
+    keyboardSupport: boolean;
+  };
+  
+  // Analytics
+  trackingEnabled?: boolean;
+  trackViews?: boolean;
+  trackInteractions?: boolean;
+  trackEngagement?: boolean;
+  
+  // A/B Testing
+  abTest?: ABTestConfig;
+  
+  // Mobile-specific settings
+  mobileOptimized: boolean;
+  mobileLayout?: MediaLayout;
+  mobileGridColumns?: {
+    mobile: number;
+  };
+  
+  // CDN and delivery
+  cdnConfig?: {
+    enabled: boolean;
+    provider: string;
+    baseUrl: string;
+    regions: string[];
+  };
+}
+
+// CTA Component Types
+export type CTAType = 'button' | 'banner' | 'inline-link';
+export type CTAStyle = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
+export type CTASize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+
+export interface CTATrackingParams {
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
+  [key: string]: string | undefined;
+}
+
+export interface CTAConversionEvent {
+  eventName: string;
+  category: string;
+  action: string;
+  label?: string;
+  value?: number;
+  customProperties?: Record<string, any>;
+}
+
+export interface CTAABTestVariant {
+  id: string;
+  name: string;
+  weight: number;
+  config: Partial<CTAComponentConfig>;
+  conversionRate?: number;
+  impressions?: number;
+  conversions?: number;
+}
+
+export interface CTAAccessibilityConfig {
+  ariaLabel?: string;
+  ariaDescribedBy?: string;
+  role?: string;
+  tabIndex?: number;
+  keyboardShortcut?: string;
+}
+
+export interface CTAButtonConfig {
+  text: string;
+  url: string;
+  style: CTAStyle;
+  size: CTASize;
+  icon?: {
+    name: string;
+    position: 'left' | 'right' | 'only';
+    size?: 'sm' | 'md' | 'lg';
+  };
+  disabled?: boolean;
+  loading?: boolean;
+  fullWidth?: boolean;
+  openInNewTab?: boolean;
+  
+  // Styling
+  customColors?: {
+    background?: string;
+    text?: string;
+    border?: string;
+    hover?: {
+      background?: string;
+      text?: string;
+      border?: string;
+    };
+  };
+  
+  // Animation
+  animation?: {
+    hover?: 'scale' | 'lift' | 'glow' | 'pulse' | 'none';
+    click?: 'ripple' | 'bounce' | 'none';
+    loading?: 'spinner' | 'dots' | 'pulse';
+  };
+  
+  // Tracking
+  trackingParams?: CTATrackingParams;
+  conversionEvents?: CTAConversionEvent[];
+  
+  // A/B Testing
+  abTestVariant?: string;
+  
+  // Accessibility
+  accessibility?: CTAAccessibilityConfig;
+}
+
+export interface CTABannerConfig {
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  backgroundImage?: MediaAsset;
+  backgroundColor?: string;
+  textColor?: string;
+  
+  // Layout
+  layout: 'left-aligned' | 'center-aligned' | 'right-aligned' | 'split';
+  height?: 'compact' | 'medium' | 'large' | 'full-screen';
+  padding?: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  
+  // Content positioning
+  contentPosition?: 'top' | 'center' | 'bottom';
+  textAlignment?: 'left' | 'center' | 'right';
+  
+  // CTA buttons
+  primaryCTA?: CTAButtonConfig;
+  secondaryCTA?: CTAButtonConfig;
+  
+  // Overlay
+  overlay?: {
+    enabled: boolean;
+    color: string;
+    opacity: number;
+  };
+  
+  // Animation
+  parallax?: boolean;
+  animateOnScroll?: boolean;
+  
+  // Responsive
+  mobileLayout?: 'stacked' | 'overlay' | 'hidden';
+  
+  // Tracking
+  trackingParams?: CTATrackingParams;
+  conversionEvents?: CTAConversionEvent[];
+  
+  // A/B Testing
+  abTestVariant?: string;
+  
+  // Accessibility
+  accessibility?: CTAAccessibilityConfig;
+}
+
+export interface CTAInlineLinkConfig {
+  text: string;
+  url: string;
+  style?: 'default' | 'underline' | 'button-like' | 'arrow' | 'external';
+  color?: string;
+  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
+  size?: 'xs' | 'sm' | 'base' | 'lg' | 'xl';
+  
+  // Icon
+  icon?: {
+    name: string;
+    position: 'left' | 'right';
+    size?: 'sm' | 'md' | 'lg';
+  };
+  
+  // Behavior
+  openInNewTab?: boolean;
+  downloadAttribute?: string;
+  
+  // Animation
+  animation?: {
+    hover?: 'underline' | 'color-change' | 'scale' | 'none';
+    transition?: 'fast' | 'normal' | 'slow';
+  };
+  
+  // Tracking
+  trackingParams?: CTATrackingParams;
+  conversionEvents?: CTAConversionEvent[];
+  
+  // A/B Testing
+  abTestVariant?: string;
+  
+  // Accessibility
+  accessibility?: CTAAccessibilityConfig;
+}
+
+export interface CTAComponentConfig {
+  type: CTAType;
+  
+  // Type-specific configurations
+  buttonConfig?: CTAButtonConfig;
+  bannerConfig?: CTABannerConfig;
+  inlineLinkConfig?: CTAInlineLinkConfig;
+  
+  // Global settings
+  theme?: 'default' | 'minimal' | 'modern' | 'classic';
+  colorScheme?: 'default' | 'primary' | 'secondary' | 'accent' | 'custom';
+  
+  // Analytics
+  trackingEnabled?: boolean;
+  conversionGoal?: string;
+  
+  // A/B Testing
+  abTest?: {
+    enabled: boolean;
+    testId?: string;
+    variants?: CTAABTestVariant[];
+    trafficSplit?: Record<string, number>;
+  };
+  
+  // Performance
+  preloadDestination?: boolean;
+  lazyLoad?: boolean;
+  
+  // Accessibility
+  respectReducedMotion?: boolean;
+  highContrast?: boolean;
+  
+  // Context
+  context?: {
+    pageType?: string;
+    section?: string;
+    position?: number;
+    audienceType?: AudienceType;
+  };
+}
