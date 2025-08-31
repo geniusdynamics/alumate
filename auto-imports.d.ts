@@ -10,16 +10,23 @@ declare global {
   const AccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['AccessibilityManager']
   const AccessibilityService: typeof import('./resources/js/services/AccessibilityService')['default']
   const AccessibilityTester: typeof import('./resources/js/utils/AccessibilityTester.js')['AccessibilityTester']
+  const AccessibilityValidator: typeof import('./resources/js/utils/accessibilityValidator')['AccessibilityValidator']
   const AnalyticsService: typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']
   const AriaManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']
   const BundleAnalyzer: typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']
   const CDNService: typeof import('./resources/js/services/CDNService')['default']
   const CRMIntegrationService: typeof import('./resources/js/services/CRMIntegrationService')['CRMIntegrationService']
   const ColorContrastManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']
+  const ComponentGroupingService: typeof import('./resources/js/services/ComponentGroupingService')['default']
+  const ComponentLibraryBridge: typeof import('./resources/js/services/ComponentLibraryBridge')['ComponentLibraryBridge']
+  const ComponentPreviewGenerator: typeof import('./resources/js/services/ComponentPreviewGenerator')['ComponentPreviewGenerator']
+  const ComponentSchemaValidator: typeof import('./resources/js/utils/componentSchemaValidator')['ComponentSchemaValidator']
+  const ComponentSerializer: typeof import('./resources/js/utils/componentSerialization')['ComponentSerializer']
   const ConversionTrackingService: typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']
   const EffectScope: typeof import('vue')['EffectScope']
   const FocusManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['FocusManager']
   const FormAccessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['FormAccessibilityManager']
+  const GrapeJSBlockGenerator: typeof import('./resources/js/utils/grapeJSBlockGenerator')['GrapeJSBlockGenerator']
   const HeatMapService: typeof import('./resources/js/services/HeatMapService')['HeatMapService']
   const HeroConfigValidator: typeof import('./resources/js/utils/heroConfigValidator')['HeroConfigValidator']
   const KeyboardNavigationManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['KeyboardNavigationManager']
@@ -31,8 +38,11 @@ declare global {
   const PerformanceService: typeof import('./resources/js/services/PerformanceService')['default']
   const PreloadService: typeof import('./resources/js/services/PreloadService')['default']
   const PushNotificationService: typeof import('./resources/js/services/PushNotificationService.js')['default']
+  const ResponsiveConfigService: typeof import('./resources/js/services/ResponsiveConfigService')['default']
+  const ResponsiveConstraintValidator: typeof import('./resources/js/utils/responsiveConstraintValidator')['ResponsiveConstraintValidator']
   const SEOService: typeof import('./resources/js/services/SEOService')['default']
   const ScreenReaderManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['ScreenReaderManager']
+  const TailwindMappingService: typeof import('./resources/js/services/TailwindMappingService')['TailwindMappingService']
   const UserFlowIntegration: typeof import('./resources/js/services/UserFlowIntegration.js')['default']
   const WebSocketService: typeof import('./resources/js/services/WebSocketService.js')['default']
   const Z_INDEX: typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']
@@ -41,11 +51,16 @@ declare global {
   const accessibilityManager: typeof import('./resources/js/utils/AccessibilityHelpers.js')['accessibilityManager']
   const accessibilityService: typeof import('./resources/js/services/AccessibilityService')['accessibilityService']
   const accessibilityTester: typeof import('./resources/js/utils/AccessibilityTester.js')['accessibilityTester']
+  const accessibilityValidator: typeof import('./resources/js/utils/accessibilityValidator')['default']
   const asyncComputed: typeof import('@vueuse/core')['asyncComputed']
   const autoResetRef: typeof import('@vueuse/core')['autoResetRef']
   const bundleAnalyzer: typeof import('./resources/js/utils/bundle-analyzer')['bundleAnalyzer']
   const cdnService: typeof import('./resources/js/services/CDNService')['cdnService']
   const cn: typeof import('./resources/js/utils/cn')['cn']
+  const componentLibraryBridge: typeof import('./resources/js/services/ComponentLibraryBridge')['componentLibraryBridge']
+  const componentPreviewGenerator: typeof import('./resources/js/services/ComponentPreviewGenerator')['componentPreviewGenerator']
+  const componentSchemaValidator: typeof import('./resources/js/utils/componentSchemaValidator')['componentSchemaValidator']
+  const componentSerializer: typeof import('./resources/js/utils/componentSerialization')['componentSerializer']
   const computed: typeof import('vue')['computed']
   const computedAsync: typeof import('@vueuse/core')['computedAsync']
   const computedEager: typeof import('@vueuse/core')['computedEager']
@@ -81,6 +96,7 @@ declare global {
   const formSubmissionUtils: typeof import('./resources/js/services/CRMIntegrationService')['formSubmissionUtils']
   const formatStatisticValue: typeof import('./resources/js/services/StatisticsService')['formatStatisticValue']
   const generateResponsiveImageSources: typeof import('./resources/js/utils/mediaOptimization')['generateResponsiveImageSources']
+  const generateSampleData: typeof import('./resources/js/utils/sampleDataGenerator')['generateSampleData']
   const generateVideoSources: typeof import('./resources/js/utils/mediaOptimization')['generateVideoSources']
   const getBackgroundGradient: typeof import('./resources/js/utils/variantStyling')['getBackgroundGradient']
   const getCurrentInstance: typeof import('vue')['getCurrentInstance']
@@ -89,6 +105,7 @@ declare global {
   const getVariantStyleClasses: typeof import('./resources/js/utils/variantStyling')['getVariantStyleClasses']
   const getZIndex: typeof import('./resources/js/utils/zIndex.js')['getZIndex']
   const getZIndexClass: typeof import('./resources/js/utils/zIndex.js')['getZIndexClass']
+  const grapeJSBlockGenerator: typeof import('./resources/js/utils/grapeJSBlockGenerator')['grapeJSBlockGenerator']
   const h: typeof import('vue')['h']
   const heroABTestConfigs: typeof import('./resources/js/utils/abTesting')['heroABTestConfigs']
   const httpService: typeof import('./resources/js/services/httpService')['default']
@@ -161,6 +178,8 @@ declare global {
   const resolveComponent: typeof import('vue')['resolveComponent']
   const resolveRef: typeof import('@vueuse/core')['resolveRef']
   const resolveUnref: typeof import('@vueuse/core')['resolveUnref']
+  const responsiveConstraintValidator: typeof import('./resources/js/utils/responsiveConstraintValidator')['default']
+  const sampleDataGenerator: typeof import('./resources/js/utils/sampleDataGenerator')['default']
   const seoService: typeof import('./resources/js/services/SEOService')['seoService']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']
@@ -431,6 +450,15 @@ declare global {
   export type { CRMIntegrationService, CRMProvider, LeadData, CRMResponse, NotificationConfig } from './resources/js/services/CRMIntegrationService'
   import('./resources/js/services/CRMIntegrationService')
   // @ts-ignore
+  export type { ComponentGroupingService } from './resources/js/services/ComponentGroupingService'
+  import('./resources/js/services/ComponentGroupingService')
+  // @ts-ignore
+  export type { ComponentLibraryBridge } from './resources/js/services/ComponentLibraryBridge'
+  import('./resources/js/services/ComponentLibraryBridge')
+  // @ts-ignore
+  export type { ComponentPreviewGenerator, PreviewOptions, PreviewResult } from './resources/js/services/ComponentPreviewGenerator'
+  import('./resources/js/services/ComponentPreviewGenerator')
+  // @ts-ignore
   export type { ConversionTrackingService } from './resources/js/services/ConversionTrackingService'
   import('./resources/js/services/ConversionTrackingService')
   // @ts-ignore
@@ -443,11 +471,17 @@ declare global {
   export type { PreloadResource } from './resources/js/services/PreloadService'
   import('./resources/js/services/PreloadService')
   // @ts-ignore
+  export type { ResponsiveConfigService } from './resources/js/services/ResponsiveConfigService'
+  import('./resources/js/services/ResponsiveConfigService')
+  // @ts-ignore
   export type { SEOMetadata, StructuredData, BreadcrumbItem } from './resources/js/services/SEOService'
   import('./resources/js/services/SEOService')
   // @ts-ignore
   export type { StatisticData, StatisticsResponse, CacheEntry } from './resources/js/services/StatisticsService'
   import('./resources/js/services/StatisticsService')
+  // @ts-ignore
+  export type { TailwindMappingService } from './resources/js/services/TailwindMappingService'
+  import('./resources/js/services/TailwindMappingService')
   // @ts-ignore
   export type { UploadedFile, UploadResponse, UploadProgress } from './resources/js/services/fileUploadService'
   import('./resources/js/services/fileUploadService')
@@ -458,11 +492,26 @@ declare global {
   export type { AccessibilityTester } from './resources/js/utils/AccessibilityTester.js'
   import('./resources/js/utils/AccessibilityTester.js')
   // @ts-ignore
+  export type { AccessibilityValidator, AccessibilityValidationResult, AccessibilityIssue, AccessibilityRecommendation } from './resources/js/utils/accessibilityValidator'
+  import('./resources/js/utils/accessibilityValidator')
+  // @ts-ignore
+  export type { ComponentSchemaValidator, ValidationWarning, ValidationOptions, ValidationRule } from './resources/js/utils/componentSchemaValidator'
+  import('./resources/js/utils/componentSchemaValidator')
+  // @ts-ignore
+  export type { ComponentSerializer, SerializationOptions, SerializationResult, DeserializationResult } from './resources/js/utils/componentSerialization'
+  import('./resources/js/utils/componentSerialization')
+  // @ts-ignore
+  export type { GrapeJSBlockGenerator, GrapeJSBlockGeneratorOptions } from './resources/js/utils/grapeJSBlockGenerator'
+  import('./resources/js/utils/grapeJSBlockGenerator')
+  // @ts-ignore
   export type { HeroConfigValidator, ValidationError, ValidationResult } from './resources/js/utils/heroConfigValidator'
   import('./resources/js/utils/heroConfigValidator')
   // @ts-ignore
   export type { MediaOptimizationService, MediaOptimizationConfig, ResponsiveImageConfig } from './resources/js/utils/mediaOptimization'
   import('./resources/js/utils/mediaOptimization')
+  // @ts-ignore
+  export type { ResponsiveConstraintValidator, ConstraintValidationResult, ConstraintViolation, AutoFixSuggestion } from './resources/js/utils/responsiveConstraintValidator'
+  import('./resources/js/utils/responsiveConstraintValidator')
   // @ts-ignore
   export type { VariantStyleClasses } from './resources/js/utils/variantStyling'
   import('./resources/js/utils/variantStyling')
@@ -477,16 +526,23 @@ declare module 'vue' {
     readonly AccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['AccessibilityManager']>
     readonly AccessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['default']>
     readonly AccessibilityTester: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['AccessibilityTester']>
+    readonly AccessibilityValidator: UnwrapRef<typeof import('./resources/js/utils/accessibilityValidator')['AccessibilityValidator']>
     readonly AnalyticsService: UnwrapRef<typeof import('./resources/js/services/AnalyticsService')['AnalyticsService']>
     readonly AriaManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['AriaManager']>
     readonly BundleAnalyzer: UnwrapRef<typeof import('./resources/js/utils/bundle-analyzer')['BundleAnalyzer']>
     readonly CDNService: UnwrapRef<typeof import('./resources/js/services/CDNService')['default']>
     readonly CRMIntegrationService: UnwrapRef<typeof import('./resources/js/services/CRMIntegrationService')['CRMIntegrationService']>
     readonly ColorContrastManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['ColorContrastManager']>
+    readonly ComponentGroupingService: UnwrapRef<typeof import('./resources/js/services/ComponentGroupingService')['default']>
+    readonly ComponentLibraryBridge: UnwrapRef<typeof import('./resources/js/services/ComponentLibraryBridge')['ComponentLibraryBridge']>
+    readonly ComponentPreviewGenerator: UnwrapRef<typeof import('./resources/js/services/ComponentPreviewGenerator')['ComponentPreviewGenerator']>
+    readonly ComponentSchemaValidator: UnwrapRef<typeof import('./resources/js/utils/componentSchemaValidator')['ComponentSchemaValidator']>
+    readonly ComponentSerializer: UnwrapRef<typeof import('./resources/js/utils/componentSerialization')['ComponentSerializer']>
     readonly ConversionTrackingService: UnwrapRef<typeof import('./resources/js/services/ConversionTrackingService')['ConversionTrackingService']>
     readonly EffectScope: UnwrapRef<typeof import('vue')['EffectScope']>
     readonly FocusManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['FocusManager']>
     readonly FormAccessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['FormAccessibilityManager']>
+    readonly GrapeJSBlockGenerator: UnwrapRef<typeof import('./resources/js/utils/grapeJSBlockGenerator')['GrapeJSBlockGenerator']>
     readonly HeatMapService: UnwrapRef<typeof import('./resources/js/services/HeatMapService')['HeatMapService']>
     readonly HeroConfigValidator: UnwrapRef<typeof import('./resources/js/utils/heroConfigValidator')['HeroConfigValidator']>
     readonly KeyboardNavigationManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['KeyboardNavigationManager']>
@@ -497,8 +553,11 @@ declare module 'vue' {
     readonly PerformanceService: UnwrapRef<typeof import('./resources/js/services/PerformanceService')['default']>
     readonly PreloadService: UnwrapRef<typeof import('./resources/js/services/PreloadService')['default']>
     readonly PushNotificationService: UnwrapRef<typeof import('./resources/js/services/PushNotificationService.js')['default']>
+    readonly ResponsiveConfigService: UnwrapRef<typeof import('./resources/js/services/ResponsiveConfigService')['default']>
+    readonly ResponsiveConstraintValidator: UnwrapRef<typeof import('./resources/js/utils/responsiveConstraintValidator')['ResponsiveConstraintValidator']>
     readonly SEOService: UnwrapRef<typeof import('./resources/js/services/SEOService')['default']>
     readonly ScreenReaderManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['ScreenReaderManager']>
+    readonly TailwindMappingService: UnwrapRef<typeof import('./resources/js/services/TailwindMappingService')['TailwindMappingService']>
     readonly UserFlowIntegration: UnwrapRef<typeof import('./resources/js/services/UserFlowIntegration.js')['default']>
     readonly WebSocketService: UnwrapRef<typeof import('./resources/js/services/WebSocketService.js')['default']>
     readonly Z_INDEX: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['Z_INDEX']>
@@ -507,11 +566,16 @@ declare module 'vue' {
     readonly accessibilityManager: UnwrapRef<typeof import('./resources/js/utils/AccessibilityHelpers.js')['accessibilityManager']>
     readonly accessibilityService: UnwrapRef<typeof import('./resources/js/services/AccessibilityService')['accessibilityService']>
     readonly accessibilityTester: UnwrapRef<typeof import('./resources/js/utils/AccessibilityTester.js')['accessibilityTester']>
+    readonly accessibilityValidator: UnwrapRef<typeof import('./resources/js/utils/accessibilityValidator')['default']>
     readonly asyncComputed: UnwrapRef<typeof import('@vueuse/core')['asyncComputed']>
     readonly autoResetRef: UnwrapRef<typeof import('@vueuse/core')['autoResetRef']>
     readonly bundleAnalyzer: UnwrapRef<typeof import('./resources/js/utils/bundle-analyzer')['bundleAnalyzer']>
     readonly cdnService: UnwrapRef<typeof import('./resources/js/services/CDNService')['cdnService']>
     readonly cn: UnwrapRef<typeof import('./resources/js/utils/cn')['cn']>
+    readonly componentLibraryBridge: UnwrapRef<typeof import('./resources/js/services/ComponentLibraryBridge')['componentLibraryBridge']>
+    readonly componentPreviewGenerator: UnwrapRef<typeof import('./resources/js/services/ComponentPreviewGenerator')['componentPreviewGenerator']>
+    readonly componentSchemaValidator: UnwrapRef<typeof import('./resources/js/utils/componentSchemaValidator')['componentSchemaValidator']>
+    readonly componentSerializer: UnwrapRef<typeof import('./resources/js/utils/componentSerialization')['componentSerializer']>
     readonly computed: UnwrapRef<typeof import('vue')['computed']>
     readonly computedAsync: UnwrapRef<typeof import('@vueuse/core')['computedAsync']>
     readonly computedEager: UnwrapRef<typeof import('@vueuse/core')['computedEager']>
@@ -547,6 +611,7 @@ declare module 'vue' {
     readonly formSubmissionUtils: UnwrapRef<typeof import('./resources/js/services/CRMIntegrationService')['formSubmissionUtils']>
     readonly formatStatisticValue: UnwrapRef<typeof import('./resources/js/services/StatisticsService')['formatStatisticValue']>
     readonly generateResponsiveImageSources: UnwrapRef<typeof import('./resources/js/utils/mediaOptimization')['generateResponsiveImageSources']>
+    readonly generateSampleData: UnwrapRef<typeof import('./resources/js/utils/sampleDataGenerator')['generateSampleData']>
     readonly generateVideoSources: UnwrapRef<typeof import('./resources/js/utils/mediaOptimization')['generateVideoSources']>
     readonly getBackgroundGradient: UnwrapRef<typeof import('./resources/js/utils/variantStyling')['getBackgroundGradient']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
@@ -554,6 +619,7 @@ declare module 'vue' {
     readonly getVariantStyleClasses: UnwrapRef<typeof import('./resources/js/utils/variantStyling')['getVariantStyleClasses']>
     readonly getZIndex: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['getZIndex']>
     readonly getZIndexClass: UnwrapRef<typeof import('./resources/js/utils/zIndex.js')['getZIndexClass']>
+    readonly grapeJSBlockGenerator: UnwrapRef<typeof import('./resources/js/utils/grapeJSBlockGenerator')['grapeJSBlockGenerator']>
     readonly h: UnwrapRef<typeof import('vue')['h']>
     readonly heroABTestConfigs: UnwrapRef<typeof import('./resources/js/utils/abTesting')['heroABTestConfigs']>
     readonly httpService: UnwrapRef<typeof import('./resources/js/services/httpService')['default']>
@@ -623,6 +689,8 @@ declare module 'vue' {
     readonly resolveComponent: UnwrapRef<typeof import('vue')['resolveComponent']>
     readonly resolveRef: UnwrapRef<typeof import('@vueuse/core')['resolveRef']>
     readonly resolveUnref: UnwrapRef<typeof import('@vueuse/core')['resolveUnref']>
+    readonly responsiveConstraintValidator: UnwrapRef<typeof import('./resources/js/utils/responsiveConstraintValidator')['default']>
+    readonly sampleDataGenerator: UnwrapRef<typeof import('./resources/js/utils/sampleDataGenerator')['default']>
     readonly seoService: UnwrapRef<typeof import('./resources/js/services/SEOService')['seoService']>
     readonly shallowReactive: UnwrapRef<typeof import('vue')['shallowReactive']>
     readonly shallowReadonly: UnwrapRef<typeof import('vue')['shallowReadonly']>
