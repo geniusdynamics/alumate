@@ -1135,6 +1135,129 @@ export interface MediaComponentConfig {
   };
 }
 
+// Brand Customizer Types
+export interface BrandLogo {
+  id: string;
+  name: string;
+  type: 'primary' | 'secondary' | 'icon' | 'wordmark';
+  url: string;
+  alt: string;
+  size: number;
+  mimeType: string;
+  isPrimary: boolean;
+  optimized: boolean;
+  cdnUrl?: string;
+  variants?: Array<{
+    type: 'light' | 'dark' | 'color' | 'monochrome';
+    url: string;
+    size: number;
+  }>;
+  usageGuidelines?: {
+    minSize: number;
+    clearSpace: number;
+    allowedBackgrounds: string[];
+    prohibitedUses: string[];
+  };
+}
+
+export interface BrandColor {
+  id: string;
+  name: string;
+  value: string;
+  type: 'primary' | 'secondary' | 'accent' | 'neutral' | 'semantic';
+  usageCount?: number;
+  contrastRatios?: Array<{
+    background: string;
+    ratio: number;
+    level: 'AA' | 'AAA' | 'fail';
+  }>;
+  accessibility?: {
+    wcagCompliant: boolean;
+    contrastIssues: string[];
+  };
+}
+
+export interface BrandFont {
+  id: string;
+  name: string;
+  family: string;
+  weights: number[];
+  styles: string[];
+  isPrimary: boolean;
+  type: 'heading' | 'body' | 'display' | 'monospace';
+  source: 'google' | 'adobe' | 'custom' | 'system';
+  url?: string;
+  fallbacks: string[];
+  usageCount?: number;
+  loadingStrategy: 'preload' | 'lazy' | 'swap';
+}
+
+export interface BrandAssets {
+  logos: BrandLogo[];
+  colors: BrandColor[];
+  fonts: BrandFont[];
+}
+
+export interface BrandGuidelines {
+  enforceColorPalette: boolean;
+  requireContrastCheck: boolean;
+  minContrastRatio: number;
+  enforceFontFamilies: boolean;
+  enforceTypographyScale: boolean;
+  maxHeadingSize: number;
+  maxBodySize: number;
+  enforceLogoPlacement: boolean;
+  minLogoSize: number;
+  logoClearSpace: number;
+}
+
+export interface BrandTemplate {
+  id: string;
+  name: string;
+  description: string;
+  colors: BrandColor[];
+  primaryFont: string;
+  secondaryFont?: string;
+  logoVariant?: string;
+  usageCount?: number;
+  isDefault?: boolean;
+  previewImage?: string;
+  tags?: string[];
+}
+
+export interface BrandConsistencyIssue {
+  id: string;
+  title: string;
+  description: string;
+  severity: 'error' | 'warning' | 'info';
+  affectedComponents: string[];
+  autoFixAvailable: boolean;
+  fixAction?: string;
+  category: 'color' | 'typography' | 'logo' | 'spacing' | 'accessibility';
+}
+
+export interface BrandConsistencyReport {
+  compliantComponents: number;
+  warningComponents: number;
+  nonCompliantComponents: number;
+  issues: BrandConsistencyIssue[];
+  overallScore?: number;
+  lastChecked?: string;
+}
+
+export interface BrandAnalytics {
+  assetUsage: Record<string, number>;
+  colorUsage: Record<string, number>;
+  fontUsage: Record<string, number>;
+  templateUsage: Record<string, number>;
+  complianceScore: number;
+  trendsData: Array<{
+    date: string;
+    metric: string;
+    value: number;
+  }>;
+}
+
 // CTA Component Types
 export type CTAType = 'button' | 'banner' | 'inline-link';
 export type CTAStyle = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
@@ -1342,4 +1465,189 @@ export interface CTAComponentConfig {
     position?: number;
     audienceType?: AudienceType;
   };
+}// 
+Theme Management Types for GrapeJS Integration
+
+export interface ComponentTheme {
+  id: number
+  name: string
+  slug: string
+  config: ThemeConfig
+  is_default: boolean
+  tenant_id: string
+  created_at: string
+  updated_at: string
+}
+
+export interface GrapeJSThemeData {
+  id: number
+  name: string
+  slug: string
+  isDefault: boolean
+  styleManager: GrapeJSStyleManager
+  cssVariables: Record<string, string>
+  tailwindMappings: Record<string, string>
+  css: string
+  accessibility: string[]
+  preview: string
+}
+
+export interface GrapeJSStyleManager {
+  sectors: GrapeJSStyleSector[]
+}
+
+export interface GrapeJSStyleSector {
+  name: string
+  open: boolean
+  buildProps: string[]
+  properties: GrapeJSStyleProperty[]
+}
+
+export interface GrapeJSStyleProperty {
+  name: string
+  property: string
+  type: 'color' | 'select' | 'slider' | 'composite' | 'integer'
+  default?: string | number
+  min?: number
+  max?: number
+  step?: number
+  unit?: string
+  units?: string[]
+  options?: Array<{ id?: string; label?: string; value: string; name?: string }>
+  properties?: GrapeJSStyleProperty[]
+}
+
+export interface ThemeConfig {
+  colors: {
+    primary: string
+    secondary?: string
+    accent?: string
+    background?: string
+    text?: string
+    [key: string]: string | undefined
+  }
+  typography: {
+    font_family: string
+    heading_font?: string
+    font_sizes?: {
+      base?: string
+      heading?: string
+      [key: string]: string | undefined
+    }
+    line_height?: number
+  }
+  spacing: {
+    base: string
+    small?: string
+    large?: string
+    section_padding?: string
+    [key: string]: string | undefined
+  }
+  borders?: {
+    radius?: string
+    width?: string
+    [key: string]: string | undefined
+  }
+  shadows?: {
+    [key: string]: string
+  }
+  animations?: {
+    duration?: string
+    easing?: string
+    [key: string]: string | undefined
+  }
+}
+
+export interface ThemeImportData {
+  name: string
+  source: 'json' | 'file' | 'url' | 'grapejs'
+  config: ThemeConfig
+  grapeJSConfig?: any
+}
+
+export interface ThemeValidationResult {
+  valid: boolean
+  errors?: string[]
+  accessibility_issues?: string[]
+  compatibility_issues?: string[]
+  css_variables?: Record<string, string>
+}
+
+export interface ThemeUsageStats {
+  component_count: number
+  page_count: number
+  is_default: boolean
+  last_used: string
+}
+
+export interface ThemeExportFormat {
+  theme: ComponentTheme
+  config: ThemeConfig
+  exported_at: string
+}
+
+export interface ThemeBulkOperation {
+  action: 'delete' | 'export' | 'apply'
+  theme_ids: number[]
+}
+
+export interface ThemeBulkResult {
+  id: number
+  status: 'deleted' | 'exported' | 'applied' | 'skipped'
+  reason?: string
+  data?: any
+  applied_count?: number
+}
+
+// Theme Editor Types
+export interface ThemeEditorState {
+  theme: ComponentTheme | null
+  isNew: boolean
+  saving: boolean
+  validating: boolean
+  previewMode: 'components' | 'styleguide' | 'accessibility'
+  currentDevice: 'desktop' | 'tablet' | 'mobile'
+}
+
+export interface ThemePreviewDevice {
+  name: string
+  label: string
+  icon: string
+  width?: number
+  height?: number
+}
+
+export interface ThemeAccessibilityCheck {
+  name: string
+  description: string
+  value?: string
+  status: 'pass' | 'warning' | 'error'
+}
+
+// Theme Import/Export Types
+export interface ThemeImportSource {
+  id: string
+  label: string
+  icon: string
+  description: string
+  acceptedFormats: string[]
+}
+
+export interface ThemeExportOptions {
+  format: 'json' | 'grapejs' | 'css' | 'tailwind'
+  includeMetadata: boolean
+  includePreview: boolean
+  minify: boolean
+}
+
+// Notification Types for Theme Operations
+export interface ThemeNotification {
+  type: 'success' | 'error' | 'warning' | 'info'
+  title: string
+  message: string
+  duration?: number
+  actions?: Array<{
+    label: string
+    action: () => void
+  }>
 }

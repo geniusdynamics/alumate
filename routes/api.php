@@ -474,6 +474,33 @@ Route::middleware('auth:sanctum')->group(function () {
     // Moderation actions
     Route::post('testimonials/{testimonial}/approve', [App\Http\Controllers\Api\TestimonialController::class, 'approve']);
     Route::post('testimonials/{testimonial}/reject', [App\Http\Controllers\Api\TestimonialController::class, 'reject']);
+});
+
+// Component Theme Management routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Standard CRUD operations
+    Route::apiResource('component-themes', App\Http\Controllers\Api\ComponentThemeController::class);
+    
+    // GrapeJS integration endpoints
+    Route::get('component-themes-grapejs', [App\Http\Controllers\Api\ComponentThemeController::class, 'grapeJSIndex']);
+    
+    // Theme operations
+    Route::post('component-themes/{theme}/duplicate', [App\Http\Controllers\Api\ComponentThemeController::class, 'duplicate']);
+    Route::post('component-themes/{theme}/apply', [App\Http\Controllers\Api\ComponentThemeController::class, 'apply']);
+    Route::get('component-themes/{theme}/preview', [App\Http\Controllers\Api\ComponentThemeController::class, 'preview']);
+    Route::get('component-themes/{theme}/usage', [App\Http\Controllers\Api\ComponentThemeController::class, 'usage']);
+    Route::get('component-themes/{theme}/cached', [App\Http\Controllers\Api\ComponentThemeController::class, 'cached']);
+    Route::delete('component-themes/{theme}/cache', [App\Http\Controllers\Api\ComponentThemeController::class, 'clearCache']);
+    
+    // Import/Export operations
+    Route::post('component-themes-import', [App\Http\Controllers\Api\ComponentThemeController::class, 'import']);
+    Route::get('component-themes/{theme}/export', [App\Http\Controllers\Api\ComponentThemeController::class, 'export']);
+    
+    // Validation and bulk operations
+    Route::post('component-themes-validate', [App\Http\Controllers\Api\ComponentThemeController::class, 'validate']);
+    Route::post('component-themes-bulk', [App\Http\Controllers\Api\ComponentThemeController::class, 'bulk']);
+    Route::post('testimonials/{testimonial}/approve', [App\Http\Controllers\Api\TestimonialController::class, 'approve']);
+    Route::post('testimonials/{testimonial}/reject', [App\Http\Controllers\Api\TestimonialController::class, 'reject']);
     Route::post('testimonials/{testimonial}/archive', [App\Http\Controllers\Api\TestimonialController::class, 'archive']);
     Route::post('testimonials/{testimonial}/featured', [App\Http\Controllers\Api\TestimonialController::class, 'setFeatured']);
     
@@ -922,4 +949,58 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Migration utilities
     Route::post('components/{component}/migrate', [App\Http\Controllers\Api\ComponentVersionController::class, 'migrate']);
+    
+    // GrapeJS Integration Testing Routes
+    Route::get('components/{component}/grapejs-block', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getGrapeJSBlock']);
+    Route::get('components/{component}/grapejs-traits/validate', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'validateTraits']);
+    Route::get('components/{component}/grapejs-compatibility', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'checkCompatibility']);
+    Route::post('components/serialize-to-grapejs', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'serializeToGrapeJS']);
+    Route::post('components/deserialize-from-grapejs', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'deserializeFromGrapeJS']);
+    Route::post('components/grapejs-performance-test', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'performanceTest']);
+    Route::post('components/{component}/grapejs-performance-test', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'componentPerformanceTest']);
+    Route::post('components/{component}/grapejs-compatibility/drag-drop', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'testDragDrop']);
+    Route::post('components/{component}/grapejs-compatibility/responsive', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'testResponsive']);
+    Route::post('components/{component}/grapejs-compatibility/style-manager', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'testStyleManager']);
+    Route::post('components/{component}/grapejs-compatibility/backward', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'testBackwardCompatibility']);
+    Route::post('components/grapejs-stability-test', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'stabilityTest']);
+    Route::post('components/{component}/grapejs-integrity-test', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'integrityTest']);
+    Route::post('components/grapejs-regression-test', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'regressionTest']);
+    Route::post('components/grapejs-blocks/batch', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getBatchBlocks']);
+});
+
+// Brand Customizer routes
+Route::middleware(['auth:sanctum'])->prefix('brand-customizer')->group(function () {
+    Route::get('data', [App\Http\Controllers\Api\BrandCustomizerController::class, 'getData']);
+    
+    // Logo management
+    Route::post('logos', [App\Http\Controllers\Api\BrandCustomizerController::class, 'uploadLogos']);
+    Route::post('logos/{logo}/set-primary', [App\Http\Controllers\Api\BrandCustomizerController::class, 'setPrimaryLogo']);
+    Route::post('logos/{logo}/optimize', [App\Http\Controllers\Api\BrandCustomizerController::class, 'optimizeLogo']);
+    Route::delete('logos/{logo}', [App\Http\Controllers\Api\BrandCustomizerController::class, 'deleteLogo']);
+    
+    // Color management
+    Route::post('colors', [App\Http\Controllers\Api\BrandCustomizerController::class, 'storeColor']);
+    Route::put('colors/{color}', [App\Http\Controllers\Api\BrandCustomizerController::class, 'updateColor']);
+    Route::delete('colors/{color}', [App\Http\Controllers\Api\BrandCustomizerController::class, 'deleteColor']);
+    
+    // Font management
+    Route::post('fonts/upload', [App\Http\Controllers\Api\BrandCustomizerController::class, 'uploadFonts']);
+    Route::post('fonts', [App\Http\Controllers\Api\BrandCustomizerController::class, 'storeFont']);
+    Route::put('fonts/{font}', [App\Http\Controllers\Api\BrandCustomizerController::class, 'updateFont']);
+    Route::post('fonts/{font}/set-primary', [App\Http\Controllers\Api\BrandCustomizerController::class, 'setPrimaryFont']);
+    Route::delete('fonts/{font}', [App\Http\Controllers\Api\BrandCustomizerController::class, 'deleteFont']);
+    
+    // Template management
+    Route::post('templates', [App\Http\Controllers\Api\BrandCustomizerController::class, 'storeTemplate']);
+    Route::put('templates/{template}', [App\Http\Controllers\Api\BrandCustomizerController::class, 'updateTemplate']);
+    Route::post('templates/{template}/apply', [App\Http\Controllers\Api\BrandCustomizerController::class, 'applyTemplate']);
+    Route::post('templates/{template}/duplicate', [App\Http\Controllers\Api\BrandCustomizerController::class, 'duplicateTemplate']);
+    
+    // Brand consistency
+    Route::post('consistency-check', [App\Http\Controllers\Api\BrandCustomizerController::class, 'consistencyCheck']);
+    Route::post('auto-fix/{issue}', [App\Http\Controllers\Api\BrandCustomizerController::class, 'autoFixIssue']);
+    
+    // Guidelines and export
+    Route::put('guidelines', [App\Http\Controllers\Api\BrandCustomizerController::class, 'updateGuidelines']);
+    Route::post('export', [App\Http\Controllers\Api\BrandCustomizerController::class, 'exportAssets']);
 });

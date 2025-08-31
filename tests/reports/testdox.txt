@@ -1,19 +1,8 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\Feature\ComponentVersionControlTest.php
- [ ] can create component version
- [ ] can get version history
- [ ] can get specific version details
- [ ] can restore component to version
- [ ] can compare versions
- [ ] can export component
- [ ] can import component
- [ ] can create template from grapejs
- [ ] can analyze component performance
- [ ] can get performance trends
- [ ] can create backup
- [ ] can list backups
- [ ] can migrate component
- [ ] version validation fails with invalid data
- [ ] cannot access version from different component
- [ ] export with file format creates file
- [ ] performance comparison between versions
+Theme Preview
+ [x] Theme preview accessibility analysis works
+ [x] Theme preview components exist
+ [x] Theme preview components are properly exported
+ [x] Theme preview performance analysis works
+ [x] Theme preview export functionality works
+ [x] Theme preview component coverage analysis works
 
