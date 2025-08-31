@@ -16,8 +16,8 @@ class HomepageNavigationSeeder extends Seeder
         HomepageNavigationItem::query()->delete();
 
         // Main Items
-        $home = HomepageNavigationItem::create(['title' => 'Home', 'url' => route('home', [], false), 'order' => 1, 'type' => 'link']);
-        $jobs = HomepageNavigationItem::create(['title' => 'Jobs', 'url' => route('jobs.public.index', [], false), 'order' => 2, 'type' => 'link']);
+        $home = HomepageNavigationItem::create(['title' => 'Home', 'url' => '/', 'order' => 1, 'type' => 'link']);
+        $jobs = HomepageNavigationItem::create(['title' => 'Jobs', 'url' => '/jobs', 'order' => 2, 'type' => 'link']);
 
         $alumni = HomepageNavigationItem::create(['title' => 'Alumni', 'url' => '#', 'order' => 3, 'type' => 'dropdown']);
         $about = HomepageNavigationItem::create(['title' => 'About', 'url' => '#', 'order' => 4, 'type' => 'dropdown']);
@@ -26,21 +26,21 @@ class HomepageNavigationSeeder extends Seeder
         HomepageNavigationItem::create([
             'parent_id' => $alumni->id,
             'title' => 'Alumni Directory',
-            'url' => route('alumni.public.directory', [], false),
+            'url' => '/alumni',
             'order' => 1,
             'type' => 'link',
         ]);
         HomepageNavigationItem::create([
             'parent_id' => $alumni->id,
             'title' => 'Alumni Map',
-            'url' => route('alumni.public.map', [], false),
+            'url' => '/alumni/map',
             'order' => 2,
             'type' => 'link',
         ]);
         HomepageNavigationItem::create([
             'parent_id' => $alumni->id,
             'title' => 'Success Stories',
-            'url' => route('stories.public.index', [], false),
+            'url' => '/stories',
             'order' => 3,
             'type' => 'link',
         ]);

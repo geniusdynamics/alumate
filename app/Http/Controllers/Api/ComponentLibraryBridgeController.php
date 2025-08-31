@@ -674,19 +674,7 @@ class ComponentLibraryBridgeController extends Controller
         ];
     }
 
-    private function mapCategoryToGrapeJS(string $category): string
-    {
-        $categoryMap = [
-            'hero' => 'Hero Sections',
-            'forms' => 'Forms',
-            'testimonials' => 'Testimonials',
-            'statistics' => 'Statistics',
-            'ctas' => 'Call to Actions',
-            'media' => 'Media'
-        ];
 
-        return $categoryMap[$category] ?? 'Components';
-    }
 
     private function getComponentPreviewImage($component): string
     {

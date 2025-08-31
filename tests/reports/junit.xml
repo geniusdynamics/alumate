@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="ThemePreviewTest" file="Theme Preview" tests="6" assertions="25" errors="0" failures="0" skipped="0" time="25.463090">
+    <testcase name="Theme preview accessibility analysis works" file="Theme Preview::Theme preview accessibility analysis works" class="ThemePreviewTest" classname="ThemePreviewTest" assertions="2" time="22.274865"/>
+    <testcase name="Theme preview components exist" file="Theme Preview::Theme preview components exist" class="ThemePreviewTest" classname="ThemePreviewTest" assertions="7" time="0.581252"/>
+    <testcase name="Theme preview components are properly exported" file="Theme Preview::Theme preview components are properly exported" class="ThemePreviewTest" classname="ThemePreviewTest" assertions="8" time="0.930082"/>
+    <testcase name="Theme preview performance analysis works" file="Theme Preview::Theme preview performance analysis works" class="ThemePreviewTest" classname="ThemePreviewTest" assertions="2" time="0.734041"/>
+    <testcase name="Theme preview export functionality works" file="Theme Preview::Theme preview export functionality works" class="ThemePreviewTest" classname="ThemePreviewTest" assertions="3" time="0.461082"/>
+    <testcase name="Theme preview component coverage analysis works" file="Theme Preview::Theme preview component coverage analysis works" class="ThemePreviewTest" classname="ThemePreviewTest" assertions="3" time="0.481768"/>
+  </testsuite>
+</testsuites>
