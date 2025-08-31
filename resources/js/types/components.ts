@@ -4,6 +4,195 @@ export type ComponentCategory = 'hero' | 'forms' | 'testimonials' | 'statistics'
 
 export type AudienceType = 'individual' | 'institution' | 'employer';
 
+// Responsive Design Types for GrapeJS Integration
+export type DeviceType = 'desktop' | 'tablet' | 'mobile';
+export type BreakpointName = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
+export interface ResponsiveBreakpoint {
+  name: BreakpointName;
+  minWidth: number;
+  maxWidth?: number;
+  device: DeviceType;
+  label: string;
+  icon?: string;
+  grapeJSDevice?: string; // Maps to GrapeJS device manager
+}
+
+export interface ResponsiveConfig {
+  breakpoints: ResponsiveBreakpoint[];
+  defaultBreakpoint: BreakpointName;
+  enabledDevices: DeviceType[];
+}
+
+export interface DeviceSpecificConfig<T = any> {
+  desktop?: T;
+  tablet?: T;
+  mobile?: T;
+}
+
+export interface ResponsiveComponentVariant {
+  device: DeviceType;
+  breakpoint: BreakpointName;
+  config: any; // Component-specific configuration
+  enabled: boolean;
+  inheritFromParent?: boolean;
+  customizations?: Record<string, any>;
+}
+
+// Accessibility Metadata for GrapeJS
+export interface AccessibilityMetadata {
+  ariaLabel?: string;
+  ariaDescribedBy?: string;
+  ariaLabelledBy?: string;
+  role?: string;
+  tabIndex?: number;
+  semanticTag?: 'header' | 'main' | 'section' | 'article' | 'aside' | 'nav' | 'footer' | 'div';
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+  landmarkRole?: 'banner' | 'main' | 'navigation' | 'complementary' | 'contentinfo' | 'search' | 'form';
+  screenReaderText?: string;
+  keyboardNavigation?: {
+    focusable: boolean;
+    tabOrder?: number;
+    skipLink?: boolean;
+    keyboardShortcuts?: Array<{
+      key: string;
+      action: string;
+      description: string;
+    }>;
+  };
+  colorContrast?: {
+    ratio: number;
+    level: 'AA' | 'AAA';
+    validated: boolean;
+  };
+  motionPreferences?: {
+    respectReducedMotion: boolean;
+    alternativeContent?: string;
+  };
+}
+
+// Component Grouping and Relationships for GrapeJS
+export interface ComponentRelationship {
+  type: 'parent' | 'child' | 'sibling' | 'dependency' | 'variant';
+  componentId: string;
+  relationshipId: string;
+  metadata?: Record<string, any>;
+}
+
+export interface ComponentGroup {
+  id: string;
+  name: string;
+  description?: string;
+  components: string[]; // Component IDs
+  category?: ComponentCategory;
+  tags?: string[];
+  grapeJSCategory?: string;
+  sortOrder?: number;
+  icon?: string;
+  color?: string;
+}
+
+// Tailwind CSS Class Mapping for GrapeJS Style Manager
+export interface TailwindClassMapping {
+  property: string; // CSS property name
+  tailwindClasses: Array<{
+    class: string;
+    value: string;
+    label: string;
+    category?: 'spacing' | 'colors' | 'typography' | 'layout' | 'effects' | 'responsive';
+    responsive?: boolean;
+    variants?: string[]; // hover, focus, etc.
+  }>;
+  grapeJSProperty?: string; // Maps to GrapeJS style manager property
+  responsive?: boolean;
+  important?: boolean;
+}
+
+export interface TailwindStyleMapping {
+  [componentType: string]: {
+    [elementSelector: string]: TailwindClassMapping[];
+  };
+}
+
+// Component Constraints for Responsive Design Compliance
+export interface ResponsiveConstraint {
+  type: 'minWidth' | 'maxWidth' | 'aspectRatio' | 'textSize' | 'spacing' | 'touchTarget' | 'custom';
+  device?: DeviceType;
+  breakpoint?: BreakpointName;
+  value: number | string;
+  unit?: 'px' | 'rem' | 'em' | '%' | 'vw' | 'vh';
+  message?: string;
+  severity: 'error' | 'warning' | 'info';
+  autoFix?: boolean;
+  fixAction?: string;
+}
+
+export interface ComponentConstraints {
+  responsive: ResponsiveConstraint[];
+  accessibility: Array<{
+    type: 'contrast' | 'focusable' | 'semantic' | 'keyboard' | 'screenReader';
+    requirement: string;
+    message?: string;
+    severity: 'error' | 'warning' | 'info';
+    autoFix?: boolean;
+  }>;
+  performance: Array<{
+    type: 'imageSize' | 'loadTime' | 'bundleSize' | 'renderTime';
+    threshold: number;
+    unit: string;
+    message?: string;
+    severity: 'error' | 'warning' | 'info';
+  }>;
+}
+
+// Enhanced Component Configuration with Responsive Support
+export interface ResponsiveComponentConfig {
+  // Base configuration (applies to all devices)
+  base: any;
+  
+  // Device-specific overrides
+  responsive: {
+    [K in DeviceType]?: any;
+  };
+  
+  // Breakpoint-specific overrides
+  breakpoints?: {
+    [K in BreakpointName]?: any;
+  };
+  
+  // Accessibility metadata
+  accessibility: AccessibilityMetadata;
+  
+  // Component relationships
+  relationships?: ComponentRelationship[];
+  
+  // Tailwind class mappings
+  tailwindMapping?: TailwindStyleMapping;
+  
+  // Constraints validation
+  constraints?: ComponentConstraints;
+  
+  // GrapeJS specific metadata
+  grapeJSMetadata?: {
+    deviceManager?: {
+      [K in DeviceType]?: {
+        width: number;
+        height?: number;
+        widthMedia?: string;
+      };
+    };
+    styleManager?: {
+      sectors: Array<{
+        name: string;
+        properties: string[];
+      }>;
+    };
+    traitManager?: {
+      traits: GrapeJSTrait[];
+    };
+  };
+}
+
 export type BackgroundMediaType = 'image' | 'video' | 'gradient';
 
 export interface MediaAsset {

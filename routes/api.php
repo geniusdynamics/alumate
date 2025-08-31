@@ -875,3 +875,51 @@ Route::prefix('forms')->group(function () {
     Route::post('/newsletter-signup', [App\Http\Controllers\Api\FormController::class, 'submitNewsletterSignup']);
     Route::post('/event-registration', [App\Http\Controllers\Api\FormController::class, 'submitEventRegistration']);
 });
+
+// Component Library Bridge routes for GrapeJS integration
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('components/bridge')->group(function () {
+        Route::get('initialize', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'initialize']);
+        Route::get('categories', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getCategories']);
+        Route::get('search', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'searchComponents']);
+        Route::post('track-usage', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'trackUsage']);
+        Route::post('track-rating', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'trackRating']);
+        Route::get('usage-stats/{componentId}', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getUsageStats']);
+        Route::get('most-used', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getMostUsed']);
+        Route::get('recently-used', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getRecentlyUsed']);
+        Route::get('trending', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getTrending']);
+        Route::get('analytics', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getAnalytics']);
+        Route::get('documentation/{componentId}', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getDocumentation']);
+        Route::get('tooltip/{componentId}', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getTooltip']);
+        Route::get('validate/{componentId}', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'validateComponent']);
+        Route::get('grapeJS-data/{componentId}', [App\Http\Controllers\Api\ComponentLibraryBridgeController::class, 'getGrapeJSData']);
+    });
+});
+
+// Component Version Control and Export System routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Component version management
+    Route::get('components/{component}/versions', [App\Http\Controllers\Api\ComponentVersionController::class, 'index']);
+    Route::post('components/{component}/versions', [App\Http\Controllers\Api\ComponentVersionController::class, 'store']);
+    Route::get('components/{component}/versions/{version}', [App\Http\Controllers\Api\ComponentVersionController::class, 'show']);
+    Route::post('components/{component}/versions/{version}/restore', [App\Http\Controllers\Api\ComponentVersionController::class, 'restore']);
+    Route::post('components/{component}/versions/compare', [App\Http\Controllers\Api\ComponentVersionController::class, 'compare']);
+
+    // Component export/import
+    Route::post('components/{component}/export', [App\Http\Controllers\Api\ComponentVersionController::class, 'export']);
+    Route::post('components/import', [App\Http\Controllers\Api\ComponentVersionController::class, 'import']);
+    Route::post('components/create-template', [App\Http\Controllers\Api\ComponentVersionController::class, 'createTemplate']);
+
+    // Performance analysis
+    Route::get('components/{component}/performance/analyze', [App\Http\Controllers\Api\ComponentVersionController::class, 'analyzePerformance']);
+    Route::get('components/{component}/performance/trends', [App\Http\Controllers\Api\ComponentVersionController::class, 'performanceTrends']);
+    Route::post('components/{component}/performance/compare', [App\Http\Controllers\Api\ComponentVersionController::class, 'comparePerformance']);
+
+    // Backup and recovery
+    Route::post('components/{component}/backup', [App\Http\Controllers\Api\ComponentVersionController::class, 'createBackup']);
+    Route::get('components/{component}/backups', [App\Http\Controllers\Api\ComponentVersionController::class, 'listBackups']);
+    Route::post('components/restore-backup', [App\Http\Controllers\Api\ComponentVersionController::class, 'restoreBackup']);
+
+    // Migration utilities
+    Route::post('components/{component}/migrate', [App\Http\Controllers\Api\ComponentVersionController::class, 'migrate']);
+});

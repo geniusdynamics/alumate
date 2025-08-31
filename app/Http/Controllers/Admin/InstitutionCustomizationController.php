@@ -275,4 +275,4 @@ class InstitutionCustomizationController extends Controller
                 'description' => 'Process donations and event payments'
             ]
         ];
-    }
+    }}

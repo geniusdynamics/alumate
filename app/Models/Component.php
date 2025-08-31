@@ -26,6 +26,8 @@ class Component extends Model
         'metadata',
         'version',
         'is_active',
+        'usage_count',
+        'last_used_at',
     ];
 
     protected $casts = [
@@ -33,6 +35,8 @@ class Component extends Model
         'metadata' => 'array',
         'is_active' => 'boolean',
         'version' => 'string',
+        'usage_count' => 'integer',
+        'last_used_at' => 'datetime',
     ];
 
     protected $attributes = [
@@ -40,6 +44,7 @@ class Component extends Model
         'version' => '1.0.0',
         'config' => '{}',
         'metadata' => '{}',
+        'usage_count' => 0,
     ];
 
     /**
@@ -128,6 +133,14 @@ class Component extends Model
     public function instances(): HasMany
     {
         return $this->hasMany(ComponentInstance::class);
+    }
+
+    /**
+     * Get the component versions
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(ComponentVersion::class);
     }
 
     /**
@@ -343,5 +356,262 @@ class Component extends Model
         $rules['slug'] .= '|'.$uniqueRule;
 
         return $rules;
+    }
+
+    /**
+     * Get responsive configuration for the component
+     */
+    public function getResponsiveConfig(): array
+    {
+        return $this->getConfigValue('responsive', [
+            'desktop' => [],
+            'tablet' => [],
+            'mobile' => []
+        ]);
+    }
+
+    /**
+     * Set responsive configuration for a specific device
+     */
+    public function setResponsiveConfig(string $device, array $config): void
+    {
+        $responsiveConfig = $this->getResponsiveConfig();
+        $responsiveConfig[$device] = $config;
+        $this->setConfigValue('responsive', $responsiveConfig);
+    }
+
+    /**
+     * Get device-specific configuration
+     */
+    public function getDeviceConfig(string $device): array
+    {
+        $responsiveConfig = $this->getResponsiveConfig();
+        return $responsiveConfig[$device] ?? [];
+    }
+
+    /**
+     * Check if component has responsive configuration
+     */
+    public function hasResponsiveConfig(): bool
+    {
+        $responsiveConfig = $this->getResponsiveConfig();
+        return !empty($responsiveConfig['desktop']) || 
+               !empty($responsiveConfig['tablet']) || 
+               !empty($responsiveConfig['mobile']);
+    }
+
+    /**
+     * Get accessibility metadata
+     */
+    public function getAccessibilityMetadata(): array
+    {
+        return $this->getConfigValue('accessibility', [
+            'semanticTag' => 'div',
+            'keyboardNavigation' => ['focusable' => false],
+            'motionPreferences' => ['respectReducedMotion' => true]
+        ]);
+    }
+
+    /**
+     * Set accessibility metadata
+     */
+    public function setAccessibilityMetadata(array $metadata): void
+    {
+        $this->setConfigValue('accessibility', $metadata);
+    }
+
+    /**
+     * Get component grouping metadata
+     */
+    public function getGroupingMetadata(): array
+    {
+        return $this->getConfigValue('grouping', [
+            'tags' => [$this->category],
+            'relationships' => [],
+            'grapeJSCategory' => $this->getGrapeJSCategoryName()
+        ]);
+    }
+
+    /**
+     * Set component grouping metadata
+     */
+    public function setGroupingMetadata(array $metadata): void
+    {
+        $this->setConfigValue('grouping', $metadata);
+    }
+
+    /**
+     * Get Tailwind CSS class mappings
+     */
+    public function getTailwindMappings(): array
+    {
+        return $this->getConfigValue('tailwindMapping', []);
+    }
+
+    /**
+     * Set Tailwind CSS class mappings
+     */
+    public function setTailwindMappings(array $mappings): void
+    {
+        $this->setConfigValue('tailwindMapping', $mappings);
+    }
+
+    /**
+     * Get component constraints
+     */
+    public function getConstraints(): array
+    {
+        return $this->getConfigValue('constraints', [
+            'responsive' => [],
+            'accessibility' => [],
+            'performance' => []
+        ]);
+    }
+
+    /**
+     * Set component constraints
+     */
+    public function setConstraints(array $constraints): void
+    {
+        $this->setConfigValue('constraints', $constraints);
+    }
+
+    /**
+     * Get GrapeJS metadata
+     */
+    public function getGrapeJSMetadata(): array
+    {
+        return $this->getConfigValue('grapeJSMetadata', [
+            'deviceManager' => [
+                'desktop' => ['width' => 1200, 'height' => 800, 'widthMedia' => 'min-width: 1024px'],
+                'tablet' => ['width' => 768, 'height' => 1024, 'widthMedia' => 'min-width: 768px and max-width: 1023px'],
+                'mobile' => ['width' => 375, 'height' => 667, 'widthMedia' => 'max-width: 767px']
+            ],
+            'styleManager' => ['sectors' => []],
+            'traitManager' => ['traits' => []]
+        ]);
+    }
+
+    /**
+     * Set GrapeJS metadata
+     */
+    public function setGrapeJSMetadata(array $metadata): void
+    {
+        $this->setConfigValue('grapeJSMetadata', $metadata);
+    }
+
+    /**
+     * Check if component is mobile-optimized
+     */
+    public function isMobileOptimized(): bool
+    {
+        $mobileConfig = $this->getDeviceConfig('mobile');
+        return !empty($mobileConfig) || $this->hasConfigKey('mobileOptimized');
+    }
+
+    /**
+     * Check if component has accessibility features
+     */
+    public function hasAccessibilityFeatures(): bool
+    {
+        $accessibility = $this->getAccessibilityMetadata();
+        return !empty($accessibility['ariaLabel']) || 
+               !empty($accessibility['keyboardNavigation']) ||
+               !empty($accessibility['screenReaderText']);
+    }
+
+    /**
+     * Get GrapeJS category name for this component
+     */
+    private function getGrapeJSCategoryName(): string
+    {
+        return match ($this->category) {
+            'hero' => 'Hero Components',
+            'forms' => 'Forms & Inputs',
+            'testimonials' => 'Social Proof',
+            'statistics' => 'Data & Metrics',
+            'ctas' => 'Call-to-Actions',
+            'media' => 'Media & Content',
+            default => 'Components'
+        };
+    }
+
+    /**
+     * Generate responsive variants for this component
+     */
+    public function generateResponsiveVariants(): array
+    {
+        $variants = [];
+        $devices = ['desktop', 'tablet', 'mobile'];
+        
+        foreach ($devices as $device) {
+            $deviceConfig = $this->getDeviceConfig($device);
+            $baseConfig = $this->config ?? [];
+            
+            $variants[] = [
+                'device' => $device,
+                'config' => array_merge($baseConfig, $deviceConfig),
+                'enabled' => !empty($deviceConfig),
+                'inheritFromParent' => empty($deviceConfig)
+            ];
+        }
+        
+        return $variants;
+    }
+
+    /**
+     * Validate responsive configuration
+     */
+    public function validateResponsiveConfig(): array
+    {
+        $errors = [];
+        $warnings = [];
+        
+        $responsiveConfig = $this->getResponsiveConfig();
+        
+        // Check for mobile optimization
+        if (empty($responsiveConfig['mobile'])) {
+            $warnings[] = 'Component lacks mobile-specific configuration';
+        }
+        
+        // Check for accessibility metadata
+        $accessibility = $this->getAccessibilityMetadata();
+        if (empty($accessibility['ariaLabel']) && empty($accessibility['ariaLabelledBy'])) {
+            $warnings[] = 'Component should have accessible name (aria-label or aria-labelledby)';
+        }
+        
+        // Check for semantic HTML usage
+        if ($accessibility['semanticTag'] === 'div') {
+            $warnings[] = 'Consider using semantic HTML elements instead of generic div';
+        }
+        
+        return [
+            'valid' => empty($errors),
+            'errors' => $errors,
+            'warnings' => $warnings
+        ];
+    }
+
+    /**
+     * Get component usage statistics for analytics
+     */
+    public function getUsageStats(): array
+    {
+        return [
+            'usage_count' => $this->usage_count,
+            'last_used_at' => $this->last_used_at,
+            'instances_count' => $this->instances()->count(),
+            'is_popular' => $this->usage_count > 10,
+            'recently_used' => $this->last_used_at && $this->last_used_at->isAfter(now()->subDays(7))
+        ];
+    }
+
+    /**
+     * Increment usage count
+     */
+    public function incrementUsage(): void
+    {
+        $this->increment('usage_count');
+        $this->update(['last_used_at' => now()]);
     }
 }

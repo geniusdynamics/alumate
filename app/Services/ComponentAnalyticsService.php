@@ -632,4 +632,223 @@ class ComponentAnalyticsService
             return null;
         }
     }
+
+    // Additional methods for ComponentLibraryBridge integration
+
+    /**
+     * Track component usage for GrapeJS integration
+     */
+    public function trackComponentUsage(string $componentId, string $context = 'grapeJS'): void
+    {
+        // This would typically create a usage record
+        // For now, we'll use the existing analytics system
+        try {
+            // Find or create a component instance for tracking
+            $componentInstance = ComponentInstance::firstOrCreate([
+                'component_id' => $componentId,
+                'page_type' => 'grapeJS',
+                'page_id' => 0, // Special ID for GrapeJS usage
+                'position' => 0
+            ]);
+
+            $this->recordView(
+                $componentInstance->id,
+                auth()->id(),
+                session()->getId(),
+                ['context' => $context]
+            );
+        } catch (\Exception $e) {
+            Log::warning('Failed to track component usage', [
+                'component_id' => $componentId,
+                'context' => $context,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Track component rating
+     */
+    public function trackComponentRating(string $componentId, float $rating): void
+    {
+        try {
+            $componentInstance = ComponentInstance::firstOrCreate([
+                'component_id' => $componentId,
+                'page_type' => 'grapeJS',
+                'page_id' => 0,
+                'position' => 0
+            ]);
+
+            ComponentAnalytic::create([
+                'component_instance_id' => $componentInstance->id,
+                'event_type' => 'rating',
+                'user_id' => auth()->id(),
+                'session_id' => session()->getId(),
+                'data' => [
+                    'rating' => $rating,
+                    'timestamp' => now()->toISOString()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::warning('Failed to track component rating', [
+                'component_id' => $componentId,
+                'rating' => $rating,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Get component statistics for bridge
+     */
+    public function getComponentStats(string $componentId): array
+    {
+        try {
+            $componentInstance = ComponentInstance::where('component_id', $componentId)
+                ->where('page_type', 'grapeJS')
+                ->first();
+
+            if (!$componentInstance) {
+                return [
+                    'componentId' => $componentId,
+                    'totalUsage' => 0,
+                    'recentUsage' => 0,
+                    'averageRating' => 0,
+                    'conversionRate' => 0,
+                    'lastUsed' => null,
+                    'popularConfigurations' => []
+                ];
+            }
+
+            $analytics = ComponentAnalytic::where('component_instance_id', $componentInstance->id)->get();
+            $recentAnalytics = ComponentAnalytic::where('component_instance_id', $componentInstance->id)
+                ->where('created_at', '>=', now()->subDays(7))
+                ->get();
+
+            $ratings = $analytics->where('event_type', 'rating');
+            $averageRating = $ratings->count() > 0 
+                ? $ratings->avg(fn($r) => $r->data['rating'] ?? 0) 
+                : 0;
+
+            return [
+                'componentId' => $componentId,
+                'totalUsage' => $analytics->where('event_type', 'view')->count(),
+                'recentUsage' => $recentAnalytics->where('event_type', 'view')->count(),
+                'averageRating' => round($averageRating, 2),
+                'conversionRate' => $this->calculateConversionRate($analytics),
+                'lastUsed' => $analytics->max('created_at'),
+                'popularConfigurations' => []
+            ];
+        } catch (\Exception $e) {
+            Log::warning('Failed to get component stats', [
+                'component_id' => $componentId,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'componentId' => $componentId,
+                'totalUsage' => 0,
+                'recentUsage' => 0,
+                'averageRating' => 0,
+                'conversionRate' => 0,
+                'lastUsed' => null,
+                'popularConfigurations' => []
+            ];
+        }
+    }
+
+    /**
+     * Get recent usage count for a component
+     */
+    public function getRecentUsageCount(string $componentId, int $days = 7): int
+    {
+        try {
+            $componentInstance = ComponentInstance::where('component_id', $componentId)
+                ->where('page_type', 'grapeJS')
+                ->first();
+
+            if (!$componentInstance) {
+                return 0;
+            }
+
+            return ComponentAnalytic::where('component_instance_id', $componentInstance->id)
+                ->where('event_type', 'view')
+                ->where('created_at', '>=', now()->subDays($days))
+                ->count();
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get average rating for a component
+     */
+    public function getAverageRating(string $componentId): float
+    {
+        try {
+            $componentInstance = ComponentInstance::where('component_id', $componentId)
+                ->where('page_type', 'grapeJS')
+                ->first();
+
+            if (!$componentInstance) {
+                return 0.0;
+            }
+
+            $ratings = ComponentAnalytic::where('component_instance_id', $componentInstance->id)
+                ->where('event_type', 'rating')
+                ->get();
+
+            if ($ratings->isEmpty()) {
+                return 0.0;
+            }
+
+            $average = $ratings->avg(fn($r) => $r->data['rating'] ?? 0);
+            return round($average, 2);
+        } catch (\Exception $e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * Get overall average rating for a tenant
+     */
+    public function getOverallAverageRating(string $tenantId): float
+    {
+        try {
+            // This would need to be implemented based on your tenant structure
+            // For now, return a placeholder
+            return 4.2;
+        } catch (\Exception $e) {
+            return 0.0;
+        }
+    }
+
+    /**
+     * Get usage count for a specific date
+     */
+    public function getUsageCountForDate(Carbon $date, string $tenantId): int
+    {
+        try {
+            return ComponentAnalytic::whereDate('created_at', $date->toDateString())
+                ->where('event_type', 'view')
+                ->count();
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
+
+    /**
+     * Calculate conversion rate from analytics data
+     */
+    private function calculateConversionRate(Collection $analytics): float
+    {
+        $views = $analytics->where('event_type', 'view')->count();
+        $conversions = $analytics->where('event_type', 'conversion')->count();
+
+        if ($views === 0) {
+            return 0.0;
+        }
+
+        return round(($conversions / $views) * 100, 2);
+    }
 }

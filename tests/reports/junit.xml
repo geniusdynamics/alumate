@@ -1,22 +1,753 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Unit\ComponentConfiguratorTest" file="tests\Unit\ComponentConfiguratorTest.php" tests="17" assertions="123" errors="0" failures="0" skipped="0" time="0.380272">
-    <testcase name="it can validate configuration schema structure" file="tests\Unit\ComponentConfiguratorTest.php::it can validate configuration schema structure" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="6" time="0.032613"/>
-    <testcase name="it can validate configuration schema for hero components" file="tests\Unit\ComponentConfiguratorTest.php::it can validate configuration schema for hero components" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="3" time="0.001587"/>
-    <testcase name="it can handle configuration presets" file="tests\Unit\ComponentConfiguratorTest.php::it can handle configuration presets" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="6" time="0.001020"/>
-    <testcase name="it can validate required fields for different component categories" file="tests\Unit\ComponentConfiguratorTest.php::it can validate required fields for different component categories" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="12" time="0.002062"/>
-    <testcase name="it can handle color validation" file="tests\Unit\ComponentConfiguratorTest.php::it can handle color validation" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="8" time="0.328402"/>
-    <testcase name="it can handle font family configuration" file="tests\Unit\ComponentConfiguratorTest.php::it can handle font family configuration" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="14" time="0.000587"/>
-    <testcase name="it can handle spacing configuration" file="tests\Unit\ComponentConfiguratorTest.php::it can handle spacing configuration" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="10" time="0.000465"/>
-    <testcase name="it can handle layout configuration" file="tests\Unit\ComponentConfiguratorTest.php::it can handle layout configuration" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="8" time="0.000910"/>
-    <testcase name="it can handle responsive settings" file="tests\Unit\ComponentConfiguratorTest.php::it can handle responsive settings" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="4" time="0.001076"/>
-    <testcase name="it can handle animation settings" file="tests\Unit\ComponentConfiguratorTest.php::it can handle animation settings" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="4" time="0.000931"/>
-    <testcase name="it can handle custom CSS configuration" file="tests\Unit\ComponentConfiguratorTest.php::it can handle custom CSS configuration" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="3" time="0.001714"/>
-    <testcase name="it can handle configuration export format" file="tests\Unit\ComponentConfiguratorTest.php::it can handle configuration export format" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="7" time="0.001213"/>
-    <testcase name="it can handle configuration import validation" file="tests\Unit\ComponentConfiguratorTest.php::it can handle configuration import validation" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="3" time="0.000937"/>
-    <testcase name="it can handle configuration versioning and history" file="tests\Unit\ComponentConfiguratorTest.php::it can handle configuration versioning and history" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="9" time="0.003574"/>
-    <testcase name="it can handle tenant-specific configuration isolation" file="tests\Unit\ComponentConfiguratorTest.php::it can handle tenant-specific configuration isolation" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="3" time="0.002169"/>
-    <testcase name="it can handle configuration field validation rules" file="tests\Unit\ComponentConfiguratorTest.php::it can handle configuration field validation rules" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="19" time="0.000589"/>
-    <testcase name="it can handle accessibility configuration options" file="tests\Unit\ComponentConfiguratorTest.php::it can handle accessibility configuration options" class="Tests\Unit\ComponentConfiguratorTest" classname="Tests.Unit.ComponentConfiguratorTest" assertions="4" time="0.000423"/>
+  <testsuite name="Tests\Feature\Feature\ComponentVersionControlTest" file="tests\Feature\Feature\ComponentVersionControlTest.php" tests="17" assertions="0" errors="17" failures="0" skipped="0" time="0.000000">
+    <testcase name="can create component version" file="tests\Feature\Feature\ComponentVersionControlTest.php::can create component version" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can create component versionIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Alexis Beahan, gaston.auer@example.net, ?, 2025-08-31 03:18:07, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, 9RJg1avPgF, ?, "{\"bio\":\"Fugiat non asperiores facere sed quo. Quia hic quibusdam debitis atque. Voluptatibus dolore quo illum quia a alias laudantium dolores. Natus est illum tempora qui ipsam id et eum.\",\"location\":null,\"website\":\"http:\\\/\\\/sawayn.com\\\/ad-deleniti-placeat-cupiditate-in-esse-aut-omnis-nam.html\",\"linkedin\":null,\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-06 19:02:30, ?, 0, America/New_York, de, aut-eveniet-vero-est-laboriosam-nesciunt-rem, 2025-08-31 03:18:07, 2025-08-31 03:18:07) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can get version history" file="tests\Feature\Feature\ComponentVersionControlTest.php::can get version history" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can get version historyIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Stephania Lang, okeefe.garry@example.org, ?, 2025-08-31 03:18:07, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, bFCLMFsHnZ, ?, "{\"bio\":null,\"location\":\"Port Sandy\",\"website\":null,\"linkedin\":null,\"twitter\":\"yost.milton\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, 2025-08-24 05:19:00, 0, America/New_York, fr, sed-rem-vitae-fugiat-et-tenetur, 2025-08-31 03:18:07, 2025-08-31 03:18:07) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can get specific version details" file="tests\Feature\Feature\ComponentVersionControlTest.php::can get specific version details" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can get specific version detailsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Brett Schaden, ljohnston@example.com, +1 (785) 378-1725, 2025-08-31 03:18:07, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, zO5xEmLyH5, ?, "{\"bio\":null,\"location\":\"Grantport\",\"website\":\"http:\\\/\\\/www.lind.com\\\/nihil-occaecati-optio-alias-assumenda-inventore-eum\",\"linkedin\":\"https:\\\/\\\/www.hyatt.com\\\/tempore-enim-est-odio-corporis-in-nostrum\",\"twitter\":\"lisa90\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-01 14:11:05, ?, 0, Asia/Tokyo, es, sit-et-amet-quo-fugit-est-et, 2025-08-31 03:18:07, 2025-08-31 03:18:07) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can restore component to version" file="tests\Feature\Feature\ComponentVersionControlTest.php::can restore component to version" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can restore component to versionIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Mrs. Estell Schumm DDS, christine43@example.net, ?, 2025-08-31 03:18:07, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, eYKbpptAVY, ?, "{\"bio\":\"Sed molestiae dolore voluptas quam autem laboriosam quae. Laboriosam autem velit aspernatur beatae sequi. Et ad inventore doloribus.\",\"location\":\"North Kraig\",\"website\":\"http:\\\/\\\/www.kemmer.com\\\/amet-dolore-non-labore-eligendi-et-autem-sit\",\"linkedin\":\"http:\\\/\\\/lockman.com\\\/\",\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-20 17:40:33, 2025-08-29 17:45:35, 0, UTC, fr, recusandae-iure-quia-ullam-tenetur-consectetur-doloribus-qui, 2025-08-31 03:18:07, 2025-08-31 03:18:07) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can compare versions" file="tests\Feature\Feature\ComponentVersionControlTest.php::can compare versions" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can compare versionsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Kennedi Renner, dayna.jerde@example.com, 914-512-9481, 2025-08-31 03:18:08, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, aKGyOrHhE8, ?, "{\"bio\":\"Ad voluptates aut maxime amet. Officia voluptates rerum hic praesentium omnis. Cumque praesentium sunt animi dolorem. Nihil ea nihil facilis.\",\"location\":null,\"website\":null,\"linkedin\":\"https:\\\/\\\/schneider.org\\\/dolores-quibusdam-ut-dolorem.html\",\"twitter\":\"junius98\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, ?, 0, UTC, en, quidem-ea-voluptas-ut-et-quis-qui-quasi-mollitia, 2025-08-31 03:18:08, 2025-08-31 03:18:08) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can export component" file="tests\Feature\Feature\ComponentVersionControlTest.php::can export component" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can export componentIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Dana Balistreri, stroman.alexane@example.com, 865.532.6461, 2025-08-31 03:18:08, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, qSmzzzVo29, ?, "{\"bio\":null,\"location\":null,\"website\":null,\"linkedin\":null,\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, ?, 0, America/New_York, de, est-quaerat-recusandae-non, 2025-08-31 03:18:08, 2025-08-31 03:18:08) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can import component" file="tests\Feature\Feature\ComponentVersionControlTest.php::can import component" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can import componentIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Prof. Chyna Little, eloise78@example.org, 1-760-252-5444, 2025-08-31 03:18:08, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, QWov6a3Mmz, ?, "{\"bio\":\"Excepturi blanditiis voluptas doloremque qui et rerum. Voluptatem consequatur et sunt sapiente. Rerum temporibus sint dolore est.\",\"location\":\"New Daronmouth\",\"website\":\"http:\\\/\\\/hyatt.com\\\/aut-consectetur-molestiae-odio-omnis-et\",\"linkedin\":null,\"twitter\":\"rey.hills\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, ?, 0, UTC, es, recusandae-quae-deleniti-quibusdam-consequuntur, 2025-08-31 03:18:08, 2025-08-31 03:18:08) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can create template from grapejs" file="tests\Feature\Feature\ComponentVersionControlTest.php::can create template from grapejs" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can create template from grapejsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Darby Adams, gernser@example.com, 914.489.3979, 2025-08-31 03:18:09, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, 5qX47HfH02, ?, "{\"bio\":null,\"location\":null,\"website\":null,\"linkedin\":null,\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, ?, 0, Europe/London, en, suscipit-quas-qui-reiciendis-asperiores, 2025-08-31 03:18:09, 2025-08-31 03:18:09) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can analyze component performance" file="tests\Feature\Feature\ComponentVersionControlTest.php::can analyze component performance" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can analyze component performanceIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Bridgette Veum, qgusikowski@example.com, ?, 2025-08-31 03:18:09, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, mAcjolzTrr, ?, "{\"bio\":\"Necessitatibus sed quaerat dolorem nisi. Deserunt officia amet error alias facere facere. Exercitationem et ullam qui repellendus cumque sequi explicabo. Laudantium facilis ea voluptatibus.\",\"location\":\"East Zion\",\"website\":\"http:\\\/\\\/www.baumbach.org\\\/quos-voluptatum-expedita-odio\",\"linkedin\":null,\"twitter\":\"julian34\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-24 22:19:45, 2025-08-27 19:34:01, 0, America/New_York, de, aliquid-vel-sunt-nihil-qui-aut-maxime, 2025-08-31 03:18:09, 2025-08-31 03:18:09) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can get performance trends" file="tests\Feature\Feature\ComponentVersionControlTest.php::can get performance trends" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can get performance trendsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Miss Susie Beier, oleuschke@example.org, +1-251-450-3441, 2025-08-31 03:18:09, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, GD0ACasimQ, ?, "{\"bio\":null,\"location\":\"Gottliebview\",\"website\":null,\"linkedin\":\"https:\\\/\\\/www.gleason.com\\\/facere-rerum-necessitatibus-quibusdam-sunt-quia\",\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, 2025-08-29 12:33:33, 0, Asia/Tokyo, es, ad-ullam-deleniti-quis-reiciendis-hic-voluptate-eveniet, 2025-08-31 03:18:09, 2025-08-31 03:18:09) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can create backup" file="tests\Feature\Feature\ComponentVersionControlTest.php::can create backup" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can create backupIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Leatha Frami II, daniel.camren@example.net, ?, 2025-08-31 03:18:09, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, wu2nm552hJ, ?, "{\"bio\":\"Dolore dolores distinctio quibusdam. Est perferendis mollitia dolores sit officiis.\",\"location\":null,\"website\":\"http:\\\/\\\/www.will.com\\\/ut-neque-unde-corrupti-doloribus\",\"linkedin\":\"http:\\\/\\\/pouros.biz\\\/ea-reprehenderit-excepturi-et-iste-voluptates-quia-quaerat-nemo.html\",\"twitter\":\"jevon26\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, ?, 0, Europe/London, fr, ipsum-aliquam-enim-rerum-ullam-saepe-doloribus-ea, 2025-08-31 03:18:09, 2025-08-31 03:18:09) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can list backups" file="tests\Feature\Feature\ComponentVersionControlTest.php::can list backups" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can list backupsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Maria Stamm, golda58@example.org, +1 (602) 895-7183, 2025-08-31 03:18:10, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, vuPXdZhMR5, ?, "{\"bio\":null,\"location\":null,\"website\":null,\"linkedin\":\"http:\\\/\\\/conroy.com\\\/\",\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-11 16:30:46, 2025-08-28 10:49:06, 0, Europe/London, fr, molestiae-sit-tempora-eius-quas-qui, 2025-08-31 03:18:10, 2025-08-31 03:18:10) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="can migrate component" file="tests\Feature\Feature\ComponentVersionControlTest.php::can migrate component" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">can migrate componentIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Eric Upton, art.koelpin@example.com, ?, 2025-08-31 03:18:10, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, ORJhzmMB3V, ?, "{\"bio\":\"Eaque et minima nihil repellat laborum voluptatum. Et veritatis eveniet adipisci hic pariatur. Unde ab culpa officiis est.\",\"location\":null,\"website\":null,\"linkedin\":null,\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-06 10:18:47, ?, 0, Asia/Tokyo, es, maiores-eaque-consectetur-mollitia-dignissimos-numquam-culpa, 2025-08-31 03:18:10, 2025-08-31 03:18:10) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="version validation fails with invalid data" file="tests\Feature\Feature\ComponentVersionControlTest.php::version validation fails with invalid data" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">version validation fails with invalid dataIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Mrs. Ayana Cronin I, flavio02@example.net, +1 (220) 584-7683, 2025-08-31 03:18:10, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, q8PKK1wSCD, ?, "{\"bio\":\"Aut temporibus reprehenderit modi minus velit numquam sit. Cum tempore consequatur ut fuga fugiat libero sunt. Non harum voluptatem expedita id facere qui dolor et. Voluptatibus non explicabo dolores quia neque hic.\",\"location\":null,\"website\":\"http:\\\/\\\/www.gottlieb.com\\\/cumque-ad-pariatur-nihil-dolores-consequuntur-velit-doloribus\",\"linkedin\":null,\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, ?, 0, America/New_York, fr, et-voluptatem-est-reprehenderit, 2025-08-31 03:18:10, 2025-08-31 03:18:10) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="cannot access version from different component" file="tests\Feature\Feature\ComponentVersionControlTest.php::cannot access version from different component" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">cannot access version from different componentIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Ona Batz, ledner.micah@example.org, ?, 2025-08-31 03:18:10, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, 1ebi2Xe6rR, ?, "{\"bio\":\"Nesciunt voluptas laudantium corporis sit nesciunt voluptate. Sint dolorem alias eaque inventore. Ducimus non ut esse minima aliquid quo tempora facilis.\",\"location\":\"Port Destiniville\",\"website\":null,\"linkedin\":null,\"twitter\":null}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, ?, ?, 0, Asia/Tokyo, es, aut-cupiditate-qui-id-sit, 2025-08-31 03:18:10, 2025-08-31 03:18:10) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="export with file format creates file" file="tests\Feature\Feature\ComponentVersionControlTest.php::export with file format creates file" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">export with file format creates fileIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Daren Kunze, tdaugherty@example.com, 1-260-760-9724, 2025-08-31 03:18:11, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, fT7RFFRQKr, ?, "{\"bio\":\"Laudantium voluptate aut dolor omnis fugiat soluta. Et ea officiis sit tempora blanditiis et tenetur. Voluptas veritatis et sed ut tenetur cumque eaque.\",\"location\":\"South Wilhelmineton\",\"website\":null,\"linkedin\":\"http:\\\/\\\/yundt.com\\\/quos-vitae-qui-officiis-optio-officiis-reiciendis\",\"twitter\":\"eula.rogahn\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-23 15:13:12, ?, 0, UTC, en, consequatur-sequi-inventore-rerum, 2025-08-31 03:18:11, 2025-08-31 03:18:11) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
+    <testcase name="performance comparison between versions" file="tests\Feature\Feature\ComponentVersionControlTest.php::performance comparison between versions" class="Tests\Feature\Feature\ComponentVersionControlTest" classname="Tests.Feature.Feature.ComponentVersionControlTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">performance comparison between versionsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^ (Connection: pgsql, SQL: insert into "users" ("name", "email", "phone", "email_verified_at", "password", "remember_token", "institution_id", "profile_data", "preferences", "status", "is_suspended", "suspended_at", "suspension_reason", "last_login_at", "last_activity_at", "two_factor_enabled", "timezone", "language", "tenant_id", "updated_at", "created_at") values (Dr. Bryon Dooley, cullrich@example.com, 463.613.3362, 2025-08-31 03:18:11, $2y$04$aqDUpHS7aZ5npQgt/y/eBOmyWA//yD5b7EeCxylD/PWlhWLrfotAy, SMcaiHybq2, ?, "{\"bio\":\"Quia doloribus quia vel maiores a at atque fugiat. Saepe a sint eum accusamus fuga. Ipsum quisquam eos eveniet. Odio impedit ipsum impedit adipisci numquam esse.\",\"location\":\"Josianeport\",\"website\":null,\"linkedin\":null,\"twitter\":\"green.archibald\"}", "{\"notifications\":{\"email\":true,\"sms\":false,\"push\":true},\"privacy\":{\"profile_visible\":true,\"show_email\":false,\"show_phone\":false},\"dashboard\":{\"theme\":\"light\",\"compact_mode\":false}}", active, 0, ?, ?, 2025-08-15 10:22:02, 2025-08-24 22:35:28, 0, Asia/Tokyo, de, velit-maxime-laboriosam-quaerat-autem-ut-quo-ut, 2025-08-31 03:18:11, 2025-08-31 03:18:11) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "tenant_id" of relation "users" does not exist
+LINE 1: ...t", "two_factor_enabled", "timezone", "language", "tenant_id...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:409
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:809
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:776
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:395
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:382
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3796
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2205
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1431
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1396
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:350
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:271
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:345
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:301
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:295
+at tests\Feature\Feature\ComponentVersionControlTest.php:15</error>
+    </testcase>
   </testsuite>
 </testsuites>
