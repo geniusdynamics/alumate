@@ -1,239 +1,151 @@
-import vue from '@vitejs/plugin-vue';
-import laravel from 'laravel-vite-plugin';
-import { resolve } from 'node:path';
-import path from 'path';
-import AutoImport from 'unplugin-auto-import/vite';
-import Components from 'unplugin-vue-components/vite';
-import { defineConfig } from 'vite';
-import { visualizer } from 'rollup-plugin-visualizer';
+import { defineConfig } from 'vite'
+import laravel from 'laravel-vite-plugin'
+import vue from '@vitejs/plugin-vue'
+import { resolve } from 'path'
 
 export default defineConfig({
-    define: {
-        // Handle any global defines if needed
-        __VUE_OPTIONS_API__: true,
-        __VUE_PROD_DEVTOOLS__: false,
-    },
-    plugins: [
-        laravel({
-            input: ['resources/js/app.ts'],
-            ssr: 'resources/js/ssr.ts',
-            refresh: true,
-            detectTls: false,
-            valetTls: false,
-        }),
+  plugins: [
+    laravel({
+      input: [
+        'resources/css/app.css',
+        'resources/css/mobile.css',
+        'resources/js/app.ts'
+      ],
+      refresh: true,
+    }),
+    vue({
+      template: {
+        transformAssetUrls: {
+          base: null,
+          includeAbsolute: false,
+        },
+      },
+    }),
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunk for third-party libraries
+          vendor: ['vue', '@inertiajs/vue3', 'axios'],
 
-        vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
-            },
-        }),
-        AutoImport({
-            imports: ['vue', '@vueuse/core'],
-            dirs: [
-                './resources/js/services/**',
-                './resources/js/utils/**',
-                './resources/js/layouts/**',
-                './resources/js/stores/**'
-                // Removed './resources/js/composables/**' to prevent conflicts
-            ],
-            viteOptimizeDeps: true,
-            dts: true,
-            vueTemplate: true,
-            dirsScanOptions: {
-                types: true,
-            },
-            // Exclude problematic files to prevent duplicates
-            exclude: [
-                /\/auto-form\/index\.ts$/,
-                /\/form\/index\.ts$/,
-                /\/sidebar\/index\.ts$/,
-                /\/composables\//,        // Exclude all composables from auto-import
-                /\/useDebounce\.js$/,     // Exclude to prevent conflict with @vueuse/core
-                /\/useAppearance\.ts$/,   // Exclude to prevent conflict with useTheme.js
-                /\/initializeTheme/      // Exclude initializeTheme functions
-            ]
-        }),
-        Components({
-            dts: true,
-            // More specific directory scanning to avoid conflicts
-            dirs: [
-                'resources/js/components/Auth/**',
-                'resources/js/components/Forms/**', 
-                'resources/js/components/Navigation/**',
-                'resources/js/layouts/GuestLayout.vue',
-                'resources/js/layouts/AppLayout.vue'
-            ],
-            deep: true,
-            // Include patterns to be more specific
-            include: [/\.vue$/],
-            // Exclude all problematic components and directories
-            exclude: [
-                /\/Analytics\//,
-                /\/Testing\//,
-                /\/SuccessStories\//,
-                /\/onboarding\//,
-                /\/layout\/AppHeader\.vue$/,
-                /\/ui\//,
-                /\/AdminLayout\.vue$/,
-                /\/InputError\.vue$/,
-                /\/components\/.*\/index\.vue$/
-            ],
-            resolvers: []
-        }),
-    ],
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, './resources/js'),
-            'ziggy-js': resolve(__dirname, 'vendor/tightenco/ziggy'),
-        },
-        // Fix for vue-leaflet package resolution issues
-        dedupe: ['vue'],
-    },
-    build: {
-        // Code splitting configuration
-        rollupOptions: {
-            external: (id) => {
-                // Externalize problematic packages
-                if (id.includes('vue-leaflet')) {
-                    return true;
-                }
-                if (id.includes('laravel-echo')) {
-                    return true;
-                }
-                return false;
-            },
-            plugins: [
-                // Add visualizer plugin to analyze bundle
-                visualizer({
-                    filename: 'dist/stats.html',
-                    open: false,
-                    gzipSize: true,
-                    brotliSize: true,
-                }),
-            ],
-            output: {
-                manualChunks: (id) => {
-                    // Vendor chunks
-                    if (id.includes('node_modules')) {
-                        if (id.includes('vue') || id.includes('@inertiajs')) {
-                            return 'vendor-vue'
-                        }
-                        if (id.includes('@headlessui') || id.includes('@heroicons') || id.includes('lucide-vue-next')) {
-                            return 'vendor-ui'
-                        }
-                        if (id.includes('lodash') || id.includes('date-fns') || id.includes('clsx')) {
-                            return 'vendor-utils'
-                        }
-                        if (id.includes('chart.js')) {
-                            return 'vendor-charts'
-                        }
-                        if (id.includes('leaflet')) {
-                            return 'vendor-maps'
-                        }
-                        if (id.includes('elasticsearch') || id.includes('search')) {
-                            return 'vendor-search'
-                        }
-                        return 'vendor-misc'
-                    }
-                    
-                    // Feature-based chunks
-                    if (id.includes('homepage')) {
-                        return 'feature-homepage'
-                    }
-                    if (id.includes('Social') || id.includes('Timeline') || id.includes('Post')) {
-                        return 'feature-social'
-                    }
-                    if (id.includes('Alumni') || id.includes('Directory')) {
-                        return 'feature-alumni'
-                    }
-                    if (id.includes('Career') || id.includes('Job') || id.includes('Mentorship')) {
-                        return 'feature-career'
-                    }
-                    if (id.includes('Event') || id.includes('Calendar')) {
-                        return 'feature-events'
-                    }
-                    if (id.includes('Search') || id.includes('Filter')) {
-                        return 'feature-search'
-                    }
-                    if (id.includes('Performance') || id.includes('Analytics')) {
-                        return 'feature-analytics'
-                    }
-                    if (id.includes('Mobile') || id.includes('PWA')) {
-                        return 'feature-mobile'
-                    }
-                },
-                // Optimize chunk sizes
-                chunkFileNames: (chunkInfo) => {
-                    const facadeModuleId = chunkInfo.facadeModuleId
-                    if (facadeModuleId) {
-                        if (facadeModuleId.includes('homepage')) {
-                            return 'assets/homepage/[name]-[hash].js'
-                        }
-                        if (facadeModuleId.includes('components')) {
-                            return 'assets/components/[name]-[hash].js'
-                        }
-                    }
-                    return 'assets/[name]-[hash].js'
-                }
-            }
-        },
-        // Asset optimization
-        assetsInlineLimit: 4096, // Inline assets smaller than 4kb
-        cssCodeSplit: true, // Split CSS into separate files
-        sourcemap: process.env.NODE_ENV === 'development',
-        minify: 'terser',
-        terserOptions: {
-            compress: {
-                drop_console: process.env.NODE_ENV === 'production',
-                drop_debugger: process.env.NODE_ENV === 'production',
-            },
-        },
-    },
-    // Performance optimizations
-    optimizeDeps: {
-        include: [
-            'vue',
-            '@inertiajs/vue3',
-            '@headlessui/vue',
-            '@heroicons/vue',
+          // Utility libraries
+          utils: [
             'lodash-es',
             'date-fns',
-            'clsx',
-            'leaflet'
-        ],
-        exclude: [
-            // Exclude large libraries that should be loaded on demand
-            'chart.js',
-            'elasticsearch',
-            'pdf-lib'
-        ]
-    },
-    // Tree shaking configuration
-    esbuild: {
-        treeShaking: true,
-        // Remove console.log in production
-        drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-    },
-    // Server configuration for development
-    server: {
-        host: '127.0.0.1', // Use 127.0.0.1 to match Laravel
-        port: 5100,
-        strictPort: true,
-        hmr: {
-            overlay: false,
-            port: 5100,
-            host: '127.0.0.1'
+            'numeral'
+          ],
+
+          // UI Components
+          ui: [
+            '@headlessui/vue',
+            'lucide-vue-next',
+            '@floating-ui/vue'
+          ],
+
+          // Performance monitoring
+          performance: [
+            'web-vitals'
+          ]
         },
-        cors: {
-            origin: ['http://127.0.0.1:8080', 'http://localhost:8080'],
-            credentials: true
+
+        // Code splitting for large components
+        chunkFileNames: (chunkInfo) => {
+          const facadeModuleId = chunkInfo.facadeModuleId
+            ? chunkInfo.facadeModuleId.split('/').pop()?.replace(/\.\w+$/, '')
+            : null
+
+          // Split large component libraries into separate chunks
+          if (facadeModuleId && facadeModuleId.includes('ComponentLibrary')) {
+            return `js/components-${facadeModuleId}.[hash].js`
+          }
+
+          // Admin pages chunk
+          if (facadeModuleId && facadeModuleId.includes('Admin')) {
+            return 'js/admin-[hash].js'
+          }
+
+          // Analytics components chunk
+          if (facadeModuleId && facadeModuleId.includes('Analytics')) {
+            return 'js/analytics-[hash].js'
+          }
+
+          // Default chunk naming
+          return 'js/[name]-[hash].js'
         },
-        origin: 'http://127.0.0.1:5100',
-        watch: {
-            usePolling: true
+
+        // Asset chunk naming
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.') ?? []
+          const extType = info[info.length - 1] ?? ''
+
+          // Images - optimized paths
+          if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name ?? '')) {
+            return `images/[name].[hash][extname]`
+          }
+
+          // Fonts - optimized paths
+          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name ?? '')) {
+            return `fonts/[name].[hash][extname]`
+          }
+
+          // CSS chunks
+          if (/\.css$/.test(assetInfo.name ?? '')) {
+            return `css/[name]-[hash][extname]`
+          }
+
+          return `[ext]/${extType}/[name]-[hash][extname]`
         }
-    }
-});
+      }
+    },
+
+    // Bundle optimization settings
+    chunkSizeWarningLimit: 1000, // Increase to reduce warnings
+    minify: 'esbuild',
+    cssMinify: true,
+    sourcemap: process.env.NODE_ENV === 'development',
+    target: 'es2015', // Target modern browsers
+
+    // Compression
+    reportCompressedSize: false, // Speed up builds in dev
+  },
+
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'resources/js'),
+      '@components': resolve(__dirname, 'resources/js/components'),
+      '@pages': resolve(__dirname, 'resources/js/Pages'),
+      '@services': resolve(__dirname, 'resources/js/services'),
+    },
+  },
+
+  server: {
+    hmr: {
+      host: 'localhost',
+    },
+  },
+
+  optimizeDeps: {
+    include: [
+      'vue',
+      '@inertiajs/vue3',
+      'axios',
+      '@headlessui/vue',
+      'lucide-vue-next',
+      'web-vitals'
+    ],
+    exclude: [
+      // Exclude large libraries from pre-bundling
+      'tinymce'
+    ]
+  },
+
+  css: {
+    postcss: './postcss.config.js',
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@import "resources/css/variables.scss";`,
+      },
+    },
+  },
+})

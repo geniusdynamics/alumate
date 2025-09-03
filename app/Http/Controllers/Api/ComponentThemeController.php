@@ -6,16 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ComponentThemeRequest;
 use App\Http\Resources\ComponentThemeResource;
 use App\Models\ComponentTheme;
-use App\Services\GrapeJSThemeService;
+use App\Services\ComponentThemeService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class ComponentThemeController extends Controller
 {
     public function __construct(
-        private GrapeJSThemeService $grapeJSThemeService
+        private ComponentThemeService $themeService
     ) {}
 
     /**
@@ -23,16 +24,15 @@ class ComponentThemeController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $themes = ComponentTheme::forTenant(Auth::user()->tenant_id)
-            ->when($request->search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
-            })
-            ->when($request->is_default !== null, function ($query) use ($request) {
-                $query->where('is_default', $request->boolean('is_default'));
-            })
-            ->orderBy('is_default', 'desc')
-            ->orderBy('name')
-            ->paginate($request->per_page ?? 15);
+        $themes = $this->themeService->getThemesForTenant(Auth::user()->tenant_id, [
+            'search' => $request->search,
+            'is_default' => $request->is_default,
+            'include_inactive' => $request->include_inactive,
+            'sort_by' => $request->sort_by,
+            'sort_direction' => $request->sort_direction,
+            'created_after' => $request->created_after,
+            'created_before' => $request->created_before,
+        ], $request->per_page ?? 15);
 
         return response()->json([
             'themes' => ComponentThemeResource::collection($themes->items()),
@@ -46,44 +46,15 @@ class ComponentThemeController extends Controller
     }
 
     /**
-     * Get themes formatted for GrapeJS integration
-     */
-    public function grapeJSIndex(): JsonResponse
-    {
-        $themes = $this->grapeJSThemeService->getThemesForGrapeJS(Auth::user()->tenant_id);
-
-        return response()->json([
-            'themes' => $themes,
-            'default_theme' => $themes->firstWhere('isDefault', true)
-        ]);
-    }
-
-    /**
      * Store a newly created theme
      */
     public function store(ComponentThemeRequest $request): JsonResponse
     {
-        $theme = ComponentTheme::create([
-            'tenant_id' => Auth::user()->tenant_id,
-            'name' => $request->name,
-            'slug' => str($request->name)->slug(),
-            'config' => $request->config,
-            'is_default' => $request->boolean('is_default', false),
-        ]);
-
-        // If this is set as default, unset other default themes
-        if ($theme->is_default) {
-            ComponentTheme::forTenant(Auth::user()->tenant_id)
-                ->where('id', '!=', $theme->id)
-                ->update(['is_default' => false]);
-        }
-
-        // Clear theme cache
-        $this->grapeJSThemeService->clearThemeCache($theme);
+        $theme = $this->themeService->createTheme($request->validated(), Auth::user()->tenant_id);
 
         return response()->json([
             'theme' => new ComponentThemeResource($theme),
-            'grapejs_data' => $this->grapeJSThemeService->exportForGrapeJS($theme)
+            'message' => 'Theme created successfully'
         ], 201);
     }
 
@@ -95,8 +66,7 @@ class ComponentThemeController extends Controller
         $this->authorize('view', $theme);
 
         return response()->json([
-            'theme' => new ComponentThemeResource($theme),
-            'grapejs_data' => $this->grapeJSThemeService->exportForGrapeJS($theme)
+            'theme' => new ComponentThemeResource($theme)
         ]);
     }
 
@@ -107,26 +77,16 @@ class ComponentThemeController extends Controller
     {
         $this->authorize('update', $theme);
 
-        $theme->update([
-            'name' => $request->name,
-            'slug' => str($request->name)->slug(),
-            'config' => $request->config,
-            'is_default' => $request->boolean('is_default', false),
-        ]);
+        $theme = $this->themeService->updateTheme($theme, $request->validated());
 
-        // If this is set as default, unset other default themes
-        if ($theme->is_default) {
-            ComponentTheme::forTenant(Auth::user()->tenant_id)
-                ->where('id', '!=', $theme->id)
-                ->update(['is_default' => false]);
-        }
-
-        // Clear theme cache
-        $this->grapeJSThemeService->clearThemeCache($theme);
+        // Clear related caches
+        Cache::forget("theme_{$theme->id}");
+        Cache::forget("theme_css_{$theme->id}");
+        Cache::forget("theme_components_{$theme->id}");
 
         return response()->json([
             'theme' => new ComponentThemeResource($theme),
-            'grapejs_data' => $this->grapeJSThemeService->exportForGrapeJS($theme)
+            'message' => 'Theme updated successfully'
         ]);
     }
 
@@ -137,29 +97,25 @@ class ComponentThemeController extends Controller
     {
         $this->authorize('delete', $theme);
 
-        // Prevent deletion of default theme if it's the only one
+        // Check if theme can be deleted (not default theme and not in use)
         if ($theme->is_default) {
-            $otherThemes = ComponentTheme::forTenant(Auth::user()->tenant_id)
-                ->where('id', '!=', $theme->id)
-                ->exists();
-
-            if (!$otherThemes) {
-                return response()->json([
-                    'message' => 'Cannot delete the only theme. Create another theme first.'
-                ], 422);
-            }
-
-            // Set another theme as default
-            ComponentTheme::forTenant(Auth::user()->tenant_id)
-                ->where('id', '!=', $theme->id)
-                ->first()
-                ->update(['is_default' => true]);
+            return response()->json([
+                'message' => 'Cannot delete default theme. Set another theme as default first.'
+            ], 422);
         }
 
-        // Clear theme cache
-        $this->grapeJSThemeService->clearThemeCache($theme);
+        if ($theme->components()->exists()) {
+            return response()->json([
+                'message' => 'Cannot delete theme with associated components. Remove associations first.'
+            ], 422);
+        }
 
-        $theme->delete();
+        $this->themeService->deleteTheme($theme);
+
+        // Clear related caches
+        Cache::forget("theme_{$theme->id}");
+        Cache::forget("theme_css_{$theme->id}");
+        Cache::forget("theme_components_{$theme->id}");
 
         return response()->json(['message' => 'Theme deleted successfully']);
     }
@@ -167,21 +123,19 @@ class ComponentThemeController extends Controller
     /**
      * Duplicate an existing theme
      */
-    public function duplicate(ComponentTheme $theme): JsonResponse
+    public function duplicate(ComponentTheme $theme, Request $request): JsonResponse
     {
         $this->authorize('view', $theme);
 
-        $duplicatedTheme = ComponentTheme::create([
-            'tenant_id' => Auth::user()->tenant_id,
-            'name' => $theme->name . ' (Copy)',
-            'slug' => str($theme->name . ' (Copy)')->slug(),
-            'config' => $theme->config,
-            'is_default' => false,
+        $request->validate([
+            'name' => 'required|string|max:255'
         ]);
 
+        $newTheme = $this->themeService->duplicateTheme($theme, $request->name);
+
         return response()->json([
-            'theme' => new ComponentThemeResource($duplicatedTheme),
-            'grapejs_data' => $this->grapeJSThemeService->exportForGrapeJS($duplicatedTheme)
+            'theme' => new ComponentThemeResource($newTheme),
+            'message' => 'Theme duplicated successfully'
         ], 201);
     }
 
@@ -193,137 +147,212 @@ class ComponentThemeController extends Controller
         $this->authorize('update', $theme);
 
         $request->validate([
-            'component_ids' => 'nullable|array',
+            'component_ids' => 'required|array',
             'component_ids.*' => 'exists:components,id'
         ]);
 
-        $appliedCount = $theme->applyToComponents($request->component_ids ?? []);
+        $results = $this->themeService->applyTheme($theme, $request->component_ids);
 
-        return response()->json([
-            'message' => "Theme applied to {$appliedCount} components",
-            'applied_count' => $appliedCount
-        ]);
-    }
-
-    /**
-     * Import theme from various sources
-     */
-    public function import(Request $request): JsonResponse
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'source' => 'required|string|in:json,file,url,grapejs',
-            'config' => 'required|array',
-            'grapejs_config' => 'nullable|array'
-        ]);
-
-        $config = $request->config;
-
-        // If importing from GrapeJS, convert the configuration
-        if ($request->source === 'grapejs' && $request->grapejs_config) {
-            $config = $this->grapeJSThemeService->convertFromGrapeJSStyles($request->grapejs_config);
+        // Clear related caches
+        foreach ($request->component_ids as $componentId) {
+            Cache::forget("component_{$componentId}");
         }
 
-        $theme = ComponentTheme::create([
-            'tenant_id' => Auth::user()->tenant_id,
-            'name' => $request->name,
-            'slug' => str($request->name)->slug(),
-            'config' => $config,
-            'is_default' => false,
-        ]);
-
         return response()->json([
-            'theme' => new ComponentThemeResource($theme),
-            'grapejs_data' => $this->grapeJSThemeService->exportForGrapeJS($theme)
-        ], 201);
+            'message' => 'Theme applied successfully',
+            'applied_count' => $results['applied_count'],
+            'skipped_count' => $results['skipped_count']
+        ]);
     }
 
     /**
-     * Export theme in various formats
+     * Get theme preview with compiled CSS
      */
-    public function export(ComponentTheme $theme, Request $request): JsonResponse
+    public function preview(ComponentTheme $theme, Request $request): JsonResponse
     {
         $this->authorize('view', $theme);
 
-        $format = $request->query('format', 'json');
+        $componentIds = $request->get('component_ids', []);
+        $previewData = $this->themeService->generatePreview($theme, $componentIds);
 
-        switch ($format) {
-            case 'grapejs':
-                $data = $this->grapeJSThemeService->exportForGrapeJS($theme);
-                break;
-            case 'css':
-                $data = [
-                    'css' => $theme->compileToCss(),
-                    'variables' => $theme->generateCssVariables()
-                ];
-                break;
-            case 'tailwind':
-                $data = [
-                    'mappings' => $this->grapeJSThemeService->generateTailwindMappings($theme),
-                    'config' => $theme->config
-                ];
-                break;
-            default:
-                $data = [
-                    'theme' => new ComponentThemeResource($theme),
-                    'config' => $theme->config,
-                    'exported_at' => now()->toISOString()
-                ];
+        // Cache the preview for performance
+        $cacheKey = "theme_preview_{$theme->id}_" . md5(serialize($componentIds));
+        $cachedPreview = Cache::get($cacheKey);
+
+        if ($cachedPreview) {
+            return response()->json($cachedPreview);
         }
 
-        return response()->json($data);
+        Cache::put($cacheKey, $previewData, now()->addHours(1));
+
+        return response()->json($previewData);
     }
 
     /**
-     * Get theme preview HTML
+     * Generate CSS compilation for theme
      */
-    public function preview(ComponentTheme $theme): JsonResponse
+    public function compile(ComponentTheme $theme): JsonResponse
     {
         $this->authorize('view', $theme);
 
-        $previewHtml = $theme->generatePreviewHtml();
-        $accessibilityIssues = $theme->checkAccessibility();
-        $compatibilityIssues = $this->grapeJSThemeService->validateGrapeJSCompatibility($theme);
+        $css = $this->themeService->compileCss($theme);
 
         return response()->json([
-            'html' => $previewHtml,
-            'accessibility_issues' => $accessibilityIssues,
-            'compatibility_issues' => $compatibilityIssues,
-            'css_variables' => $this->grapeJSThemeService->generateGrapeJSCssVariables($theme)
+            'css' => $css,
+            'theme_id' => $theme->id,
+            'compiled_at' => now()->toISOString()
         ]);
     }
 
     /**
      * Validate theme configuration
      */
-    public function validate(Request $request): JsonResponse
+    public function validateConfig(ComponentTheme $theme, Request $request): JsonResponse
     {
+        $this->authorize('view', $theme);
+
         $request->validate([
             'config' => 'required|array'
         ]);
 
-        try {
-            // Create a temporary theme instance for validation
-            $tempTheme = new ComponentTheme([
-                'config' => $request->config
-            ]);
+        $validationResult = $this->themeService->validateThemeConfig($request->config);
 
-            $tempTheme->validateConfig($request->config);
-            $accessibilityIssues = $tempTheme->checkAccessibility();
-            $compatibilityIssues = $this->grapeJSThemeService->validateGrapeJSCompatibility($tempTheme);
+        return response()->json([
+            'valid' => $validationResult['valid'],
+            'errors' => $validationResult['errors'] ?? [],
+            'warnings' => $validationResult['warnings'] ?? [],
+            'message' => $validationResult['valid']
+                ? 'Theme configuration is valid'
+                : 'Theme configuration has issues'
+        ], $validationResult['valid'] ? 200 : 422);
+    }
 
+    /**
+     * Get theme inheritance chain
+     */
+    public function inheritance(ComponentTheme $theme): JsonResponse
+    {
+        $this->authorize('view', $theme);
+
+        $inheritanceChain = $theme->getInheritanceChain();
+
+        return response()->json([
+            'theme' => $theme->only(['id', 'name', 'slug', 'is_default']),
+            'inheritance_chain' => $inheritanceChain,
+            'merged_config' => $theme->getMergedConfig()
+        ]);
+    }
+
+    /**
+     * Override theme settings
+     */
+    public function override(ComponentTheme $theme, Request $request): JsonResponse
+    {
+        $this->authorize('update', $theme);
+
+        $request->validate([
+            'overrides' => 'required|array',
+            'overrides.*' => 'array'
+        ]);
+
+        $originalConfig = $theme->config;
+        $theme->config = array_merge($theme->config, $request->overrides);
+        $theme->save();
+
+        // Create backup of original config
+        $backupPath = "themes/backups/override_{$theme->id}_" . now()->format('Y_m_d_H_i_s');
+        Storage::put($backupPath . '.json', json_encode([
+            'theme_id' => $theme->id,
+            'original_config' => $originalConfig,
+            'overrides' => $request->overrides,
+            'backed_up_at' => now()->toISOString()
+        ]));
+
+        // Clear caches
+        Cache::forget("theme_{$theme->id}");
+        Cache::forget("theme_css_{$theme->id}");
+
+        return response()->json([
+            'theme' => new ComponentThemeResource($theme),
+            'message' => 'Theme overrides applied successfully',
+            'backup_path' => $backupPath
+        ]);
+    }
+
+    /**
+     * Set theme as default
+     */
+    public function setDefault(ComponentTheme $theme): JsonResponse
+    {
+        $this->authorize('update', $theme);
+
+        $this->themeService->setAsDefault($theme);
+
+        return response()->json([
+            'theme' => new ComponentThemeResource($theme),
+            'message' => 'Theme set as default successfully'
+        ]);
+    }
+
+    /**
+     * Create backup of theme
+     */
+    public function backup(ComponentTheme $theme): JsonResponse
+    {
+        $this->authorize('view', $theme);
+
+        $backupPath = $this->themeService->backupTheme($theme);
+
+        return response()->json([
+            'backup_path' => $backupPath,
+            'message' => 'Theme backup created successfully'
+        ]);
+    }
+
+    /**
+     * Restore theme from backup
+     */
+    public function restore(Request $request): JsonResponse
+    {
+        $request->validate([
+            'backup_path' => 'required|string|regex:/^themes\/backups\//'
+        ]);
+
+        if (!Storage::exists($request->backup_path . '.json')) {
             return response()->json([
-                'valid' => true,
-                'accessibility_issues' => $accessibilityIssues,
-                'compatibility_issues' => $compatibilityIssues,
-                'css_variables' => $this->grapeJSThemeService->generateGrapeJSCssVariables($tempTheme)
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'valid' => false,
-                'errors' => [$e->getMessage()]
-            ], 422);
+                'message' => 'Backup file not found'
+            ], 404);
         }
+
+        $backupData = json_decode(Storage::get($request->backup_path . '.json'), true);
+
+        // Validate backup belongs to current tenant
+        if (!isset($backupData['theme_id'])) {
+            $themeId = $backupData['theme_id']; // Adjust based on backup structure
+            $theme = ComponentTheme::forTenant(Auth::user()->tenant_id)->find($themeId);
+        } else {
+            $theme = ComponentTheme::forTenant(Auth::user()->tenant_id)->find($backupData['theme_id']);
+        }
+
+        if (!$theme) {
+            return response()->json([
+                'message' => 'Theme not found or access denied'
+            ], 404);
+        }
+
+        $this->authorize('update', $theme);
+
+        $theme->config = $backupData['original_config'];
+        $theme->save();
+
+        // Clear caches
+        Cache::forget("theme_{$theme->id}");
+        Cache::forget("theme_css_{$theme->id}");
+
+        return response()->json([
+            'theme' => new ComponentThemeResource($theme),
+            'message' => 'Theme restored from backup successfully'
+        ]);
     }
 
     /**
@@ -333,21 +362,113 @@ class ComponentThemeController extends Controller
     {
         $this->authorize('view', $theme);
 
-        $componentCount = $theme->components()->count();
-        $pageCount = $theme->components()
-            ->with('instances')
-            ->get()
-            ->pluck('instances')
-            ->flatten()
-            ->pluck('page_id')
-            ->unique()
-            ->count();
+        $stats = $this->themeService->getThemeUsageStats($theme);
 
         return response()->json([
-            'component_count' => $componentCount,
-            'page_count' => $pageCount,
-            'is_default' => $theme->is_default,
-            'last_used' => $theme->updated_at
+            'stats' => $stats,
+            'theme' => $theme->only(['id', 'name', 'slug'])
+        ]);
+    }
+
+    /**
+     * Bulk operations on themes
+     */
+    public function bulk(Request $request): JsonResponse
+    {
+        $request->validate([
+            'action' => 'required|string|in:delete,set_default,export',
+            'theme_ids' => 'required|array|min:1',
+            'theme_ids.*' => 'exists:component_themes,id'
+        ]);
+
+        $themes = ComponentTheme::forTenant(Auth::user()->tenant_id)
+            ->whereIn('id', $request->theme_ids)
+            ->get();
+
+        $results = [];
+        $successCount = 0;
+        $errorCount = 0;
+
+        if ($request->action === 'export') {
+            $exportData = $this->themeService->bulkExportThemes($themes);
+            return response()->json([
+                'themes' => $exportData,
+                'count' => $themes->count(),
+                'exported_at' => now()->toISOString()
+            ]);
+        }
+
+        foreach ($themes as $theme) {
+            try {
+                switch ($request->action) {
+                    case 'delete':
+                        if (!$theme->is_default && !$theme->components()->exists()) {
+                            $this->themeService->deleteTheme($theme);
+                            $results[] = ['id' => $theme->id, 'status' => 'deleted'];
+                            $successCount++;
+                        } else {
+                            $results[] = ['id' => $theme->id, 'status' => 'skipped'];
+                            $errorCount++;
+                        }
+                        break;
+
+                    case 'set_default':
+                        // Can only have one default theme, so only set first theme as default
+                        if ($successCount === 0) {
+                            $this->themeService->setAsDefault($theme);
+                            $results[] = ['id' => $theme->id, 'status' => 'set_default'];
+                            $successCount++;
+                        } else {
+                            $results[] = ['id' => $theme->id, 'status' => 'skipped', 'reason' => 'Already set default'];
+                        }
+                        break;
+                }
+            } catch (\Exception $e) {
+                $results[] = ['id' => $theme->id, 'status' => 'error', 'message' => $e->getMessage()];
+                $errorCount++;
+            }
+        }
+
+        return response()->json([
+            'message' => "Bulk {$request->action} operation completed",
+            'results' => $results,
+            'summary' => [
+                'success' => $successCount,
+                'errors' => $errorCount,
+                'total' => count($themes)
+            ]
+        ]);
+    }
+
+    /**
+     * Export themes in various formats
+     */
+    public function export(Request $request): JsonResponse
+    {
+        $request->validate([
+            'format' => 'string|in:json,tailwind,css',
+            'theme_ids' => 'nullable|array',
+            'theme_ids.*' => 'exists:component_themes,id'
+        ]);
+
+        $format = $request->get('format', 'json');
+        $themeIds = $request->get('theme_ids', []);
+
+        if (!empty($themeIds)) {
+            $themes = ComponentTheme::forTenant(Auth::user()->tenant_id)
+                ->whereIn('id', $themeIds)
+                ->get();
+        } else {
+            $themes = ComponentTheme::forTenant(Auth::user()->tenant_id)->get();
+        }
+
+        $exportData = $this->themeService->exportThemes($themes, $format);
+
+        return response()->json([
+            'themes' => $exportData,
+            'format' => $format,
+            'exported_at' => now()->toISOString(),
+            'count' => $themes->count()
         ]);
     }
 
@@ -358,15 +479,14 @@ class ComponentThemeController extends Controller
     {
         $this->authorize('view', $theme);
 
-        $cacheKey = "theme_data_{$theme->id}";
-        
+        $cacheKey = "theme_{$theme->id}";
+
         $data = Cache::remember($cacheKey, now()->addHours(24), function () use ($theme) {
             return [
                 'theme' => new ComponentThemeResource($theme),
-                'grapejs_data' => $this->grapeJSThemeService->exportForGrapeJS($theme),
-                'css_variables' => $this->grapeJSThemeService->generateGrapeJSCssVariables($theme),
-                'tailwind_mappings' => $this->grapeJSThemeService->generateTailwindMappings($theme),
-                'accessibility_check' => $theme->checkAccessibility(),
+                'css' => $theme->compileToCss(),
+                'merged_config' => $theme->getMergedConfig(),
+                'inheritance_chain' => $theme->getInheritanceChain(),
                 'cached_at' => now()->toISOString()
             ];
         });
@@ -381,61 +501,11 @@ class ComponentThemeController extends Controller
     {
         $this->authorize('update', $theme);
 
-        $this->grapeJSThemeService->clearThemeCache($theme);
-        Cache::forget("theme_data_{$theme->id}");
+        Cache::forget("theme_{$theme->id}");
+        Cache::forget("theme_css_{$theme->id}");
+        Cache::forget("theme_preview_{$theme->id}");
+        Cache::forget("theme_components_{$theme->id}");
 
         return response()->json(['message' => 'Theme cache cleared successfully']);
-    }
-
-    /**
-     * Bulk operations on themes
-     */
-    public function bulk(Request $request): JsonResponse
-    {
-        $request->validate([
-            'action' => 'required|string|in:delete,export,apply',
-            'theme_ids' => 'required|array|min:1',
-            'theme_ids.*' => 'exists:component_themes,id'
-        ]);
-
-        $themes = ComponentTheme::forTenant(Auth::user()->tenant_id)
-            ->whereIn('id', $request->theme_ids)
-            ->get();
-
-        $results = [];
-
-        foreach ($themes as $theme) {
-            switch ($request->action) {
-                case 'delete':
-                    if (!$theme->is_default || $themes->count() > 1) {
-                        $this->grapeJSThemeService->clearThemeCache($theme);
-                        $theme->delete();
-                        $results[] = ['id' => $theme->id, 'status' => 'deleted'];
-                    } else {
-                        $results[] = ['id' => $theme->id, 'status' => 'skipped', 'reason' => 'Cannot delete default theme'];
-                    }
-                    break;
-                case 'export':
-                    $results[] = [
-                        'id' => $theme->id,
-                        'status' => 'exported',
-                        'data' => $this->grapeJSThemeService->exportForGrapeJS($theme)
-                    ];
-                    break;
-                case 'apply':
-                    $appliedCount = $theme->applyToComponents();
-                    $results[] = [
-                        'id' => $theme->id,
-                        'status' => 'applied',
-                        'applied_count' => $appliedCount
-                    ];
-                    break;
-            }
-        }
-
-        return response()->json([
-            'message' => "Bulk {$request->action} completed",
-            'results' => $results
-        ]);
     }
 }

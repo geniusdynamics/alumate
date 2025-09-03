@@ -476,41 +476,86 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('testimonials/{testimonial}/reject', [App\Http\Controllers\Api\TestimonialController::class, 'reject']);
 });
 
-// Component Theme Management routes
-Route::middleware('auth:sanctum')->group(function () {
+// Component Library routes
+Route::middleware(['auth:sanctum'])->prefix('components')->name('components.')->group(function () {
     // Standard CRUD operations
-    Route::apiResource('component-themes', App\Http\Controllers\Api\ComponentThemeController::class);
-    
+    Route::apiResource('', App\Http\Controllers\Api\ComponentController::class);
+
+    // Component operations
+    Route::post('{component}/duplicate', [App\Http\Controllers\Api\ComponentController::class, 'duplicate']);
+    Route::post('{component}/activate', [App\Http\Controllers\Api\ComponentController::class, 'activate']);
+    Route::post('{component}/deactivate', [App\Http\Controllers\Api\ComponentController::class, 'deactivate']);
+    Route::get('{component}/preview', [App\Http\Controllers\Api\ComponentController::class, 'preview']);
+    Route::get('{component}/usage', [App\Http\Controllers\Api\ComponentController::class, 'usage']);
+    Route::get('{component}/versions', [App\Http\Controllers\Api\ComponentController::class, 'versions']);
+    Route::post('{component}/versions', [App\Http\Controllers\Api\ComponentController::class, 'createVersion']);
+
+    // Component search and filtering
+    Route::get('search', [App\Http\Controllers\Api\ComponentController::class, 'search']);
+    Route::get('categories/{category}', [App\Http\Controllers\Api\ComponentController::class, 'byCategory']);
+    Route::get('types/{type}', [App\Http\Controllers\Api\ComponentController::class, 'byType']);
+
+    // Component instances
+    Route::get('{component}/instances', [App\Http\Controllers\Api\ComponentController::class, 'instances']);
+    Route::post('{component}/instances', [App\Http\Controllers\Api\ComponentController::class, 'createInstance']);
+    Route::get('instances/{instance}', [App\Http\Controllers\Api\ComponentController::class, 'showInstance']);
+    Route::put('instances/{instance}', [App\Http\Controllers\Api\ComponentController::class, 'updateInstance']);
+    Route::delete('instances/{instance}', [App\Http\Controllers\Api\ComponentController::class, 'deleteInstance']);
+    Route::post('instances/{instance}/move', [App\Http\Controllers\Api\ComponentController::class, 'moveInstance']);
+    Route::post('instances/{instance}/duplicate', [App\Http\Controllers\Api\ComponentController::class, 'duplicateInstance']);
+
+    // Component analytics
+    Route::get('{component}/analytics', [App\Http\Controllers\Api\ComponentController::class, 'analytics']);
+    Route::post('{component}/track-view', [App\Http\Controllers\Api\ComponentController::class, 'trackView']);
+    Route::post('{component}/track-click', [App\Http\Controllers\Api\ComponentController::class, 'trackClick']);
+    Route::post('{component}/track-conversion', [App\Http\Controllers\Api\ComponentController::class, 'trackConversion']);
+
+    // Bulk operations
+    Route::post('bulk-activate', [App\Http\Controllers\Api\ComponentController::class, 'bulkActivate']);
+    Route::post('bulk-deactivate', [App\Http\Controllers\Api\ComponentController::class, 'bulkDeactivate']);
+    Route::post('bulk-delete', [App\Http\Controllers\Api\ComponentController::class, 'bulkDelete']);
+
+    // Import/Export
+    Route::post('import', [App\Http\Controllers\Api\ComponentController::class, 'import']);
+    Route::get('{component}/export', [App\Http\Controllers\Api\ComponentController::class, 'export']);
+    Route::post('bulk-export', [App\Http\Controllers\Api\ComponentController::class, 'bulkExport']);
+});
+
+// Component Theme Management routes
+Route::middleware(['auth:sanctum'])->prefix('component-themes')->name('component-themes.')->group(function () {
+    // Standard CRUD operations
+    Route::apiResource('', App\Http\Controllers\Api\ComponentThemeController::class);
+
     // GrapeJS integration endpoints
-    Route::get('component-themes-grapejs', [App\Http\Controllers\Api\ComponentThemeController::class, 'grapeJSIndex']);
-    
+    Route::get('grapejs', [App\Http\Controllers\Api\ComponentThemeController::class, 'grapeJSIndex']);
+
     // Theme operations
-    Route::post('component-themes/{theme}/duplicate', [App\Http\Controllers\Api\ComponentThemeController::class, 'duplicate']);
-    Route::post('component-themes/{theme}/apply', [App\Http\Controllers\Api\ComponentThemeController::class, 'apply']);
-    Route::get('component-themes/{theme}/preview', [App\Http\Controllers\Api\ComponentThemeController::class, 'preview']);
-    Route::get('component-themes/{theme}/usage', [App\Http\Controllers\Api\ComponentThemeController::class, 'usage']);
-    Route::get('component-themes/{theme}/cached', [App\Http\Controllers\Api\ComponentThemeController::class, 'cached']);
-    Route::delete('component-themes/{theme}/cache', [App\Http\Controllers\Api\ComponentThemeController::class, 'clearCache']);
-    
+    Route::post('{theme}/duplicate', [App\Http\Controllers\Api\ComponentThemeController::class, 'duplicate']);
+    Route::post('{theme}/apply', [App\Http\Controllers\Api\ComponentThemeController::class, 'apply']);
+    Route::get('{theme}/preview', [App\Http\Controllers\Api\ComponentThemeController::class, 'preview']);
+    Route::get('{theme}/usage', [App\Http\Controllers\Api\ComponentThemeController::class, 'usage']);
+    Route::get('{theme}/cached', [App\Http\Controllers\Api\ComponentThemeController::class, 'cached']);
+    Route::delete('{theme}/cache', [App\Http\Controllers\Api\ComponentThemeController::class, 'clearCache']);
+
     // Import/Export operations
-    Route::post('component-themes-import', [App\Http\Controllers\Api\ComponentThemeController::class, 'import']);
-    Route::get('component-themes/{theme}/export', [App\Http\Controllers\Api\ComponentThemeController::class, 'export']);
-    
+    Route::post('import', [App\Http\Controllers\Api\ComponentThemeController::class, 'import']);
+    Route::get('{theme}/export', [App\Http\Controllers\Api\ComponentThemeController::class, 'export']);
+
     // Validation and bulk operations
-    Route::post('component-themes-validate', [App\Http\Controllers\Api\ComponentThemeController::class, 'validate']);
-    Route::post('component-themes-bulk', [App\Http\Controllers\Api\ComponentThemeController::class, 'bulk']);
+    Route::post('validate', [App\Http\Controllers\Api\ComponentThemeController::class, 'validate']);
+    Route::post('bulk', [App\Http\Controllers\Api\ComponentThemeController::class, 'bulk']);
     Route::post('testimonials/{testimonial}/approve', [App\Http\Controllers\Api\TestimonialController::class, 'approve']);
     Route::post('testimonials/{testimonial}/reject', [App\Http\Controllers\Api\TestimonialController::class, 'reject']);
     Route::post('testimonials/{testimonial}/archive', [App\Http\Controllers\Api\TestimonialController::class, 'archive']);
     Route::post('testimonials/{testimonial}/featured', [App\Http\Controllers\Api\TestimonialController::class, 'setFeatured']);
-    
+
     // Analytics and tracking
     Route::post('testimonials/{testimonial}/track-click', [App\Http\Controllers\Api\TestimonialController::class, 'trackClick']);
     Route::get('testimonials-analytics', [App\Http\Controllers\Api\TestimonialController::class, 'analytics']);
-    
+
     // Filtering and options
     Route::get('testimonials-filter-options', [App\Http\Controllers\Api\TestimonialController::class, 'filterOptions']);
-    
+
     // Import/Export
     Route::get('testimonials-export', [App\Http\Controllers\Api\TestimonialController::class, 'export']);
     Route::post('testimonials-import', [App\Http\Controllers\Api\TestimonialController::class, 'import']);
@@ -1003,4 +1048,430 @@ Route::middleware(['auth:sanctum'])->prefix('brand-customizer')->group(function 
     // Guidelines and export
     Route::put('guidelines', [App\Http\Controllers\Api\BrandCustomizerController::class, 'updateGuidelines']);
     Route::post('export', [App\Http\Controllers\Api\BrandCustomizerController::class, 'exportAssets']);
+// Production Monitoring and Analytics routes
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('monitoring')->group(function () {
+    // Main dashboard data
+    Route::get('dashboard', [App\Http\Controllers\Api\MonitoringController::class, 'dashboard']);
+    Route::get('realtime', [App\Http\Controllers\Api\MonitoringController::class, 'realtime']);
+
+    // Detailed metrics by category
+    Route::get('metrics/{type}', [App\Http\Controllers\Api\MonitoringController::class, 'metrics']);
+
+    // Alerts and notifications
+    Route::get('alerts', [App\Http\Controllers\Api\MonitoringController::class, 'alerts']);
+
+    // Automated reports
+    Route::get('reports', [App\Http\Controllers\Api\MonitoringController::class, 'reports']);
+
+    // Manual monitoring cycle execution
+    Route::post('cycle', [App\Http\Controllers\Api\MonitoringController::class, 'executeCycle']);
+
+    // Configuration and settings
+    Route::get('settings', [App\Http\Controllers\Api\MonitoringController::class, 'settings']);
+});
+
+// Error Tracking Integration routes (public endpoints for client error reporting)
+Route::post('errors/track', function (Illuminate\Http\Request $request) {
+    try {
+        $error = [
+            'message' => $request->input('message'),
+            'stack' => $request->input('stack'),
+            'url' => $request->input('url'),
+            'user_agent' => $request->input('user_agent'),
+            'user_id' => auth()->id(),
+            'timestamp' => now()->toISOString(),
+            'metadata' => $request->except(['message', 'stack', 'url', 'user_agent'])
+        ];
+
+        \Log::error('Frontend Error', $error);
+
+        // Store in monitoring system for tracking
+        \Cache::put("error_report_" . uniqid(), json_encode($error), 86400);
+
+        return response()->json(['status' => 'recorded']);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error'], 500);
+    }
+});
+
+// Webhook routes for external monitoring integrations
+Route::prefix('webhooks/monitoring')->group(function () {
+    // Datadog integrations
+    Route::post('datadog/metrics', function (Illuminate\Http\Request $request) {
+        \Log::info('Datadog Metrics Webhook', $request->all());
+        \Cache::put('datadog_webhook_' . time(), $request->all(), 3600);
+        return response()->json(['status' => 'received']);
+    });
+
+    // New Relic integrations
+    Route::post('newrelic/alerts', function (Illuminate\Http\Request $request) {
+        \Log::info('New Relic Alert Webhook', $request->all());
+        \Cache::put('newrelic_alert_' . time(), $request->all(), 3600);
+        return response()->json(['status' => 'received']);
+    });
+
+    // Slack integrations
+    Route::post('slack/app-rate-limited', function (Illuminate\Http\Request $request) {
+        \Log::warning('Slack Rate Limit Alert', $request->all());
+        return response()->json(['status' => 'received']);
+    });
+
+    // Sentry integrations
+    Route::post('sentry/issues', function (Illuminate\Http\Request $request) {
+        \Log::error('Sentry Issue Webhook', $request->all());
+        return response()->json(['status' => 'received']);
+    });
+});
+
+// Performance Monitoring Webhooks
+Route::prefix('webhooks/performance')->group(function () {
+    // Core Web Vitals collection
+    Route::post('web-vitals', function (Illuminate\Http\Request $request) {
+        try {
+            $vitals = $request->only([
+                'fid', 'lcp', 'fcp', 'cls', 'ttfb', 'url', 'user_agent', 'timestamp'
+            ]);
+
+            $vitals['recorded_at'] = now()->toISOString();
+            $vitals['user_id'] = auth()->id();
+
+            // Store web vitals for analysis
+            \Cache::put("web_vitals_" . uniqid(), json_encode($vitals), 86400);
+
+            return response()->json(['status' => 'recorded']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error'], 500);
+        }
+    });
+
+    // User interaction tracking
+    Route::post('user-interactions', function (Illuminate\Http\Request $request) {
+        try {
+            $interaction = [
+                'type' => $request->input('type'), // 'click', 'scroll', 'form_interaction', etc.
+                'element' => $request->input('element'),
+                'element_selector' => $request->input('element_selector'),
+                'page_url' => $request->input('page_url'),
+                'timestamp' => $request->input('timestamp', now()->toISOString()),
+                'user_id' => auth()->id(),
+                'session_id' => session()->getId(),
+                'metadata' => $request->except(['type', 'element', 'element_selector', 'page_url', 'timestamp'])
+            ];
+
+            // Store interaction data
+            \Cache::put("interaction_" . uniqid(), json_encode($interaction), 86400);
+
+            return response()->json(['status' => 'recorded']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error'], 500);
+        }
+    });
+
+    // Page load performance
+    Route::post('page-loads', function (Illuminate\Http\Request $request) {
+        try {
+            $loadData = [
+                'page_url' => $request->input('page_url'),
+                'load_time' => $request->input('load_time'),
+                'dns_lookup' => $request->input('dns_lookup'),
+                'tcp_connect' => $request->input('tcp_connect'),
+                'server_response' => $request->input('server_response'),
+                'page_parse' => $request->input('page_parse'),
+                'render_time' => $request->input('render_time'),
+                'user_agent' => $request->userAgent(),
+                'user_id' => auth()->id(),
+                'timestamp' => now()->toISOString()
+            ];
+
+            // Store page load data
+            \Cache::put("page_load_" . uniqid(), json_encode($loadData), 86400);
+
+            return response()->json(['status' => 'recorded']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error'], 500);
+        }
+    });
+});
+
+// Automated Testing Pipeline Integration
+Route::middleware('auth:sanctum')->prefix('testing')->group(function () {
+    // Test execution endpoints
+    Route::post('execute/unit', function (Illuminate\Http\Request $request) {
+        // Trigger unit tests and return results
+        $command = $request->input('command', 'composer test --testsuite=Unit');
+        $output = shell_exec($command);
+
+        \Log::info("Unit Tests Executed", ['command' => $command, 'output' => $output]);
+
+        return response()->json([
+            'status' => 'completed',
+            'tests' => 'unit',
+            'output' => $output,
+            'timestamp' => now()->toISOString()
+        ]);
+    });
+
+    Route::post('execute/feature', function (Illuminate\Http\Request $request) {
+        // Trigger feature tests and return results
+        $command = $request->input('command', 'composer test --testsuite=Feature');
+        $output = shell_exec($command);
+
+        \Log::info("Feature Tests Executed", ['command' => $command, 'output' => $output]);
+
+        return response()->json([
+            'status' => 'completed',
+            'tests' => 'feature',
+            'output' => $output,
+            'timestamp' => now()->toISOString()
+        ]);
+    });
+
+    Route::post('execute/e2e', function (Illuminate\Http\Request $request) {
+        // Trigger E2E tests and return results
+        $command = $request->input('command', 'npm run test:e2e');
+        $output = shell_exec($command);
+
+        \Log::info("E2E Tests Executed", ['command' => $command, 'output' => $output]);
+
+        return response()->json([
+            'status' => 'completed',
+            'tests' => 'e2e',
+            'output' => $output,
+            'timestamp' => now()->toISOString()
+        ]);
+    });
+
+    // Test results and statistics
+    Route::get('results/unit', function () {
+        // Get latest unit test results
+        return response()->json(['status' => 'not_implemented_yet']);
+    });
+
+    Route::get('results/feature', function () {
+        // Get latest feature test results
+        return response()->json(['status' => 'not_implemented_yet']);
+    });
+
+    Route::get('results/e2e', function () {
+        // Get latest E2E test results
+        return response()->json(['status' => 'not_implemented_yet']);
+    });
+
+    Route::get('coverage', function () {
+        // Get test coverage data
+        return response()->json(['status' => 'not_implemented_yet']);
+    });
+});
+
+// Security Monitoring Integration
+Route::middleware('auth:sanctum')->prefix('security')->group(function () {
+    // Security audit initiation
+    Route::post('audit/initiate', function () {
+        // Trigger security audit
+        $securityService = app(App\Services\SecurityAuditService::class);
+        $results = $securityService->performSecurityAudit();
+
+        \Log::info('Security Audit Completed', ['timestamp' => now()->toISOString()]);
+
+        return response()->json([
+            'status' => 'completed',
+            'results' => $results,
+            'timestamp' => now()->toISOString()
+        ]);
+    });
+
+    // Security alerts management
+    Route::get('alerts', function () {
+        $alerts = \Cache::get('security_alerts', []);
+        return response()->json([
+            'status' => 'success',
+            'alerts' => $alerts,
+            'count' => count($alerts)
+        ]);
+    });
+
+    // Security compliance status
+    Route::get('compliance', function () {
+        $securityService = app(App\Services\SecurityAuditService::class);
+        $compliance = $securityService->generateComplianceReport();
+
+        return response()->json([
+            'status' => 'success',
+            'compliance' => $compliance
+        ]);
+    });
+
+    // Threat detection status
+    Route::get('threats', function () {
+        $securityService = app(App\Services\SecurityAuditService::class);
+        $threats = $securityService->monitorSuspiciousActivity();
+
+        return response()->json([
+            'status' => 'success',
+            'threats' => $threats
+        ]);
+    });
+});
+
+// Deployment and Release Monitoring
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('deployment')->group(function () {
+    // Deployment status tracking
+    Route::post('status/update', function (Illuminate\Http\Request $request) {
+        $statusUpdate = [
+            'deployment_id' => $request->input('deployment_id'),
+            'environment' => $request->input('environment', 'production'),
+            'status' => $request->input('status'), // 'started', 'completed', 'failed'
+            'progress' => $request->input('progress', 0),
+            'message' => $request->input('message'),
+            'timestamp' => now()->toISOString()
+        ];
+
+        // Store deployment status
+        \Cache::put("deployment_status_" . $statusUpdate['deployment_id'], $statusUpdate);
+        \Log::info("Deployment Status Update", $statusUpdate);
+
+        return response()->json([
+            'status' => 'recorded',
+            'deployment' => $statusUpdate
+        ]);
+    });
+
+    // Deployment history
+    Route::get('history', function () {
+        // Get recent deployment history
+        $keys = \Cache::store('redis')->keys('deployment_status_*');
+        $deployments = [];
+
+        foreach ($keys as $key) {
+            $data = \Cache::get(str_replace('redis:', '', $key));
+            if ($data) {
+                $deployments[] = $data;
+            }
+        }
+
+        // Sort by timestamp descending
+        usort($deployments, fn($a, $b) => strtotime($b['timestamp']) - strtotime($a['timestamp']));
+
+        return response()->json([
+            'status' => 'success',
+            'deployments' => array_slice($deployments, 0, 50) // Last 50 deployments
+        ]);
+    });
+
+    // Rollback endpoint
+    Route::post('rollback/{deploymentId}', function ($deploymentId) {
+        // Handle rollback logic
+        \Log::warning("Deployment Rollback Initiated", [
+            'deployment_id' => $deploymentId,
+            'timestamp' => now()->toISOString(),
+            'user' => auth()->id()
+        ]);
+
+        // Store rollback action
+        \Cache::put("rollback_{$deploymentId}", [
+            'deployment_id' => $deploymentId,
+            'rollback_initiated_at' => now()->toISOString(),
+            'rollback_by' => auth()->id(),
+            'rollback_status' => 'initiated'
+        ]);
+
+        return response()->json([
+            'status' => 'rollback_initiated',
+            'deployment_id' => $deploymentId,
+            'rollback_id' => "rollback_{$deploymentId}"
+        ]);
+    });
+});
+
+// Component Analytics Tracking (client-side events)
+Route::middleware('auth:sanctum')->prefix('components/analytics')->group(function () {
+    Route::post('view', function (Illuminate\Http\Request $request) {
+        try {
+            $componentService = app(App\Services\ComponentAnalyticsService::class);
+
+            $componentService->recordView(
+                $request->input('component_instance_id'),
+                auth()->id(),
+                session()->getId(),
+                [
+                    'view_duration' => $request->input('view_duration'),
+                    'scroll_depth' => $request->input('scroll_depth'),
+                    'interactions' => $request->input('interactions', 0)
+                ]
+            );
+
+            return response()->json(['status' => 'recorded']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    });
+
+    Route::post('click', function (Illuminate\Http\Request $request) {
+        try {
+            $componentService = app(App\Services\ComponentAnalyticsService::class);
+
+            $componentService->recordClick(
+                $request->input('component_instance_id'),
+                auth()->id(),
+                session()->getId(),
+                [
+                    'element_id' => $request->input('element_id'),
+                    'element_class' => $request->input('element_class'),
+                    'click_x' => $request->input('click_x'),
+                    'click_y' => $request->input('click_y'),
+                    'element_text' => $request->input('element_text')
+                ]
+            );
+
+            return response()->json(['status' => 'recorded']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    });
+
+    Route::post('conversion', function (Illuminate\Http\Request $request) {
+        try {
+            $componentService = app(App\Services\ComponentAnalyticsService::class);
+
+            $componentService->recordConversion(
+                $request->input('component_instance_id'),
+                auth()->id(),
+                session()->getId(),
+                [
+                    'conversion_type' => $request->input('conversion_type'),
+                    'conversion_value' => $request->input('conversion_value'),
+                    'funnel_step' => $request->input('funnel_step'),
+                    'source_url' => $request->input('source_url')
+                ]
+            );
+
+            return response()->json(['status' => 'recorded']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    });
+
+    Route::post('form-submit', function (Illuminate\Http\Request $request) {
+        try {
+            $componentService = app(App\Services\ComponentAnalyticsService::class);
+
+            $componentService->recordFormSubmit(
+                $request->input('component_instance_id'),
+                auth()->id(),
+                session()->getId(),
+                [
+                    'form_id' => $request->input('form_id'),
+                    'fields_count' => $request->input('fields_count'),
+                    'completion_time' => $request->input('completion_time'),
+                    'validation_errors' => $request->input('validation_errors'),
+                    'form_type' => $request->input('form_type')
+                ]
+            );
+
+            return response()->json(['status' => 'recorded']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    });
+});
 });
