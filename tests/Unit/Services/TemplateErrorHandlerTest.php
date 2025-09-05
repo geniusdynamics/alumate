@@ -20,7 +20,7 @@ use Exception;
  * Tests error handling, tenant isolation, logging, monitoring, and recovery scenarios
  */
 class TemplateErrorHandlerTest extends TestCase
-
+{
     protected TemplateErrorHandler $errorHandler;
     protected LogManager $logManager;
     protected string $testTenantId = 'test-tenant-123';
