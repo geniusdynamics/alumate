@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AnalyticsService;
+use App\Services\EmailAnalyticsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -11,7 +12,8 @@ use Illuminate\Support\Facades\Response;
 class AnalyticsController extends Controller
 {
     public function __construct(
-        private AnalyticsService $analyticsService
+        private AnalyticsService $analyticsService,
+        private EmailAnalyticsService $emailAnalyticsService
     ) {
         $this->middleware(['auth', 'role:admin|super_admin']);
     }
@@ -419,5 +421,248 @@ class AnalyticsController extends Controller
         }
 
         return $alerts;
+    }
+
+    // Email Analytics Endpoints
+
+    /**
+     * Get email performance metrics
+     */
+    public function getEmailPerformanceMetrics(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'campaign_id' => 'nullable|exists:email_campaigns,id',
+            'template_id' => 'nullable|exists:templates,id',
+        ]);
+
+        try {
+            $tenantId = tenant()->id ?? 1;
+            $metrics = $this->emailAnalyticsService->getEmailPerformanceMetrics($tenantId, $validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $metrics,
+                'message' => 'Email performance metrics retrieved successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve email performance metrics',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get email funnel analytics
+     */
+    public function getEmailFunnelAnalytics(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'campaign_id' => 'nullable|exists:email_campaigns,id',
+        ]);
+
+        try {
+            $tenantId = tenant()->id ?? 1;
+            $funnel = $this->emailAnalyticsService->getFunnelAnalytics($tenantId, $validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $funnel,
+                'message' => 'Email funnel analytics retrieved successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve email funnel analytics',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate email engagement report
+     */
+    public function generateEmailEngagementReport(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        try {
+            $tenantId = tenant()->id ?? 1;
+            $report = $this->emailAnalyticsService->generateEngagementReport($tenantId, $validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $report,
+                'message' => 'Email engagement report generated successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate email engagement report',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get A/B testing results
+     */
+    public function getABTestResults(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'campaign_id' => 'nullable|exists:email_campaigns,id',
+        ]);
+
+        try {
+            $tenantId = tenant()->id ?? 1;
+            $results = $this->emailAnalyticsService->getABTestResults($tenantId, $validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => $results,
+                'message' => 'A/B test results retrieved successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve A/B test results',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get real-time email analytics
+     */
+    public function getRealTimeEmailAnalytics(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'minutes' => 'nullable|integer|min:1|max:60',
+        ]);
+
+        try {
+            $tenantId = auth()->user()->current_tenant_id ?? 1;
+            $minutes = $validated['minutes'] ?? 5;
+            $analytics = $this->emailAnalyticsService->getRealTimeAnalytics($tenantId, $minutes);
+
+            return response()->json([
+                'success' => true,
+                'data' => $analytics,
+                'message' => 'Real-time email analytics retrieved successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve real-time email analytics',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate automated email report
+     */
+    public function generateAutomatedEmailReport(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'period' => 'required|string|in:hourly,daily,weekly,monthly',
+        ]);
+
+        try {
+            $tenantId = auth()->user()->current_tenant_id ?? 1;
+            $report = $this->emailAnalyticsService->generateAutomatedReport($tenantId, $validated['period']);
+
+            return response()->json([
+                'success' => true,
+                'data' => $report,
+                'message' => 'Automated email report generated successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate automated email report',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Track email event (for external integrations)
+     */
+    public function trackEmailEvent(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email_analytics_id' => 'required|exists:email_analytics,id',
+            'event_type' => 'required|string|in:delivery,open,click,conversion,bounce,complaint,unsubscribe',
+            'metadata' => 'nullable|array',
+        ]);
+
+        try {
+            $result = match ($validated['event_type']) {
+                'delivery' => $this->emailAnalyticsService->trackDelivery($validated['email_analytics_id'], $validated['metadata'] ?? []),
+                'open' => $this->emailAnalyticsService->trackOpen($validated['email_analytics_id'], $validated['metadata'] ?? []),
+                'click' => $this->emailAnalyticsService->trackClick($validated['email_analytics_id'], $validated['metadata']['url'] ?? '', $validated['metadata'] ?? []),
+                'conversion' => $this->emailAnalyticsService->trackConversion($validated['email_analytics_id'], $validated['metadata']['type'] ?? 'custom', $validated['metadata']['value'] ?? 0.00, $validated['metadata'] ?? []),
+                'bounce' => $this->emailAnalyticsService->trackBounce($validated['email_analytics_id'], $validated['metadata']['reason'] ?? 'Unknown'),
+                'complaint' => $this->emailAnalyticsService->trackComplaint($validated['email_analytics_id'], $validated['metadata']['reason'] ?? 'Unknown'),
+                'unsubscribe' => $this->emailAnalyticsService->trackUnsubscribe($validated['email_analytics_id']),
+            };
+
+            return response()->json([
+                'success' => $result,
+                'message' => $result ? 'Email event tracked successfully' : 'Failed to track email event',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to track email event',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get email analytics dashboard data
+     */
+    public function getEmailAnalyticsDashboard(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        try {
+            $tenantId = auth()->user()->current_tenant_id ?? 1;
+
+            $dashboard = [
+                'performance_metrics' => $this->emailAnalyticsService->getEmailPerformanceMetrics($tenantId, $validated),
+                'funnel_analytics' => $this->emailAnalyticsService->getFunnelAnalytics($tenantId, $validated),
+                'engagement_report' => $this->emailAnalyticsService->generateEngagementReport($tenantId, $validated),
+                'ab_test_results' => $this->emailAnalyticsService->getABTestResults($tenantId, $validated),
+                'real_time' => $this->emailAnalyticsService->getRealTimeAnalytics($tenantId),
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $dashboard,
+                'message' => 'Email analytics dashboard data retrieved successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve email analytics dashboard data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

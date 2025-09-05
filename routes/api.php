@@ -891,6 +891,18 @@ Route::middleware(['auth:sanctum', 'role:admin|super_admin'])->prefix('analytics
     Route::post('custom-report', [App\Http\Controllers\Api\AnalyticsController::class, 'generateCustomReport']);
     Route::get('export', [App\Http\Controllers\Api\AnalyticsController::class, 'exportData']);
     Route::get('available-metrics', [App\Http\Controllers\Api\AnalyticsController::class, 'getAvailableMetrics']);
+
+    // Email Analytics routes
+    Route::prefix('email')->group(function () {
+        Route::get('performance', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailPerformance']);
+        Route::get('funnel', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailFunnel']);
+        Route::get('engagement', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailEngagement']);
+        Route::get('ab-test', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailAbTest']);
+        Route::get('realtime', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailRealtime']);
+        Route::get('report/{period}', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailReport']);
+        Route::post('track', [App\Http\Controllers\Api\AnalyticsController::class, 'trackEmailEvent']);
+        Route::get('dashboard', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailDashboard']);
+    });
 });
 
 // Calendar Integration routes
@@ -1568,5 +1580,30 @@ Route::middleware('auth:sanctum')->prefix('components/analytics')->group(functio
             return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
         }
     });
+});
+
+// Email Sequence Management routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('email-sequences')->group(function () {
+    // Sequence CRUD operations
+    Route::get('/', [App\Http\Controllers\Api\EmailSequenceController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\EmailSequenceController::class, 'store']);
+    Route::get('/{sequence}', [App\Http\Controllers\Api\EmailSequenceController::class, 'show']);
+    Route::put('/{sequence}', [App\Http\Controllers\Api\EmailSequenceController::class, 'update']);
+    Route::delete('/{sequence}', [App\Http\Controllers\Api\EmailSequenceController::class, 'destroy']);
+
+    // Sequence management
+    Route::post('/{sequence}/duplicate', [App\Http\Controllers\Api\EmailSequenceController::class, 'duplicate']);
+    Route::post('/{sequence}/toggle-active', [App\Http\Controllers\Api\EmailSequenceController::class, 'toggleActive']);
+
+    // Email management within sequences
+    Route::get('/{sequence}/emails', [App\Http\Controllers\Api\EmailSequenceController::class, 'getEmails']);
+    Route::post('/{sequence}/emails', [App\Http\Controllers\Api\EmailSequenceController::class, 'addEmail']);
+    Route::put('/{sequence}/emails/{email}', [App\Http\Controllers\Api\EmailSequenceController::class, 'updateEmail']);
+    Route::delete('/{sequence}/emails/{email}', [App\Http\Controllers\Api\EmailSequenceController::class, 'removeEmail']);
+
+    // Enrollment management
+    Route::get('/{sequence}/enrollments', [App\Http\Controllers\Api\EmailSequenceController::class, 'getEnrollments']);
+    Route::post('/{sequence}/enroll', [App\Http\Controllers\Api\EmailSequenceController::class, 'enroll']);
+    Route::delete('/{sequence}/unenroll/{userId}', [App\Http\Controllers\Api\EmailSequenceController::class, 'unenroll']);
 });
 });

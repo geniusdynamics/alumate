@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Lead;
 use App\Models\CrmIntegration;
+use App\Models\CrmSyncLog;
 use App\Jobs\ProcessCrmWebhook;
 use App\Jobs\SyncLeadToCrm;
 use App\Jobs\RetryFailedCrmSubmission;
@@ -11,459 +12,536 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Collection;
 use Carbon\Carbon;
 
+/**
+ * CRM Integration Service for lead synchronization
+ *
+ * This service handles bidirectional synchronization between the application
+ * and external CRM systems (Salesforce, HubSpot, Zoho, etc.)
+ */
 class CrmIntegrationService
 {
     /**
-     * Process form submission and create lead with CRM integration
+     * Synchronize a lead with external CRM systems
      */
-    public function processFormSubmission(array $formData, string $formType, array $crmConfig = []): array
+    public function syncLeadToCrm(Lead $lead, ?CrmIntegration $integration = null): array
     {
         try {
-            // Create lead from form data
-            $lead = $this->createLeadFromFormData($formData, $formType);
-            
-            // Calculate lead score
-            $leadScore = $this->calculateLeadScore($formData, $formType);
-            $lead->update(['score' => $leadScore]);
-            
-            // Determine lead routing
-            $routing = $this->determineLeadRouting($formData, $formType, $leadScore);
-            $lead->update([
-                'assigned_to' => $routing['assigned_to'],
-                'priority' => $routing['priority']
-            ]);
-            
-            // Process CRM integration if enabled
-            $crmResult = null;
-            if (!empty($crmConfig) && ($crmConfig['enabled'] ?? false)) {
-                $crmResult = $this->sendLeadToCrm($lead, $crmConfig);
+            if (!$integration) {
+                $integration = $this->getActiveCrmIntegration();
             }
-            
-            // Track conversion attribution
-            $this->trackConversionAttribution($lead, $formData);
-            
-            // Handle GDPR compliance
-            $this->handleGdprCompliance($lead, $formData);
-            
-            return [
-                'success' => true,
-                'lead_id' => $lead->id,
-                'lead_score' => $leadScore,
-                'routing' => $routing,
-                'crm_result' => $crmResult
-            ];
-            
-        } catch (\Exception $e) {
-            Log::error('CRM integration form processing failed', [
-                'form_type' => $formType,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            return [
-                'success' => false,
-                'error' => $e->getMessage()
-            ];
-        }
-    }
-    
-    /**
-     * Create lead from form data
-     */
-    private function createLeadFromFormData(array $formData, string $formType): Lead
-    {
-        // Extract standard fields
-        $leadData = [
-            'first_name' => $formData['first_name'] ?? $formData['name'] ?? '',
-            'last_name' => $formData['last_name'] ?? '',
-            'email' => $formData['email'] ?? '',
-            'phone' => $formData['phone'] ?? '',
-            'company' => $formData['company'] ?? $formData['organization'] ?? $formData['institution_name'] ?? '',
-            'job_title' => $formData['job_title'] ?? $formData['title'] ?? $formData['contact_title'] ?? '',
-            'lead_type' => $this->mapFormTypeToLeadType($formType),
-            'source' => 'form_submission',
-            'status' => 'new',
-            'form_data' => $formData,
-            'utm_data' => $this->extractUtmData($formData)
-        ];
-        
-        // Handle name splitting if only full name provided
-        if (empty($leadData['first_name']) && !empty($formData['name'])) {
-            $nameParts = explode(' ', $formData['name'], 2);
-            $leadData['first_name'] = $nameParts[0];
-            $leadData['last_name'] = $nameParts[1] ?? '';
-        }
-        
-        return Lead::create($leadData);
-    }
-    
-    /**
-     * Calculate lead score based on form data and type
-     */
-    public function calculateLeadScore(array $formData, string $formType): int
-    {
-        $baseScores = [
-            'individual-signup' => 60,
-            'institution-demo-request' => 85,
-            'contact-general' => 30,
-            'newsletter-signup' => 25,
-            'event-registration' => 40
-        ];
-        
-        $score = $baseScores[$formType] ?? 50;
-        
-        // Completeness scoring
-        $totalFields = count($formData);
-        $completedFields = count(array_filter($formData, function($value) {
-            return !empty($value) && $value !== null;
-        }));
-        
-        $completenessScore = ($completedFields / max($totalFields, 1)) * 20;
-        $score += $completenessScore;
-        
-        // Form-specific scoring
-        switch ($formType) {
-            case 'institution-demo-request':
-                if (($formData['decision_role'] ?? '') === 'decision_maker') {
-                    $score += 25;
-                }
-                if (!empty($formData['budget_range']) && !str_contains($formData['budget_range'], '<')) {
-                    $score += 20;
-                }
-                if (in_array($formData['implementation_timeline'] ?? '', ['immediate', '1-3months'])) {
-                    $score += 15;
-                }
-                if (!empty($formData['alumni_count'])) {
-                    $alumniCount = $formData['alumni_count'];
-                    if (str_contains($alumniCount, '>50000') || str_contains($alumniCount, '>100000')) {
-                        $score += 20;
-                    }
-                }
-                break;
-                
-            case 'individual-signup':
-                if (!empty($formData['current_company'])) {
-                    $score += 15;
-                }
-                if (!empty($formData['current_job_title'])) {
-                    $score += 10;
-                }
-                if (!empty($formData['industry'])) {
-                    $score += 5;
-                }
-                break;
-                
-            case 'contact-general':
-                if (($formData['priority_level'] ?? '') === 'urgent') {
-                    $score += 20;
-                }
-                if (in_array($formData['inquiry_category'] ?? '', ['sales', 'demo_request'])) {
-                    $score += 15;
-                }
-                break;
-        }
-        
-        // UTM source scoring
-        $utmSource = $formData['utm_source'] ?? '';
-        $highValueSources = ['google-ads', 'linkedin-ads', 'partner-referral'];
-        if (in_array($utmSource, $highValueSources)) {
-            $score += 10;
-        }
-        
-        return min(max($score, 0), 100);
-    }
-    
-    /**
-     * Determine lead routing based on form data and score
-     */
-    public function determineLeadRouting(array $formData, string $formType, int $leadScore): array
-    {
-        $routing = [
-            'assigned_to' => null,
-            'priority' => 'medium'
-        ];
-        
-        // Priority based on score
-        if ($leadScore >= 80) {
-            $routing['priority'] = 'high';
-        } elseif ($leadScore >= 60) {
-            $routing['priority'] = 'medium';
-        } else {
-            $routing['priority'] = 'low';
-        }
-        
-        // Form-specific routing
-        switch ($formType) {
-            case 'institution-demo-request':
-                $routing['assigned_to'] = $this->getEnterpriseTeamMember($formData);
-                if ($leadScore >= 85) {
-                    $routing['priority'] = 'urgent';
-                }
-                break;
-                
-            case 'individual-signup':
-                $routing['assigned_to'] = $this->getIndividualTeamMember($formData);
-                break;
-                
-            case 'contact-general':
-                $category = $formData['inquiry_category'] ?? 'general';
-                $routing['assigned_to'] = $this->getTeamMemberByCategory($category);
-                
-                if (($formData['priority_level'] ?? '') === 'urgent') {
-                    $routing['priority'] = 'urgent';
-                }
-                break;
-        }
-        
-        return $routing;
-    }
-    
-    /**
-     * Send lead to CRM system
-     */
-    public function sendLeadToCrm(Lead $lead, array $crmConfig): array
-    {
-        try {
-            // Get CRM integration configuration
-            $integration = $this->getCrmIntegration($crmConfig['provider'] ?? 'hubspot');
-            
+
             if (!$integration || !$integration->is_active) {
-                throw new \Exception('CRM integration not available or inactive');
+                return [
+                    'success' => false,
+                    'message' => 'No active CRM integration found',
+                ];
             }
-            
-            // Queue the CRM sync job for better performance
-            SyncLeadToCrm::dispatch($lead, $integration, $crmConfig)
-                ->onQueue('crm-integration');
-            
-            return [
-                'success' => true,
-                'message' => 'Lead queued for CRM sync',
-                'provider' => $integration->provider
-            ];
-            
+
+            // Create sync log
+            $syncLog = $this->createSyncLog($lead, $integration, 'create');
+
+            // Map lead data according to field mappings
+            $mappedData = $this->mapLeadData($lead, $integration);
+
+            // Sync with CRM
+            $result = $this->performCrmSync($integration, $mappedData, 'create');
+
+            // Update sync log and lead
+            if ($result['success']) {
+                $syncLog->markSuccessful($result['response']);
+                $lead->update([
+                    'crm_id' => $result['crm_record_id'],
+                    'synced_at' => now(),
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'Lead synced successfully',
+                    'crm_record_id' => $result['crm_record_id'],
+                    'sync_log_id' => $syncLog->id,
+                ];
+            } else {
+                $syncLog->markFailed($result['error']);
+                return [
+                    'success' => false,
+                    'message' => $result['error'],
+                    'sync_log_id' => $syncLog->id,
+                ];
+            }
+
         } catch (\Exception $e) {
             Log::error('CRM lead sync failed', [
                 'lead_id' => $lead->id,
-                'provider' => $crmConfig['provider'] ?? 'unknown',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
-            
-            // Queue retry job
-            RetryFailedCrmSubmission::dispatch($lead, $crmConfig)
-                ->delay(now()->addMinutes(5))
-                ->onQueue('crm-retry');
-            
+
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
-                'retry_scheduled' => true
+                'message' => $e->getMessage(),
             ];
         }
     }
-    
+
+    /**
+     * Perform bidirectional sync for lead updates
+     */
+    public function syncLeadUpdates(Lead $lead): array
+    {
+        $results = [];
+
+        $integrations = CrmIntegration::active()->get();
+
+        foreach ($integrations as $integration) {
+            if ($lead->crm_id) {
+                // Update existing CRM record
+                $result = $this->updateCrmRecord($lead, $integration);
+            } else {
+                // Create new CRM record
+                $result = $this->syncLeadToCrm($lead, $integration);
+            }
+
+            $results[] = [
+                'provider' => $integration->provider,
+                'result' => $result,
+            ];
+        }
+
+        return [
+            'success' => collect($results)->every(fn($r) => $r['result']['success']),
+            'results' => $results,
+        ];
+    }
+
+    /**
+     * Update existing CRM record
+     */
+    public function updateCrmRecord(Lead $lead, CrmIntegration $integration): array
+    {
+        try {
+            if (!$lead->crm_id) {
+                return $this->syncLeadToCrm($lead, $integration);
+            }
+
+            $syncLog = $this->createSyncLog($lead, $integration, 'update');
+            $mappedData = $this->mapLeadData($lead, $integration);
+
+            $result = $this->performCrmSync($integration, $mappedData, 'update', $lead->crm_id);
+
+            if ($result['success']) {
+                $syncLog->markSuccessful($result['response']);
+                $lead->update(['synced_at' => now()]);
+
+                return [
+                    'success' => true,
+                    'message' => 'CRM record updated successfully',
+                    'sync_log_id' => $syncLog->id,
+                ];
+            } else {
+                $syncLog->markFailed($result['error']);
+                return [
+                    'success' => false,
+                    'message' => $result['error'],
+                    'sync_log_id' => $syncLog->id,
+                ];
+            }
+
+        } catch (\Exception $e) {
+            Log::error('CRM record update failed', [
+                'lead_id' => $lead->id,
+                'crm_id' => $lead->crm_id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Pull lead updates from CRM systems
+     */
+    public function pullCrmUpdates(CrmIntegration $integration): array
+    {
+        try {
+            $client = $integration->getApiClient();
+            $updates = $client->getRecentUpdates();
+
+            $processed = 0;
+            $errors = [];
+
+            foreach ($updates as $update) {
+                try {
+                    $lead = $this->findOrCreateLeadFromCrmData($update, $integration);
+                    $this->updateLeadFromCrmData($lead, $update, $integration);
+
+                    $syncLog = $this->createSyncLog($lead, $integration, 'pull');
+                    $syncLog->markSuccessful(['crm_data' => $update]);
+
+                    $processed++;
+                } catch (\Exception $e) {
+                    $errors[] = [
+                        'crm_record_id' => $update['id'] ?? 'unknown',
+                        'error' => $e->getMessage(),
+                    ];
+                }
+            }
+
+            return [
+                'success' => true,
+                'processed' => $processed,
+                'errors' => $errors,
+                'message' => "Processed {$processed} CRM updates",
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('CRM pull updates failed', [
+                'integration_id' => $integration->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
     /**
      * Process webhook from CRM system
      */
     public function processWebhook(string $provider, array $payload): array
     {
         try {
+            $integration = CrmIntegration::byProvider($provider)->active()->first();
+
+            if (!$integration) {
+                throw new \Exception("No active integration found for provider: {$provider}");
+            }
+
             // Validate webhook signature
-            if (!$this->validateWebhookSignature($provider, $payload)) {
+            if (!$this->validateWebhookSignature($integration, $payload)) {
                 throw new \Exception('Invalid webhook signature');
             }
-            
+
             // Queue webhook processing
-            ProcessCrmWebhook::dispatch($provider, $payload)
-                ->onQueue('webhook-processing');
-            
+            ProcessCrmWebhook::dispatch($integration, $payload)
+                ->onQueue('crm-webhooks');
+
             return [
                 'success' => true,
-                'message' => 'Webhook queued for processing'
+                'message' => 'Webhook queued for processing',
             ];
-            
+
         } catch (\Exception $e) {
             Log::error('Webhook processing failed', [
                 'provider' => $provider,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
-            
+
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'message' => $e->getMessage(),
             ];
         }
     }
-    
+
     /**
-     * Track conversion attribution
+     * Handle conflict resolution for sync operations
      */
-    private function trackConversionAttribution(Lead $lead, array $formData): void
+    public function resolveSyncConflict(Lead $lead, array $crmData, CrmIntegration $integration): array
     {
-        $attribution = [
-            'utm_source' => $formData['utm_source'] ?? null,
-            'utm_medium' => $formData['utm_medium'] ?? null,
-            'utm_campaign' => $formData['utm_campaign'] ?? null,
-            'utm_term' => $formData['utm_term'] ?? null,
-            'utm_content' => $formData['utm_content'] ?? null,
-            'referrer' => $formData['referrer'] ?? null,
-            'landing_page' => $formData['landing_page'] ?? null,
-            'session_id' => $formData['session_id'] ?? null,
-            'conversion_timestamp' => now()->toISOString()
-        ];
-        
-        $lead->addActivity('conversion_attribution', 'Conversion tracked', null, $attribution);
-        
-        // Update behavioral data
-        $behavioralData = $lead->behavioral_data ?? [];
-        $behavioralData['attribution'] = $attribution;
-        $lead->update(['behavioral_data' => $behavioralData]);
-    }
-    
-    /**
-     * Handle GDPR compliance
-     */
-    private function handleGdprCompliance(Lead $lead, array $formData): void
-    {
-        $gdprData = [
-            'consent_given' => $formData['gdpr_consent'] ?? false,
-            'consent_timestamp' => now()->toISOString(),
-            'consent_ip' => request()->ip(),
-            'consent_user_agent' => request()->userAgent(),
-            'data_processing_purposes' => [
-                'lead_management',
-                'marketing_communications',
-                'service_delivery'
-            ],
-            'retention_period' => '7 years',
-            'data_subject_rights' => [
-                'access',
-                'rectification',
-                'erasure',
-                'portability',
-                'restriction',
-                'objection'
-            ]
-        ];
-        
-        if ($formData['marketing_consent'] ?? false) {
-            $gdprData['marketing_consent'] = true;
-            $gdprData['marketing_consent_timestamp'] = now()->toISOString();
+        try {
+            // Implement conflict resolution logic
+            // For now, prefer local data over CRM data
+            $conflictLog = [
+                'lead_id' => $lead->id,
+                'crm_data' => $crmData,
+                'local_data' => $lead->toArray(),
+                'resolution' => 'prefer_local',
+                'resolved_at' => now(),
+            ];
+
+            Log::info('CRM sync conflict resolved', $conflictLog);
+
+            return [
+                'success' => true,
+                'resolution' => 'prefer_local',
+                'message' => 'Conflict resolved by preferring local data',
+            ];
+
+        } catch (\Exception $e) {
+            Log::error('Conflict resolution failed', [
+                'lead_id' => $lead->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'message' => $e->getMessage(),
+            ];
         }
-        
-        $lead->addActivity('gdpr_compliance', 'GDPR data recorded', null, $gdprData);
     }
-    
+
     /**
-     * Get CRM integration by provider
+     * Get sync status and statistics
      */
-    private function getCrmIntegration(string $provider): ?CrmIntegration
+    public function getSyncStatus(?CrmIntegration $integration = null): array
     {
-        return CrmIntegration::where('provider', $provider)
-            ->where('is_active', true)
-            ->first();
-    }
-    
-    /**
-     * Map form type to lead type
-     */
-    private function mapFormTypeToLeadType(string $formType): string
-    {
-        $mapping = [
-            'individual-signup' => 'individual',
-            'institution-demo-request' => 'institution',
-            'contact-general' => 'inquiry',
-            'newsletter-signup' => 'subscriber',
-            'event-registration' => 'attendee'
+        $query = CrmSyncLog::query();
+
+        if ($integration) {
+            $query->where('crm_integration_id', $integration->id);
+        }
+
+        $stats = [
+            'total_syncs' => $query->count(),
+            'successful_syncs' => (clone $query)->successful()->count(),
+            'failed_syncs' => (clone $query)->failed()->count(),
+            'pending_syncs' => (clone $query)->pending()->count(),
+            'retryable_syncs' => (clone $query)->retryable()->count(),
+            'last_sync_at' => $query->latest('created_at')->value('created_at'),
+            'average_sync_duration' => $query->whereNotNull('sync_duration')->avg('sync_duration'),
         ];
-        
-        return $mapping[$formType] ?? 'general';
+
+        return $stats;
     }
-    
+
     /**
-     * Extract UTM data from form data
+     * Retry failed sync operations
      */
-    private function extractUtmData(array $formData): array
+    public function retryFailedSyncs(?CrmIntegration $integration = null): array
     {
+        $query = CrmSyncLog::retryable();
+
+        if ($integration) {
+            $query->where('crm_integration_id', $integration->id);
+        }
+
+        $failedSyncs = $query->get();
+        $results = [];
+
+        foreach ($failedSyncs as $syncLog) {
+            try {
+                $lead = $syncLog->lead;
+                $integration = $syncLog->crmIntegration;
+
+                if ($lead && $integration) {
+                    $result = $this->syncLeadToCrm($lead, $integration);
+                    $results[] = [
+                        'sync_log_id' => $syncLog->id,
+                        'result' => $result,
+                    ];
+                }
+            } catch (\Exception $e) {
+                $results[] = [
+                    'sync_log_id' => $syncLog->id,
+                    'result' => ['success' => false, 'message' => $e->getMessage()],
+                ];
+            }
+        }
+
         return [
-            'utm_source' => $formData['utm_source'] ?? null,
-            'utm_medium' => $formData['utm_medium'] ?? null,
-            'utm_campaign' => $formData['utm_campaign'] ?? null,
-            'utm_term' => $formData['utm_term'] ?? null,
-            'utm_content' => $formData['utm_content'] ?? null
+            'processed' => count($results),
+            'results' => $results,
         ];
     }
-    
+
     /**
-     * Get enterprise team member for assignment
+     * Create sync log entry
      */
-    private function getEnterpriseTeamMember(array $formData): ?int
+    private function createSyncLog(Lead $lead, CrmIntegration $integration, string $syncType): CrmSyncLog
     {
-        // Simple round-robin assignment for now
-        // In production, this would use more sophisticated logic
-        $enterpriseTeam = [1, 2, 3]; // User IDs of enterprise team
-        $cacheKey = 'enterprise_assignment_index';
-        
-        $index = Cache::get($cacheKey, 0);
-        $assignedUserId = $enterpriseTeam[$index % count($enterpriseTeam)];
-        
-        Cache::put($cacheKey, $index + 1, now()->addHour());
-        
-        return $assignedUserId;
+        return CrmSyncLog::create([
+            'tenant_id' => $integration->tenant_id ?? 1,
+            'crm_integration_id' => $integration->id,
+            'lead_id' => $lead->id,
+            'sync_type' => $syncType,
+            'crm_provider' => $integration->provider,
+            'status' => 'pending',
+        ]);
     }
-    
+
     /**
-     * Get individual team member for assignment
+     * Map lead data according to CRM field mappings
      */
-    private function getIndividualTeamMember(array $formData): ?int
+    private function mapLeadData(Lead $lead, CrmIntegration $integration): array
     {
-        $individualTeam = [4, 5, 6]; // User IDs of individual team
-        $cacheKey = 'individual_assignment_index';
-        
-        $index = Cache::get($cacheKey, 0);
-        $assignedUserId = $individualTeam[$index % count($individualTeam)];
-        
-        Cache::put($cacheKey, $index + 1, now()->addHour());
-        
-        return $assignedUserId;
+        $mappedData = [];
+
+        foreach ($integration->field_mappings as $localField => $crmField) {
+            $value = $this->getLeadFieldValue($lead, $localField);
+            if ($value !== null) {
+                $mappedData[$crmField] = $value;
+            }
+        }
+
+        return $mappedData;
     }
-    
+
     /**
-     * Get team member by inquiry category
+     * Get field value from lead
      */
-    private function getTeamMemberByCategory(string $category): ?int
+    private function getLeadFieldValue(Lead $lead, string $field)
     {
-        $categoryAssignments = [
-            'technical_support' => [7, 8],
-            'sales' => [1, 2],
-            'demo_request' => [1, 2, 3],
-            'partnership' => [9],
-            'media' => [10],
-            'privacy' => [11],
-            'bug_report' => [7, 8],
-            'feature_request' => [12],
-            'general' => [13, 14]
+        switch ($field) {
+            case 'full_name':
+                return $lead->full_name;
+            case 'first_name':
+                return $lead->first_name;
+            case 'last_name':
+                return $lead->last_name;
+            case 'email':
+                return $lead->email;
+            case 'phone':
+                return $lead->phone;
+            case 'company':
+                return $lead->company;
+            case 'job_title':
+                return $lead->job_title;
+            case 'lead_type':
+                return $lead->lead_type;
+            case 'source':
+                return $lead->source;
+            case 'status':
+                return $lead->status;
+            case 'score':
+                return $lead->score;
+            case 'priority':
+                return $lead->priority;
+            default:
+                return $lead->$field ?? null;
+        }
+    }
+
+    /**
+     * Perform actual CRM sync operation
+     */
+    private function performCrmSync(CrmIntegration $integration, array $data, string $operation, ?string $crmRecordId = null): array
+    {
+        try {
+            $client = $integration->getApiClient();
+
+            switch ($operation) {
+                case 'create':
+                    $result = $client->createLead($data);
+                    return [
+                        'success' => true,
+                        'crm_record_id' => $result['id'],
+                        'response' => $result,
+                    ];
+
+                case 'update':
+                    $result = $client->updateLead($crmRecordId, $data);
+                    return [
+                        'success' => true,
+                        'crm_record_id' => $crmRecordId,
+                        'response' => $result,
+                    ];
+
+                default:
+                    throw new \Exception("Unsupported sync operation: {$operation}");
+            }
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Find or create lead from CRM data
+     */
+    private function findOrCreateLeadFromCrmData(array $crmData, CrmIntegration $integration): Lead
+    {
+        // Try to find existing lead by CRM ID
+        $lead = Lead::where('crm_id', $crmData['id'])->first();
+
+        if (!$lead) {
+            // Try to find by email
+            $email = $this->extractEmailFromCrmData($crmData, $integration);
+            if ($email) {
+                $lead = Lead::where('email', $email)->first();
+            }
+        }
+
+        if (!$lead) {
+            // Create new lead
+            $lead = $this->createLeadFromCrmData($crmData, $integration);
+        }
+
+        return $lead;
+    }
+
+    /**
+     * Update lead from CRM data
+     */
+    private function updateLeadFromCrmData(Lead $lead, array $crmData, CrmIntegration $integration): void
+    {
+        $updateData = [];
+
+        foreach ($integration->field_mappings as $localField => $crmField) {
+            if (isset($crmData[$crmField])) {
+                $updateData[$localField] = $crmData[$crmField];
+            }
+        }
+
+        if (!empty($updateData)) {
+            $lead->update($updateData);
+        }
+    }
+
+    /**
+     * Extract email from CRM data
+     */
+    private function extractEmailFromCrmData(array $crmData, CrmIntegration $integration): ?string
+    {
+        $emailField = array_search('email', $integration->field_mappings);
+        return $crmData[$emailField] ?? null;
+    }
+
+    /**
+     * Create lead from CRM data
+     */
+    private function createLeadFromCrmData(array $crmData, CrmIntegration $integration): Lead
+    {
+        $leadData = [
+            'crm_id' => $crmData['id'],
+            'crm_provider' => $integration->provider,
+            'source' => 'crm_import',
         ];
-        
-        $team = $categoryAssignments[$category] ?? $categoryAssignments['general'];
-        $cacheKey = "category_assignment_index_{$category}";
-        
-        $index = Cache::get($cacheKey, 0);
-        $assignedUserId = $team[$index % count($team)];
-        
-        Cache::put($cacheKey, $index + 1, now()->addHour());
-        
-        return $assignedUserId;
+
+        foreach ($integration->field_mappings as $localField => $crmField) {
+            if (isset($crmData[$crmField])) {
+                $leadData[$localField] = $crmData[$crmField];
+            }
+        }
+
+        return Lead::create($leadData);
     }
-    
+
+    /**
+     * Get active CRM integration
+     */
+    private function getActiveCrmIntegration(): ?CrmIntegration
+    {
+        return CrmIntegration::active()->first();
+    }
+
     /**
      * Validate webhook signature
      */
-    private function validateWebhookSignature(string $provider, array $payload): bool
+    private function validateWebhookSignature(CrmIntegration $integration, array $payload): bool
     {
-        // Implementation would depend on the CRM provider's webhook signature method
-        // For now, return true - in production, implement proper signature validation
+        // Implementation depends on CRM provider
+        // For now, return true - implement proper validation based on provider
         return true;
     }
 }
