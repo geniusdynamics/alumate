@@ -155,3 +155,47 @@ Broadcast::channel('activity-feed', function ($user) {
         'last_active' => now(),
     ];
 });
+
+// Template preview channels
+Broadcast::channel('template.{templateId}.preview', function ($user, $templateId) {
+    // Check if user has access to this template
+    // For now, allow all authenticated users (can be restricted later based on permissions)
+    return [
+        'user_id' => $user->id,
+        'template_id' => $templateId,
+        'joined_at' => now()->toISOString()
+    ];
+});
+
+Broadcast::channel('template.{templateId}.collaborators', function ($user, $templateId) {
+    // Presence channel for template collaborators
+    // Can add authorization logic here based on template permissions
+    return [
+        'user_id' => $user->id,
+        'user_name' => $user->name,
+        'template_id' => $templateId,
+        'joined_at' => now()->toISOString()
+    ];
+});
+
+// Tenant-specific template preview channels
+Broadcast::channel('tenant.{tenantId}.template-previews', function ($user, $tenantId) {
+    // Verify user belongs to the tenant (with tenant isolation)
+    if (config('database.multi_tenant', false)) {
+        try {
+            $tenant = tenant();
+            return $tenant && $tenant->id === $tenantId;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    // For single-tenant, allow all authenticated users
+    return true;
+});
+
+// User-specific template preview channels
+Broadcast::channel('user.{userId}.template-previews', function ($user, $userId) {
+    // Only allow users to listen to their own template preview updates
+    return (int) $user->id === (int) $userId;
+});

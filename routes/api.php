@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AchievementCelebrationController;
 use App\Http\Controllers\Api\AchievementController;
 use App\Http\Controllers\Api\AlumniDirectoryController;
+use App\Http\Controllers\Api\AnalyticsTrackingController;
 use App\Http\Controllers\Api\CareerTimelineController;
 use App\Http\Controllers\Api\EventsController;
 use App\Http\Controllers\Api\JobMatchingController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Api\StudentAlumniStoryController;
 use App\Http\Controllers\Api\StudentCareerGuidanceController;
 use App\Http\Controllers\Api\StudentMentorshipController;
 use App\Http\Controllers\Api\StudentProfileController;
+use App\Http\Controllers\Api\TemplateAnalyticsController;
 use App\Http\Controllers\Api\TimelineController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -798,6 +800,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('alumni/location', [App\Http\Controllers\Api\AlumniMapController::class, 'updateLocation']);
 });
 
+// Public Analytics Tracking routes (no auth required for client-side tracking)
+Route::prefix('analytics')->group(function () {
+    Route::post('track', [App\Http\Controllers\Api\AnalyticsTrackingController::class, 'track']);
+    Route::post('track-template-usage', [App\Http\Controllers\Api\AnalyticsTrackingController::class, 'trackTemplateUsage']);
+    Route::get('pixel/{landingPageId}', [App\Http\Controllers\Api\AnalyticsTrackingController::class, 'pixel']);
+});
+
 // Analytics routes
 Route::prefix('analytics')->group(function () {
     // Event tracking endpoints
@@ -1380,6 +1389,92 @@ Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('deploymen
             'deployment_id' => $deploymentId,
             'rollback_id' => "rollback_{$deploymentId}"
         ]);
+    });
+});
+
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
+
+// Template Management routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('templates')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\TemplateController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\TemplateController::class, 'store']);
+    Route::get('/search', [App\Http\Controllers\Api\TemplateController::class, 'search']);
+    Route::get('/popular', [App\Http\Controllers\Api\TemplateController::class, 'popular']);
+    Route::get('/recent', [App\Http\Controllers\Api\TemplateController::class, 'recent']);
+    Route::get('/premium', [App\Http\Controllers\Api\TemplateController::class, 'premium']);
+    Route::get('/by-audience', [App\Http\Controllers\Api\TemplateController::class, 'byAudience']);
+    Route::get('/categories', [App\Http\Controllers\Api\TemplateController::class, 'categories']);
+
+    // General preview options
+    Route::get('/preview-options', [App\Http\Controllers\Api\TemplatePreviewController::class, 'previewOptions']);
+
+    Route::prefix('{template}')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\TemplateController::class, 'show']);
+        Route::put('/', [App\Http\Controllers\Api\TemplateController::class, 'update']);
+        Route::delete('/', [App\Http\Controllers\Api\TemplateController::class, 'destroy']);
+        Route::post('/duplicate', [App\Http\Controllers\Api\TemplateController::class, 'duplicate']);
+        Route::get('/preview', [App\Http\Controllers\Api\TemplateController::class, 'preview']);
+        Route::post('/activate', [App\Http\Controllers\Api\TemplateController::class, 'activate']);
+        Route::post('/deactivate', [App\Http\Controllers\Api\TemplateController::class, 'deactivate']);
+        Route::get('/stats', [App\Http\Controllers\Api\TemplateController::class, 'stats']);
+
+        // Template Preview routes
+        Route::prefix('preview')->group(function () {
+            Route::post('/', [App\Http\Controllers\Api\TemplatePreviewController::class, 'preview']);
+            Route::get('/responsive', [App\Http\Controllers\Api\TemplatePreviewController::class, 'responsivePreview']);
+            Route::post('/apply-brand', [App\Http\Controllers\Api\TemplatePreviewController::class, 'applyBrand']);
+            Route::get('/assets', [App\Http\Controllers\Api\TemplatePreviewController::class, 'assets']);
+            Route::post('/clear-cache', [App\Http\Controllers\Api\TemplatePreviewController::class, 'clearCache']);
+        });
+    });
+});
+
+// Landing Page Management routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('landing-pages')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\LandingPageController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\LandingPageController::class, 'store']);
+    Route::get('/drafts', [App\Http\Controllers\Api\LandingPageController::class, 'drafts']);
+    Route::get('/published', [App\Http\Controllers\Api\LandingPageController::class, 'published']);
+    Route::post('/create-from-template', [App\Http\Controllers\Api\LandingPageController::class, 'createFromTemplate']);
+    Route::post('/bulk', [App\Http\Controllers\Api\LandingPageController::class, 'bulk']);
+
+    Route::get('/status/{status}', [App\Http\Controllers\Api\LandingPageController::class, 'byStatus']);
+
+    Route::prefix('{landingPage}')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\LandingPageController::class, 'show']);
+        Route::put('/', [App\Http\Controllers\Api\LandingPageController::class, 'update']);
+        Route::delete('/', [App\Http\Controllers\Api\LandingPageController::class, 'destroy']);
+        Route::post('/duplicate', [App\Http\Controllers\Api\LandingPageController::class, 'duplicate']);
+        Route::post('/publish', [App\Http\Controllers\Api\LandingPageController::class, 'publish']);
+        Route::post('/unpublish', [App\Http\Controllers\Api\LandingPageController::class, 'unpublish']);
+        Route::post('/archive', [App\Http\Controllers\Api\LandingPageController::class, 'archive']);
+        Route::get('/analytics', [App\Http\Controllers\Api\LandingPageController::class, 'analytics']);
+    });
+});
+
+// Brand Configuration Management routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('brand-configs')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\BrandConfigController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\BrandConfigController::class, 'store']);
+    Route::get('/search', [App\Http\Controllers\Api\BrandConfigController::class, 'search']);
+    Route::post('/import', [App\Http\Controllers\Api\BrandConfigController::class, 'import']);
+
+    Route::prefix('{brandConfig}')->group(function () {
+        Route::get('/', [App\Http\Controllers\Api\BrandConfigController::class, 'show']);
+        Route::put('/', [App\Http\Controllers\Api\BrandConfigController::class, 'update']);
+        Route::delete('/', [App\Http\Controllers\Api\BrandConfigController::class, 'destroy']);
+
+        // Asset management
+        Route::post('/upload-logo', [App\Http\Controllers\Api\BrandConfigController::class, 'uploadLogo']);
+        Route::post('/upload-favicon', [App\Http\Controllers\Api\BrandConfigController::class, 'uploadFavicon']);
+        Route::post('/upload-asset', [App\Http\Controllers\Api\BrandConfigController::class, 'uploadCustomAsset']);
+
+        // Brand application and preview
+        Route::post('/apply-to-template/{templateId}', [App\Http\Controllers\Api\BrandConfigController::class, 'applyToTemplate']);
+        Route::post('/preview', [App\Http\Controllers\Api\BrandConfigController::class, 'preview']);
+        Route::post('/export', [App\Http\Controllers\Api\BrandConfigController::class, 'export']);
     });
 });
 

@@ -743,11 +743,26 @@ Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin
     });
 });
 
-// Public Landing Page Routes
-Route::prefix('landing')->name('landing-page.')->group(function () {
-    Route::get('/{slug}', [\App\Http\Controllers\LandingPagePublicController::class, 'show'])->name('show');
-    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPagePublicController::class, 'submitForm'])->name('submit');
-    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPagePublicController::class, 'trackEvent'])->name('track');
+// Public Landing Page Routes for Published Pages
+Route::prefix('p')->name('landing-page.')->group(function () {
+    // Main published landing page route
+    Route::get('/{slug}', [\App\Http\Controllers\LandingPageController::class, 'show'])->name('show');
+
+    // Form submission for published landing pages
+    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPageController::class, 'submitForm'])->name('submit');
+
+    // Analytics tracking for published pages
+    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPageController::class, 'trackEvent'])->name('track');
+
+    // Preview mode (requires authentication) - for development/testing-only
+    Route::middleware(['auth'])->get('/{slug}/preview', [\App\Http\Controllers\LandingPageController::class, 'preview'])->name('preview');
+});
+
+// Legacy landing page routes (backwards compatibility)
+Route::prefix('landing')->name('landing-legacy.')->group(function () {
+    Route::get('/{slug}', [\App\Http\Controllers\LandingPageController::class, 'show'])->name('show');
+    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPageController::class, 'submitForm'])->name('submit');
+    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPageController::class, 'trackEvent'])->name('track');
 });
 // Analytics Dashboard Routes (Admin only)
 Route::middleware(['auth', 'role:admin|super_admin'])->prefix('analytics')->name('analytics.')->group(function () {

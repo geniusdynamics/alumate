@@ -1258,6 +1258,79 @@ export interface BrandAnalytics {
   }>;
 }
 
+// Template Component Types
+export type TemplateAudienceType = 'individual' | 'institution' | 'employer' | 'general';
+export type TemplateCampaignType = 'onboarding' | 'event_promotion' | 'donation' | 'networking' | 'career_services' | 'recruiting' | 'leadership' | 'marketing';
+export type TemplateCategory = 'landing' | 'homepage' | 'form' | 'email' | 'social';
+export type ViewportType = 'desktop' | 'tablet' | 'mobile';
+export type ViewMode = 'grid' | 'list';
+
+export interface Template {
+  id: number;
+  tenantId: number;
+  name: string;
+  slug: string;
+  description?: string;
+  category: TemplateCategory;
+  audienceType: TemplateAudienceType;
+  campaignType: TemplateCampaignType;
+  structure: any; // JSON structure for component configuration
+  defaultConfig: any; // Default configuration
+  performanceMetrics?: any;
+  previewImage?: string;
+  previewUrl?: string;
+  version: number;
+  isActive: boolean;
+  isPremium: boolean;
+  usageCount: number;
+  lastUsedAt?: string;
+  tags: string[];
+  createdBy?: number;
+  updatedBy?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TemplateUsageStats {
+  usageCount: number;
+  lastUsedAt?: string;
+  landingPageCount: number;
+  isPopular: boolean;
+  recentlyUsed: boolean;
+}
+
+export interface TemplateFilterOptions {
+  category?: TemplateCategory[];
+  audienceType?: TemplateAudienceType[];
+  campaignType?: TemplateCampaignType[];
+  tags?: string[];
+  isPremium?: boolean;
+  searchQuery?: string;
+}
+
+export interface TemplateSearchParams {
+  filters: TemplateFilterOptions;
+  page: number;
+  perPage: number;
+  sortBy: 'name' | 'created_at' | 'usage_count' | 'last_used_at';
+  sortOrder: 'asc' | 'desc';
+}
+
+export interface TemplateCollection {
+  data: Template[];
+  total: number;
+  page: number;
+  perPage: number;
+  lastPage: number;
+}
+
+export interface TemplatePreviewConfig {
+  templateId: number | string;
+  viewport: ViewportType;
+  showControls: boolean;
+  interactive: boolean;
+}
+
 // CTA Component Types
 export type CTAType = 'button' | 'banner' | 'inline-link';
 export type CTAStyle = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link';
@@ -1465,8 +1538,9 @@ export interface CTAComponentConfig {
     position?: number;
     audienceType?: AudienceType;
   };
-}// 
-Theme Management Types for GrapeJS Integration
+}
+
+// Theme Management Types for GrapeJS Integration
 
 export interface ComponentTheme {
   id: number
@@ -1650,4 +1724,308 @@ export interface ThemeNotification {
     label: string
     action: () => void
   }>
+
+export interface CustomizationState {
+  templateId: number | null;
+  isEdited: boolean;
+  hasUnsavedChanges: boolean;
+  isAutoSaving: boolean;
+  lastSaved?: string;
+  activePanel: 'brand' | 'content' | 'settings';
+}
+
+export interface ColorCustomization {
+  type: 'primary' | 'secondary' | 'accent' | 'text' | 'background' | 'surface';
+  color: string;
+  contrastRatio?: number;
+  accessibilityStatus: 'pass' | 'warning' | 'fail';
+  usageGuidelines?: string[];
+  inheritedFrom?: string; // brand color name
+}
+
+export interface FontCustomization {
+  type: 'heading' | 'body' | 'display' | 'accent';
+  family: string;
+  weight: number;
+  size: number;
+  lineHeight: number;
+  letterSpacing?: number;
+  googleFontsUrl?: string;
+  fallbacks: string[];
+  isVariableFont?: boolean;
+  source: 'google' | 'system' | 'custom';
+}
+
+export interface LogoCustomization {
+  id: string;
+  name: string;
+  type: 'primary' | 'secondary' | 'icon' | 'wordmark';
+  url: string;
+  alt: string;
+  size: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  position: 'header' | 'footer' | 'floating';
+  hoverEffect?: 'scale' | 'opacity' | 'none';
+}
+
+export interface BrandCustomization {
+  name: string;
+  tagline?: string;
+  colors: Record<string, ColorCustomization>;
+  fonts: Record<string, FontCustomization>;
+  logos: LogoCustomization[];
+  styles: {
+    borderRadius: 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+    spacing: 'compact' | 'default' | 'spacious';
+    shadow: 'none' | 'sm' | 'md' | 'lg' | 'xl';
+  };
+}
+
+export interface ContentBlock {
+  id: string;
+  type: 'text' | 'image' | 'button' | 'divider' | 'spacer' | 'video' | 'quote';
+  data: any;
+  position: number;
+  isVisible: boolean;
+  responsiveSettings?: DeviceSpecificConfig<{
+    hidden?: boolean;
+    size?: 'sm' | 'md' | 'lg';
+    alignment?: 'left' | 'center' | 'right';
+  }>;
+  animationSettings?: {
+    enabled: boolean;
+    type: 'fade' | 'slide' | 'zoom' | 'none';
+    delay: number;
+    duration: number;
+  };
+  accessibilitySettings?: {
+    ariaLabel?: string;
+    role?: string;
+    screenReaderText?: string;
+  };
+}
+
+export interface TextBlock extends ContentBlock {
+  type: 'text';
+  data: {
+    html: string;
+    text: string;
+    format: 'paragraph' | 'heading1' | 'heading2' | 'heading3' | 'bullet' | 'numbered';
+    alignment: 'left' | 'center' | 'right' | 'justify';
+    color?: string;
+    size?: number;
+  };
+}
+
+export interface ImageBlock extends ContentBlock {
+  type: 'image';
+  data: {
+    url: string;
+    alt: string;
+    caption?: string;
+    thumbnail?: string;
+    width?: number;
+    height?: number;
+    aspectRatio?: 'square' | 'rectangle' | 'wide' | 'tall';
+    fit: 'cover' | 'contain' | 'fill' | 'scale';
+    link?: string;
+    lazyLoad?: boolean;
+  };
+}
+
+export interface ButtonBlock extends ContentBlock {
+  type: 'button';
+  data: {
+    text: string;
+    url: string;
+    style: 'primary' | 'secondary' | 'outline' | 'ghost';
+    size: 'sm' | 'md' | 'lg';
+    icon?: string;
+    iconPosition?: 'left' | 'right';
+    openInNewTab?: boolean;
+    trackingParams?: Record<string, string>;
+  };
+}
+
+export interface ContentCustomization {
+  blocks: ContentBlock[];
+  layout: {
+    maxWidth: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+    alignment: 'center' | 'left' | 'stretch';
+    verticalSpacing: 'sm' | 'md' | 'lg';
+    responsiveGaps: boolean;
+  };
+  global: {
+    textColor?: string;
+    backgroundColor?: string;
+    linkColor?: string;
+    headingStyles?: Record<string, any>;
+  };
+}
+
+export interface UndoRedoSnapshot {
+  id: string;
+  timestamp: Date;
+  action: string;
+  brand?: BrandCustomization;
+  content?: ContentCustomization;
+  previousSnapshot?: UndoRedoSnapshot;
+}
+
+export interface ColorPickerState {
+  isOpen: boolean;
+  currentColor: string;
+  previousColor: string;
+  recentColors: string[];
+  paletteMode: 'hsv' | 'hsl' | 'rgb';
+  hasAlphaChannel: boolean;
+  inputMode: 'hex' | 'rgb' | 'hsl';
+  isCheckingContrast: boolean;
+  contrastResults: {
+    backgroundColor?: string;
+    ratio?: number;
+    level?: 'AA' | 'AAA' | 'fail';
+    suggestions?: string[];
+  }[];
+}
+
+export interface FontValidationResult {
+  isValid: boolean;
+  fontFamily: string;
+  weights: number[];
+  available: boolean;
+  contrast?: {
+    textColor: string;
+    backgroundColor: string;
+    ratio: number;
+    level: 'AA' | 'AAA';
+  };
+  recommendations?: {
+    size?: number;
+    lineHeight?: number;
+    maxWidth?: number;
+  };
+}
+
+export interface ColorPalettePreset {
+  name: string;
+  colors: Array<{
+    name: string;
+    color: string;
+    type: string;
+  }>;
+  isCustom: boolean;
+  createdAt?: string;
+  usageCount?: number;
+}
+
+export interface GoogleFontData {
+  family: string;
+  variants: string[];
+  subsets: string[];
+  version: string;
+  lastModified: string;
+  files: Record<string, string>;
+  category: 'serif' | 'sans-serif' | 'display' | 'monospace' | 'handwriting';
+  kind: 'webfonts#webfont';
+  menu?: string;
+}
+
+export interface FontLibraryData {
+  google: GoogleFontData[];
+  custom: Array<{
+    name: string;
+    url: string;
+    weights: number[];
+    fallbacks: string[];
+  }>;
+  system: Array<{
+    name: string;
+    stack: string[];
+    label: string;
+  }>;
+}
+
+export interface ContentEditorState {
+  isActive: boolean;
+  selectedBlockId: string | null;
+  editMode: 'visual' | 'code' | 'split';
+  hasUnsavedChanges: boolean;
+  undoStack: UndoRedoSnapshot[];
+  redoStack: UndoRedoSnapshot[];
+  searchQuery: string;
+  filters: {
+    type?: ContentBlock['type'][];
+    visibility?: boolean;
+    hasContent?: boolean;
+  };
+  dragState: {
+    isDragging: boolean;
+    draggedId: string | null;
+    dropTargetId: string | null;
+    dropPosition: 'before' | 'after' | null;
+  };
+}
+
+export interface TemplateCustomizationConfig {
+  templateId: number;
+  brand: BrandCustomization;
+  content: ContentCustomization;
+  settings: {
+    autoSave: boolean;
+    realTimePreview: boolean;
+    showAccessibilityWarnings: boolean;
+    darkModePreview: boolean;
+    responsivePreview: boolean;
+    exportFormats: ('pdf' | 'png' | 'jpg' | 'html')[];
+  };
+  metadata: {
+    createdBy: number;
+    createdAt: string;
+    updatedBy?: number;
+    updatedAt?: string;
+    version: number;
+    changeLog: Array<{
+      action: string;
+      timestamp: string;
+      userId: number;
+      details: Record<string, any>;
+    }>;
+  };
+}
+
+export interface CustomizationAPIResponse {
+  data: TemplateCustomizationConfig;
+  preview?: {
+    html: string;
+    css: string;
+    js?: string;
+  };
+  validation?: {
+    errors: Array<{
+      field: string;
+      message: string;
+      severity: 'error' | 'warning' | 'info';
+    }>;
+    score: {
+      accessibility: number;
+      performance: number;
+      seo: number;
+      overall: number;
+    };
+  };
+}
+
+export interface BulkCustomizationUpdate {
+  templateId: number;
+  updates: Partial<{
+    brand: Partial<BrandCustomization>;
+    content: Partial<ContentCustomization>;
+    settings: Partial<TemplateCustomizationConfig['settings']>;
+  }>;
+  validateBeforeSave: boolean;
+  createSnapshot: boolean;
+  snapshotLabel?: string;
+}
 }

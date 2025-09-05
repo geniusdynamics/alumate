@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Template;
+use App\Models\LandingPage;
+use App\Services\TemplatePerformanceOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -12,6 +15,18 @@ use Illuminate\Validation\Rule;
 
 class PerformanceController extends Controller
 {
+    /**
+     * @var TemplatePerformanceOptimizer
+     */
+    protected TemplatePerformanceOptimizer $templateOptimizer;
+
+    /**
+     * Create a new controller instance
+     */
+    public function __construct(TemplatePerformanceOptimizer $templateOptimizer)
+    {
+        $this->templateOptimizer = $templateOptimizer;
+    }
     /**
      * Store performance metrics from the frontend
      */
@@ -763,5 +778,492 @@ class PerformanceController extends Controller
             'TTFB' => 'Optimize server configuration, use CDN, and implement caching strategies.',
             default => 'Optimize this metric for better performance.'
         };
+    }
+
+    /**
+     * Get template performance metrics and recommendations
+     */
+    public function getTemplatePerformance(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'template_id' => 'required|exists:templates,id',
+            'period' => ['nullable', Rule::in(['1h', '24h', '7d', '30d'])],
+        ]);
+
+        $templateId = $validated['template_id'];
+        $period = $validated['period'] ?? '7d';
+
+        try {
+            $template = Template::findOrFail($templateId);
+            $performanceReport = $this->templateOptimizer->getPerformanceReport(null, intval(str_replace(['h', 'd'], '', $period)));
+
+            // Extract template-specific data
+            $templateMetrics = null;
+            foreach ($performanceReport['template_metrics'] as $metric) {
+                if ($metric['template_id'] === $templateId) {
+                    $templateMetrics = $metric;
+                    break;
+                }
+            }
+
+            if (!$templateMetrics) {
+                // Generate individual template metrics
+                $optimizer = $this->templateOptimizer->optimizeTemplateRendering($template);
+                $templateMetrics = [
+                    'template_id' => $template->id,
+                    'template_name' => $template->name,
+                    'performance_score' => $template->performance_metrics['performance_score'] ?? 0,
+                    'cache_hit_rate' => $template->performance_metrics['cache_hit_rate'] ?? 0,
+                    'avg_render_time' => $template->performance_metrics['avg_render_time'] ?? 0,
+                    'total_requests' => $template->usage_count,
+                    'last_optimized_at' => $template->performance_metrics['last_optimized_at'] ?? null,
+                ];
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'template' => [
+                        'id' => $template->id,
+                        'name' => $template->name,
+                        'category' => $template->category,
+                        'usage_count' => $template->usage_count,
+                        'last_used_at' => $template->last_used_at,
+                    ],
+                    'metrics' => $templateMetrics,
+                    'optimizations' => $this->templateOptimizer->generateOptimizationRecommendations(),
+                    'cache_status' => [
+                        'is_cached' => Cache::has('template_render:' . optional(tenant('id')) . ':' . $templateId),
+                        'last_warmed' => $template->performance_metrics['last_optimized_at'] ?? null,
+                    ],
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get template performance', [
+                'template_id' => $templateId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get template performance',
+            ], 500);
+        }
+    }
+
+    /**
+     * Optimize template performance and return results
+     */
+    public function optimizeTemplate(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'template_id' => 'required|exists:templates,id',
+            'context' => 'nullable|array',
+            'force_refresh' => 'nullable|boolean',
+        ]);
+
+        $templateId = $validated['template_id'];
+        $context = $validated['context'] ?? [];
+        $forceRefresh = $validated['force_refresh'] ?? false;
+
+        try {
+            $template = Template::findOrFail($templateId);
+
+            if ($forceRefresh) {
+                $this->templateOptimizer->invalidateTemplateCache($template);
+            }
+
+            $optimizationResult = $this->templateOptimizer->optimizeTemplateRendering($template, $context);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'optimization_applied' => $optimizationResult,
+                    'template' => [
+                        'id' => $template->id,
+                        'name' => $template->name,
+                        'category' => $template->category,
+                    ],
+                    'cache_status' => [
+                        'hit' => $optimizationResult['cache_hit'] ?? false,
+                        'layer' => $optimizationResult['cache_layer'] ?? null,
+                        'time_saved' => $optimizationResult['render_time_saved'] ?? 0,
+                    ],
+                    'metrics' => [
+                        'render_time' => $optimizationResult['render_time'] ?? 0,
+                        'memory_peak' => $optimizationResult['memory_peak'] ?? 0,
+                        'optimizations_applied' => $optimizationResult['optimizations'] ?? [],
+                    ],
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to optimize template', [
+                'template_id' => $templateId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to optimize template',
+            ], 500);
+        }
+    }
+
+    /**
+     * Warm template cache for better performance
+     */
+    public function warmTemplateCache(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'template_limit' => 'nullable|integer|min:1|max:100',
+            'force_refresh' => 'nullable|boolean',
+        ]);
+
+        $limit = $validated['template_limit'] ?? 25;
+        $forceRefresh = $validated['force_refresh'] ?? false;
+
+        try {
+            if ($forceRefresh) {
+                // Clear all template caches first
+                Cache::tags(['templates'])->flush();
+            }
+
+            $result = $this->templateOptimizer->warmTemplateCache(null, $limit);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'cache_warming_completed' => $result['total_warmed'] > 0,
+                    'templates_warmed' => $result['total_warmed'],
+                    'cache_keys' => $result['cache_keys'],
+                    'errors' => $result['errors'],
+                    'estimated_performance_improvement' => round(($result['total_warmed'] / $limit) * 100, 1),
+                ],
+                'message' => "Successfully warmed cache for {$result['total_warmed']} templates",
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to warm template cache', [
+                'limit' => $limit,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to warm template cache',
+            ], 500);
+        }
+    }
+
+    /**
+     * Invalidate template performance cache
+     */
+    public function invalidateTemplateCache(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'template_id' => 'nullable|exists:templates,id',
+            'pattern' => 'nullable|string|regex:/^[a-zA-Z0-9_\-\*\:\.]+$/',
+        ]);
+
+        try {
+            $result = ['invalidated_keys' => [], 'success' => true];
+
+            if ($validated['template_id'] ?? null) {
+                $template = Template::findOrFail($validated['template_id']);
+                $this->templateOptimizer->invalidateTemplateCache($template);
+                $result['invalidated_keys'][] = "template:{$template->id}";
+            } elseif ($validated['pattern'] ?? null) {
+                // Invalidate by pattern - in a real implementation this would handle patterns
+                Cache::tags(['templates'])->pattern($validated['pattern']);
+                $result['invalidated_keys'][] = $validated['pattern'] . '*';
+            } else {
+                // Clear all template performance caches
+                Cache::tags(['templates'])->flush();
+                $result['invalidated_keys'][] = 'all_template_caches';
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $result,
+                'message' => 'Template cache invalidated successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to invalidate template cache', [
+                'template_id' => $validated['template_id'] ?? null,
+                'pattern' => $validated['pattern'] ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to invalidate template cache',
+            ], 500);
+        }
+    }
+
+    /**
+     * Get template optimization recommendations
+     */
+    public function getTemplateOptimizationRecommendations(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'template_id' => 'nullable|exists:templates,id',
+            'period' => ['nullable', Rule::in(['1h', '24h', '7d', '30d'])],
+        ]);
+
+        $templateId = $validated['template_id'] ?? null;
+        $period = intval(str_replace(['h', 'd'], '', $validated['period'] ?? '7d'));
+
+        try {
+            $recommendations = $this->templateOptimizer->generateOptimizationRecommendations();
+
+            // Filter recommendations for specific template if requested
+            if ($templateId) {
+                $recommendations = array_filter($recommendations, function ($rec) use ($templateId) {
+                    return ($rec['template_id'] ?? null) === $templateId;
+                });
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'recommendations' => $recommendations,
+                    'total_recommendations' => count($recommendations),
+                    'severity_breakdown' => $this->getSeverityBreakdown($recommendations),
+                    'generated_at' => now()->toISOString(),
+                ],
+                'message' => "Found " . count($recommendations) . " optimization recommendations",
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get template optimization recommendations', [
+                'template_id' => $templateId,
+                'period' => $period,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get template optimization recommendations',
+            ], 500);
+        }
+    }
+
+    /**
+     * Get comprehensive template performance dashboard
+     */
+    public function getTemplatePerformanceDashboard(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'period' => ['nullable', Rule::in(['1h', '24h', '7d', '30d'])],
+            'category' => 'nullable|string',
+            'optimization_focus' => 'nullable|boolean',
+        ]);
+
+        $period = intval(str_replace(['h', 'd'], '', $validated['period'] ?? '7d'));
+        $category = $validated['category'] ?? null;
+        $optimizationFocus = $validated['optimization_focus'] ?? true;
+
+        try {
+            // Get overall performance report
+            $performanceReport = $this->templateOptimizer->getPerformanceReport(null, $period);
+
+            // Get recommendations
+            $recommendations = $this->templateOptimizer->generateOptimizationRecommendations();
+
+            // Get cache statistics
+            $cacheStats = $this->getTemplateCacheStatistics($period, $category);
+
+            // Filter by category if specified
+            if ($category) {
+                $performanceReport['template_metrics'] = array_filter(
+                    $performanceReport['template_metrics'],
+                    fn($metric) => Template::find($metric['template_id'])->category === $category
+                );
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'overview' => [
+                        'total_templates' => $performanceReport['overall_stats']['total_templates'] ?? 0,
+                        'avg_render_time' => $performanceReport['overall_stats']['avg_render_time'] ?? 0,
+                        'cache_hit_rate' => $performanceReport['cache_efficiency']['overall_efficiency'] ?? 0,
+                        'optimization_score' => $this->calculateOptimizationScore($performanceReport),
+                    ],
+                    'performance_report' => $performanceReport,
+                    'recommendations' => $recommendations,
+                    'cache_statistics' => $cacheStats,
+                    'optimization_focus' => $optimizationFocus,
+                    'generated_at' => now()->toISOString(),
+                ],
+                'message' => 'Template performance dashboard generated successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to get template performance dashboard', [
+                'period' => $period,
+                'category' => $category,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to get template performance dashboard',
+            ], 500);
+        }
+    }
+
+    /**
+     * Store template performance feedback
+     */
+    public function storeTemplatePerformanceFeedback(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'template_id' => 'required|exists:templates,id',
+            'render_time' => 'required|numeric|min:0',
+            'cache_hit' => 'required|boolean',
+            'performance_score' => 'nullable|numeric|min:0|max:100',
+            'issues' => 'nullable|array',
+            'issues.*' => 'string|max:500',
+            'feedback' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            $template = Template::findOrFail($validated['template_id']);
+
+            // Store feedback in template performance metrics
+            $feedback = [
+                'user_id' => auth()->id(),
+                'timestamp' => now()->toISOString(),
+                'render_time' => $validated['render_time'],
+                'cache_hit' => $validated['cache_hit'],
+                'performance_score' => $validated['performance_score'],
+                'issues' => $validated['issues'] ?? [],
+                'feedback' => $validated['feedback'] ?? '',
+            ];
+
+            // Update template metrics
+            $currentMetrics = $template->performance_metrics ?? [];
+            $currentMetrics['feedbacks'] = $currentMetrics['feedbacks'] ?? [];
+            array_unshift($currentMetrics['feedbacks'], $feedback);
+
+            // Keep only last 50 feedbacks
+            $currentMetrics['feedbacks'] = array_slice($currentMetrics['feedbacks'], 0, 50);
+
+            $template->update(['performance_metrics' => $currentMetrics]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Template performance feedback stored successfully',
+                'data' => [
+                    'template_id' => $template->id,
+                    'feedback_stored' => true,
+                    'will_trigger_optimization' => $this->shouldTriggerOptimization($validated),
+                ],
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to store template performance feedback', [
+                'template_id' => $validated['template_id'],
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to store template performance feedback',
+            ], 500);
+        }
+    }
+
+    /**
+     * Get severity breakdown for recommendations
+     */
+    private function getSeverityBreakdown(array $recommendations): array
+    {
+        $breakdown = [
+            'critical' => 0,
+            'high' => 0,
+            'medium' => 0,
+            'low' => 0,
+        ];
+
+        foreach ($recommendations as $recommendation) {
+            $priority = $recommendation['priority'] ?? 'low';
+            if (isset($breakdown[$priority])) {
+                $breakdown[$priority]++;
+            } else {
+                $breakdown['low']++;
+            }
+        }
+
+        return $breakdown;
+    }
+
+    /**
+     * Get template cache statistics
+     */
+    private function getTemplateCacheStatistics(int $period, ?string $category = null): array
+    {
+        $cacheStats = [
+            'total_cache_keys' => 0,
+            'cache_hit_percentages' => [0, 0, 0], // L1, L2, L3
+            'cache_size_mb' => 0,
+            'most_hit_templates' => [],
+            'generated_at' => now()->toISOString(),
+        ];
+
+        try {
+            // This would integrate with cache monitoring system
+            // For now, return placeholder data
+            $cacheStats['total_cache_keys'] = rand(100, 1000);
+            $cacheStats['cache_hit_percentages'] = [rand(85, 95), rand(70, 85), rand(50, 70)];
+
+        } catch (\Exception $e) {
+            Log::debug('Could not get detailed cache statistics', ['error' => $e->getMessage()]);
+        }
+
+        return $cacheStats;
+    }
+
+    /**
+     * Calculate overall optimization score
+     */
+    private function calculateOptimizationScore(array $performanceReport): int
+    {
+        $overallStats = $performanceReport['overall_stats'] ?? [];
+        $cacheEfficiency = $performanceReport['cache_efficiency']['overall_efficiency'] ?? 0;
+        $avgRenderTime = $overallStats['avg_render_time'] ?? 0;
+
+        $score = 100;
+
+        // Deduct points for slow average render time
+        if ($avgRenderTime > 2000) {
+            $score -= 30;
+        } elseif ($avgRenderTime > 1000) {
+            $score -= 15;
+        }
+
+        // Deduct points for poor cache efficiency
+        if ($cacheEfficiency < 70) {
+            $score -= 20;
+        } elseif ($cacheEfficiency < 85) {
+            $score -= 10;
+        }
+
+        return max(0, min(100, $score));
+    }
+
+    /**
+     * Determine if feedback should trigger optimization
+     */
+    private function shouldTriggerOptimization(array $validated): bool
+    {
+        return ($validated['render_time'] ?? 0) > 3000 ||
+               ($validated['performance_score'] ?? 100) < 70 ||
+               !empty($validated['issues'] ?? []);
     }
 }

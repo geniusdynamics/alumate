@@ -1,19 +1,23 @@
 <template>
-  <div class="metric-card bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-    <div class="flex items-center">
-      <div :class="iconClasses" class="flex-shrink-0">
-        <span class="text-2xl">{{ icon }}</span>
+  <div class="metric-card bg-white rounded-lg shadow p-6">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm font-medium text-gray-600">{{ title }}</p>
+        <p class="text-2xl font-bold text-gray-900">{{ value }}</p>
+        <div v-if="change !== 0" class="flex items-center mt-2">
+          <span
+            class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+            :class="changeClass"
+          >
+            <TrendingUpIcon v-if="change > 0" class="w-3 h-3 mr-1" />
+            <TrendingDownIcon v-else class="w-3 h-3 mr-1" />
+            {{ Math.abs(change) }}%
+          </span>
+          <span class="text-xs text-gray-500 ml-2">vs last period</span>
+        </div>
       </div>
-      <div class="ml-4 flex-1">
-        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 truncate">
-          {{ title }}
-        </p>
-        <p class="text-2xl font-semibold text-gray-900 dark:text-white">
-          {{ value }}
-        </p>
-        <p v-if="change" :class="changeClasses" class="text-sm font-medium">
-          {{ change }}
-        </p>
+      <div class="metric-icon" :class="iconClass">
+        <component :is="iconComponent" class="w-8 h-8" />
       </div>
     </div>
   </div>
@@ -21,52 +25,75 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import {
+  TrendingUpIcon,
+  TrendingDownIcon,
+  TemplateIcon,
+  UsersIcon,
+  TargetIcon,
+  PercentIcon
+} from 'lucide-vue-next'
 
 interface Props {
   title: string
   value: string | number
-  icon: string
-  color: 'blue' | 'green' | 'yellow' | 'purple' | 'red'
-  change?: string
-  changeType?: 'positive' | 'negative' | 'neutral'
+  change?: number
+  changeType?: string
+  icon?: string
 }
 
-const props = defineProps<Props>()
-
-const iconClasses = computed(() => {
-  const baseClasses = 'w-12 h-12 rounded-lg flex items-center justify-center'
-  
-  const colorClasses = {
-    blue: 'bg-blue-100 dark:bg-blue-900',
-    green: 'bg-green-100 dark:bg-green-900',
-    yellow: 'bg-yellow-100 dark:bg-yellow-900',
-    purple: 'bg-purple-100 dark:bg-purple-900',
-    red: 'bg-red-100 dark:bg-red-900',
-  }
-  
-  return `${baseClasses} ${colorClasses[props.color]}`
+const props = withDefaults(defineProps<Props>(), {
+  change: 0,
+  changeType: 'neutral',
+  icon: 'default'
 })
 
-const changeClasses = computed(() => {
-  if (!props.changeType) return 'text-gray-600 dark:text-gray-400'
-  
-  const typeClasses = {
-    positive: 'text-green-600 dark:text-green-400',
-    negative: 'text-red-600 dark:text-red-400',
-    neutral: 'text-gray-600 dark:text-gray-400',
+const changeClass = computed(() => {
+  if (props.change > 0) {
+    return 'bg-green-100 text-green-800'
+  } else if (props.change < 0) {
+    return 'bg-red-100 text-red-800'
   }
-  
-  return typeClasses[props.changeType]
+  return 'bg-gray-100 text-gray-800'
+})
+
+const iconComponent = computed(() => {
+  switch (props.icon) {
+    case 'template':
+      return TemplateIcon
+    case 'users':
+      return UsersIcon
+    case 'conversion':
+      return TargetIcon
+    case 'percentage':
+      return PercentIcon
+    default:
+      return TargetIcon
+  }
+})
+
+const iconClass = computed(() => {
+  switch (props.icon) {
+    case 'template':
+      return 'text-blue-600 bg-blue-100'
+    case 'users':
+      return 'text-green-600 bg-green-100'
+    case 'conversion':
+      return 'text-purple-600 bg-purple-100'
+    case 'percentage':
+      return 'text-orange-600 bg-orange-100'
+    default:
+      return 'text-gray-600 bg-gray-100'
+  }
 })
 </script>
 
 <style scoped>
 .metric-card {
-  transition: transform 0.2s ease-in-out, shadow 0.2s ease-in-out;
+  @apply transition-all duration-200 hover:shadow-lg;
 }
 
-.metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+.metric-icon {
+  @apply p-3 rounded-full;
 }
 </style>

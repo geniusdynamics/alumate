@@ -1,87 +1,23 @@
-Accessibility Compliance (Tests\Performance\AccessibilityCompliance)
- [ ] Homepage wcag aa compliance
- [x] Homepage semantic html structure
- [x] Homepage keyboard navigation
- [x] Homepage aria compliance
- [x] Homepage color contrast
- [x] Homepage images accessibility
- [x] Homepage form accessibility
- [x] Homepage multimedia accessibility
- [x] Homepage responsive accessibility
- [x] Homepage performance accessibility impact
-
-Bundle Optimization (Tests\Performance\BundleOptimization)
- [ ] It loads homepage with optimized bundles
-
-D:\DevCenter\abuilds\alumate\tests\Feature\Admin\HomepageContentControllerTest.php
- [ ] can view content management index
- [ ] can get content via api
- [ ] can update content
- [ ] can bulk update content
- [ ] can request approval for content
- [ ] can approve content
- [ ] can reject content
- [ ] can publish approved content
- [ ] can get content history
- [ ] can revert to version
- [ ] can preview content changes
- [ ] can export content
- [ ] can import content
- [ ] validates content update request
- [ ] validates bulk update request
-
-D:\DevCenter\abuilds\alumate\tests\Feature\HomepageControllerTest.php
- [ ] index handles null service responses gracefully
- [ ] institutional handles malformed ab tests safely
- [ ] getMetaData falls back to hero and defaults
-
-D:\DevCenter\abuilds\alumate\tests\Unit\HomepageContentServiceTest.php
- [ ] can get content for audience
- [ ] can get formatted content
- [ ] can update content
- [ ] can update existing content
- [ ] can request approval
- [ ] can approve content
- [ ] can publish approved content
- [ ] cannot publish unapproved content
- [ ] can revert to version
- [ ] can bulk update content
- [ ] content caching works
- [ ] can export content
- [ ] can import content
-
-Deployment Verification (Tests\Feature\DeploymentVerification)
- [ ] It can run homepage migrations
-
-Hero Section (Tests\Feature\HeroSection)
- [x] Homepage loads with individual audience
- [x] Homepage loads with institutional audience
- [ ] Homepage service provides dual audience content
-
-Homepage Performance (Tests\Performance\HomepagePerformance)
- [ ] Homepage load performance under concurrent users
- [ ] Homepage api response times
- [ ] Homepage caching performance
- [ ] Homepage database query optimization
- [ ] Homepage memory usage
- [ ] Homepage image optimization performance
- [ ] Homepage javascript bundle performance
- [ ] Homepage css performance
- [ ] Homepage seo performance
- [ ] Homepage accessibility performance
- [ ] Homepage analytics performance
- [ ] Homepage ab testing performance
-
-Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)
- [ ] Uptime monitoring detects down endpoints
- [ ] Performance alert is sent when threshold exceeded
- [ ] Error alert is sent with proper rate limiting
- [ ] Conversion monitoring detects low conversion rates
- [ ] Security monitoring detects suspicious activity
- [ ] Alert notification email is sent
- [ ] Slack alert is sent when configured
- [ ] Sentry integration captures alerts
- [ ] Monitoring dashboard returns comprehensive data
- [ ] Health check endpoint returns proper status
- [ ] Monitoring command runs successfully
+Template Xss Prevention Service (Tests\Unit\Services\TemplateXssPreventionService)
+ [ ] It sanitizes basic html content
+ [ ] It removes script tags
+ [ ] It removes event handlers
+ [ ] It sanitizes javascript urls
+ [ ] It removes iframe tags
+ [ ] It throws exception for script injection
+ [ ] It throws exception for data exfiltration
+ [ ] It sanitizes template structure recursively
+ [ ] It logs security events for threats
+ [ ] It handles css expressions
+ [ ] It sanitizes vbscript urls
+ [ ] It handles data url schemes
+ [ ] It preserves safe html tags
+ [ ] It sanitizes mixed safe and dangerous content
+ [ ] It handles complex event handlers
+ [ ] It provides sanitization statistics
+ [ ] It handles self closing dangerous tags
+ [ ] It sanitizes object and embed tags
+ [ ] It handles case insensitive dangerous tags
+ [ ] It preserves safe attributes
+ [ ] It handles malformed html
 

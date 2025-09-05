@@ -3,19 +3,13 @@
 namespace Tests\Unit\Services;
 
 use App\Models\User;
+use App\Models\NotificationTemplate;
+use App\Models\NotificationPreference;
 use App\Services\NotificationService;
-use App\Notifications\TestNotification;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Notification as NotificationFacade;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Notifications\DatabaseNotification;
-use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Mockery;
+use Illuminate\Support\Facades\Cache;
+use Tests\TestCase;
 
-/**
- * Unit tests for NotificationService
- */
 class NotificationServiceTest extends TestCase
 {
     use RefreshDatabase;
@@ -28,447 +22,196 @@ class NotificationServiceTest extends TestCase
         parent::setUp();
 
         $this->notificationService = new NotificationService();
-        $this->user = User::factory()->create();
 
-        // Clear cache before each test
-        Cache::flush();
-    }
+        // Create a test user
+        $this->user = User::factory()->create([
+            'email' => 'test@example.com',
+            'name' => 'Test User',
+        ]);
 
-    /**
-     * Test sending notification to user via multiple channels
-     */
-    public function test_send_notification()
-    {
-        // Mock notification
-        $notificationMock = Mockery::mock(TestNotification::class);
-        $notificationMock->shouldReceive('via')->andReturn(['database', 'mail']);
+        // Create test notification templates
+        NotificationTemplate::create([
+            'name' => 'test_notification',
+            'type' => 'email',
+            'subject' => 'Test Subject',
+            'content' => 'Hello {{user_name}}, this is a test notification.',
+            'variables' => ['user_name'],
+            'is_active' => true,
+        ]);
 
-        // Mock Laravel Notification facade
-        NotificationFacade::shouldReceive('send')
-            ->once()
-            ->andReturnNull();
-
-        // Test sending notification
-        $this->notificationService->sendNotification($this->user, $notificationMock);
-
-        // Verify notification was stored in database
-        $this->assertDatabaseHas('notifications', [
-            'notifiable_id' => $this->user->id,
-            'notifiable_type' => get_class($this->user),
+        NotificationTemplate::create([
+            'name' => 'test_notification',
+            'type' => 'sms',
+            'content' => 'Hello {{user_name}}, SMS test.',
+            'variables' => ['user_name'],
+            'is_active' => true,
         ]);
     }
 
-    /**
-     * Test marking notification as read
-     */
-    public function test_mark_as_read()
+    /** @test */
+    public function it_can_send_notification_to_single_user()
     {
-        // Create a notification first
-        $this->user->notify(new TestNotification());
+        $result = $this->notificationService->sendNotification(
+            $this->user->id,
+            'test_notification',
+            ['user_name' => $this->user->name]
+        );
 
-        $notification = $this->user->notifications()->first();
-
-        // Initially unread
-        $this->assertNull($notification->read_at);
-
-        // Mark as read
-        $result = $this->notificationService->markAsRead($notification->id, $this->user);
-
-        $this->assertTrue($result);
-
-        // Verify notification is now read
-        $updatedNotification = $this->user->notifications()->find($notification->id);
-        $this->assertNotNull($updatedNotification->read_at);
+        $this->assertCount(1, $result);
+        $this->assertEquals($this->user->id, $result[0]['user_id']);
+        $this->assertEquals('test_notification', $result[0]['type']);
     }
 
-    /**
-     * Test mark as read with invalid notification ID
-     */
-    public function test_mark_as_read_invalid_id()
+    /** @test */
+    public function it_can_send_bulk_notifications()
     {
-        $result = $this->notificationService->markAsRead('invalid-id', $this->user);
+        $user2 = User::factory()->create();
 
-        $this->assertFalse($result);
-    }
-
-    /**
-     * Test mark as read on already read notification
-     */
-    public function test_mark_as_read_already_read()
-    {
-        // Create and mark notification as read
-        $this->user->notify(new TestNotification());
-        $notification = $this->user->notifications()->first();
-        $notification->markAsRead();
-
-        // Try to mark as read again
-        $result = $this->notificationService->markAsRead($notification->id, $this->user);
-
-        $this->assertFalse($result);
-    }
-
-    /**
-     * Test marking all notifications as read
-     */
-    public function test_mark_all_as_read()
-    {
-        // Create multiple unread notifications
-        $this->user->notify(new TestNotification());
-        $this->user->notify(new TestNotification());
-        $this->user->notify(new TestNotification());
-
-        $unreadCount = $this->user->unreadNotifications()->count();
-        $this->assertEquals(3, $unreadCount);
-
-        // Mark all as read
-        $markedCount = $this->notificationService->markAllAsRead($this->user);
-
-        $this->assertEquals(3, $markedCount);
-
-        // Verify all are now read
-        $remainingUnread = $this->user->unreadNotifications()->count();
-        $this->assertEquals(0, $remainingUnread);
-    }
-
-    /**
-     * Test getting unread count
-     */
-    public function test_get_unread_count()
-    {
-        // Create unread notifications
-        $this->user->notify(new TestNotification());
-        $this->user->notify(new TestNotification());
-
-        $unreadCount = $this->notificationService->getUnreadCount($this->user);
-        $this->assertEquals(2, $unreadCount);
-
-        // Test caching
-        $cachedCount = $this->notificationService->getUnreadCount($this->user);
-        $this->assertEquals(2, $cachedCount);
-    }
-
-    /**
-     * Test get unread count with caching
-     */
-    public function test_get_unread_count_caching()
-    {
-        $cacheKey = "unread_notifications_count_{$this->user->id}";
-
-        // Initially cache should be empty
-        $this->assertFalse(Cache::has($cacheKey));
-
-        // Create notification and get count
-        $this->user->notify(new TestNotification());
-        $count = $this->notificationService->getUnreadCount($this->user);
-
-        // Cache should now be set
-        $this->assertTrue(Cache::has($cacheKey));
-        $this->assertEquals(1, $count);
-
-        // Add another notification
-        $this->user->notify(new TestNotification());
-
-        // Count should still be cached (old value)
-        $cachedCount = $this->notificationService->getUnreadCount($this->user);
-        $this->assertEquals(1, $cachedCount); // Still shows cached value
-    }
-
-    /**
-     * Test getting user notifications with pagination
-     */
-    public function test_get_user_notifications_pagination()
-    {
-        // Create multiple notifications
-        for ($i = 0; $i < 5; $i++) {
-            $this->user->notify(new TestNotification());
-        }
-
-        $notifications = $this->notificationService->getUserNotifications($this->user, 3);
-
-        $this->assertInstanceOf(\Illuminate\Pagination\LengthAwarePaginator::class, $notifications);
-        $this->assertEquals(3, $notifications->perPage());
-        $this->assertEquals(5, $notifications->total());
-
-        // Should be ordered by creation date descending
-        $this->assertTrue($notifications->first()->created_at > $notifications->last()->created_at);
-    }
-
-    /**
-     * Test getting user preferences with defaults
-     */
-    public function test_get_user_preferences_defaults()
-    {
-        // User with no custom preferences
-        $preferences = $this->notificationService->getUserPreferences($this->user);
-
-        $this->assertEquals(true, $preferences['email_enabled']);
-        $this->assertEquals(true, $preferences['push_enabled']);
-        $this->assertEquals('immediate', $preferences['email_frequency']);
-
-        // Check default types structure
-        $this->assertArrayHasKey('types', $preferences);
-        $this->assertArrayHasKey('post_reaction', $preferences['types']);
-        $this->assertArrayHasKey('email', $preferences['types']['post_reaction']);
-    }
-
-    /**
-     * Test getting user preferences with custom settings
-     */
-    public function test_get_user_preferences_custom()
-    {
-        $customPreferences = [
-            'email_enabled' => false,
-            'push_enabled' => true,
-            'custom_setting' => 'test_value'
+        $notifications = [
+            [
+                'user' => $this->user->id,
+                'type' => 'test_notification',
+                'data' => ['user_name' => $this->user->name],
+            ],
+            [
+                'user' => $user2->id,
+                'type' => 'test_notification',
+                'data' => ['user_name' => $user2->name],
+            ],
         ];
 
-        $this->user->update(['notification_preferences' => $customPreferences]);
+        $result = $this->notificationService->sendBulkNotifications($notifications);
 
-        $preferences = $this->notificationService->getUserPreferences($this->user);
-
-        $this->assertEquals(false, $preferences['email_enabled']);
-        $this->assertEquals(true, $preferences['push_enabled']);
-        $this->assertEquals('test_value', $preferences['custom_setting']);
+        $this->assertCount(2, $result);
+        $this->assertEquals($this->user->id, $result[0]['user_id']);
+        $this->assertEquals($user2->id, $result[1]['user_id']);
     }
 
-    /**
-     * Test updating user preferences
-     */
-    public function test_update_user_preferences()
+    /** @test */
+    public function it_respects_user_notification_preferences()
     {
-        $newPreferences = [
+        // Create preference with email disabled
+        NotificationPreference::create([
+            'user_id' => $this->user->id,
+            'notification_type' => 'test_notification',
             'email_enabled' => false,
+            'sms_enabled' => true,
+            'in_app_enabled' => true,
             'push_enabled' => false,
-            'custom_setting' => 'updated_value'
-        ];
-
-        $this->notificationService->updateUserPreferences($this->user, $newPreferences);
-
-        $this->user->refresh();
-        $this->assertEquals($newPreferences, $this->user->notification_preferences);
-    }
-
-    /**
-     * Test clearing preferences cache when updating
-     */
-    public function test_update_preferences_clears_cache()
-    {
-        $cacheKey = "notification_preferences_{$this->user->id}";
-
-        // Get preferences to cache them
-        $oldPreferences = $this->notificationService->getUserPreferences($this->user);
-        $this->assertTrue(Cache::has($cacheKey));
-
-        // Update preferences
-        $this->notificationService->updateUserPreferences($this->user, ['email_enabled' => false]);
-
-        // Cache should be cleared
-        $this->assertFalse(Cache::has($cacheKey));
-    }
-
-    /**
-     * Test cleanup old notifications
-     */
-    public function test_cleanup_old_notifications()
-    {
-        // Create old notification
-        DatabaseNotification::create([
-            'id' => fake()->uuid(),
-            'notifiable_id' => $this->user->id,
-            'notifiable_type' => get_class($this->user),
-            'data' => ['test' => 'data'],
-            'read_at' => null,
-            'created_at' => now()->subDays(100),
-            'updated_at' => now()->subDays(100)
         ]);
 
-        // Create new notification
-        DatabaseNotification::create([
-            'id' => fake()->uuid(),
-            'notifiable_id' => $this->user->id,
-            'notifiable_type' => get_class($this->user),
-            'data' => ['test' => 'data'],
-            'read_at' => null,
-            'created_at' => now(),
-            'updated_at' => now()
+        $result = $this->notificationService->sendNotification(
+            $this->user->id,
+            'test_notification',
+            ['user_name' => $this->user->name]
+        );
+
+        $this->assertCount(1, $result);
+        $channels = $result[0]['channels_sent'];
+
+        // Should not have email channel
+        $this->assertArrayNotHasKey('email', $channels);
+        // Should have SMS and in-app channels
+        $this->assertArrayHasKey('sms', $channels);
+        $this->assertArrayHasKey('in_app', $channels);
+    }
+
+    /** @test */
+    public function it_can_update_notification_preferences()
+    {
+        $preference = $this->notificationService->updatePreferences(
+            $this->user->id,
+            'test_notification',
+            [
+                'email_enabled' => false,
+                'sms_enabled' => true,
+                'in_app_enabled' => true,
+                'push_enabled' => false,
+            ]
+        );
+
+        $this->assertInstanceOf(NotificationPreference::class, $preference);
+        $this->assertEquals($this->user->id, $preference->user_id);
+        $this->assertEquals('test_notification', $preference->notification_type);
+        $this->assertFalse($preference->email_enabled);
+        $this->assertTrue($preference->sms_enabled);
+    }
+
+    /** @test */
+    public function it_can_get_user_preferences()
+    {
+        // Create a preference
+        $this->notificationService->updatePreferences(
+            $this->user->id,
+            'test_notification',
+            ['email_enabled' => false]
+        );
+
+        $preferences = $this->notificationService->getAllUserPreferences($this->user->id);
+
+        $this->assertArrayHasKey('test_notification', $preferences);
+        $this->assertFalse($preferences['test_notification']['email_enabled']);
+    }
+
+    /** @test */
+    public function it_returns_default_preferences_when_none_exist()
+    {
+        $preferences = $this->notificationService->getAllUserPreferences($this->user->id);
+
+        $this->assertArrayHasKey('job_match', $preferences);
+        $this->assertArrayHasKey('application_status', $preferences);
+        $this->assertArrayHasKey('interview_reminder', $preferences);
+    }
+
+    /** @test */
+    public function it_caches_notification_preferences()
+    {
+        // First call should cache
+        $preferences1 = $this->notificationService->getAllUserPreferences($this->user->id);
+
+        // Modify database directly
+        NotificationPreference::create([
+            'user_id' => $this->user->id,
+            'notification_type' => 'test_notification',
+            'email_enabled' => false,
         ]);
 
-        $totalBefore = DatabaseNotification::count();
-        $deletedCount = $this->notificationService->cleanupOldNotifications(50);
+        // Second call should return cached data
+        $preferences2 = $this->notificationService->getAllUserPreferences($this->user->id);
 
-        $this->assertGreaterThan(0, $deletedCount);
-        $this->assertEquals($totalBefore - 1, DatabaseNotification::count());
+        $this->assertEquals($preferences1, $preferences2);
     }
 
-    /**
-     * Test getting notification statistics
-     */
-    public function test_get_notification_stats()
+    /** @test */
+    public function it_can_clear_user_cache()
     {
-        // Create some notifications
-        $this->user->notify(new TestNotification()); // unread
-        $this->user->notify(new TestNotification()); // unread
+        // Set some data
+        Cache::put("notification_preferences_{$this->user->id}_test", 'test_data', 3600);
 
-        // Mark one as read
-        $notification = $this->user->notifications()->first();
-        $notification->markAsRead();
+        // Clear cache
+        $this->notificationService->clearUserCache($this->user->id);
 
-        $stats = $this->notificationService->getNotificationStats($this->user);
-
-        $this->assertEquals(2, $stats['total']);
-        $this->assertEquals(1, $stats['unread']);
-        $this->assertEquals(1, $stats['read']);
-        $this->assertIsArray($stats['by_type']);
+        // Verify cache is cleared
+        $this->assertNull(Cache::get("notification_preferences_{$this->user->id}_test"));
     }
 
-    /**
-     * Test sending bulk notifications
-     */
-    public function test_send_bulk_notification()
+    /** @test */
+    public function it_handles_invalid_user_gracefully()
     {
-        $users = [
-            User::factory()->create(),
-            User::factory()->create(),
-            User::factory()->create()
-        ];
-
-        $notificationMock = Mockery::mock(TestNotification::class);
-
-        // Mock bulk send
-        NotificationFacade::shouldReceive('send')
-            ->with($users, $notificationMock)
-            ->once()
-            ->andReturnNull();
-
-        $this->notificationService->sendBulkNotification($users, $notificationMock);
+        $this->expectException(\InvalidArgumentException::class);
+        $this->notificationService->sendNotification('invalid_user', 'test_notification');
     }
 
-    /**
-     * Test clearing unread count cache
-     */
-    public function test_clear_unread_count_cache()
+    /** @test */
+    public function it_handles_missing_template_gracefully()
     {
-        $cacheKey = "unread_notifications_count_{$this->user->id}";
+        $result = $this->notificationService->sendNotification(
+            $this->user->id,
+            'nonexistent_template'
+        );
 
-        // Set cache value
-        Cache::put($cacheKey, 5, 300);
-
-        $this->assertTrue(Cache::has($cacheKey));
-
-        // Call private method to clear cache (using reflection)
-        $reflection = new \ReflectionClass($this->notificationService);
-        $method = $reflection->getMethod('clearUnreadCountCache');
-        $method->setAccessible(true);
-        $method->invokeArgs($this->notificationService, [$this->user]);
-
-        // Cache should be cleared
-        $this->assertFalse(Cache::has($cacheKey));
-    }
-
-    /**
-     * Test clearing preferences cache
-     */
-    public function test_clear_preferences_cache()
-    {
-        $cacheKey = "notification_preferences_{$this->user->id}";
-
-        // Set cache value
-        Cache::put($cacheKey, ['email_enabled' => true], 300);
-
-        $this->assertTrue(Cache::has($cacheKey));
-
-        // Call private method to clear cache (using reflection)
-        $reflection = new \ReflectionClass($this->notificationService);
-        $method = $reflection->getMethod('clearPreferencesCache');
-        $method->setAccessible(true);
-        $method->invokeArgs($this->notificationService, [$this->user]);
-
-        // Cache should be cleared
-        $this->assertFalse(Cache::has($cacheKey));
-    }
-
-    /**
-     * Test get notification type from notification class
-     */
-    public function test_get_notification_type()
-    {
-        $notificationMock = Mockery::mock(TestNotification::class);
-
-        // Call private method to get type (using reflection)
-        $reflection = new \ReflectionClass($this->notificationService);
-        $method = $reflection->getMethod('getNotificationType');
-        $method->setAccessible(true);
-        $type = $method->invokeArgs($this->notificationService, [$notificationMock]);
-
-        $this->assertEquals('test', $type);
-    }
-
-    /**
-     * Test should send email method
-     */
-    public function test_should_send_email()
-    {
-        $notificationMock = Mockery::mock(TestNotification::class);
-        $preferences = [
-            'types' => [
-                'test' => ['email' => true, 'push' => false]
-            ]
-        ];
-
-        // Call private method (using reflection)
-        $reflection = new \ReflectionClass($this->notificationService);
-        $method = $reflection->getMethod('shouldSendEmail');
-        $method->setAccessible(true);
-        $result = $method->invokeArgs($this->notificationService, [$notificationMock, $preferences]);
-
-        $this->assertTrue($result);
-    }
-
-    /**
-     * Test should send email when disabled in preferences
-     */
-    public function test_should_send_email_disabled()
-    {
-        $notificationMock = Mockery::mock(TestNotification::class);
-        $preferences = [
-            'types' => [
-                'test' => ['email' => false, 'push' => false]
-            ]
-        ];
-
-        // Call private method (using reflection)
-        $reflection = new \ReflectionClass($this->notificationService);
-        $method = $reflection->getMethod('shouldSendEmail');
-        $method->setAccessible(true);
-        $result = $method->invokeArgs($this->notificationService, [$notificationMock, $preferences]);
-
-        $this->assertFalse($result);
-    }
-
-    /**
-     * Test should send push notification
-     */
-    public function test_should_send_push()
-    {
-        $notificationMock = Mockery::mock(TestNotification::class);
-        $preferences = [
-            'types' => [
-                'test' => ['email' => false, 'push' => true]
-            ]
-        ];
-
-        // Call private method (using reflection)
-        $reflection = new \ReflectionClass($this->notificationService);
-        $method = $reflection->getMethod('shouldSendPush');
-        $method->setAccessible(true);
-        $result = $method->invokeArgs($this->notificationService, [$notificationMock, $preferences]);
-
-        $this->assertTrue($result);
-    }
-
-    protected function tearDown(): void
-    {
-        Mockery::close();
-        parent::tearDown();
+        $this->assertCount(1, $result);
+        // Should still return result but with failed channels
+        $this->assertEquals($this->user->id, $result[0]['user_id']);
     }
 }

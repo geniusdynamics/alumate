@@ -51,101 +51,29 @@
         </style>
     </head>
     <body>
-        <h2>Accessibility Compliance (Tests\Performance\AccessibilityCompliance)</h2>
+        <h2>Template Xss Prevention Service (Tests\Unit\Services\TemplateXssPreventionService)</h2>
         <ul>
-            <li class="defect">Homepage wcag aa compliance</li>
-            <li class="defect">Homepage semantic html structure</li>
-            <li class="defect">Homepage keyboard navigation</li>
-            <li class="defect">Homepage aria compliance</li>
-            <li class="defect">Homepage color contrast</li>
-            <li class="defect">Homepage images accessibility</li>
-            <li class="defect">Homepage form accessibility</li>
-            <li class="defect">Homepage multimedia accessibility</li>
-            <li class="defect">Homepage responsive accessibility</li>
-            <li class="success">Homepage performance accessibility impact</li>
-        </ul>
-        <h2>Bundle Optimization (Tests\Performance\BundleOptimization)</h2>
-        <ul>
-            <li class="defect">It loads homepage with optimized bundles</li>
-        </ul>
-        <h2>D:\DevCenter\abuilds\alumate\tests\Feature\Admin\HomepageContentControllerTest.php</h2>
-        <ul>
-            <li class="defect">can view content management index</li>
-            <li class="defect">can get content via api</li>
-            <li class="defect">can update content</li>
-            <li class="defect">can bulk update content</li>
-            <li class="defect">can request approval for content</li>
-            <li class="defect">can approve content</li>
-            <li class="defect">can reject content</li>
-            <li class="defect">can publish approved content</li>
-            <li class="defect">can get content history</li>
-            <li class="defect">can revert to version</li>
-            <li class="defect">can preview content changes</li>
-            <li class="defect">can export content</li>
-            <li class="defect">can import content</li>
-            <li class="defect">validates content update request</li>
-            <li class="defect">validates bulk update request</li>
-        </ul>
-        <h2>D:\DevCenter\abuilds\alumate\tests\Feature\HomepageControllerTest.php</h2>
-        <ul>
-            <li class="defect">index handles null service responses gracefully</li>
-            <li class="defect">institutional handles malformed ab tests safely</li>
-            <li class="defect">getMetaData falls back to hero and defaults</li>
-        </ul>
-        <h2>D:\DevCenter\abuilds\alumate\tests\Unit\HomepageContentServiceTest.php</h2>
-        <ul>
-            <li class="defect">can get content for audience</li>
-            <li class="defect">can get formatted content</li>
-            <li class="defect">can update content</li>
-            <li class="defect">can update existing content</li>
-            <li class="defect">can request approval</li>
-            <li class="defect">can approve content</li>
-            <li class="defect">can publish approved content</li>
-            <li class="defect">cannot publish unapproved content</li>
-            <li class="defect">can revert to version</li>
-            <li class="defect">can bulk update content</li>
-            <li class="defect">content caching works</li>
-            <li class="defect">can export content</li>
-            <li class="defect">can import content</li>
-        </ul>
-        <h2>Deployment Verification (Tests\Feature\DeploymentVerification)</h2>
-        <ul>
-            <li class="defect">It can run homepage migrations</li>
-        </ul>
-        <h2>Hero Section (Tests\Feature\HeroSection)</h2>
-        <ul>
-            <li class="success">Homepage loads with individual audience</li>
-            <li class="success">Homepage loads with institutional audience</li>
-            <li class="defect">Homepage service provides dual audience content</li>
-        </ul>
-        <h2>Homepage Performance (Tests\Performance\HomepagePerformance)</h2>
-        <ul>
-            <li class="defect">Homepage load performance under concurrent users</li>
-            <li class="defect">Homepage api response times</li>
-            <li class="defect">Homepage caching performance</li>
-            <li class="defect">Homepage database query optimization</li>
-            <li class="defect">Homepage memory usage</li>
-            <li class="defect">Homepage image optimization performance</li>
-            <li class="defect">Homepage javascript bundle performance</li>
-            <li class="defect">Homepage css performance</li>
-            <li class="defect">Homepage seo performance</li>
-            <li class="defect">Homepage accessibility performance</li>
-            <li class="defect">Homepage analytics performance</li>
-            <li class="defect">Homepage ab testing performance</li>
-        </ul>
-        <h2>Monitoring Alerting (Tests\Feature\Homepage\MonitoringAlerting)</h2>
-        <ul>
-            <li class="defect">Uptime monitoring detects down endpoints</li>
-            <li class="defect">Performance alert is sent when threshold exceeded</li>
-            <li class="defect">Error alert is sent with proper rate limiting</li>
-            <li class="defect">Conversion monitoring detects low conversion rates</li>
-            <li class="defect">Security monitoring detects suspicious activity</li>
-            <li class="defect">Alert notification email is sent</li>
-            <li class="defect">Slack alert is sent when configured</li>
-            <li class="defect">Sentry integration captures alerts</li>
-            <li class="defect">Monitoring dashboard returns comprehensive data</li>
-            <li class="defect">Health check endpoint returns proper status</li>
-            <li class="defect">Monitoring command runs successfully</li>
+            <li class="defect">It sanitizes basic html content</li>
+            <li class="defect">It removes script tags</li>
+            <li class="defect">It removes event handlers</li>
+            <li class="defect">It sanitizes javascript urls</li>
+            <li class="defect">It removes iframe tags</li>
+            <li class="defect">It throws exception for script injection</li>
+            <li class="defect">It throws exception for data exfiltration</li>
+            <li class="defect">It sanitizes template structure recursively</li>
+            <li class="defect">It logs security events for threats</li>
+            <li class="defect">It handles css expressions</li>
+            <li class="defect">It sanitizes vbscript urls</li>
+            <li class="defect">It handles data url schemes</li>
+            <li class="defect">It preserves safe html tags</li>
+            <li class="defect">It sanitizes mixed safe and dangerous content</li>
+            <li class="defect">It handles complex event handlers</li>
+            <li class="defect">It provides sanitization statistics</li>
+            <li class="defect">It handles self closing dangerous tags</li>
+            <li class="defect">It sanitizes object and embed tags</li>
+            <li class="defect">It handles case insensitive dangerous tags</li>
+            <li class="defect">It preserves safe attributes</li>
+            <li class="defect">It handles malformed html</li>
         </ul>
     </body>
 </html>
