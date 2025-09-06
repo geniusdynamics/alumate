@@ -110,7 +110,8 @@ const formInteractionTrackingScript = computed(() => {
     return ''
   }
 
-  return `<script>(function(){document.addEventListener('DOMContentLoaded',function(){const forms=document.querySelectorAll('form');forms.forEach(function(form,index){form.addEventListener('focusin',function(e){if(window._etTrack){window._etTrack('focusin',{form_index:index,element:e.target.tagName,field_name:e.target.name||e.target.id})}})});const buttons=document.querySelectorAll('button,.btn,.cta-button');buttons.forEach(function(button,index){button.addEventListener('click',function(){if(window._etTrack){window._etTrack('cta_click',{button_index:index,button_text:button.textContent?.trim()||'',button_type:button.type||'button',button_class:button.className})}})});let startTime=Date.now();window.addEventListener('beforeunload',function(){let duration=Math.round((Date.now()-startTime)/1000);if(window._etTrack){window._etTrack('time_on_page',{duration_seconds:duration,page_url:window.location.href})}});setTimeout(function(){const documentHeight=document.documentElement.scrollHeight;const windowHeight=window.innerHeight;if(documentHeight>windowHeight*2){let maxScroll=0;const checkScroll=function(){const scrollTop=window.scrollY;const documentHeight=document.documentElement.scrollHeight;const windowHeight=window.innerHeight;const scrollPercent=Math.round((scrollTop/(documentHeight-windowHeight))*100);if(scrollPercent>maxScroll&&window._etTrack){maxScroll=scrollPercent;if(scrollPercent>=25||scrollPercent>=50||scrollPercent>=75){window._etTrack('scroll_depth',{depth_percent:scrollPercent,max_depth:maxScroll})}}};window.addEventListener('scroll',checkScroll);window.addEventListener('beforeunload',function(){const scrollTop=window.scrollY;const documentHeight=document.documentElement.scrollHeight;const windowHeight=window.innerHeight;const finalScrollPercent=Math.round((scrollTop/(documentHeight-windowHeight))*100);if(window._etTrack){window._etTrack('final_scroll_depth',{depth_percent:finalScrollPercent})}})}},1000)})()})</script>`
+  // Return the script content without the script tags for v-html injection
+  return `(function(){document.addEventListener('DOMContentLoaded',function(){const forms=document.querySelectorAll('form');forms.forEach(function(form,index){form.addEventListener('focusin',function(e){if(window._etTrack){window._etTrack('focusin',{form_index:index,element:e.target.tagName,field_name:e.target.name||e.target.id})}})});const buttons=document.querySelectorAll('button,.btn,.cta-button');buttons.forEach(function(button,index){button.addEventListener('click',function(){if(window._etTrack){window._etTrack('cta_click',{button_index:index,button_text:button.textContent?.trim()||'',button_type:button.type||'button',button_class:button.className})}})});let startTime=Date.now();window.addEventListener('beforeunload',function(){let duration=Math.round((Date.now()-startTime)/1000);if(window._etTrack){window._etTrack('time_on_page',{duration_seconds:duration,page_url:window.location.href})}});setTimeout(function(){const documentHeight=document.documentElement.scrollHeight;const windowHeight=window.innerHeight;if(documentHeight>windowHeight*2){let maxScroll=0;const checkScroll=function(){const scrollTop=window.scrollY;const documentHeight=document.documentElement.scrollHeight;const windowHeight=window.innerHeight;const scrollPercent=Math.round((scrollTop/(documentHeight-windowHeight))*100);if(scrollPercent>maxScroll&&window._etTrack){maxScroll=scrollPercent;if(scrollPercent>=25||scrollPercent>=50||scrollPercent>=75){window._etTrack('scroll_depth',{depth_percent:scrollPercent,max_depth:maxScroll})}}};window.addEventListener('scroll',checkScroll);window.addEventListener('beforeunload',function(){const scrollTop=window.scrollY;const documentHeight=document.documentElement.scrollHeight;const windowHeight=window.innerHeight;const finalScrollPercent=Math.round((scrollTop/(documentHeight-windowHeight))*100);if(window._etTrack){window._etTrack('final_scroll_depth',{depth_percent:finalScrollPercent})}})}},1000)})()})`
 })
 
 const handleFormSubmission = (formData: any) => {
@@ -181,16 +182,24 @@ const renderSection = (section: any, index: number) => {
 }
 
 const renderHeroSection = (config: any, index: number) => {
-  return `
-    <div class="lp-hero">
-      <div class="lp-hero-content">
-        <h1 class="lp-hero-title">${config.title || 'Hero Title'}</h1>
-        <p class="lp-hero-subtitle">${config.subtitle || ''}</p>
-        ${config.cta_text ? `<a href="#" class="lp-hero-cta lp-cta-button" data-cta="hero" data-section="${index}">${config.cta_text}</a>` : ''}
-      </div>
-      ${config.background_url ? `<div class="lp-hero-background"><img src="${config.background_url}" alt="Hero background"></div>` : ''}
-    </div>
-  `
+  const parts = []
+  parts.push('<div class="lp-hero">')
+  parts.push('<div class="lp-hero-content">')
+  parts.push(`<h1 class="lp-hero-title">${config.title || 'Hero Title'}</h1>`)
+  parts.push(`<p class="lp-hero-subtitle">${config.subtitle || ''}</p>`)
+  
+  if (config.cta_text) {
+    parts.push(`<a href="#" class="lp-hero-cta lp-cta-button" data-cta="hero" data-section="${index}">${config.cta_text}</a>`)
+  }
+  
+  parts.push('</' + 'div>')
+  
+  if (config.background_url) {
+    parts.push(`<div class="lp-hero-background"><img src="${config.background_url}" alt="Hero background"></div>`)
+  }
+  
+  parts.push('</' + 'div>')
+  return parts.join('')
 }
 
 const renderFeaturesSection = (config: any, index: number) => {
@@ -202,16 +211,18 @@ const renderFeaturesSection = (config: any, index: number) => {
   }
 
   features.forEach((feature: any, featureIndex: number) => {
-    html += `
-      <div class="lp-feature" data-feature-index="${featureIndex}" data-section="${index}">
-        ${feature.icon ? `<div class="lp-feature-icon">${feature.icon}</div>` : ''}
-        <h3 class="lp-feature-title">${feature.title || ''}</h3>
-        <p class="lp-feature-description">${feature.description || ''}</p>
-      </div>
-    `
+    html += `<div class="lp-feature" data-feature-index="${featureIndex}" data-section="${index}">`
+    
+    if (feature.icon) {
+      html += `<div class="lp-feature-icon">${feature.icon}</div>`
+    }
+    
+    html += `<h3 class="lp-feature-title">${feature.title || ''}</h3>`
+    html += `<p class="lp-feature-description">${feature.description || ''}</p>`
+    html += '</' + 'div>'
   })
 
-  html += '</div>'
+  html += '</' + 'div>'
   return html
 }
 
@@ -224,46 +235,46 @@ const renderTestimonialsSection = (config: any, index: number) => {
   }
 
   testimonials.forEach((testimonial: any, testimonialIndex: number) => {
-    html += `
-      <div class="lp-testimonial" data-testimonial-index="${testimonialIndex}" data-section="${index}">
-        ${testimonial.image ? `<div class="lp-testimonial-image"><img src="${testimonial.image}" alt="${testimonial.author}"></div>` : ''}
-        <blockquote class="lp-testimonial-text">${testimonial.text || ''}</blockquote>
-        <cite class="lp-testimonial-author">${testimonial.author || ''}</cite>
-        <span class="lp-testimonial-company">${testimonial.company || ''}</span>
-      </div>
-    `
+    html += `<div class="lp-testimonial" data-testimonial-index="${testimonialIndex}" data-section="${index}">`
+    
+    if (testimonial.image) {
+      html += `<div class="lp-testimonial-image"><img src="${testimonial.image}" alt="${testimonial.author}"></div>`
+    }
+    
+    html += `<blockquote class="lp-testimonial-text">${testimonial.text || ''}</blockquote>`
+    html += `<cite class="lp-testimonial-author">${testimonial.author || ''}</cite>`
+    html += `<span class="lp-testimonial-company">${testimonial.company || ''}</span>`
+    html += '</' + 'div>'
   })
 
-  html += '</div>'
+  html += '</' + 'div>'
   return html
 }
 
 const renderCTASection = (config: any, index: number) => {
-  return `
-    <div class="lp-cta-section">
-      <h2 class="lp-cta-title">${config.title || 'Ready to Get Started?'}</h2>
-      <p class="lp-cta-description">${config.description || ''}</p>
-      <a href="#" class="lp-cta-button" data-cta="section" data-section="${index}">${config.button_text || 'Get Started'}</a>
-    </div>
-  `
+  let html = '<div class="lp-cta-section">'
+  html += `<h2 class="lp-cta-title">${config.title || 'Ready to Get Started?'}</h2>`
+  html += `<p class="lp-cta-description">${config.description || ''}</p>`
+  html += `<a href="#" class="lp-cta-button" data-cta="section" data-section="${index}">${config.button_text || 'Get Started'}</a>`
+  html += '</' + 'div>'
+  return html
 }
 
 const renderTextSection = (config: any, index: number) => {
-  return `
-    <div class="lp-text-section" data-section="${index}">
-      <h2 class="lp-text-title">${config.title || ''}</h2>
-      <div class="lp-text-content">${config.content || ''}</div>
-    </div>
-  `
+  let html = '<div class="lp-text-section" data-section="' + index + '">'
+  html += '<h2 class="lp-text-title">' + (config.title || '') + '</h2>'
+  html += '<div class="lp-text-content">' + (config.content || '') + '</div>'
+  html += '</' + 'div>'
+  return html
 }
 
 const renderDefaultSection = (config: any, index: number) => {
-  return `
-    <div class="lp-default-section" data-section="${index}">
-      <h2>${config.title || 'Section'}</h2>
-      <p>${config.description || 'Default section content'}</p>
-    </div>
-  `
+  const parts = []
+  parts.push('<div class="lp-default-section" data-section="' + index + '">')
+  parts.push('<h2>' + (config.title || 'Section') + '</h2>')
+  parts.push('<p>' + (config.description || 'Default section content') + '</p>')
+  parts.push('</div>')
+  return parts.join('')
 }
 
 onMounted(() => {

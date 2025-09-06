@@ -318,7 +318,6 @@ const zoomStep = 0.25
 const containerClasses = computed(() => ({
   'device-frame-enabled': props.showDeviceFrame,
   [`viewport-${currentViewport.value}`]: true,
-  'touch-mode-active': touchModeEnabled.value,
   'touch-mode-active': touchModeEnabled.value
 }))
 
@@ -833,7 +832,8 @@ watch(() => props.enableTouchMode, (newValue) => {
 /* Keyboard Shortcuts Mobile */
 .keyboard-shortcuts-mobile {
   @apply fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 z-30;
-  @apply max-h-80vh overflow-y-auto;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .shortcuts-header {

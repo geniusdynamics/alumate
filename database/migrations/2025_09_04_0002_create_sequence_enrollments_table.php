@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sequence_enrollments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sequence_id')->constrained('email_sequences');
+            $table->unsignedBigInteger('sequence_id');
             $table->foreignId('lead_id')->constrained('leads');
             $table->integer('current_step')->default(0);
             $table->enum('status', ['active', 'completed', 'paused', 'unsubscribed'])->default('active');

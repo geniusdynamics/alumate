@@ -34,9 +34,9 @@ class TenantSeeder extends Seeder
             ]
         );
 
-        // Create domain for the tenant
+        // Create domain for the tenant using the correct column name
         $tenant->domains()->firstOrCreate([
-            'domain' => 'tech-institute.localhost',
+            'domain_name' => 'tech-institute.localhost',
         ]);
 
         $this->command->info('Demo tenant created successfully!');

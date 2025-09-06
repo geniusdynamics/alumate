@@ -35,226 +35,224 @@
     <!-- Chart Area -->
     <div class="chart-container">
       <!-- Charts Container -->
-      <div v-if="data.length > 0">
+      <template v-if="data.length > 0">
         <div v-if="chartType === 'line'" class="line-chart" role="img" :aria-label="`${title} line chart showing ${data.length} data points`">
-        <svg :width="svgWidth" :height="svgHeight" class="w-full h-full">
-          <!-- Grid lines -->
-          <defs>
-            <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.3"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
+          <svg :width="svgWidth" :height="svgHeight" class="w-full h-full">
+            <!-- Grid lines -->
+            <defs>
+              <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.3"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
 
-          <!-- X-axis -->
-          <line
-            :x1="padding.left"
-            :y1="svgHeight - padding.bottom"
-            :x2="svgWidth - padding.right"
-            :y2="svgHeight - padding.bottom"
-            stroke="#374151"
-            stroke-width="1"
-          />
-
-          <!-- Y-axis -->
-          <line
-            :x1="padding.left"
-            :y1="padding.top"
-            :x2="padding.left"
-            :y2="svgHeight - padding.bottom"
-            stroke="#374151"
-            stroke-width="1"
-          />
-
-          <!-- Data Line -->
-          <path
-            :d="linePath"
-            fill="none"
-            stroke="#3b82f6"
-            stroke-width="3"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-
-          <!-- Data Points -->
-          <circle
-            v-for="(point, index) in data"
-            :key="`point-${index}`"
-            :cx="getXCoordinate(index)"
-            :cy="getYCoordinate(point.rate)"
-            r="6"
-            fill="#3b82f6"
-            stroke="white"
-            stroke-width="2"
-            class="hover:stroke-gray-400 cursor-pointer transition-colors"
-            :aria-label="`Data point ${index + 1}: ${point.date}, ${point.rate}% conversion rate`"
-          />
-
-          <!-- Hover tooltips (placeholder for future enhancement) -->
-          <g v-for="(point, index) in data" :key="`tooltip-${index}`" class="hidden">
-            <rect
-              :x="getXCoordinate(index) - 35"
-              :y="getYCoordinate(point.rate) - 45"
-              width="70"
-              height="35"
-              rx="4"
-              fill="#1f2937"
-              opacity="0.9"
+            <!-- X-axis -->
+            <line
+              :x1="padding.left"
+              :y1="svgHeight - padding.bottom"
+              :x2="svgWidth - padding.right"
+              :y2="svgHeight - padding.bottom"
+              stroke="#374151"
+              stroke-width="1"
             />
-            <text
-              :x="getXCoordinate(index)"
-              :y="getYCoordinate(point.rate) - 25"
-              text-anchor="middle"
-              fill="white"
-              font-size="12"
-            >
-              {{ point.rate }}%
-            </text>
-          </g>
-        </svg>
-      </div>
 
-      <!-- Bar Chart -->
-      <div v-else-if="chartType === 'bar'" class="bar-chart" role="img" :aria-label="`${title} bar chart showing ${data.length} data points`">
-        <div class="flex items-end justify-around h-80 w-full">
-          <div
-            v-for="(point, index) in data"
-            :key="`bar-${index}`"
-            class="flex-1 flex flex-col items-center mx-1"
-            :style="{ height: '100%' }"
-          >
-            <!-- Bar -->
+            <!-- Y-axis -->
+            <line
+              :x1="padding.left"
+              :y1="padding.top"
+              :x2="padding.left"
+              :y2="svgHeight - padding.bottom"
+              stroke="#374151"
+              stroke-width="1"
+            />
+
+            <!-- Data Line -->
+            <path
+              :d="linePath"
+              fill="none"
+              stroke="#3b82f6"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+            <!-- Data Points -->
+            <circle
+              v-for="(point, index) in data"
+              :key="`point-${index}`"
+              :cx="getXCoordinate(index)"
+              :cy="getYCoordinate(point.rate)"
+              r="6"
+              fill="#3b82f6"
+              stroke="white"
+              stroke-width="2"
+              class="hover:stroke-gray-400 cursor-pointer transition-colors"
+              :aria-label="`Data point ${index + 1}: ${point.date}, ${point.rate}% conversion rate`"
+            />
+
+            <!-- Hover tooltips (placeholder for future enhancement) -->
+            <g v-for="(point, index) in data" :key="`tooltip-${index}`" class="hidden">
+              <rect
+                :x="getXCoordinate(index) - 35"
+                :y="getYCoordinate(point.rate) - 45"
+                width="70"
+                height="35"
+                rx="4"
+                fill="#1f2937"
+                opacity="0.9"
+              />
+              <text
+                :x="getXCoordinate(index)"
+                :y="getYCoordinate(point.rate) - 25"
+                text-anchor="middle"
+                fill="white"
+                font-size="12"
+              >
+                {{ point.rate }}%
+              </text>
+            </g>
+          </svg>
+        </div>
+
+        <!-- Bar Chart -->
+        <div v-else-if="chartType === 'bar'" class="bar-chart" role="img" :aria-label="`${title} bar chart showing ${data.length} data points`">
+          <div class="flex items-end justify-around h-80 w-full">
             <div
-              class="bar bg-blue-600 hover:bg-blue-700 rounded-t transition-colors cursor-pointer"
-              :style="{
-                height: `${Math.max((point.rate / maxValue) * 100, 2)}%`,
-                width: '100%',
-                maxWidth: '40px'
-              }"
-              :aria-label="`${point.date}: ${point.rate}% conversion rate`"
-            ></div>
+              v-for="(point, index) in data"
+              :key="`bar-${index}`"
+              class="flex-1 flex flex-col items-center mx-1"
+              :style="{ height: '100%' }"
+            >
+              <!-- Bar -->
+              <div
+                class="bar bg-blue-600 hover:bg-blue-700 rounded-t transition-colors cursor-pointer"
+                :style="{
+                  height: `${Math.max((point.rate / maxValue) * 100, 2)}%`,
+                  width: '100%',
+                  maxWidth: '40px'
+                }"
+                :aria-label="`${point.date}: ${point.rate}% conversion rate`"
+              ></div>
 
-            <!-- Label -->
-            <div class="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center">
-              {{ formatDateLabel(point.date) }}
+              <!-- Label -->
+              <div class="text-xs text-gray-600 dark:text-gray-400 mt-2 text-center">
+                {{ formatDateLabel(point.date) }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Y-axis labels -->
+          <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+            <span>0%</span>
+            <span>{{ maxValue.toFixed(1) }}%</span>
+          </div>
+        </div>
+
+        <!-- Area Chart -->
+        <div v-else-if="chartType === 'area'" class="area-chart" role="img" :aria-label="`${title} area chart showing ${data.length} data points`">
+          <svg :width="svgWidth" :height="svgHeight" class="w-full h-full">
+            <!-- Grid -->
+            <defs>
+              <pattern id="area-grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.3"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#area-grid)" />
+
+            <!-- Area fill -->
+            <path
+              :d="`${linePath} L ${getXCoordinate(data.length - 1)} ${svgHeight - padding.bottom} L ${getXCoordinate(0)} ${svgHeight - padding.bottom} Z`"
+              fill="rgba(59, 130, 246, 0.1)"
+            />
+
+            <!-- Area line -->
+            <path
+              :d="linePath"
+              fill="none"
+              stroke="#3b82f6"
+              stroke-width="2"
+            />
+
+            <!-- Data points -->
+            <circle
+              v-for="(point, index) in data"
+              :key="`area-point-${index}`"
+              :cx="getXCoordinate(index)"
+              :cy="getYCoordinate(point.rate)"
+              r="4"
+              fill="#3b82f6"
+              stroke="white"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+
+        <!-- Combined Chart -->
+        <div v-else class="combined-chart" role="img" :aria-label="`${title} combined chart showing conversions and views`">
+          <svg :width="svgWidth" :height="svgHeight" class="w-full h-full">
+            <!-- Grid -->
+            <defs>
+              <pattern id="combined-grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.3"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#combined-grid)" />
+
+            <!-- Bars for conversions -->
+            <rect
+              v-for="(point, index) in data"
+              :key="`combined-bar-${index}`"
+              :x="getXCoordinate(index) - 8"
+              :y="getYCoordinate(point.conversions / maxConversions * maxValue)"
+              :width="16"
+              :height="getBarHeight(point.conversions / maxConversions * maxValue)"
+              fill="#10b981"
+              opacity="0.8"
+            />
+
+            <!-- Line for conversion rate -->
+            <path
+              :d="rateLinePath"
+              fill="none"
+              stroke="#3b82f6"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+            <!-- Axes -->
+            <line
+              :x1="padding.left"
+              :y1="svgHeight - padding.bottom"
+              :x2="svgWidth - padding.right"
+              :y2="svgHeight - padding.bottom"
+              stroke="#374151"
+              stroke-width="1"
+            />
+            <line
+              :x1="padding.left"
+              :y1="padding.top"
+              :x2="padding.left"
+              :y2="svgHeight - padding.bottom"
+              stroke="#374151"
+              stroke-width="1"
+            />
+          </svg>
+
+          <!-- Legend -->
+          <div class="flex justify-center gap-6 mt-4">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-green-500 rounded"></div>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Conversions</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+              <span class="text-sm text-gray-600 dark:text-gray-400">Rate</span>
             </div>
           </div>
         </div>
-
-        <!-- Y-axis labels -->
-        <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
-          <span>0%</span>
-          <span>{{ maxValue.toFixed(1) }}%</span>
-        </div>
-      </div>
-
-      <!-- Area Chart -->
-      <div v-else-if="chartType === 'area'" class="area-chart" role="img" :aria-label="`${title} area chart showing ${data.length} data points`">
-        <svg :width="svgWidth" :height="svgHeight" class="w-full h-full">
-          <!-- Grid -->
-          <defs>
-            <pattern id="area-grid" width="40" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.3"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#area-grid)" />
-
-          <!-- Area fill -->
-          <path
-            :d="`${linePath} L ${getXCoordinate(data.length - 1)} ${svgHeight - padding.bottom} L ${getXCoordinate(0)} ${svgHeight - padding.bottom} Z`"
-            fill="rgba(59, 130, 246, 0.1)"
-          />
-
-          <!-- Area line -->
-          <path
-            :d="linePath"
-            fill="none"
-            stroke="#3b82f6"
-            stroke-width="2"
-          />
-
-          <!-- Data points -->
-          <circle
-            v-for="(point, index) in data"
-            :key="`area-point-${index}`"
-            :cx="getXCoordinate(index)"
-            :cy="getYCoordinate(point.rate)"
-            r="4"
-            fill="#3b82f6"
-            stroke="white"
-            stroke-width="2"
-          />
-        </svg>
-      </div>
-
-      <!-- Combined Chart -->
-      <div v-else class="combined-chart" role="img" :aria-label="`${title} combined chart showing conversions and views`">
-        <svg :width="svgWidth" :height="svgHeight" class="w-full h-full">
-          <!-- Grid -->
-          <defs>
-            <pattern id="combined-grid" width="40" height="20" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" stroke-width="1" opacity="0.3"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#combined-grid)" />
-
-          <!-- Bars for conversions -->
-          <rect
-            v-for="(point, index) in data"
-            :key="`combined-bar-${index}`"
-            :x="getXCoordinate(index) - 8"
-            :y="getYCoordinate(point.conversions / maxConversions * maxValue)"
-            :width="16"
-            :height="getBarHeight(point.conversions / maxConversions * maxValue)"
-            fill="#10b981"
-            opacity="0.8"
-          />
-
-          <!-- Line for conversion rate -->
-          <path
-            :d="rateLinePath"
-            fill="none"
-            stroke="#3b82f6"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-
-          <!-- Axes -->
-          <line
-            :x1="padding.left"
-            :y1="svgHeight - padding.bottom"
-            :x2="svgWidth - padding.right"
-            :y2="svgHeight - padding.bottom"
-            stroke="#374151"
-            stroke-width="1"
-          />
-          <line
-            :x1="padding.left"
-            :y1="padding.top"
-            :x2="padding.left"
-            :y2="svgHeight - padding.bottom"
-            stroke="#374151"
-            stroke-width="1"
-          />
-        </svg>
-
-        <!-- Legend -->
-        <div class="flex justify-center gap-6 mt-4">
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-green-500 rounded"></div>
-            <span class="text-sm text-gray-600 dark:text-gray-400">Conversions</span>
-          </div>
-          <div class="flex items-center gap-2">
-            <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-            <span class="text-sm text-gray-600 dark:text-gray-400">Rate</span>
-          </div>
-        </div>
-      </div>
-
-        </div>
-      </div>
-
+      </template>
+      
       <!-- Empty State -->
       <div v-else class="empty-state flex flex-col items-center justify-center h-80 text-gray-500 dark:text-gray-400">
         <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -264,6 +262,7 @@
         <p class="text-sm">Conversion metrics will appear here once data is collected</p>
       </div>
     </div>
+  </div>
 
     <!-- Chart Footer with Summary Stats -->
     <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
@@ -306,7 +305,6 @@
       This chart displays conversion rate data over time. The x-axis represents dates and the y-axis represents conversion percentages.
       Current average conversion rate is {{ averageRate }}% with a {{ trendDirection }}ward trend of {{ Math.abs(trendValue) }}%.
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -504,15 +502,29 @@ onMounted(() => {
 
   updateDimensions()
   window.addEventListener('resize', updateDimensions)
+})
 
-  // Cleanup
-  onActivated(() => {
-    window.addEventListener('resize', updateDimensions)
-  })
+// Cleanup
+onActivated(() => {
+  const updateDimensions = () => {
+    const container = document.querySelector('.conversion-chart')
+    if (container) {
+      const rect = container.getBoundingClientRect()
+      svgWidth.value = rect.width || 800
+    }
+  }
+  window.addEventListener('resize', updateDimensions)
+})
 
-  onDeactivated(() => {
-    window.removeEventListener('resize', updateDimensions)
-  })
+onDeactivated(() => {
+  const updateDimensions = () => {
+    const container = document.querySelector('.conversion-chart')
+    if (container) {
+      const rect = container.getBoundingClientRect()
+      svgWidth.value = rect.width || 800
+    }
+  }
+  window.removeEventListener('resize', updateDimensions)
 })
 </script>
 

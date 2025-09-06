@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('template_crm_integrations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tenant_id');
+            $table->string('tenant_id');
             $table->string('name');
             $table->string('provider'); // hubspot, salesforce, pipedrive, etc.
             $table->json('config'); // API keys, endpoints, etc.

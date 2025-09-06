@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('site_analytics', function (Blueprint $table) {
             $table->id();
             $table->foreignId('published_site_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->date('date');
             $table->integer('page_views')->default(0);
             $table->integer('unique_visitors')->default(0);
@@ -32,6 +32,9 @@ return new class extends Migration
             $table->index(['tenant_id', 'date']);
             $table->index(['date']);
             $table->unique(['published_site_id', 'date']);
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

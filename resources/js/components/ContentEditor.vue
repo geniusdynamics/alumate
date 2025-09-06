@@ -424,10 +424,10 @@ const contentJson = computed({
       const parsed = JSON.parse(value)
       if (parsed && typeof parsed === 'object') {
         content.value = parsed
-        jsonError = ref('')
+        jsonError.value = ''
       }
     } catch (e: any) {
-      jsonError = ref(`Invalid JSON: ${e.message}`)
+      jsonError.value = `Invalid JSON: ${e.message}`
     }
   }
 })

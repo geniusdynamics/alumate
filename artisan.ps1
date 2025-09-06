@@ -10,7 +10,7 @@ param(
 )
 
 # PHP executable path
-$phpPath = "D:\DevCenter\xampp\php-8.3.23\php.exe"
+$phpPath = "C:\Users\Oneito\AppData\Local\Microsoft\WinGet\Packages\PHP.PHP.8.3_Microsoft.Winget.Source_8wekyb3d8bbwe\php.exe"
 
 # Check if PHP exists
 if (-not (Test-Path $phpPath)) {
@@ -27,7 +27,7 @@ if (-not (Test-Path "artisan")) {
 }
 
 # Build the command
-$command = @($phpPath, "artisan") + $Arguments
+$command = @($phpPath, "-c", "minimal_php.ini", "artisan") + $Arguments
 
 # Execute the command
 Write-Host "Executing: $($command -join ' ')" -ForegroundColor Green

@@ -28,7 +28,7 @@ import { computed } from 'vue'
 import {
   TrendingUpIcon,
   TrendingDownIcon,
-  TemplateIcon,
+  LayoutTemplateIcon,
   UsersIcon,
   TargetIcon,
   PercentIcon
@@ -60,7 +60,7 @@ const changeClass = computed(() => {
 const iconComponent = computed(() => {
   switch (props.icon) {
     case 'template':
-      return TemplateIcon
+      return LayoutTemplateIcon
     case 'users':
       return UsersIcon
     case 'conversion':

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('template_crm_sync_logs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('tenant_id');
+            $table->string('tenant_id');
             $table->unsignedBigInteger('template_crm_integration_id');
             $table->unsignedBigInteger('template_id');
             $table->string('sync_type'); // create, update, delete

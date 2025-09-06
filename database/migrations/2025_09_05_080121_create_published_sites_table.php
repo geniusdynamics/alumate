@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('published_sites', function (Blueprint $table) {
             $table->id();
             $table->foreignId('landing_page_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('domain')->nullable();
@@ -46,6 +46,9 @@ return new class extends Migration
             $table->index(['subdomain']);
             $table->index(['status', 'deployment_status']);
             $table->index(['published_at']);
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

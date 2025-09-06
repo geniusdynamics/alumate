@@ -29,7 +29,7 @@ return new class extends Migration
             $table->bigInteger('memory_used')->nullable();
             $table->bigInteger('memory_total')->nullable();
             $table->bigInteger('memory_limit')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->unsignedBigInteger('user_id')->nullable(); // Store user ID without foreign key constraint
             $table->string('tenant_id', 36);
             $table->timestamps();
 
@@ -42,7 +42,7 @@ return new class extends Migration
         // Performance metrics table
         Schema::create('performance_metrics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('performance_sessions')->onDelete('cascade');
+            $table->unsignedBigInteger('session_id');
             $table->string('name', 100);
             $table->decimal('value', 12, 4);
             $table->string('url', 500);
@@ -61,7 +61,7 @@ return new class extends Migration
         // Performance alerts table (for threshold violations)
         Schema::create('performance_alerts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('performance_sessions')->onDelete('cascade');
+            $table->unsignedBigInteger('session_id');
             $table->string('metric_name', 100);
             $table->decimal('metric_value', 12, 4);
             $table->decimal('threshold_value', 12, 4);
@@ -70,7 +70,7 @@ return new class extends Migration
             $table->json('context')->nullable();
             $table->boolean('acknowledged')->default(false);
             $table->timestamp('acknowledged_at')->nullable();
-            $table->foreignId('acknowledged_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('acknowledged_by')->nullable(); // Store user ID without foreign key constraint
             $table->timestamps();
 
             // Indexes
@@ -90,7 +90,7 @@ return new class extends Migration
             $table->decimal('critical_threshold', 12, 4);
             $table->boolean('is_active')->default(true);
             $table->string('tenant_id', 36);
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('created_by'); // Store user ID without foreign key constraint
             $table->timestamps();
 
             // Indexes
@@ -114,7 +114,7 @@ return new class extends Migration
             $table->timestamp('last_sent_at')->nullable();
             $table->timestamp('next_send_at')->nullable();
             $table->string('tenant_id', 36);
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('created_by'); // Store user ID without foreign key constraint
             $table->timestamps();
 
             // Indexes

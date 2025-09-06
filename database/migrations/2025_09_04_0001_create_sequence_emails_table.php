@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('sequence_emails', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sequence_id')->constrained('email_sequences')->onDelete('cascade');
+            $table->unsignedBigInteger('sequence_id');
             $table->foreignId('template_id');
             $table->string('subject_line', 255);
             $table->integer('delay_hours')->default(0);

@@ -24,7 +24,8 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->timestamps();
 
-            $table->foreign('tenant_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('cascade');
+            // Remove foreign key constraint to tenants table as it's in central database
+            // The tenant_id is used for identification but not as a foreign key
         });
     }
 

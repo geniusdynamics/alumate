@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::table('graduates', function (Blueprint $table) {
             $table->string('previous_institution_id')->nullable();
-            $table->foreign('previous_institution_id')->references('id')->on('tenants')->onUpdate('cascade')->onDelete('set null');
+            // Remove foreign key constraint to tenants table as it's in central database
+            // The previous_institution_id is used for identification but not as a foreign key
         });
     }
 
@@ -27,7 +28,6 @@ return new class extends Migration
     public function down()
     {
         Schema::table('graduates', function (Blueprint $table) {
-            $table->dropForeign(['previous_institution_id']);
             $table->dropColumn('previous_institution_id');
         });
     }

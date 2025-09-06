@@ -257,7 +257,7 @@
                 class="fullscreen-btn"
                 :aria-label="isFullScreen ? 'Exit fullscreen preview' : 'Enter fullscreen preview'"
               >
-                <component :is="isFullScreen ? MinimiseIcon : FullscreenIcon" class="w-4 h-4" />
+                <component :is="isFullScreen ? ArrowsPointingInIcon : ArrowsPointingOutIcon" class="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -344,14 +344,14 @@ import ContentEditor from './ContentEditor.vue'
 
 // Icons
 import {
-  PaletteIcon,
+  SwatchIcon,
   DocumentTextIcon,
   CogIcon,
   ComputerDesktopIcon,
   DevicePhoneMobileIcon,
   DeviceTabletIcon,
-  FullscreenIcon,
-  MinimiseIcon
+  ArrowsPointingOutIcon,
+  ArrowsPointingInIcon
 } from '@heroicons/vue/24/outline'
 
 // Types
@@ -410,7 +410,7 @@ const panels = [
   {
     id: 'brand' as const,
     label: 'Brand',
-    icon: PaletteIcon,
+    icon: SwatchIcon,
     notifications: undefined
   },
   {

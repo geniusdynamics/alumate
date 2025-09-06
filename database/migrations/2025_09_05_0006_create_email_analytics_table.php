@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('email_analytics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->foreignId('email_campaign_id')->nullable()->constrained()->onDelete('set null');
             $table->foreignId('email_template_id')->nullable()->constrained('templates')->onDelete('set null');
             $table->foreignId('recipient_id')->nullable()->constrained('users')->onDelete('set null');
@@ -80,6 +80,9 @@ return new class extends Migration
             // Composite indexes for common queries
             $table->index(['tenant_id', 'email_campaign_id', 'send_date']);
             $table->index(['tenant_id', 'recipient_id', 'send_date']);
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

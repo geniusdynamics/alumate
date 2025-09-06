@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('ssl_certificates', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->string('certificate_id')->unique();
             $table->string('domain_name');
             $table->string('provider')->default('letsencrypt'); // letsencrypt, custom
@@ -33,6 +33,9 @@ return new class extends Migration
             $table->index(['domain_name']);
             $table->index(['expires_at']);
             $table->index(['certificate_id']);
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

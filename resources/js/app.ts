@@ -5,6 +5,8 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 import { initializeTheme } from './composables/useAppearance';
 import { performanceService } from './services/PerformanceService';
 import { preloadService } from './services/PreloadService';
@@ -61,6 +63,7 @@ createInertiaApp({
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
+            .use(Toast)
 
         // Mount the app
         performanceService.markStart('app-mount')

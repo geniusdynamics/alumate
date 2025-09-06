@@ -14,7 +14,7 @@
                 </svg>
                 Premium
               </span>
-              <span class="category-badge" :class="`category-${selectedTemplate?.category}`">
+              <span class="category-badge" :class="'category-' + (selectedTemplate?.category || '')">
                 {{ selectedTemplate?.category }}
               </span>
             </div>
@@ -31,7 +31,7 @@
                 :class="{ 'active': currentViewport === viewport.type }"
                 class="viewport-btn"
                 :aria-pressed="currentViewport === viewport.type"
-                :aria-label="`Switch to ${viewport.label} view (${viewport.width})`"
+                :aria-label="'Switch to ' + viewport.label + ' view (' + viewport.width + ')'"
               >
                 <component :is="viewport.icon" class="w-5 h-5" />
                 <span class="viewport-label">{{ viewport.label }}</span>
@@ -74,7 +74,7 @@
           <div v-else class="preview-iframe-container" :class="currentViewportClass">
             <iframe
               v-if="responsivePreview && responsivePreview[currentViewport]?.html"
-              :srcdoc="previewSrcDoc"
+              :srcdoc="currentPreviewSrcDoc"
               class="preview-iframe"
               :title="selectedTemplate?.name + ' preview'"
               sandbox="allow-scripts"
@@ -221,18 +221,27 @@ const currentViewportClass = computed(() => {
 const previewSrcDoc = computed(() => {
   if (!previewHtml.value || !previewCss.value) return ''
 
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <style>${previewCss.value}</style>
-    </head>
-    <body>${previewHtml.value}</body>
-    </html>
-  `
+  const parts = [];
+  parts.push('<!DOCTYPE html>');
+  parts.push('<html>');
+  parts.push('<head>');
+  parts.push('<meta charset="UTF-8">');
+  parts.push('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+  parts.push('<style>');
+  parts.push(previewCss.value);
+  parts.push('</style>');
+  parts.push('</head>');
+  parts.push('<body>');
+  parts.push(previewHtml.value);
+  parts.push('</body>');
+  parts.push('</html>');
+
+  return parts.join('');
 })
+
+const changeViewport = (type: ViewportType) => {
+  currentViewport.value = type
+}
 
 const currentPreviewSrcDoc = computed(() => {
   if (!responsivePreview.value || !responsivePreview.value[currentViewport.value]) return ''
@@ -240,19 +249,39 @@ const currentPreviewSrcDoc = computed(() => {
   const currentPreview = responsivePreview.value[currentViewport.value]
   const assets = previewAssets.value
 
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      ${assets?.css ? `<style>${assets.css}</style>` : ''}
-      ${assets?.styles.map(style => `<link rel="stylesheet" href="${style}">`).join('\n') || ''}
-    </head>
-    <body>${currentPreview.html}</body>
-    ${assets?.scripts.map(script => `<script src="${script}"></script>`).join('\n') || ''}
-    </html>
-  `
+  const parts = [];
+  parts.push('<!DOCTYPE html>');
+  parts.push('<html>');
+  parts.push('<head>');
+  parts.push('<meta charset="UTF-8">');
+  parts.push('<meta name="viewport" content="width=device-width, initial-scale=1.0">');
+
+  if (assets?.css) {
+    parts.push('<' + 'style>');
+    parts.push(assets.css);
+    parts.push('<' + '/style>');
+  }
+
+  if (assets?.styles && assets.styles.length > 0) {
+    assets.styles.forEach(style => {
+      parts.push('<' + 'link rel="stylesheet" href="' + style + '">');
+    });
+  }
+
+  parts.push('</head>');
+  parts.push('<body>');
+  parts.push(currentPreview.html);
+  parts.push('</body>');
+
+  if (assets?.scripts && assets.scripts.length > 0) {
+    assets.scripts.forEach(script => {
+      parts.push('<' + 'script src="' + script + '"><' + '/script>');
+    });
+  }
+
+  parts.push('</html>');
+
+  return parts.join('');
 })
 
 // Methods
@@ -295,7 +324,12 @@ const generatePreview = async () => {
 const copyEmbedCode = async () => {
   if (!previewHtml.value) return
 
-  const embedCode = `<iframe srcdoc="${previewSrcDoc.value.replace(/"/g, '"')}" width="100%" height="400" frameborder="0"></iframe>`
+  const parts = [];
+  parts.push('<' + 'iframe srcdoc="');
+  parts.push(previewSrcDoc.value.replace(/"/g, '"'));
+  parts.push('" width="100%" height="400" frameborder="0"><' + '/iframe>');
+
+  const embedCode = parts.join('');
 
   try {
     await navigator.clipboard.writeText(embedCode)
@@ -358,11 +392,6 @@ watch(() => showPreview.value, (newValue) => {
     cleanup()
   }
 })
-
-// Cleanup function
-const cleanup = () => {
-  document.removeEventListener('keydown', handleKeydown)
-}
 </script>
 
 <style scoped>

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('publishing_workflows', function (Blueprint $table) {
             $table->id();
             $table->foreignId('published_site_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->string('workflow_name');
             $table->string('status')->default('draft'); // draft, active, paused, completed
             $table->string('trigger_type')->default('manual'); // manual, scheduled, webhook
@@ -29,6 +29,9 @@ return new class extends Migration
             $table->index(['published_site_id', 'status']);
             $table->index(['tenant_id', 'status']);
             $table->index(['status', 'scheduled_at']);
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

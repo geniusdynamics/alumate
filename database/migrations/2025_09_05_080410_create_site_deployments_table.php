@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('site_deployments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('published_site_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->string('deployment_id')->unique();
             $table->string('status')->default('pending'); // pending, deploying, deployed, failed, rolled_back
             $table->string('trigger_type')->default('manual'); // manual, auto, webhook
@@ -35,6 +35,9 @@ return new class extends Migration
             $table->index(['tenant_id', 'created_at']);
             $table->index(['status', 'created_at']);
             $table->index(['deployment_id']);
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

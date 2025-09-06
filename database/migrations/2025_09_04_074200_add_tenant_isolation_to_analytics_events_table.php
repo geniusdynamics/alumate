@@ -17,9 +17,8 @@ return new class extends Migration
             $table->boolean('is_compliant')->default(true)->after('ip_address');
 
             // Add composite indexes for tenant isolation
-            $table->index(['tenant_id', 'event_type', 'occurred_at'], 'analytics_events_tenant_type_time_idx');
-            $table->index(['tenant_id', 'user_id', 'occurred_at'], 'analytics_events_tenant_user_time_idx');
-            $table->index(['tenant_id', 'session_id', 'occurred_at'], 'analytics_events_tenant_session_time_idx');
+            $table->index(['tenant_id', 'event_type', 'timestamp'], 'analytics_events_tenant_type_time_idx');
+            $table->index(['tenant_id', 'session_id', 'timestamp'], 'analytics_events_tenant_session_time_idx');
 
             // Add data retention for privacy compliance
             $table->timestamp('data_retention_until')->nullable();
@@ -35,7 +34,6 @@ return new class extends Migration
     {
         Schema::table('analytics_events', function (Blueprint $table) {
             $table->dropIndex('analytics_events_tenant_type_time_idx');
-            $table->dropIndex('analytics_events_tenant_user_time_idx');
             $table->dropIndex('analytics_events_tenant_session_time_idx');
             $table->dropColumn([
                 'tenant_id',

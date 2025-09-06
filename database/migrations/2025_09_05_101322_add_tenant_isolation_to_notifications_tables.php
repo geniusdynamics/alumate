@@ -13,32 +13,40 @@ return new class extends Migration
     {
         // Add tenant isolation to notification_preferences table
         Schema::table('notification_preferences', function (Blueprint $table) {
-            $table->foreignId('tenant_id')->after('id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id')->after('id');
             $table->index(['tenant_id', 'user_id']);
             $table->index(['tenant_id', 'notification_type']);
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
 
         // Add tenant isolation to notification_templates table
         Schema::table('notification_templates', function (Blueprint $table) {
-            $table->foreignId('tenant_id')->after('id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id')->after('id');
             $table->index(['tenant_id', 'type']);
             $table->index(['tenant_id', 'name']);
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
 
         // Add tenant isolation to notification_logs table
         Schema::table('notification_logs', function (Blueprint $table) {
-            $table->foreignId('tenant_id')->after('id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id')->after('id');
             $table->index(['tenant_id', 'channel']);
             $table->index(['tenant_id', 'status']);
             $table->index(['tenant_id', 'sent_at']);
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
 
         // Add tenant isolation to notifications table (Laravel's default)
         Schema::table('notifications', function (Blueprint $table) {
-            $table->foreignId('tenant_id')->nullable()->after('id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id')->nullable()->after('id');
             $table->index(['tenant_id', 'notifiable_type', 'notifiable_id']);
             $table->index(['tenant_id', 'type']);
             $table->index(['tenant_id', 'read_at']);
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

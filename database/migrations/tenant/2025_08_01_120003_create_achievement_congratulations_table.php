@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('achievement_congratulations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('achievement_celebration_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Who congratulated
+            $table->unsignedBigInteger('achievement_celebration_id');
+            $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
             $table->text('message')->nullable(); // Optional congratulations message
             $table->timestamps();
 

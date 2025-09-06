@@ -32,8 +32,7 @@ export default defineConfig({
           // Utility libraries
           utils: [
             'lodash-es',
-            'date-fns',
-            'numeral'
+            'date-fns'
           ],
 
           // UI Components
@@ -44,9 +43,7 @@ export default defineConfig({
           ],
 
           // Performance monitoring
-          performance: [
-            'web-vitals'
-          ]
+          performance: []
         },
 
         // Code splitting for large components
@@ -131,8 +128,7 @@ export default defineConfig({
       '@inertiajs/vue3',
       'axios',
       '@headlessui/vue',
-      'lucide-vue-next',
-      'web-vitals'
+      'lucide-vue-next'
     ],
     exclude: [
       // Exclude large libraries from pre-bundling

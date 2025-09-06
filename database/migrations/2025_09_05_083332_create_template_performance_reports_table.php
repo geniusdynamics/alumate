@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('template_performance_reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('report_type'); // 'template_performance', 'comparison', 'trend_analysis', etc.
@@ -30,6 +30,9 @@ return new class extends Migration
             $table->index(['tenant_id', 'status']);
             $table->index('generated_at');
             $table->index('expires_at');
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 

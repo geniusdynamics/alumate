@@ -854,11 +854,11 @@ onMounted(() => {
 }
 
 .loading-dot:nth-child(2) {
-  @apply animation-delay-100;
+  animation-delay: 0.1s;
 }
 
 .loading-dot:nth-child(3) {
-  @apply animation-delay-200;
+  animation-delay: 0.2s;
 }
 
 @keyframes pulse {

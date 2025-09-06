@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('email_preferences', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
             $table->string('email');
             $table->json('preferences')->nullable(); // Granular subscription controls
             $table->json('frequency_settings')->nullable(); // Frequency settings for each category
@@ -41,6 +41,9 @@ return new class extends Migration
 
             // Unique constraint for email per tenant
             $table->unique(['email', 'tenant_id']);
+            
+            // Foreign key constraint for tenant_id
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
         });
     }
 
