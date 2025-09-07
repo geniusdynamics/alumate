@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         // Performance sessions table
-        Schema::create('performance_sessions', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_sessions')) {
+            Schema::create('performance_sessions', function (Blueprint $table) {
             $table->id();
             $table->string('url', 500);
             $table->string('referrer', 500)->nullable();
@@ -29,7 +30,7 @@ return new class extends Migration
             $table->bigInteger('memory_used')->nullable();
             $table->bigInteger('memory_total')->nullable();
             $table->bigInteger('memory_limit')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
+            $table->unsignedBigInteger('user_id')->nullable(); // Store user ID without foreign key constraint
             $table->string('tenant_id', 36);
             $table->timestamps();
 
@@ -37,12 +38,14 @@ return new class extends Migration
             $table->index(['tenant_id', 'created_at']);
             $table->index(['user_id', 'created_at']);
             $table->index('url');
-        });
+            });
+        }
 
         // Performance metrics table
-        Schema::create('performance_metrics', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_metrics')) {
+            Schema::create('performance_metrics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('performance_sessions')->onDelete('cascade');
+            $table->unsignedBigInteger('session_id');
             $table->string('name', 100);
             $table->decimal('value', 12, 4);
             $table->string('url', 500);
@@ -56,12 +59,14 @@ return new class extends Migration
             $table->index(['url', 'name']);
             $table->index('timestamp');
             $table->index('value');
-        });
+            });
+        }
 
         // Performance alerts table (for threshold violations)
-        Schema::create('performance_alerts', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_alerts')) {
+            Schema::create('performance_alerts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained('performance_sessions')->onDelete('cascade');
+            $table->unsignedBigInteger('session_id');
             $table->string('metric_name', 100);
             $table->decimal('metric_value', 12, 4);
             $table->decimal('threshold_value', 12, 4);
@@ -70,17 +75,19 @@ return new class extends Migration
             $table->json('context')->nullable();
             $table->boolean('acknowledged')->default(false);
             $table->timestamp('acknowledged_at')->nullable();
-            $table->foreignId('acknowledged_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->unsignedBigInteger('acknowledged_by')->nullable(); // Store user ID without foreign key constraint
             $table->timestamps();
 
             // Indexes
             $table->index(['metric_name', 'severity', 'created_at']);
             $table->index(['acknowledged', 'created_at']);
             $table->index('url');
-        });
+            });
+        }
 
         // Performance budgets table (for setting performance targets)
-        Schema::create('performance_budgets', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_budgets')) {
+            Schema::create('performance_budgets', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
             $table->string('metric_name', 100);
@@ -90,17 +97,19 @@ return new class extends Migration
             $table->decimal('critical_threshold', 12, 4);
             $table->boolean('is_active')->default(true);
             $table->string('tenant_id', 36);
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('created_by'); // Store user ID without foreign key constraint
             $table->timestamps();
 
             // Indexes
             $table->index(['tenant_id', 'is_active']);
             $table->index(['metric_name', 'is_active']);
             $table->index('url_pattern');
-        });
+            });
+        }
 
         // Performance reports table (for scheduled reports)
-        Schema::create('performance_reports', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_reports')) {
+            Schema::create('performance_reports', function (Blueprint $table) {
             $table->id();
             $table->string('name', 200);
             $table->string('type', 50); // 'daily', 'weekly', 'monthly'
@@ -114,13 +123,14 @@ return new class extends Migration
             $table->timestamp('last_sent_at')->nullable();
             $table->timestamp('next_send_at')->nullable();
             $table->string('tenant_id', 36);
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('created_by'); // Store user ID without foreign key constraint
             $table->timestamps();
 
             // Indexes
             $table->index(['tenant_id', 'is_active']);
             $table->index(['is_active', 'next_send_at']);
-        });
+            });
+        }
     }
 
     /**

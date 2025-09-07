@@ -151,6 +151,55 @@ return [
             'days' => 7,
             'replace_placeholders' => true,
         ],
+
+        // Template-specific log channels (new)
+        'template-errors' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/template-errors.log'),
+            'level' => env('LOG_LEVEL', 'error'),
+            'days' => 30,
+            'replace_placeholders' => true,
+        ],
+
+        'template-warnings' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/template-warnings.log'),
+            'level' => env('LOG_LEVEL', 'warning'),
+            'days' => 14,
+            'replace_placeholders' => true,
+        ],
+
+        'template-info' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/template-info.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 7,
+            'replace_placeholders' => true,
+        ],
+
+        'template-alerts' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/template-alerts.log'),
+            'level' => env('LOG_LEVEL', 'alert'),
+            'days' => 90,
+            'replace_placeholders' => true,
+        ],
+
+        'template-performance' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/template-performance.log'),
+            'level' => env('LOG_LEVEL', 'info'),
+            'days' => 14,
+            'replace_placeholders' => true,
+        ],
+
+        'template-security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/template-security.log'),
+            'level' => env('LOG_LEVEL', 'warning'),
+            'days' => 90,
+            'replace_placeholders' => true,
+        ],
     ],
 
 ];

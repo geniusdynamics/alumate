@@ -147,6 +147,7 @@ class GenerateAnalyticsSnapshots extends Command
 
         if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('graduate_outcomes', $dateString)) {
             $this->info('Snapshot for today already exists. Use --force to regenerate.');
+
             return;
         }
 
@@ -162,6 +163,7 @@ class GenerateAnalyticsSnapshots extends Command
 
         if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('course_roi', $dateString)) {
             $this->info('Snapshot for today already exists. Use --force to regenerate.');
+
             return;
         }
 
@@ -182,6 +184,7 @@ class GenerateAnalyticsSnapshots extends Command
 
         if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('employer_engagement', $dateString)) {
             $this->info('Snapshot for today already exists. Use --force to regenerate.');
+
             return;
         }
 
@@ -202,6 +205,7 @@ class GenerateAnalyticsSnapshots extends Command
 
         if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('community_health', $dateString)) {
             $this->info('Snapshot for today already exists. Use --force to regenerate.');
+
             return;
         }
 
@@ -222,6 +226,7 @@ class GenerateAnalyticsSnapshots extends Command
 
         if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('platform_benchmarks', $dateString)) {
             $this->info('Snapshot for today already exists. Use --force to regenerate.');
+
             return;
         }
 
@@ -242,6 +247,7 @@ class GenerateAnalyticsSnapshots extends Command
 
         if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('market_trends', $dateString)) {
             $this->info('Snapshot for today already exists. Use --force to regenerate.');
+
             return;
         }
 
@@ -262,6 +268,7 @@ class GenerateAnalyticsSnapshots extends Command
 
         if (! $force && \App\Models\AnalyticsSnapshot::getSnapshotForDate('system_growth', $dateString)) {
             $this->info('Snapshot for today already exists. Use --force to regenerate.');
+
             return;
         }
 

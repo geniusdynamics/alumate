@@ -62,16 +62,16 @@ Broadcast::channel('connection.{connectionId}', function ($user, $connectionId) 
 Broadcast::channel('event.{eventId}', function ($user, $eventId) {
     // Check if user has access to the event (public events or user is attendee)
     $event = \App\Models\Event::find($eventId);
-    
-    if (!$event) {
+
+    if (! $event) {
         return false;
     }
-    
+
     // Public events are accessible to all authenticated users
     if ($event->visibility === 'public') {
         return true;
     }
-    
+
     // Private events require attendance or ownership
     return $event->attendees()->where('user_id', $user->id)->exists() ||
            $event->organizer_id === $user->id;
@@ -81,16 +81,16 @@ Broadcast::channel('event.{eventId}', function ($user, $eventId) {
 Broadcast::channel('job.{jobId}', function ($user, $jobId) {
     // Check if user has access to the job posting
     $job = \App\Models\Job::find($jobId);
-    
-    if (!$job) {
+
+    if (! $job) {
         return false;
     }
-    
+
     // Public jobs are accessible to all authenticated users
     if ($job->visibility === 'public') {
         return true;
     }
-    
+
     // Private jobs require specific access
     return $job->posted_by === $user->id ||
            $job->applications()->where('user_id', $user->id)->exists();
@@ -100,11 +100,11 @@ Broadcast::channel('job.{jobId}', function ($user, $jobId) {
 Broadcast::channel('chat.{chatId}', function ($user, $chatId) {
     // Check if user is part of the chat
     $chat = \App\Models\Chat::find($chatId);
-    
-    if (!$chat) {
+
+    if (! $chat) {
         return false;
     }
-    
+
     return $chat->participants()->where('user_id', $user->id)->exists();
 });
 
@@ -132,11 +132,11 @@ Broadcast::channel('alumni-map', function ($user) {
 Broadcast::channel('conversation.{conversationId}', function ($user, $conversationId) {
     // Check if user is a participant in the conversation
     $conversation = \App\Models\Conversation::find($conversationId);
-    
-    if (!$conversation) {
+
+    if (! $conversation) {
         return false;
     }
-    
+
     return $conversation->hasParticipant($user);
 });
 
@@ -154,4 +154,48 @@ Broadcast::channel('activity-feed', function ($user) {
         'avatar_url' => $user->avatar_url,
         'last_active' => now(),
     ];
+});
+
+// Template preview channels
+Broadcast::channel('template.{templateId}.preview', function ($user, $templateId) {
+    // Check if user has access to this template
+    // For now, allow all authenticated users (can be restricted later based on permissions)
+    return [
+        'user_id' => $user->id,
+        'template_id' => $templateId,
+        'joined_at' => now()->toISOString()
+    ];
+});
+
+Broadcast::channel('template.{templateId}.collaborators', function ($user, $templateId) {
+    // Presence channel for template collaborators
+    // Can add authorization logic here based on template permissions
+    return [
+        'user_id' => $user->id,
+        'user_name' => $user->name,
+        'template_id' => $templateId,
+        'joined_at' => now()->toISOString()
+    ];
+});
+
+// Tenant-specific template preview channels
+Broadcast::channel('tenant.{tenantId}.template-previews', function ($user, $tenantId) {
+    // Verify user belongs to the tenant (with tenant isolation)
+    if (config('database.multi_tenant', false)) {
+        try {
+            $tenant = tenant();
+            return $tenant && $tenant->id === $tenantId;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    // For single-tenant, allow all authenticated users
+    return true;
+});
+
+// User-specific template preview channels
+Broadcast::channel('user.{userId}.template-previews', function ($user, $userId) {
+    // Only allow users to listen to their own template preview updates
+    return (int) $user->id === (int) $userId;
 });

@@ -35,10 +35,7 @@
       <link rel="dns-prefetch" href="//analytics.google.com">
       <link rel="dns-prefetch" href="//www.googletagmanager.com">
       
-      <!-- Structured Data -->
-      <script type="application/ld+json" v-html="organizationSchema"></script>
-      <script type="application/ld+json" v-html="websiteSchema"></script>
-      <script type="application/ld+json" v-html="breadcrumbSchema"></script>
+      <!-- Structured Data will be handled by the page component -->
     </Head>
     
     <!-- Accessibility enhancements -->
@@ -111,53 +108,7 @@ const canonicalUrl = computed(() => {
 })
 const ogImage = computed(() => 'https://alumniplatform.com/images/og-homepage.jpg')
 const twitterImage = computed(() => 'https://alumniplatform.com/images/twitter-homepage.jpg')
-// Structured Data
-const organizationSchema = computed(() => JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: 'Alumni Platform',
-  url: 'https://alumniplatform.com',
-  logo: 'https://alumniplatform.com/images/logo.png',
-  description: 'Professional alumni networking platform connecting graduates worldwide',
-  sameAs: [
-    'https://twitter.com/AlumniPlatform',
-    'https://linkedin.com/company/alumni-platform',
-    'https://facebook.com/AlumniPlatform'
-  ],
-  contactPoint: {
-    '@type': 'ContactPoint',
-    telephone: '+1-555-0123',
-    contactType: 'customer service',
-    email: 'support@alumniplatform.com'
-  }
-}, null, 2))
-const websiteSchema = computed(() => JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Alumni Platform',
-  url: 'https://alumniplatform.com',
-  description: props.description,
-  potentialAction: {
-    '@type': 'SearchAction',
-    target: {
-      '@type': 'EntryPoint',
-      urlTemplate: 'https://alumniplatform.com/search?q={search_term_string}'
-    },
-    'query-input': 'required name=search_term_string'
-  }
-}, null, 2))
-const breadcrumbSchema = computed(() => JSON.stringify({
-  '@context': 'https://schema.org',
-  '@type': 'BreadcrumbList',
-  itemListElement: [
-    {
-      '@type': 'ListItem',
-      position: 1,
-      name: 'Home',
-      item: 'https://alumniplatform.com'
-    }
-  ]
-}, null, 2))
+// Structured data is now handled by individual page components
 onMounted(() => {
   // Initialize accessibility features
   accessibilityService.announce('Alumni Platform homepage loaded', 'polite')

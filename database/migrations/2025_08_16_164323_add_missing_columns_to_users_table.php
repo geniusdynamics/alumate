@@ -13,56 +13,56 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Add is_active column if not exists
-            if (!Schema::hasColumn('users', 'is_active')) {
+            if (! Schema::hasColumn('users', 'is_active')) {
                 $table->boolean('is_active')->default(true);
             }
-            
+
             // Add profile visibility settings
-            if (!Schema::hasColumn('users', 'profile_visibility')) {
+            if (! Schema::hasColumn('users', 'profile_visibility')) {
                 $table->enum('profile_visibility', ['public', 'alumni_only', 'private'])->default('alumni_only');
             }
-            
+
             // Add location privacy settings
-            if (!Schema::hasColumn('users', 'location_privacy')) {
+            if (! Schema::hasColumn('users', 'location_privacy')) {
                 $table->enum('location_privacy', ['public', 'alumni_only', 'private'])->default('alumni_only');
             }
-            
+
             // Add location fields if not exists
-            if (!Schema::hasColumn('users', 'latitude')) {
+            if (! Schema::hasColumn('users', 'latitude')) {
                 $table->decimal('latitude', 10, 8)->nullable();
             }
-            
-            if (!Schema::hasColumn('users', 'longitude')) {
+
+            if (! Schema::hasColumn('users', 'longitude')) {
                 $table->decimal('longitude', 11, 8)->nullable();
             }
-            
-            if (!Schema::hasColumn('users', 'location')) {
+
+            if (! Schema::hasColumn('users', 'location')) {
                 $table->string('location')->nullable();
             }
-            
-            if (!Schema::hasColumn('users', 'country')) {
+
+            if (! Schema::hasColumn('users', 'country')) {
                 $table->string('country')->nullable();
             }
-            
-            if (!Schema::hasColumn('users', 'region')) {
+
+            if (! Schema::hasColumn('users', 'region')) {
                 $table->string('region')->nullable();
             }
-            
+
             // Add current employment fields
-            if (!Schema::hasColumn('users', 'current_title')) {
+            if (! Schema::hasColumn('users', 'current_title')) {
                 $table->string('current_title')->nullable();
             }
-            
-            if (!Schema::hasColumn('users', 'current_company')) {
+
+            if (! Schema::hasColumn('users', 'current_company')) {
                 $table->string('current_company')->nullable();
             }
-            
-            if (!Schema::hasColumn('users', 'current_industry')) {
+
+            if (! Schema::hasColumn('users', 'current_industry')) {
                 $table->string('current_industry')->nullable();
             }
-            
+
             // Add avatar URL
-            if (!Schema::hasColumn('users', 'avatar_url')) {
+            if (! Schema::hasColumn('users', 'avatar_url')) {
                 $table->string('avatar_url')->nullable();
             }
         });
@@ -86,7 +86,7 @@ return new class extends Migration
                 'current_title',
                 'current_company',
                 'current_industry',
-                'avatar_url'
+                'avatar_url',
             ]);
         });
     }

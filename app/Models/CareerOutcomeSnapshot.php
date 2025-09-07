@@ -62,7 +62,7 @@ class CareerOutcomeSnapshot extends Model
 
     public function getTrackingRateAttribute()
     {
-        return $this->total_graduates > 0 
+        return $this->total_graduates > 0
             ? round(($this->tracked_graduates / $this->total_graduates) * 100, 2)
             : 0;
     }

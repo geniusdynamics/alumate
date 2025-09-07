@@ -3,12 +3,11 @@
 namespace App\Services;
 
 use App\Models\Forum;
-use App\Models\ForumTopic;
 use App\Models\ForumPost;
 use App\Models\ForumTag;
+use App\Models\ForumTopic;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class ForumService
 {
@@ -28,12 +27,12 @@ class ForumService
             // Filter by user access permissions
             $query->where(function ($q) use ($user) {
                 $q->where('visibility', 'public')
-                  ->orWhere(function ($subQ) use ($user) {
-                      $subQ->where('visibility', 'group_only')
-                           ->whereHas('group.members', function ($memberQ) use ($user) {
-                               $memberQ->where('user_id', $user->id);
-                           });
-                  });
+                    ->orWhere(function ($subQ) use ($user) {
+                        $subQ->where('visibility', 'group_only')
+                            ->whereHas('group.members', function ($memberQ) use ($user) {
+                                $memberQ->where('user_id', $user->id);
+                            });
+                    });
             });
         }
 
@@ -49,30 +48,30 @@ class ForumService
             ->whereHas('forum', function ($q) use ($user) {
                 $q->active()->where(function ($subQ) use ($user) {
                     $subQ->where('visibility', 'public')
-                         ->orWhere(function ($groupQ) use ($user) {
-                             $groupQ->where('visibility', 'group_only')
-                                    ->whereHas('group.members', function ($memberQ) use ($user) {
-                                        $memberQ->where('user_id', $user->id);
-                                    });
-                         });
+                        ->orWhere(function ($groupQ) use ($user) {
+                            $groupQ->where('visibility', 'group_only')
+                                ->whereHas('group.members', function ($memberQ) use ($user) {
+                                    $memberQ->where('user_id', $user->id);
+                                });
+                        });
                 });
             })
             ->active()
             ->where(function ($q) use ($query) {
                 $q->where('title', 'like', "%{$query}%")
-                  ->orWhere('content', 'like', "%{$query}%");
+                    ->orWhere('content', 'like', "%{$query}%");
             });
 
         // Apply filters
-        if (!empty($filters['forum_id'])) {
+        if (! empty($filters['forum_id'])) {
             $topicsQuery->where('forum_id', $filters['forum_id']);
         }
 
-        if (!empty($filters['tag'])) {
+        if (! empty($filters['tag'])) {
             $topicsQuery->withTag($filters['tag']);
         }
 
-        if (!empty($filters['user_id'])) {
+        if (! empty($filters['user_id'])) {
             $topicsQuery->where('user_id', $filters['user_id']);
         }
 
@@ -94,14 +93,14 @@ class ForumService
             case 'relevance':
             default:
                 // Simple relevance scoring based on title vs content matches
-                $topicsQuery->orderByRaw("
+                $topicsQuery->orderByRaw('
                     CASE 
                         WHEN title LIKE ? THEN 2
                         WHEN content LIKE ? THEN 1
                         ELSE 0
                     END DESC
-                ", ["%{$query}%", "%{$query}%"])
-                ->orderBy('views_count', 'desc');
+                ', ["%{$query}%", "%{$query}%"])
+                    ->orderBy('views_count', 'desc');
                 break;
         }
 
@@ -209,7 +208,7 @@ class ForumService
             default => null,
         };
 
-        if (!$model) {
+        if (! $model) {
             return false;
         }
 
@@ -220,6 +219,7 @@ class ForumService
                     'approved_by' => $moderator->id,
                     'approved_at' => now(),
                 ]);
+
                 return true;
 
             case 'reject':
@@ -228,10 +228,12 @@ class ForumService
                     'approved_by' => null,
                     'approved_at' => null,
                 ]);
+
                 return true;
 
             case 'delete':
                 $model->delete();
+
                 return true;
 
             default:

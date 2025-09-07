@@ -2,10 +2,10 @@
 
 namespace Tests\Unit;
 
-use App\Models\SalaryProgression;
 use App\Models\CareerPath;
 use App\Models\IndustryPlacement;
 use App\Models\ProgramEffectiveness;
+use App\Models\SalaryProgression;
 use Tests\TestCase;
 
 class CareerOutcomeModelsTest extends TestCase
@@ -56,8 +56,8 @@ class CareerOutcomeModelsTest extends TestCase
 
         $careerPath->total_job_changes = 4;
         // Mock the user relationship for testing
-        $careerPath->setRelation('user', (object)['graduationYear' => 2020]);
-        
+        $careerPath->setRelation('user', (object) ['graduationYear' => 2020]);
+
         $this->assertLessThan(100, $careerPath->job_stability_score);
         $this->assertGreaterThanOrEqual(0, $careerPath->job_stability_score);
     }
@@ -121,7 +121,7 @@ class CareerOutcomeModelsTest extends TestCase
     public function test_career_path_static_methods()
     {
         $pathTypes = CareerPath::getPathTypes();
-        
+
         $this->assertIsArray($pathTypes);
         $this->assertArrayHasKey(CareerPath::PATH_LINEAR, $pathTypes);
         $this->assertArrayHasKey(CareerPath::PATH_PIVOT, $pathTypes);

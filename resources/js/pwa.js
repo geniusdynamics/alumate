@@ -29,8 +29,10 @@ class PWAManager {
         // Setup background sync
         this.setupBackgroundSync();
         
-        // Setup periodic sync (if supported)
-        this.setupPeriodicSync();
+        // Setup periodic sync (if supported) - wait for service worker to be ready
+        if (this.swRegistration) {
+            await this.setupPeriodicSync();
+        }
         
         console.log('PWA Manager initialized');
     }
@@ -312,7 +314,15 @@ class PWAManager {
     
     async setupPeriodicSync() {
         if ('serviceWorker' in navigator && 'periodicSync' in window.ServiceWorkerRegistration.prototype) {
+            if (!this.swRegistration) {
+                console.warn('Service worker registration not available for periodic sync');
+                return;
+            }
+            
             try {
+                // Wait for service worker to be ready
+                await navigator.serviceWorker.ready;
+                
                 await this.swRegistration.periodicSync.register('background-sync', {
                     minInterval: 24 * 60 * 60 * 1000, // 24 hours
                 });

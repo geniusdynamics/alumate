@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\EmailAutomationRule;
-use App\Models\EmailCampaign;
 use App\Services\EmailMarketingService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessAutomationRuleJob implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
 
@@ -33,8 +32,8 @@ class ProcessAutomationRuleJob implements ShouldQueue
 
             // Create a campaign based on the automation rule
             $campaign = $emailMarketingService->createCampaign([
-                'name' => $this->rule->name . ' - ' . now()->format('Y-m-d H:i'),
-                'description' => 'Automated campaign triggered by: ' . $this->rule->trigger_event,
+                'name' => $this->rule->name.' - '.now()->format('Y-m-d H:i'),
+                'description' => 'Automated campaign triggered by: '.$this->rule->trigger_event,
                 'subject' => $this->generateSubject(),
                 'content' => $this->rule->template->html_content,
                 'type' => 'engagement',
@@ -48,7 +47,7 @@ class ProcessAutomationRuleJob implements ShouldQueue
 
             if ($success) {
                 $this->rule->incrementSentCount();
-                
+
                 Log::info('Automation rule processed successfully', [
                     'rule_id' => $this->rule->id,
                     'campaign_id' => $campaign->id,
@@ -92,11 +91,11 @@ class ProcessAutomationRuleJob implements ShouldQueue
             case 'user_registered':
                 $rules[] = ['type' => 'upcoming_events'];
                 break;
-            
+
             case 'post_created':
                 $rules[] = ['type' => 'recent_posts'];
                 break;
-            
+
             case 'career_milestone':
                 $rules[] = ['type' => 'career_milestone'];
                 break;

@@ -13,7 +13,7 @@ class SimpleCareerAnalyticsTest extends BaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Create a simple user for testing
         $this->user = User::factory()->create([
             'email' => 'test@example.com',

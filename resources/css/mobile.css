@@ -1,4 +1,13 @@
-/* Mobile-specific styles for Alumni Platform */
+/* Mobile-first responsive design system for Alumni Platform */
+
+/*
+ * MOBILE-FIRST PRINCIPLES:
+ * 1. Base styles apply to mobile (320px and up)
+ * 2. Small enhancements at sm breakpoint (640px+)
+ * 3. Medium breakpoints at md (768px+)
+ * 4. Large breakpoints at lg (1024px+)
+ * 5. All breakpoints use min-width for progressive enhancement
+ */
 
 /* Touch target sizes - minimum 44px */
 .touch-target {

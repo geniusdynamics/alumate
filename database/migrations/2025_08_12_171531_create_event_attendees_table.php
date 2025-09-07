@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamp('rsvp_date')->nullable();
             $table->timestamp('checked_in_at')->nullable();
             $table->timestamps();
-            
+
             $table->unique(['event_id', 'user_id']);
         });
     }

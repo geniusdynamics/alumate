@@ -18,10 +18,10 @@ return new class extends Migration
             $table->timestamp('joined_at')->useCurrent();
             $table->string('status')->default('active'); // active, inactive
             $table->timestamps();
-            
+
             // Unique constraint to prevent duplicate memberships
             $table->unique(['circle_id', 'user_id']);
-            
+
             // Indexes
             $table->index(['user_id', 'status']);
             $table->index(['circle_id', 'status']);

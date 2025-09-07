@@ -13,6 +13,7 @@ class DashboardTest extends TestCase
     use RefreshDatabase;
 
     protected User $institutionAdmin;
+
     protected Institution $institution;
 
     protected function setUp(): void
@@ -82,7 +83,7 @@ class DashboardTest extends TestCase
                     'average_salary',
                     'total_graduates',
                     'estimated_roi_percentage',
-                ]
+                ],
             ]);
     }
 

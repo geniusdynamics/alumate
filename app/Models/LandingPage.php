@@ -2,59 +2,192 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 class LandingPage extends Model
 {
-    use SoftDeletes;
+    use HasFactory;
 
     protected $fillable = [
+        'template_id',
+        'tenant_id',
         'name',
         'slug',
-        'title',
         'description',
-        'target_audience',
+        'config',
+        'brand_config',
+        'audience_type',
         'campaign_type',
-        'campaign_name',
+        'category',
         'status',
-        'content',
-        'settings',
-        'form_config',
-        'template_id',
+        'published_at',
+        'draft_hash',
+        'version',
+        'usage_count',
+        'conversion_count',
+        'preview_url',
+        'public_url',
+        'seo_title',
+        'seo_description',
+        'seo_keywords',
+        'social_image',
+        'tracking_id',
+        'favicon_url',
+        'custom_css',
+        'custom_js',
         'created_by',
         'updated_by',
-        'published_at',
     ];
 
     protected $casts = [
-        'content' => 'array',
-        'settings' => 'array',
-        'form_config' => 'array',
+        'config' => 'array',
+        'brand_config' => 'array',
         'published_at' => 'datetime',
+        'version' => 'integer',
+        'usage_count' => 'integer',
+        'conversion_count' => 'integer',
+        'seo_keywords' => 'array',
+    ];
+
+    protected $attributes = [
+        'status' => 'draft',
+        'version' => 1,
+        'usage_count' => 0,
+        'conversion_count' => 0,
+        'config' => '{}',
+        'brand_config' => '{}',
+        'seo_keywords' => '[]',
+    ];
+
+    /**
+     * Available statuses for landing pages
+     */
+    public const STATUSES = [
+        'draft',
+        'reviewing',
+        'published',
+        'archived',
+        'suspended',
+    ];
+
+    /**
+     * Categories for landing pages
+     */
+    public const CATEGORIES = [
+        'individual',
+        'institution',
+        'employer',
     ];
 
     /**
      * Boot the model
      */
-    protected static function boot()
+    protected static function boot(): void
     {
         parent::boot();
 
-        static::creating(function ($landingPage) {
-            if (empty($landingPage->slug)) {
-                $landingPage->slug = Str::slug($landingPage->name);
+        // Apply tenant scoping automatically for multi-tenant isolation
+        static::addGlobalScope('tenant', function ($builder) {
+            // Check if we're in a multi-tenant context
+            if (config('database.multi_tenant', false)) {
+                try {
+                    // In production, apply tenant filter based on current tenant context
+                    if (tenant() && tenant()->id) {
+                        $builder->where('tenant_id', tenant()->id);
+                    }
+                } catch (\Exception $e) {
+                    // Skip tenant scoping in test environment
+                }
             }
         });
 
-        static::updating(function ($landingPage) {
-            if ($landingPage->isDirty('name') && empty($landingPage->slug)) {
-                $landingPage->slug = Str::slug($landingPage->name);
+        // Auto-generate slug if not provided
+        static::creating(function ($page) {
+            if (empty($page->slug)) {
+                $page->slug = $page->generateUniqueSlug($page->name, $page->tenant_id);
+            }
+
+            // Generate draft hash for tracking changes
+            if (empty($page->draft_hash)) {
+                $page->draft_hash = Str::random(32);
             }
         });
+    }
+
+    /**
+     * Scope query to specific tenant
+     */
+    public function scopeForTenant($query, int $tenantId)
+    {
+        return $query->where('tenant_id', $tenantId);
+    }
+
+    /**
+     * Scope query to published pages only
+     */
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
+    }
+
+    /**
+     * Scope query to draft pages only
+     */
+    public function scopeDrafts($query)
+    {
+        return $query->where('status', 'draft');
+    }
+
+    /**
+     * Scope query by status
+     */
+    public function scopeByStatus($query, string $status)
+    {
+        return $query->where('status', $status);
+    }
+
+    /**
+     * Scope query by category
+     */
+    public function scopeByCategory($query, string $category)
+    {
+        return $query->where('category', $category);
+    }
+
+    /**
+     * Scope query by audience type
+     */
+    public function scopeByAudience($query, string $audienceType)
+    {
+        return $query->where('audience_type', $audienceType);
+    }
+
+    /**
+     * Scope query by campaign type
+     */
+    public function scopeByCampaign($query, string $campaignType)
+    {
+        return $query->where('campaign_type', $campaignType);
+    }
+
+    /**
+     * Get the tenant that owns this landing page
+     */
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
+    }
+
+    /**
+     * Get the template used by this landing page
+     */
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(Template::class, 'template_id');
     }
 
     /**
@@ -74,15 +207,7 @@ class LandingPage extends Model
     }
 
     /**
-     * Get the template used for this landing page
-     */
-    public function template(): BelongsTo
-    {
-        return $this->belongsTo(LandingPageTemplate::class, 'template_id');
-    }
-
-    /**
-     * Get all submissions for this landing page
+     * Get submissions for this landing page
      */
     public function submissions(): HasMany
     {
@@ -90,7 +215,7 @@ class LandingPage extends Model
     }
 
     /**
-     * Get all analytics events for this landing page
+     * Get analytics for this landing page
      */
     public function analytics(): HasMany
     {
@@ -98,11 +223,23 @@ class LandingPage extends Model
     }
 
     /**
-     * Get recent submissions
+     * Get components used in this landing page
      */
-    public function recentSubmissions(): HasMany
+    public function components(): HasMany
     {
-        return $this->hasMany(LandingPageSubmission::class)->latest()->limit(10);
+        return $this->hasMany(LandingPageComponent::class);
+    }
+
+    /**
+     * Get effective configuration (template config + custom config)
+     */
+    public function getEffectiveConfig(): array
+    {
+        $templateConfig = $this->template ? $this->template->default_config ?? [] : [];
+        $pageConfig = $this->config ?? [];
+        $brandConfig = $this->brand_config ?? [];
+
+        return array_merge($templateConfig, $brandConfig, $pageConfig);
     }
 
     /**
@@ -114,11 +251,11 @@ class LandingPage extends Model
     }
 
     /**
-     * Check if the landing page is draft
+     * Check if the landing page is public
      */
-    public function isDraft(): bool
+    public function isPublic(): bool
     {
-        return $this->status === 'draft';
+        return $this->isPublished() && $this->published_at->isPast();
     }
 
     /**
@@ -129,7 +266,11 @@ class LandingPage extends Model
         $this->update([
             'status' => 'published',
             'published_at' => now(),
+            'version' => $this->version + 1,
         ]);
+
+        // Update draft hash to reflect published state
+        $this->update(['draft_hash' => Str::random(32)]);
     }
 
     /**
@@ -144,120 +285,194 @@ class LandingPage extends Model
     }
 
     /**
-     * Get the public URL for this landing page
+     * Archive the landing page
      */
-    public function getPublicUrlAttribute(): string
+    public function archive(): void
     {
-        return route('landing-page.show', $this->slug);
+        $this->update(['status' => 'archived']);
     }
 
     /**
-     * Get conversion rate
+     * Suspend the landing page
      */
-    public function getConversionRateAttribute(): float
+    public function suspend(): void
     {
-        $views = $this->analytics()->where('event_type', 'page_view')->count();
-        $conversions = $this->submissions()->count();
-
-        return $views > 0 ? ($conversions / $views) * 100 : 0;
+        $this->update(['status' => 'suspended']);
     }
 
     /**
-     * Get total views
+     * Get the full public URL for this landing page
      */
-    public function getTotalViewsAttribute(): int
+    public function getFullPublicUrl(): string
     {
-        return $this->analytics()->where('event_type', 'page_view')->count();
+        if (!$this->isPublished() || empty($this->public_url)) {
+            return '';
+        }
+
+        // If using subdomain isolation
+        if (config('database.multi_tenant')) {
+            try {
+                $tenantDomain = tenant()->domain;
+                return "https://{$this->slug}.{$tenantDomain}";
+            } catch (\Exception $e) {
+                // Fallback to path-based URL
+            }
+        }
+
+        return $this->public_url;
     }
 
     /**
-     * Get total submissions
+     * Get the full preview URL for this landing page
      */
-    public function getTotalSubmissionsAttribute(): int
+    public function getFullPreviewUrl(): string
     {
-        return $this->submissions()->count();
+        if (empty($this->preview_url)) {
+            return '';
+        }
+
+        // Include draft hash for cache busting
+        return $this->preview_url . '?draft=' . $this->draft_hash;
     }
 
     /**
-     * Scope for published pages
+     * Generate a unique slug for the landing page
      */
-    public function scopePublished($query)
+    protected function generateUniqueSlug(string $name, int $tenantId): string
     {
-        return $query->where('status', 'published')->whereNotNull('published_at');
+        $baseSlug = Str::slug($name);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while ($this->slugExists($slug, $tenantId)) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
     }
 
     /**
-     * Scope for draft pages
+     * Check if a slug exists for the tenant
      */
-    public function scopeDraft($query)
+    protected function slugExists(string $slug, int $tenantId): bool
     {
-        return $query->where('status', 'draft');
+        $query = static::where('tenant_id', $tenantId)->where('slug', $slug);
+
+        if ($this->exists) {
+            $query->where('id', '!=', $this->id);
+        }
+
+        return $query->exists();
     }
 
     /**
-     * Scope by target audience
+     * Get SEO metadata array
      */
-    public function scopeForAudience($query, string $audience)
+    public function getSEOMetadata(): array
     {
-        return $query->where('target_audience', $audience);
-    }
-
-    /**
-     * Scope by campaign type
-     */
-    public function scopeByCampaignType($query, string $campaignType)
-    {
-        return $query->where('campaign_type', $campaignType);
-    }
-
-    /**
-     * Scope by campaign name
-     */
-    public function scopeByCampaign($query, string $campaignName)
-    {
-        return $query->where('campaign_name', $campaignName);
-    }
-
-    /**
-     * Get analytics summary
-     */
-    public function getAnalyticsSummary(): array
-    {
-        $analytics = $this->analytics()
-            ->selectRaw('event_type, COUNT(*) as count')
-            ->groupBy('event_type')
-            ->pluck('count', 'event_type')
-            ->toArray();
-
         return [
-            'page_views' => $analytics['page_view'] ?? 0,
-            'form_submissions' => $analytics['form_submit'] ?? 0,
-            'button_clicks' => $analytics['button_click'] ?? 0,
-            'conversion_rate' => $this->conversion_rate,
-            'total_submissions' => $this->total_submissions,
+            'title' => $this->seo_title ?? $this->name,
+            'description' => $this->seo_description ?? $this->description,
+            'keywords' => $this->seo_keywords ?? [],
+            'image' => $this->social_image,
+            'url' => $this->getFullPublicUrl(),
+            'site_name' => tenant()->name ?? config('app.name'),
+            'locale' => 'en_US',
         ];
     }
 
     /**
-     * Clone the landing page
+     * Get performance statistics
      */
-    public function duplicate(?string $newName = null): self
+    public function getPerformanceStats(): array
     {
-        $newName = $newName ?: $this->name.' (Copy)';
+        return [
+            'usage_count' => $this->usage_count,
+            'conversion_count' => $this->conversion_count,
+            'conversion_rate' => $this->usage_count > 0
+                ? round(($this->conversion_count / $this->usage_count) * 100, 2)
+                : 0,
+            'is_performing' => $this->conversion_rate > 5, // 5% conversion rate threshold
+        ];
+    }
 
-        return self::create([
-            'name' => $newName,
-            'title' => $this->title.' (Copy)',
-            'description' => $this->description,
-            'target_audience' => $this->target_audience,
-            'campaign_type' => $this->campaign_type,
-            'campaign_name' => $this->campaign_name,
-            'content' => $this->content,
-            'settings' => $this->settings,
-            'form_config' => $this->form_config,
-            'template_id' => $this->template_id,
-            'created_by' => auth()->id(),
-            'status' => 'draft',
-        ]);
+    /**
+     * Increment usage count
+     */
+    public function incrementUsage(): void
+    {
+        $this->increment('usage_count');
+    }
+
+    /**
+     * Increment conversion count
+     */
+    public function incrementConversion(): void
+    {
+        $this->increment('conversion_count');
+    }
+
+    /**
+     * Update draft hash when configuration changes
+     */
+    public function updateDraftHash(): void
+    {
+        $this->update(['draft_hash' => Str::random(32)]);
+    }
+
+    /**
+     * Get model validation rules
+     */
+    public static function getValidationRules(): array
+    {
+        return [
+            'template_id' => 'required|exists:templates,id',
+            'tenant_id' => 'required|exists:tenants,id',
+            'name' => 'required|string|max:255',
+            'slug' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
+            'description' => 'nullable|string|max:1000',
+            'config' => 'nullable|array',
+            'brand_config' => 'nullable|array',
+            'audience_type' => 'required|in:' . implode(',', ['individual', 'institution', 'employer']),
+            'campaign_type' => 'required|in:' . implode(',', [
+                'onboarding', 'event_promotion', 'networking', 'career_services',
+                'recruiting', 'donation', 'leadership', 'marketing'
+            ]),
+            'category' => 'required|in:' . implode(',', self::CATEGORIES),
+            'status' => 'required|in:' . implode(',', self::STATUSES),
+            'published_at' => 'nullable|date',
+            'version' => 'integer|min:1',
+            'usage_count' => 'integer|min:0',
+            'conversion_count' => 'integer|min:0',
+            'preview_url' => 'nullable|string|url|max:255',
+            'public_url' => 'nullable|string|url|max:255',
+            'seo_title' => 'nullable|string|max:60',
+            'seo_description' => 'nullable|string|max:160',
+            'seo_keywords' => 'nullable|array',
+            'social_image' => 'nullable|string|url|max:255',
+            'tracking_id' => 'nullable|string|max:255',
+            'favicon_url' => 'nullable|string|url|max:255',
+            'custom_css' => 'nullable|string',
+            'custom_js' => 'nullable|string',
+            'created_by' => 'nullable|exists:users,id',
+            'updated_by' => 'nullable|exists:users,id',
+        ];
+    }
+
+    /**
+     * Get unique validation rules (for updates)
+     */
+    public static function getUniqueValidationRules(?int $ignoreId = null): array
+    {
+        $rules = self::getValidationRules();
+
+        if ($ignoreId) {
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:landing_pages,slug,' . $ignoreId;
+        } else {
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:landing_pages,slug';
+        }
+
+        return $rules;
     }
 }

@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
+use App\Models\OnboardingEvent;
 use App\Models\User;
 use App\Models\UserOnboardingState;
-use App\Models\OnboardingEvent;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OnboardingController extends Controller
 {
@@ -18,7 +17,7 @@ class OnboardingController extends Controller
     public function getOnboardingState(Request $request)
     {
         $user = Auth::user();
-        
+
         $state = UserOnboardingState::firstOrCreate(
             ['user_id' => $user->id],
             [
@@ -33,14 +32,14 @@ class OnboardingController extends Controller
                 'preferences' => [
                     'show_tips' => true,
                     'auto_show_updates' => true,
-                    'tour_speed' => 'normal'
-                ]
+                    'tour_speed' => 'normal',
+                ],
             ]
         );
 
         return response()->json([
             'success' => true,
-            'state' => $state
+            'state' => $state,
         ]);
     }
 
@@ -50,7 +49,7 @@ class OnboardingController extends Controller
     public function updateOnboardingState(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'has_completed_onboarding' => 'sometimes|boolean',
             'has_skipped_onboarding' => 'sometimes|boolean',
@@ -60,27 +59,27 @@ class OnboardingController extends Controller
             'feature_discovery_viewed' => 'sometimes|boolean',
             'explored_features' => 'sometimes|array',
             'whats_new_viewed' => 'sometimes|array',
-            'preferences' => 'sometimes|array'
+            'preferences' => 'sometimes|array',
         ]);
 
         $state = UserOnboardingState::updateOrCreate(
             ['user_id' => $user->id],
             $request->only([
                 'has_completed_onboarding',
-                'has_skipped_onboarding', 
+                'has_skipped_onboarding',
                 'completed_steps',
                 'last_active_step',
                 'profile_completion_dismissed',
                 'feature_discovery_viewed',
                 'explored_features',
                 'whats_new_viewed',
-                'preferences'
+                'preferences',
             ])
         );
 
         return response()->json([
             'success' => true,
-            'state' => $state
+            'state' => $state,
         ]);
     }
 
@@ -90,10 +89,10 @@ class OnboardingController extends Controller
     public function getNewFeatures(Request $request)
     {
         $user = Auth::user();
-        
+
         // Get features released since user's last login or registration
         $lastLoginDate = $user->last_login_at ?? $user->created_at;
-        
+
         $newFeatures = [
             [
                 'id' => 'alumni-map',
@@ -106,21 +105,21 @@ class OnboardingController extends Controller
                 'benefits' => [
                     'Find alumni in your city or travel destinations',
                     'Discover regional alumni clusters and communities',
-                    'Plan networking events based on geographic data'
+                    'Plan networking events based on geographic data',
                 ],
                 'howItWorks' => [
                     'View the interactive world map',
                     'Filter by graduation year, industry, or interests',
                     'Click on markers to see alumni profiles',
-                    'Connect with nearby alumni'
+                    'Connect with nearby alumni',
                 ],
                 'tips' => [
                     'Enable location sharing for better recommendations',
                     'Use the cluster view for dense metropolitan areas',
-                    'Set up location alerts for travel networking'
+                    'Set up location alerts for travel networking',
                 ],
                 'route' => '/alumni/map',
-                'actionText' => 'Explore Map'
+                'actionText' => 'Explore Map',
             ],
             [
                 'id' => 'job-matching-graph',
@@ -133,21 +132,21 @@ class OnboardingController extends Controller
                 'benefits' => [
                     'Jobs ranked by your network strength',
                     'See mutual connections at companies',
-                    'Request warm introductions'
+                    'Request warm introductions',
                 ],
                 'howItWorks' => [
                     'Browse personalized job recommendations',
                     'View connection insights for each role',
                     'Request introductions through mutual contacts',
-                    'Track application progress'
+                    'Track application progress',
                 ],
                 'tips' => [
                     'Complete your profile for better matches',
                     'Connect with more alumni to improve rankings',
-                    'Set up job alerts for specific criteria'
+                    'Set up job alerts for specific criteria',
                 ],
                 'route' => '/career/jobs',
-                'actionText' => 'Find Jobs'
+                'actionText' => 'Find Jobs',
             ],
             [
                 'id' => 'real-time-updates',
@@ -160,22 +159,22 @@ class OnboardingController extends Controller
                 'benefits' => [
                     'Instant notifications for likes and comments',
                     'Live updates on posts and events',
-                    'Real-time connection status'
+                    'Real-time connection status',
                 ],
                 'howItWorks' => [
                     'Enable push notifications in your browser',
                     'Customize notification preferences',
                     'See live activity indicators',
-                    'Get instant updates on mobile'
+                    'Get instant updates on mobile',
                 ],
                 'tips' => [
                     'Customize notification frequency to avoid overwhelm',
                     'Use quiet hours for focused work time',
-                    'Enable location-based event notifications'
+                    'Enable location-based event notifications',
                 ],
                 'route' => '/settings/notifications',
-                'actionText' => 'Configure Notifications'
-            ]
+                'actionText' => 'Configure Notifications',
+            ],
         ];
 
         // Filter features based on user's role and interests
@@ -183,7 +182,7 @@ class OnboardingController extends Controller
 
         return response()->json([
             'success' => true,
-            'features' => $filteredFeatures
+            'features' => $filteredFeatures,
         ]);
     }
 
@@ -193,12 +192,12 @@ class OnboardingController extends Controller
     public function getProfileCompletion(Request $request)
     {
         $user = Auth::user();
-        
+
         $completionData = $this->calculateProfileCompletion($user);
 
         return response()->json([
             'success' => true,
-            'completion_data' => $completionData
+            'completion_data' => $completionData,
         ]);
     }
 
@@ -208,7 +207,7 @@ class OnboardingController extends Controller
     public function getWhatsNew(Request $request)
     {
         $user = Auth::user();
-        
+
         $updates = [
             [
                 'id' => 'platform-update-2024-08',
@@ -220,16 +219,16 @@ class OnboardingController extends Controller
                     'Advanced search with natural language queries',
                     'Connection strength indicators',
                     'Mutual connection insights',
-                    'Industry and location clustering'
+                    'Industry and location clustering',
                 ],
                 'actions' => [
                     [
                         'label' => 'Try New Search',
                         'type' => 'navigate',
-                        'url' => '/alumni/directory'
-                    ]
+                        'url' => '/alumni/directory',
+                    ],
                 ],
-                'read' => false
+                'read' => false,
             ],
             [
                 'id' => 'mobile-improvements-2024-08',
@@ -241,7 +240,7 @@ class OnboardingController extends Controller
                     'Improved mobile navigation',
                     'Better touch target sizes',
                     'Offline content caching',
-                    'Pull-to-refresh on key pages'
+                    'Pull-to-refresh on key pages',
                 ],
                 'actions' => [
                     [
@@ -250,17 +249,17 @@ class OnboardingController extends Controller
                         'feature' => [
                             'id' => 'pwa-install',
                             'title' => 'Install Alumni App',
-                            'description' => 'Add the alumni platform to your home screen for a native app experience.'
-                        ]
-                    ]
+                            'description' => 'Add the alumni platform to your home screen for a native app experience.',
+                        ],
+                    ],
                 ],
-                'read' => false
-            ]
+                'read' => false,
+            ],
         ];
 
         return response()->json([
             'success' => true,
-            'updates' => $updates
+            'updates' => $updates,
         ]);
     }
 
@@ -270,22 +269,22 @@ class OnboardingController extends Controller
     public function recordEvent(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'event_type' => 'required|string',
             'data' => 'sometimes|array',
-            'timestamp' => 'sometimes|date'
+            'timestamp' => 'sometimes|date',
         ]);
 
         OnboardingEvent::create([
             'user_id' => $user->id,
             'event_type' => $request->event_type,
             'data' => $request->data ?? [],
-            'timestamp' => $request->timestamp ?? now()
+            'timestamp' => $request->timestamp ?? now(),
         ]);
 
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
 
@@ -295,19 +294,19 @@ class OnboardingController extends Controller
     public function saveUserInterests(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'interests' => 'required|array',
-            'interests.*' => 'string'
+            'interests.*' => 'string',
         ]);
 
         // Update user's interests
         $user->update([
-            'interests' => $request->interests
+            'interests' => $request->interests,
         ]);
 
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
 
@@ -317,9 +316,9 @@ class OnboardingController extends Controller
     public function completeOnboarding(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
-            'completed_steps' => 'sometimes|array'
+            'completed_steps' => 'sometimes|array',
         ]);
 
         UserOnboardingState::updateOrCreate(
@@ -327,7 +326,7 @@ class OnboardingController extends Controller
             [
                 'has_completed_onboarding' => true,
                 'completed_steps' => $request->completed_steps ?? [],
-                'last_active_step' => 0
+                'last_active_step' => 0,
             ]
         );
 
@@ -336,12 +335,12 @@ class OnboardingController extends Controller
             'user_id' => $user->id,
             'event_type' => 'onboarding_completed',
             'data' => ['completed_steps' => $request->completed_steps ?? []],
-            'timestamp' => now()
+            'timestamp' => now(),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Onboarding completed successfully'
+            'message' => 'Onboarding completed successfully',
         ]);
     }
 
@@ -356,7 +355,7 @@ class OnboardingController extends Controller
             ['user_id' => $user->id],
             [
                 'has_skipped_onboarding' => true,
-                'has_completed_onboarding' => true
+                'has_completed_onboarding' => true,
             ]
         );
 
@@ -365,12 +364,12 @@ class OnboardingController extends Controller
             'user_id' => $user->id,
             'event_type' => 'onboarding_skipped',
             'data' => [],
-            'timestamp' => now()
+            'timestamp' => now(),
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'Onboarding skipped'
+            'message' => 'Onboarding skipped',
         ]);
     }
 
@@ -380,21 +379,21 @@ class OnboardingController extends Controller
     public function markFeatureExplored(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
-            'feature_id' => 'required|string'
+            'feature_id' => 'required|string',
         ]);
 
         $state = UserOnboardingState::firstOrCreate(['user_id' => $user->id]);
         $exploredFeatures = $state->explored_features ?? [];
-        
-        if (!in_array($request->feature_id, $exploredFeatures)) {
+
+        if (! in_array($request->feature_id, $exploredFeatures)) {
             $exploredFeatures[] = $request->feature_id;
             $state->update(['explored_features' => $exploredFeatures]);
         }
 
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
 
@@ -411,7 +410,7 @@ class OnboardingController extends Controller
         );
 
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
 
@@ -421,9 +420,9 @@ class OnboardingController extends Controller
     public function dismissPrompt(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
-            'prompt' => 'required|string'
+            'prompt' => 'required|string',
         ]);
 
         if ($request->prompt === 'profile-completion') {
@@ -434,7 +433,7 @@ class OnboardingController extends Controller
         }
 
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
 
@@ -447,15 +446,15 @@ class OnboardingController extends Controller
 
         $state = UserOnboardingState::firstOrCreate(['user_id' => $user->id]);
         $whatsNewViewed = $state->whats_new_viewed ?? [];
-        
+
         // Mark all current updates as viewed
         $currentUpdates = ['platform-update-2024-08', 'mobile-improvements-2024-08'];
         $whatsNewViewed = array_unique(array_merge($whatsNewViewed, $currentUpdates));
-        
+
         $state->update(['whats_new_viewed' => $whatsNewViewed]);
 
         return response()->json([
-            'success' => true
+            'success' => true,
         ]);
     }
 
@@ -465,25 +464,25 @@ class OnboardingController extends Controller
     public function updatePreferences(Request $request)
     {
         $user = Auth::user();
-        
+
         $request->validate([
             'show_tips' => 'sometimes|boolean',
             'auto_show_updates' => 'sometimes|boolean',
-            'tour_speed' => 'sometimes|string|in:slow,normal,fast'
+            'tour_speed' => 'sometimes|string|in:slow,normal,fast',
         ]);
 
         $state = UserOnboardingState::firstOrCreate(['user_id' => $user->id]);
         $preferences = $state->preferences ?? [];
-        
+
         $preferences = array_merge($preferences, $request->only([
-            'show_tips', 'auto_show_updates', 'tour_speed'
+            'show_tips', 'auto_show_updates', 'tour_speed',
         ]));
-        
+
         $state->update(['preferences' => $preferences]);
 
         return response()->json([
             'success' => true,
-            'preferences' => $preferences
+            'preferences' => $preferences,
         ]);
     }
 
@@ -493,17 +492,17 @@ class OnboardingController extends Controller
     public function getContextualHelp(Request $request, $elementId)
     {
         $helpContent = $this->getHelpContentForElement($elementId);
-        
-        if (!$helpContent) {
+
+        if (! $helpContent) {
             return response()->json([
                 'success' => false,
-                'message' => 'Help content not found'
+                'message' => 'Help content not found',
             ], 404);
         }
 
         return response()->json([
             'success' => true,
-            'content' => $helpContent
+            'content' => $helpContent,
         ]);
     }
 
@@ -518,50 +517,50 @@ class OnboardingController extends Controller
                 'description' => 'Name, email, and profile photo',
                 'icon' => 'photo',
                 'weight' => 15,
-                'completed' => !empty($user->name) && !empty($user->email) && !empty($user->avatar_url)
+                'completed' => ! empty($user->name) && ! empty($user->email) && ! empty($user->avatar_url),
             ],
             'bio' => [
                 'title' => 'Professional Bio',
                 'description' => 'Tell your story and highlight your expertise',
                 'icon' => 'bio',
                 'weight' => 10,
-                'completed' => !empty($user->bio) && strlen($user->bio) > 50
+                'completed' => ! empty($user->bio) && strlen($user->bio) > 50,
             ],
             'education' => [
                 'title' => 'Education History',
                 'description' => 'Add your degrees and certifications',
                 'icon' => 'education',
                 'weight' => 20,
-                'completed' => $user->educations()->count() > 0
+                'completed' => $user->educations()->count() > 0,
             ],
             'work_experience' => [
                 'title' => 'Work Experience',
                 'description' => 'Share your career journey',
                 'icon' => 'work',
                 'weight' => 25,
-                'completed' => $user->careerEntries()->count() > 0
+                'completed' => $user->careerEntries()->count() > 0,
             ],
             'location' => [
                 'title' => 'Location',
                 'description' => 'Help alumni find you locally',
                 'icon' => 'location',
                 'weight' => 10,
-                'completed' => !empty($user->location)
+                'completed' => ! empty($user->location),
             ],
             'skills' => [
                 'title' => 'Skills & Expertise',
                 'description' => 'Showcase your professional skills',
                 'icon' => 'academic',
                 'weight' => 15,
-                'completed' => $user->skills()->count() >= 3
+                'completed' => $user->skills()->count() >= 3,
             ],
             'social_profiles' => [
                 'title' => 'Social Profiles',
                 'description' => 'Connect your LinkedIn, GitHub, etc.',
                 'icon' => 'social',
                 'weight' => 5,
-                'completed' => $user->socialProfiles()->count() > 0
-            ]
+                'completed' => $user->socialProfiles()->count() > 0,
+            ],
         ];
 
         $totalWeight = array_sum(array_column($sections, 'weight'));
@@ -576,7 +575,7 @@ class OnboardingController extends Controller
                     'key' => $key,
                     'title' => $section['title'],
                     'description' => $section['description'],
-                    'icon' => $section['icon']
+                    'icon' => $section['icon'],
                 ];
             }
         }
@@ -587,7 +586,7 @@ class OnboardingController extends Controller
             'completion_percentage' => $completionPercentage,
             'missing_sections' => $missingSections,
             'total_sections' => count($sections),
-            'completed_sections' => count($sections) - count($missingSections)
+            'completed_sections' => count($sections) - count($missingSections),
         ];
     }
 
@@ -614,20 +613,20 @@ class OnboardingController extends Controller
                     'Click in the text area to start writing',
                     'Add images, videos, or links to enrich your post',
                     'Choose your audience (circles, groups, or public)',
-                    'Click "Post" to share with your network'
+                    'Click "Post" to share with your network',
                 ],
                 'tips' => [
                     'Posts with images get 3x more engagement',
                     'Use @mentions to notify specific alumni',
-                    'Add relevant hashtags to increase discoverability'
+                    'Add relevant hashtags to increase discoverability',
                 ],
                 'actions' => [
                     [
                         'label' => 'Try It Now',
                         'type' => 'event',
-                        'event' => 'focus-post-creator'
-                    ]
-                ]
+                        'event' => 'focus-post-creator',
+                    ],
+                ],
             ],
             'alumni-search' => [
                 'title' => 'Search Alumni',
@@ -636,15 +635,15 @@ class OnboardingController extends Controller
                     'Enter a name, company, or skill in the search box',
                     'Use filters to narrow down results',
                     'Click on profiles to learn more',
-                    'Send connection requests with personal messages'
+                    'Send connection requests with personal messages',
                 ],
                 'tips' => [
                     'Search by graduation year to find classmates',
                     'Filter by location to find local alumni',
-                    'Look for mutual connections for warm introductions'
+                    'Look for mutual connections for warm introductions',
                 ],
-                'learnMoreUrl' => '/help/alumni-search'
-            ]
+                'learnMoreUrl' => '/help/alumni-search',
+            ],
         ];
 
         return $helpContent[$elementId] ?? null;

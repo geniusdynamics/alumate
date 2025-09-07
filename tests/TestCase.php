@@ -36,7 +36,7 @@ abstract class TestCase extends BaseTestCase
         config(['database.connections.pgsql.database' => 'laravel_test']);
 
         // Only run migrations if not already run
-        if (!Schema::hasTable('migrations')) {
+        if (! Schema::hasTable('migrations')) {
             Artisan::call('migrate:fresh');
         }
     }

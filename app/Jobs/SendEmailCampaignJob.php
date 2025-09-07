@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Log;
 
 class SendEmailCampaignJob implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $maxExceptions = 1;
 
     public function __construct(
@@ -40,7 +41,7 @@ class SendEmailCampaignJob implements ShouldQueue
                 Log::error('Email campaign send failed', [
                     'campaign_id' => $this->campaign->id,
                 ]);
-                
+
                 $this->fail('Campaign send failed');
             }
         } catch (\Exception $e) {
@@ -51,7 +52,7 @@ class SendEmailCampaignJob implements ShouldQueue
             ]);
 
             $this->campaign->update(['status' => 'draft']);
-            
+
             throw $e;
         }
     }

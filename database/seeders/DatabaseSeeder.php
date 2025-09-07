@@ -17,6 +17,11 @@ class DatabaseSeeder extends Seeder
             GraduateTrackingSeeder::class,
             DemoUsersSeeder::class,
             HomepageNavigationSeeder::class,
+            
+            // Template Creation System Seeders
+            BrandConfigSeeder::class,
+            TemplateSeeder::class,
+            LandingPageSeeder::class,
         ]);
     }
 }

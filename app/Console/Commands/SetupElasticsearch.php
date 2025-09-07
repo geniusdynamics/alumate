@@ -2,11 +2,11 @@
 
 namespace App\Console\Commands;
 
-use App\Services\ElasticsearchService;
-use App\Models\User;
-use App\Models\Post;
-use App\Models\Job;
 use App\Models\Event;
+use App\Models\Job;
+use App\Models\Post;
+use App\Models\User;
+use App\Services\ElasticsearchService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -45,9 +45,10 @@ class SetupElasticsearch extends Command
             // Create indices
             $this->info('Creating Elasticsearch indices...');
             $success = $this->elasticsearchService->createIndices();
-            
-            if (!$success) {
+
+            if (! $success) {
                 $this->error('Failed to create Elasticsearch indices');
+
                 return 1;
             }
 
@@ -60,11 +61,13 @@ class SetupElasticsearch extends Command
             }
 
             $this->info('🎉 Elasticsearch setup completed successfully!');
+
             return 0;
 
         } catch (\Exception $e) {
-            $this->error('Failed to set up Elasticsearch: ' . $e->getMessage());
+            $this->error('Failed to set up Elasticsearch: '.$e->getMessage());
             Log::error('Elasticsearch setup failed', ['error' => $e->getMessage()]);
+
             return 1;
         }
     }
@@ -83,7 +86,7 @@ class SetupElasticsearch extends Command
                     $this->elasticsearchService->indexUser($user);
                     $userCount++;
                 } catch (\Exception $e) {
-                    $this->warn("Failed to index user {$user->id}: " . $e->getMessage());
+                    $this->warn("Failed to index user {$user->id}: ".$e->getMessage());
                 }
             }
         });
@@ -98,7 +101,7 @@ class SetupElasticsearch extends Command
                     $this->elasticsearchService->indexPost($post);
                     $postCount++;
                 } catch (\Exception $e) {
-                    $this->warn("Failed to index post {$post->id}: " . $e->getMessage());
+                    $this->warn("Failed to index post {$post->id}: ".$e->getMessage());
                 }
             }
         });
@@ -115,7 +118,7 @@ class SetupElasticsearch extends Command
                         // $this->elasticsearchService->indexJob($job);
                         $jobCount++;
                     } catch (\Exception $e) {
-                        $this->warn("Failed to index job {$job->id}: " . $e->getMessage());
+                        $this->warn("Failed to index job {$job->id}: ".$e->getMessage());
                     }
                 }
             });
@@ -133,7 +136,7 @@ class SetupElasticsearch extends Command
                         // $this->elasticsearchService->indexEvent($event);
                         $eventCount++;
                     } catch (\Exception $e) {
-                        $this->warn("Failed to index event {$event->id}: " . $e->getMessage());
+                        $this->warn("Failed to index event {$event->id}: ".$e->getMessage());
                     }
                 }
             });

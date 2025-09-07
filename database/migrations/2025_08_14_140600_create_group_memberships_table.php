@@ -19,10 +19,10 @@ return new class extends Migration
             $table->timestamp('joined_at')->useCurrent();
             $table->string('status')->default('active'); // active, pending, inactive
             $table->timestamps();
-            
+
             // Unique constraint to prevent duplicate memberships
             $table->unique(['group_id', 'user_id']);
-            
+
             // Indexes
             $table->index(['user_id', 'status']);
             $table->index(['group_id', 'status']);

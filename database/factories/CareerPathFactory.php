@@ -47,7 +47,7 @@ class CareerPathFactory extends Factory
             'Junior Developer', 'Software Engineer', 'Senior Developer', 'Team Lead',
             'Engineering Manager', 'Director of Engineering', 'VP of Engineering',
             'Analyst', 'Senior Analyst', 'Manager', 'Senior Manager', 'Director',
-            'Associate', 'Specialist', 'Senior Specialist', 'Principal'
+            'Associate', 'Specialist', 'Senior Specialist', 'Principal',
         ];
 
         for ($i = 0; $i <= $jobChanges; $i++) {
@@ -70,7 +70,7 @@ class CareerPathFactory extends Factory
             'JavaScript', 'Python', 'Java', 'C++', 'React', 'Vue.js', 'Angular',
             'Node.js', 'PHP', 'Laravel', 'Django', 'Spring Boot', 'AWS', 'Azure',
             'Docker', 'Kubernetes', 'Git', 'SQL', 'MongoDB', 'PostgreSQL',
-            'Project Management', 'Leadership', 'Communication', 'Problem Solving'
+            'Project Management', 'Leadership', 'Communication', 'Problem Solving',
         ];
 
         $evolution = [];

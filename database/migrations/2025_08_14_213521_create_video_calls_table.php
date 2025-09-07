@@ -28,7 +28,7 @@ return new class extends Migration
             $table->text('livekit_room_token')->nullable();
             $table->json('settings')->nullable(); // recording, screen_share, etc.
             $table->timestamps();
-            
+
             $table->index(['scheduled_at']);
             $table->index(['status']);
             $table->index(['provider']);

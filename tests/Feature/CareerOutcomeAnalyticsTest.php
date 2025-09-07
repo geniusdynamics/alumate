@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use App\Models\SalaryProgression;
 use App\Models\CareerPath;
 use App\Models\CareerTimeline;
 use App\Models\EducationHistory;
+use App\Models\SalaryProgression;
+use App\Models\User;
 use App\Services\CareerOutcomeAnalyticsService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
 
@@ -28,7 +27,7 @@ class CareerOutcomeAnalyticsTest extends TestCase
     {
         // Create test data
         $users = User::factory(10)->create();
-        
+
         foreach ($users as $user) {
             EducationHistory::factory()->create([
                 'graduate_id' => $user->id,
@@ -50,7 +49,7 @@ class CareerOutcomeAnalyticsTest extends TestCase
         }
 
         $overview = $this->analyticsService->getOverviewMetrics([
-            'graduation_year' => '2020'
+            'graduation_year' => '2020',
         ]);
 
         $this->assertArrayHasKey('total_alumni', $overview);
@@ -65,7 +64,7 @@ class CareerOutcomeAnalyticsTest extends TestCase
     {
         // Create test data
         $users = User::factory(5)->create();
-        
+
         foreach ($users as $user) {
             SalaryProgression::factory(3)->create([
                 'user_id' => $user->id,
@@ -74,7 +73,7 @@ class CareerOutcomeAnalyticsTest extends TestCase
         }
 
         $analysis = $this->analyticsService->getSalaryAnalysis([
-            'industry' => 'Technology'
+            'industry' => 'Technology',
         ]);
 
         $this->assertArrayHasKey('overall_statistics', $analysis);
@@ -86,7 +85,7 @@ class CareerOutcomeAnalyticsTest extends TestCase
     {
         // Create test data
         $users = User::factory(8)->create();
-        
+
         foreach ($users as $user) {
             CareerPath::factory()->create([
                 'user_id' => $user->id,
@@ -114,18 +113,18 @@ class CareerOutcomeAnalyticsTest extends TestCase
         $response = $this->getJson('/api/career-analytics');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'overview',
-                        'program_effectiveness',
-                        'salary_analysis',
-                        'industry_placement',
-                        'demographic_outcomes',
-                        'career_paths',
-                        'trends',
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'overview',
+                    'program_effectiveness',
+                    'salary_analysis',
+                    'industry_placement',
+                    'demographic_outcomes',
+                    'career_paths',
+                    'trends',
+                ],
+            ]);
     }
 
     public function test_api_returns_filter_options()
@@ -136,18 +135,18 @@ class CareerOutcomeAnalyticsTest extends TestCase
         $response = $this->getJson('/api/career-analytics/filter-options');
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'graduation_years',
-                        'programs',
-                        'departments',
-                        'industries',
-                        'demographic_types',
-                        'career_path_types',
-                        'trend_types',
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'graduation_years',
+                    'programs',
+                    'departments',
+                    'industries',
+                    'demographic_types',
+                    'career_path_types',
+                    'trend_types',
+                ],
+            ]);
     }
 
     public function test_can_generate_program_effectiveness()
@@ -177,17 +176,17 @@ class CareerOutcomeAnalyticsTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'program_name',
-                        'graduation_year',
-                        'total_graduates',
-                        'employment_rate_6_months',
-                        'employment_rate_1_year',
-                        'employment_rate_2_years',
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'program_name',
+                    'graduation_year',
+                    'total_graduates',
+                    'employment_rate_6_months',
+                    'employment_rate_1_year',
+                    'employment_rate_2_years',
+                ],
+            ]);
     }
 
     public function test_can_generate_snapshot()
@@ -203,17 +202,17 @@ class CareerOutcomeAnalyticsTest extends TestCase
         ]);
 
         $response->assertStatus(200)
-                ->assertJsonStructure([
-                    'success',
-                    'data' => [
-                        'period_type',
-                        'period_start',
-                        'period_end',
-                        'metrics',
-                        'total_graduates',
-                        'tracked_graduates',
-                    ]
-                ]);
+            ->assertJsonStructure([
+                'success',
+                'data' => [
+                    'period_type',
+                    'period_start',
+                    'period_end',
+                    'metrics',
+                    'total_graduates',
+                    'tracked_graduates',
+                ],
+            ]);
     }
 
     public function test_salary_progression_model_calculations()

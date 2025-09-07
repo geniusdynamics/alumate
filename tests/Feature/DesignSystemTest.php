@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class DesignSystemTest extends TestCase
@@ -34,14 +33,14 @@ class DesignSystemTest extends TestCase
     public function test_design_system_showcase_route_exists(): void
     {
         $response = $this->get('/design-system');
-        
+
         $response->assertStatus(200);
     }
 
     public function test_design_system_documentation_contains_required_sections(): void
     {
         $content = file_get_contents(base_path('docs/design-system.md'));
-        
+
         $requiredSections = [
             '# Modern Alumni Platform - Design System Documentation',
             '## Color Palette',
@@ -53,7 +52,7 @@ class DesignSystemTest extends TestCase
             '## Accessibility Guidelines',
             '## Mobile Optimization',
             '## Theme System',
-            '## Component Showcase'
+            '## Component Showcase',
         ];
 
         foreach ($requiredSections as $section) {
@@ -68,7 +67,7 @@ class DesignSystemTest extends TestCase
     public function test_coding_standards_documentation_contains_required_sections(): void
     {
         $content = file_get_contents(base_path('docs/coding-standards.md'));
-        
+
         $requiredSections = [
             '# Modern Alumni Platform - Coding Standards',
             '## PHP/Laravel Standards',
@@ -79,7 +78,7 @@ class DesignSystemTest extends TestCase
             '## File Organization',
             '## Naming Conventions',
             '## Documentation Standards',
-            '## Performance Guidelines'
+            '## Performance Guidelines',
         ];
 
         foreach ($requiredSections as $section) {
@@ -94,7 +93,7 @@ class DesignSystemTest extends TestCase
     public function test_ui_components_have_proper_index_files(): void
     {
         $components = ['button', 'card', 'input', 'badge', 'label', 'textarea', 'checkbox'];
-        
+
         foreach ($components as $component) {
             $indexPath = resource_path("js/Components/ui/{$component}/index.ts");
             $this->assertTrue(
@@ -107,7 +106,7 @@ class DesignSystemTest extends TestCase
     public function test_theme_system_css_variables_are_defined(): void
     {
         $appCssContent = file_get_contents(resource_path('css/app.css'));
-        
+
         $requiredVariables = [
             '--background:',
             '--foreground:',
@@ -119,7 +118,7 @@ class DesignSystemTest extends TestCase
             '--muted-foreground:',
             '--border:',
             '--input:',
-            '--ring:'
+            '--ring:',
         ];
 
         foreach ($requiredVariables as $variable) {
@@ -134,14 +133,14 @@ class DesignSystemTest extends TestCase
     public function test_tailwind_config_has_custom_design_tokens(): void
     {
         $tailwindConfigContent = file_get_contents(base_path('tailwind.config.js'));
-        
+
         $requiredTokens = [
             'fontFamily',
             'colors',
             'spacing',
             'borderRadius',
             'minHeight',
-            'minWidth'
+            'minWidth',
         ];
 
         foreach ($requiredTokens as $token) {

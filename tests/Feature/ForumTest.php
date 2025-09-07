@@ -1,14 +1,13 @@
 <?php
 
-use App\Models\User;
 use App\Models\Forum;
-use App\Models\ForumTopic;
 use App\Models\ForumPost;
-use App\Models\ForumTag;
+use App\Models\ForumTopic;
+use App\Models\User;
 
 test('user can view forums list', function () {
     $user = User::factory()->create();
-    
+
     // Create a public forum
     $forum = Forum::create([
         'name' => 'General Discussion',
@@ -21,28 +20,28 @@ test('user can view forums list', function () {
     $response = $this->actingAs($user)->getJson('/api/forums');
 
     $response->assertStatus(200)
-             ->assertJson([
-                 'success' => true,
-             ])
-             ->assertJsonStructure([
-                 'success',
-                 'data' => [
-                     '*' => [
-                         'id',
-                         'name',
-                         'description',
-                         'slug',
-                         'visibility',
-                         'topics_count',
-                         'posts_count',
-                     ]
-                 ]
-             ]);
+        ->assertJson([
+            'success' => true,
+        ])
+        ->assertJsonStructure([
+            'success',
+            'data' => [
+                '*' => [
+                    'id',
+                    'name',
+                    'description',
+                    'slug',
+                    'visibility',
+                    'topics_count',
+                    'posts_count',
+                ],
+            ],
+        ]);
 });
 
 test('user can create a forum topic', function () {
     $user = User::factory()->create();
-    
+
     $forum = Forum::create([
         'name' => 'Test Forum',
         'slug' => 'test-forum',
@@ -57,13 +56,13 @@ test('user can create a forum topic', function () {
     ];
 
     $response = $this->actingAs($user)
-                     ->postJson("/api/forums/{$forum->id}/topics", $topicData);
+        ->postJson("/api/forums/{$forum->id}/topics", $topicData);
 
     $response->assertStatus(201)
-             ->assertJson([
-                 'success' => true,
-                 'message' => 'Topic created successfully.',
-             ]);
+        ->assertJson([
+            'success' => true,
+            'message' => 'Topic created successfully.',
+        ]);
 
     $this->assertDatabaseHas('forum_topics', [
         'forum_id' => $forum->id,
@@ -75,7 +74,7 @@ test('user can create a forum topic', function () {
 
 test('user can reply to a forum topic', function () {
     $user = User::factory()->create();
-    
+
     $forum = Forum::create([
         'name' => 'Test Forum',
         'slug' => 'test-forum',
@@ -97,13 +96,13 @@ test('user can reply to a forum topic', function () {
     ];
 
     $response = $this->actingAs($user)
-                     ->postJson("/api/topics/{$topic->id}/posts", $postData);
+        ->postJson("/api/topics/{$topic->id}/posts", $postData);
 
     $response->assertStatus(201)
-             ->assertJson([
-                 'success' => true,
-                 'message' => 'Post created successfully.',
-             ]);
+        ->assertJson([
+            'success' => true,
+            'message' => 'Post created successfully.',
+        ]);
 
     $this->assertDatabaseHas('forum_posts', [
         'topic_id' => $topic->id,
@@ -114,7 +113,7 @@ test('user can reply to a forum topic', function () {
 
 test('user can like a forum post', function () {
     $user = User::factory()->create();
-    
+
     $forum = Forum::create([
         'name' => 'Test Forum',
         'slug' => 'test-forum',
@@ -139,15 +138,15 @@ test('user can like a forum post', function () {
     ]);
 
     $response = $this->actingAs($user)
-                     ->postJson("/api/posts/{$post->id}/like");
+        ->postJson("/api/posts/{$post->id}/like");
 
     $response->assertStatus(200)
-             ->assertJson([
-                 'success' => true,
-                 'data' => [
-                     'liked' => true,
-                 ],
-             ]);
+        ->assertJson([
+            'success' => true,
+            'data' => [
+                'liked' => true,
+            ],
+        ]);
 
     $this->assertDatabaseHas('forum_post_likes', [
         'post_id' => $post->id,
@@ -158,7 +157,7 @@ test('user can like a forum post', function () {
 
 test('user can search forum topics', function () {
     $user = User::factory()->create();
-    
+
     $forum = Forum::create([
         'name' => 'Test Forum',
         'slug' => 'test-forum',
@@ -176,25 +175,25 @@ test('user can search forum topics', function () {
     ]);
 
     $response = $this->actingAs($user)
-                     ->getJson('/api/forums/search?query=Laravel');
+        ->getJson('/api/forums/search?query=Laravel');
 
     $response->assertStatus(200)
-             ->assertJson([
-                 'success' => true,
-                 'query' => 'Laravel',
-             ])
-             ->assertJsonStructure([
-                 'success',
-                 'data' => [
-                     '*' => [
-                         'id',
-                         'title',
-                         'content',
-                         'forum',
-                         'user',
-                     ]
-                 ],
-                 'query',
-                 'total',
-             ]);
+        ->assertJson([
+            'success' => true,
+            'query' => 'Laravel',
+        ])
+        ->assertJsonStructure([
+            'success',
+            'data' => [
+                '*' => [
+                    'id',
+                    'title',
+                    'content',
+                    'forum',
+                    'user',
+                ],
+            ],
+            'query',
+            'total',
+        ]);
 });

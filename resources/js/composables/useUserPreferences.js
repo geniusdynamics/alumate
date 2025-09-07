@@ -152,6 +152,11 @@ export function useUserPreferences() {
         return preferences[key] !== undefined ? preferences[key] : fallback
     }
 
+    // Set preference value (alias for updatePreference)
+    const setPreference = (key, value) => {
+        return updatePreference(key, value)
+    }
+
     // Check if a specific feature is enabled
     const isFeatureEnabled = (feature) => {
         const featureMap = {
@@ -242,6 +247,7 @@ export function useUserPreferences() {
         updatePreferences,
         resetPreferences,
         getPreference,
+        setPreference,
         isFeatureEnabled,
         
         // Theme helpers

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LandingPage;
 use App\Models\LandingPageAnalytics;
 use App\Services\LandingPageService;
+use App\Services\TemplateAnalyticsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,7 +14,8 @@ use Inertia\Response;
 class LandingPagePublicController extends Controller
 {
     public function __construct(
-        private LandingPageService $landingPageService
+        private LandingPageService $landingPageService,
+        private TemplateAnalyticsService $analyticsService
     ) {}
 
     /**
@@ -25,10 +27,19 @@ class LandingPagePublicController extends Controller
             ->published()
             ->firstOrFail();
 
-        // Track page view
+        // Track page view using the new analytics service
         $this->trackPageView($landingPage, $request);
 
-        return Inertia::render('LandingPage/Show', [
+        // Generate analytics tracking code if template exists
+        $analyticsCode = '';
+        if ($landingPage->template_id) {
+            $analyticsCode = $this->analyticsService->generateTrackingCode(
+                $landingPage->template_id,
+                $landingPage->id
+            );
+        }
+
+        $responseData = [
             'landingPage' => [
                 'id' => $landingPage->id,
                 'name' => $landingPage->name,
@@ -48,7 +59,18 @@ class LandingPagePublicController extends Controller
                 'og_description' => $landingPage->settings['seo']['og_description'] ?? $landingPage->description,
                 'og_image' => $landingPage->settings['seo']['og_image'] ?? null,
             ],
-        ]);
+        ];
+
+        // Inject analytics tracking code if available
+        if (!empty($analyticsCode)) {
+            $responseData['analytics_tracking'] = [
+                'enabled' => true,
+                'code' => base64_encode($analyticsCode),
+                'last_updated' => now()->toISOString(),
+            ];
+        }
+
+        return Inertia::render('LandingPage/Show', $responseData);
     }
 
     /**
@@ -101,32 +123,28 @@ class LandingPagePublicController extends Controller
             ->firstOrFail();
 
         $validated = $request->validate([
-            'event_type' => 'required|string',
-            'event_name' => 'nullable|string',
+            'event_type' => 'required|string|in:' . implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
             'event_data' => 'nullable|array',
+            'conversion_value' => 'nullable|numeric|min:0|max:999999.99',
+            'session_id' => 'nullable|string|max:255',
         ]);
 
         try {
-            LandingPageAnalytics::create([
+            $eventData = array_merge($validated, [
+                'template_id' => $landingPage->template_id,
                 'landing_page_id' => $landingPage->id,
-                'event_type' => $validated['event_type'],
-                'event_name' => $validated['event_name'] ?? null,
-                'event_data' => $validated['event_data'] ?? [],
-                'session_id' => $request->session()->getId(),
-                'visitor_id' => $this->getVisitorId($request),
-                'ip_address' => $request->ip(),
+                'user_identifier' => $this->getVisitorId($request) . '_et',
+                'referrer_url' => $request->header('referer'),
                 'user_agent' => $request->userAgent(),
-                'referrer' => $request->header('referer'),
-                'utm_data' => $this->extractUtmData($request),
-                'device_type' => $this->getDeviceType($request),
-                'browser' => $this->getBrowser($request),
-                'os' => $this->getOS($request),
-                'event_time' => now(),
+                'timestamp' => now(),
             ]);
+
+            $event = $this->analyticsService->trackEvent($eventData);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Event tracked successfully',
+                'event_id' => $event ? $event->id : null,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -137,50 +155,63 @@ class LandingPagePublicController extends Controller
     }
 
     /**
-     * Track page view
+     * Track page view using the new analytics service
      */
     private function trackPageView(LandingPage $landingPage, Request $request): void
     {
-        LandingPageAnalytics::create([
-            'landing_page_id' => $landingPage->id,
-            'event_type' => 'page_view',
-            'session_id' => $request->session()->getId(),
-            'visitor_id' => $this->getVisitorId($request),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'referrer' => $request->header('referer'),
-            'utm_data' => $this->extractUtmData($request),
-            'device_type' => $this->getDeviceType($request),
-            'browser' => $this->getBrowser($request),
-            'os' => $this->getOS($request),
-            'event_time' => now(),
-        ]);
+        try {
+            $this->analyticsService->trackEvent([
+                'event_type' => 'page_view',
+                'template_id' => $landingPage->template_id,
+                'landing_page_id' => $landingPage->id,
+                'user_identifier' => $this->getVisitorId($request) . '_pv',
+                'session_id' => $request->session()->getId(),
+                'referrer_url' => $request->header('referer'),
+                'user_agent' => $request->userAgent(),
+                'event_data' => [
+                    'page_title' => $landingPage->title,
+                    'page_path' => '/' . $landingPage->slug,
+                    'campaign_type' => $landingPage->campaign_type,
+                    'target_audience' => $landingPage->target_audience,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            // Log error but don't prevent page loading
+            \Illuminate\Support\Facades\Log::warning('Failed to track page view', [
+                'landing_page_id' => $landingPage->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
-     * Track form submission
+     * Track form submission using the new analytics service
      */
     private function trackFormSubmission(LandingPage $landingPage, Request $request, array $formData): void
     {
-        LandingPageAnalytics::create([
-            'landing_page_id' => $landingPage->id,
-            'event_type' => 'form_submit',
-            'event_name' => $formData['form_name'] ?? 'default',
-            'event_data' => [
-                'form_fields' => array_keys($formData),
-                'form_name' => $formData['form_name'] ?? 'default',
-            ],
-            'session_id' => $request->session()->getId(),
-            'visitor_id' => $this->getVisitorId($request),
-            'ip_address' => $request->ip(),
-            'user_agent' => $request->userAgent(),
-            'referrer' => $request->header('referer'),
-            'utm_data' => $this->extractUtmData($request),
-            'device_type' => $this->getDeviceType($request),
-            'browser' => $this->getBrowser($request),
-            'os' => $this->getOS($request),
-            'event_time' => now(),
-        ]);
+        try {
+            $this->analyticsService->trackEvent([
+                'event_type' => 'form_submit',
+                'template_id' => $landingPage->template_id,
+                'landing_page_id' => $landingPage->id,
+                'user_identifier' => $this->getVisitorId($request) . '_fs',
+                'session_id' => $request->session()->getId(),
+                'referrer_url' => $request->header('referer'),
+                'user_agent' => $request->userAgent(),
+                'event_data' => [
+                    'form_name' => $formData['form_name'] ?? 'default',
+                    'form_fields' => array_keys($formData),
+                    'campaign_type' => $landingPage->campaign_type,
+                    'target_audience' => $landingPage->target_audience,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            // Log error but don't prevent form submission
+            \Illuminate\Support\Facades\Log::warning('Failed to track form submission', [
+                'landing_page_id' => $landingPage->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -234,7 +265,7 @@ class LandingPagePublicController extends Controller
             return $request->session()->get('visitor_id');
         }
 
-        $visitorId = 'visitor_'.\Str::random(16);
+        $visitorId = 'visitor_' . \Illuminate\Support\Str::random(16);
         $request->session()->put('visitor_id', $visitorId);
 
         return $visitorId;

@@ -2,15 +2,12 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
-
 class TestRunner
 {
     public static function runComprehensiveTestSuite(): array
     {
         $results = [];
-        
+
         // Test categories to run
         $testCategories = [
             'Feature Tests' => [
@@ -35,12 +32,12 @@ class TestRunner
 
         foreach ($testCategories as $category => $tests) {
             $results[$category] = [];
-            
+
             foreach ($tests as $testFile) {
                 try {
                     // Run individual test file
                     $output = shell_exec("php artisan test {$testFile} --stop-on-failure 2>&1");
-                    
+
                     $results[$category][$testFile] = [
                         'status' => strpos($output, 'FAILED') === false ? 'PASSED' : 'FAILED',
                         'output' => $output,
@@ -60,7 +57,7 @@ class TestRunner
     public static function generateTestReport(array $results): string
     {
         $report = "# Alumni Platform - Comprehensive Test Suite Report\n\n";
-        $report .= "Generated: " . date('Y-m-d H:i:s') . "\n\n";
+        $report .= 'Generated: '.date('Y-m-d H:i:s')."\n\n";
 
         $totalTests = 0;
         $passedTests = 0;
@@ -69,11 +66,11 @@ class TestRunner
 
         foreach ($results as $category => $tests) {
             $report .= "## {$category}\n\n";
-            
+
             foreach ($tests as $testFile => $result) {
                 $totalTests++;
                 $status = $result['status'];
-                
+
                 switch ($status) {
                     case 'PASSED':
                         $passedTests++;
@@ -92,14 +89,14 @@ class TestRunner
                 }
 
                 $report .= "- {$icon} **{$testFile}**: {$status}\n";
-                
+
                 if ($status !== 'PASSED') {
                     $report .= "  ```\n";
-                    $report .= "  " . substr($result['output'], 0, 500) . "...\n";
+                    $report .= '  '.substr($result['output'], 0, 500)."...\n";
                     $report .= "  ```\n";
                 }
             }
-            
+
             $report .= "\n";
         }
 
@@ -108,7 +105,7 @@ class TestRunner
         $report .= "- **Passed**: {$passedTests}\n";
         $report .= "- **Failed**: {$failedTests}\n";
         $report .= "- **Errors**: {$errorTests}\n";
-        $report .= "- **Success Rate**: " . round(($passedTests / $totalTests) * 100, 2) . "%\n\n";
+        $report .= '- **Success Rate**: '.round(($passedTests / $totalTests) * 100, 2)."%\n\n";
 
         $report .= "## Test Coverage Areas\n\n";
         $report .= "### ✅ Implemented Test Areas\n";
@@ -136,14 +133,14 @@ class TestRunner
     public static function runAndReport(): void
     {
         echo "Running Alumni Platform Comprehensive Test Suite...\n\n";
-        
+
         $results = self::runComprehensiveTestSuite();
         $report = self::generateTestReport($results);
-        
+
         // Save report to file
-        $reportPath = storage_path('logs/test_report_' . date('Y-m-d_H-i-s') . '.md');
+        $reportPath = storage_path('logs/test_report_'.date('Y-m-d_H-i-s').'.md');
         file_put_contents($reportPath, $report);
-        
+
         echo $report;
         echo "\nFull report saved to: {$reportPath}\n";
     }

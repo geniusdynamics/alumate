@@ -2,21 +2,25 @@
 
 use App\Models\CalendarConnection;
 use App\Models\Event;
+use App\Models\MentorshipSession;
 use App\Models\User;
+use App\Services\CalendarIntegrationService;
+use Database\Factories\CalendarConnectionFactory;
+use Database\Factories\EventFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user, 'web');
+    $this->calendarService = app(CalendarIntegrationService::class);
 });
 
 it('can list calendar connections', function () {
-    CalendarConnection::factory()->create([
+    CalendarConnectionFactory::new()->active()->google()->create([
         'user_id' => $this->user->id,
-        'provider' => 'google',
-        'is_active' => true,
     ]);
 
     $response = $this->getJson('/api/calendar/connections');
@@ -76,10 +80,8 @@ it('validates calendar connection request', function () {
 });
 
 it('can disconnect a calendar provider', function () {
-    $connection = CalendarConnection::factory()->create([
+    $connection = CalendarConnectionFactory::new()->active()->google()->create([
         'user_id' => $this->user->id,
-        'provider' => 'google',
-        'is_active' => true,
     ]);
 
     $response = $this->postJson("/api/calendar/connections/{$connection->id}/disconnect");
@@ -94,7 +96,11 @@ it('can disconnect a calendar provider', function () {
 });
 
 it('can get sync status', function () {
-    CalendarConnection::factory()->count(3)->create([
+    CalendarConnectionFactory::new()->count(2)->active()->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    CalendarConnectionFactory::new()->failed()->create([
         'user_id' => $this->user->id,
     ]);
 
@@ -206,6 +212,97 @@ it('validates event creation request', function () {
         ->assertJsonValidationErrors(['title', 'start_time', 'end_time']);
 });
 
+it('can schedule a mentorship session via service', function () {
+    $mentor = User::factory()->create();
+    $mentee = User::factory()->create();
+
+    $sessionData = [
+        'mentor_id' => $mentor->id,
+        'mentee_id' => $mentee->id,
+        'start_time' => now()->addDay()->toISOString(),
+        'duration_minutes' => 60,
+        'topic' => 'Career Development',
+        'notes' => 'Discussing career goals',
+    ];
+
+    $response = $this->postJson('/api/calendar/schedule-mentorship', $sessionData);
+
+    $response->assertCreated()
+        ->assertJsonStructure([
+            'message',
+            'session' => [
+                'id',
+                'mentor',
+                'mentee',
+                'scheduled_at',
+                'duration_minutes',
+                'topic',
+            ],
+        ]);
+
+    $this->assertDatabaseHas('mentorship_sessions', [
+        'mentor_id' => $mentor->id,
+        'mentee_id' => $mentee->id,
+        'topic' => 'Career Development',
+    ]);
+});
+
+it('validates mentorship session scheduling via service', function () {
+    $response = $this->postJson('/api/calendar/schedule-mentorship', [
+        'mentor_id' => 999,
+        'mentee_id' => 999,
+        'start_time' => 'invalid-date',
+    ]);
+
+    $response->assertUnprocessable()
+        ->assertJsonValidationErrors(['mentor_id', 'mentee_id', 'start_time']);
+});
+
+it('prevents unauthorized mentorship session scheduling via service', function () {
+    $mentor = User::factory()->create();
+    $mentee = User::factory()->create();
+    $unauthorizedUser = User::factory()->create();
+
+    $this->actingAs($unauthorizedUser);
+
+    $response = $this->postJson('/api/calendar/schedule-mentorship', [
+        'mentor_id' => $mentor->id,
+        'mentee_id' => $mentee->id,
+        'start_time' => now()->addDay()->toISOString(),
+        'duration_minutes' => 60,
+    ]);
+
+    $response->assertForbidden();
+});
+
+it('can send calendar invites for an event', function () {
+    Mail::fake();
+
+    $event = EventFactory::new()->create([
+        'user_id' => $this->user->id,
+        'attendees' => ['test1@example.com', 'test2@example.com'],
+    ]);
+
+    $response = $this->postJson("/api/calendar/events/{$event->id}/invites");
+
+    $response->assertOk()
+        ->assertJson(['message' => 'Calendar invites sent successfully']);
+
+    // Verify that email invites were attempted
+    Mail::assertSent(\App\Mail\CalendarInviteMail::class, 2);
+});
+
+it('requires authorization to send invites', function () {
+    $otherUser = User::factory()->create();
+    $event = EventFactory::new()->create([
+        'user_id' => $otherUser->id,
+    ]);
+
+    $response = $this->postJson("/api/calendar/events/{$event->id}/invites");
+
+    $response->assertForbidden();
+});
+
 it('can schedule a mentorship session', function () {
     $mentor = User::factory()->create();
     $mentee = User::factory()->create();
@@ -269,25 +366,89 @@ it('prevents unauthorized mentorship session scheduling', function () {
     $response->assertForbidden();
 });
 
-it('can send calendar invites for an event', function () {
-    $event = Event::factory()->create([
+it('can sync calendar events', function () {
+    $connection = CalendarConnectionFactory::new()->active()->google()->create([
         'user_id' => $this->user->id,
-        'attendees' => ['test1@example.com', 'test2@example.com'],
     ]);
 
-    $response = $this->postJson("/api/calendar/events/{$event->id}/invites");
+    $response = $this->postJson("/api/calendar/connections/{$connection->id}/sync");
 
     $response->assertOk()
-        ->assertJson(['message' => 'Calendar invites sent successfully']);
+        ->assertJsonStructure([
+            'message',
+            'sync_result' => [
+                'success',
+                'events_synced',
+                'last_sync_at',
+            ],
+        ]);
 });
 
-it('requires authorization to send invites', function () {
-    $otherUser = User::factory()->create();
-    $event = Event::factory()->create([
-        'user_id' => $otherUser->id,
+it('can handle calendar sync failures gracefully', function () {
+    $connection = CalendarConnectionFactory::new()->failed()->create([
+        'user_id' => $this->user->id,
     ]);
 
-    $response = $this->postJson("/api/calendar/events/{$event->id}/invites");
+    $response = $this->postJson("/api/calendar/connections/{$connection->id}/sync");
 
-    $response->assertForbidden();
+    $response->assertOk()
+        ->assertJsonStructure([
+            'message',
+            'sync_result',
+        ]);
+});
+
+it('can create events with virtual meetings', function () {
+    $eventData = [
+        'title' => 'Virtual Team Meeting',
+        'description' => 'Weekly team sync',
+        'start_time' => now()->addHour()->toISOString(),
+        'end_time' => now()->addHours(2)->toISOString(),
+        'location' => null,
+        'is_virtual' => true,
+        'meeting_url' => 'https://zoom.us/j/123456789',
+        'attendees' => ['team@example.com'],
+        'event_type' => 'meeting',
+    ];
+
+    $response = $this->postJson('/api/calendar/events', $eventData);
+
+    $response->assertCreated()
+        ->assertJsonStructure([
+            'message',
+            'event' => [
+                'id',
+                'title',
+                'start_time',
+                'end_time',
+                'is_virtual',
+                'meeting_url',
+            ],
+        ]);
+
+    $this->assertDatabaseHas('events', [
+        'user_id' => $this->user->id,
+        'title' => 'Virtual Team Meeting',
+        'is_virtual' => true,
+    ]);
+});
+
+it('can handle multiple calendar providers', function () {
+    CalendarConnectionFactory::new()->active()->google()->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    CalendarConnectionFactory::new()->active()->outlook()->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    $response = $this->getJson('/api/calendar/connections');
+
+    $response->assertOk();
+
+    $connections = $response->json('connections');
+    expect($connections)->toHaveCount(2);
+
+    $providers = collect($connections)->pluck('provider')->sort()->values();
+    expect($providers)->toEqual(['google', 'outlook']);
 });

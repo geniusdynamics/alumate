@@ -4,14 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
     public function up(): void
     {
         // Analytics events tracking table
-        if (!Schema::hasTable('analytics_events')) {
+        if (! Schema::hasTable('analytics_events')) {
             Schema::create('analytics_events', function (Blueprint $table) {
                 $table->id();
                 $table->string('event_type'); // page_view, feature_usage, user_action, etc.
@@ -33,7 +34,7 @@ return new class extends Migration {
         }
 
         // User activity sessions table
-        if (!Schema::hasTable('user_activity_sessions')) {
+        if (! Schema::hasTable('user_activity_sessions')) {
             Schema::create('user_activity_sessions', function (Blueprint $table) {
                 $table->id();
                 $table->string('session_id')->unique();
@@ -58,7 +59,7 @@ return new class extends Migration {
         }
 
         // Feature usage tracking table
-        if (!Schema::hasTable('feature_usage_tracking')) {
+        if (! Schema::hasTable('feature_usage_tracking')) {
             Schema::create('feature_usage_tracking', function (Blueprint $table) {
                 $table->id();
                 $table->string('feature_name'); // timeline, directory, jobs, etc.
@@ -74,7 +75,7 @@ return new class extends Migration {
         }
 
         // User engagement metrics table
-        if (!Schema::hasTable('user_engagement_metrics')) {
+        if (! Schema::hasTable('user_engagement_metrics')) {
             Schema::create('user_engagement_metrics', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained()->onDelete('cascade');

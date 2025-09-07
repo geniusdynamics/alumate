@@ -177,7 +177,7 @@ class PerformanceService {
     const finalMetrics = this.getMetrics()
     
     try {
-      await fetch('/api/performance/metrics', {
+      await fetch('/monitoring/api/performance-metrics', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

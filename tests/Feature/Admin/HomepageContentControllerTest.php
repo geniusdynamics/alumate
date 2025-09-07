@@ -3,8 +3,6 @@
 use App\Models\HomepageContent;
 use App\Models\User;
 
-uses(Tests\TestCase::class);
-
 beforeEach(function () {
     $this->admin = User::factory()->create();
     // In a real app, you'd assign admin role here

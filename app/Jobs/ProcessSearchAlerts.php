@@ -2,16 +2,16 @@
 
 namespace App\Jobs;
 
+use App\Mail\SearchAlertMail;
 use App\Models\SavedSearch;
 use App\Services\ElasticsearchService;
-use App\Mail\SearchAlertMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ProcessSearchAlerts implements ShouldQueue
 {
@@ -34,7 +34,7 @@ class ProcessSearchAlerts implements ShouldQueue
             } catch (\Exception $e) {
                 Log::error('Failed to process search alert', [
                     'search_id' => $savedSearch->id,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
             }
         }
@@ -60,15 +60,16 @@ class ProcessSearchAlerts implements ShouldQueue
         $currentResultCount = $results['total'];
 
         // Check if there are new results
-        if (!$savedSearch->hasNewResults($currentResultCount)) {
+        if (! $savedSearch->hasNewResults($currentResultCount)) {
             Log::info('No new results for search alert', [
                 'search_id' => $savedSearch->id,
                 'current_count' => $currentResultCount,
-                'previous_count' => $savedSearch->last_result_count
+                'previous_count' => $savedSearch->last_result_count,
             ]);
-            
+
             // Update last run time even if no new results
             $savedSearch->markAsRun($currentResultCount);
+
             return;
         }
 
@@ -79,22 +80,22 @@ class ProcessSearchAlerts implements ShouldQueue
             'new_results_count' => $newResultsCount,
             'total_results_count' => $currentResultCount,
             'results' => array_slice($results['hits'], 0, 10), // Show top 10 results
-            'search_url' => $this->generateSearchUrl($savedSearch)
+            'search_url' => $this->generateSearchUrl($savedSearch),
         ];
 
         // Send email alert
         try {
             Mail::to($savedSearch->user->email)->send(new SearchAlertMail($alertData));
-            
+
             Log::info('Search alert email sent', [
                 'search_id' => $savedSearch->id,
                 'user_email' => $savedSearch->user->email,
-                'new_results' => $newResultsCount
+                'new_results' => $newResultsCount,
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send search alert email', [
                 'search_id' => $savedSearch->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             throw $e;
         }
@@ -104,7 +105,7 @@ class ProcessSearchAlerts implements ShouldQueue
 
         Log::info('Search alert processed successfully', [
             'search_id' => $savedSearch->id,
-            'new_results' => $newResultsCount
+            'new_results' => $newResultsCount,
         ]);
     }
 
@@ -116,7 +117,7 @@ class ProcessSearchAlerts implements ShouldQueue
         $baseUrl = config('app.url');
         $searchParams = http_build_query([
             'q' => $savedSearch->query,
-            'filters' => json_encode($savedSearch->filters)
+            'filters' => json_encode($savedSearch->filters),
         ]);
 
         return "{$baseUrl}/search?{$searchParams}";

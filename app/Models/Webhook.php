@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Webhook extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'url',
@@ -21,33 +23,37 @@ class Webhook extends Model
         'retry_attempts',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'events' => 'array',
-            'headers' => 'array',
-            'timeout' => 'integer',
-            'retry_attempts' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'events' => 'array',
+        'headers' => 'array',
+    ];
+
+    protected $hidden = [
+        'secret',
+    ];
 
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function deliveries(): HasMany
+    public function isActive(): bool
     {
-        return $this->hasMany(WebhookDelivery::class);
+        return $this->status === 'active';
     }
 
-    public function scopeActive($query)
+    public function subscribesToEvent(string $event): bool
     {
-        return $query->where('status', 'active');
+        return in_array($event, $this->events ?? []);
     }
 
-    public function scopeForEvent($query, string $event)
+    public function isPaused(): bool
     {
-        return $query->whereJsonContains('events', $event);
+        return $this->status === 'paused';
+    }
+
+    public function isDisabled(): bool
+    {
+        return $this->status === 'disabled';
     }
 }

@@ -40,7 +40,7 @@ class ForumTopic extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         static::creating(function ($topic) {
             if (empty($topic->slug)) {
                 $topic->slug = Str::slug($topic->title);
@@ -130,7 +130,7 @@ class ForumTopic extends Model
             'last_post_user_id' => $post->user_id,
             'last_post_at' => $post->created_at,
         ]);
-        
+
         $this->forum->update(['last_activity_at' => $post->created_at]);
     }
 

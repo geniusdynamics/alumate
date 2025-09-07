@@ -17,7 +17,7 @@ class EventController extends Controller
     public function rsvp(Request $request, Event $event)
     {
         $request->validate([
-            'status' => ['required', Rule::in(['attending', 'maybe', 'not_attending'])]
+            'status' => ['required', Rule::in(['attending', 'maybe', 'not_attending'])],
         ]);
 
         $user = Auth::user();
@@ -25,18 +25,18 @@ class EventController extends Controller
         $attendee = EventAttendee::updateOrCreate(
             [
                 'event_id' => $event->id,
-                'user_id' => $user->id
+                'user_id' => $user->id,
             ],
             [
                 'status' => $request->status,
-                'rsvp_date' => now()
+                'rsvp_date' => now(),
             ]
         );
 
         return response()->json([
             'message' => 'RSVP updated successfully',
             'status' => $request->status,
-            'attendee' => $attendee
+            'attendee' => $attendee,
         ]);
     }
 
@@ -48,11 +48,11 @@ class EventController extends Controller
         $user = Auth::user();
 
         EventAttendee::where('event_id', $event->id)
-                    ->where('user_id', $user->id)
-                    ->delete();
+            ->where('user_id', $user->id)
+            ->delete();
 
         return response()->json([
-            'message' => 'RSVP cancelled successfully'
+            'message' => 'RSVP cancelled successfully',
         ]);
     }
 }

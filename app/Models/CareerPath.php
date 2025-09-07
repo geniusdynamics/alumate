@@ -11,9 +11,13 @@ class CareerPath extends Model
     use HasFactory;
 
     const PATH_LINEAR = 'linear';
+
     const PATH_PIVOT = 'pivot';
+
     const PATH_ENTREPRENEURIAL = 'entrepreneurial';
+
     const PATH_PORTFOLIO = 'portfolio';
+
     const PATH_ACADEMIC = 'academic';
 
     protected $fillable = [
@@ -73,13 +77,13 @@ class CareerPath extends Model
         // Calculate based on years since graduation and job changes
         $user = $this->user;
         $yearsSinceGraduation = $user->graduationYear ? now()->year - $user->graduationYear : 5;
-        
+
         if ($yearsSinceGraduation <= 0) {
             return 100;
         }
 
         $changesPerYear = $this->total_job_changes / $yearsSinceGraduation;
-        
+
         // Score decreases with more frequent job changes
         return max(0, 100 - ($changesPerYear * 25));
     }
@@ -88,7 +92,7 @@ class CareerPath extends Model
     {
         $user = $this->user;
         $yearsSinceGraduation = $user->graduationYear ? now()->year - $user->graduationYear : 1;
-        
+
         if ($yearsSinceGraduation <= 0) {
             return 0;
         }

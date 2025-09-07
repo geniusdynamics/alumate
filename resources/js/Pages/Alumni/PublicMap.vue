@@ -176,16 +176,17 @@
 
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3'
+import type { AlumniProfile, InstitutionOption } from '@/types'
 
 interface Props {
-  alumni: any[]
+  alumni: AlumniProfile[]
   stats: {
     total_alumni: number
     by_country: Record<string, number>
     by_region: Record<string, number>
     by_industry: Record<string, number>
   }
-  schools: any[]
+  schools: InstitutionOption[]
   industries: string[]
   countries: string[]
   graduationYears: number[]

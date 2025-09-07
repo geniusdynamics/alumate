@@ -5,7 +5,6 @@ namespace App\Events;
 use App\Models\Post;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -33,29 +32,29 @@ class PostCreated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         $channels = [];
-        
+
         // Broadcast to user's timeline
-        $channels[] = new PrivateChannel('user.' . $this->post->user_id . '.timeline');
-        
+        $channels[] = new PrivateChannel('user.'.$this->post->user_id.'.timeline');
+
         // Broadcast to circles if post is shared with circles
         if ($this->post->circle_ids) {
             foreach ($this->post->circle_ids as $circleId) {
-                $channels[] = new PrivateChannel('circle.' . $circleId);
+                $channels[] = new PrivateChannel('circle.'.$circleId);
             }
         }
-        
+
         // Broadcast to groups if post is shared with groups
         if ($this->post->group_ids) {
             foreach ($this->post->group_ids as $groupId) {
-                $channels[] = new PrivateChannel('group.' . $groupId);
+                $channels[] = new PrivateChannel('group.'.$groupId);
             }
         }
-        
+
         // Broadcast to general timeline for public posts
         if ($this->post->visibility === 'public') {
             $channels[] = new Channel('timeline.public');
         }
-        
+
         return $channels;
     }
 

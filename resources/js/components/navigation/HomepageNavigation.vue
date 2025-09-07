@@ -42,13 +42,44 @@ const auth = computed(() => page.props.auth)
 // Navigation items state
 const navigationItems = ref([])
 
+// Mock navigation data as fallback
+const mockNavigationData = [
+  { id: 1, title: 'Home', url: '/', order: 1, type: 'link', children: [] },
+  { id: 2, title: 'Jobs', url: '/jobs', order: 2, type: 'link', children: [] },
+  {
+    id: 3,
+    title: 'Alumni',
+    url: '#',
+    order: 3,
+    type: 'dropdown',
+    children: [
+      { id: 5, title: 'Alumni Directory', url: '/alumni/directory', order: 1, type: 'link' },
+      { id: 6, title: 'Alumni Events', url: '/alumni/events', order: 2, type: 'link' }
+    ]
+  },
+  {
+    id: 4,
+    title: 'About',
+    url: '#',
+    order: 4,
+    type: 'dropdown',
+    children: [
+      { id: 7, title: 'Our Story', url: '/about/story', order: 1, type: 'link' },
+      { id: 8, title: 'Team', url: '/about/team', order: 2, type: 'link' },
+      { id: 9, title: 'Contact', url: '/about/contact', order: 3, type: 'link' }
+    ]
+  }
+]
+
 // Fetch navigation items
 onMounted(async () => {
   try {
     const response = await axios.get('/api/homepage-navigation')
     navigationItems.value = response.data
   } catch (error) {
-    console.error('Failed to fetch navigation items:', error)
+    console.error('Failed to fetch navigation items, using fallback data:', error)
+    // Use mock data as fallback when API fails
+    navigationItems.value = mockNavigationData
   }
 })
 

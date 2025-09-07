@@ -17,7 +17,7 @@ return new class extends Migration
             // Create the posts table if it doesn't exist
             Schema::create('posts', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
                 $table->text('content');
                 $table->json('media_urls')->nullable();
                 $table->enum('post_type', ['text', 'media', 'career_update', 'achievement', 'event', 'poll', 'article_share'])->default('text');

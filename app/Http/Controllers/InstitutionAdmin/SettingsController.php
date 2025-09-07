@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\InstitutionAdmin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Institution;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -18,7 +17,7 @@ class SettingsController extends Controller
         $institution = Auth::user()->institution;
 
         return Inertia::render('InstitutionAdmin/Settings/Branding', [
-            'institution' => $institution
+            'institution' => $institution,
         ]);
     }
 
@@ -56,7 +55,7 @@ class SettingsController extends Controller
         $institution = Auth::user()->institution;
 
         return Inertia::render('InstitutionAdmin/Settings/Integrations', [
-            'settings' => $institution->integration_settings ?? []
+            'settings' => $institution->integration_settings ?? [],
         ]);
     }
 
@@ -72,7 +71,7 @@ class SettingsController extends Controller
         ]);
 
         $institution->update([
-            'integration_settings' => $validated['integrations']
+            'integration_settings' => $validated['integrations'],
         ]);
 
         return back()->with('success', 'Integration settings updated successfully.');

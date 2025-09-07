@@ -24,7 +24,7 @@ return new class extends Migration
             $table->json('whats_new_viewed')->nullable();
             $table->json('preferences')->nullable();
             $table->timestamps();
-            
+
             $table->unique('user_id');
         });
     }

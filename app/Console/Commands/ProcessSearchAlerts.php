@@ -27,11 +27,11 @@ class ProcessSearchAlerts extends Command
     public function handle(): int
     {
         $this->info('Dispatching search alerts processing job...');
-        
+
         ProcessSearchAlertsJob::dispatch();
-        
+
         $this->info('✅ Search alerts processing job dispatched successfully');
-        
+
         return 0;
     }
 }

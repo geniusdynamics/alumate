@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\CareerOutcomeAnalyticsService;
 use App\Models\CareerOutcomeSnapshot;
-use App\Models\ProgramEffectiveness;
-use App\Models\IndustryPlacement;
-use App\Models\DemographicOutcome;
 use App\Models\CareerTrend;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use App\Models\DemographicOutcome;
+use App\Models\IndustryPlacement;
+use App\Models\ProgramEffectiveness;
+use App\Services\CareerOutcomeAnalyticsService;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CareerOutcomeAnalyticsController extends Controller
 {
@@ -388,7 +388,7 @@ class CareerOutcomeAnalyticsController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Export functionality would be implemented here',
-            'download_url' => '/api/career-analytics/download/' . uniqid(),
+            'download_url' => '/api/career-analytics/download/'.uniqid(),
         ]);
     }
 

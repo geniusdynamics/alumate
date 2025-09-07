@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('data')->nullable();
             $table->timestamp('timestamp');
             $table->timestamps();
-            
+
             $table->index(['user_id', 'event_type']);
             $table->index('timestamp');
         });

@@ -20,29 +20,29 @@ class AlumniMapService
             ->with(['educations.school', 'currentEmployment.company']);
 
         // Apply filters
-        if (!empty($filters['graduation_year'])) {
+        if (! empty($filters['graduation_year'])) {
             $query->whereHas('educations', function ($q) use ($filters) {
                 $q->where('graduation_year', $filters['graduation_year']);
             });
         }
 
-        if (!empty($filters['school_id'])) {
+        if (! empty($filters['school_id'])) {
             $query->whereHas('educations', function ($q) use ($filters) {
                 $q->where('school_id', $filters['school_id']);
             });
         }
 
-        if (!empty($filters['industry'])) {
+        if (! empty($filters['industry'])) {
             $query->whereHas('currentEmployment', function ($q) use ($filters) {
                 $q->where('industry', $filters['industry']);
             });
         }
 
-        if (!empty($filters['country'])) {
+        if (! empty($filters['country'])) {
             $query->where('country', $filters['country']);
         }
 
-        if (!empty($filters['region'])) {
+        if (! empty($filters['region'])) {
             $query->where('region', $filters['region']);
         }
 
@@ -85,11 +85,12 @@ class AlumniMapService
             $cluster_size, $cluster_size,
             $cluster_size, $cluster_size,
             $bounds_south, $bounds_north,
-            $bounds_west, $bounds_east
+            $bounds_west, $bounds_east,
         ]);
 
         return array_map(function ($cluster) {
             $cluster->alumni = json_decode($cluster->alumni, true);
+
             return $cluster;
         }, $alumni);
     }
@@ -103,7 +104,7 @@ class AlumniMapService
             'by_country' => $this->getStatsByCountry(),
             'by_region' => $this->getStatsByRegion(),
             'by_industry' => $this->getStatsByIndustry(),
-            'total_alumni' => $this->getTotalAlumniWithLocation()
+            'total_alumni' => $this->getTotalAlumniWithLocation(),
         ];
     }
 
@@ -148,7 +149,7 @@ class AlumniMapService
             ->whereHas('currentEmployment')
             ->join('employments', function ($join) {
                 $join->on('users.id', '=', 'employments.user_id')
-                     ->where('employments.is_current', true);
+                    ->where('employments.is_current', true);
             })
             ->select('employments.industry', DB::raw('COUNT(*) as count'))
             ->groupBy('employments.industry')
@@ -189,8 +190,8 @@ class AlumniMapService
     public function updateLocationPrivacy(User $user, string $privacy_level): bool
     {
         $allowed_levels = ['public', 'alumni_only', 'private'];
-        
-        if (!in_array($privacy_level, $allowed_levels)) {
+
+        if (! in_array($privacy_level, $allowed_levels)) {
             return false;
         }
 
@@ -214,7 +215,7 @@ class AlumniMapService
     {
         // Using Haversine formula for distance calculation
         return User::select('*')
-            ->selectRaw("
+            ->selectRaw('
                 (6371 * acos(
                     cos(radians(?)) * 
                     cos(radians(latitude)) * 
@@ -222,7 +223,7 @@ class AlumniMapService
                     sin(radians(?)) * 
                     sin(radians(latitude))
                 )) AS distance
-            ", [$latitude, $longitude, $latitude])
+            ', [$latitude, $longitude, $latitude])
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->where('location_privacy', '!=', 'private')

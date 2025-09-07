@@ -234,23 +234,23 @@ Route::middleware('auth')->group(function () {
         Route::get('staff', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'staffManagement'])->name('staff');
         Route::get('import-export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'importExportCenter'])->name('import-export');
         Route::post('reports/export', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'exportReport'])->name('reports.export');
-    Route::get('analytics/course-roi', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'courseRoi'])->name('analytics.course-roi');
-    Route::get('analytics/employer-engagement', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'employerEngagement'])->name('analytics.employer-engagement');
-    Route::get('analytics/community-health', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'communityHealth'])->name('analytics.community-health');
+        Route::get('analytics/course-roi', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'courseRoi'])->name('analytics.course-roi');
+        Route::get('analytics/employer-engagement', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'employerEngagement'])->name('analytics.employer-engagement');
+        Route::get('analytics/community-health', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'communityHealth'])->name('analytics.community-health');
 
-    // Settings
-    Route::get('settings/branding', [InstitutionAdminSettingsController::class, 'showBranding'])->name('settings.branding');
-    Route::post('settings/branding', [InstitutionAdminSettingsController::class, 'updateBranding'])->name('settings.branding.update');
-    Route::get('settings/integrations', [InstitutionAdminSettingsController::class, 'showIntegrations'])->name('settings.integrations');
-    Route::post('settings/integrations', [InstitutionAdminSettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
+        // Settings
+        Route::get('settings/branding', [InstitutionAdminSettingsController::class, 'showBranding'])->name('settings.branding');
+        Route::post('settings/branding', [InstitutionAdminSettingsController::class, 'updateBranding'])->name('settings.branding.update');
+        Route::get('settings/integrations', [InstitutionAdminSettingsController::class, 'showIntegrations'])->name('settings.integrations');
+        Route::post('settings/integrations', [InstitutionAdminSettingsController::class, 'updateIntegrations'])->name('settings.integrations.update');
 
-    // Analytics API
-    Route::prefix('api/analytics')->name('api.analytics.')->group(function () {
-        Route::get('graduate-outcomes', [InstitutionAdminAnalyticsController::class, 'getGraduateOutcomes'])->name('graduate-outcomes');
-        Route::get('course-roi', [InstitutionAdminAnalyticsController::class, 'getCourseRoi'])->name('course-roi');
-        Route::get('employer-engagement', [InstitutionAdminAnalyticsController::class, 'getEmployerEngagement'])->name('employer-engagement');
-        Route::get('community-health', [InstitutionAdminAnalyticsController::class, 'getCommunityHealth'])->name('community-health');
-    });
+        // Analytics API
+        Route::prefix('api/analytics')->name('api.analytics.')->group(function () {
+            Route::get('graduate-outcomes', [InstitutionAdminAnalyticsController::class, 'getGraduateOutcomes'])->name('graduate-outcomes');
+            Route::get('course-roi', [InstitutionAdminAnalyticsController::class, 'getCourseRoi'])->name('course-roi');
+            Route::get('employer-engagement', [InstitutionAdminAnalyticsController::class, 'getEmployerEngagement'])->name('employer-engagement');
+            Route::get('community-health', [InstitutionAdminAnalyticsController::class, 'getCommunityHealth'])->name('community-health');
+        });
 
         // Graduate Management for Institution Admin
         Route::get('graduates', [\App\Http\Controllers\GraduateController::class, 'index'])->name('graduates.index');
@@ -743,11 +743,26 @@ Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin
     });
 });
 
-// Public Landing Page Routes
-Route::prefix('landing')->name('landing-page.')->group(function () {
-    Route::get('/{slug}', [\App\Http\Controllers\LandingPagePublicController::class, 'show'])->name('show');
-    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPagePublicController::class, 'submitForm'])->name('submit');
-    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPagePublicController::class, 'trackEvent'])->name('track');
+// Public Landing Page Routes for Published Pages
+Route::prefix('p')->name('landing-page.')->group(function () {
+    // Main published landing page route
+    Route::get('/{slug}', [\App\Http\Controllers\LandingPageController::class, 'show'])->name('show');
+
+    // Form submission for published landing pages
+    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPageController::class, 'submitForm'])->name('submit');
+
+    // Analytics tracking for published pages
+    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPageController::class, 'trackEvent'])->name('track');
+
+    // Preview mode (requires authentication) - for development/testing-only
+    Route::middleware(['auth'])->get('/{slug}/preview', [\App\Http\Controllers\LandingPageController::class, 'preview'])->name('preview');
+});
+
+// Legacy landing page routes (backwards compatibility)
+Route::prefix('landing')->name('landing-legacy.')->group(function () {
+    Route::get('/{slug}', [\App\Http\Controllers\LandingPageController::class, 'show'])->name('show');
+    Route::post('/{slug}/submit', [\App\Http\Controllers\LandingPageController::class, 'submitForm'])->name('submit');
+    Route::post('/{slug}/track', [\App\Http\Controllers\LandingPageController::class, 'trackEvent'])->name('track');
 });
 // Analytics Dashboard Routes (Admin only)
 Route::middleware(['auth', 'role:admin|super_admin'])->prefix('analytics')->name('analytics.')->group(function () {
@@ -765,4 +780,57 @@ Route::middleware(['auth', 'role:super-admin'])->group(function () {
     Route::get('/admin/performance', function () {
         return Inertia::render('Admin/PerformanceMonitoring');
     })->name('admin.performance');
+});
+
+// Institution Customization Routes (Admin)
+Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('institutions/{institution}')->name('institutions.')->group(function () {
+        Route::get('customization', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'index'])->name('customization');
+        Route::post('branding', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'updateBranding'])->name('branding');
+        Route::post('features', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'updateFeatures'])->name('features');
+        Route::post('custom-fields', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'updateCustomFields'])->name('custom-fields');
+        Route::post('workflows', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'updateWorkflows'])->name('workflows');
+        Route::post('reporting', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'updateReportingConfig'])->name('reporting');
+        Route::post('integrations', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'updateIntegrations'])->name('integrations');
+        Route::get('white-label-config', [\App\Http\Controllers\Admin\InstitutionCustomizationController::class, 'generateWhiteLabelConfig'])->name('white-label-config');
+    });
+
+    // Integration Configuration Routes
+    Route::prefix('integrations')->name('integrations.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'store'])->name('store');
+        Route::get('/{integration}', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'show'])->name('show');
+        Route::get('/{integration}/edit', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'edit'])->name('edit');
+        Route::put('/{integration}', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'update'])->name('update');
+        Route::delete('/{integration}', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'destroy'])->name('destroy');
+        Route::post('/{integration}/test', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'test'])->name('test');
+        Route::post('/{integration}/sync', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'sync'])->name('sync');
+        Route::post('/{integration}/webhook-token', [\App\Http\Controllers\Admin\IntegrationConfigurationController::class, 'generateWebhookToken'])->name('webhook-token');
+    });
+});
+// Component Library Demo Routes
+Route::middleware('auth')->prefix('component-library')->name('component-library.')->group(function () {
+    Route::get('/hero-demo', function () {
+        return Inertia::render('ComponentLibrary/HeroDemo');
+    })->name('hero-demo');
+});
+
+// Component Library Demo Routes
+Route::middleware(['auth'])->prefix('component-library')->name('component-library.')->group(function () {
+    Route::get('hero-demo', function () {
+        return Inertia::render('ComponentLibrary/HeroDemo');
+    })->name('hero-demo');
+    
+    Route::get('statistics-demo', function () {
+        return Inertia::render('ComponentLibrary/StatisticsDemo');
+    })->name('statistics-demo');
+    
+    Route::get('background-media-demo', function () {
+        return Inertia::render('ComponentLibrary/BackgroundMediaDemo');
+    })->name('background-media-demo');
+    
+    Route::get('forms', function () {
+        return Inertia::render('ComponentLibrary/FormDemo');
+    })->name('forms');
 });

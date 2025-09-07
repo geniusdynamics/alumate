@@ -17,12 +17,13 @@ class AlumniPlatformPerformanceTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected array $performanceMetrics = [];
 
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->user = User::factory()->create();
         $this->performanceMetrics = [];
     }
@@ -30,10 +31,10 @@ class AlumniPlatformPerformanceTest extends TestCase
     protected function tearDown(): void
     {
         // Log performance metrics
-        if (!empty($this->performanceMetrics)) {
+        if (! empty($this->performanceMetrics)) {
             $this->logPerformanceResults();
         }
-        
+
         parent::tearDown();
     }
 
@@ -90,7 +91,7 @@ class AlumniPlatformPerformanceTest extends TestCase
         ];
 
         $response->assertStatus(200);
-        
+
         // Performance assertions
         $this->assertLessThan(2000, $executionTime, 'Timeline generation should complete within 2 seconds');
         $this->assertLessThan(50, $queryCount, 'Timeline generation should use fewer than 50 queries');
@@ -100,15 +101,15 @@ class AlumniPlatformPerformanceTest extends TestCase
     {
         // Create large alumni dataset
         $alumni = User::factory()->count(1000)->create();
-        
+
         // Add varied data for search testing
         foreach ($alumni as $user) {
             $user->update([
                 'skills' => $this->faker->randomElements([
-                    'PHP', 'Laravel', 'Vue.js', 'React', 'Node.js', 'Python', 
-                    'Java', 'C++', 'JavaScript', 'TypeScript', 'Go', 'Rust'
+                    'PHP', 'Laravel', 'Vue.js', 'React', 'Node.js', 'Python',
+                    'Java', 'C++', 'JavaScript', 'TypeScript', 'Go', 'Rust',
                 ], rand(2, 6)),
-                'location' => $this->faker->city . ', ' . $this->faker->stateAbbr,
+                'location' => $this->faker->city.', '.$this->faker->stateAbbr,
             ]);
         }
 
@@ -143,7 +144,7 @@ class AlumniPlatformPerformanceTest extends TestCase
             ];
 
             $response->assertStatus(200);
-            
+
             // Performance assertions
             $this->assertLessThan(1500, $executionTime, "Alumni search should complete within 1.5 seconds for query: $query");
             $this->assertLessThan(20, $queryCount, "Alumni search should use fewer than 20 queries for query: $query");
@@ -155,7 +156,7 @@ class AlumniPlatformPerformanceTest extends TestCase
         // Create large dataset
         $users = User::factory()->count(500)->create();
         $companies = \App\Models\Company::factory()->count(50)->create();
-        
+
         // Create job postings
         $jobs = collect();
         foreach ($companies as $company) {
@@ -199,7 +200,7 @@ class AlumniPlatformPerformanceTest extends TestCase
         ];
 
         $response->assertStatus(200);
-        
+
         // Performance assertions
         $this->assertLessThan(3000, $executionTime, 'Job matching should complete within 3 seconds');
         $this->assertLessThan(30, $queryCount, 'Job matching should use fewer than 30 queries');
@@ -241,7 +242,7 @@ class AlumniPlatformPerformanceTest extends TestCase
         ];
 
         $response->assertStatus(200);
-        
+
         // Performance assertions
         $this->assertLessThan(500, $executionTime, 'Post engagement should complete within 500ms');
         $this->assertLessThan(10, $queryCount, 'Post engagement should use fewer than 10 queries');
@@ -267,7 +268,7 @@ class AlumniPlatformPerformanceTest extends TestCase
         ];
 
         $response->assertStatus(200);
-        
+
         // Performance assertions
         $this->assertLessThan(1000, $executionTime, 'Post retrieval with engagements should complete within 1 second');
         $this->assertLessThan(15, $queryCount, 'Post retrieval should use fewer than 15 queries');
@@ -287,11 +288,11 @@ class AlumniPlatformPerformanceTest extends TestCase
         // Create circles and groups
         $circles = Circle::factory()->count(5)->create();
         $groups = Group::factory()->count(3)->create();
-        
+
         foreach ($circles as $circle) {
             $this->user->circles()->attach($circle->id);
         }
-        
+
         foreach ($groups as $group) {
             $this->user->groups()->attach($group->id);
         }
@@ -311,7 +312,7 @@ class AlumniPlatformPerformanceTest extends TestCase
                 'company_id' => $company->id,
                 'is_active' => true,
             ]);
-            
+
             foreach ($jobs as $job) {
                 \App\Models\JobMatchScore::factory()->create([
                     'user_id' => $this->user->id,
@@ -344,7 +345,7 @@ class AlumniPlatformPerformanceTest extends TestCase
         ];
 
         $response->assertStatus(200);
-        
+
         // Performance assertions
         $this->assertLessThan(2500, $executionTime, 'Dashboard loading should complete within 2.5 seconds');
         $this->assertLessThan(40, $queryCount, 'Dashboard loading should use fewer than 40 queries');
@@ -357,7 +358,7 @@ class AlumniPlatformPerformanceTest extends TestCase
         // Create large dataset
         $users = User::factory()->count(200)->create();
         $posts = collect();
-        
+
         foreach ($users as $user) {
             $userPosts = Post::factory()->count(10)->create([
                 'user_id' => $user->id,
@@ -425,20 +426,20 @@ class AlumniPlatformPerformanceTest extends TestCase
     {
         $logFile = storage_path('logs/performance_test_results.log');
         $timestamp = now()->toDateTimeString();
-        
+
         $logEntry = "\n=== Performance Test Results - $timestamp ===\n";
-        
+
         foreach ($this->performanceMetrics as $testName => $metrics) {
             $logEntry .= "\n$testName:\n";
             foreach ($metrics as $key => $value) {
                 $logEntry .= "  $key: $value\n";
             }
         }
-        
-        $logEntry .= "\n" . str_repeat('=', 60) . "\n";
-        
+
+        $logEntry .= "\n".str_repeat('=', 60)."\n";
+
         file_put_contents($logFile, $logEntry, FILE_APPEND | LOCK_EX);
-        
+
         // Also output to console during testing
         echo $logEntry;
     }

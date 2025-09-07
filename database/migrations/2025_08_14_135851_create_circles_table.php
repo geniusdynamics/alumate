@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('member_count')->default(0);
             $table->boolean('auto_generated')->default(false);
             $table->timestamps();
-            
+
             // Indexes
             $table->index(['type', 'auto_generated']);
             $table->index('member_count');

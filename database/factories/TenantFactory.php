@@ -12,36 +12,37 @@ class TenantFactory extends Factory
     public function definition(): array
     {
         $institutionTypes = ['University', 'College', 'Institute', 'Academy'];
-        $institutionType = $this->faker->randomElement($institutionTypes);
-        $institutionName = $this->faker->company.' '.$institutionType;
+        $institutionType = fake()->randomElement($institutionTypes);
+        $institutionName = fake()->company().' '.$institutionType;
 
         return [
-            'id' => $this->faker->unique()->slug(),
+            'id' => fake()->unique()->slug(),
             'name' => $institutionName,
-            'address' => $this->faker->address,
+            'address' => fake()->address(),
             'contact_information' => json_encode([
-                'email' => $this->faker->companyEmail,
-                'phone' => $this->faker->phoneNumber,
-                'website' => $this->faker->url,
+                'email' => fake()->companyEmail(),
+                'phone' => fake()->phoneNumber(),
+                'website' => fake()->url(),
             ]),
-            'plan' => $this->faker->randomElement(['basic', 'premium', 'enterprise']),
-            'data' => [
+            'plan' => fake()->randomElement(['basic', 'premium', 'enterprise']),
+            'data' => json_encode([
                 'name' => $institutionName, // Also store in data for compatibility
-                'established' => $this->faker->numberBetween(1800, 2020),
+                'established' => fake()->numberBetween(1800, 2020),
                 'type' => strtolower($institutionType),
-                'accreditation' => $this->faker->words(3, true),
-            ],
+                'accreditation' => fake()->words(3, true),
+            ]),
         ];
     }
 
     public function university(): static
     {
         return $this->state(function (array $attributes) {
+            $data = json_decode($attributes['data'] ?? '{}', true);
+            $data['type'] = 'university';
+
             return [
-                'name' => $this->faker->company.' University',
-                'data' => array_merge($attributes['data'] ?? [], [
-                    'type' => 'university',
-                ]),
+                'name' => fake()->company().' University',
+                'data' => json_encode($data),
             ];
         });
     }
@@ -49,11 +50,12 @@ class TenantFactory extends Factory
     public function college(): static
     {
         return $this->state(function (array $attributes) {
+            $data = json_decode($attributes['data'] ?? '{}', true);
+            $data['type'] = 'college';
+
             return [
-                'name' => $this->faker->company.' College',
-                'data' => array_merge($attributes['data'] ?? [], [
-                    'type' => 'college',
-                ]),
+                'name' => fake()->company().' College',
+                'data' => json_encode($data),
             ];
         });
     }

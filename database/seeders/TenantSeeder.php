@@ -15,11 +15,7 @@ class TenantSeeder extends Seeder
             [
                 'name' => 'Tech Institute',
                 'address' => '123 University Ave, Tech City, TC 12345',
-                'contact_information' => [
-                    'phone' => '+1-555-123-4567',
-                    'email' => 'contact@tech-institute.edu',
-                    'website' => 'https://tech-institute.edu',
-                ],
+                'contact_information' => 'Phone: +1-555-123-4567, Email: contact@tech-institute.edu, Website: https://tech-institute.edu',
                 'plan' => 'premium',
                 'data' => [
                     'name' => 'Tech Institute',
@@ -38,9 +34,9 @@ class TenantSeeder extends Seeder
             ]
         );
 
-        // Create domain for the tenant
+        // Create domain for the tenant using the correct column name
         $tenant->domains()->firstOrCreate([
-            'domain' => 'tech-institute.localhost',
+            'domain_name' => 'tech-institute.localhost',
         ]);
 
         $this->command->info('Demo tenant created successfully!');

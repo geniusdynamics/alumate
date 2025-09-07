@@ -5,12 +5,13 @@ namespace AlumniPlatform\ApiClient;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Collection;
 
 class Client
 {
     private HttpClient $httpClient;
+
     private string $baseUri;
+
     private string $token;
 
     public function __construct(array $config)
@@ -22,11 +23,11 @@ class Client
             'base_uri' => $this->baseUri,
             'timeout' => $config['timeout'] ?? 30,
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->token,
+                'Authorization' => 'Bearer '.$this->token,
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
-                'User-Agent' => 'AlumniPlatform-PHP-SDK/1.0'
-            ]
+                'User-Agent' => 'AlumniPlatform-PHP-SDK/1.0',
+            ],
         ]);
     }
 
@@ -45,7 +46,7 @@ class Client
     {
         return $this->get('/timeline', [
             'page' => $page,
-            'per_page' => $perPage
+            'per_page' => $perPage,
         ]);
     }
 
@@ -90,7 +91,7 @@ class Client
         if ($message) {
             $data['message'] = $message;
         }
-        
+
         $this->post("/alumni/{$userId}/connect", $data);
     }
 
@@ -203,7 +204,8 @@ class Client
      */
     public static function verifyWebhookSignature(string $payload, string $signature, string $secret): bool
     {
-        $expectedSignature = 'sha256=' . hash_hmac('sha256', $payload, $secret);
+        $expectedSignature = 'sha256='.hash_hmac('sha256', $payload, $secret);
+
         return hash_equals($expectedSignature, $signature);
     }
 
@@ -214,14 +216,14 @@ class Client
     {
         try {
             $response = $this->httpClient->get($endpoint, [
-                'query' => $params
+                'query' => $params,
             ]);
 
             return json_decode($response->getBody()->getContents(), true);
         } catch (ClientException $e) {
             $this->handleClientException($e);
         } catch (RequestException $e) {
-            throw new AlumniPlatformException('Request failed: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new AlumniPlatformException('Request failed: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -232,14 +234,14 @@ class Client
     {
         try {
             $response = $this->httpClient->post($endpoint, [
-                'json' => $data
+                'json' => $data,
             ]);
 
             return json_decode($response->getBody()->getContents(), true);
         } catch (ClientException $e) {
             $this->handleClientException($e);
         } catch (RequestException $e) {
-            throw new AlumniPlatformException('Request failed: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new AlumniPlatformException('Request failed: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -255,7 +257,7 @@ class Client
         } catch (ClientException $e) {
             $this->handleClientException($e);
         } catch (RequestException $e) {
-            throw new AlumniPlatformException('Request failed: ' . $e->getMessage(), $e->getCode(), $e);
+            throw new AlumniPlatformException('Request failed: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -276,11 +278,11 @@ class Client
                 throw new AlumniPlatformException('Resource not found.', 404, $e);
             case 422:
                 $errors = json_decode($body, true);
-                throw new AlumniPlatformException('Validation failed: ' . json_encode($errors['errors'] ?? $errors), 422, $e);
+                throw new AlumniPlatformException('Validation failed: '.json_encode($errors['errors'] ?? $errors), 422, $e);
             case 429:
                 throw new AlumniPlatformException('Rate limit exceeded. Please try again later.', 429, $e);
             default:
-                throw new AlumniPlatformException('API error: ' . $body, $statusCode, $e);
+                throw new AlumniPlatformException('API error: '.$body, $statusCode, $e);
         }
     }
 }

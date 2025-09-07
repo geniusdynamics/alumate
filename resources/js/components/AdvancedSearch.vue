@@ -202,8 +202,8 @@ import PostResult from './SearchResults/PostResult.vue'
 import JobResult from './SearchResults/JobResult.vue'
 import EventResult from './SearchResults/EventResult.vue'
 import {
-  SearchIcon,
-  FilterIcon,
+  MagnifyingGlassIcon as SearchIcon,
+  FunnelIcon as FilterIcon,
   BookmarkIcon
 } from '@heroicons/vue/24/outline'
 import LoadingSpinner from './LoadingSpinner.vue'

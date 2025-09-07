@@ -65,29 +65,29 @@ class CallRecording extends Model
 
     public function getFileSizeHumanAttribute(): string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return 'Unknown';
         }
 
         $bytes = $this->file_size;
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-        
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
-        return round($bytes, 2) . ' ' . $units[$i];
+
+        return round($bytes, 2).' '.$units[$i];
     }
 
     public function getDurationHumanAttribute(): string
     {
-        if (!$this->duration_seconds) {
+        if (! $this->duration_seconds) {
             return 'Unknown';
         }
 
         $minutes = floor($this->duration_seconds / 60);
         $seconds = $this->duration_seconds % 60;
-        
+
         return sprintf('%02d:%02d', $minutes, $seconds);
     }
 }

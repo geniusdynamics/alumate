@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\ForumTag;
 use App\Services\ForumService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ForumSearchController extends Controller
@@ -43,7 +43,7 @@ class ForumSearchController extends Controller
                     'id' => $topic->id,
                     'title' => $topic->title,
                     'slug' => $topic->slug,
-                    'content' => substr($topic->content, 0, 200) . '...',
+                    'content' => substr($topic->content, 0, 200).'...',
                     'posts_count' => $topic->posts_count,
                     'views_count' => $topic->views_count,
                     'created_at' => $topic->created_at,
@@ -112,18 +112,18 @@ class ForumSearchController extends Controller
     public function getTopicsByTag(Request $request, ForumTag $tag): JsonResponse
     {
         $user = Auth::user();
-        
+
         $topics = $tag->topics()
             ->with(['forum', 'user', 'lastPostUser'])
             ->whereHas('forum', function ($query) use ($user) {
                 $query->active()->where(function ($subQ) use ($user) {
                     $subQ->where('visibility', 'public')
-                         ->orWhere(function ($groupQ) use ($user) {
-                             $groupQ->where('visibility', 'group_only')
-                                    ->whereHas('group.members', function ($memberQ) use ($user) {
-                                        $memberQ->where('user_id', $user->id);
-                                    });
-                         });
+                        ->orWhere(function ($groupQ) use ($user) {
+                            $groupQ->where('visibility', 'group_only')
+                                ->whereHas('group.members', function ($memberQ) use ($user) {
+                                    $memberQ->where('user_id', $user->id);
+                                });
+                        });
                 });
             })
             ->active()

@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use App\Models\Tenant;
 
 class DemoUsersSeeder extends Seeder
 {
@@ -114,31 +115,38 @@ class DemoUsersSeeder extends Seeder
         $graduate->assignRole($graduateRole);
 
         // Create graduate profile in tenant context
-        tenancy()->initialize('tech-institute');
+        $tenant = Tenant::find('tech-institute');
+        if ($tenant) {
+            tenancy()->initialize($tenant);
 
-        // First, ensure we have a course to reference
-        $course = \App\Models\Course::firstOrCreate(
-            ['name' => 'Computer Science'],
-            [
-                'description' => 'Bachelor of Computer Science',
-                'duration' => 4,
-                'level' => 'undergraduate',
-            ]
-        );
+            // First, ensure we have a course to reference
+            $course = \App\Models\Course::firstOrCreate(
+                ['name' => 'Computer Science'],
+                [
+                    'description' => 'Bachelor of Computer Science',
+                    'code' => 'CS-001',
+                    'level' => 'degree',
+                    'duration_months' => 48,
+                    'study_mode' => 'full_time',
+                    'institution_id' => 'tech-institute',
+                    'is_active' => true,
+                ]
+            );
 
-        \App\Models\Graduate::firstOrCreate(
-            ['email' => 'john.smith@student.edu'],
-            [
-                'tenant_id' => 'tech-institute',
-                'name' => 'John Smith',
-                'email' => 'john.smith@student.edu',
-                'phone' => '+1234567890',
-                'graduation_year' => 2023,
-                'course_id' => $course->id,
-                'user_id' => $graduate->id,
-            ]
-        );
-        tenancy()->end();
+            \App\Models\Graduate::firstOrCreate(
+                ['email' => 'john.smith@student.edu'],
+                [
+                    'tenant_id' => 'tech-institute',
+                    'name' => 'John Smith',
+                    'email' => 'john.smith@student.edu',
+                    'phone' => '+1234567890',
+                    'graduation_year' => 2023,
+                    'course_id' => $course->id,
+                    'user_id' => $graduate->id,
+                ]
+            );
+            tenancy()->end();
+        }
 
         $this->command->info('Demo users created successfully!');
         $this->command->info('Super Admin: admin@system.com / password');

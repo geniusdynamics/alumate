@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Forum;
-use App\Models\ForumTopic;
 use App\Models\ForumTag;
+use App\Models\ForumTopic;
 use App\Models\ForumTopicSubscription;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -20,8 +20,8 @@ class ForumTopicController extends Controller
     public function index(Request $request, Forum $forum): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$forum->canUserAccess($user)) {
+
+        if (! $forum->canUserAccess($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied to this forum.',
@@ -42,7 +42,7 @@ class ForumTopicController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
+                    ->orWhere('content', 'like', "%{$search}%");
             });
         }
 
@@ -61,8 +61,8 @@ class ForumTopicController extends Controller
             case 'activity':
             default:
                 $query->orderBy('is_sticky', 'desc')
-                      ->orderBy('is_announcement', 'desc')
-                      ->orderBy('last_post_at', 'desc');
+                    ->orderBy('is_announcement', 'desc')
+                    ->orderBy('last_post_at', 'desc');
                 break;
         }
 
@@ -86,8 +86,8 @@ class ForumTopicController extends Controller
     public function store(Request $request, Forum $forum): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$forum->canUserAccess($user)) {
+
+        if (! $forum->canUserAccess($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied to this forum.',
@@ -107,11 +107,11 @@ class ForumTopicController extends Controller
                 'user_id' => $user->id,
                 'title' => $validated['title'],
                 'content' => $validated['content'],
-                'is_approved' => !$forum->requires_approval,
+                'is_approved' => ! $forum->requires_approval,
             ]);
 
             // Handle tags
-            if (!empty($validated['tags'])) {
+            if (! empty($validated['tags'])) {
                 $tagIds = [];
                 foreach ($validated['tags'] as $tagName) {
                     $tag = ForumTag::firstOrCreate(
@@ -141,6 +141,7 @@ class ForumTopicController extends Controller
             ], 201);
         } catch (\Exception $e) {
             DB::rollback();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create topic.',
@@ -154,8 +155,8 @@ class ForumTopicController extends Controller
     public function show(Forum $forum, ForumTopic $topic): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$forum->canUserAccess($user) || $topic->forum_id !== $forum->id) {
+
+        if (! $forum->canUserAccess($user) || $topic->forum_id !== $forum->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied.',
@@ -171,9 +172,9 @@ class ForumTopicController extends Controller
             'tags',
             'posts' => function ($query) {
                 $query->approved()
-                      ->with(['user', 'replies.user'])
-                      ->orderBy('created_at');
-            }
+                    ->with(['user', 'replies.user'])
+                    ->orderBy('created_at');
+            },
         ]);
 
         // Check if user is subscribed
@@ -254,8 +255,8 @@ class ForumTopicController extends Controller
     public function update(Request $request, Forum $forum, ForumTopic $topic): JsonResponse
     {
         $user = Auth::user();
-        
-        if ($topic->user_id !== $user->id && !$user->hasRole(['admin', 'moderator'])) {
+
+        if ($topic->user_id !== $user->id && ! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to edit this topic.',
@@ -306,6 +307,7 @@ class ForumTopicController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollback();
+
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update topic.',
@@ -319,8 +321,8 @@ class ForumTopicController extends Controller
     public function destroy(Forum $forum, ForumTopic $topic): JsonResponse
     {
         $user = Auth::user();
-        
-        if ($topic->user_id !== $user->id && !$user->hasRole(['admin', 'moderator'])) {
+
+        if ($topic->user_id !== $user->id && ! $user->hasRole(['admin', 'moderator'])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized to delete this topic.',
@@ -346,8 +348,8 @@ class ForumTopicController extends Controller
     public function toggleSubscription(Forum $forum, ForumTopic $topic): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$forum->canUserAccess($user)) {
+
+        if (! $forum->canUserAccess($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied.',

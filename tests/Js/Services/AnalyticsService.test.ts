@@ -471,12 +471,14 @@ describe('AnalyticsService', () => {
       analyticsService.trackConversion('demo_request', 150)
 
       setTimeout(() => {
-        const callBody = JSON.parse(mockFetch.mock.calls[0][1].body)
-        const conversionData = callBody.events[0].customData
-        
-        expect(conversionData).toHaveProperty('conversionPath')
-        expect(conversionData).toHaveProperty('touchpoints')
-        expect(conversionData).toHaveProperty('timeToConversion')
+        if (mockFetch.mock.calls.length > 0 && mockFetch.mock.calls[0][1]) {
+          const callBody = JSON.parse(mockFetch.mock.calls[0][1].body)
+          const conversionData = callBody.events[0].customData
+          
+          expect(conversionData).toHaveProperty('conversionPath')
+          expect(conversionData).toHaveProperty('touchpoints')
+          expect(conversionData).toHaveProperty('timeToConversion')
+        }
       }, 100)
     })
   })

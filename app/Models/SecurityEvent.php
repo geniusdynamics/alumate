@@ -96,6 +96,12 @@ class SecurityEvent extends Model
 
     const TYPE_ACCOUNT_LOCKOUT = 'account_lockout';
 
+    const TYPE_TWO_FACTOR_ENABLED = 'two_factor_enabled';
+
+    const TYPE_TWO_FACTOR_DISABLED = 'two_factor_disabled';
+
+    const TYPE_SESSION_CLEANUP = 'session_cleanup';
+
     // Severity levels
     const SEVERITY_LOW = 'low';
 

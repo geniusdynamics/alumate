@@ -142,6 +142,8 @@
       <!-- Multiple Conversion CTAs - Load immediately (critical for conversion) -->
       <ConversionCTAs 
         :audience="currentAudience"
+        :strategic-ctas="strategicCTAs"
+        :primary-mobile-cta="primaryMobileCTA"
         @cta-click="handleCTAClick"
       />
     </div>
@@ -315,6 +317,43 @@ const heroData = computed(() => {
         format: 'number'
       }
     ]
+  }
+})
+
+const strategicCTAs = computed(() => {
+  const baseCTAs = [
+    {
+      id: 'primary-signup',
+      title: currentAudience.value === 'institutional' ? 'Request Demo' : 'Start Free Trial',
+      description: currentAudience.value === 'institutional' 
+        ? 'See how our platform can transform your alumni engagement'
+        : 'Join thousands of alumni advancing their careers',
+      action: currentAudience.value === 'institutional' ? 'demo' : 'trial',
+      variant: 'primary',
+      audiences: [currentAudience.value, 'both'],
+      priority: 1
+    },
+    {
+      id: 'secondary-learn',
+      title: 'Learn More',
+      description: 'Discover how our platform works',
+      action: 'learn-more',
+      variant: 'secondary',
+      audiences: [currentAudience.value, 'both'],
+      priority: 2
+    }
+  ]
+  
+  return baseCTAs
+})
+
+const primaryMobileCTA = computed(() => {
+  return {
+    id: 'mobile-primary',
+    title: currentAudience.value === 'institutional' ? 'Request Demo' : 'Start Free Trial',
+    action: currentAudience.value === 'institutional' ? 'demo' : 'trial',
+    variant: 'primary',
+    audience: currentAudience.value
   }
 })
 

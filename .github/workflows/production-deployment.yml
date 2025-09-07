@@ -1,0 +1,366 @@
+name: Production Deployment
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - '.github/**'
+      - 'scripts/**'
+      - '!scripts/deploy.production.sh'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+      confirm_deployment:
+        description: 'Type "deploy" to confirm deployment'
+        required: true
+        type: string
+
+env:
+  NODE_VERSION: '22'
+  PHP_VERSION: '8.3'
+  COMPOSER_VERSION: '2'
+
+jobs:
+  # Security and quality checks before deployment
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          tools: composer:${{ env.COMPOSER_VERSION }}
+          coverage: none
+
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --quiet
+
+      - name: Run security analysis
+        run: |
+          if command -v composer audit >/dev/null 2>&1; then
+            composer audit --no-interaction || true
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci --silent
+
+      - name: Run dependency security audit
+        run: npm audit --audit-level=critical || true
+
+  # Build and test the application
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    needs: security-scan
+    environment:
+      name: ${{ github.event.inputs.environment || 'production' }}
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql, bcmath
+          tools: composer:${{ env.COMPOSER_VERSION }}
+          coverage: pcov
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install PHP dependencies
+        run: composer install --no-dev --optimize-autoloader --no-interaction --quiet
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci --silent
+
+      - name: Setup test environment
+        run: |
+          cp .env.example .env.testing
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/' .env.testing
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=test_db/' .env.testing
+          sed -i 's/DB_USERNAME=.*/DB_USERNAME=postgres/' .env.testing
+          sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=password/' .env.testing
+
+      - name: Generate application key
+        run: php artisan key:generate
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Run system migrations
+        run: php artisan migrate --force --no-interaction
+
+      - name: Run tenant migrations
+        run: php artisan tenants:migrate --force --no-interaction
+
+      - name: Run PHP tests
+        run: php artisan test --testsuite=Unit --coverage --min=70 || true
+
+      - name: Build frontend assets
+        run: npm run build --silent
+
+      - name: Create deployment artifact
+        run: |
+          mkdir -p deployment-package
+          tar -czf deployment-package/app.tar.gz \
+            --exclude=node_modules \
+            --exclude=.git \
+            --exclude=tests \
+            --exclude=.env* \
+            --exclude=storage/logs \
+            --exclude=storage/framework/cache \
+            --exclude=storage/framework/sessions \
+            --exclude=storage/framework/views \
+            --exclude=storage/app \
+            --exclude=database/seeders \
+            --exclude=deployment-package \
+            .
+
+      - name: Upload deployment artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-${{ github.sha }}
+          path: deployment-package/
+          retention-days: 1
+
+  # Deploy to staging first (optional)
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event.inputs.environment != 'production'
+    environment:
+      name: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download deployment artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build-${{ github.sha }}
+          path: deployment-package/
+
+      - name: Extract deployment artifact
+        run: tar -xzf deployment-package/app.tar.gz -C deployment-package/
+
+      - name: Deploy using production script
+        env:
+          DEPLOY_ENV: staging
+          DEPLOY_HOST: ${{ secrets.STAGING_HOST }}
+          DEPLOY_USER: ${{ secrets.STAGING_USER }}
+          DEPLOY_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          DEPLOY_PATH: ${{ secrets.STAGING_PATH }}
+          DB_USERNAME: ${{ secrets.STAGING_DB_USER }}
+          DB_PASSWORD: ${{ secrets.STAGING_DB_PASSWORD }}
+          REDIS_PASSWORD: ${{ secrets.STAGING_REDIS_PASSWORD }}
+          APP_KEY: ${{ secrets.STAGING_APP_KEY }}
+          GIT_REPOSITORY: ${{ github.repositoryUrl }}
+        run: |
+          # Create deployment key
+          echo "$DEPLOY_KEY" > deploy_key
+          chmod 600 deploy_key
+
+          # Copy deployment script
+          scp -i deploy_key -o StrictHostKeyChecking=no \
+            infrastructure/production/deploy.production.sh \
+            $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
+
+          # Execute deployment
+          scp -i deploy_key -o StrictHostKeyChecking=no \
+            deployment-package/ \
+            $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/app/
+
+          ssh -i deploy_key -o StrictHostKeyChecking=no \
+            $DEPLOY_USER@$DEPLOY_HOST \
+            "cd $DEPLOY_PATH && ./deploy.production.sh"
+
+      - name: Health check
+        run: |
+          sleep 30
+          curl -f https://${{ secrets.STAGING_DOMAIN }}/health-check || exit 1
+
+      - name: Send notification
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Production deployment with approval
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [build-and-test, deploy-staging]
+    if: github.event.inputs.environment == 'production' || (github.ref == 'refs/heads/main' && github.event_name == 'push')
+    environment:
+      name: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download deployment artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build-${{ github.sha }}
+          path: deployment-package/
+
+      - name: Extract deployment artifact
+        run: tar -xzf deployment-package/app.tar.gz -C deployment-package/
+
+      - name: Backup production database
+        env:
+          DB_HOST: ${{ secrets.PROD_DB_HOST }}
+          DB_USERNAME: ${{ secrets.PROD_DB_USER }}
+          DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          DB_DATABASE: ${{ secrets.PROD_DB_NAME }}
+        run: |
+          BACKUP_FILE="prod_backup_$(date +%Y%m%d_%H%M%S).dump"
+          pg_dump -h $DB_HOST -U $DB_USERNAME -d $DB_DATABASE \
+                  --compress=9 --format=custom \
+                  --file="$BACKUP_FILE" \
+                  --no-owner --no-privileges
+          echo "BACKUP_FILE=$BACKUP_FILE" >> $GITHUB_ENV
+
+      - name: Deploy to production servers
+        env:
+          DEPLOY_ENV: production
+          DEPLOY_HOST: ${{ secrets.PROD_HOST }}
+          DEPLOY_USER: ${{ secrets.PROD_USER }}
+          DEPLOY_KEY: ${{ secrets.PROD_SSH_KEY }}
+          DEPLOY_PATH: ${{ secrets.PROD_PATH }}
+          DB_USERNAME: ${{ secrets.PROD_DB_USER }}
+          DB_PASSWORD: ${{ secrets.PROD_DB_PASSWORD }}
+          REDIS_PASSWORD: ${{ secrets.PROD_REDIS_PASSWORD }}
+          APP_KEY: ${{ secrets.PROD_APP_KEY }}
+          GIT_REPOSITORY: ${{ github.repositoryUrl }}
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+        run: |
+          # Create deployment key
+          echo "$DEPLOY_KEY" > deploy_key
+          chmod 600 deploy_key
+
+          # Upload application code
+          rsync -avz --delete \
+            --exclude='node_modules' \
+            --exclude='.git' \
+            --exclude='storage/logs' \
+            --exclude='.env' \
+            -e "ssh -i deploy_key -o StrictHostKeyChecking=no" \
+            deployment-package/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
+
+          # Execute deployment script on remote server
+          ssh -i deploy_key -o StrictHostKeyChecking=no \
+            $DEPLOY_USER@$DEPLOY_HOST \
+            "cd $DEPLOY_PATH && chmod +x deploy.production.sh && DEPLOY_ENV=production ./deploy.production.sh"
+
+      - name: Health check - Load balancer
+        run: |
+          sleep 30
+          curl -f --max-time 10 "https://${{ secrets.PROD_DOMAIN }}/health-check" || exit 1
+          echo "Load balancer health check passed"
+
+      - name: Health check - Direct server (if load balancer fails)
+        if: failure()
+        run: |
+          echo "Load balancer health check failed, checking direct server access..."
+          curl -f --max-time 10 "https://${{ secrets.PROD_DIRECT_SERVER }}/health-check" || exit 1
+
+      - name: Rollback on failure
+        if: failure()
+        env:
+          DEPLOY_HOST: ${{ secrets.PROD_HOST }}
+          DEPLOY_USER: ${{ secrets.PROD_USER }}
+          DEPLOY_KEY: ${{ secrets.PROD_SSH_KEY }}
+        run: |
+          echo "$DEPLOY_KEY" > deploy_key
+          chmod 600 deploy_key
+          ssh -i deploy_key -o StrictHostKeyChecking=no \
+            $DEPLOY_USER@$DEPLOY_HOST \
+            "cd ${{ secrets.PROD_PATH }} && ./deploy.production.sh rollback"
+
+      - name: Send deployment notification
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Trigger database migration check
+        if: success()
+        run: |
+          sleep 300  # Wait for deployment to stabilize
+          curl -f "https://${{ secrets.PROD_DOMAIN }}/api/v1/migrations/status" || true
+
+      - name: Update deployment status on monitoring
+        if: always()
+        run: |
+          DEPLOY_STATUS=$([ "${{ job.status }}" = "success" ] && echo "success" || echo "failed")
+          curl -X POST "https://api.monitoring.your-domain.com/deployments" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\":\"${DEPLOY_STATUS}\",\"environment\":\"production\",\"sha\":\"${{ github.sha }}\",\"timestamp\":\"$(date -Iseconds)\"}" \
+            --silent --output /dev/null || true

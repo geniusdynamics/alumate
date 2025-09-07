@@ -3,256 +3,383 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Notifications\DatabaseNotification;
+use App\Models\NotificationTemplate;
+use App\Models\NotificationPreference;
+use App\Models\NotificationLog;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * Comprehensive Notification Service
+ *
+ * Handles all notification operations including sending, preferences,
+ * templates, and multi-channel delivery with tenant isolation
+ */
 class NotificationService
 {
+    protected const CACHE_TTL = 3600; // 1 hour
+
     /**
-     * Send notification to user via multiple channels.
+     * Send notification to user(s)
+     *
+     * @param string|array $users User ID(s) or User model(s)
+     * @param string $type Notification type
+     * @param array $data Notification data
+     * @param array $channels Specific channels to use (optional)
+     * @return array Results of notification sending
      */
-    public function sendNotification(User $user, $notification): void
+    public function sendNotification($users, string $type, array $data = [], array $channels = []): array
     {
-        $preferences = $this->getUserPreferences($user);
+        $users = $this->normalizeUsers($users);
+        $results = [];
 
-        // Always send database notification
-        $user->notify($notification);
-
-        // Send email if user has email notifications enabled
-        if ($preferences['email_enabled'] && $this->shouldSendEmail($notification, $preferences)) {
-            $user->notify($notification->via(['mail']));
+        foreach ($users as $user) {
+            $results[] = $this->sendToUser($user, $type, $data, $channels);
         }
 
-        // Send push notification if user has push enabled
-        if ($preferences['push_enabled'] && $this->shouldSendPush($notification, $preferences)) {
-            $this->sendPushNotification($user, $notification);
+        return $results;
+    }
+
+    /**
+     * Send bulk notifications
+     *
+     * @param array $notifications Array of [user, type, data, channels]
+     * @return array Results
+     */
+    public function sendBulkNotifications(array $notifications): array
+    {
+        $results = [];
+
+        foreach ($notifications as $notification) {
+            $results[] = $this->sendToUser(
+                $notification['user'],
+                $notification['type'],
+                $notification['data'] ?? [],
+                $notification['channels'] ?? []
+            );
         }
 
-        // Broadcast real-time notification
-        $this->broadcastNotification($user, $notification);
-
-        // Clear unread count cache
-        $this->clearUnreadCountCache($user);
+        return $results;
     }
 
     /**
-     * Mark notification as read.
+     * Send notification to single user
      */
-    public function markAsRead(string $notificationId, User $user): bool
+    protected function sendToUser($user, string $type, array $data, array $channels): array
     {
-        $notification = $user->notifications()->find($notificationId);
+        $user = $this->resolveUser($user);
+        $preferences = $this->getUserPreferences($user->id, $type);
 
-        if ($notification && is_null($notification->read_at)) {
-            $notification->markAsRead();
-            $this->clearUnreadCountCache($user);
-
-            return true;
+        if (empty($channels)) {
+            $channels = $this->getEnabledChannels($preferences);
         }
 
-        return false;
-    }
+        $results = [];
 
-    /**
-     * Mark all notifications as read for user.
-     */
-    public function markAllAsRead(User $user): int
-    {
-        $count = $user->unreadNotifications()->count();
-        $user->unreadNotifications()->update(['read_at' => now()]);
-        $this->clearUnreadCountCache($user);
-
-        return $count;
-    }
-
-    /**
-     * Get count of unread notifications for user.
-     */
-    public function getUnreadCount(User $user): int
-    {
-        $cacheKey = "unread_notifications_count_{$user->id}";
-
-        return Cache::remember($cacheKey, 300, function () use ($user) {
-            return $user->unreadNotifications()->count();
-        });
-    }
-
-    /**
-     * Get paginated notifications for user.
-     */
-    public function getUserNotifications(User $user, int $perPage = 20): \Illuminate\Contracts\Pagination\LengthAwarePaginator
-    {
-        return $user->notifications()
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
-    }
-
-    /**
-     * Get user's notification preferences.
-     */
-    public function getUserPreferences(User $user): array
-    {
-        $cacheKey = "notification_preferences_{$user->id}";
-
-        return Cache::remember($cacheKey, 3600, function () use ($user) {
-            $preferences = $user->notification_preferences ?? [];
-
-            // Default preferences
-            return array_merge([
-                'email_enabled' => true,
-                'push_enabled' => true,
-                'email_frequency' => 'immediate', // immediate, daily, weekly
-                'types' => [
-                    'post_reaction' => ['email' => true, 'push' => true, 'database' => true],
-                    'post_comment' => ['email' => true, 'push' => true, 'database' => true],
-                    'post_mention' => ['email' => true, 'push' => true, 'database' => true],
-                    'connection_request' => ['email' => true, 'push' => true, 'database' => true],
-                    'connection_accepted' => ['email' => true, 'push' => true, 'database' => true],
-                    'group_invitation' => ['email' => true, 'push' => false, 'database' => true],
-                    'event_reminder' => ['email' => true, 'push' => true, 'database' => true],
-                ],
-            ], $preferences);
-        });
-    }
-
-    /**
-     * Update user's notification preferences.
-     */
-    public function updateUserPreferences(User $user, array $preferences): void
-    {
-        $user->update(['notification_preferences' => $preferences]);
-        $this->clearPreferencesCache($user);
-    }
-
-    /**
-     * Delete old notifications.
-     */
-    public function cleanupOldNotifications(int $daysOld = 90): int
-    {
-        return DatabaseNotification::where('created_at', '<', now()->subDays($daysOld))
-            ->delete();
-    }
-
-    /**
-     * Get notification statistics for user.
-     */
-    public function getNotificationStats(User $user): array
-    {
-        $stats = $user->notifications()
-            ->select(
-                DB::raw('COUNT(*) as total'),
-                DB::raw('COUNT(CASE WHEN read_at IS NULL THEN 1 END) as unread'),
-                DB::raw('COUNT(CASE WHEN read_at IS NOT NULL THEN 1 END) as read')
-            )
-            ->first();
-
-        $typeStats = $user->notifications()
-            ->select('type', DB::raw('COUNT(*) as count'))
-            ->groupBy('type')
-            ->pluck('count', 'type')
-            ->toArray();
+        foreach ($channels as $channel) {
+            if ($this->isChannelEnabled($preferences, $channel)) {
+                $results[$channel] = $this->sendViaChannel($user, $type, $data, $channel);
+            }
+        }
 
         return [
-            'total' => $stats->total ?? 0,
-            'unread' => $stats->unread ?? 0,
-            'read' => $stats->read ?? 0,
-            'by_type' => $typeStats,
+            'user_id' => $user->id,
+            'type' => $type,
+            'channels_sent' => $results,
+            'timestamp' => now(),
         ];
     }
 
     /**
-     * Send bulk notifications to multiple users.
+     * Send notification via specific channel
      */
-    public function sendBulkNotification(array $users, $notification): void
+    protected function sendViaChannel(User $user, string $type, array $data, string $channel): array
     {
-        Notification::send($users, $notification);
+        try {
+            $result = match ($channel) {
+                'email' => $this->sendEmail($user, $type, $data),
+                'sms' => $this->sendSms($user, $type, $data),
+                'in_app' => $this->sendInApp($user, $type, $data),
+                'push' => $this->sendPush($user, $type, $data),
+                default => throw new \InvalidArgumentException("Unsupported channel: {$channel}")
+            };
 
-        // Clear cache for all users
-        foreach ($users as $user) {
-            $this->clearUnreadCountCache($user);
+            $this->logNotification($user->id, $type, $channel, 'sent');
+            return ['status' => 'sent', 'result' => $result];
+
+        } catch (\Exception $e) {
+            Log::error("Failed to send {$channel} notification", [
+                'user_id' => $user->id,
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
+
+            $this->logNotification($user->id, $type, $channel, 'failed', $e->getMessage());
+            return ['status' => 'failed', 'error' => $e->getMessage()];
         }
     }
 
     /**
-     * Check if email should be sent based on preferences.
+     * Send email notification
      */
-    private function shouldSendEmail($notification, array $preferences): bool
+    protected function sendEmail(User $user, string $type, array $data): bool
     {
-        $notificationType = $this->getNotificationType($notification);
-
-        if (! isset($preferences['types'][$notificationType])) {
-            return false;
+        $template = $this->getNotificationTemplate($type, 'email');
+        if (!$template) {
+            throw new \Exception("Email template not found for type: {$type}");
         }
 
-        return $preferences['types'][$notificationType]['email'] ?? false;
+        $content = $template->render($data);
+
+        // Here you would integrate with your email service (Mailgun, SendGrid, etc.)
+        Mail::raw($content['content'], function ($message) use ($user, $content) {
+            $message->to($user->email)
+                    ->subject($content['subject'] ?? 'Notification');
+        });
+
+        return true;
     }
 
     /**
-     * Check if push notification should be sent.
+     * Send SMS notification
      */
-    private function shouldSendPush($notification, array $preferences): bool
+    protected function sendSms(User $user, string $type, array $data): bool
     {
-        $notificationType = $this->getNotificationType($notification);
-
-        if (! isset($preferences['types'][$notificationType])) {
-            return false;
+        $template = $this->getNotificationTemplate($type, 'sms');
+        if (!$template) {
+            throw new \Exception("SMS template not found for type: {$type}");
         }
 
-        return $preferences['types'][$notificationType]['push'] ?? false;
-    }
+        $content = $template->render($data);
 
-    /**
-     * Send push notification to user.
-     */
-    private function sendPushNotification(User $user, $notification): void
-    {
-        // This would integrate with a push notification service like FCM
+        // Here you would integrate with your SMS service (Twilio, AWS SNS, etc.)
         // For now, we'll just log it
-        \Log::info('Push notification sent', [
-            'user_id' => $user->id,
-            'notification_type' => get_class($notification),
+        Log::info("SMS sent to {$user->phone}", ['content' => $content['content']]);
+
+        return true;
+    }
+
+    /**
+     * Send in-app notification
+     */
+    protected function sendInApp(User $user, string $type, array $data): array
+    {
+        $notification = $user->notifications()->create([
+            'type' => $type,
+            'data' => $data,
+            'tenant_id' => $user->tenant_id ?? null,
+        ]);
+
+        // Broadcast to real-time channels if needed
+        // broadcast(new \App\Events\NotificationSent($user, $notification));
+
+        return ['notification_id' => $notification->id];
+    }
+
+    /**
+     * Send push notification
+     */
+    protected function sendPush(User $user, string $type, array $data): bool
+    {
+        // Here you would integrate with push notification service (Firebase, OneSignal, etc.)
+        Log::info("Push notification sent to user {$user->id}", [
+            'type' => $type,
+            'data' => $data
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Get user notification preferences
+     */
+    protected function getUserPreferences(int $userId, string $type): array
+    {
+        $cacheKey = "notification_preferences_{$userId}_{$type}";
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId, $type) {
+            $preference = NotificationPreference::where('user_id', $userId)
+                ->where('notification_type', $type)
+                ->first();
+
+            if ($preference) {
+                return $preference->toArray();
+            }
+
+            // Return defaults if no preference set
+            return array_merge([
+                'user_id' => $userId,
+                'notification_type' => $type,
+            ], NotificationPreference::getDefaultPreferences()[$type] ?? []);
+        });
+    }
+
+    /**
+     * Get enabled channels for user
+     */
+    protected function getEnabledChannels(array $preferences): array
+    {
+        $channels = [];
+
+        if (($preferences['email_enabled'] ?? false)) {
+            $channels[] = 'email';
+        }
+        if (($preferences['sms_enabled'] ?? false)) {
+            $channels[] = 'sms';
+        }
+        if (($preferences['in_app_enabled'] ?? false)) {
+            $channels[] = 'in_app';
+        }
+        if (($preferences['push_enabled'] ?? false)) {
+            $channels[] = 'push';
+        }
+
+        return $channels;
+    }
+
+    /**
+     * Check if channel is enabled
+     */
+    protected function isChannelEnabled(array $preferences, string $channel): bool
+    {
+        return $preferences[$channel . '_enabled'] ?? false;
+    }
+
+    /**
+     * Get notification template
+     */
+    protected function getNotificationTemplate(string $name, string $type): ?NotificationTemplate
+    {
+        $cacheKey = "notification_template_{$name}_{$type}";
+
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($name, $type) {
+            return NotificationTemplate::where('name', $name)
+                ->where('type', $type)
+                ->active()
+                ->first();
+        });
+    }
+
+    /**
+     * Log notification attempt
+     */
+    protected function logNotification(int $userId, string $type, string $channel, string $status, ?string $error = null): void
+    {
+        NotificationLog::create([
+            'tenant_id' => tenant()->id ?? null,
+            'notification_id' => null, // Would be set if we have a notification record
+            'channel' => $channel,
+            'status' => $status,
+            'error_message' => $error,
+            'sent_at' => $status === 'sent' ? now() : null,
         ]);
     }
 
     /**
-     * Broadcast real-time notification.
+     * Normalize users input
      */
-    private function broadcastNotification(User $user, $notification): void
+    protected function normalizeUsers($users): array
     {
-        // This would broadcast via WebSocket/Pusher
-        // For now, we'll just log it
-        \Log::info('Real-time notification broadcasted', [
-            'user_id' => $user->id,
-            'notification_type' => get_class($notification),
+        if (!is_array($users)) {
+            $users = [$users];
+        }
+
+        return array_map([$this, 'resolveUser'], $users);
+    }
+
+    /**
+     * Resolve user to User model
+     */
+    protected function resolveUser($user): User
+    {
+        if ($user instanceof User) {
+            return $user;
+        }
+
+        if (is_numeric($user)) {
+            return User::findOrFail($user);
+        }
+
+        throw new \InvalidArgumentException('Invalid user identifier');
+    }
+
+    /**
+     * Create or update notification preferences
+     */
+    public function updatePreferences(int $userId, string $type, array $preferences): NotificationPreference
+    {
+        return NotificationPreference::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'notification_type' => $type,
+                'tenant_id' => tenant()->id ?? null,
+            ],
+            $preferences
+        );
+    }
+
+    /**
+     * Get user notification preferences for all types
+     */
+    public function getAllUserPreferences(int $userId): array
+    {
+        return NotificationPreference::getUserPreferences($userId);
+    }
+
+    /**
+     * Mark notification as read
+     */
+    public function markAsRead(string $notificationId, int $userId): bool
+    {
+        $user = User::find($userId);
+        $notification = $user->notifications()->find($notificationId);
+        if ($notification) {
+            $notification->markAsRead();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get unread notifications count
+     */
+    public function getUnreadCount(int $userId): int
+    {
+        $user = User::find($userId);
+        return $user->unreadNotifications()->count();
+    }
+
+    /**
+     * Schedule notification for later delivery
+     */
+    public function scheduleNotification($users, string $type, array $data, \Carbon\Carbon $scheduledAt, array $channels = []): void
+    {
+        // Implementation would use Laravel's job scheduling
+        // \App\Jobs\SendScheduledNotification::dispatch($users, $type, $data, $scheduledAt, $channels)
+        //     ->delay($scheduledAt);
+
+        Log::info("Scheduled notification for {$scheduledAt}", [
+            'users' => $users,
+            'type' => $type,
+            'channels' => $channels,
         ]);
     }
 
     /**
-     * Get notification type from notification class.
+     * Clear notification cache for user
      */
-    private function getNotificationType($notification): string
+    public function clearUserCache(int $userId): void
     {
-        $className = get_class($notification);
-        $shortName = class_basename($className);
+        $patterns = [
+            "notification_preferences_{$userId}_*",
+            "user_notifications_{$userId}_*",
+        ];
 
-        // Convert class name to snake_case
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', str_replace('Notification', '', $shortName)));
-    }
-
-    /**
-     * Clear unread count cache for user.
-     */
-    private function clearUnreadCountCache(User $user): void
-    {
-        Cache::forget("unread_notifications_count_{$user->id}");
-    }
-
-    /**
-     * Clear preferences cache for user.
-     */
-    private function clearPreferencesCache(User $user): void
-    {
-        Cache::forget("notification_preferences_{$user->id}");
+        foreach ($patterns as $pattern) {
+            Cache::forget($pattern);
+        }
     }
 }

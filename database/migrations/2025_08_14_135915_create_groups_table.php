@@ -22,7 +22,7 @@ return new class extends Migration
             $table->json('settings')->nullable(); // Group-specific settings
             $table->integer('member_count')->default(0);
             $table->timestamps();
-            
+
             // Indexes
             $table->index(['type', 'privacy']);
             $table->index('institution_id');

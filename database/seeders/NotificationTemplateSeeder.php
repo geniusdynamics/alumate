@@ -7,189 +7,211 @@ use Illuminate\Database\Seeder;
 
 class NotificationTemplateSeeder extends Seeder
 {
-    public function run()
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
     {
         $templates = [
-            // Job Match Notifications
             [
-                'name' => 'job_match',
+                'name' => 'welcome_email',
                 'type' => 'email',
-                'subject' => 'New Job Match: {{job_title}} at {{company_name}}',
+                'subject' => 'Welcome to {{institution_name}}',
+                'content' => 'Dear {{user_name}},
+
+Welcome to {{institution_name}}! We\'re excited to have you join our community.
+
+Your account has been successfully created and you can now access all our features.
+
+Best regards,
+{{institution_name}} Team',
+                'variables' => ['user_name', 'institution_name'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'job_match_notification',
+                'type' => 'email',
+                'subject' => 'New Job Match: {{job_title}}',
                 'content' => 'Hi {{user_name}},
 
-We found a job that matches your profile!
+Great news! We found a job that matches your profile:
 
 Job Title: {{job_title}}
 Company: {{company_name}}
-Application Deadline: {{application_deadline}}
+Location: {{job_location}}
 
-View and apply for this job: {{job_url}}
+Click here to view the full job details and apply: {{job_url}}
 
 Best regards,
-Graduate Tracking System',
-                'variables' => ['user_name', 'job_title', 'company_name', 'job_url', 'application_deadline'],
+{{institution_name}} Career Services',
+                'variables' => ['user_name', 'job_title', 'company_name', 'job_location', 'job_url', 'institution_name'],
+                'is_active' => true,
             ],
             [
-                'name' => 'job_match',
-                'type' => 'sms',
-                'subject' => null,
-                'content' => 'Hi {{user_name}}! New job match: {{job_title}} at {{company_name}}. Apply now: {{job_url}}',
-                'variables' => ['user_name', 'job_title', 'company_name', 'job_url'],
-            ],
-            [
-                'name' => 'job_match',
-                'type' => 'push',
-                'subject' => 'New Job Match Available',
-                'content' => '{{job_title}} at {{company_name}} - Apply now!',
-                'variables' => ['job_title', 'company_name'],
-            ],
-
-            // Application Status Notifications
-            [
-                'name' => 'application_status',
+                'name' => 'application_status_update',
                 'type' => 'email',
                 'subject' => 'Application Status Update: {{job_title}}',
-                'content' => 'Hi {{user_name}},
+                'content' => 'Dear {{user_name}},
 
-Your application status has been updated!
+Your application status for {{job_title}} at {{company_name}} has been updated.
 
-Job: {{job_title}} at {{company_name}}
-Status changed from: {{old_status}} to {{new_status}}
+New Status: {{status}}
 
-View your application: {{application_url}}
+{{additional_message}}
+
+You can view your application details here: {{application_url}}
 
 Best regards,
-Graduate Tracking System',
-                'variables' => ['user_name', 'job_title', 'company_name', 'old_status', 'new_status', 'application_url'],
+{{institution_name}} Team',
+                'variables' => ['user_name', 'job_title', 'company_name', 'status', 'additional_message', 'application_url', 'institution_name'],
+                'is_active' => true,
             ],
-            [
-                'name' => 'application_status',
-                'type' => 'sms',
-                'subject' => null,
-                'content' => 'Application update: {{job_title}} status changed to {{new_status}}. View details: {{application_url}}',
-                'variables' => ['job_title', 'new_status', 'application_url'],
-            ],
-            [
-                'name' => 'application_status',
-                'type' => 'push',
-                'subject' => 'Application Status Updated',
-                'content' => '{{job_title}} - Status: {{new_status}}',
-                'variables' => ['job_title', 'new_status'],
-            ],
-
-            // Interview Reminder Notifications
             [
                 'name' => 'interview_reminder',
                 'type' => 'email',
-                'subject' => 'Interview Reminder: {{job_title}} at {{company_name}}',
+                'subject' => 'Interview Reminder: {{job_title}}',
                 'content' => 'Hi {{user_name}},
 
-This is a reminder about your upcoming interview!
+This is a reminder about your upcoming interview:
 
 Job: {{job_title}}
 Company: {{company_name}}
-Interview Date & Time: {{interview_datetime}}
+Date & Time: {{interview_datetime}}
+Location: {{interview_location}}
+Interviewer: {{interviewer_name}}
 
-View application details: {{application_url}}
-
-Good luck with your interview!
+Please arrive 15 minutes early and bring your resume.
 
 Best regards,
-Graduate Tracking System',
-                'variables' => ['user_name', 'job_title', 'company_name', 'interview_datetime', 'application_url'],
+{{institution_name}} Career Services',
+                'variables' => ['user_name', 'job_title', 'company_name', 'interview_datetime', 'interview_location', 'interviewer_name', 'institution_name'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'password_reset',
+                'type' => 'email',
+                'subject' => 'Password Reset Request',
+                'content' => 'Hi {{user_name}},
+
+You recently requested to reset your password for your {{institution_name}} account.
+
+Click the link below to reset your password:
+{{reset_url}}
+
+This link will expire in 24 hours.
+
+If you didn\'t request this password reset, please ignore this email.
+
+Best regards,
+{{institution_name}} Team',
+                'variables' => ['user_name', 'institution_name', 'reset_url'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'account_verification',
+                'type' => 'email',
+                'subject' => 'Verify Your Email Address',
+                'content' => 'Hi {{user_name}},
+
+Thank you for creating an account with {{institution_name}}!
+
+Please verify your email address by clicking the link below:
+{{verification_url}}
+
+This link will expire in 24 hours.
+
+Best regards,
+{{institution_name}} Team',
+                'variables' => ['user_name', 'institution_name', 'verification_url'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'job_deadline_reminder',
+                'type' => 'email',
+                'subject' => 'Application Deadline Approaching: {{job_title}}',
+                'content' => 'Hi {{user_name}},
+
+The application deadline for {{job_title}} at {{company_name}} is approaching.
+
+Deadline: {{deadline_date}}
+Time Remaining: {{time_remaining}}
+
+Don\'t miss out on this opportunity! Apply now: {{job_url}}
+
+Best regards,
+{{institution_name}} Career Services',
+                'variables' => ['user_name', 'job_title', 'company_name', 'deadline_date', 'time_remaining', 'job_url', 'institution_name'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'employer_contact_notification',
+                'type' => 'email',
+                'subject' => 'New Employer Contact Request',
+                'content' => 'Hi {{user_name}},
+
+{{employer_name}} from {{company_name}} has expressed interest in connecting with you.
+
+They mentioned: "{{message}}"
+
+You can view their profile and respond here: {{profile_url}}
+
+Best regards,
+{{institution_name}} Team',
+                'variables' => ['user_name', 'employer_name', 'company_name', 'message', 'profile_url', 'institution_name'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'system_maintenance',
+                'type' => 'email',
+                'subject' => 'Scheduled System Maintenance',
+                'content' => 'Hi {{user_name}},
+
+We will be performing scheduled maintenance on our system.
+
+Maintenance Window: {{maintenance_start}} - {{maintenance_end}}
+Expected Downtime: {{downtime_duration}}
+
+During this time, some features may be unavailable. We apologize for any inconvenience.
+
+Best regards,
+{{institution_name}} Team',
+                'variables' => ['user_name', 'maintenance_start', 'maintenance_end', 'downtime_duration', 'institution_name'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'welcome_email',
+                'type' => 'sms',
+                'subject' => null,
+                'content' => 'Welcome to {{institution_name}}! Your account is ready. Visit {{login_url}} to get started.',
+                'variables' => ['institution_name', 'login_url'],
+                'is_active' => true,
+            ],
+            [
+                'name' => 'job_match_notification',
+                'type' => 'sms',
+                'subject' => null,
+                'content' => 'New job match: {{job_title}} at {{company_name}}. Apply now: {{job_url}}',
+                'variables' => ['job_title', 'company_name', 'job_url'],
+                'is_active' => true,
             ],
             [
                 'name' => 'interview_reminder',
                 'type' => 'sms',
                 'subject' => null,
-                'content' => 'Interview reminder: {{job_title}} at {{company_name}} on {{interview_datetime}}. Good luck!',
-                'variables' => ['job_title', 'company_name', 'interview_datetime'],
-            ],
-            [
-                'name' => 'interview_reminder',
-                'type' => 'push',
-                'subject' => 'Interview Reminder',
-                'content' => '{{job_title}} interview at {{interview_datetime}}',
+                'content' => 'Interview reminder: {{job_title}} at {{interview_datetime}}. Don\'t be late!',
                 'variables' => ['job_title', 'interview_datetime'],
-            ],
-
-            // Job Deadline Notifications
-            [
-                'name' => 'job_deadline',
-                'type' => 'email',
-                'subject' => 'Application Deadline Reminder: {{job_title}}',
-                'content' => 'Hi {{user_name}},
-
-Don\'t miss out! The application deadline for this job is approaching.
-
-Job: {{job_title}} at {{company_name}}
-Deadline: {{deadline_date}} ({{days_left}} days left)
-
-Apply now: {{job_url}}
-
-Best regards,
-Graduate Tracking System',
-                'variables' => ['user_name', 'job_title', 'company_name', 'days_left', 'deadline_date', 'job_url'],
-            ],
-            [
-                'name' => 'job_deadline',
-                'type' => 'push',
-                'subject' => 'Application Deadline Soon',
-                'content' => '{{job_title}} - {{days_left}} days left to apply!',
-                'variables' => ['job_title', 'days_left'],
-            ],
-
-            // System Update Notifications
-            [
-                'name' => 'system_updates',
-                'type' => 'email',
-                'subject' => 'System Update: {{update_title}}',
-                'content' => 'Hi {{user_name}},
-
-{{update_message}}
-
-Visit your dashboard: {{dashboard_url}}
-
-Best regards,
-Graduate Tracking System',
-                'variables' => ['user_name', 'update_title', 'update_message', 'dashboard_url'],
-            ],
-            [
-                'name' => 'system_updates',
-                'type' => 'push',
-                'subject' => '{{update_title}}',
-                'content' => '{{update_message}}',
-                'variables' => ['update_title', 'update_message'],
-            ],
-
-            // Employer Contact Notifications
-            [
-                'name' => 'employer_contact',
-                'type' => 'email',
-                'subject' => 'Message from {{employer_name}}',
-                'content' => 'Hi {{user_name}},
-
-You have received a message from {{employer_name}}:
-
-{{contact_message}}
-
-View employer profile: {{employer_url}}
-
-Best regards,
-Graduate Tracking System',
-                'variables' => ['user_name', 'employer_name', 'contact_message', 'employer_url'],
-            ],
-            [
-                'name' => 'employer_contact',
-                'type' => 'push',
-                'subject' => 'Message from {{employer_name}}',
-                'content' => '{{contact_message}}',
-                'variables' => ['employer_name', 'contact_message'],
+                'is_active' => true,
             ],
         ];
 
         foreach ($templates as $template) {
-            NotificationTemplate::create($template);
+            NotificationTemplate::updateOrCreate(
+                [
+                    'name' => $template['name'],
+                    'type' => $template['type'],
+                ],
+                $template
+            );
         }
     }
 }

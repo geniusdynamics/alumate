@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('transcription')->nullable();
             $table->text('ai_summary')->nullable();
             $table->timestamps();
-            
+
             $table->index(['call_id']);
             $table->index(['status']);
         });

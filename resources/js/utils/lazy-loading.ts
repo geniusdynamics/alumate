@@ -93,21 +93,8 @@ export function preloadCriticalResources(): void {
     criticalCSS.href = '/build/assets/app.css'
     document.head.appendChild(criticalCSS)
     
-    // Preload critical fonts
-    const fonts = [
-        '/fonts/inter-var.woff2',
-        '/fonts/inter-var-italic.woff2'
-    ]
-    
-    fonts.forEach(font => {
-        const link = document.createElement('link')
-        link.rel = 'preload'
-        link.as = 'font'
-        link.type = 'font/woff2'
-        link.crossOrigin = 'anonymous'
-        link.href = font
-        document.head.appendChild(link)
-    })
+    // Note: Font preloading removed as Inter fonts don't exist in this project
+    // The project uses 'Instrument Sans' and system fonts instead
 }
 
 /**

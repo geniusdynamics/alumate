@@ -5,7 +5,7 @@
       <img
         :src="event.media_urls[0]"
         :alt="event.title"
-        class="w-full h-48 object-cover rounded-t-lg"
+        class="w-full h-32 sm:h-40 md:h-48 object-cover rounded-t-lg"
       />
       <div class="absolute top-3 left-3">
         <span :class="formatBadgeClass" class="px-2 py-1 text-xs font-medium rounded-full">
@@ -20,14 +20,14 @@
     </div>
 
     <!-- Event Content -->
-    <div class="p-6">
+    <div class="p-4 sm:p-6">
       <!-- Header -->
       <div class="flex items-start justify-between mb-3">
         <div class="flex-1">
-          <h3 class="text-lg font-semibold text-gray-900 line-clamp-2 mb-1">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 line-clamp-2 mb-1">
             {{ event.title }}
           </h3>
-          <p class="text-sm text-gray-600 line-clamp-2">
+          <p class="text-xs sm:text-sm text-gray-600 line-clamp-2">
             {{ event.short_description || event.description }}
           </p>
         </div>

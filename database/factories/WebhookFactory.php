@@ -30,7 +30,7 @@ class WebhookFactory extends Factory
         return [
             'user_id' => User::factory(),
             'url' => $this->faker->url(),
-            'events' => $this->faker->randomElements($availableEvents, $this->faker->numberBetween(1, 5)),
+            'events' => json_encode($this->faker->randomElements($availableEvents, $this->faker->numberBetween(1, 5))),
             'secret' => $this->faker->sha256(),
             'status' => $this->faker->randomElement(['active', 'paused', 'disabled']),
             'name' => $this->faker->words(3, true),

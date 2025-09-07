@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-09-06T06:47:02.908Z",
+  "baseUrl": "http://127.0.0.1:8080",
+  "tests": [
+    {
+      "page": "Homepage",
+      "url": "http://127.0.0.1:8080",
+      "status": "passed",
+      "loadTime": 2917,
+      "title": "Laravel",
+      "hasContent": true,
+      "interactiveElements": {
+        "buttons": 0,
+        "links": 0,
+        "forms": 0
+      },
+      "errors": [
+        "Refused to load the stylesheet 'https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap' because it violates the following Content Security Policy directive: \"style-src 'self' 'unsafe-inline'\". Note that 'style-src-elem' was not explicitly set, so 'style-src' is used as a fallback.\n",
+        "Refused to load the script 'http://localhost:5173/@vite/client' because it violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.\n",
+        "Refused to load the script 'http://localhost:5173/resources/js/app.ts' because it violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.\n",
+        "Refused to load the script 'http://localhost:5173/resources/js/Pages/DesignSystem/Showcase.vue' because it violates the following Content Security Policy directive: \"script-src 'self' 'unsafe-inline' 'unsafe-eval'\". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.\n"
+      ]
+    },
+    {
+      "page": "Design System",
+      "url": "http://127.0.0.1:8080/design-system",
+      "status": "passed",
+      "loadTime": 5052,
+      "title": "Laravel",
+      "hasContent": true,
+      "interactiveElements": {
+        "buttons": 0,
+        "links": 0,
+        "components": 0
+      }
+    }
+  ]
+}

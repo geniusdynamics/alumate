@@ -1,213 +1,244 @@
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import type { AudienceType } from '@/types/homepage'
+import { ref } from 'vue'
 
-// Mock services for now
-const AnalyticsService = {
-    trackEvent: (eventName: string, properties?: Record<string, any>) => { console.log('AnalyticsService.trackEvent', eventName, properties) },
-    trackPageView: (page: string) => { console.log('AnalyticsService.trackPageView', page) },
-    setUserId: (userId: string) => { console.log('AnalyticsService.setUserId', userId) },
-    setUserProperties: (properties: Record<string, any>) => { console.log('AnalyticsService.setUserProperties', properties) },
-    getSessionId: () => `analytics_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-    getSessionDuration: () => 123,
-    isUserActive: () => true,
-    enableDebugMode: () => { console.log('Analytics debug mode enabled') },
-    disableDebugMode: () => { console.log('Analytics debug mode disabled') },
-    destroy: () => {}
+interface AnalyticsEvent {
+  name: string
+  properties?: Record<string, any>
+  timestamp?: number
 }
 
-const ConversionTrackingService = {
-    trackConversion: (goalId: string, value?: number, customData?: Record<string, any>) => { console.log('ConversionTrackingService.trackConversion', goalId, value, customData) },
-    destroy: () => {}
+interface AnalyticsConfig {
+  enabled?: boolean
+  debug?: boolean
+  providers?: ('gtag' | 'mixpanel' | 'amplitude' | 'custom')[]
 }
 
-const ABTestingService = {
-    getVariant: (testId: string) => null,
-    isInTest: (testId: string) => false,
-    isInVariant: (testId: string, variantId: string) => false,
-    getComponentOverrides: (testId: string) => [],
-    getTestResults: async (testId: string) => null,
-    destroy: () => {}
-}
+const analyticsConfig = ref<AnalyticsConfig>({
+  enabled: true,
+  debug: false,
+  providers: ['gtag']
+})
 
-const HeatMapService = {
-    startRecording: () => {},
-    stopRecording: () => {},
-    getData: () => null,
-    generateReport: async () => null,
-    destroy: () => {}
-}
+const eventQueue = ref<AnalyticsEvent[]>([])
 
-
-export function useAnalytics(
-  audience: AudienceType,
-  options: {
-    enableDebugMode?: boolean
-    enableHeatMapping?: boolean
-    enableABTesting?: boolean
-  } = {},
-  userId?: string
-) {
-  const isInitialized = ref(false)
-  const sessionId = ref('')
-  const currentPage = ref('homepage')
-  const deviceType = ref('desktop')
-  const isOnline = ref(true)
-  const activeTests = ref({})
-  const analyticsMetrics = ref(null)
-  const conversionMetrics = ref(null)
+export function useAnalytics(config?: AnalyticsConfig) {
+  if (config) {
+    analyticsConfig.value = { ...analyticsConfig.value, ...config }
+  }
 
   const trackEvent = (eventName: string, properties?: Record<string, any>) => {
-    AnalyticsService.trackEvent(eventName, properties)
-  }
+    if (!analyticsConfig.value.enabled) return
 
-  const trackPageView = (data: { page: string; additionalData?: Record<string, any> }) => {
-    currentPage.value = data.page
-    AnalyticsService.trackPageView(data.page)
-  }
-
-  const trackSectionView = (data: any) => {};
-  const trackSectionExit = (section: string) => {};
-  const trackCTAClick = (data: any) => {};
-  const trackFormSubmission = (data: any) => {};
-  const trackCalculatorUsage = (data: any) => {};
-  const trackScrollDepth = (data: any) => {};
-  const trackUserBehavior = (behaviorType: string, data: any) => {};
-  const trackConversion = (goalId: string, value?: number, customData?: Record<string, any>) => {};
-  const trackError = (errorType: string, data: any) => {};
-  const getVariant = (testId: string) => null;
-  const isInTest = (testId: string) => false;
-  const isInVariant = (testId: string, variant: string) => false;
-  const getComponentOverrides = (testId: string) => [];
-  const getTestResults = async (testId: string) => null;
-  const startHeatMapRecording = () => {};
-  const stopHeatMapRecording = () => {};
-  const getHeatMapData = () => null;
-  const generateHeatMapReport = async () => null;
-  const getAnalyticsMetrics = async () => null;
-  const getConversionMetrics = async () => null;
-  const generateReport = async (reportType: string, options: any) => null;
-  const generateConversionReport = async () => null;
-  const exportAnalyticsData = async (format: string) => true;
-  const trackPerformanceMetrics = () => {
-      if (typeof window !== 'undefined') {
-          window.performance.getEntriesByType('navigation');
-      }
-  };
-  const integrateGoogleAnalytics = (trackingId: string) => {
-      const script = document.createElement('script');
-      script.src = `https://www.googletagmanager.com/gtag/js?id=${trackingId}`;
-      document.head.appendChild(script);
-  };
-  const integrateHotjar = (hjid: string) => {};
-  const integrateMixpanel = (token: string) => {
-      const script = document.createElement('script');
-      script.src = `https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js`;
-      document.head.appendChild(script);
-  };
-  const updateAudience = (newAudience: AudienceType) => {};
-  const setUserId = (newUserId: string) => {};
-  const getSessionId = () => sessionId.value;
-  const getSessionDuration = () => 0;
-  const isUserActive = () => true;
-  const getDebugInfo = () => ({
-      sessionId: sessionId.value,
-      audience,
-      services: ['AnalyticsService', 'ConversionTrackingService', 'ABTestingService', 'HeatMapService'],
-      deviceType: deviceType.value,
-  });
-  const enableDebugMode = () => {
-      AnalyticsService.enableDebugMode();
-  };
-  const disableDebugMode = () => {
-      AnalyticsService.disableDebugMode();
-  };
-
-
-  onMounted(() => {
-    sessionId.value = AnalyticsService.getSessionId()
-    isInitialized.value = true
-
-    const handleResize = () => {
-      if (window.innerWidth < 768) {
-        deviceType.value = 'mobile';
-      } else if (window.innerWidth < 1024) {
-        deviceType.value = 'tablet';
-      } else {
-        deviceType.value = 'desktop';
-      }
+    const event: AnalyticsEvent = {
+      name: eventName,
+      properties: {
+        ...properties,
+        timestamp: Date.now(),
+        url: typeof window !== 'undefined' ? window.location.href : '',
+        user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : ''
+      },
+      timestamp: Date.now()
     }
 
-    const handleOnline = () => isOnline.value = true;
-    const handleOffline = () => isOnline.value = false;
+    // Add to queue for debugging
+    eventQueue.value.push(event)
 
-    if (typeof window !== 'undefined') {
-        if (document.readyState === 'complete') {
-            trackPerformanceMetrics()
-        } else {
-            window.addEventListener('load', trackPerformanceMetrics);
+    // Keep only last 100 events in queue
+    if (eventQueue.value.length > 100) {
+      eventQueue.value = eventQueue.value.slice(-100)
+    }
+
+    if (analyticsConfig.value.debug) {
+      console.log('Analytics Event:', event)
+    }
+
+    // Send to configured providers
+    analyticsConfig.value.providers?.forEach(provider => {
+      sendToProvider(provider, event)
+    })
+  }
+
+  const trackPageView = (path?: string, title?: string) => {
+    const properties = {
+      page_path: path || (typeof window !== 'undefined' ? window.location.pathname : ''),
+      page_title: title || (typeof document !== 'undefined' ? document.title : ''),
+      page_location: typeof window !== 'undefined' ? window.location.href : ''
+    }
+
+    trackEvent('page_view', properties)
+  }
+
+  const trackUserAction = (action: string, category: string, label?: string, value?: number) => {
+    trackEvent('user_action', {
+      action,
+      category,
+      label,
+      value
+    })
+  }
+
+  const trackTiming = (category: string, variable: string, time: number, label?: string) => {
+    trackEvent('timing', {
+      category,
+      variable,
+      time,
+      label
+    })
+  }
+
+  const trackError = (error: Error | string, context?: Record<string, any>) => {
+    const errorData = typeof error === 'string' 
+      ? { message: error }
+      : {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
         }
 
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
+    trackEvent('error', {
+      ...errorData,
+      ...context
+    })
+  }
 
-        handleResize();
-        handleOnline();
-    }
-  })
+  const setUserProperties = (properties: Record<string, any>) => {
+    if (!analyticsConfig.value.enabled) return
 
-  onUnmounted(() => {
-    AnalyticsService.destroy()
-    ConversionTrackingService.destroy()
-    ABTestingService.destroy()
-    HeatMapService.destroy()
-  })
+    analyticsConfig.value.providers?.forEach(provider => {
+      setUserPropertiesForProvider(provider, properties)
+    })
+  }
+
+  const identify = (userId: string, traits?: Record<string, any>) => {
+    if (!analyticsConfig.value.enabled) return
+
+    analyticsConfig.value.providers?.forEach(provider => {
+      identifyForProvider(provider, userId, traits)
+    })
+  }
 
   return {
-    isInitialized,
-    sessionId,
-    currentPage,
-    deviceType,
-    isOnline,
-    activeTests,
-    analyticsMetrics,
-    conversionMetrics,
     trackEvent,
     trackPageView,
-    trackSectionView,
-    trackSectionExit,
-    trackCTAClick,
-    trackFormSubmission,
-    trackCalculatorUsage,
-    trackScrollDepth,
-    trackUserBehavior,
-    trackConversion,
+    trackUserAction,
+    trackTiming,
     trackError,
-    getVariant,
-    isInTest,
-    isInVariant,
-    getComponentOverrides,
-    getTestResults,
-    startHeatMapRecording,
-    stopHeatMapRecording,
-    getHeatMapData,
-    generateHeatMapReport,
-    getAnalyticsMetrics,
-    getConversionMetrics,
-    generateReport,
-    generateConversionReport,
-    exportAnalyticsData,
-    trackPerformanceMetrics,
-    integrateGoogleAnalytics,
-    integrateHotjar,
-    integrateMixpanel,
-    updateAudience,
-    setUserId,
-    getSessionId,
-    getSessionDuration,
-    isUserActive,
-    getDebugInfo,
-    enableDebugMode,
-    disableDebugMode,
+    setUserProperties,
+    identify,
+    eventQueue: eventQueue.value,
+    config: analyticsConfig.value
+  }
+}
+
+// Provider-specific implementations
+function sendToProvider(provider: string, event: AnalyticsEvent) {
+  switch (provider) {
+    case 'gtag':
+      sendToGtag(event)
+      break
+    case 'mixpanel':
+      sendToMixpanel(event)
+      break
+    case 'amplitude':
+      sendToAmplitude(event)
+      break
+    case 'custom':
+      sendToCustomProvider(event)
+      break
+  }
+}
+
+function sendToGtag(event: AnalyticsEvent) {
+  if (typeof window !== 'undefined' && 'gtag' in window) {
+    // @ts-ignore
+    window.gtag('event', event.name, event.properties)
+  }
+}
+
+function sendToMixpanel(event: AnalyticsEvent) {
+  if (typeof window !== 'undefined' && 'mixpanel' in window) {
+    // @ts-ignore
+    window.mixpanel.track(event.name, event.properties)
+  }
+}
+
+function sendToAmplitude(event: AnalyticsEvent) {
+  if (typeof window !== 'undefined' && 'amplitude' in window) {
+    // @ts-ignore
+    window.amplitude.getInstance().logEvent(event.name, event.properties)
+  }
+}
+
+function sendToCustomProvider(event: AnalyticsEvent) {
+  // Custom analytics implementation
+  // This could send to your own analytics API
+  if (typeof window !== 'undefined') {
+    fetch('/api/analytics/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+      },
+      body: JSON.stringify(event)
+    }).catch(error => {
+      console.error('Failed to send analytics event:', error)
+    })
+  }
+}
+
+function setUserPropertiesForProvider(provider: string, properties: Record<string, any>) {
+  switch (provider) {
+    case 'gtag':
+      if (typeof window !== 'undefined' && 'gtag' in window) {
+        // @ts-ignore
+        window.gtag('config', 'GA_MEASUREMENT_ID', {
+          user_properties: properties
+        })
+      }
+      break
+    case 'mixpanel':
+      if (typeof window !== 'undefined' && 'mixpanel' in window) {
+        // @ts-ignore
+        window.mixpanel.people.set(properties)
+      }
+      break
+    case 'amplitude':
+      if (typeof window !== 'undefined' && 'amplitude' in window) {
+        // @ts-ignore
+        window.amplitude.getInstance().setUserProperties(properties)
+      }
+      break
+  }
+}
+
+function identifyForProvider(provider: string, userId: string, traits?: Record<string, any>) {
+  switch (provider) {
+    case 'gtag':
+      if (typeof window !== 'undefined' && 'gtag' in window) {
+        // @ts-ignore
+        window.gtag('config', 'GA_MEASUREMENT_ID', {
+          user_id: userId
+        })
+      }
+      break
+    case 'mixpanel':
+      if (typeof window !== 'undefined' && 'mixpanel' in window) {
+        // @ts-ignore
+        window.mixpanel.identify(userId)
+        if (traits) {
+          // @ts-ignore
+          window.mixpanel.people.set(traits)
+        }
+      }
+      break
+    case 'amplitude':
+      if (typeof window !== 'undefined' && 'amplitude' in window) {
+        // @ts-ignore
+        window.amplitude.getInstance().setUserId(userId)
+        if (traits) {
+          // @ts-ignore
+          window.amplitude.getInstance().setUserProperties(traits)
+        }
+      }
+      break
   }
 }

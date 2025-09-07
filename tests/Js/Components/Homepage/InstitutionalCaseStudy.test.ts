@@ -91,8 +91,8 @@ describe('InstitutionalCaseStudy', () => {
     expect(wrapper.text()).toContain('MIT struggled with low alumni engagement rates and outdated communication methods.')
     
     // Check for challenge icon (red warning icon)
-    const challengeSection = wrapper.find('h4:contains("Challenge")')
-    expect(challengeSection.exists()).toBe(true)
+    const challengeSection = wrapper.findAll('h4').filter(node => node.text().includes('Challenge'))
+    expect(challengeSection.length).toBeGreaterThan(0)
   })
 
   it('displays solution section with correct icon and content', () => {
@@ -156,7 +156,7 @@ describe('InstitutionalCaseStudy', () => {
       }
     })
 
-    const verifiedBadges = wrapper.findAll('.text-green-600:contains("Verified")')
+    const verifiedBadges = wrapper.findAll('.text-green-600').filter(node => node.text().includes('Verified'))
     expect(verifiedBadges.length).toBe(3) // All results are verified
   })
 
@@ -178,7 +178,7 @@ describe('InstitutionalCaseStudy', () => {
       }
     })
 
-    const demoButton = wrapper.find('button:contains("Request Similar Demo")')
+    const demoButton = wrapper.findAll('button').filter(node => node.text().includes('Request Similar Demo'))[0]
     expect(demoButton.exists()).toBe(true)
   })
 
@@ -189,7 +189,7 @@ describe('InstitutionalCaseStudy', () => {
       }
     })
 
-    const demoButton = wrapper.find('button:contains("Request Similar Demo")')
+    const demoButton = wrapper.findAll('button').filter(node => node.text().includes('Request Similar Demo'))[0]
     await demoButton.trigger('click')
 
     expect(wrapper.emitted('request-demo')).toBeTruthy()

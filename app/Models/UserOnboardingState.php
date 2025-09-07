@@ -19,7 +19,7 @@ class UserOnboardingState extends Model
         'feature_discovery_viewed',
         'explored_features',
         'whats_new_viewed',
-        'preferences'
+        'preferences',
     ];
 
     protected $casts = [
@@ -31,7 +31,7 @@ class UserOnboardingState extends Model
         'feature_discovery_viewed' => 'boolean',
         'explored_features' => 'array',
         'whats_new_viewed' => 'array',
-        'preferences' => 'array'
+        'preferences' => 'array',
     ];
 
     public function user()

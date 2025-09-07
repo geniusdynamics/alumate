@@ -277,6 +277,34 @@ self.addEventListener('sync', event => {
   }
 });
 
+// Periodic background sync for regular maintenance
+self.addEventListener('periodicsync', event => {
+  console.log('Service Worker: Periodic sync triggered', event.tag);
+  
+  if (event.tag === 'background-sync') {
+    event.waitUntil(doPeriodicBackgroundSync());
+  }
+});
+
+async function doPeriodicBackgroundSync() {
+  try {
+    console.log('Service Worker: Performing periodic background sync');
+    
+    // Perform regular maintenance tasks
+    await doBackgroundSync();
+    
+    // Notify clients of successful periodic sync
+    notifyClients({
+      type: 'PERIODIC_SYNC_SUCCESS',
+      timestamp: Date.now()
+    });
+    
+    console.log('Service Worker: Periodic background sync completed');
+  } catch (error) {
+    console.error('Service Worker: Periodic background sync failed:', error);
+  }
+}
+
 async function doBackgroundSync() {
   try {
     // Process any queued offline actions

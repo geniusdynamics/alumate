@@ -1,6 +1,3 @@
-D:\DevCenter\abuilds\alumate\tests\Feature\UserTestingServiceTest.php
- [ ] `UserTestingService` → it can create a testing session
- [ ] `UserTestingService` → it can record user feedback
- [ ] `UserTestingService` → it can create an A/B test
- [x] `UserTestingService` → it provides testing scenarios
+Calendar Integration Service (Tests\Unit\Services\CalendarIntegrationService)
+ [ ] Fetch apple events success
 

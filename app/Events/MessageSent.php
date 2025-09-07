@@ -6,7 +6,6 @@ use App\Models\Message;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -17,6 +16,7 @@ class MessageSent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
+
     public $sender;
 
     /**
@@ -36,18 +36,18 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         $channels = [];
-        
+
         // Broadcast to conversation channel
-        $channels[] = new PrivateChannel('conversation.' . $this->message->conversation_id);
-        
+        $channels[] = new PrivateChannel('conversation.'.$this->message->conversation_id);
+
         // Broadcast to each participant's personal channel
         $participants = $this->message->conversation->participants;
         foreach ($participants as $participant) {
             if ($participant->id !== $this->sender->id) {
-                $channels[] = new PrivateChannel('user.' . $participant->id . '.messages');
+                $channels[] = new PrivateChannel('user.'.$participant->id.'.messages');
             }
         }
-        
+
         return $channels;
     }
 

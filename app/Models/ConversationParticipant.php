@@ -119,7 +119,7 @@ class ConversationParticipant extends Model
      */
     public function getUnreadCount(): int
     {
-        if (!$this->last_read_at) {
+        if (! $this->last_read_at) {
             return $this->conversation->messages()->count();
         }
 

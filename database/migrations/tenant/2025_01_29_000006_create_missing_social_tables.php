@@ -17,8 +17,8 @@ return new class extends Migration
         if (! Schema::hasTable('post_engagements') && Schema::hasTable('posts')) {
             Schema::create('post_engagements', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
-                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                $table->unsignedBigInteger('post_id');
+                $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
                 $table->enum('type', ['like', 'love', 'celebrate', 'support', 'insightful', 'comment', 'share', 'bookmark']);
                 $table->json('metadata')->nullable();
                 $table->timestamp('created_at');
@@ -34,8 +34,8 @@ return new class extends Migration
         if (! Schema::hasTable('circle_memberships') && Schema::hasTable('circles')) {
             Schema::create('circle_memberships', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('circle_id')->constrained('circles')->onDelete('cascade');
-                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                $table->unsignedBigInteger('circle_id');
+                $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
                 $table->timestamp('joined_at');
                 $table->enum('status', ['active', 'inactive'])->default('active');
 
@@ -49,8 +49,8 @@ return new class extends Migration
         if (! Schema::hasTable('group_memberships') && Schema::hasTable('groups')) {
             Schema::create('group_memberships', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('group_id')->constrained('groups')->onDelete('cascade');
-                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+                $table->unsignedBigInteger('group_id');
+                $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
                 $table->enum('role', ['member', 'moderator', 'admin'])->default('member');
                 $table->timestamp('joined_at');
                 $table->enum('status', ['active', 'pending', 'blocked'])->default('active');
@@ -66,15 +66,14 @@ return new class extends Migration
         if (! Schema::hasTable('alumni_connections')) {
             Schema::create('alumni_connections', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedBigInteger('requester_id');
-                $table->unsignedBigInteger('recipient_id');
+                $table->unsignedBigInteger('requester_id'); // Store user ID without foreign key constraint
+                $table->unsignedBigInteger('recipient_id'); // Store user ID without foreign key constraint
                 $table->enum('status', ['pending', 'accepted', 'declined', 'blocked'])->default('pending');
                 $table->text('message')->nullable();
                 $table->timestamp('connected_at')->nullable();
                 $table->timestamps();
 
-                $table->foreign('requester_id')->references('id')->on('users')->onDelete('cascade');
-                $table->foreign('recipient_id')->references('id')->on('users')->onDelete('cascade');
+                // Remove foreign key constraints to users table as it's in central database
                 $table->unique(['requester_id', 'recipient_id']);
                 $table->index(['requester_id', 'status']);
                 $table->index(['recipient_id', 'status']);
@@ -85,9 +84,9 @@ return new class extends Migration
         if (! Schema::hasTable('comments') && Schema::hasTable('posts')) {
             Schema::create('comments', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('post_id')->constrained('posts')->onDelete('cascade');
-                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-                $table->foreignId('parent_id')->nullable()->constrained('comments')->onDelete('cascade');
+                $table->unsignedBigInteger('post_id');
+                $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
+                $table->unsignedBigInteger('parent_id')->nullable();
                 $table->text('content');
                 $table->json('mentions')->nullable(); // Array of mentioned user IDs
                 $table->timestamps();
@@ -102,7 +101,7 @@ return new class extends Migration
         if (! Schema::hasTable('post_drafts')) {
             Schema::create('post_drafts', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('user_id')->constrained()->onDelete('cascade');
+                $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
                 $table->text('content');
                 $table->json('media_urls')->nullable();
                 $table->enum('post_type', ['text', 'image', 'video', 'career_update', 'achievement', 'event'])->default('text');
@@ -124,9 +123,9 @@ return new class extends Migration
         if (! Schema::hasTable('group_invitations') && Schema::hasTable('groups')) {
             Schema::create('group_invitations', function (Blueprint $table) {
                 $table->id();
-                $table->foreignId('group_id')->constrained('groups')->onDelete('cascade');
-                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-                $table->foreignId('inviter_id')->constrained('users')->onDelete('cascade');
+                $table->unsignedBigInteger('group_id');
+                $table->unsignedBigInteger('user_id'); // Store user ID without foreign key constraint
+                $table->unsignedBigInteger('inviter_id'); // Store user ID without foreign key constraint
                 $table->text('message')->nullable();
                 $table->enum('status', ['pending', 'accepted', 'declined'])->default('pending');
                 $table->timestamp('expires_at')->nullable();

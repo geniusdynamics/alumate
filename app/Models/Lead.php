@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Lead extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'first_name',
@@ -32,15 +33,21 @@ class Lead extends Model
         'qualified_at',
         'crm_id',
         'synced_at',
+        'routing_log',
+        'crm_provider',
+        'routing_status',
+        'routing_failed_at',
     ];
 
     protected $casts = [
         'utm_data' => 'array',
         'form_data' => 'array',
         'behavioral_data' => 'array',
+        'routing_log' => 'array',
         'last_contacted_at' => 'datetime',
         'qualified_at' => 'datetime',
         'synced_at' => 'datetime',
+        'routing_failed_at' => 'datetime',
     ];
 
     /**

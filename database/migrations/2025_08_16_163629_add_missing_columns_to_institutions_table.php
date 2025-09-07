@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::table('institutions', function (Blueprint $table) {
             // Add soft deletes if not exists
-            if (!Schema::hasColumn('institutions', 'deleted_at')) {
+            if (! Schema::hasColumn('institutions', 'deleted_at')) {
                 $table->softDeletes();
             }
-            
+
             // Add other commonly needed columns
-            if (!Schema::hasColumn('institutions', 'is_active')) {
+            if (! Schema::hasColumn('institutions', 'is_active')) {
                 $table->boolean('is_active')->default(true);
             }
-            
-            if (!Schema::hasColumn('institutions', 'status')) {
+
+            if (! Schema::hasColumn('institutions', 'status')) {
                 $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             }
         });

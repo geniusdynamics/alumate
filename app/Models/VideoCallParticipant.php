@@ -44,15 +44,17 @@ class VideoCallParticipant extends Model
 
     public function isActive(): bool
     {
-        return $this->joined_at && !$this->left_at;
+        return $this->joined_at && ! $this->left_at;
     }
 
     public function getDurationAttribute(): ?int
     {
         if ($this->joined_at) {
             $endTime = $this->left_at ?? now();
+
             return $endTime->diffInMinutes($this->joined_at);
         }
+
         return null;
     }
 

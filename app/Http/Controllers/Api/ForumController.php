@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Forum;
 use App\Models\Group;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ForumController extends Controller
@@ -29,12 +29,12 @@ class ForumController extends Controller
             $user = Auth::user();
             $query->where(function ($q) use ($user) {
                 $q->where('visibility', 'public')
-                  ->orWhere(function ($subQ) use ($user) {
-                      $subQ->where('visibility', 'group_only')
-                           ->whereHas('group.members', function ($memberQ) use ($user) {
-                               $memberQ->where('user_id', $user->id);
-                           });
-                  });
+                    ->orWhere(function ($subQ) use ($user) {
+                        $subQ->where('visibility', 'group_only')
+                            ->whereHas('group.members', function ($memberQ) use ($user) {
+                                $memberQ->where('user_id', $user->id);
+                            });
+                    });
             });
         }
 
@@ -96,8 +96,8 @@ class ForumController extends Controller
     public function show(Forum $forum): JsonResponse
     {
         $user = Auth::user();
-        
-        if (!$forum->canUserAccess($user)) {
+
+        if (! $forum->canUserAccess($user)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Access denied to this forum.',

@@ -21,6 +21,7 @@
     },
     "devDependencies": {
         "@eslint/js": "^9.31.0",
+        "@pinia/testing": "^1.0.2",
         "@types/node": "^24.0.13",
         "@vitest/ui": "^3.2.4",
         "@vue/eslint-config-typescript": "^14.6.0",
@@ -30,10 +31,12 @@
         "eslint-config-prettier": "^10.1.5",
         "eslint-plugin-vue": "^10.3.0",
         "jsdom": "^26.1.0",
+        "playwright": "^1.55.0",
         "postcss": "^8.5.6",
         "prettier": "^3.6.2",
         "prettier-plugin-organize-imports": "^4.2.0",
         "prettier-plugin-tailwindcss": "^0.6.14",
+        "rollup-plugin-visualizer": "^6.0.3",
         "tailwindcss": "^3.4.17",
         "terser": "^5.43.1",
         "typescript-eslint": "^8.36.0",
@@ -73,6 +76,7 @@
         "vue": "^3.5.17",
         "vue-leaflet": "^0.1.0",
         "vue-sonner": "^2.0.1",
+        "vue-toastification": "^2.0.0-rc.5",
         "ziggy-js": "^2.5.3",
         "zod": "3.24.0"
     },

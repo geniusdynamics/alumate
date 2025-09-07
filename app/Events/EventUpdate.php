@@ -6,7 +6,6 @@ use App\Models\Event;
 use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -17,8 +16,11 @@ class EventUpdate implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $event;
+
     public $updateType;
+
     public $updateData;
+
     public $user;
 
     /**
@@ -40,23 +42,23 @@ class EventUpdate implements ShouldBroadcast
     public function broadcastOn(): array
     {
         $channels = [];
-        
+
         // Broadcast to event-specific channel
-        $channels[] = new Channel('event.' . $this->event->id);
-        
+        $channels[] = new Channel('event.'.$this->event->id);
+
         // Broadcast to attendees
         foreach ($this->event->attendees as $attendee) {
-            $channels[] = new PrivateChannel('user.' . $attendee->id . '.notifications');
+            $channels[] = new PrivateChannel('user.'.$attendee->id.'.notifications');
         }
-        
+
         // Broadcast to organizer
-        $channels[] = new PrivateChannel('user.' . $this->event->organizer_id . '.notifications');
-        
+        $channels[] = new PrivateChannel('user.'.$this->event->organizer_id.'.notifications');
+
         // Broadcast to public events channel if event is public
         if ($this->event->visibility === 'public') {
             $channels[] = new Channel('events.public');
         }
-        
+
         return $channels;
     }
 
