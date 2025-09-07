@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <section class="security-privacy py-16 bg-gray-50">
     <div class="container mx-auto px-4">
       <!-- Section Header -->
@@ -19,7 +19,7 @@
         <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">Privacy Protection</h3>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div 
-            v-for="highlight in privacyHighlights" 
+            v-for="highlight in privacyHighlights || []" 
             :key="highlight.id"
             class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-300"
           >
@@ -57,7 +57,7 @@
         <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">Security Certifications</h3>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
           <div 
-            v-for="cert in securityCertifications" 
+            v-for="cert in securityCertifications || []" 
             :key="cert.id"
             class="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow duration-300 text-center group cursor-pointer"
             @click="openCertificationModal(cert)"
@@ -80,13 +80,13 @@
       <div class="mb-16">
         <div class="bg-white rounded-xl p-8 shadow-sm">
           <div class="text-center mb-8">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ verificationProcess.title }}</h3>
-            <p class="text-gray-600 max-w-2xl mx-auto">{{ verificationProcess.description }}</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ verificationProcess?.title || 'Alumni Verification Process' }}</h3>
+            <p class="text-gray-600 max-w-2xl mx-auto">{{ verificationProcess?.description || 'Our multi-step verification ensures authentic connections and maintains the integrity of your professional network.' }}</p>
           </div>
           
           <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div 
-              v-for="step in verificationProcess.steps" 
+              v-for="step in verificationProcess?.steps || []" 
               :key="step.id"
               class="text-center"
             >
@@ -107,7 +107,7 @@
               <h4 class="text-lg font-semibold text-gray-900 mb-4">Benefits of Verification</h4>
               <ul class="space-y-2">
                 <li 
-                  v-for="benefit in verificationProcess.benefits" 
+                  v-for="benefit in verificationProcess?.benefits || []" 
                   :key="benefit"
                   class="flex items-start text-gray-600"
                 >
@@ -120,7 +120,7 @@
               <h4 class="text-lg font-semibold text-gray-900 mb-4">Requirements</h4>
               <ul class="space-y-2">
                 <li 
-                  v-for="requirement in verificationProcess.requirements" 
+                  v-for="requirement in verificationProcess?.requirements || []" 
                   :key="requirement"
                   class="flex items-start text-gray-600"
                 >
@@ -137,13 +137,13 @@
       <div class="mb-16">
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8">
           <div class="text-center mb-8">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ dataProtection.title }}</h3>
-            <p class="text-gray-600 max-w-2xl mx-auto">{{ dataProtection.description }}</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ dataProtection?.title || 'Data Protection & Privacy' }}</h3>
+            <p class="text-gray-600 max-w-2xl mx-auto">{{ dataProtection?.description || 'We implement comprehensive data protection measures based on privacy-by-design principles and international best practices.' }}</p>
           </div>
 
           <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div 
-              v-for="principle in dataProtection.principles" 
+              v-for="principle in dataProtection?.principles || []" 
               :key="principle.id"
               class="bg-white rounded-lg p-6"
             >
@@ -156,7 +156,7 @@
               <p class="text-gray-600 mb-4">{{ principle.description }}</p>
               <ul class="space-y-1">
                 <li 
-                  v-for="impl in principle.implementation" 
+                  v-for="impl in principle.implementation || []" 
                   :key="impl"
                   class="text-sm text-gray-600 flex items-start"
                 >
@@ -171,7 +171,7 @@
             <h4 class="text-lg font-semibold text-gray-900 mb-4">Your Rights</h4>
             <div class="grid md:grid-cols-2 gap-6">
               <div 
-                v-for="right in dataProtection.userRights" 
+                v-for="right in dataProtection?.userRights || []" 
                 :key="right.id"
                 class="border-l-4 border-blue-400 pl-4"
               >
@@ -194,7 +194,7 @@
         <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">Compliance Standards</h3>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div 
-            v-for="compliance in complianceInfo" 
+            v-for="compliance in complianceInfo || []" 
             :key="compliance.id"
             class="bg-white rounded-lg p-6 shadow-sm"
           >
@@ -239,19 +239,19 @@
         <p class="text-gray-600 mb-6">Our privacy and security team is here to help.</p>
         <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8">
           <a 
-            :href="`mailto:${dataProtection.contactInfo.email}`"
+            :href="`mailto:${dataProtection?.contactInfo?.email || 'privacy@alumate.com'}`"
             class="flex items-center text-blue-600 hover:text-blue-700"
           >
             <i class="fas fa-envelope mr-2"></i>
-            {{ dataProtection.contactInfo.email }}
+            {{ dataProtection?.contactInfo?.email || 'privacy@alumate.com' }}
           </a>
-          <span v-if="dataProtection.contactInfo.phone" class="flex items-center text-gray-600">
+          <span v-if="dataProtection?.contactInfo?.phone" class="flex items-center text-gray-600">
             <i class="fas fa-phone mr-2"></i>
             {{ dataProtection.contactInfo.phone }}
           </span>
           <span class="flex items-center text-gray-600">
             <i class="fas fa-clock mr-2"></i>
-            {{ dataProtection.contactInfo.hours }}
+            {{ dataProtection?.contactInfo?.hours || 'Monday - Friday, 9 AM - 5 PM EST' }}
           </span>
         </div>
       </div>
@@ -311,6 +311,7 @@ import type { SecurityPrivacyProps, SecurityCertification } from '@/types/homepa
 interface Props extends /* @vue-ignore */ SecurityPrivacyProps {}
 
 const props = withDefaults(defineProps<Props>(), {
+  audience: 'individual',
   privacyHighlights: () => [],
   securityCertifications: () => [],
   verificationProcess: () => ({

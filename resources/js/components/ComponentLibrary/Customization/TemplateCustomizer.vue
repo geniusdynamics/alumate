@@ -494,7 +494,6 @@ import { router } from '@inertiajs/vue3'
 // Component imports
 import ColorPicker from './ColorPicker.vue'
 import FontSelector from './FontSelector.vue'
-import ContentEditor from './ContentEditor.vue'
 
 // Types
 import type {

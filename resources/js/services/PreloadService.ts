@@ -1,4 +1,7 @@
 import { cdnService } from './CDNService'
+import { PerformanceMonitor } from '../utils/performance-monitor'
+import { Logger } from '../utils/logger'
+import { getAssetUrl, shouldSkipPreloading, shouldSkipAssetPreloading } from '../utils/asset-url-helper'
 
 export interface PreloadResource {
   href: string
@@ -16,19 +19,47 @@ class PreloadService {
    * Preload critical resources for faster page loading
    */
   public preloadCriticalResources(): void {
-    // Preload critical CSS
-    this.preloadCSS('/build/assets/app.css')
+    this.preloadCriticalCSS()
+    this.preloadCriticalJS()
     
-    // Preload critical fonts
-    this.preloadFont('/fonts/inter-var.woff2', 'font/woff2')
-    this.preloadFont('/fonts/inter-var-italic.woff2', 'font/woff2')
+    // Note: Font preloading removed as Inter fonts don't exist in this project
+    // The project uses 'Instrument Sans' and system fonts instead
     
     // Preload hero images
     this.preloadImage('/images/hero-background.webp', { priority: 'high' })
     this.preloadImage('/images/hero-background.jpg', { priority: 'high' })
-    
-    // Preload critical JavaScript chunks
-    this.preloadScript('/build/assets/homepage-core.js')
+  }
+
+  private preloadCriticalCSS(): void {
+    // Skip preloading in development as Vite handles module loading
+    if (shouldSkipPreloading()) {
+      return
+    }
+
+    const criticalCSS = [
+      '/build/assets/app.css',
+      '/build/assets/mobile.css'
+    ]
+
+    criticalCSS.forEach(href => {
+      this.preloadCSS(getAssetUrl(href))
+    })
+  }
+
+  private preloadCriticalJS(): void {
+    // Skip preloading in development as Vite handles module loading
+    if (shouldSkipPreloading()) {
+      return
+    }
+
+    const criticalJS = [
+      '/build/assets/app.js',
+      '/build/assets/vendor.js'
+    ]
+
+    criticalJS.forEach(src => {
+      this.preloadJS(getAssetUrl(src))
+    })
   }
 
   /**
@@ -46,18 +77,30 @@ class PreloadService {
       this.preloadImage(src, { priority: 'high' })
     })
 
-    // Preload next likely components
-    this.prefetchComponent('/build/assets/homepage-features.js')
-    this.prefetchComponent('/build/assets/homepage-conversion.js')
+    // Skip script preloading in development as Vite handles module loading
+    if (!shouldSkipPreloading()) {
+      // Preload homepage-specific JavaScript chunks
+      this.preloadScript(getAssetUrl('/build/assets/homepage-features.js'))
+      this.preloadScript(getAssetUrl('/build/assets/homepage-conversion.js'))
+      
+      // Preload authentication-related resources for quick login
+      this.preloadScript(getAssetUrl('/build/assets/auth.js'))
+    }
+    
+    // Preload API endpoints that are likely to be called (these work in all environments)
+    this.preloadData('/api/user/profile')
+    this.preloadData('/api/homepage/stats')
   }
 
   /**
    * Preload CSS file
    */
   public preloadCSS(href: string, media?: string): void {
-    if (this.preloadedResources.has(href)) return
+    if (this.preloadedResources.has(href) || shouldSkipAssetPreloading(href) || !href) return
 
     const url = cdnService.getCSSUrl(href)
+    if (!url) return // Skip if URL is empty (development mode)
+    
     const link = this.createPreloadLink({
       href: url,
       as: 'style',
@@ -77,9 +120,11 @@ class PreloadService {
    * Preload JavaScript file
    */
   public preloadScript(src: string): void {
-    if (this.preloadedResources.has(src)) return
+    if (this.preloadedResources.has(src) || shouldSkipAssetPreloading(src) || !src) return
 
     const url = cdnService.getJSUrl(src)
+    if (!url) return // Skip if URL is empty (development mode)
+    
     const link = this.createPreloadLink({
       href: url,
       as: 'script'
@@ -87,6 +132,24 @@ class PreloadService {
 
     this.appendToHead(link)
     this.preloadedResources.add(src)
+  }
+
+  /**
+   * Preload design system resources
+   */
+  public preloadDesignSystemResources(): void {
+    // Skip preloading in development as Vite handles module loading
+    if (shouldSkipPreloading()) {
+      return
+    }
+
+    // Preload design system components
+    this.preloadScript(getAssetUrl('/build/assets/design-system.js'))
+    this.preloadCSS(getAssetUrl('/build/assets/design-system.css'))
+    
+    // Preload component library chunks
+    this.preloadScript(getAssetUrl('/build/assets/components-ui.js'))
+    this.preloadScript(getAssetUrl('/build/assets/components-forms.js'))
   }
 
   /**

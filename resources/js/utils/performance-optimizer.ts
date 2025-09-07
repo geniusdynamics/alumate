@@ -2,6 +2,10 @@
  * Performance Optimization Utilities
  */
 
+import { Logger } from './logger'
+import { PerformanceMonitor } from './performance-monitor'
+import { getAssetUrl, shouldSkipPreloading, shouldSkipAssetPreloading } from './asset-url-helper'
+
 interface OptimizationConfig {
   enableLazyLoading: boolean
   enableImageOptimization: boolean
@@ -327,21 +331,23 @@ class PerformanceOptimizer {
   }
 
   private preloadCriticalResources(): void {
-    const criticalResources = [
-      '/build/assets/app.css',
-      '/build/assets/app.js',
-      '/fonts/inter-var.woff2'
-    ]
+    // Skip preloading in development as Vite handles module loading
+    if (shouldSkipPreloading()) {
+      return
+    }
 
-    criticalResources.forEach((resource) => {
-      if (!this.preloadedResources.has(resource)) {
-        this.preloadResource(resource)
-      }
-    })
+    // Preload critical CSS
+    this.preloadResource(getAssetUrl('/build/assets/app.css'), 'style')
+    
+    // Preload critical JavaScript
+    this.preloadResource(getAssetUrl('/build/assets/app.js'), 'script')
+    
+    // Note: Font preloading removed as Inter fonts don't exist in this project
+    // The project uses 'Instrument Sans' and system fonts instead
   }
 
   private preloadResource(href: string, as: string = 'script'): void {
-    if (this.preloadedResources.has(href)) return
+    if (this.preloadedResources.has(href) || shouldSkipAssetPreloading(href) || !href) return
 
     const link = document.createElement('link')
     link.rel = 'preload'
@@ -357,6 +363,11 @@ class PerformanceOptimizer {
   }
 
   private initializeHoverPreloading(): void {
+    // Skip preloading in development as Vite handles module loading
+    if (shouldSkipPreloading()) {
+      return
+    }
+
     document.addEventListener('mouseover', (event) => {
       const target = event.target as HTMLElement
       const link = target.closest('a[href]') as HTMLAnchorElement
@@ -367,6 +378,31 @@ class PerformanceOptimizer {
           this.preloadResource(href, 'document')
         }
       }
+    })
+
+    // Preload page-specific resources when hovering over navigation links
+    const navLinks = document.querySelectorAll('a[href]')
+    
+    navLinks.forEach((link) => {
+      link.addEventListener('mouseenter', () => {
+        const href = (link as HTMLAnchorElement).href
+        const pathname = new URL(href).pathname
+        
+        // Preload page-specific resources based on the link
+        switch (pathname) {
+          case '/design-system':
+            this.preloadResource(getAssetUrl('/build/assets/design-system.js'))
+            this.preloadResource(getAssetUrl('/build/assets/design-system.css'))
+            break
+          case '/dashboard':
+            this.preloadResource(getAssetUrl('/build/assets/dashboard.js'))
+            this.preloadResource(getAssetUrl('/build/assets/dashboard.css'))
+            break
+          case '/profile':
+            this.preloadResource(getAssetUrl('/build/assets/profile.js'))
+            break
+        }
+      }, { once: true })
     })
   }
 
@@ -380,6 +416,52 @@ class PerformanceOptimizer {
         this.predictivePreload()
       }, 150)
     })
+
+    // Initialize user behavior based preloading
+    this.preloadBasedOnUserBehavior()
+  }
+
+  private preloadBasedOnUserBehavior(): void {
+    // Skip preloading in development as Vite handles module loading
+    if (shouldSkipPreloading()) {
+      return
+    }
+
+    // Track user interactions and preload accordingly
+    let scrollDepth = 0
+    let timeOnPage = 0
+    
+    // Track scroll depth
+    window.addEventListener('scroll', () => {
+      const currentScrollDepth = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100
+      
+      if (currentScrollDepth > scrollDepth) {
+        scrollDepth = currentScrollDepth
+        
+        // Preload additional resources based on scroll depth
+        if (scrollDepth > 50 && !this.preloadedResources.has('secondary-content')) {
+          this.preloadResource(getAssetUrl('/build/assets/secondary-content.js'))
+          this.preloadedResources.add('secondary-content')
+        }
+        
+        if (scrollDepth > 80 && !this.preloadedResources.has('footer-content')) {
+          this.preloadResource(getAssetUrl('/build/assets/footer-content.js'))
+          this.preloadedResources.add('footer-content')
+        }
+      }
+    })
+    
+    // Track time on page
+    setInterval(() => {
+      timeOnPage += 1000
+      
+      // After 30 seconds, preload likely next pages
+      if (timeOnPage === 30000 && !this.preloadedResources.has('likely-next')) {
+        this.preloadResource(getAssetUrl('/build/assets/dashboard.js'))
+        this.preloadResource(getAssetUrl('/build/assets/profile.js'))
+        this.preloadedResources.add('likely-next')
+      }
+    }, 1000)
   }
 
   private predictivePreload(): void {

@@ -119,8 +119,8 @@
       <div class="mb-16">
         <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-8">
           <div class="text-center mb-8">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ apiDocumentation.title }}</h3>
-            <p class="text-gray-600 max-w-2xl mx-auto">{{ apiDocumentation.description }}</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ apiDocumentation?.title || 'API Documentation' }}</h3>
+            <p class="text-gray-600 max-w-2xl mx-auto">{{ apiDocumentation?.description || 'Comprehensive API documentation for developers' }}</p>
           </div>
 
           <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -129,7 +129,7 @@
                 <i class="fas fa-code text-blue-600 text-xl"></i>
               </div>
               <h4 class="text-lg font-semibold text-gray-900 mb-2">REST API</h4>
-              <p class="text-gray-600 text-sm">{{ apiDocumentation.version }}</p>
+              <p class="text-gray-600 text-sm">{{ apiDocumentation?.version || 'v1.0' }}</p>
             </div>
             
             <div class="bg-white rounded-lg p-6 text-center">
@@ -137,7 +137,7 @@
                 <i class="fas fa-shield-alt text-green-600 text-xl"></i>
               </div>
               <h4 class="text-lg font-semibold text-gray-900 mb-2">Secure Auth</h4>
-              <p class="text-gray-600 text-sm">{{ apiDocumentation.authentication.length }} methods</p>
+              <p class="text-gray-600 text-sm">{{ apiDocumentation?.authentication?.length || 0 }} methods</p>
             </div>
             
             <div class="bg-white rounded-lg p-6 text-center">
@@ -145,7 +145,7 @@
                 <i class="fas fa-puzzle-piece text-purple-600 text-xl"></i>
               </div>
               <h4 class="text-lg font-semibold text-gray-900 mb-2">SDKs</h4>
-              <p class="text-gray-600 text-sm">{{ apiDocumentation.sdks.length }} languages</p>
+              <p class="text-gray-600 text-sm">{{ apiDocumentation?.sdks?.length || 0 }} languages</p>
             </div>
             
             <div class="bg-white rounded-lg p-6 text-center">
@@ -153,7 +153,7 @@
                 <i class="fas fa-book-open text-orange-600 text-xl"></i>
               </div>
               <h4 class="text-lg font-semibold text-gray-900 mb-2">Examples</h4>
-              <p class="text-gray-600 text-sm">{{ apiDocumentation.examples.length }} code samples</p>
+              <p class="text-gray-600 text-sm">{{ apiDocumentation?.examples?.length || 0 }} code samples</p>
             </div>
           </div>
 
@@ -165,7 +165,7 @@
               View API Documentation
             </button>
             <a 
-              :href="apiDocumentation.baseUrl"
+              :href="apiDocumentation?.baseUrl || '#'"
               target="_blank"
               class="bg-white text-blue-600 py-3 px-6 rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors duration-200"
             >
@@ -179,8 +179,8 @@
       <div class="mb-16">
         <div class="bg-white rounded-xl border border-gray-200 p-8">
           <div class="text-center mb-8">
-            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ migrationSupport.title }}</h3>
-            <p class="text-gray-600 max-w-2xl mx-auto">{{ migrationSupport.description }}</p>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ migrationSupport?.title || 'Migration Support' }}</h3>
+            <p class="text-gray-600 max-w-2xl mx-auto">{{ migrationSupport?.description || 'Seamless migration assistance for your existing systems' }}</p>
           </div>
 
           <!-- Supported Platforms -->
@@ -188,8 +188,8 @@
             <h4 class="text-lg font-semibold text-gray-900 mb-4">Supported Platforms</h4>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div 
-                v-for="platform in migrationSupport.supportedPlatforms" 
-                :key="platform.id"
+            v-for="platform in migrationSupport?.supportedPlatforms || []" 
+            :key="platform.id"
                 class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-blue-300 transition-colors duration-200"
               >
                 <img 
@@ -220,16 +220,16 @@
             <h4 class="text-lg font-semibold text-gray-900 mb-4">Migration Process</h4>
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div 
-                v-for="step in migrationSupport.migrationProcess" 
+                v-for="step in migrationSupport?.migrationProcess || []" 
                 :key="step.id"
                 class="text-center"
               >
                 <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <span class="text-blue-600 font-bold">{{ step.stepNumber }}</span>
+                  <span class="text-blue-600 font-bold">{{ step?.stepNumber || '1' }}</span>
                 </div>
-                <h5 class="font-semibold text-gray-900 mb-2">{{ step.title }}</h5>
-                <p class="text-gray-600 text-sm mb-2">{{ step.description }}</p>
-                <span class="text-xs text-gray-500">{{ step.duration }}</span>
+                <h5 class="font-semibold text-gray-900 mb-2">{{ step?.title || 'Migration Step' }}</h5>
+                <p class="text-gray-600 text-sm mb-2">{{ step?.description || 'Step description' }}</p>
+                <span class="text-xs text-gray-500">{{ step?.duration || 'Duration TBD' }}</span>
               </div>
             </div>
           </div>
@@ -237,22 +237,22 @@
           <!-- Support Levels -->
           <div class="grid md:grid-cols-3 gap-6">
             <div class="text-center p-6 border border-gray-200 rounded-lg">
-              <h5 class="font-semibold text-gray-900 mb-2">{{ migrationSupport.support.type }}</h5>
-              <p class="text-gray-600 text-sm mb-4">{{ migrationSupport.support.description }}</p>
+              <h5 class="font-semibold text-gray-900 mb-2">{{ migrationSupport?.support?.type }}</h5>
+              <p class="text-gray-600 text-sm mb-4">{{ migrationSupport?.support?.description }}</p>
               <ul class="space-y-1 text-sm text-gray-600">
-                <li v-for="item in migrationSupport.support.included" :key="item">
+                <li v-for="item in migrationSupport?.support?.included || []" :key="item">
                   <i class="fas fa-check text-green-500 mr-2"></i>{{ item }}
                 </li>
               </ul>
             </div>
             <div class="text-center p-6 border border-gray-200 rounded-lg">
               <h5 class="font-semibold text-gray-900 mb-2">Timeline</h5>
-              <p class="text-2xl font-bold text-blue-600 mb-2">{{ migrationSupport.timeline }}</p>
+              <p class="text-2xl font-bold text-blue-600 mb-2">{{ migrationSupport?.timeline }}</p>
               <p class="text-gray-600 text-sm">Average migration time</p>
             </div>
             <div class="text-center p-6 border border-gray-200 rounded-lg">
               <h5 class="font-semibold text-gray-900 mb-2">Migration Tools</h5>
-              <p class="text-2xl font-bold text-green-600 mb-2">{{ migrationSupport.tools.length }}</p>
+              <p class="text-2xl font-bold text-green-600 mb-2">{{ migrationSupport?.tools?.length || 0 }}</p>
               <p class="text-gray-600 text-sm">Automated tools available</p>
             </div>
           </div>
@@ -264,7 +264,7 @@
         <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">Training & Support</h3>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div 
-            v-for="program in trainingPrograms" 
+            v-for="program in trainingPrograms || []" 
             :key="program.id"
             class="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow duration-300"
           >
@@ -333,7 +333,7 @@
         <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">Scalability for Every Institution Size</h3>
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div 
-            v-for="scale in scalabilityInfo" 
+            v-for="scale in scalabilityInfo || []" 
             :key="scale.id"
             class="bg-white rounded-lg border-2 border-gray-200 p-6 hover:border-blue-300 transition-colors duration-300"
             :class="{ 'border-blue-500 bg-blue-50': scale.institutionSize === 'enterprise' }"
@@ -401,7 +401,7 @@
           <button class="bg-white text-blue-600 py-3 px-6 rounded-lg hover:bg-gray-100 transition-colors duration-200 font-semibold">
             {{ audience === 'institutional' ? 'Schedule Technical Demo' : 'Start Free Trial' }}
           </button>
-          <button class="border border-white text-white py-3 px-6 rounded-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
+          <button class="border border-blue-600 text-blue-600 py-3 px-6 rounded-lg hover:bg-blue-50 transition-colors duration-200">
             View Documentation
           </button>
         </div>
@@ -506,7 +506,7 @@
             >
               View Documentation
             </a>
-            <button class="flex-1 border border-white text-white py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200">
+            <button class="flex-1 border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors duration-200">
               Contact Support
             </button>
           </div>
@@ -540,7 +540,7 @@
               <h4 class="font-semibold text-gray-900 mb-3">Authentication Methods</h4>
               <div class="space-y-3">
                 <div 
-                  v-for="auth in apiDocumentation.authentication" 
+                  v-for="auth in apiDocumentation?.authentication || []" 
                   :key="auth.type"
                   class="border border-gray-200 rounded-lg p-3"
                 >
@@ -553,7 +553,7 @@
               <h4 class="font-semibold text-gray-900 mb-3">Available SDKs</h4>
               <div class="space-y-2">
                 <div 
-                  v-for="sdk in apiDocumentation.sdks" 
+                  v-for="sdk in apiDocumentation?.sdks || []" 
                   :key="sdk.language"
                   class="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
                 >
@@ -577,7 +577,7 @@
             <h4 class="font-semibold text-gray-900 mb-3">Sample Endpoints</h4>
             <div class="space-y-3">
               <div 
-                v-for="endpoint in apiDocumentation.endpoints.slice(0, 5)" 
+                  v-for="endpoint in (apiDocumentation?.endpoints || []).slice(0, 5)" 
                 :key="endpoint.id"
                 class="border border-gray-200 rounded-lg p-4"
               >
@@ -607,7 +607,7 @@
             >
               View Full Documentation
             </a>
-            <button class="border border-white text-white py-3 px-6 rounded-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
+            <button class="border border-blue-600 text-blue-600 py-3 px-6 rounded-lg hover:bg-blue-50 transition-colors duration-200">
               Download Postman Collection
             </button>
           </div>
@@ -717,13 +717,10 @@
           </div>
 
           <div class="text-center">
-            <button 
-              @click="openTrainingModal(program)"
-              class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200"
-            >
-              View Program Details
+            <button class="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors duration-200 mr-4">
+              Register Now
             </button>
-            <button class="border border-white text-white py-2 px-4 rounded-lg hover:bg-white hover:text-blue-600 transition-colors duration-200">
+            <button class="border border-blue-600 text-blue-600 py-3 px-6 rounded-lg hover:bg-blue-50 transition-colors duration-200">
               Download Syllabus
             </button>
           </div>
@@ -744,7 +741,35 @@ import type {
 interface Props extends /* @vue-ignore */ IntegrationEcosystemProps {}
 
 const props = withDefaults(defineProps<Props>(), {
-  integrations: () => []
+  audience: 'individual',
+  integrations: () => [],
+  apiDocumentation: () => ({
+    title: 'API Documentation',
+    description: 'Comprehensive API documentation for developers',
+    version: 'v1.0',
+    baseUrl: 'https://api.alumate.com',
+    authentication: [],
+    endpoints: [],
+    sdks: [],
+    examples: [],
+    rateLimits: []
+  }),
+  migrationSupport: () => ({
+    title: 'Migration Support',
+    description: 'Seamless migration from your existing platform',
+    supportedPlatforms: [],
+    migrationProcess: [],
+    timeline: '2-4 weeks',
+    support: {
+      type: 'assisted',
+      description: 'Assisted migration support',
+      included: [],
+      timeline: '2-4 weeks'
+    },
+    tools: []
+  }),
+  trainingPrograms: () => [],
+  scalabilityInfo: () => []
 })
 
 const selectedCategory = ref<string>('all')

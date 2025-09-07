@@ -19,9 +19,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register model observers
-        \App\Models\User::observe(\App\Observers\UserObserver::class);
-        \App\Models\EducationHistory::observe(\App\Observers\EducationHistoryObserver::class);
+        // Temporarily disabled model observers to avoid database dependency
+        // \App\Models\User::observe(\App\Observers\UserObserver::class);
+        // \App\Models\EducationHistory::observe(\App\Observers\EducationHistoryObserver::class);
 
         // Register console commands
         if ($this->app->runningInConsole()) {

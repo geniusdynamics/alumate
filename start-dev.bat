@@ -46,12 +46,12 @@ start "Vite Dev Server - Alumni Platform" cmd /k "echo Starting Vite Dev Server.
 echo ✓ Vite server starting in separate window...
 
 REM Wait for Vite to initialize with better error handling
-echo Waiting for Vite to initialize on http://127.0.0.1:5173 ...
+echo Waiting for Vite to initialize on http://127.0.0.1:5173 or 5174 ...
 set /a WAITED=0
 set /a TIMEOUT=60
 :WAIT_VITE
-REM Try to fetch Vite client endpoint using PowerShell
-powershell -Command "try { $resp = Invoke-WebRequest -Uri 'http://127.0.0.1:5173/@vite/client' -UseBasicParsing -TimeoutSec 3; if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { exit 1 }"
+REM Try to fetch Vite client endpoint using PowerShell (check both ports)
+powershell -Command "try { $resp = Invoke-WebRequest -Uri 'http://localhost:5173/' -UseBasicParsing -TimeoutSec 3; if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { try { $resp = Invoke-WebRequest -Uri 'http://localhost:5174/' -UseBasicParsing -TimeoutSec 3; if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { exit 1 } }"
 if %errorlevel%==0 (
   echo ✓ Vite is ready after %WAITED%s
   goto START_LARAVEL

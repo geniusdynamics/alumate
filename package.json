@@ -31,6 +31,7 @@
         "eslint-config-prettier": "^10.1.5",
         "eslint-plugin-vue": "^10.3.0",
         "jsdom": "^26.1.0",
+        "playwright": "^1.55.0",
         "postcss": "^8.5.6",
         "prettier": "^3.6.2",
         "prettier-plugin-organize-imports": "^4.2.0",

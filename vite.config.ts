@@ -117,8 +117,23 @@ export default defineConfig({
   },
 
   server: {
+    host: '127.0.0.1',
+    port: 5176,
     hmr: {
-      host: 'localhost',
+      host: '127.0.0.1',
+      port: 5176,
+    },
+    origin: 'http://127.0.0.1:5176',
+    cors: {
+      origin: ['http://127.0.0.1:8080', 'http://localhost:8080', 'http://127.0.0.1:8081', 'http://localhost:8081'],
+      credentials: true,
+    },
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8081',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 

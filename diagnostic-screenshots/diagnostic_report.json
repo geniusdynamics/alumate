@@ -1,0 +1,684 @@
+{
+  "timestamp": "2025-09-06T08:54:03.561Z",
+  "tests": [
+    {
+      "name": "Homepage",
+      "url": "http://127.0.0.1:8081",
+      "error": "page.goto: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8081/\", waiting until \"networkidle\"\u001b[22m\n",
+      "timestamp": "2025-09-06T08:54:33.578Z"
+    },
+    {
+      "name": "Design_System",
+      "url": "http://127.0.0.1:8081/design-system",
+      "status": 200,
+      "title": "- Laravel",
+      "hasContent": true,
+      "contentLength": 170,
+      "visibleElements": 51,
+      "vueAppMounted": true,
+      "cssLoaded": true,
+      "jsErrorCount": 50,
+      "screenshot": "D:\\DevCenter\\abuilds\\alumate\\diagnostic-screenshots\\Design_System_diagnostic.png",
+      "timestamp": "2025-09-06T08:54:49.994Z"
+    }
+  ],
+  "screenshots": [
+    "D:\\DevCenter\\abuilds\\alumate\\diagnostic-screenshots\\Design_System_diagnostic.png"
+  ],
+  "consoleLogs": [
+    {
+      "type": "log",
+      "text": "🔍 Browser logger active (MCP server detected). Posting to: http://127.0.0.1:8081/_boost/browser-logs",
+      "timestamp": "2025-09-06T08:54:05.834Z"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "timestamp": "2025-09-06T08:54:07.281Z"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected.",
+      "timestamp": "2025-09-06T08:54:07.293Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Property \"audience\" was accessed during render but is not defined on instance. \n  at <SecurityPrivacy audience=\"individual\" privacy-highlights= [Object, Object, Object] security-certifications= [Object, Object, Object, Object, Object, Object]  ... > \n  at <TrustIndicators audience=\"individual\" > \n  at <HomepageLayout title=\"Connect with Your Alumni Network - Professional Networking Platform\" description=\"Join thousands of alumni advancing their careers through meaningful connections, mentorship, and professional opportunities.\" keywords=\"alumni network, professional networking, career advancement, mentorship\" > \n  at <Index errors= {} name=\"Laravel\" quote= {message: Simplicity is the ultimate sophistication., author: Leonardo da Vinci}  ... > \n  at <Inertia initialPage= {component: Homepage/Index, props: Object, url: /, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {__name: Index, props: Object, setup: , __hmrId: 3e89818a, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:14.676Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Property \"audience\" was accessed during render but is not defined on instance. \n  at <SecurityPrivacy audience=\"individual\" privacy-highlights= [Object, Object, Object] security-certifications= [Object, Object, Object, Object, Object, Object]  ... > \n  at <TrustIndicators audience=\"individual\" > \n  at <HomepageLayout title=\"Connect with Your Alumni Network - Professional Networking Platform\" description=\"Join thousands of alumni advancing their careers through meaningful connections, mentorship, and professional opportunities.\" keywords=\"alumni network, professional networking, career advancement, mentorship\" > \n  at <Index errors= {} name=\"Laravel\" quote= {message: Simplicity is the ultimate sophistication., author: Leonardo da Vinci}  ... > \n  at <Inertia initialPage= {component: Homepage/Index, props: Object, url: /, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {__name: Index, props: Object, setup: , __hmrId: 3e89818a, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:14.679Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Property \"privacyHighlights\" was accessed during render but is not defined on instance. \n  at <SecurityPrivacy audience=\"individual\" privacy-highlights= [Object, Object, Object] security-certifications= [Object, Object, Object, Object, Object, Object]  ... > \n  at <TrustIndicators audience=\"individual\" > \n  at <HomepageLayout title=\"Connect with Your Alumni Network - Professional Networking Platform\" description=\"Join thousands of alumni advancing their careers through meaningful connections, mentorship, and professional opportunities.\" keywords=\"alumni network, professional networking, career advancement, mentorship\" > \n  at <Index errors= {} name=\"Laravel\" quote= {message: Simplicity is the ultimate sophistication., author: Leonardo da Vinci}  ... > \n  at <Inertia initialPage= {component: Homepage/Index, props: Object, url: /, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {__name: Index, props: Object, setup: , __hmrId: 3e89818a, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:14.681Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Property \"securityCertifications\" was accessed during render but is not defined on instance. \n  at <SecurityPrivacy audience=\"individual\" privacy-highlights= [Object, Object, Object] security-certifications= [Object, Object, Object, Object, Object, Object]  ... > \n  at <TrustIndicators audience=\"individual\" > \n  at <HomepageLayout title=\"Connect with Your Alumni Network - Professional Networking Platform\" description=\"Join thousands of alumni advancing their careers through meaningful connections, mentorship, and professional opportunities.\" keywords=\"alumni network, professional networking, career advancement, mentorship\" > \n  at <Index errors= {} name=\"Laravel\" quote= {message: Simplicity is the ultimate sophistication., author: Leonardo da Vinci}  ... > \n  at <Inertia initialPage= {component: Homepage/Index, props: Object, url: /, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {__name: Index, props: Object, setup: , __hmrId: 3e89818a, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:14.684Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Property \"verificationProcess\" was accessed during render but is not defined on instance. \n  at <SecurityPrivacy audience=\"individual\" privacy-highlights= [Object, Object, Object] security-certifications= [Object, Object, Object, Object, Object, Object]  ... > \n  at <TrustIndicators audience=\"individual\" > \n  at <HomepageLayout title=\"Connect with Your Alumni Network - Professional Networking Platform\" description=\"Join thousands of alumni advancing their careers through meaningful connections, mentorship, and professional opportunities.\" keywords=\"alumni network, professional networking, career advancement, mentorship\" > \n  at <Index errors= {} name=\"Laravel\" quote= {message: Simplicity is the ultimate sophistication., author: Leonardo da Vinci}  ... > \n  at <Inertia initialPage= {component: Homepage/Index, props: Object, url: /, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {__name: Index, props: Object, setup: , __hmrId: 3e89818a, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:14.687Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Unhandled error during execution of render function \n  at <SecurityPrivacy audience=\"individual\" privacy-highlights= [Object, Object, Object] security-certifications= [Object, Object, Object, Object, Object, Object]  ... > \n  at <TrustIndicators audience=\"individual\" > \n  at <HomepageLayout title=\"Connect with Your Alumni Network - Professional Networking Platform\" description=\"Join thousands of alumni advancing their careers through meaningful connections, mentorship, and professional opportunities.\" keywords=\"alumni network, professional networking, career advancement, mentorship\" > \n  at <Index errors= {} name=\"Laravel\" quote= {message: Simplicity is the ultimate sophistication., author: Leonardo da Vinci}  ... > \n  at <Inertia initialPage= {component: Homepage/Index, props: Object, url: /, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {__name: Index, props: Object, setup: , __hmrId: 3e89818a, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:14.693Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:15.049Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:15.383Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:15.749Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:16.110Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:16.444Z"
+    },
+    {
+      "type": "log",
+      "text": "Bundle loaded: app.css {size: 0.29KB, loadTime: 1931.90ms}",
+      "timestamp": "2025-09-06T08:54:16.444Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:16.786Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "timestamp": "2025-09-06T08:54:17.312Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to fetch navigation items: AxiosError",
+      "timestamp": "2025-09-06T08:54:17.319Z"
+    },
+    {
+      "type": "log",
+      "text": "SW registered: ServiceWorkerRegistration",
+      "timestamp": "2025-09-06T08:54:17.321Z"
+    },
+    {
+      "type": "log",
+      "text": "Service Worker registered successfully: ServiceWorkerRegistration",
+      "timestamp": "2025-09-06T08:54:17.321Z"
+    },
+    {
+      "type": "warning",
+      "text": "Deprecated API for given entry type.",
+      "timestamp": "2025-09-06T08:54:17.992Z"
+    },
+    {
+      "type": "log",
+      "text": "Performance metrics (navigation): {domContentLoaded: 0.20000000298023224, loadComplete: 0.5999999940395355, firstPaint: 2280, firstContentfulPaint: 0, largestContentfulPaint: 0}",
+      "timestamp": "2025-09-06T08:54:17.992Z"
+    },
+    {
+      "type": "log",
+      "text": "ServiceWorker registration successful with scope:  http://127.0.0.1:8081/",
+      "timestamp": "2025-09-06T08:54:17.993Z"
+    },
+    {
+      "type": "log",
+      "text": "Bundle Analysis: # Bundle Analysis Report\n\n## Bundle Information\n- **app.css**: 0.29KB (1931.90ms)\n\n## Performance Metrics\n- Total Bundle Size: 0.29KB\n- Load Time: NaNms\n- First Contentful Paint: 0.00ms\n- Time to Interactive: NaNms\n- Memory Usage: 22.32MB\n- Network Requests: 138\n",
+      "timestamp": "2025-09-06T08:54:18.999Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:19.100Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:19.465Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:19.818Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:20.180Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/api/homepage/stats was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/statistics/platform-stats-bg.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/testimonials/featured-testimonial.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/fonts/inter-var.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/fonts/inter-var-italic.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/logos/company-logos-sprite.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/hero-background.jpg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/build/assets/app.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/api/user/profile was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/hero-background.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:21.796Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "timestamp": "2025-09-06T08:54:22.611Z"
+    },
+    {
+      "type": "log",
+      "text": "Background sync is supported",
+      "timestamp": "2025-09-06T08:54:22.611Z"
+    },
+    {
+      "type": "log",
+      "text": "PWA Manager initialized",
+      "timestamp": "2025-09-06T08:54:22.611Z"
+    },
+    {
+      "type": "error",
+      "text": "Periodic background sync registration failed: InvalidStateError: Failed to execute 'register' on 'PeriodicSyncManager': Registration failed - no active Service Worker\n    at PWAManager.setupPeriodicSync (http://127.0.0.1:5176/resources/js/pwa.js:316:56)\n    at PWAManager.init (http://127.0.0.1:5176/resources/js/pwa.js:33:14)",
+      "timestamp": "2025-09-06T08:54:22.612Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "timestamp": "2025-09-06T08:54:24.049Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:24.676Z"
+    },
+    {
+      "type": "log",
+      "text": "Bundle loaded: auth.js {size: 0.29KB, loadTime: 321.40ms}",
+      "timestamp": "2025-09-06T08:54:24.677Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:24.989Z"
+    },
+    {
+      "type": "warning",
+      "text": "Hero video failed to load, falling back to background image",
+      "timestamp": "2025-09-06T08:54:24.990Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:25.304Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:26.713Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:28.386Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:29.094Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:29.399Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:30.647Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:31.065Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:31.408Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:31.715Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:32.443Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:32.759Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:33.229Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:33.643Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:34.128Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:35.438Z"
+    },
+    {
+      "type": "log",
+      "text": "Bundle loaded: dashboard.js {size: 0.29KB, loadTime: 2993.30ms}",
+      "timestamp": "2025-09-06T08:54:35.439Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:35.856Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:36.343Z"
+    },
+    {
+      "type": "warning",
+      "text": "Failed to report performance metrics: TypeError: Failed to fetch\n    at window.fetch (http://127.0.0.1:5176/resources/js/utils/performance-optimizer.ts:384:30)\n    at PerformanceService.reportMetrics (http://127.0.0.1:5176/resources/js/services/PerformanceService.ts:115:13)",
+      "timestamp": "2025-09-06T08:54:36.864Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to send logs: TypeError: Failed to fetch\n    at window.fetch (http://127.0.0.1:5176/resources/js/utils/performance-optimizer.ts:384:30)\n    at flushLogs (http://127.0.0.1:8081/:97:9)",
+      "timestamp": "2025-09-06T08:54:36.864Z"
+    },
+    {
+      "type": "log",
+      "text": "🔍 Browser logger active (MCP server detected). Posting to: http://127.0.0.1:8081/_boost/browser-logs",
+      "timestamp": "2025-09-06T08:54:36.891Z"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connecting...",
+      "timestamp": "2025-09-06T08:54:36.965Z"
+    },
+    {
+      "type": "log",
+      "text": "SW registered: ServiceWorkerRegistration",
+      "timestamp": "2025-09-06T08:54:37.022Z"
+    },
+    {
+      "type": "log",
+      "text": "Service Worker registered successfully: ServiceWorkerRegistration",
+      "timestamp": "2025-09-06T08:54:37.022Z"
+    },
+    {
+      "type": "debug",
+      "text": "[vite] connected.",
+      "timestamp": "2025-09-06T08:54:37.044Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(var(--primary))\" name=\"Primary\" description=\"Main brand color\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.280Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(var(--primary-foreground))\" name=\"Primary Foreground\" description=\"Text on primary\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.284Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(var(--secondary))\" name=\"Secondary\" description=\"Secondary backgrounds\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.288Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(var(--secondary-foreground))\" name=\"Secondary Foreground\" description=\"Text on secondary\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.291Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(22 163 74)\" name=\"Success\" description=\"Success states\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.297Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(217 119 6)\" name=\"Warning\" description=\"Warning states\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.301Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(220 38 38)\" name=\"Error\" description=\"Error states\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.304Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(var(--background))\" name=\"Background\" description=\"Main background\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.309Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(var(--card))\" name=\"Card\" description=\"Card backgrounds\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.313Z"
+    },
+    {
+      "type": "warning",
+      "text": "[Vue warn]: Component provided template option but runtime compilation is not supported in this build of Vue. Configure your bundler to alias \"vue\" to \"vue/dist/vue.esm-bundler.js\". \n  at <ColorSwatch color=\"hsl(var(--muted))\" name=\"Muted\" description=\"Subtle backgrounds\" > \n  at <Showcase errors= {} name=\"Laravel\" quote= {message: Simplicity is an acquired taste., author: Katharine Gerould}  ... > \n  at <Inertia initialPage= {component: DesignSystem/Showcase, props: Object, url: /design-system, version: cf367cea1614eb6cfe32eebf84f5bc34, clearHistory: false} initialComponent= {components: Object, __name: Showcase, setup: , __hmrId: a3851035, render: } resolveComponent=fn<resolveComponent>  ... > \n  at <App>",
+      "timestamp": "2025-09-06T08:54:37.318Z"
+    },
+    {
+      "type": "warning",
+      "text": "Deprecated API for given entry type.",
+      "timestamp": "2025-09-06T08:54:37.404Z"
+    },
+    {
+      "type": "log",
+      "text": "Performance metrics (navigation): {domContentLoaded: 0.10000000894069672, loadComplete: 0.19999998807907104, firstPaint: 3336, firstContentfulPaint: 0, largestContentfulPaint: 0}",
+      "timestamp": "2025-09-06T08:54:37.404Z"
+    },
+    {
+      "type": "log",
+      "text": "ServiceWorker registration successful with scope:  http://127.0.0.1:8081/",
+      "timestamp": "2025-09-06T08:54:37.405Z"
+    },
+    {
+      "type": "log",
+      "text": "Bundle Analysis: # Bundle Analysis Report\n\n## Bundle Information\n\n## Performance Metrics\n- Total Bundle Size: 0.00KB\n- Load Time: NaNms\n- First Contentful Paint: 3888.00ms\n- Time to Interactive: NaNms\n- Memory Usage: 25.29MB\n- Network Requests: 60\n",
+      "timestamp": "2025-09-06T08:54:38.409Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:40.110Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:40.482Z"
+    },
+    {
+      "type": "log",
+      "text": "Bundle loaded: app.css {size: 0.29KB, loadTime: 2971.40ms}",
+      "timestamp": "2025-09-06T08:54:40.483Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:40.819Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:41.140Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:41.431Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "timestamp": "2025-09-06T08:54:41.894Z"
+    },
+    {
+      "type": "log",
+      "text": "Background sync is supported",
+      "timestamp": "2025-09-06T08:54:41.894Z"
+    },
+    {
+      "type": "log",
+      "text": "PWA Manager initialized",
+      "timestamp": "2025-09-06T08:54:41.894Z"
+    },
+    {
+      "type": "error",
+      "text": "Periodic background sync registration failed: NotAllowedError: Permission denied.",
+      "timestamp": "2025-09-06T08:54:41.894Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:42.207Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:42.584Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:42.943Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:43.243Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:43.544Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+      "timestamp": "2025-09-06T08:54:44.400Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:45.418Z"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+      "timestamp": "2025-09-06T08:54:45.779Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/api/homepage/stats was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/statistics/platform-stats-bg.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/testimonials/featured-testimonial.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/fonts/inter-var.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/fonts/inter-var-italic.woff2 was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/logos/company-logos-sprite.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/hero-background.jpg was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/build/assets/app.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/api/user/profile was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    },
+    {
+      "type": "warning",
+      "text": "The resource http://127.0.0.1:8081/images/hero-background.webp was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally.",
+      "timestamp": "2025-09-06T08:54:49.286Z"
+    }
+  ],
+  "networkErrors": [
+    {
+      "url": "http://127.0.0.1:8081/fonts/inter-var.woff2",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:15.050Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/fonts/inter-var-italic.woff2",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:15.383Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/build/assets/app.css",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:16.444Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/build/assets/auth.js",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:24.676Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/videos/hero/alumni-success-stories.mp4",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:24.990Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/build/assets/dashboard.js",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:35.438Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/api/analytics/performance",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:36.861Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/api/analytics/performance",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:36.861Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/api/analytics/performance",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:36.861Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/api/performance/metrics",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:36.861Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/_boost/browser-logs",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:36.862Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/images/placeholder-badge.png",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:36.863Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/fonts/inter-var.woff2",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:40.110Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/build/assets/app.css",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:40.483Z"
+    },
+    {
+      "url": "http://127.0.0.1:8081/fonts/inter-var-italic.woff2",
+      "failure": "net::ERR_ABORTED",
+      "timestamp": "2025-09-06T08:54:40.819Z"
+    }
+  ],
+  "pageErrors": [
+    {
+      "message": "Cannot read properties of undefined (reading 'title')",
+      "stack": "TypeError: Cannot read properties of undefined (reading 'title')\n    at Proxy._sfc_render (http://127.0.0.1:5176/resources/js/components/homepage/SecurityPrivacy.vue:285:57)\n    at renderComponentRoot (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:8851:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:7657:46)\n    at ReactiveEffect.run (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:683:19)\n    at setupRenderEffect (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:7792:5)\n    at mountComponent (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:7566:7)\n    at processComponent (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:7518:9)\n    at patch (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:7032:11)\n    at mountChildren (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:7266:7)\n    at mountElement (http://127.0.0.1:5176/node_modules/.vite/deps/chunk-LAZT6YGI.js?v=4ab887a2:7189:7)",
+      "timestamp": "2025-09-06T08:54:14.715Z"
+    }
+  ]
+}
