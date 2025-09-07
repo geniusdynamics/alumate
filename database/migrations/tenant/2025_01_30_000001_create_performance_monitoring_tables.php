@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         // Performance sessions table
-        Schema::create('performance_sessions', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_sessions')) {
+            Schema::create('performance_sessions', function (Blueprint $table) {
             $table->id();
             $table->string('url', 500);
             $table->string('referrer', 500)->nullable();
@@ -37,10 +38,12 @@ return new class extends Migration
             $table->index(['tenant_id', 'created_at']);
             $table->index(['user_id', 'created_at']);
             $table->index('url');
-        });
+            });
+        }
 
         // Performance metrics table
-        Schema::create('performance_metrics', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_metrics')) {
+            Schema::create('performance_metrics', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('session_id');
             $table->string('name', 100);
@@ -56,10 +59,12 @@ return new class extends Migration
             $table->index(['url', 'name']);
             $table->index('timestamp');
             $table->index('value');
-        });
+            });
+        }
 
         // Performance alerts table (for threshold violations)
-        Schema::create('performance_alerts', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_alerts')) {
+            Schema::create('performance_alerts', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('session_id');
             $table->string('metric_name', 100);
@@ -77,10 +82,12 @@ return new class extends Migration
             $table->index(['metric_name', 'severity', 'created_at']);
             $table->index(['acknowledged', 'created_at']);
             $table->index('url');
-        });
+            });
+        }
 
         // Performance budgets table (for setting performance targets)
-        Schema::create('performance_budgets', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_budgets')) {
+            Schema::create('performance_budgets', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100);
             $table->string('metric_name', 100);
@@ -97,10 +104,12 @@ return new class extends Migration
             $table->index(['tenant_id', 'is_active']);
             $table->index(['metric_name', 'is_active']);
             $table->index('url_pattern');
-        });
+            });
+        }
 
         // Performance reports table (for scheduled reports)
-        Schema::create('performance_reports', function (Blueprint $table) {
+        if (!Schema::hasTable('performance_reports')) {
+            Schema::create('performance_reports', function (Blueprint $table) {
             $table->id();
             $table->string('name', 200);
             $table->string('type', 50); // 'daily', 'weekly', 'monthly'
@@ -120,7 +129,8 @@ return new class extends Migration
             // Indexes
             $table->index(['tenant_id', 'is_active']);
             $table->index(['is_active', 'next_send_at']);
-        });
+            });
+        }
     }
 
     /**

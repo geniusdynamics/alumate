@@ -1,7 +1,7 @@
 <template>
   <div class="conversion-ctas">
-    <!-- Strategic CTA Placement throughout page -->
-    <div v-for="cta in strategicCTAs" :key="cta.id" :class="getCTAClasses(cta)">
+    <!-- Simple Strategic CTA Placement -->
+    <div v-for="cta in strategicCTAsFiltered" :key="cta.id" :class="getCTAClasses(cta)">
       <component
         :is="getCTAComponent(cta.type)"
         :cta="cta"
@@ -10,42 +10,22 @@
       />
     </div>
 
-    <!-- Exit Intent Popup -->
-    <ExitIntentPopup
-      v-if="showExitIntent"
-      :audience="audience"
-      :special-offer="exitIntentOffer"
-      @close="handleExitIntentClose"
-      @convert="handleExitIntentConvert"
-    />
-
-    <!-- Progressive CTAs based on engagement -->
-    <ProgressiveCTAs
-      :engagement-level="engagementLevel"
-      :audience="audience"
-      :scroll-depth="scrollDepth"
-      @cta-click="handleCTAClick"
-    />
-
-    <!-- Mobile-optimized floating CTA -->
-    <FloatingMobileCTA
-      v-if="isMobile && showFloatingCTA"
-      :audience="audience"
-      :primary-cta="primaryMobileCTA"
-      @click="handleCTAClick"
-    />
+    <!-- Simple Mobile CTA (no floating popup) -->
+    <div v-if="isMobile" class="simple-mobile-cta">
+      <button 
+        class="mobile-cta-button"
+        @click="handleMobileCTA"
+      >
+        {{ primaryMobileCTA.text }}
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, withDefaults } from 'vue'
 import { useAnalytics } from '@/composables/useAnalytics'
 import { useAudienceDetection } from '@/composables/useAudienceDetection'
-import { useScrollTracking } from '@/composables/useScrollTracking'
-import { useExitIntent } from '@/composables/useExitIntent'
-import ExitIntentPopup from './ExitIntentPopup.vue'
-import ProgressiveCTAs from './ProgressiveCTAs.vue'
-import FloatingMobileCTA from './FloatingMobileCTA.vue'
 import ContextualCTA from './ContextualCTA.vue'
 import SectionCTA from './SectionCTA.vue'
 import StickyHeaderCTA from './StickyHeaderCTA.vue'
@@ -60,29 +40,49 @@ import type {
 
 interface Props {
   audience: AudienceType
-  strategicCTAs: StrategicCTA[]
+  strategicCTAs?: StrategicCTA[]
   exitIntentOffer?: ExitIntentOffer
-  primaryMobileCTA: CTAButton
+  primaryMobileCTA?: CTAButton
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  strategicCTAs: () => [],
+  primaryMobileCTA: () => ({ text: 'Get Started', action: 'register', variant: 'primary' })
+})
 
 // Composables
 const { trackEvent } = useAnalytics()
 const { isMobile } = useAudienceDetection()
-const { scrollDepth, isScrolling } = useScrollTracking()
-const { showExitIntent, resetExitIntent } = useExitIntent()
 
 // Reactive state
-const engagementLevel = ref<EngagementLevel>('low')
-const showFloatingCTA = ref(false)
 const ctaInteractions = ref<Record<string, number>>({})
+const engagementLevel = ref<EngagementLevel>('medium')
 
 // Computed properties
 const strategicCTAsFiltered = computed(() => {
-  return props.strategicCTAs.filter(cta => 
-    cta.audience === props.audience || cta.audience === 'both'
-  )
+  if (!props.strategicCTAs || !Array.isArray(props.strategicCTAs)) {
+    return []
+  }
+  
+  return props.strategicCTAs.filter(cta => {
+    if (props.audience === 'institutional') {
+      return cta.audiences.includes('institutional') || cta.audiences.includes('both')
+    }
+    return cta.audiences.includes('general') || cta.audiences.includes('both')
+  })
+})
+
+const ctaClasses = computed(() => {
+  return (cta: any) => {
+    const baseClasses = 'inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md transition-all duration-200'
+    const variantClasses = {
+      primary: 'text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-500',
+      secondary: 'text-blue-700 bg-blue-100 hover:bg-blue-200 focus:ring-blue-500',
+      outline: 'text-blue-700 border-blue-300 hover:bg-blue-50 focus:ring-blue-500'
+    }
+    
+    return `${baseClasses} ${variantClasses[cta.variant] || variantClasses.primary}`
+  }
 })
 
 // Methods
@@ -90,8 +90,7 @@ const getCTAComponent = (type: string) => {
   const components = {
     'contextual': ContextualCTA,
     'section': SectionCTA,
-    'sticky-header': StickyHeaderCTA,
-    'floating': FloatingMobileCTA
+    'sticky-header': StickyHeaderCTA
   }
   return components[type] || ContextualCTA
 }
@@ -113,22 +112,25 @@ const handleCTAClick = (event: CTAClickEvent) => {
   // Track CTA interaction
   ctaInteractions.value[event.action] = (ctaInteractions.value[event.action] || 0) + 1
   
-  // Update engagement level based on interactions
-  updateEngagementLevel()
-  
   // Track analytics event
   trackEvent('cta_click', {
     action: event.action,
     section: event.section,
     audience: props.audience,
-    engagementLevel: engagementLevel.value,
-    scrollDepth: scrollDepth.value,
     interactionCount: ctaInteractions.value[event.action],
     ...event.additionalData
   })
   
   // Handle specific CTA actions
   handleCTAAction(event)
+}
+
+const handleMobileCTA = () => {
+  handleCTAClick({
+    action: props.primaryMobileCTA.action,
+    section: 'mobile-cta',
+    audience: props.audience
+  })
 }
 
 const handleCTAAction = (event: CTAClickEvent) => {
@@ -156,42 +158,7 @@ const handleCTAAction = (event: CTAClickEvent) => {
   }
 }
 
-const updateEngagementLevel = () => {
-  const totalInteractions = Object.values(ctaInteractions.value).reduce((sum, count) => sum + count, 0)
-  const scrollProgress = scrollDepth.value
-  
-  if (totalInteractions >= 3 || scrollProgress > 75) {
-    engagementLevel.value = 'high'
-  } else if (totalInteractions >= 1 || scrollProgress > 50) {
-    engagementLevel.value = 'medium'
-  } else {
-    engagementLevel.value = 'low'
-  }
-}
 
-const handleExitIntentClose = () => {
-  trackEvent('exit_intent_popup_close', {
-    audience: props.audience,
-    engagementLevel: engagementLevel.value,
-    scrollDepth: scrollDepth.value
-  })
-  resetExitIntent()
-}
-
-const handleExitIntentConvert = (action: string) => {
-  trackEvent('exit_intent_conversion', {
-    action,
-    audience: props.audience,
-    engagementLevel: engagementLevel.value,
-    scrollDepth: scrollDepth.value
-  })
-  resetExitIntent()
-  handleCTAClick({
-    action,
-    section: 'exit-intent',
-    audience: props.audience
-  })
-}
 
 const scrollToNextSection = (currentSection: string) => {
   // Implementation to scroll to next relevant section
@@ -205,91 +172,42 @@ const scrollToNextSection = (currentSection: string) => {
   }
 }
 
-// Lifecycle
+// Lifecycle hooks
 onMounted(() => {
-  // Show floating CTA after user scrolls past hero
-  const handleScroll = () => {
-    showFloatingCTA.value = scrollDepth.value > 25
-  }
-  
-  window.addEventListener('scroll', handleScroll)
-  
   // Track initial page view
-  trackEvent('conversion_ctas_loaded', {
+  trackEvent('conversion_ctas_view', {
     audience: props.audience,
-    ctaCount: strategicCTAsFiltered.value.length
+    strategicCTAsCount: props.strategicCTAs?.length || 0,
+    hasMobileCTA: !!props.primaryMobileCTA
   })
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', () => {})
 })
 </script>
 
 <style scoped>
-.conversion-ctas {
-  position: relative;
-}
-
-.strategic-cta {
-  transition: all 0.3s ease;
-}
-
-.cta-contextual {
-  position: relative;
-  z-index: 10;
+.strategic-ctas {
+  @apply space-y-8;
 }
 
 .cta-section {
-  margin: 2rem 0;
+  @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
 }
 
-.cta-sticky-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+.cta-grid {
+  @apply grid gap-4;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
-.cta-floating {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
+.cta-button {
+  @apply transition-all duration-200 transform hover:scale-105;
 }
 
-.cta-mobile-optimized {
-  @apply md:hidden;
-}
-
-.cta-mobile-optimized .cta-button {
-  min-height: 44px;
-  min-width: 44px;
-  font-size: 16px;
-  padding: 12px 24px;
-}
-
-.cta-high-engagement {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
+.mobile-cta {
+  @apply fixed bottom-4 right-4 z-50 md:hidden;
 }
 
 @media (max-width: 768px) {
-  .cta-floating {
-    bottom: 10px;
-    right: 10px;
-    left: 10px;
-    right: 10px;
+  .mobile-cta {
+    @apply bottom-0 right-0 left-0 rounded-none p-4 bg-blue-600 text-white text-center;
   }
 }
 </style>
