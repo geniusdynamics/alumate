@@ -15,7 +15,7 @@ use App\Exceptions\BrandConfigDeletionException;
  *
  * Handles brand configuration management, validation, and tenant isolation
  */
-class BrandConfigService
+class BrandConfigService extends BaseService
 {
     private int $cacheTtl = 3600; // 1 hour
 
@@ -35,12 +35,11 @@ class BrandConfigService
     {
         $this->validateBrandConfig($data);
 
-        // Ensure uniqueness within tenant
-        if (isset($data['name']) && isset($data['tenant_id'])) {
-            if (BrandConfig::where('tenant_id', $data['tenant_id'])
-                          ->where('name', $data['name'])
+        // Ensure uniqueness within tenant schema
+        if (isset($data['name'])) {
+            if (BrandConfig::where('name', $data['name'])
                           ->exists()) {
-                throw new BrandConfigValidationException('Brand configuration with this name already exists for this tenant');
+                throw new BrandConfigValidationException('Brand configuration with this name already exists');
             }
         }
 
@@ -49,13 +48,12 @@ class BrandConfigService
             'updated_by' => auth()->id(),
         ]));
 
-        // Clear tenant-specific cache
-        Cache::tags(['brand-configs'])->forget("tenant.{$data['tenant_id']}.configs");
+        // Clear cache
+        Cache::tags(['brand-configs'])->flush();
 
         Log::info('Brand configuration created', [
             'brand_config_id' => $brandConfig->id,
             'name' => $brandConfig->name,
-            'tenant_id' => $brandConfig->tenant_id,
         ]);
 
         return $brandConfig->fresh();
@@ -87,16 +85,11 @@ class BrandConfigService
      */
     public function getAll(array $filters = []): \Illuminate\Database\Eloquent\Collection
     {
-        $tenantId = $filters['tenant_id'] ?? 'all';
         return Cache::tags(['brand-configs'])->remember(
-            "tenant.{$tenantId}.configs." . md5(serialize($filters)),
+            "configs." . md5(serialize($filters)),
             $this->cacheTtl,
             function () use ($filters) {
                 $query = BrandConfig::query();
-
-                if (isset($filters['tenant_id'])) {
-                    $query->forTenant($filters['tenant_id']);
-                }
 
                 if (isset($filters['is_active'])) {
                     $query->where('is_active', $filters['is_active']);
@@ -120,19 +113,16 @@ class BrandConfigService
     }
 
     /**
-     * Get default brand configuration for tenant
+     * Get default brand configuration
      *
-     * @param int|null $tenantId If null, uses current tenant context
      * @return BrandConfig|null
      */
-    public function getDefault(?int $tenantId = null): ?BrandConfig
+    public function getDefault(): ?BrandConfig
     {
-        $tenantId = $tenantId ?? (tenant()->id ?? 1);
-
         return Cache::tags(['brand-configs'])->remember(
-            "tenant.{$tenantId}.default",
+            "default",
             $this->cacheTtl,
-            fn() => BrandConfig::forTenant($tenantId)->default()->active()->first()
+            fn() => BrandConfig::default()->active()->first()
         );
     }
 
@@ -151,19 +141,17 @@ class BrandConfigService
 
         // Validate uniqueness if name is being changed
         if (isset($data['name']) && $data['name'] !== $brandConfig->name) {
-            if (BrandConfig::where('tenant_id', $brandConfig->tenant_id)
-                          ->where('name', $data['name'])
+            if (BrandConfig::where('name', $data['name'])
                           ->where('id', '!=', $id)
                           ->exists()) {
-                throw new BrandConfigValidationException('Brand configuration with this name already exists for this tenant');
+                throw new BrandConfigValidationException('Brand configuration with this name already exists');
             }
         }
 
         // Handle default flag changes
         if (isset($data['is_default']) && $data['is_default']) {
-            // Remove default from all other brand configs for this tenant
-            BrandConfig::where('tenant_id', $brandConfig->tenant_id)
-                       ->where('id', '!=', $id)
+            // Remove default from all other brand configs
+            BrandConfig::where('id', '!=', $id)
                        ->update(['is_default' => false]);
         }
 
@@ -188,8 +176,8 @@ class BrandConfigService
     {
         $brandConfig = $this->getById($id);
 
-        // Remove default from all brand configs for this tenant
-        BrandConfig::where('tenant_id', $brandConfig->tenant_id)
+        // Remove default from all brand configs
+        BrandConfig::where('id', '!=', $id)
                    ->update(['is_default' => false]);
 
         // Set this as default
@@ -226,7 +214,7 @@ class BrandConfigService
         $duplicate->save();
 
         // Clear cache
-        Cache::tags(['brand-configs'])->forget("tenant.{$original->tenant_id}.configs");
+        Cache::tags(['brand-configs'])->flush();
 
         return $duplicate->fresh();
     }
@@ -245,8 +233,7 @@ class BrandConfigService
 
         // Check if this is the default and if there are alternatives
         if ($brandConfig->is_default) {
-            $alternatives = BrandConfig::where('tenant_id', $brandConfig->tenant_id)
-                                      ->where('id', '!=', $id)
+            $alternatives = BrandConfig::where('id', '!=', $id)
                                       ->count();
 
             if ($alternatives === 0) {
@@ -254,8 +241,7 @@ class BrandConfigService
             }
 
             // Set first alternative as default
-            $alternative = BrandConfig::where('tenant_id', $brandConfig->tenant_id)
-                                     ->where('id', '!=', $id)
+            $alternative = BrandConfig::where('id', '!=', $id)
                                      ->first();
             $alternative->update(['is_default' => true]);
         }
@@ -273,7 +259,6 @@ class BrandConfigService
         Log::info('Brand configuration deleted', [
             'brand_config_id' => $id,
             'name' => $brandConfig->name,
-            'tenant_id' => $brandConfig->tenant_id,
         ]);
 
         return true;
@@ -405,7 +390,6 @@ class BrandConfigService
         }
 
         $brandData = array_merge($importData['brand_config'], array_filter([
-            'tenant_id' => $options['tenant_id'] ?? null,
             'is_default' => false,
             'is_active' => true,
             'created_by' => auth()->id(),

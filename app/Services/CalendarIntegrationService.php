@@ -1,4 +1,6 @@
 <?php
+// ABOUTME: Service for integrating with external calendar providers (Google, Outlook, Apple, CalDAV)
+// ABOUTME: Updated for schema-based tenancy - handles calendar sync and event management within tenant context
 
 namespace App\Services;
 
@@ -13,7 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Microsoft\Graph\Graph;
 
-class CalendarIntegrationService
+class CalendarIntegrationService extends BaseService
 {
     protected array $supportedProviders = [
         'google',

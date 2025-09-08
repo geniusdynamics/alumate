@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
  * Core business logic for managing A/B tests, traffic distribution,
  * and statistical analysis.
  */
-class AbTestService
+class AbTestService extends BaseService
 {
     /**
      * Cache keys and durations

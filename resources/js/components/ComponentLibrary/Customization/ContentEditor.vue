@@ -786,7 +786,7 @@ interface Emits {
   fileUploaded: [data: { blockId: string; file: File; url: string }]
   blockOrderChanged: [blocks: ContentBlock[]]
   blockDeleted: [blockId: string]
-  blockDuplicated: [originalBlockId: string; newBlockId: string]
+  blockDuplicated: [originalBlockId: string, newBlockId: string]
 }
 
 const props = withDefaults(defineProps<Props>(), {

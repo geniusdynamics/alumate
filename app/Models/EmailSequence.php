@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: EmailSequence model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages email sequences with tenant isolation handled by database schema
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +17,7 @@ class EmailSequence extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'name',
         'description',
         'audience_type',
@@ -53,34 +56,32 @@ class EmailSequence extends Model
     ];
 
     /**
+     * Get the current tenant from context.
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
+
+    /**
      * Boot the model
      */
     protected static function boot(): void
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
-        });
+        // Schema-based tenancy: tenant isolation handled by database schema
+        // No global scope needed as each tenant has its own schema
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility - returns query unchanged in schema-based tenancy).
      */
     public function scopeForTenant($query, string $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, tenant filtering is handled by database schema
+        // This scope is maintained for legacy compatibility but returns query unchanged
+        return $query;
     }
 
     /**
@@ -108,11 +109,13 @@ class EmailSequence extends Model
     }
 
     /**
-     * Get the tenant that owns the sequence
+     * Get the tenant that owns the sequence (legacy compatibility for schema-based tenancy).
      */
     public function tenant(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class);
+        // In schema-based tenancy, return current tenant from context
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id);
     }
 
     /**
@@ -150,7 +153,7 @@ class EmailSequence extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // 'tenant_id' => 'required|exists:tenants,id', // Removed for schema-based tenancy
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'audience_type' => ['required', 'string', Rule::in(self::AUDIENCE_TYPES)],
@@ -167,10 +170,11 @@ class EmailSequence extends Model
     {
         $rules = self::getValidationRules();
 
+        // In schema-based tenancy, uniqueness is enforced within the tenant's schema
         if ($ignoreId) {
-            $rules['name'] = 'required|string|max:255|unique:email_sequences,name,' . $ignoreId . ',id,tenant_id,' . tenant()->id;
+            $rules['name'] = 'required|string|max:255|unique:email_sequences,name,' . $ignoreId . ',id';
         } else {
-            $rules['name'] = 'required|string|max:255|unique:email_sequences,name,NULL,id,tenant_id,' . tenant()->id;
+            $rules['name'] = 'required|string|max:255|unique:email_sequences,name';
         }
 
         return $rules;

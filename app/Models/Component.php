@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: Component model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages UI components with automatic tenant context resolution
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,7 +18,6 @@ class Component extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'theme_id',
         'name',
         'slug',
@@ -66,24 +68,20 @@ class Component extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically (skip in testing)
-        try {
-            if (app()->bound('auth') && auth()->check() && auth()->user() && auth()->user()->tenant_id) {
-                static::addGlobalScope('tenant', function ($builder) {
-                    $builder->where('tenant_id', auth()->user()->tenant_id);
-                });
-            }
-        } catch (\Exception $e) {
-            // Skip tenant scoping in test environment or when auth is not available
-        }
+        // Apply tenant context for schema-based tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            app(TenantContextService::class)->applyTenantContext($builder);
+        });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (for schema-based tenancy)
+     * Note: This is primarily for administrative purposes
      */
-    public function scopeForTenant($query, int $tenantId)
+    public function scopeForTenant($query, string $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, this would switch schema context
+        return app(TenantContextService::class)->scopeToTenant($query, $tenantId);
     }
 
     /**
@@ -111,11 +109,12 @@ class Component extends Model
     }
 
     /**
-     * Get the tenant that owns the component
+     * Get the current tenant context
+     * Note: In schema-based tenancy, tenant relationship is contextual
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**

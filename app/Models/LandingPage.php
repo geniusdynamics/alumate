@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: LandingPage model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages landing pages with automatic tenant context resolution
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +17,6 @@ class LandingPage extends Model
 
     protected $fillable = [
         'template_id',
-        'tenant_id',
         'name',
         'slug',
         'description',
@@ -90,25 +92,15 @@ class LandingPage extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
+        // Apply tenant context for schema-based tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            app(TenantContextService::class)->applyTenantContext($builder);
         });
 
         // Auto-generate slug if not provided
         static::creating(function ($page) {
             if (empty($page->slug)) {
-                $page->slug = $page->generateUniqueSlug($page->name, $page->tenant_id);
+                $page->slug = $page->generateUniqueSlug($page->name);
             }
 
             // Generate draft hash for tracking changes
@@ -119,11 +111,13 @@ class LandingPage extends Model
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (for schema-based tenancy)
+     * Note: This is primarily for administrative purposes
      */
-    public function scopeForTenant($query, int $tenantId)
+    public function scopeForTenant($query, string $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, this would switch schema context
+        return app(TenantContextService::class)->scopeToTenant($query, $tenantId);
     }
 
     /**
@@ -175,11 +169,12 @@ class LandingPage extends Model
     }
 
     /**
-     * Get the tenant that owns this landing page
+     * Get the current tenant context
+     * Note: In schema-based tenancy, tenant relationship is contextual
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**
@@ -338,13 +333,13 @@ class LandingPage extends Model
     /**
      * Generate a unique slug for the landing page
      */
-    protected function generateUniqueSlug(string $name, int $tenantId): string
+    protected function generateUniqueSlug(string $name): string
     {
         $baseSlug = Str::slug($name);
         $slug = $baseSlug;
         $counter = 1;
 
-        while ($this->slugExists($slug, $tenantId)) {
+        while ($this->slugExists($slug)) {
             $slug = $baseSlug . '-' . $counter;
             $counter++;
         }
@@ -353,11 +348,11 @@ class LandingPage extends Model
     }
 
     /**
-     * Check if a slug exists for the tenant
+     * Check if a slug exists in current tenant context
      */
-    protected function slugExists(string $slug, int $tenantId): bool
+    protected function slugExists(string $slug): bool
     {
-        $query = static::where('tenant_id', $tenantId)->where('slug', $slug);
+        $query = static::where('slug', $slug);
 
         if ($this->exists) {
             $query->where('id', '!=', $this->id);

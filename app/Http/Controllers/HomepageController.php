@@ -30,11 +30,9 @@ class HomepageController extends Controller
         // Build context for personalization
         $context = $this->buildContext($request);
 
-        // Get personalized content; if not array, replace with default content
-        $content = $this->homepageService->getPersonalizedContent($audience, $context);
-        if (! is_array($content)) {
-            $content = $this->getDefaultContent();
-        }
+        // TEMPORARY FIX: Bypass personalization service to avoid memory issues
+        // $content = $this->homepageService->getPersonalizedContent($audience, $context);
+        $content = $this->getDefaultContent();
 
         // Ensure content has required structure with safe defaults
         if (! is_array($content) || empty($content)) {
@@ -98,11 +96,9 @@ class HomepageController extends Controller
         // Build context for personalization
         $context = $this->buildContext($request);
 
-        // Get personalized content; if not array, replace with default content
-        $content = $this->homepageService->getPersonalizedContent($audience, $context);
-        if (! is_array($content)) {
-            $content = $this->getDefaultContent();
-        }
+        // TEMPORARY FIX: Bypass personalization service to avoid memory issues
+        // $content = $this->homepageService->getPersonalizedContent($audience, $context);
+        $content = $this->getDefaultContent();
 
         // Ensure content has required structure with safe defaults
         if (! is_array($content) || empty($content)) {

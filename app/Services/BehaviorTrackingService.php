@@ -19,7 +19,7 @@ use Carbon\Carbon;
  * Core business logic for tracking user behaviors, evaluating trigger conditions,
  * and managing automatic sequence enrollment based on lead engagement.
  */
-class BehaviorTrackingService
+class BehaviorTrackingService extends BaseService
 {
     /**
      * Cache keys and durations
@@ -50,7 +50,6 @@ class BehaviorTrackingService
                 'ip_address' => $eventData['ip_address'] ?? request()->ip(),
                 'user_agent' => $eventData['user_agent'] ?? request()->userAgent(),
                 'occurred_at' => $eventData['occurred_at'] ?? now(),
-                'tenant_id' => tenant()->id,
             ]);
 
             // Update lead score based on behavior
@@ -65,7 +64,6 @@ class BehaviorTrackingService
                 'event_id' => $event->id,
                 'lead_id' => $event->lead_id,
                 'event_type' => $event->event_type,
-                'tenant_id' => tenant()->id,
             ]);
 
             return $event;
@@ -74,7 +72,6 @@ class BehaviorTrackingService
             Log::error('Failed to track behavior event', [
                 'error' => $e->getMessage(),
                 'event_data' => $eventData,
-                'tenant_id' => tenant()->id,
             ]);
             throw $e;
         }

@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Collection;
  * Handles all notification operations including sending, preferences,
  * templates, and multi-channel delivery with tenant isolation
  */
-class NotificationService
+class NotificationService extends BaseService
 {
     protected const CACHE_TTL = 3600; // 1 hour
 
@@ -170,7 +170,6 @@ class NotificationService
         $notification = $user->notifications()->create([
             'type' => $type,
             'data' => $data,
-            'tenant_id' => $user->tenant_id ?? null,
         ]);
 
         // Broadcast to real-time channels if needed
@@ -268,8 +267,9 @@ class NotificationService
      */
     protected function logNotification(int $userId, string $type, string $channel, string $status, ?string $error = null): void
     {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
+        
         NotificationLog::create([
-            'tenant_id' => tenant()->id ?? null,
             'notification_id' => null, // Would be set if we have a notification record
             'channel' => $channel,
             'status' => $status,
@@ -315,7 +315,6 @@ class NotificationService
             [
                 'user_id' => $userId,
                 'notification_type' => $type,
-                'tenant_id' => tenant()->id ?? null,
             ],
             $preferences
         );

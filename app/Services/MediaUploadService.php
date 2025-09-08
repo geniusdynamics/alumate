@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Intervention\Image\Facades\Image;
 
-class MediaUploadService
+class MediaUploadService extends BaseService
 {
     protected array $allowedImageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 

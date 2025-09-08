@@ -1,10 +1,13 @@
 <?php
+// ABOUTME: SecurityLog model for tracking security events with schema-based tenant isolation
+// ABOUTME: Handles security logging, threat detection, and audit trails within tenant context
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Services\TenantContextService;
 
 /**
  * SecurityLog Model
@@ -28,7 +31,7 @@ class SecurityLog extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'user_id',
         'event_type',
         'event_category',
@@ -122,19 +125,37 @@ class SecurityLog extends Model
     }
 
     /**
-     * Get the tenant associated with this security log.
+     * Get the current tenant context
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**
-     * Scope to filter by tenant
+     * Scope to filter by tenant (legacy compatibility)
      */
-    public function scopeForTenant($query, $tenantId)
+    public function scopeForTenant($query, $tenantId = null)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, tenant context is automatically applied
+        return $query;
+    }
+
+    /**
+     * The model's "booted" method.
+     */
+    protected static function booted(): void
+    {
+        // Apply tenant context global scope
+        static::addGlobalScope('tenant', function ($builder) {
+            if (app()->bound(TenantContextService::class)) {
+                $tenantContext = app(TenantContextService::class);
+                if ($tenantContext->hasTenantContext()) {
+                    // In schema-based tenancy, queries are automatically scoped to current schema
+                    // No additional filtering needed
+                }
+            }
+        });
     }
 
     /**
@@ -202,7 +223,6 @@ class SecurityLog extends Model
     /**
      * Log template security violation
      *
-     * @param int $tenantId
      * @param int|null $userId
      * @param int|null $templateId
      * @param array $violations
@@ -210,14 +230,12 @@ class SecurityLog extends Model
      * @return static
      */
     public static function logTemplateViolation(
-        int $tenantId,
         ?int $userId,
         ?int $templateId,
         array $violations,
         array $additionalData = []
     ): self {
         return static::create([
-            'tenant_id' => $tenantId,
             'user_id' => $userId,
             'event_type' => self::EVENT_TYPE_TEMPLATE_VIOLATION,
             'event_category' => self::CATEGORY_INPUT_VALIDATION,
@@ -234,20 +252,17 @@ class SecurityLog extends Model
     /**
      * Log XSS attempt
      *
-     * @param int $tenantId
      * @param int|null $userId
      * @param int|null $templateId
      * @param array $threatDetails
      * @return static
      */
     public static function logXssAttempt(
-        int $tenantId,
         ?int $userId,
         ?int $templateId,
         array $threatDetails
     ): self {
         return static::create([
-            'tenant_id' => $tenantId,
             'user_id' => $userId,
             'event_type' => self::EVENT_TYPE_XSS_ATTEMPT,
             'event_category' => self::CATEGORY_XSS_PREVENTION,
@@ -264,28 +279,25 @@ class SecurityLog extends Model
     /**
      * Log tenant isolation breach
      *
-     * @param int $tenantId
      * @param int|null $userId
-     * @param int $attemptedTenantId
+     * @param string $attemptedSchema
      * @param array $additionalData
      * @return static
      */
     public static function logTenantIsolationBreach(
-        int $tenantId,
         ?int $userId,
-        int $attemptedTenantId,
+        string $attemptedSchema,
         array $additionalData = []
     ): self {
         return static::create([
-            'tenant_id' => $tenantId,
             'user_id' => $userId,
             'event_type' => self::EVENT_TYPE_TENANT_ISOLATION_BREACH,
             'event_category' => self::CATEGORY_TENANT_SECURITY,
             'severity' => self::SEVERITY_CRITICAL,
-            'description' => "Tenant isolation breach attempted: tried to access tenant {$attemptedTenantId} from tenant {$tenantId}",
+            'description' => "Tenant isolation breach attempted: tried to access schema {$attemptedSchema}",
             'metadata' => array_merge($additionalData, [
-                'attempted_tenant_id' => $attemptedTenantId,
-                'breach_type' => 'cross_tenant_access'
+                'attempted_schema' => $attemptedSchema,
+                'breach_type' => 'cross_schema_access'
             ]),
             'occurred_at' => now(),
             'resolution_status' => self::STATUS_OPEN,
@@ -295,7 +307,6 @@ class SecurityLog extends Model
     /**
      * Log unauthorized access attempt
      *
-     * @param int $tenantId
      * @param int|null $userId
      * @param string $resourceType
      * @param int|string $resourceId
@@ -303,14 +314,12 @@ class SecurityLog extends Model
      * @return static
      */
     public static function logUnauthorizedAccess(
-        int $tenantId,
         ?int $userId,
         string $resourceType,
         $resourceId,
         array $additionalData = []
     ): self {
         return static::create([
-            'tenant_id' => $tenantId,
             'user_id' => $userId,
             'event_type' => self::EVENT_TYPE_UNAUTHORIZED_ACCESS,
             'event_category' => self::CATEGORY_ACCESS_CONTROL,
@@ -327,20 +336,17 @@ class SecurityLog extends Model
     /**
      * Log rate limit exceeded
      *
-     * @param int $tenantId
      * @param int|null $userId
      * @param string $operationType
      * @param array $additionalData
      * @return static
      */
     public static function logRateLimitExceeded(
-        int $tenantId,
         ?int $userId,
         string $operationType,
         array $additionalData = []
     ): self {
         return static::create([
-            'tenant_id' => $tenantId,
             'user_id' => $userId,
             'event_type' => self::EVENT_TYPE_RATE_LIMIT_EXCEEDED,
             'event_category' => self::CATEGORY_RATE_LIMITING,
@@ -419,14 +425,13 @@ class SecurityLog extends Model
     }
 
     /**
-     * Get security statistics for a tenant
+     * Get security statistics for current tenant
      *
-     * @param int $tenantId
      * @return array
      */
-    public static function getSecurityStats(int $tenantId): array
+    public static function getSecurityStats(): array
     {
-        $query = static::forTenant($tenantId);
+        $query = static::query();
 
         return [
             'total_events' => $query->count(),
@@ -434,21 +439,20 @@ class SecurityLog extends Model
             'high_severity_events' => (clone $query)->bySeverity(self::SEVERITY_HIGH)->count(),
             'unresolved_events' => (clone $query)->unresolved()->count(),
             'recent_events_24h' => (clone $query)->recent(24)->count(),
-            'most_common_event_types' => static::getMostCommonEventTypes($tenantId),
-            'events_by_category' => static::getEventsByCategory($tenantId),
+            'most_common_event_types' => static::getMostCommonEventTypes(),
+            'events_by_category' => static::getEventsByCategory(),
         ];
     }
 
     /**
-     * Get most common event types for a tenant
+     * Get most common event types for current tenant
      *
-     * @param int $tenantId
      * @param int $limit
      * @return array
      */
-    protected static function getMostCommonEventTypes(int $tenantId, int $limit = 10): array
+    protected static function getMostCommonEventTypes(int $limit = 10): array
     {
-        return static::forTenant($tenantId)
+        return static::query()
             ->select('event_type', \DB::raw('COUNT(*) as count'))
             ->groupBy('event_type')
             ->orderBy('count', 'desc')
@@ -458,14 +462,13 @@ class SecurityLog extends Model
     }
 
     /**
-     * Get events grouped by category for a tenant
+     * Get events grouped by category for current tenant
      *
-     * @param int $tenantId
      * @return array
      */
-    protected static function getEventsByCategory(int $tenantId): array
+    protected static function getEventsByCategory(): array
     {
-        return static::forTenant($tenantId)
+        return static::query()
             ->select('event_category', \DB::raw('COUNT(*) as count'))
             ->groupBy('event_category')
             ->pluck('count', 'event_category')
@@ -473,16 +476,15 @@ class SecurityLog extends Model
     }
 
     /**
-     * Get threat patterns for a tenant within date range
+     * Get threat patterns for current tenant within date range
      *
-     * @param int $tenantId
      * @param string $startDate
      * @param string $endDate
      * @return array
      */
-    public static function getThreatPatterns(int $tenantId, string $startDate, string $endDate): array
+    public static function getThreatPatterns(string $startDate, string $endDate): array
     {
-        return static::forTenant($tenantId)
+        return static::query()
             ->inDateRange($startDate, $endDate)
             ->whereNotNull('threat_patterns')
             ->select('threat_patterns', 'event_type', 'occurred_at')
@@ -511,27 +513,25 @@ class SecurityLog extends Model
     }
 
     /**
-     * Generate security report for a tenant
+     * Generate security report for current tenant
      *
-     * @param int $tenantId
      * @param int $days
      * @return array
      */
-    public static function generateSecurityReport(int $tenantId, int $days = 30): array
+    public static function generateSecurityReport(int $days = 30): array
     {
         $startDate = now()->subDays($days);
 
-        $query = static::forTenant($tenantId)->where('occurred_at', '>=', $startDate);
+        $query = static::query()->where('occurred_at', '>=', $startDate);
 
         return [
-            'tenant_id' => $tenantId,
             'period_days' => $days,
             'generated_at' => now(),
-            'statistics' => static::getSecurityStats($tenantId),
+            'statistics' => static::getSecurityStats(),
             'critical_events' => $query->bySeverity(self::SEVERITY_CRITICAL)->get(),
-            'top_threats' => static::getMostCommonEventTypes($tenantId),
+            'top_threats' => static::getMostCommonEventTypes(),
             'unresolved_events' => $query->unresolved()->get(),
-            'threat_patterns' => static::getThreatPatterns($tenantId, $startDate->toDateString(), now()->toDateString()),
+            'threat_patterns' => static::getThreatPatterns($startDate->toDateString(), now()->toDateString()),
         ];
     }
 }

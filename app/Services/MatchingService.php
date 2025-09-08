@@ -1,4 +1,6 @@
 <?php
+// ABOUTME: Service for calculating job-graduate matches and compatibility scores
+// ABOUTME: Updated for schema-based tenancy - handles matching algorithms within tenant context
 
 namespace App\Services;
 
@@ -9,7 +11,7 @@ use App\Models\JobGraduateMatch;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class MatchingService
+class MatchingService extends BaseService
 {
     public function calculateJobGraduateMatch(Job $job, Graduate $graduate)
     {

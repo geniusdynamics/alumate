@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: Graduate model for managing graduate records with schema-based tenant isolation
+// ABOUTME: Uses schema-based tenancy where each tenant has their own database schema for complete data isolation
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use App\Traits\HasGraduateAuditLog;
 use App\Traits\HasPreviousInstitution;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -13,7 +16,7 @@ class Graduate extends Model
     use HasFactory, HasGraduateAuditLog, HasPreviousInstitution;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Commented out for schema-based tenancy - tenant isolation handled at schema level
         'student_id',
         'name',
         'email',
@@ -40,6 +43,14 @@ class Graduate extends Model
         'profile_visibility',
         'user_id',
     ];
+
+    /**
+     * Get current tenant from context service
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
 
     protected $casts = [
         'graduation_year' => 'integer',
@@ -70,12 +81,16 @@ class Graduate extends Model
 
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class);
+        // Schema-based tenancy: Return current tenant from context instead of database relationship
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
     public function institution()
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
+        // Schema-based tenancy: Return current tenant from context instead of database relationship
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
     public function applications()

@@ -41,7 +41,7 @@ export function lazyRoute(path: string, chunkName?: string) {
     return () => {
         const componentPath = path.startsWith('./') ? path : `./Pages/${path}.vue`
         
-        return import(/* webpackChunkName: "[request]" */ componentPath)
+        return import(/* @vite-ignore */ componentPath)
     }
 }
 

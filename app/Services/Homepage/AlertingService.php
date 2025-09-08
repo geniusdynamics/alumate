@@ -1,14 +1,18 @@
 <?php
 
+// ABOUTME: This service handles alerting functionality for homepage monitoring and notifications
+// ABOUTME: Provides alert management with rate limiting and multi-channel delivery (Slack, email, PagerDuty, etc.)
+
 namespace App\Services\Homepage;
 
 use App\Mail\Homepage\AlertNotification;
+use App\Services\BaseService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class AlertingService
+class AlertingService extends BaseService
 {
     private array $config;
 

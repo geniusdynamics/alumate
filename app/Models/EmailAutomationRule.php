@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: EmailAutomationRule model for managing email automation rules with schema-based tenant isolation
+// ABOUTME: Uses schema-based tenancy where each tenant has their own database schema for complete data isolation
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,8 +24,16 @@ class EmailAutomationRule extends Model
         'is_active',
         'sent_count',
         'created_by',
-        'tenant_id',
+        // 'tenant_id', // Commented out for schema-based tenancy - tenant isolation handled at schema level
     ];
+
+    /**
+     * Get current tenant from context service
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
 
     protected function casts(): array
     {
@@ -40,7 +51,9 @@ class EmailAutomationRule extends Model
 
     public function tenant(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class);
+        // Schema-based tenancy: Return current tenant from context instead of database relationship
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
     public function template(): BelongsTo

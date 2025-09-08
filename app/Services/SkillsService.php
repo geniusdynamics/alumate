@@ -1,5 +1,8 @@
 <?php
 
+// ABOUTME: This service handles skill management including user skills, endorsements, and skill recommendations
+// ABOUTME: Provides functionality for skill tracking, gap analysis, and learning resource recommendations
+
 namespace App\Services;
 
 use App\Models\LearningResource;
@@ -9,7 +12,7 @@ use App\Models\User;
 use App\Models\UserSkill;
 use Illuminate\Support\Collection;
 
-class SkillsService
+class SkillsService extends BaseService
 {
     public function addSkillToUser(User $user, array $skillData): UserSkill
     {

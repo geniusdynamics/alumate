@@ -1,5 +1,8 @@
 <?php
 
+// ABOUTME: This service handles security operations including two-factor authentication, failed login tracking, and security policy enforcement
+// ABOUTME: Provides comprehensive security monitoring and protection features for user accounts and system access
+
 namespace App\Services;
 
 use App\Models\FailedLoginAttempt;
@@ -16,7 +19,7 @@ use Illuminate\Support\Str;
 // Note: Google2FA package may not be installed, using fallback for secret generation
 // If needed, install with: composer require pragmarx/google2fa
 
-class SecurityService
+class SecurityService extends BaseService
 {
     public function __construct()
     {

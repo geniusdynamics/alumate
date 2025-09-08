@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\EmailAnalytics;
 use App\Models\Tenant;
+use App\Services\TenantContextService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
@@ -20,6 +21,13 @@ class EmailAnalyticsService
     const CACHE_PREFIX = 'email_analytics_';
     const CACHE_DURATION = 1800; // 30 minutes
 
+    protected TenantContextService $tenantContext;
+
+    public function __construct(TenantContextService $tenantContext)
+    {
+        $this->tenantContext = $tenantContext;
+    }
+
     /**
      * Track email delivery event
      */
@@ -31,7 +39,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordDelivery();
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -47,7 +55,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordOpen($metadata);
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -63,7 +71,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordClick($url, $metadata);
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -79,7 +87,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordConversion($type, $value, $metadata);
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -95,7 +103,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordBounce($reason);
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -111,7 +119,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordComplaint($reason);
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -127,7 +135,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordUnsubscribe();
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -135,12 +143,13 @@ class EmailAnalyticsService
     /**
      * Get email performance metrics
      */
-    public function getEmailPerformanceMetrics(int $tenantId, array $filters = []): array
+    public function getEmailPerformanceMetrics(array $filters = []): array
     {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = self::CACHE_PREFIX . 'performance_' . $tenantId . '_' . md5(serialize($filters));
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($tenantId, $filters) {
-            $query = EmailAnalytics::forTenant($tenantId);
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
+            $query = EmailAnalytics::query();
 
             // Apply date filters
             if (isset($filters['start_date'])) {
@@ -192,12 +201,13 @@ class EmailAnalyticsService
     /**
      * Get funnel analytics from email open to final conversion
      */
-    public function getFunnelAnalytics(int $tenantId, array $filters = []): array
+    public function getFunnelAnalytics(array $filters = []): array
     {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = self::CACHE_PREFIX . 'funnel_' . $tenantId . '_' . md5(serialize($filters));
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($tenantId, $filters) {
-            $query = EmailAnalytics::forTenant($tenantId);
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
+            $query = EmailAnalytics::query();
 
             // Apply filters
             if (isset($filters['start_date'])) {
@@ -236,12 +246,13 @@ class EmailAnalyticsService
     /**
      * Generate engagement reports and trend analysis
      */
-    public function generateEngagementReport(int $tenantId, array $filters = []): array
+    public function generateEngagementReport(array $filters = []): array
     {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = self::CACHE_PREFIX . 'engagement_' . $tenantId . '_' . md5(serialize($filters));
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($tenantId, $filters) {
-            $query = EmailAnalytics::forTenant($tenantId);
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
+            $query = EmailAnalytics::query();
 
             // Apply filters
             if (isset($filters['start_date'])) {
@@ -297,12 +308,13 @@ class EmailAnalyticsService
     /**
      * Get A/B testing results for email variants
      */
-    public function getABTestResults(int $tenantId, array $filters = []): array
+    public function getABTestResults(array $filters = []): array
     {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = self::CACHE_PREFIX . 'ab_test_' . $tenantId . '_' . md5(serialize($filters));
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($tenantId, $filters) {
-            $query = EmailAnalytics::forTenant($tenantId)->whereNotNull('ab_test_variant');
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
+            $query = EmailAnalytics::whereNotNull('ab_test_variant');
 
             // Apply filters
             if (isset($filters['start_date'])) {
@@ -366,7 +378,7 @@ class EmailAnalyticsService
         }
 
         $analytics->recordConversion($conversionType, $metadata['value'] ?? 0.00, $metadata);
-        $this->clearAnalyticsCache($analytics->tenant_id);
+        $this->clearAnalyticsCache();
 
         return true;
     }
@@ -374,11 +386,11 @@ class EmailAnalyticsService
     /**
      * Get real-time analytics updates
      */
-    public function getRealTimeAnalytics(int $tenantId, int $minutes = 5): array
+    public function getRealTimeAnalytics(int $minutes = 5): array
     {
         $since = Carbon::now()->subMinutes($minutes);
 
-        $recentActivity = EmailAnalytics::forTenant($tenantId)
+        $recentActivity = EmailAnalytics::query()
             ->where('updated_at', '>=', $since)
             ->orderBy('updated_at', 'desc')
             ->limit(50)
@@ -410,11 +422,12 @@ class EmailAnalyticsService
     /**
      * Generate automated reports
      */
-    public function generateAutomatedReport(int $tenantId, string $period = 'daily', array $filters = []): array
+    public function generateAutomatedReport(string $period = 'daily', array $filters = []): array
     {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = self::CACHE_PREFIX . 'report_' . $tenantId . '_' . $period . '_' . md5(serialize($filters));
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($tenantId, $period, $filters) {
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($period, $filters) {
             $dateRange = $this->getDateRangeForPeriod($period);
 
             $filters = array_merge($filters, [
@@ -425,11 +438,11 @@ class EmailAnalyticsService
             return [
                 'period' => $period,
                 'date_range' => $dateRange,
-                'performance_metrics' => $this->getEmailPerformanceMetrics($tenantId, $filters),
-                'funnel_analytics' => $this->getFunnelAnalytics($tenantId, $filters),
-                'engagement_report' => $this->generateEngagementReport($tenantId, $filters),
-                'ab_test_results' => $this->getABTestResults($tenantId, $filters),
-                'recommendations' => $this->generateRecommendations($tenantId, $filters),
+                'performance_metrics' => $this->getEmailPerformanceMetrics($filters),
+                'funnel_analytics' => $this->getFunnelAnalytics($filters),
+                'engagement_report' => $this->generateEngagementReport($filters),
+                'ab_test_results' => $this->getABTestResults($filters),
+                'recommendations' => $this->generateRecommendations($filters),
                 'generated_at' => now(),
             ];
         });
@@ -544,9 +557,9 @@ class EmailAnalyticsService
     /**
      * Generate recommendations based on analytics data
      */
-    private function generateRecommendations(int $tenantId, array $filters): array
+    private function generateRecommendations(array $filters): array
     {
-        $metrics = $this->getEmailPerformanceMetrics($tenantId, $filters);
+        $metrics = $this->getEmailPerformanceMetrics($filters);
         $recommendations = [];
 
         if ($metrics['open_rate'] < 20) {
@@ -585,10 +598,11 @@ class EmailAnalyticsService
     }
 
     /**
-     * Clear analytics cache for tenant
+     * Clear analytics cache for current tenant
      */
-    private function clearAnalyticsCache(int $tenantId): void
+    private function clearAnalyticsCache(): void
     {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKeys = [
             self::CACHE_PREFIX . 'performance_' . $tenantId,
             self::CACHE_PREFIX . 'funnel_' . $tenantId,

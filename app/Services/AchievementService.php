@@ -12,7 +12,7 @@ use App\Notifications\AchievementEarnedNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class AchievementService
+class AchievementService extends BaseService
 {
     /**
      * Check and award achievements for a user

@@ -1,5 +1,8 @@
 <?php
 
+// ABOUTME: This service handles template management including filtering, validation, and tenant isolation
+// ABOUTME: Provides comprehensive template operations for landing pages and campaign templates
+
 namespace App\Services;
 
 use App\Models\Template;
@@ -20,7 +23,7 @@ use App\Services\MobileTemplateRenderer;
  * Core business logic for template management, filtering, and validation.
  * Provides comprehensive template operations with tenant isolation.
  */
-class TemplateService
+class TemplateService extends BaseService
 {
     /**
      * Cache service instance

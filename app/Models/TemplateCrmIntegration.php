@@ -1,7 +1,11 @@
 <?php
 
+// ABOUTME: This model manages CRM integrations for templates with schema-based multi-tenancy
+// ABOUTME: Handles synchronization between templates and various CRM providers (Salesforce, HubSpot, etc.)
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +16,7 @@ class TemplateCrmIntegration extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'name',
         'provider',
         'config',
@@ -73,28 +77,28 @@ class TemplateCrmIntegration extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
+        // Apply schema-based tenant scoping automatically
         static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
+            try {
+                $tenantContext = app(TenantContextService::class);
+                if ($tenantContext->hasContext()) {
+                    // Schema-based tenancy: queries are automatically scoped to current schema
+                    // No additional filtering needed as data is physically separated
                 }
+            } catch (\Exception $e) {
+                // Skip tenant scoping in test environment or when service unavailable
             }
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
+     * Note: With schema-based tenancy, this is handled automatically by database schema
      */
     public function scopeForTenant($query, int $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // Legacy method - schema-based tenancy handles this automatically
+        return $query;
     }
 
     /**
@@ -126,11 +130,16 @@ class TemplateCrmIntegration extends Model
     }
 
     /**
-     * Get the tenant that owns the integration
+     * Get the current tenant context
+     * Note: With schema-based tenancy, tenant context is managed by TenantContextService
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        try {
+            return app(TenantContextService::class)->getCurrentTenant();
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**
@@ -301,7 +310,7 @@ class TemplateCrmIntegration extends Model
     private function createSyncLog(Template $template, string $syncType, array $data): TemplateCrmSyncLog
     {
         return $this->syncLogs()->create([
-            'tenant_id' => $this->tenant_id,
+            // 'tenant_id' => $this->tenant_id, // Removed for schema-based tenancy
             'template_id' => $template->id,
             'sync_type' => $syncType,
             'crm_provider' => $this->provider,

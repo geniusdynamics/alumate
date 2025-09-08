@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
-class AlumniRecommendationService
+class AlumniRecommendationService extends BaseService
 {
     private const CACHE_PREFIX = 'recommendations:user:';
 
@@ -164,7 +164,6 @@ class AlumniRecommendationService
             ->push($user->id);
 
         return User::whereNotIn('id', $excludeIds)
-            ->where('tenant_id', $user->tenant_id)
             ->with(['circles', 'educations', 'workExperiences'])
             ->limit(500) // Reasonable limit for processing
             ->get();

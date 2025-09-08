@@ -6,11 +6,18 @@ use App\Models\Event;
 use App\Models\EventCheckIn;
 use App\Models\EventRegistration;
 use App\Models\User;
+use App\Models\Institution;
+use App\Models\Circle;
+use App\Models\Group;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Exception;
 
-class EventsService
+class EventsService extends BaseService
 {
     protected JitsiMeetService $jitsiMeetService;
 

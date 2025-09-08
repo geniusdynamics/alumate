@@ -1,817 +1,675 @@
 <?php
+// ABOUTME: User model for schema-based multi-tenancy handling authentication and user management
+// ABOUTME: Manages users across tenants with role-based access control and tenant context awareness
 
 namespace App\Models;
 
-use App\Traits\HasDataTable;
-use Illuminate\Database\Eloquent\Builder;
+use App\Services\TenantContextService;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Builder;
+// use Laravel\Sanctum\HasApiTokens; // Commented out - Sanctum not installed
 use Spatie\Permission\Traits\HasRoles;
+use Exception;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasDataTable, HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, HasRoles;
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'password',
+        'first_name',
+        'last_name',
         'phone',
         'avatar',
-        'avatar_url',
-        'bio',
-        'location',
-        'latitude',
-        'longitude',
-        'country',
-        'region',
-        'location_privacy',
-        'location_updated_at',
-        'website',
-        'interests',
-        'institution_id',
-        'profile_data',
-        'preferences',
-        'notification_preferences',
-        'is_suspended',
-        'suspended_at',
-        'suspension_reason',
-        'last_login_at',
-        'last_activity_at',
-        'email_verified_at',
-        'two_factor_enabled',
         'timezone',
-        'language',
-        'status',
-        'user_type',
+        'locale',
         'is_active',
-        'profile_visibility',
-        'current_title',
-        'current_company',
-        'current_industry',
+        'is_super_admin',
+        'last_login_at',
+        'last_login_ip',
+        'password_changed_at',
+        'two_factor_enabled',
+        'two_factor_secret',
+        'preferences',
+        'metadata'
     ];
 
-    /**
-     * The attributes that should be cast.
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'last_login_at' => 'datetime',
-        'last_activity_at' => 'datetime',
-        'suspended_at' => 'datetime',
-        'location_updated_at' => 'datetime',
-        'profile_data' => 'array',
-        'preferences' => 'array',
-        'notification_preferences' => 'array',
-        'interests' => 'array',
-        'two_factor_enabled' => 'boolean',
-        'is_suspended' => 'boolean',
-        'is_active' => 'boolean',
-        'latitude' => 'decimal:8',
-        'longitude' => 'decimal:8',
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     */
     protected $hidden = [
         'password',
         'remember_token',
-        'two_factor_secret',
-        'two_factor_recovery_codes',
+        'two_factor_secret'
     ];
 
-    protected array $searchableColumns = [
-        'name',
-        'email',
-        'phone',
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'last_login_at' => 'datetime',
+        'password_changed_at' => 'datetime',
+        'is_active' => 'boolean',
+        'is_super_admin' => 'boolean',
+        'two_factor_enabled' => 'boolean',
+        'preferences' => 'array',
+        'metadata' => 'array'
     ];
 
-    protected array $sortableColumns = [
-        'name',
-        'email',
-        'created_at',
-        'last_login_at',
-        'status',
+    protected $dates = [
+        'deleted_at'
     ];
+
+    protected $appends = [
+        'full_name',
+        'initials',
+        'avatar_url',
+        'accessible_tenants',
+        'current_tenant_role'
+    ];
+
+    // User roles
+    const ROLE_SUPER_ADMIN = 'super_admin';
+    const ROLE_TENANT_ADMIN = 'tenant_admin';
+    const ROLE_INSTRUCTOR = 'instructor';
+    const ROLE_STAFF = 'staff';
+    const ROLE_STUDENT = 'student';
+    const ROLE_VIEWER = 'viewer';
 
     /**
-     * Get the attributes that should be cast.
+     * Boot the model
      */
-    protected function casts(): array
+    protected static function boot()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'suspended_at' => 'datetime',
-            'last_login_at' => 'datetime',
-            'last_activity_at' => 'datetime',
-            'profile_data' => 'array',
-            'preferences' => 'array',
-            'notification_preferences' => 'array',
-            'interests' => 'array',
-            'two_factor_enabled' => 'boolean',
-            'is_suspended' => 'boolean',
-        ];
+        parent::boot();
+
+        // Log user activities
+        static::created(function ($user) {
+            ActivityLog::logSystem('user_created', "User created: {$user->email}", [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'user_name' => $user->name
+            ]);
+        });
+
+        static::updated(function ($user) {
+            $changes = $user->getChanges();
+            unset($changes['updated_at'], $changes['password']); // Don't log password changes in detail
+            
+            if (!empty($changes)) {
+                ActivityLog::logSystem('user_updated', "User updated: {$user->email}", [
+                    'user_id' => $user->id,
+                    'changes' => array_keys($changes)
+                ]);
+            }
+        });
+
+        static::deleted(function ($user) {
+            ActivityLog::logSecurity('user_deleted', "User deleted: {$user->email}", [
+                'user_id' => $user->id,
+                'user_email' => $user->email
+            ], ActivityLog::SEVERITY_CRITICAL);
+        });
     }
 
-    // Relationships
-    public function institution()
+    /**
+     * Get user's full name
+     */
+    public function getFullNameAttribute(): string
     {
-        return $this->belongsTo(Tenant::class, 'institution_id');
+        if ($this->first_name && $this->last_name) {
+            return "{$this->first_name} {$this->last_name}";
+        }
+        
+        return $this->name ?? $this->email;
     }
 
-    public function graduate()
+    /**
+     * Get user's initials
+     */
+    public function getInitialsAttribute(): string
     {
-        return $this->hasOne(Graduate::class);
+        if ($this->first_name && $this->last_name) {
+            return strtoupper(substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1));
+        }
+        
+        $name = $this->name ?? $this->email;
+        $parts = explode(' ', $name);
+        
+        if (count($parts) >= 2) {
+            return strtoupper(substr($parts[0], 0, 1) . substr($parts[1], 0, 1));
+        }
+        
+        return strtoupper(substr($name, 0, 2));
     }
 
-    public function employer()
+    /**
+     * Get user's avatar URL
+     */
+    public function getAvatarUrlAttribute(): string
     {
-        return $this->hasOne(Employer::class);
+        if ($this->avatar) {
+            return asset('storage/avatars/' . $this->avatar);
+        }
+        
+        // Generate Gravatar URL as fallback
+        $hash = md5(strtolower(trim($this->email)));
+        return "https://www.gravatar.com/avatar/{$hash}?d=identicon&s=200";
     }
 
-    public function studentProfile()
+    /**
+     * Get tenants accessible to this user
+     */
+    public function getAccessibleTenantsAttribute(): array
     {
-        return $this->hasOne(StudentProfile::class);
+        if ($this->is_super_admin) {
+            return Tenant::all()->map(function ($tenant) {
+                return [
+                    'id' => $tenant->id,
+                    'name' => $tenant->name,
+                    'schema' => $tenant->schema_name,
+                    'role' => 'super_admin'
+                ];
+            })->toArray();
+        }
+
+        return $this->tenantUsers()->with('tenant')->get()->map(function ($tenantUser) {
+            return [
+                'id' => $tenantUser->tenant->id,
+                'name' => $tenantUser->tenant->name,
+                'schema' => $tenantUser->tenant->schema_name,
+                'role' => $tenantUser->role,
+                'is_active' => $tenantUser->is_active
+            ];
+        })->toArray();
     }
 
-    public function speakerProfile()
+    /**
+     * Get current tenant role
+     */
+    public function getCurrentTenantRoleAttribute(): ?string
     {
-        return $this->hasOne(SpeakerProfile::class);
+        if ($this->is_super_admin) {
+            return self::ROLE_SUPER_ADMIN;
+        }
+
+        $currentTenant = TenantContextService::getCurrentTenant();
+        if (!$currentTenant) {
+            return null;
+        }
+
+        $tenantUser = $this->tenantUsers()
+            ->where('tenant_id', $currentTenant->id)
+            ->first();
+
+        return $tenantUser?->role;
     }
 
-    public function notificationPreferences()
+    /**
+     * Get tenant users (pivot relationship)
+     */
+    public function tenantUsers(): HasMany
     {
-        return $this->hasMany(NotificationPreference::class);
+        return $this->hasMany(TenantUser::class);
     }
 
-    public function activityLogs()
+    /**
+     * Get tenants this user belongs to
+     */
+    public function tenants(): BelongsToMany
+    {
+        return $this->belongsToMany(Tenant::class, 'tenant_users')
+            ->withPivot(['role', 'is_active', 'joined_at', 'invited_by'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get activity logs for this user
+     */
+    public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
     }
 
-    public function securityEvents()
+    /**
+     * Get grades assigned by this user (as grader)
+     */
+    public function gradesAssigned(): HasMany
     {
-        return $this->hasMany(SecurityEvent::class);
+        return $this->hasMany(Grade::class, 'grader_id');
     }
 
-    public function dataAccessLogs()
-    {
-        return $this->hasMany(DataAccessLog::class);
-    }
-
-    public function sessionSecurity()
-    {
-        return $this->hasMany(SessionSecurity::class);
-    }
-
-    // Onboarding relationships
-    public function onboardingState()
-    {
-        return $this->hasOne(UserOnboardingState::class);
-    }
-
-    public function onboardingEvents()
-    {
-        return $this->hasMany(OnboardingEvent::class);
-    }
-
-    // Career relationships
-    public function careerEntries()
-    {
-        return $this->hasMany(CareerTimeline::class);
-    }
-
-    public function skills()
-    {
-        return $this->belongsToMany(Skill::class, 'user_skills');
-    }
-
-    // Social relationships
-    public function posts()
-    {
-        return $this->hasMany(Post::class);
-    }
-
-    public function socialProfiles()
-    {
-        return $this->hasMany(SocialProfile::class);
-    }
-
-    public function circles()
-    {
-        return $this->belongsToMany(Circle::class, 'circle_memberships')
-            ->withPivot('joined_at', 'status')
-            ->withTimestamps();
-    }
-
-    public function groups()
-    {
-        return $this->belongsToMany(Group::class, 'group_memberships')
-            ->withPivot('role', 'joined_at', 'status')
-            ->withTimestamps();
-    }
-
-    public function connections()
-    {
-        return $this->belongsToMany(User::class, 'alumni_connections', 'requester_id', 'recipient_id')
-            ->withPivot('status', 'message', 'connected_at')
-            ->wherePivot('status', 'accepted')
-            ->withTimestamps();
-    }
-
-    public function sentConnectionRequests()
-    {
-        return $this->hasMany(Connection::class, 'user_id');
-    }
-
-    public function receivedConnectionRequests()
-    {
-        return $this->hasMany(Connection::class, 'connected_user_id');
-    }
-
-    public function postEngagements()
-    {
-        return $this->hasMany(PostEngagement::class);
-    }
-
-    public function comments()
-    {
-        return $this->hasMany(Comment::class);
-    }
-
-    public function educations()
-    {
-        return $this->hasMany(EducationHistory::class, 'graduate_id');
-    }
-
-    public function careerTimeline()
-    {
-        return $this->hasMany(CareerTimeline::class)->ordered();
-    }
-
-    public function careerMilestones()
-    {
-        return $this->hasMany(CareerMilestone::class)->ordered();
-    }
-
-    public function achievements()
-    {
-        return $this->belongsToMany(Achievement::class, 'user_achievements')
-            ->withPivot(['earned_at', 'metadata', 'is_featured', 'is_notified'])
-            ->withTimestamps();
-    }
-
-    public function userAchievements()
-    {
-        return $this->hasMany(UserAchievement::class);
-    }
-
-    public function featuredAchievements()
-    {
-        return $this->userAchievements()->where('is_featured', true);
-    }
-
-    public function currentPosition()
-    {
-        return $this->hasOne(CareerTimeline::class)->where('is_current', true);
-    }
-
-    // Scopes
+    /**
+     * Scope for active users
+     */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', 'active')
-            ->where('is_suspended', false);
+        return $query->where('is_active', true);
     }
 
-    public function scopeSuspended(Builder $query): Builder
+    /**
+     * Scope for super admins
+     */
+    public function scopeSuperAdmins(Builder $query): Builder
     {
-        return $query->where('is_suspended', true);
+        return $query->where('is_super_admin', true);
     }
 
-    public function scopeByRole(Builder $query, string $role): Builder
-    {
-        return $query->whereHas('roles', function ($q) use ($role) {
-            $q->where('name', $role);
-        });
-    }
-
-    public function scopeByInstitution(Builder $query, $institutionId): Builder
-    {
-        return $query->where('institution_id', $institutionId);
-    }
-
-    // Helper methods for user types
-    public function isStudent(): bool
-    {
-        return $this->hasRole('Student') && $this->studentProfile !== null;
-    }
-
-    public function isAlumni(): bool
-    {
-        return $this->hasRole('Graduate') && $this->graduate !== null;
-    }
-
-    public function isEmployer(): bool
-    {
-        return $this->hasRole('Employer') && $this->employer !== null;
-    }
-
-    public function getUserType(): string
-    {
-        if ($this->isStudent()) {
-            return 'student';
-        }
-        if ($this->isAlumni()) {
-            return 'alumni';
-        }
-        if ($this->isEmployer()) {
-            return 'employer';
-        }
-        if ($this->hasRole('Institution Admin')) {
-            return 'admin';
-        }
-        if ($this->hasRole('Super Admin')) {
-            return 'super_admin';
-        }
-
-        return 'user';
-    }
-
-    public function scopeRecentlyActive(Builder $query, int $days = 30): Builder
-    {
-        return $query->where('last_activity_at', '>=', now()->subDays($days));
-    }
-
+    /**
+     * Scope for verified users
+     */
     public function scopeVerified(Builder $query): Builder
     {
         return $query->whereNotNull('email_verified_at');
     }
 
-    // Accessors & Mutators
-
-    public function getFullNameAttribute(): string
+    /**
+     * Scope for users with two-factor enabled
+     */
+    public function scopeWithTwoFactor(Builder $query): Builder
     {
-        return $this->name;
+        return $query->where('two_factor_enabled', true);
     }
 
-    public function getAvatarUrlAttribute(): string
+    /**
+     * Scope for users in specific tenant
+     */
+    public function scopeInTenant(Builder $query, int $tenantId): Builder
     {
-        if ($this->avatar) {
-            return asset('storage/'.$this->avatar);
+        return $query->whereHas('tenants', function ($q) use ($tenantId) {
+            $q->where('tenant_id', $tenantId);
+        });
+    }
+
+    /**
+     * Scope for users with specific role in current tenant
+     */
+    public function scopeWithRole(Builder $query, string $role): Builder
+    {
+        $currentTenant = TenantContextService::getCurrentTenant();
+        
+        if (!$currentTenant) {
+            return $query->where('is_super_admin', true)->where('1', '0'); // No results if no tenant context
         }
 
-        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=7F9CF5&background=EBF4FF';
+        return $query->whereHas('tenantUsers', function ($q) use ($role, $currentTenant) {
+            $q->where('tenant_id', $currentTenant->id)
+              ->where('role', $role)
+              ->where('is_active', true);
+        });
     }
 
-    public function getLastSeenAttribute(): string
+    /**
+     * Check if user has access to tenant
+     */
+    public function hasAccessToTenant(int $tenantId): bool
     {
-        if (! $this->last_activity_at) {
-            return 'Never';
-        }
-
-        return $this->last_activity_at->diffForHumans();
-    }
-
-    public function getStatusBadgeAttribute(): array
-    {
-        if ($this->is_suspended) {
-            return ['text' => 'Suspended', 'color' => 'red'];
-        }
-
-        return match ($this->status) {
-            'active' => ['text' => 'Active', 'color' => 'green'],
-            'inactive' => ['text' => 'Inactive', 'color' => 'gray'],
-            'pending' => ['text' => 'Pending', 'color' => 'yellow'],
-            default => ['text' => 'Unknown', 'color' => 'gray'],
-        };
-    }
-
-    // Methods
-    public function suspend(?string $reason = null, $suspendedBy = null): void
-    {
-        $this->update([
-            'is_suspended' => true,
-            'suspended_at' => now(),
-            'suspension_reason' => $reason,
-        ]);
-
-        // Log the suspension
-        $this->activityLogs()->create([
-            'action' => 'user_suspended',
-            'description' => "User suspended. Reason: {$reason}",
-            'performed_by' => $suspendedBy,
-            'metadata' => [
-                'reason' => $reason,
-                'suspended_by' => $suspendedBy,
-            ],
-        ]);
-    }
-
-    public function unsuspend($unsuspendedBy = null): void
-    {
-        $this->update([
-            'is_suspended' => false,
-            'suspended_at' => null,
-            'suspension_reason' => null,
-        ]);
-
-        // Log the unsuspension
-        $this->activityLogs()->create([
-            'action' => 'user_unsuspended',
-            'description' => 'User suspension lifted',
-            'performed_by' => $unsuspendedBy,
-            'metadata' => [
-                'unsuspended_by' => $unsuspendedBy,
-            ],
-        ]);
-    }
-
-    public function updateLastActivity(): void
-    {
-        $this->update(['last_activity_at' => now()]);
-    }
-
-    public function updateLastLogin(): void
-    {
-        $this->update(['last_login_at' => now()]);
-    }
-
-    public function hasSpecificRole(string $role): bool
-    {
-        return $this->roles()->where('name', $role)->exists();
-    }
-
-    public function getPrimaryRole(): ?string
-    {
-        $role = $this->roles()->first();
-
-        return $role ? $role->name : null;
-    }
-
-    public function canAccessInstitution($institutionId): bool
-    {
-        // Super admins can access all institutions
-        if ($this->hasSpecificRole('super-admin')) {
+        if ($this->is_super_admin) {
             return true;
         }
 
-        // Users can only access their own institution
-        return $this->institution_id == $institutionId;
+        return $this->tenantUsers()
+            ->where('tenant_id', $tenantId)
+            ->where('is_active', true)
+            ->exists();
     }
 
-    public function getPermissionsForInstitution($institutionId): array
+    /**
+     * Check if user has role in current tenant
+     */
+    public function hasRoleInCurrentTenant(string $role): bool
     {
-        if (! $this->canAccessInstitution($institutionId)) {
-            return [];
+        if ($this->is_super_admin) {
+            return true;
         }
 
-        return $this->getAllPermissions()->pluck('name')->toArray();
-    }
-
-    public function getDashboardRoute(): string
-    {
-        $role = $this->getPrimaryRole();
-
-        return match ($role) {
-            'super-admin' => route('super-admin.dashboard'),
-            'institution-admin' => route('institution-admin.dashboard'),
-            'employer' => route('employer.dashboard'),
-            'graduate' => route('graduate.dashboard'),
-            default => route('dashboard'),
-        };
-    }
-
-    public function getProfileCompletionPercentage(): int
-    {
-        $requiredFields = ['name', 'email', 'phone'];
-        $completedFields = 0;
-
-        foreach ($requiredFields as $field) {
-            if (! empty($this->$field)) {
-                $completedFields++;
-            }
+        $currentTenant = TenantContextService::getCurrentTenant();
+        if (!$currentTenant) {
+            return false;
         }
 
-        // Check profile data
-        if (! empty($this->profile_data)) {
-            $profileFields = ['bio', 'location', 'website'];
-            foreach ($profileFields as $field) {
-                if (! empty($this->profile_data[$field] ?? null)) {
-                    $completedFields++;
-                }
-            }
-            $requiredFields = array_merge($requiredFields, $profileFields);
-        }
-
-        return round(($completedFields / count($requiredFields)) * 100);
+        return $this->tenantUsers()
+            ->where('tenant_id', $currentTenant->id)
+            ->where('role', $role)
+            ->where('is_active', true)
+            ->exists();
     }
 
-    public function generateApiToken(): string
+    /**
+     * Check if user can manage students
+     */
+    public function canManageStudents(): bool
     {
-        return $this->createToken('api-token')->plainTextToken;
+        return $this->hasRoleInCurrentTenant(self::ROLE_TENANT_ADMIN) ||
+               $this->hasRoleInCurrentTenant(self::ROLE_INSTRUCTOR) ||
+               $this->hasRoleInCurrentTenant(self::ROLE_STAFF);
     }
 
-    public function revokeAllTokens(): void
+    /**
+     * Check if user can manage courses
+     */
+    public function canManageCourses(): bool
     {
-        $this->tokens()->delete();
+        return $this->hasRoleInCurrentTenant(self::ROLE_TENANT_ADMIN) ||
+               $this->hasRoleInCurrentTenant(self::ROLE_INSTRUCTOR);
     }
 
-    // Developer API relationships
-    public function apiKeys()
+    /**
+     * Check if user can assign grades
+     */
+    public function canAssignGrades(): bool
     {
-        return $this->hasMany(ApiKey::class);
+        return $this->hasRoleInCurrentTenant(self::ROLE_TENANT_ADMIN) ||
+               $this->hasRoleInCurrentTenant(self::ROLE_INSTRUCTOR);
     }
 
-    public function webhooks()
+    /**
+     * Check if user can view analytics
+     */
+    public function canViewAnalytics(): bool
     {
-        return $this->hasMany(Webhook::class);
+        return $this->hasRoleInCurrentTenant(self::ROLE_TENANT_ADMIN) ||
+               $this->hasRoleInCurrentTenant(self::ROLE_INSTRUCTOR) ||
+               $this->hasRoleInCurrentTenant(self::ROLE_STAFF);
     }
 
-    public function getActivitySummary(int $days = 30): array
+    /**
+     * Add user to tenant with role
+     */
+    public function addToTenant(int $tenantId, string $role, ?int $invitedBy = null): TenantUser
     {
-        $startDate = now()->subDays($days);
-
-        return [
-            'total_logins' => $this->activityLogs()
-                ->where('action', 'user_login')
-                ->where('created_at', '>=', $startDate)
-                ->count(),
-            'last_login' => $this->last_login_at?->format('Y-m-d H:i:s'),
-            'total_activities' => $this->activityLogs()
-                ->where('created_at', '>=', $startDate)
-                ->count(),
-            'most_active_day' => $this->activityLogs()
-                ->where('created_at', '>=', $startDate)
-                ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
-                ->groupBy('date')
-                ->orderBy('count', 'desc')
-                ->first()?->date,
-        ];
-    }
-
-    // Social methods
-    public function getConnectionStatus(User $otherUser): string
-    {
-        if ($this->id === $otherUser->id) {
-            return 'self';
-        }
-
-        $connection = $this->sentConnectionRequests()
-            ->where('connected_user_id', $otherUser->id)
+        // Check if user already exists in tenant
+        $existingTenantUser = $this->tenantUsers()
+            ->where('tenant_id', $tenantId)
             ->first();
 
-        if ($connection) {
-            return $connection->status;
+        if ($existingTenantUser) {
+            // Update existing relationship
+            $existingTenantUser->update([
+                'role' => $role,
+                'is_active' => true,
+                'invited_by' => $invitedBy
+            ]);
+            
+            return $existingTenantUser;
         }
 
-        $receivedConnection = $this->receivedConnectionRequests()
-            ->where('user_id', $otherUser->id)
-            ->first();
+        // Create new tenant user relationship
+        $tenantUser = $this->tenantUsers()->create([
+            'tenant_id' => $tenantId,
+            'role' => $role,
+            'is_active' => true,
+            'joined_at' => now(),
+            'invited_by' => $invitedBy
+        ]);
 
-        if ($receivedConnection) {
-            return $receivedConnection->status === 'pending' ? 'received_request' : $receivedConnection->status;
-        }
-
-        return 'none';
-    }
-
-    public function sendConnectionRequest(User $otherUser, ?string $message = null): Connection
-    {
-        return Connection::create([
+        ActivityLog::logSystem('user_added_to_tenant', "User {$this->email} added to tenant {$tenantId} with role {$role}", [
             'user_id' => $this->id,
-            'connected_user_id' => $otherUser->id,
-            'message' => $message,
-            'status' => 'pending',
+            'tenant_id' => $tenantId,
+            'role' => $role,
+            'invited_by' => $invitedBy
+        ]);
+
+        return $tenantUser;
+    }
+
+    /**
+     * Remove user from tenant
+     */
+    public function removeFromTenant(int $tenantId): bool
+    {
+        $removed = $this->tenantUsers()
+            ->where('tenant_id', $tenantId)
+            ->delete();
+
+        if ($removed) {
+            ActivityLog::logSystem('user_removed_from_tenant', "User {$this->email} removed from tenant {$tenantId}", [
+                'user_id' => $this->id,
+                'tenant_id' => $tenantId
+            ]);
+        }
+
+        return $removed > 0;
+    }
+
+    /**
+     * Update user role in tenant
+     */
+    public function updateTenantRole(int $tenantId, string $newRole): bool
+    {
+        $tenantUser = $this->tenantUsers()
+            ->where('tenant_id', $tenantId)
+            ->first();
+
+        if (!$tenantUser) {
+            return false;
+        }
+
+        $oldRole = $tenantUser->role;
+        $updated = $tenantUser->update(['role' => $newRole]);
+
+        if ($updated) {
+            ActivityLog::logSecurity('user_role_changed', "User {$this->email} role changed from {$oldRole} to {$newRole} in tenant {$tenantId}", [
+                'user_id' => $this->id,
+                'tenant_id' => $tenantId,
+                'old_role' => $oldRole,
+                'new_role' => $newRole
+            ]);
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Activate/deactivate user in tenant
+     */
+    public function setTenantStatus(int $tenantId, bool $isActive): bool
+    {
+        $tenantUser = $this->tenantUsers()
+            ->where('tenant_id', $tenantId)
+            ->first();
+
+        if (!$tenantUser) {
+            return false;
+        }
+
+        $updated = $tenantUser->update(['is_active' => $isActive]);
+
+        if ($updated) {
+            $status = $isActive ? 'activated' : 'deactivated';
+            ActivityLog::logSystem("user_{$status}_in_tenant", "User {$this->email} {$status} in tenant {$tenantId}", [
+                'user_id' => $this->id,
+                'tenant_id' => $tenantId,
+                'is_active' => $isActive
+            ]);
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Record login activity
+     */
+    public function recordLogin(string $ipAddress = null): void
+    {
+        $this->update([
+            'last_login_at' => now(),
+            'last_login_ip' => $ipAddress ?? request()->ip()
+        ]);
+
+        ActivityLog::logAuth(ActivityLog::ACTION_LOGIN, $this->id, [
+            'ip_address' => $ipAddress ?? request()->ip(),
+            'user_agent' => request()->userAgent()
         ]);
     }
 
-    public function acceptConnectionRequest(int $connectionId): bool
+    /**
+     * Record failed login attempt
+     */
+    public static function recordFailedLogin(string $email, string $ipAddress = null): void
     {
-        $connection = $this->receivedConnectionRequests()
-            ->where('id', $connectionId)
-            ->where('status', 'pending')
-            ->first();
-
-        return $connection ? $connection->accept() : false;
+        ActivityLog::logAuth(ActivityLog::ACTION_FAILED_LOGIN, null, [
+            'email' => $email,
+            'ip_address' => $ipAddress ?? request()->ip(),
+            'user_agent' => request()->userAgent()
+        ]);
     }
 
-    public function getAcceptedConnections()
+    /**
+     * Enable two-factor authentication
+     */
+    public function enableTwoFactor(string $secret): bool
     {
-        return $this->connections()->wherePivot('status', 'accepted');
+        $updated = $this->update([
+            'two_factor_enabled' => true,
+            'two_factor_secret' => encrypt($secret)
+        ]);
+
+        if ($updated) {
+            ActivityLog::logSecurity('two_factor_enabled', "Two-factor authentication enabled for user {$this->email}", [
+                'user_id' => $this->id
+            ]);
+        }
+
+        return $updated;
     }
 
-    public function getPendingConnectionRequests()
+    /**
+     * Disable two-factor authentication
+     */
+    public function disableTwoFactor(): bool
     {
-        return $this->receivedConnectionRequests()->where('status', 'pending');
+        $updated = $this->update([
+            'two_factor_enabled' => false,
+            'two_factor_secret' => null
+        ]);
+
+        if ($updated) {
+            ActivityLog::logSecurity('two_factor_disabled', "Two-factor authentication disabled for user {$this->email}", [
+                'user_id' => $this->id
+            ]);
+        }
+
+        return $updated;
     }
 
-    public function getMutualConnections(User $otherUser)
+    /**
+     * Update user preferences
+     */
+    public function updatePreferences(array $preferences): bool
     {
-        return Connection::mutualConnections($this, $otherUser);
+        $currentPreferences = $this->preferences ?? [];
+        $newPreferences = array_merge($currentPreferences, $preferences);
+        
+        return $this->update(['preferences' => $newPreferences]);
     }
 
-    public function isConnectedTo(User $otherUser): bool
+    /**
+     * Get user preference
+     */
+    public function getPreference(string $key, $default = null)
     {
-        return $this->getConnectionStatus($otherUser) === 'accepted';
+        return data_get($this->preferences, $key, $default);
     }
 
-    public function getSharedCircles(User $otherUser)
+    /**
+     * Get user statistics
+     */
+    public function getStatistics(): array
     {
-        $myCircleIds = $this->circles()->pluck('circles.id');
-        $theirCircleIds = $otherUser->circles()->pluck('circles.id');
+        $stats = [
+            'total_logins' => $this->activityLogs()
+                ->where('action', ActivityLog::ACTION_LOGIN)
+                ->count(),
+            'last_login' => $this->last_login_at,
+            'account_age_days' => $this->created_at->diffInDays(now()),
+            'tenants_count' => $this->tenants()->count(),
+            'is_verified' => !is_null($this->email_verified_at),
+            'has_two_factor' => $this->two_factor_enabled
+        ];
 
-        $sharedCircleIds = $myCircleIds->intersect($theirCircleIds);
+        // Add tenant-specific stats if in tenant context
+        $currentTenant = TenantContextService::getCurrentTenant();
+        if ($currentTenant && $this->hasAccessToTenant($currentTenant->id)) {
+            $stats['current_tenant'] = [
+                'name' => $currentTenant->name,
+                'role' => $this->current_tenant_role,
+                'activities_count' => $this->activityLogs()
+                    ->recent(30)
+                    ->count()
+            ];
 
-        return Circle::whereIn('id', $sharedCircleIds)->get();
+            // Add role-specific stats
+            if ($this->canAssignGrades()) {
+                $stats['grades_assigned'] = $this->gradesAssigned()->count();
+            }
+        }
+
+        return $stats;
     }
 
-    public function getSharedGroups(User $otherUser)
+    /**
+     * Get all available roles
+     */
+    public static function getAvailableRoles(): array
     {
-        $myGroupIds = $this->groups()->pluck('groups.id');
-        $theirGroupIds = $otherUser->groups()->pluck('groups.id');
-
-        $sharedGroupIds = $myGroupIds->intersect($theirGroupIds);
-
-        return Group::whereIn('id', $sharedGroupIds)->get();
+        return [
+            self::ROLE_SUPER_ADMIN => 'Super Administrator',
+            self::ROLE_TENANT_ADMIN => 'Tenant Administrator',
+            self::ROLE_INSTRUCTOR => 'Instructor',
+            self::ROLE_STAFF => 'Staff',
+            self::ROLE_STUDENT => 'Student',
+            self::ROLE_VIEWER => 'Viewer'
+        ];
     }
 
-    // Mentorship relationships
-    public function mentorProfile()
+    /**
+     * Search users
+     */
+    public static function search(string $query): Builder
     {
-        return $this->hasOne(MentorProfile::class);
+        return static::where(function ($q) use ($query) {
+            $q->where('name', 'ILIKE', "%{$query}%")
+              ->orWhere('email', 'ILIKE', "%{$query}%")
+              ->orWhere('first_name', 'ILIKE', "%{$query}%")
+              ->orWhere('last_name', 'ILIKE', "%{$query}%");
+        });
     }
 
-    public function mentorRequests()
+    /**
+     * Bulk invite users to tenant
+     */
+    public static function bulkInviteToTenant(array $emails, int $tenantId, string $role, int $invitedBy): array
     {
-        return $this->hasMany(MentorshipRequest::class, 'mentor_id');
-    }
-
-    public function menteeRequests()
-    {
-        return $this->hasMany(MentorshipRequest::class, 'mentee_id');
-    }
-
-    public function activeMentorships()
-    {
-        return $this->menteeRequests()->where('status', 'accepted');
-    }
-
-    public function activeMentees()
-    {
-        return $this->mentorRequests()->where('status', 'accepted');
-    }
-
-    public function isMentor(): bool
-    {
-        return $this->mentorProfile()->exists() && $this->mentorProfile->is_active;
-    }
-
-    public function canBeMentor(): bool
-    {
-        // Basic criteria for becoming a mentor
-        $hasExperience = $this->careerTimeline()->count() > 0;
-        $hasEducation = $this->educations()->count() > 0;
-
-        return $hasExperience && $hasEducation;
-    }
-
-    // Video Calling relationships
-    public function hostedVideoCalls()
-    {
-        return $this->hasMany(VideoCall::class, 'host_user_id');
-    }
-
-    public function videoCallParticipations()
-    {
-        return $this->hasMany(VideoCallParticipant::class);
-    }
-
-    public function videoCalls()
-    {
-        return $this->belongsToMany(VideoCall::class, 'video_call_participants', 'user_id', 'call_id')
-            ->withPivot(['role', 'joined_at', 'left_at', 'connection_quality'])
-            ->withTimestamps();
-    }
-
-    public function coffeeChatRequestsAsRequester()
-    {
-        return $this->hasMany(CoffeeChatRequest::class, 'requester_id');
-    }
-
-    public function coffeeChatRequestsAsRecipient()
-    {
-        return $this->hasMany(CoffeeChatRequest::class, 'recipient_id');
-    }
-
-    public function screenSharingSessions()
-    {
-        return $this->hasMany(ScreenSharingSession::class, 'presenter_user_id');
-    }
-
-    public function calendarConnections()
-    {
-        return $this->hasMany(CalendarConnection::class);
-    }
-
-    public function events()
-    {
-        return $this->hasMany(Event::class);
-    }
-
-    public function mentorshipSessions()
-    {
-        return $this->hasMany(MentorshipSession::class, 'mentor_id');
-    }
-
-    public function menteeSessions()
-    {
-        return $this->hasMany(MentorshipSession::class, 'mentee_id');
-    }
-
-    // Video calling helper methods
-    public function getActiveVideoCall()
-    {
-        return $this->videoCalls()
-            ->where('status', 'active')
-            ->wherePivot('left_at', null)
-            ->first();
-    }
-
-    public function hasActiveVideoCall(): bool
-    {
-        return $this->getActiveVideoCall() !== null;
-    }
-
-    public function getUpcomingVideoCalls()
-    {
-        return $this->videoCalls()
-            ->where('status', 'scheduled')
-            ->where('scheduled_at', '>', now())
-            ->orderBy('scheduled_at')
-            ->get();
-    }
-
-    public function getPendingCoffeeChatRequests()
-    {
-        return $this->coffeeChatRequestsAsRecipient()
-            ->where('status', 'pending')
-            ->with('requester')
-            ->orderBy('created_at', 'desc')
-            ->get();
-    }
-
-    public function getCompletedCoffeeChats()
-    {
-        return CoffeeChatRequest::where(function ($query) {
-            $query->where('requester_id', $this->id)
-                ->orWhere('recipient_id', $this->id);
-        })
-            ->where('status', 'completed')
-            ->with(['requester', 'recipient'])
-            ->orderBy('updated_at', 'desc')
-            ->get();
-    }
-
-    // User Testing relationships
-    public function feedback()
-    {
-        return $this->hasMany(UserFeedback::class);
-    }
-
-    public function testingSessions()
-    {
-        return $this->hasMany(UserTestingSession::class);
-    }
-
-    public function abTestAssignments()
-    {
-        return $this->hasMany(ABTestAssignment::class);
-    }
-
-    public function abTestConversions()
-    {
-        return $this->hasMany(ABTestConversion::class);
-    }
-
-    public function sentMentorshipRequests()
-    {
-        return $this->hasMany(MentorshipRequest::class, 'mentee_id');
-    }
-
-    public function jobApplications()
-    {
-        return $this->hasMany(JobApplication::class);
-    }
-
-    public function eventAttendances()
-    {
-        return $this->hasMany(EventAttendance::class);
+        $results = ['success' => [], 'errors' => []];
+        
+        foreach ($emails as $email) {
+            try {
+                $user = static::where('email', $email)->first();
+                
+                if (!$user) {
+                    // Create new user
+                    $user = static::create([
+                        'email' => $email,
+                        'name' => explode('@', $email)[0], // Temporary name
+                        'password' => bcrypt(str()->random(16)), // Temporary password
+                        'is_active' => false // Will be activated when they set password
+                    ]);
+                }
+                
+                $user->addToTenant($tenantId, $role, $invitedBy);
+                $results['success'][] = $email;
+                
+            } catch (Exception $e) {
+                $results['errors'][] = "Error inviting {$email}: " . $e->getMessage();
+            }
+        }
+        
+        return $results;
     }
 }

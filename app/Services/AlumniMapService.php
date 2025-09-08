@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
-class AlumniMapService
+class AlumniMapService extends BaseService
 {
     /**
      * Get alumni with location data for map visualization

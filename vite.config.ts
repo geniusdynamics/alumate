@@ -125,12 +125,12 @@ export default defineConfig({
     },
     origin: 'http://127.0.0.1:5176',
     cors: {
-      origin: ['http://127.0.0.1:8080', 'http://localhost:8080', 'http://127.0.0.1:8081', 'http://localhost:8081'],
+      origin: ['http://127.0.0.1:8001', 'http://localhost:8001', 'http://127.0.0.1:8080', 'http://localhost:8080', 'http://127.0.0.1:8081', 'http://localhost:8081'],
       credentials: true,
     },
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8081',
+        target: 'http://127.0.0.1:8001',
         changeOrigin: true,
         secure: false,
       },

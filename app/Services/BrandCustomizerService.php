@@ -1,4 +1,6 @@
 <?php
+// ABOUTME: Service for managing brand customization including logos, colors, fonts, and templates
+// ABOUTME: Updated for schema-based tenancy - uses tenant context instead of tenant_id columns
 
 namespace App\Services;
 
@@ -8,6 +10,7 @@ use App\Models\BrandFont;
 use App\Models\BrandTemplate;
 use App\Models\BrandGuidelines;
 use App\Models\Component;
+use App\Services\TenantContextService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
@@ -17,19 +20,26 @@ use ZipArchive;
 
 class BrandCustomizerService
 {
+    protected TenantContextService $tenantContext;
+
+    public function __construct(TenantContextService $tenantContext)
+    {
+        $this->tenantContext = $tenantContext;
+    }
+
     /**
-     * Get all brand data for a tenant
+     * Get all brand data for current tenant
      */
-    public function getBrandData(string $tenantId): array
+    public function getBrandData(): array
     {
         return [
             'assets' => [
-                'logos' => BrandLogo::where('tenant_id', $tenantId)->get(),
-                'colors' => BrandColor::where('tenant_id', $tenantId)->get(),
-                'fonts' => BrandFont::where('tenant_id', $tenantId)->get()
+                'logos' => BrandLogo::all(),
+                'colors' => BrandColor::all(),
+                'fonts' => BrandFont::all()
             ],
             'guidelines' => BrandGuidelines::firstOrCreate(
-                ['tenant_id' => $tenantId],
+                [],
                 [
                     'enforce_color_palette' => true,
                     'require_contrast_check' => true,
@@ -43,17 +53,18 @@ class BrandCustomizerService
                     'logo_clear_space' => 1.5
                 ]
             ),
-            'templates' => BrandTemplate::where('tenant_id', $tenantId)->with('colors')->get(),
-            'consistencyReport' => $this->generateConsistencyReport($tenantId),
-            'analytics' => $this->generateAnalytics($tenantId)
+            'templates' => BrandTemplate::with('colors')->get(),
+            'consistencyReport' => $this->generateConsistencyReport(),
+            'analytics' => $this->generateAnalytics()
         ];
     }
 
     /**
      * Upload and process brand logo
      */
-    public function uploadLogo(UploadedFile $file, string $tenantId): BrandLogo
+    public function uploadLogo(UploadedFile $file): BrandLogo
     {
+        $tenantId = $this->tenantContext->getCurrentTenant()->id;
         $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
         $path = "brand-assets/{$tenantId}/logos/{$filename}";
         
@@ -64,7 +75,6 @@ class BrandCustomizerService
         $optimizedPath = $this->createOptimizedLogo($file, $tenantId, $filename);
         
         return BrandLogo::create([
-            'tenant_id' => $tenantId,
             'name' => pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
             'type' => 'primary',
             'url' => Storage::disk('public')->url($path),
@@ -117,16 +127,16 @@ class BrandCustomizerService
     /**
      * Set primary logo
      */
-    public function setPrimaryLogo(string $logoId, string $tenantId): bool
+    public function setPrimaryLogo(string $logoId): bool
     {
-        $logo = BrandLogo::where('id', $logoId)->where('tenant_id', $tenantId)->first();
+        $logo = BrandLogo::find($logoId);
         
         if (!$logo) {
             return false;
         }
         
         // Reset all logos to non-primary
-        BrandLogo::where('tenant_id', $tenantId)->update(['is_primary' => false]);
+        BrandLogo::query()->update(['is_primary' => false]);
         
         // Set this logo as primary
         $logo->update(['is_primary' => true]);
@@ -137,9 +147,9 @@ class BrandCustomizerService
     /**
      * Optimize existing logo
      */
-    public function optimizeLogo(string $logoId, string $tenantId): ?BrandLogo
+    public function optimizeLogo(string $logoId): ?BrandLogo
     {
-        $logo = BrandLogo::where('id', $logoId)->where('tenant_id', $tenantId)->first();
+        $logo = BrandLogo::find($logoId);
         
         if (!$logo) {
             return null;
@@ -155,6 +165,7 @@ class BrandCustomizerService
             $tempPath = stream_get_meta_data($tempFile)['uri'];
             
             $uploadedFile = new UploadedFile($tempPath, $logo->name, $logo->mime_type, null, true);
+            $tenantId = $this->tenantContext->getCurrentTenant()->id;
             $optimizedPath = $this->createOptimizedLogo($uploadedFile, $tenantId, basename($originalPath));
             
             $logo->update([
@@ -197,9 +208,9 @@ class BrandCustomizerService
     /**
      * Delete logo
      */
-    public function deleteLogo(string $logoId, string $tenantId): bool
+    public function deleteLogo(string $logoId): bool
     {
-        $logo = BrandLogo::where('id', $logoId)->where('tenant_id', $tenantId)->first();
+        $logo = BrandLogo::find($logoId);
         
         if (!$logo) {
             return false;
@@ -225,12 +236,11 @@ class BrandCustomizerService
     /**
      * Create brand color
      */
-    public function createColor(array $data, string $tenantId): BrandColor
+    public function createColor(array $data): BrandColor
     {
         $accessibility = $this->checkColorAccessibility($data['value']);
         
         return BrandColor::create([
-            'tenant_id' => $tenantId,
             'name' => $data['name'],
             'value' => $data['value'],
             'type' => $data['type'],
@@ -244,9 +254,9 @@ class BrandCustomizerService
     /**
      * Update brand color
      */
-    public function updateColor(string $colorId, array $data, string $tenantId): ?BrandColor
+    public function updateColor(string $colorId, array $data): ?BrandColor
     {
-        $color = BrandColor::where('id', $colorId)->where('tenant_id', $tenantId)->first();
+        $color = BrandColor::find($colorId);
         
         if (!$color) {
             return null;
@@ -348,9 +358,9 @@ class BrandCustomizerService
     /**
      * Delete brand color
      */
-    public function deleteColor(string $colorId, string $tenantId): bool
+    public function deleteColor(string $colorId): bool
     {
-        $color = BrandColor::where('id', $colorId)->where('tenant_id', $tenantId)->first();
+        $color = BrandColor::find($colorId);
         
         if (!$color) {
             return false;
@@ -364,8 +374,9 @@ class BrandCustomizerService
     /**
      * Upload custom fonts
      */
-    public function uploadFonts(array $files, string $tenantId): string
+    public function uploadFonts(array $files): string
     {
+        $tenantId = $this->tenantContext->getCurrentTenant()->id;
         $fontDir = "brand-assets/{$tenantId}/fonts/" . Str::uuid();
         
         foreach ($files as $file) {
@@ -421,10 +432,9 @@ class BrandCustomizerService
     /**
      * Create brand font
      */
-    public function createFont(array $data, string $tenantId): BrandFont
+    public function createFont(array $data): BrandFont
     {
         return BrandFont::create([
-            'tenant_id' => $tenantId,
             'name' => $data['name'],
             'family' => $data['family'],
             'weights' => $data['weights'],
@@ -442,9 +452,9 @@ class BrandCustomizerService
     /**
      * Update brand font
      */
-    public function updateFont(string $fontId, array $data, string $tenantId): ?BrandFont
+    public function updateFont(string $fontId, array $data): ?BrandFont
     {
-        $font = BrandFont::where('id', $fontId)->where('tenant_id', $tenantId)->first();
+        $font = BrandFont::find($fontId);
         
         if (!$font) {
             return null;
@@ -468,16 +478,16 @@ class BrandCustomizerService
     /**
      * Set primary font
      */
-    public function setPrimaryFont(string $fontId, string $tenantId): bool
+    public function setPrimaryFont(string $fontId): bool
     {
-        $font = BrandFont::where('id', $fontId)->where('tenant_id', $tenantId)->first();
+        $font = BrandFont::find($fontId);
         
         if (!$font) {
             return false;
         }
         
         // Reset all fonts to non-primary
-        BrandFont::where('tenant_id', $tenantId)->update(['is_primary' => false]);
+        BrandFont::query()->update(['is_primary' => false]);
         
         // Set this font as primary
         $font->update(['is_primary' => true]);
@@ -488,9 +498,9 @@ class BrandCustomizerService
     /**
      * Delete brand font
      */
-    public function deleteFont(string $fontId, string $tenantId): bool
+    public function deleteFont(string $fontId): bool
     {
-        $font = BrandFont::where('id', $fontId)->where('tenant_id', $tenantId)->first();
+        $font = BrandFont::find($fontId);
         
         if (!$font) {
             return false;
@@ -504,10 +514,9 @@ class BrandCustomizerService
     /**
      * Create brand template
      */
-    public function createTemplate(array $data, string $tenantId): BrandTemplate
+    public function createTemplate(array $data): BrandTemplate
     {
         $template = BrandTemplate::create([
-            'tenant_id' => $tenantId,
             'name' => $data['name'],
             'description' => $data['description'] ?? null,
             'primary_font' => $data['primaryFont'],
@@ -532,9 +541,9 @@ class BrandCustomizerService
     /**
      * Update brand template
      */
-    public function updateTemplate(string $templateId, array $data, string $tenantId): ?BrandTemplate
+    public function updateTemplate(string $templateId, array $data): ?BrandTemplate
     {
-        $template = BrandTemplate::where('id', $templateId)->where('tenant_id', $tenantId)->first();
+        $template = BrandTemplate::find($templateId);
         
         if (!$template) {
             return null;

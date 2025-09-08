@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class ABTestingService
+class ABTestingService extends BaseService
 {
     /**
      * Get the variant for a user in a specific test
