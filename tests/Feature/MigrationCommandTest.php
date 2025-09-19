@@ -483,7 +483,7 @@ class MigrationCommandTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             $studentId = DB::table('students')->insertGetId([
                 'tenant_id' => $tenant->id,
-                'student_id' => "STU{$tenant->id}{$i:03d}",
+                'student_id' => "STU{$tenant->id}" . str_pad($i, 3, '0', STR_PAD_LEFT),
                 'first_name' => $this->faker->firstName,
                 'last_name' => $this->faker->lastName,
                 'email' => $this->faker->unique()->email,

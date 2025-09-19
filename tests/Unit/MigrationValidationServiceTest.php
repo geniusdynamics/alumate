@@ -492,7 +492,7 @@ class MigrationValidationServiceTest extends TestCase
         for ($i = 1; $i <= 3; $i++) {
             DB::table('students')->insert([
                 'tenant_id' => $tenant->id,
-                'student_id' => "STU{$tenant->id}{$i:03d}",
+                'student_id' => "STU{$tenant->id}" . str_pad($i, 3, '0', STR_PAD_LEFT),
                 'first_name' => "Student{$i}",
                 'last_name' => "Test",
                 'email' => "student{$i}@tenant{$tenant->id}.com",
@@ -506,7 +506,7 @@ class MigrationValidationServiceTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             DB::table('courses')->insert([
                 'tenant_id' => $tenant->id,
-                'course_code' => "CS{$i:03d}",
+                'course_code' => "CS" . str_pad($i, 3, '0', STR_PAD_LEFT),
                 'course_name' => "Computer Science {$i}",
                 'credits' => 3,
                 'created_at' => now(),

@@ -1606,4 +1606,126 @@ Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('email-sequenc
     Route::post('/{sequence}/enroll', [App\Http\Controllers\Api\EmailSequenceController::class, 'enroll']);
     Route::delete('/{sequence}/unenroll/{userId}', [App\Http\Controllers\Api\EmailSequenceController::class, 'unenroll']);
 });
+// Export routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('exports')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\ExportController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\ExportController::class, 'store']);
+    Route::get('/{export}', [App\Http\Controllers\Api\ExportController::class, 'show']);
+    Route::delete('/{export}', [App\Http\Controllers\Api\ExportController::class, 'destroy']);
+    Route::get('/{export}/download', [App\Http\Controllers\Api\ExportController::class, 'download']);
+});
+
+// Backup routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('backups')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\BackupController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\BackupController::class, 'store']);
+    Route::get('/{backup}', [App\Http\Controllers\Api\BackupController::class, 'show']);
+    Route::post('/{backup}/restore', [App\Http\Controllers\Api\BackupController::class, 'restore']);
+    Route::delete('/{backup}', [App\Http\Controllers\Api\BackupController::class, 'destroy']);
+});
+
+// Migration routes
+Route::middleware(['auth:sanctum', 'api.rate_limit:api'])->prefix('migrations')->group(function () {
+    Route::get('/', [App\Http\Controllers\Api\MigrationController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\MigrationController::class, 'store']);
+    Route::get('/{migration}', [App\Http\Controllers\Api\MigrationController::class, 'show']);
+    Route::post('/{migration}/execute', [App\Http\Controllers\Api\MigrationController::class, 'execute']);
+    Route::delete('/{migration}', [App\Http\Controllers\Api\MigrationController::class, 'destroy']);
+});
+});
+// Custom Code routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('custom-codes', App\Http\Controllers\CustomCodeController::class);
+    Route::get('custom-codes/search', [App\Http\Controllers\CustomCodeController::class, 'search']);
+    Route::get('custom-codes/stats', [App\Http\Controllers\CustomCodeController::class, 'stats']);
+    Route::post('custom-codes/validate', [App\Http\Controllers\CustomCodeController::class, 'validate']);
+});
+
+// Page Preview routes for Vue.js Page Builder System
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('pages/{page}/preview', [App\Http\Controllers\Api\PagePreviewController::class, 'preview'])->name('api.pages.preview');
+    Route::post('pages/{page}/preview', [App\Http\Controllers\Api\PagePreviewController::class, 'updatePreview']);
+});
+
+// Custom Code Integration routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('custom-code')->group(function () {
+        Route::get('/', [App\Http\Controllers\CustomCodeController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\CustomCodeController::class, 'store']);
+        Route::get('/{customCode}', [App\Http\Controllers\CustomCodeController::class, 'show']);
+        Route::put('/{customCode}', [App\Http\Controllers\CustomCodeController::class, 'update']);
+        Route::delete('/{customCode}', [App\Http\Controllers\CustomCodeController::class, 'destroy']);
+        Route::post('/{customCode}/validate', [App\Http\Controllers\CustomCodeController::class, 'validate']);
+        Route::post('/{customCode}/preview', [App\Http\Controllers\CustomCodeController::class, 'preview']);
+    });
+});
+
+// Style Preset routes
+Route::middleware(['auth:sanctum'])->prefix('style-presets')->name('style-presets.')->group(function () {
+    Route::get('', [App\Http\Controllers\Api\StylePresetController::class, 'index']);
+    Route::post('', [App\Http\Controllers\Api\StylePresetController::class, 'store']);
+    Route::get('{stylePreset}', [App\Http\Controllers\Api\StylePresetController::class, 'show']);
+    Route::put('{stylePreset}', [App\Http\Controllers\Api\StylePresetController::class, 'update']);
+    Route::delete('{stylePreset}', [App\Http\Controllers\Api\StylePresetController::class, 'destroy']);
+    
+    // Category and filtering
+    Route::get('categories/{category}', [App\Http\Controllers\Api\StylePresetController::class, 'byCategory']);
+    Route::get('categories', [App\Http\Controllers\Api\StylePresetController::class, 'categories']);
+    
+    // Preset operations
+    Route::post('{stylePreset}/duplicate', [App\Http\Controllers\Api\StylePresetController::class, 'duplicate']);
+    
+    // Bulk operations
+    Route::post('bulk-store', [App\Http\Controllers\Api\StylePresetController::class, 'bulkStore']);
+    Route::get('export', [App\Http\Controllers\Api\StylePresetController::class, 'export']);
+});
+
+// Form Builder routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('form-builders', App\Http\Controllers\Api\FormBuilderController::class);
+    
+    // Form submission endpoint (public for form submissions)
+    Route::post('form-builders/{form}/submit', [App\Http\Controllers\Api\FormBuilderController::class, 'submit'])
+        ->withoutMiddleware('auth:sanctum')
+        ->middleware(['throttle:form-submission']);
+    
+    // Form configuration endpoints
+    Route::post('form-builders/{form}/conditional-logic', [App\Http\Controllers\Api\FormBuilderController::class, 'evaluateConditionalLogic']);
+    Route::get('form-builders/field-types', [App\Http\Controllers\Api\FormBuilderController::class, 'getFieldTypes']);
+    
+    // Form analytics and submissions
+    Route::get('form-builders/{form}/submissions', [App\Http\Controllers\Api\FormSubmissionController::class, 'index']);
+    Route::get('form-builders/{form}/analytics', [App\Http\Controllers\Api\FormSubmissionController::class, 'analytics']);
+    Route::post('form-builders/{form}/submissions/{submission}/retry-crm-sync', [App\Http\Controllers\Api\FormSubmissionController::class, 'retryCrmSync']);
+});
+
+// Version Control and Collaboration routes
+Route::middleware('auth:sanctum')->group(function () {
+    // Version Control routes
+    Route::prefix('pages/{page}')->group(function () {
+        Route::get('versions', [App\Http\Controllers\Api\VersionControlController::class, 'index']);
+        Route::post('versions', [App\Http\Controllers\Api\VersionControlController::class, 'store']);
+        Route::get('versions/{version}', [App\Http\Controllers\Api\VersionControlController::class, 'show']);
+        Route::post('versions/{version}/rollback', [App\Http\Controllers\Api\VersionControlController::class, 'rollback']);
+        Route::post('versions/{version}/publish', [App\Http\Controllers\Api\VersionControlController::class, 'publish']);
+        Route::get('versions/{version1}/compare/{version2}', [App\Http\Controllers\Api\VersionControlController::class, 'compare']);
+        Route::post('versions/auto-save', [App\Http\Controllers\Api\VersionControlController::class, 'autoSave']);
+        Route::get('versions/published', [App\Http\Controllers\Api\VersionControlController::class, 'published']);
+    });
+
+    // Collaboration routes
+    Route::prefix('pages/{page}/collaboration')->group(function () {
+        Route::post('start', [App\Http\Controllers\Api\CollaborationController::class, 'startSession']);
+        Route::get('sessions', [App\Http\Controllers\Api\CollaborationController::class, 'activeSessions']);
+        Route::post('changes', [App\Http\Controllers\Api\CollaborationController::class, 'recordChange']);
+        Route::post('apply', [App\Http\Controllers\Api\CollaborationController::class, 'applyChanges']);
+        Route::get('changes', [App\Http\Controllers\Api\CollaborationController::class, 'recentChanges']);
+        Route::get('changes/since', [App\Http\Controllers\Api\CollaborationController::class, 'changesSince']);
+        Route::get('activity', [App\Http\Controllers\Api\CollaborationController::class, 'userActivity']);
+    });
+
+    Route::post('collaboration/end', [App\Http\Controllers\Api\CollaborationController::class, 'endSession']);
+    Route::post('collaboration/activity', [App\Http\Controllers\Api\CollaborationController::class, 'updateActivity']);
+    Route::post('collaboration/changes/{change}/resolve', [App\Http\Controllers\Api\CollaborationController::class, 'resolveConflict']);
+    Route::post('collaboration/cleanup', [App\Http\Controllers\Api\CollaborationController::class, 'cleanupSessions']);
 });

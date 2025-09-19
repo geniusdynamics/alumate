@@ -1,3 +1,21 @@
-Calendar Integration Service (Tests\Unit\Services\CalendarIntegrationService)
- [ ] Fetch apple events success
+D:\DevCenter\abuilds\alumate\tests\Feature\AdvancedStylingTest.php
+ [ ] `Style Presets API` → it can list style presets
+ [ ] `Style Presets API` → it can create a style preset
+ [ ] `Style Presets API` → it validates required fields when creating preset
+ [ ] `Style Presets API` → it can update a style preset
+ [ ] `Style Presets API` → it can delete a style preset
+ [ ] `Style Presets API` → it can get presets by category
+ [ ] `Style Presets API` → it can duplicate a style preset
+ [ ] `Style Presets API` → it can bulk store style presets
+ [ ] `Style Presets API` → it can export style presets
+ [ ] `Style Presets API` → it enforces tenant isolation
+ [ ] `Brand Guidelines Validation` → it validates brand color compliance
+ [ ] `Brand Guidelines Validation` → it identifies brand compliant presets
+ [ ] `Brand Guidelines Validation` → it generates correct preview styles
+ [ ] `Brand Guidelines Validation` → it converts camelCase to kebab-case for CSS properties
+ [ ] `Brand Guidelines Validation` → it applies preset to component data correctly
+ [ ] `Brand Guidelines Validation` → it exports preset data correctly
+ [ ] `Tailwind CSS Integration` → it generates correct Tailwind classes string
+ [ ] `Tailwind CSS Integration` → it handles empty Tailwind classes array
+ [ ] `Tailwind CSS Integration` → it handles null Tailwind classes
 

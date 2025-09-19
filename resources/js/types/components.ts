@@ -370,19 +370,101 @@ export interface ComponentInstance {
 }
 
 export interface Component {
-    id: string;
-    tenantId: string;
-    name: string;
-    slug: string;
-    category: ComponentCategory;
+  id: string;
+  tenantId: string;
+  name: string;
+  slug: string;
+  category: ComponentCategory;
+  type: string;
+  description?: string;
+  config: HeroComponentConfig;
+  metadata?: Record<string, unknown>;
+  version: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Page Builder Types
+export interface Page {
+  id: string;
+  tenantId: string;
+  title: string;
+  slug: string;
+  content?: string;
+  status: 'draft' | 'published' | 'archived';
+  templateId?: string;
+  grapejsData?: any;
+  metadata?: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+}
+
+// GrapeJS Integration Types
+export interface GrapeJSConfig {
+  container: string;
+  height?: string;
+  width?: string;
+  storageManager?: {
     type: string;
-    description?: string;
-    config: HeroComponentConfig;
-    metadata?: Record<string, unknown>;
-    version: string;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
+    autosave?: boolean;
+    stepsBeforeSave?: number;
+    options?: {
+      remote?: {
+        urlLoad?: string;
+        urlStore?: string;
+        headers?: Record<string, string>;
+        contentTypeJson?: boolean;
+      };
+    };
+  };
+  blockManager?: {
+    appendTo?: string;
+  };
+  styleManager?: {
+    appendTo?: string;
+  };
+  layerManager?: {
+    appendTo?: string;
+  };
+  traitManager?: {
+    appendTo?: string;
+  };
+  deviceManager?: {
+    devices?: Array<{
+      name: string;
+      width: string;
+      widthMedia?: string;
+    }>;
+  };
+  plugins?: string[];
+  pluginsOpts?: Record<string, any>;
+}
+
+export interface EditorState {
+  isLoading: boolean;
+  isError: boolean;
+  errorMessage: string;
+  currentPage: Page | null;
+  selectedComponent: Component | null;
+  deviceMode: string;
+  isSaving: boolean;
+  isPublishing: boolean;
+}
+
+export interface EditorEvent {
+  type: string;
+  component?: any;
+  data?: any;
+  error?: Error;
+  device?: string;
+}
+
+export interface EditorCommand {
+  type: string;
+  name?: string;
+  options?: any;
 }
 
 // Form Component Types
@@ -1724,14 +1806,6 @@ export interface ThemeNotification {
     label: string
     action: () => void
   }>
-
-export interface CustomizationState {
-  templateId: number | null;
-  isEdited: boolean;
-  hasUnsavedChanges: boolean;
-  isAutoSaving: boolean;
-  lastSaved?: string;
-  activePanel: 'brand' | 'content' | 'settings';
 }
 
 export interface ColorCustomization {

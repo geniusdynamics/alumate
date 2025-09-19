@@ -1,0 +1,699 @@
+openapi: 3.0.3
+info:
+  title: Component Library API
+  description: |
+    The Component Library API provides comprehensive endpoints for managing reusable UI components,
+    themes, media assets, and analytics for alumni engagement platforms.
+    
+    ## Authentication
+    All endpoints require Bearer token authentication using Laravel Sanctum.
+    
+    ## Rate Limiting
+    - Standard endpoints: 1000 requests/minute
+    - File uploads: 100 requests/minute  
+    - Analytics: 500 requests/minute
+    
+    ## Multi-tenancy
+    All data is automatically scoped to the authenticated user's tenant.
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: api-support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+  - url: http://localhost:8000/api/v1
+    description: Development server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /components:
+    get:
+      summary: List components
+      description: Retrieve a paginated list of components with optional filtering and sorting
+      tags:
+        - Components
+      parameters:
+        - name: category
+          in: query
+          description: Filter by component category
+          schema:
+            type: string
+            enum: [hero, forms, testimonials, statistics, ctas, media]
+        - name: search
+          in: query
+          description: Search by name or description
+          schema:
+            type: string
+        - name: per_page
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 15
+        - name: sort
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [name, created_at, updated_at]
+            default: created_at
+        - name: direction
+          in: query
+          description: Sort direction
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    post:
+      summary: Create component
+      description: Create a new component with configuration and metadata
+      tags:
+        - Components
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentCreateRequest'
+      responses:
+        '201':
+          description: Component created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /components/{id}:
+    get:
+      summary: Get component
+      description: Retrieve a specific component with full details including theme and instances
+      tags:
+        - Components
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      summary: Update component
+      description: Update an existing component's configuration and metadata
+      tags:
+        - Components
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentUpdateRequest'
+      responses:
+        '200':
+          description: Component updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      summary: Delete component
+      description: Delete a component and all its instances
+      tags:
+        - Components
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Component deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /components/{id}/duplicate:
+    post:
+      summary: Duplicate component
+      description: Create a copy of an existing component with optional modifications
+      tags:
+        - Components
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Component ID to duplicate
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentDuplicateRequest'
+      responses:
+        '201':
+          description: Component duplicated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /component-themes:
+    get:
+      summary: List themes
+      description: Retrieve a list of available component themes
+      tags:
+        - Themes
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThemeListResponse'
+
+    post:
+      summary: Create theme
+      description: Create a new component theme with styling configuration
+      tags:
+        - Themes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ThemeCreateRequest'
+      responses:
+        '201':
+          description: Theme created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThemeResponse'
+
+  /component-media:
+    post:
+      summary: Upload media
+      description: Upload media files for use in components
+      tags:
+        - Media
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MediaUploadRequest'
+      responses:
+        '201':
+          description: Media uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MediaResponse'
+
+  /component-analytics/track:
+    post:
+      summary: Track event
+      description: Record an analytics event for component interaction tracking
+      tags:
+        - Analytics
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsTrackRequest'
+      responses:
+        '201':
+          description: Event tracked successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+
+  /component-analytics:
+    get:
+      summary: Get analytics
+      description: Retrieve analytics data for components with filtering and aggregation
+      tags:
+        - Analytics
+      parameters:
+        - name: component_id
+          in: query
+          description: Filter by component ID
+          schema:
+            type: integer
+        - name: event_type
+          in: query
+          description: Filter by event type
+          schema:
+            type: string
+            enum: [view, click, conversion, form_submit]
+        - name: date_from
+          in: query
+          description: Start date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: date_to
+          in: query
+          description: End date (YYYY-MM-DD)
+          schema:
+            type: string
+            format: date
+        - name: group_by
+          in: query
+          description: Group results by time period
+          schema:
+            type: string
+            enum: [day, week, month]
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Component:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Hero Section - Alumni"
+        slug:
+          type: string
+          example: "hero-section-alumni"
+        category:
+          type: string
+          enum: [hero, forms, testimonials, statistics, ctas, media]
+          example: "hero"
+        type:
+          type: string
+          example: "individual"
+        description:
+          type: string
+          example: "Hero section optimized for individual alumni"
+        config:
+          type: object
+          example:
+            headline: "Welcome Back, Alumni"
+            subheading: "Connect with your network"
+            cta_text: "Get Started"
+            background_type: "image"
+        metadata:
+          type: object
+          example:
+            tags: ["alumni", "hero", "conversion"]
+            usage_count: 45
+            conversion_rate: 0.12
+        version:
+          type: string
+          example: "1.0.0"
+        is_active:
+          type: boolean
+          example: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ComponentCreateRequest:
+      type: object
+      required:
+        - name
+        - category
+        - type
+        - config
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          example: "Custom Hero Section"
+        category:
+          type: string
+          enum: [hero, forms, testimonials, statistics, ctas, media]
+          example: "hero"
+        type:
+          type: string
+          maxLength: 100
+          example: "custom"
+        description:
+          type: string
+          maxLength: 1000
+          example: "Custom hero section for special campaigns"
+        config:
+          type: object
+          example:
+            headline: "Join Our Network"
+            subheading: "Connect with thousands of alumni"
+            cta_text: "Sign Up Now"
+        metadata:
+          type: object
+          example:
+            tags: ["custom", "campaign", "hero"]
+
+    ComponentUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        category:
+          type: string
+          enum: [hero, forms, testimonials, statistics, ctas, media]
+        type:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 1000
+        config:
+          type: object
+        metadata:
+          type: object
+        is_active:
+          type: boolean
+
+    ComponentDuplicateRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          maxLength: 255
+          example: "Copy of Hero Section"
+        modifications:
+          type: object
+          example:
+            config:
+              headline: "Modified Headline"
+
+    ComponentResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Component'
+
+    ComponentListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Component'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+        links:
+          $ref: '#/components/schemas/PaginationLinks'
+
+    Theme:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        config:
+          type: object
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ThemeCreateRequest:
+      type: object
+      required:
+        - name
+        - config
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        config:
+          type: object
+        is_default:
+          type: boolean
+          default: false
+
+    ThemeResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Theme'
+
+    ThemeListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Theme'
+
+    MediaUploadRequest:
+      type: object
+      required:
+        - file
+      properties:
+        file:
+          type: string
+          format: binary
+        type:
+          type: string
+          enum: [image, video, document]
+        alt_text:
+          type: string
+        caption:
+          type: string
+
+    MediaResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+            filename:
+              type: string
+            original_name:
+              type: string
+            mime_type:
+              type: string
+            size:
+              type: integer
+            type:
+              type: string
+            url:
+              type: string
+            thumbnail_url:
+              type: string
+            alt_text:
+              type: string
+            metadata:
+              type: object
+            created_at:
+              type: string
+              format: date-time
+
+    AnalyticsTrackRequest:
+      type: object
+      required:
+        - component_instance_id
+        - event_type
+      properties:
+        component_instance_id:
+          type: integer
+        event_type:
+          type: string
+          enum: [view, click, conversion, form_submit]
+        data:
+          type: object
+        user_id:
+          type: integer
+        session_id:
+          type: string
+
+    AnalyticsResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            summary:
+              type: object
+              properties:
+                total_views:
+                  type: integer
+                total_clicks:
+                  type: integer
+                conversion_rate:
+                  type: number
+                unique_users:
+                  type: integer
+            events:
+              type: array
+              items:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                  views:
+                    type: integer
+                  clicks:
+                    type: integer
+                  conversions:
+                    type: integer
+                  conversion_rate:
+                    type: number
+
+    PaginationMeta:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        last_page:
+          type: integer
+
+    PaginationLinks:
+      type: object
+      properties:
+        first:
+          type: string
+        last:
+          type: string
+        prev:
+          type: string
+          nullable: true
+        next:
+          type: string
+          nullable: true
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+  responses:
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    ValidationError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

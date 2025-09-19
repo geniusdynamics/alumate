@@ -1,39 +1,55 @@
 # ABOUTME: Fixed PowerShell script for starting Vite and Laravel development servers
-# ABOUTME: Includes proper error handling, execution policy check, and correct PHP paths
+# ABOUTME: Includes proper error handling, execution policy check, and dynamic PHP path detection
 
 # Check execution policy first
 $currentPolicy = Get-ExecutionPolicy -Scope CurrentUser
-if ($currentPolicy -eq \"Restricted\") {
-    Write-Host \"❌ PowerShell execution policy is Restricted\" -ForegroundColor Red
-    Write-Host \"\"
-    Write-Host \"To fix this, run as Administrator:\" -ForegroundColor Yellow
-    Write-Host \"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser\" -ForegroundColor Cyan
-    Write-Host \"\"
-    Write-Host \"Alternatively, use start-dev.bat which doesn't have this restriction.\" -ForegroundColor Green
-    Write-Host \"\"
-    Read-Host \"Press Enter to exit\"
+if ($currentPolicy -eq "Restricted") {
+    Write-Host "❌ PowerShell execution policy is Restricted" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "To fix this, run as Administrator:" -ForegroundColor Yellow
+    Write-Host "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser" -ForegroundColor Cyan
+    Write-Host ""
+    Write-Host "Alternatively, use start-dev.bat which doesn't have this restriction." -ForegroundColor Green
+    Write-Host ""
+    Read-Host "Press Enter to exit"
     exit 1
 }
 
 # Configuration
 $VitePort = 5100
 $LaravelPort = 8080
-$LogFile = \"dev-server.log\"
-
-# Correct executable paths for this project
-$NodePath = \"node\"
-$PhpPath = \"D:\\DevCenter\\xampp\\php-8.3.23\\php.exe\"
-$PnpmPath = \"pnpm\"
+$LogFile = "dev-server.log"
 
 # Color scheme
 $Colors = @{
-    Success = \"Green\"
-    Error = \"Red\"
-    Warning = \"Yellow\"
-    Info = \"Cyan\"
-    Highlight = \"Magenta\"
-    Muted = \"Gray\"
+    Success = "Green"
+    Error = "Red"
+    Warning = "Yellow"
+    Info = "Cyan"
+    Highlight = "Magenta"
+    Muted = "Gray"
 }
+
+# Detect executable paths dynamically
+$NodePath = "node"
+# Try to find PHP in PATH first, fallback to XAMPP if needed
+try {
+    $PhpCommand = Get-Command php -ErrorAction Stop
+    $PhpPath = $PhpCommand.Source
+    Write-Host "✅ Found PHP at: $PhpPath" -ForegroundColor $Colors.Success
+} catch {
+    # Fallback to XAMPP path if PHP not in PATH
+    $PhpPath = "D:\DevCenter\xampp\php-8.3.23\php.exe"
+    if (Test-Path $PhpPath) {
+        Write-Host "⚠️  Using fallback PHP at: $PhpPath" -ForegroundColor $Colors.Warning
+    } else {
+        Write-Host "❌ PHP not found in PATH or XAMPP location" -ForegroundColor $Colors.Error
+        Write-Host "Please install PHP or add it to your PATH" -ForegroundColor $Colors.Error
+        Read-Host "Press Enter to exit"
+        exit 1
+    }
+}
+$PnpmPath = "pnpm"
 
 # Function to test if a port is in use
 function Test-PortInUse {

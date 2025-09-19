@@ -1,420 +1,1102 @@
-import type { 
-  ABTest, 
-  ABVariant, 
-  ComponentOverride, 
-  ConversionGoal, 
-  AudienceType,
-  ABTestResult,
-  ABTestStatistics
-} from '@/types/homepage'
+import axios, { AxiosInstance } from 'axios'
+import { io, type Socket } from 'socket.io-client'
+import type { AnalyticsIntegrationService } from './AnalyticsIntegrationService'
 
+// Type definitions based on design document
+export interface ExperimentConfig {
+  name: string
+  description?: string
+  hypothesis: string
+  goal: TestGoal
+  variants: VariantConfig[]
+  trafficAllocation: number[]
+  duration: number // in days
+  startDate?: Date
+  endDate?: Date
+  targeting?: TargetingRules
+  status: ExperimentStatus
+}
+
+export interface Experiment {
+  id: string
+  config: ExperimentConfig
+  status: ExperimentStatus
+  variants: Variant[]
+  results?: TestResults
+  createdAt: Date
+  updatedAt: Date
+  createdBy: string
+  tenantId?: string
+}
+
+export type ExperimentStatus = 'draft' | 'scheduled' | 'running' | 'paused' | 'completed' | 'archived'
+
+export interface VariantConfig {
+  id?: string
+  name: string
+  description?: string
+  changes: VariantChange[]
+  weight: number
+}
+
+export interface VariantChange {
+  type: ChangeType
+  targetId: string
+  property: string
+  value: any
+}
+
+export type ChangeType = 'content' | 'style' | 'component' | 'layout'
+
+export interface Variant {
+  id: string
+  experimentId: string
+  config: VariantConfig
+  visitors: number
+  conversions: number
+  conversionRate: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface TestGoal {
+  type: GoalType
+  selector?: string
+  eventName?: string
+  customFunction?: string
+  value?: number
+}
+
+export type GoalType = 'conversion' | 'engagement' | 'clicks' | 'custom'
+
+export interface TargetingRules {
+  audienceSegments?: string[]
+  geolocation?: GeolocationRule[]
+  deviceTypes?: string[]
+  browsers?: string[]
+  customRules?: CustomRule[]
+}
+
+export interface GeolocationRule {
+  country?: string
+  region?: string
+  city?: string
+  include: boolean
+}
+
+export interface CustomRule {
+  condition: string
+  value: any
+}
+
+export interface TestResults {
+  experimentId: string
+  startDate: Date
+  endDate: Date
+  totalVisitors: number
+  variantResults: VariantResult[]
+  winner?: string
+  confidence: number
+  statisticalSignificance: boolean
+  updatedAt: Date
+}
+
+export interface VariantResult {
+  variantId: string
+  name: string
+  visitors: number
+  conversions: number
+  conversionRate: number
+  engagement: number
+  revenue?: number
+  statisticalSignificance: boolean
+}
+
+export interface RealTimeResults {
+  experimentId: string
+  currentVisitors: number
+  currentConversions: number
+  variantMetrics: RealTimeMetric[]
+  lastUpdated: Date
+}
+
+export interface RealTimeMetric {
+  variantId: string
+  visitorsPerMinute: number
+  conversionsPerMinute: number
+  currentConversionRate: number
+}
+
+export interface StatisticalAnalysis {
+  pValue: number
+  confidenceInterval: ConfidenceInterval
+  effectSize: number
+  power: number
+  significance: boolean
+}
+
+export interface ConfidenceInterval {
+  lowerBound: number
+  upperBound: number
+  confidenceLevel: number
+}
+
+export interface ExperimentQueryOptions {
+  status?: ExperimentStatus
+  limit?: number
+  offset?: number
+  sortBy?: 'createdAt' | 'updatedAt' | 'name'
+  sortOrder?: 'asc' | 'desc'
+  startDate?: Date
+  endDate?: Date
+}
+
+export interface TrafficAssignment {
+  experimentId: string
+  variantId: string
+  userId: string
+  sessionId: string
+  timestamp: Date
+  tenantId?: string
+}
+
+/**
+ * A/B Testing Service for managing experiments, variants, and traffic allocation
+ * Integrates with analytics service for performance tracking and statistical analysis
+ */
 export class ABTestingService {
-  private activeTests: Map<string, ABTest> = new Map()
-  private userAssignments: Map<string, Map<string, string>> = new Map() // userId -> testId -> variantId
-  private sessionAssignments: Map<string, string> = new Map() // testId -> variantId
-  private userId?: string
-  private sessionId: string
-  private audience: AudienceType
+  private http: AxiosInstance
+  private socket: Socket | null = null
+  private analyticsService: AnalyticsIntegrationService
+  private experiments: Map<string, Experiment> = new Map()
+  private trafficAssignments: Map<string, TrafficAssignment> = new Map()
+  private cacheTimeout = 5 * 60 * 1000 // 5 minutes
+  private tenantId?: string
 
-  constructor(userId: string | undefined, sessionId: string, audience: AudienceType) {
-    this.userId = userId
-    this.sessionId = sessionId
-    this.audience = audience
-    this.loadActiveTests()
-    this.loadUserAssignments()
+  constructor(
+    analyticsService: AnalyticsIntegrationService,
+    tenantId?: string,
+    baseURL: string = '/api/ab-testing'
+  ) {
+    this.analyticsService = analyticsService
+    this.tenantId = tenantId
+
+    this.http = axios.create({
+      baseURL,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': this.getCsrfToken()
+      }
+    })
+
+    // Add tenant header if available
+    if (tenantId) {
+      this.http.defaults.headers.common['X-Tenant-ID'] = tenantId
+    }
+
+    this.setupInterceptors()
   }
 
-  private async loadActiveTests(): Promise<void> {
+  /**
+   * Initialize the service with socket connection for real-time updates
+   */
+  async initialize(socket?: Socket): Promise<void> {
+    if (socket) {
+      this.socket = socket
+      this.setupSocketListeners()
+    }
+
+    // Load initial experiments
+    await this.loadExperiments()
+  }
+
+  // Experiment Management Methods
+
+  /**
+   * Create a new A/B testing experiment
+   */
+  async createExperiment(config: ExperimentConfig): Promise<Experiment> {
+    this.validateExperimentConfig(config)
+
     try {
-      const response = await fetch('/api/ab-tests/active', {
-        headers: {
-          'X-Audience': this.audience
-        }
+      const response = await this.http.post('/experiments', {
+        ...config,
+        tenantId: this.tenantId
       })
-      
-      if (response.ok) {
-        const tests: ABTest[] = await response.json()
-        tests.forEach(test => {
-          if (this.isTestApplicable(test)) {
-            this.activeTests.set(test.id, test)
-          }
+
+      const experiment: Experiment = {
+        ...response.data,
+        createdAt: new Date(response.data.createdAt),
+        updatedAt: new Date(response.data.updatedAt)
+      }
+
+      this.experiments.set(experiment.id, experiment)
+
+      // Track experiment creation
+      await this.analyticsService.trackEvent('experiment_created', {
+        experimentId: experiment.id,
+        experimentName: experiment.config.name,
+        variantCount: experiment.variants.length,
+        tenantId: this.tenantId
+      })
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('experiment:created', experiment)
+      }
+
+      return experiment
+    } catch (error) {
+      console.error('Failed to create experiment:', error)
+      throw new Error('Failed to create experiment')
+    }
+  }
+
+  /**
+   * Update an existing experiment
+   */
+  async updateExperiment(experimentId: string, config: Partial<ExperimentConfig>): Promise<Experiment> {
+    const experiment = this.experiments.get(experimentId)
+    if (!experiment) {
+      throw new Error(`Experiment with ID ${experimentId} not found`)
+    }
+
+    try {
+      const response = await this.http.put(`/experiments/${experimentId}`, config)
+
+      const updatedExperiment: Experiment = {
+        ...experiment,
+        config: { ...experiment.config, ...config },
+        updatedAt: new Date()
+      }
+
+      this.experiments.set(experimentId, updatedExperiment)
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('experiment:updated', updatedExperiment)
+      }
+
+      return updatedExperiment
+    } catch (error) {
+      console.error('Failed to update experiment:', error)
+      throw new Error('Failed to update experiment')
+    }
+  }
+
+  /**
+   * Delete an experiment
+   */
+  async deleteExperiment(experimentId: string): Promise<void> {
+    try {
+      await this.http.delete(`/experiments/${experimentId}`)
+
+      this.experiments.delete(experimentId)
+
+      // Clean up traffic assignments
+      this.cleanupTrafficAssignments(experimentId)
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('experiment:deleted', { experimentId })
+      }
+    } catch (error) {
+      console.error('Failed to delete experiment:', error)
+      throw new Error('Failed to delete experiment')
+    }
+  }
+
+  /**
+   * Get a specific experiment
+   */
+  async getExperiment(experimentId: string): Promise<Experiment> {
+    // Check cache first
+    const cached = this.experiments.get(experimentId)
+    if (cached) {
+      return cached
+    }
+
+    try {
+      const response = await this.http.get(`/experiments/${experimentId}`)
+      const experiment: Experiment = {
+        ...response.data,
+        createdAt: new Date(response.data.createdAt),
+        updatedAt: new Date(response.data.updatedAt)
+      }
+
+      this.experiments.set(experimentId, experiment)
+      return experiment
+    } catch (error) {
+      console.error('Failed to fetch experiment:', error)
+      throw new Error('Failed to fetch experiment')
+    }
+  }
+
+  /**
+   * Get experiments with optional filtering
+   */
+  async getExperiments(options?: ExperimentQueryOptions): Promise<Experiment[]> {
+    try {
+      const params = new URLSearchParams()
+      if (options?.status) params.append('status', options.status)
+      if (options?.limit) params.append('limit', options.limit.toString())
+      if (options?.offset) params.append('offset', options.offset.toString())
+      if (options?.sortBy) params.append('sortBy', options.sortBy)
+      if (options?.sortOrder) params.append('sortOrder', options.sortOrder)
+      if (options?.startDate) params.append('startDate', options.startDate.toISOString())
+      if (options?.endDate) params.append('endDate', options.endDate.toISOString())
+
+      const response = await this.http.get(`/experiments?${params.toString()}`)
+      const experiments: Experiment[] = response.data.map((exp: any) => ({
+        ...exp,
+        createdAt: new Date(exp.createdAt),
+        updatedAt: new Date(exp.updatedAt)
+      }))
+
+      // Cache experiments
+      experiments.forEach(exp => {
+        this.experiments.set(exp.id, exp)
+      })
+
+      return experiments
+    } catch (error) {
+      console.error('Failed to fetch experiments:', error)
+      throw new Error('Failed to fetch experiments')
+    }
+  }
+
+  // Variant Management Methods
+
+  /**
+   * Create a new variant for an experiment
+   */
+  async createVariant(experimentId: string, config: VariantConfig): Promise<Variant> {
+    try {
+      const response = await this.http.post(`/experiments/${experimentId}/variants`, config)
+
+      const variant: Variant = {
+        ...response.data,
+        createdAt: new Date(response.data.createdAt),
+        updatedAt: new Date(response.data.updatedAt)
+      }
+
+      // Update experiment in cache
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        experiment.variants.push(variant)
+        experiment.updatedAt = new Date()
+      }
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('variant:created', { experimentId, variant })
+      }
+
+      return variant
+    } catch (error) {
+      console.error('Failed to create variant:', error)
+      throw new Error('Failed to create variant')
+    }
+  }
+
+  /**
+   * Update an existing variant
+   */
+  async updateVariant(variantId: string, config: VariantConfig): Promise<Variant> {
+    try {
+      const response = await this.http.put(`/variants/${variantId}`, config)
+
+      const updatedVariant: Variant = {
+        ...response.data,
+        updatedAt: new Date()
+      }
+
+      // Update variant in experiment cache
+      for (const experiment of this.experiments.values()) {
+        const variantIndex = experiment.variants.findIndex(v => v.id === variantId)
+        if (variantIndex !== -1) {
+          experiment.variants[variantIndex] = updatedVariant
+          experiment.updatedAt = new Date()
+          break
+        }
+      }
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('variant:updated', { variantId, variant: updatedVariant })
+      }
+
+      return updatedVariant
+    } catch (error) {
+      console.error('Failed to update variant:', error)
+      throw new Error('Failed to update variant')
+    }
+  }
+
+  /**
+   * Delete a variant
+   */
+  async deleteVariant(variantId: string): Promise<void> {
+    try {
+      await this.http.delete(`/variants/${variantId}`)
+
+      // Remove variant from experiment cache
+      for (const experiment of this.experiments.values()) {
+        experiment.variants = experiment.variants.filter(v => v.id !== variantId)
+        experiment.updatedAt = new Date()
+      }
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('variant:deleted', { variantId })
+      }
+    } catch (error) {
+      console.error('Failed to delete variant:', error)
+      throw new Error('Failed to delete variant')
+    }
+  }
+
+  /**
+   * Get variants for an experiment
+   */
+  async getVariants(experimentId: string): Promise<Variant[]> {
+    const experiment = this.experiments.get(experimentId)
+    if (experiment) {
+      return experiment.variants
+    }
+
+    try {
+      const response = await this.http.get(`/experiments/${experimentId}/variants`)
+      const variants: Variant[] = response.data.map((v: any) => ({
+        ...v,
+        createdAt: new Date(v.createdAt),
+        updatedAt: new Date(v.updatedAt)
+      }))
+
+      return variants
+    } catch (error) {
+      console.error('Failed to fetch variants:', error)
+      throw new Error('Failed to fetch variants')
+    }
+  }
+
+  // Traffic Assignment Methods
+
+  /**
+   * Assign a user to a variant based on traffic allocation
+   */
+  assignVariant(experimentId: string, userId: string, sessionId: string): string | null {
+    const experiment = this.experiments.get(experimentId)
+    if (!experiment || experiment.status !== 'running') {
+      return null
+    }
+
+    // Check if user is already assigned
+    const existingAssignment = Array.from(this.trafficAssignments.values())
+      .find(assignment =>
+        assignment.experimentId === experimentId &&
+        assignment.userId === userId
+      )
+
+    if (existingAssignment) {
+      return existingAssignment.variantId
+    }
+
+    // Assign based on traffic allocation
+    const variantId = this.selectVariantByTrafficAllocation(experiment)
+
+    if (variantId) {
+      const assignment: TrafficAssignment = {
+        experimentId,
+        variantId,
+        userId,
+        sessionId,
+        timestamp: new Date(),
+        tenantId: this.tenantId
+      }
+
+      this.trafficAssignments.set(`${experimentId}-${userId}`, assignment)
+
+      // Track assignment
+      this.analyticsService.trackEvent('variant_assigned', {
+        experimentId,
+        variantId,
+        userId,
+        tenantId: this.tenantId
+      }).catch(console.error)
+    }
+
+    return variantId
+  }
+
+  /**
+   * Get the assigned variant for a user
+   */
+  getAssignedVariant(experimentId: string, userId: string): string | null {
+    const assignment = this.trafficAssignments.get(`${experimentId}-${userId}`)
+    return assignment?.variantId || null
+  }
+
+  /**
+   * Select variant based on traffic allocation using weighted random selection
+   */
+  private selectVariantByTrafficAllocation(experiment: Experiment): string | null {
+    const { variants, config } = experiment
+    const { trafficAllocation } = config
+
+    if (variants.length === 0 || trafficAllocation.length !== variants.length) {
+      return null
+    }
+
+    const random = Math.random() * 100
+    let cumulativeWeight = 0
+
+    for (let i = 0; i < variants.length; i++) {
+      cumulativeWeight += trafficAllocation[i]
+      if (random <= cumulativeWeight) {
+        return variants[i].id
+      }
+    }
+
+    return null
+  }
+
+  // Analytics Integration Methods
+
+  /**
+   * Track a conversion event for a variant
+   */
+  async trackConversion(experimentId: string, variantId: string, userId: string, conversionType: string): Promise<void> {
+    try {
+      // Update local variant metrics
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        const variant = experiment.variants.find(v => v.id === variantId)
+        if (variant) {
+          variant.conversions++
+          variant.conversionRate = variant.visitors > 0 ? variant.conversions / variant.visitors : 0
+          experiment.updatedAt = new Date()
+        }
+      }
+
+      // Track via analytics service
+      await this.analyticsService.trackEvent('conversion', {
+        experimentId,
+        variantId,
+        userId,
+        conversionType,
+        tenantId: this.tenantId
+      })
+
+      // Send to backend
+      await this.http.post('/conversions', {
+        experimentId,
+        variantId,
+        userId,
+        conversionType,
+        tenantId: this.tenantId
+      })
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('conversion:tracked', {
+          experimentId,
+          variantId,
+          userId,
+          conversionType
         })
       }
     } catch (error) {
-      console.error('Failed to load active A/B tests:', error)
+      console.error('Failed to track conversion:', error)
+      throw new Error('Failed to track conversion')
     }
   }
 
-  private loadUserAssignments(): void {
-    if (this.userId) {
-      const stored = localStorage.getItem(`ab_assignments_${this.userId}`)
-      if (stored) {
-        try {
-          const assignments = JSON.parse(stored)
-          this.userAssignments.set(this.userId, new Map(Object.entries(assignments)))
-        } catch (error) {
-          console.error('Failed to parse stored A/B test assignments:', error)
+  /**
+   * Track a visitor for a variant
+   */
+  async trackVisitor(experimentId: string, variantId: string, userId: string): Promise<void> {
+    try {
+      // Update local variant metrics
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        const variant = experiment.variants.find(v => v.id === variantId)
+        if (variant) {
+          variant.visitors++
+          variant.conversionRate = variant.conversions > 0 ? variant.conversions / variant.visitors : 0
+          experiment.updatedAt = new Date()
         }
       }
-    }
 
-    // Load session assignments
-    const sessionStored = sessionStorage.getItem(`ab_session_assignments_${this.sessionId}`)
-    if (sessionStored) {
-      try {
-        const assignments = JSON.parse(sessionStored)
-        this.sessionAssignments = new Map(Object.entries(assignments))
-      } catch (error) {
-        console.error('Failed to parse session A/B test assignments:', error)
-      }
-    }
-  }
-
-  private saveUserAssignments(): void {
-    if (this.userId && this.userAssignments.has(this.userId)) {
-      const assignments = Object.fromEntries(this.userAssignments.get(this.userId)!)
-      localStorage.setItem(`ab_assignments_${this.userId}`, JSON.stringify(assignments))
-    }
-
-    // Save session assignments
-    const sessionAssignments = Object.fromEntries(this.sessionAssignments)
-    sessionStorage.setItem(`ab_session_assignments_${this.sessionId}`, JSON.stringify(sessionAssignments))
-  }
-
-  private isTestApplicable(test: ABTest): boolean {
-    // Check if test is for current audience
-    if (test.audience !== this.audience && test.audience !== 'both') {
-      return false
-    }
-
-    // Check if test is currently running
-    const now = new Date()
-    if (test.startDate > now || (test.endDate && test.endDate < now)) {
-      return false
-    }
-
-    // Check test status
-    if (test.status !== 'running') {
-      return false
-    }
-
-    return true
-  }
-
-  private hashUserId(userId: string, testId: string): number {
-    // Simple hash function for consistent variant assignment
-    let hash = 0
-    const str = `${userId}_${testId}`
-    
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
-      hash = hash & hash // Convert to 32-bit integer
-    }
-    
-    return Math.abs(hash)
-  }
-
-  private assignVariant(test: ABTest): ABVariant {
-    const identifier = this.userId || this.sessionId
-    const hash = this.hashUserId(identifier, test.id)
-    
-    // Calculate cumulative weights
-    let totalWeight = 0
-    const cumulativeWeights: Array<{ variant: ABVariant; weight: number }> = []
-    
-    test.variants.forEach(variant => {
-      totalWeight += variant.weight
-      cumulativeWeights.push({ variant, weight: totalWeight })
-    })
-
-    // Normalize hash to 0-100 range based on traffic allocation
-    const normalizedHash = (hash % 100) + 1
-    
-    // Check if user should be included in test based on traffic allocation
-    if (normalizedHash > test.trafficAllocation) {
-      // Return control variant (first variant) for users not in test
-      return test.variants[0]
-    }
-
-    // Assign variant based on weights
-    const targetWeight = (hash % totalWeight) + 1
-    
-    for (const { variant, weight } of cumulativeWeights) {
-      if (targetWeight <= weight) {
-        return variant
-      }
-    }
-
-    // Fallback to first variant
-    return test.variants[0]
-  }
-
-  // Public Methods
-
-  public getVariant(testId: string): ABVariant | null {
-    const test = this.activeTests.get(testId)
-    if (!test) return null
-
-    // Check existing assignment
-    let assignedVariantId: string | undefined
-
-    if (this.userId && this.userAssignments.has(this.userId)) {
-      assignedVariantId = this.userAssignments.get(this.userId)!.get(testId)
-    }
-
-    if (!assignedVariantId) {
-      assignedVariantId = this.sessionAssignments.get(testId)
-    }
-
-    if (assignedVariantId) {
-      const variant = test.variants.find(v => v.id === assignedVariantId)
-      if (variant) return variant
-    }
-
-    // Assign new variant
-    const variant = this.assignVariant(test)
-    
-    // Store assignment
-    if (this.userId) {
-      if (!this.userAssignments.has(this.userId)) {
-        this.userAssignments.set(this.userId, new Map())
-      }
-      this.userAssignments.get(this.userId)!.set(testId, variant.id)
-    }
-    
-    this.sessionAssignments.set(testId, variant.id)
-    this.saveUserAssignments()
-
-    // Track assignment
-    this.trackAssignment(testId, variant.id)
-
-    return variant
-  }
-
-  public getComponentOverrides(testId: string): ComponentOverride[] {
-    const variant = this.getVariant(testId)
-    return variant?.componentOverrides || []
-  }
-
-  public isInTest(testId: string): boolean {
-    return this.getVariant(testId) !== null
-  }
-
-  public isInVariant(testId: string, variantId: string): boolean {
-    const variant = this.getVariant(testId)
-    return variant?.id === variantId
-  }
-
-  public trackConversion(testId: string, goalId: string, value?: number): void {
-    const variant = this.getVariant(testId)
-    if (!variant) return
-
-    const test = this.activeTests.get(testId)
-    if (!test) return
-
-    const goal = test.conversionGoals.find(g => g.id === goalId)
-    if (!goal) return
-
-    // Send conversion event
-    this.sendConversionEvent(testId, variant.id, goalId, value || goal.value)
-  }
-
-  public getAllActiveTests(): ABTest[] {
-    return Array.from(this.activeTests.values())
-  }
-
-  public getTestAssignments(): Record<string, string> {
-    const assignments: Record<string, string> = {}
-    
-    this.activeTests.forEach((test, testId) => {
-      const variant = this.getVariant(testId)
-      if (variant) {
-        assignments[testId] = variant.id
-      }
-    })
-
-    return assignments
-  }
-
-  public async getTestResults(testId: string): Promise<ABTestResult | null> {
-    try {
-      const response = await fetch(`/api/ab-tests/${testId}/results`)
-      if (response.ok) {
-        return await response.json()
-      }
-    } catch (error) {
-      console.error(`Failed to get results for test ${testId}:`, error)
-    }
-    return null
-  }
-
-  public async getTestStatistics(testId: string): Promise<ABTestStatistics | null> {
-    try {
-      const response = await fetch(`/api/ab-tests/${testId}/statistics`)
-      if (response.ok) {
-        return await response.json()
-      }
-    } catch (error) {
-      console.error(`Failed to get statistics for test ${testId}:`, error)
-    }
-    return null
-  }
-
-  // Test Management Methods (for admin use)
-
-  public async createTest(test: Omit<ABTest, 'id'>): Promise<string | null> {
-    try {
-      const response = await fetch('/api/ab-tests', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(test)
+      // Track via analytics service
+      await this.analyticsService.trackPageView(window.location.href, {
+        experimentId,
+        variantId,
+        userId,
+        tenantId: this.tenantId
       })
 
-      if (response.ok) {
-        const result = await response.json()
-        return result.id
-      }
-    } catch (error) {
-      console.error('Failed to create A/B test:', error)
-    }
-    return null
-  }
-
-  public async updateTest(testId: string, updates: Partial<ABTest>): Promise<boolean> {
-    try {
-      const response = await fetch(`/api/ab-tests/${testId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updates)
+      // Send to backend
+      await this.http.post('/visitors', {
+        experimentId,
+        variantId,
+        userId,
+        tenantId: this.tenantId
       })
-
-      return response.ok
     } catch (error) {
-      console.error(`Failed to update test ${testId}:`, error)
-      return false
+      console.error('Failed to track visitor:', error)
+      throw new Error('Failed to track visitor')
     }
   }
 
-  public async startTest(testId: string): Promise<boolean> {
-    return this.updateTest(testId, { status: 'running', startDate: new Date() })
+  /**
+   * Get test results for an experiment
+   */
+  async getTestResults(experimentId: string): Promise<TestResults> {
+    try {
+      const response = await this.http.get(`/experiments/${experimentId}/results`)
+      const results: TestResults = {
+        ...response.data,
+        startDate: new Date(response.data.startDate),
+        endDate: new Date(response.data.endDate),
+        updatedAt: new Date(response.data.updatedAt)
+      }
+
+      // Update experiment with results
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        experiment.results = results
+      }
+
+      return results
+    } catch (error) {
+      console.error('Failed to fetch test results:', error)
+      throw new Error('Failed to fetch test results')
+    }
   }
 
-  public async pauseTest(testId: string): Promise<boolean> {
-    return this.updateTest(testId, { status: 'paused' })
+  /**
+   * Get real-time results for an experiment
+   */
+  async getRealTimeResults(experimentId: string): Promise<RealTimeResults> {
+    try {
+      const response = await this.http.get(`/experiments/${experimentId}/real-time-results`)
+      const results: RealTimeResults = {
+        ...response.data,
+        lastUpdated: new Date(response.data.lastUpdated)
+      }
+
+      return results
+    } catch (error) {
+      console.error('Failed to fetch real-time results:', error)
+      throw new Error('Failed to fetch real-time results')
+    }
   }
 
-  public async endTest(testId: string): Promise<boolean> {
-    return this.updateTest(testId, { status: 'completed', endDate: new Date() })
+  /**
+   * Calculate statistical significance for test results
+   */
+  async calculateStatisticalSignificance(results: TestResults): Promise<StatisticalAnalysis> {
+    try {
+      const analysis = this.performStatisticalAnalysis(results)
+
+      // Cache analysis result
+      if (results.experimentId) {
+        const experiment = this.experiments.get(results.experimentId)
+        if (experiment) {
+          experiment.results = {
+            ...results,
+            statisticalSignificance: analysis.significance
+          }
+        }
+      }
+
+      return analysis
+    } catch (error) {
+      console.error('Failed to calculate statistical significance:', error)
+      throw new Error('Failed to calculate statistical significance')
+    }
   }
 
-  // Utility Methods
+  /**
+   * Perform statistical analysis on test results
+   */
+  private performStatisticalAnalysis(results: TestResults): StatisticalAnalysis {
+    if (results.variantResults.length < 2) {
+      return {
+        pValue: 1,
+        confidenceInterval: { lowerBound: 0, upperBound: 0, confidenceLevel: 0.95 },
+        effectSize: 0,
+        power: 0,
+        significance: false
+      }
+    }
 
-  public calculateStatisticalSignificance(
-    controlConversions: number,
-    controlSamples: number,
-    variantConversions: number,
-    variantSamples: number
-  ): { significant: boolean; pValue: number; confidenceLevel: number } {
-    // Simplified statistical significance calculation
-    // In production, you'd want to use a proper statistical library
-    
-    const controlRate = controlConversions / controlSamples
-    const variantRate = variantConversions / variantSamples
-    
-    const pooledRate = (controlConversions + variantConversions) / (controlSamples + variantSamples)
-    const standardError = Math.sqrt(pooledRate * (1 - pooledRate) * (1/controlSamples + 1/variantSamples))
-    
-    const zScore = Math.abs(controlRate - variantRate) / standardError
-    
-    // Approximate p-value calculation (simplified)
-    const pValue = 2 * (1 - this.normalCDF(Math.abs(zScore)))
-    
+    const controlVariant = results.variantResults[0]
+    const treatmentVariant = results.variantResults[1]
+
+    // Calculate p-value using chi-square approximation
+    const pValue = this.calculatePValue(controlVariant, treatmentVariant)
+
+    // Calculate confidence interval
+    const confidenceInterval = this.calculateConfidenceInterval(controlVariant, treatmentVariant)
+
+    // Calculate effect size (Cohen's h)
+    const effectSize = this.calculateEffectSize(controlVariant, treatmentVariant)
+
+    // Calculate statistical power
+    const power = this.calculatePower(controlVariant, treatmentVariant)
+
+    const significance = pValue < 0.05
+
     return {
-      significant: pValue < 0.05,
       pValue,
-      confidenceLevel: (1 - pValue) * 100
+      confidenceInterval,
+      effectSize,
+      power,
+      significance
     }
   }
 
-  private normalCDF(x: number): number {
-    // Approximation of the cumulative distribution function for standard normal distribution
-    return 0.5 * (1 + this.erf(x / Math.sqrt(2)))
+  /**
+   * Calculate p-value using chi-square test approximation
+   */
+  private calculatePValue(control: VariantResult, treatment: VariantResult): number {
+    const n1 = control.visitors
+    const n2 = treatment.visitors
+    const p1 = control.conversionRate
+    const p2 = treatment.conversionRate
+
+    if (n1 === 0 || n2 === 0) return 1
+
+    const pooledP = (control.conversions + treatment.conversions) / (n1 + n2)
+    const se = Math.sqrt(pooledP * (1 - pooledP) * (1/n1 + 1/n2))
+    const z = Math.abs(p1 - p2) / se
+
+    // Approximate p-value from z-score
+    return 2 * (1 - this.normalCDF(z))
   }
 
-  private erf(x: number): number {
-    // Approximation of the error function
-    const a1 =  0.254829592
-    const a2 = -0.284496736
-    const a3 =  1.421413741
-    const a4 = -1.453152027
-    const a5 =  1.061405429
-    const p  =  0.3275911
+  /**
+   * Calculate confidence interval for conversion rate difference
+   */
+  private calculateConfidenceInterval(control: VariantResult, treatment: VariantResult, confidenceLevel: number = 0.95): ConfidenceInterval {
+    const n1 = control.visitors
+    const n2 = treatment.visitors
+    const p1 = control.conversionRate
+    const p2 = treatment.conversionRate
 
-    const sign = x >= 0 ? 1 : -1
-    x = Math.abs(x)
+    if (n1 === 0 || n2 === 0) {
+      return { lowerBound: 0, upperBound: 0, confidenceLevel }
+    }
+
+    const diff = p2 - p1
+    const se = Math.sqrt((p1 * (1 - p1) / n1) + (p2 * (1 - p2) / n2))
+
+    const z = 1.96 // For 95% confidence level
+    const marginOfError = z * se
+
+    return {
+      lowerBound: diff - marginOfError,
+      upperBound: diff + marginOfError,
+      confidenceLevel
+    }
+  }
+
+  /**
+   * Calculate effect size using Cohen's h
+   */
+  private calculateEffectSize(control: VariantResult, treatment: VariantResult): number {
+    const p1 = control.conversionRate
+    const p2 = treatment.conversionRate
+
+    return 2 * (Math.asin(Math.sqrt(p2)) - Math.asin(Math.sqrt(p1)))
+  }
+
+  /**
+   * Calculate statistical power
+   */
+  private calculatePower(control: VariantResult, treatment: VariantResult): number {
+    const n1 = control.visitors
+    const n2 = treatment.visitors
+    const p1 = control.conversionRate
+    const p2 = treatment.conversionRate
+
+    if (n1 === 0 || n2 === 0) return 0
+
+    const effectSize = Math.abs(p1 - p2)
+    const pooledP = (p1 + p2) / 2
+    const se = Math.sqrt(pooledP * (1 - pooledP) * (1/n1 + 1/n2))
+
+    if (se === 0) return 0
+
+    const z = effectSize / se
+    return this.normalCDF(z - 1.96) // Power for 95% significance level
+  }
+
+  /**
+   * Standard normal cumulative distribution function approximation
+   */
+  private normalCDF(x: number): number {
+    const a1 = 0.254829592
+    const a2 = -0.284496736
+    const a3 = 1.421413741
+    const a4 = -1.453152027
+    const a5 = 1.061405429
+    const p = 0.3275911
+
+    const sign = x < 0 ? -1 : 1
+    x = Math.abs(x) / Math.sqrt(2.0)
 
     const t = 1.0 / (1.0 + p * x)
     const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x)
 
-    return sign * y
+    return 0.5 * (1.0 + sign * y)
   }
 
-  // Private Helper Methods
+  // Experiment Lifecycle Methods
 
-  private trackAssignment(testId: string, variantId: string): void {
-    // Send assignment tracking event
-    fetch('/api/ab-tests/assignments', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Session-ID': this.sessionId
-      },
-      body: JSON.stringify({
-        testId,
-        variantId,
-        userId: this.userId,
-        sessionId: this.sessionId,
-        audience: this.audience,
-        timestamp: new Date().toISOString()
-      })
-    }).catch(error => {
-      console.error('Failed to track A/B test assignment:', error)
+  /**
+   * Start an experiment
+   */
+  async startExperiment(experimentId: string): Promise<void> {
+    try {
+      await this.http.post(`/experiments/${experimentId}/start`)
+
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        experiment.status = 'running'
+        experiment.config.startDate = new Date()
+        experiment.updatedAt = new Date()
+      }
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('experiment:started', { experimentId })
+      }
+    } catch (error) {
+      console.error('Failed to start experiment:', error)
+      throw new Error('Failed to start experiment')
+    }
+  }
+
+  /**
+   * Pause an experiment
+   */
+  async pauseExperiment(experimentId: string): Promise<void> {
+    try {
+      await this.http.post(`/experiments/${experimentId}/pause`)
+
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        experiment.status = 'paused'
+        experiment.updatedAt = new Date()
+      }
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('experiment:paused', { experimentId })
+      }
+    } catch (error) {
+      console.error('Failed to pause experiment:', error)
+      throw new Error('Failed to pause experiment')
+    }
+  }
+
+  /**
+   * Resume a paused experiment
+   */
+  async resumeExperiment(experimentId: string): Promise<void> {
+    try {
+      await this.http.post(`/experiments/${experimentId}/resume`)
+
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        experiment.status = 'running'
+        experiment.updatedAt = new Date()
+      }
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('experiment:resumed', { experimentId })
+      }
+    } catch (error) {
+      console.error('Failed to resume experiment:', error)
+      throw new Error('Failed to resume experiment')
+    }
+  }
+
+  /**
+   * End an experiment
+   */
+  async endExperiment(experimentId: string): Promise<void> {
+    try {
+      await this.http.post(`/experiments/${experimentId}/end`)
+
+      const experiment = this.experiments.get(experimentId)
+      if (experiment) {
+        experiment.status = 'completed'
+        experiment.config.endDate = new Date()
+        experiment.updatedAt = new Date()
+      }
+
+      // Notify via socket
+      if (this.socket) {
+        this.socket.emit('experiment:ended', { experimentId })
+      }
+    } catch (error) {
+      console.error('Failed to end experiment:', error)
+      throw new Error('Failed to end experiment')
+    }
+  }
+
+  // Utility Methods
+
+  /**
+   * Validate experiment configuration
+   */
+  private validateExperimentConfig(config: ExperimentConfig): void {
+    if (!config.name || config.name.trim() === '') {
+      throw new Error('Experiment name is required')
+    }
+
+    if (!config.hypothesis || config.hypothesis.trim() === '') {
+      throw new Error('Experiment hypothesis is required')
+    }
+
+    if (!config.goal) {
+      throw new Error('Experiment goal is required')
+    }
+
+    if (!config.variants || config.variants.length < 2) {
+      throw new Error('At least 2 variants are required for A/B testing')
+    }
+
+    // Validate traffic allocation
+    if (!config.trafficAllocation || config.trafficAllocation.length !== config.variants.length) {
+      throw new Error('Traffic allocation must match number of variants')
+    }
+
+    const totalAllocation = config.trafficAllocation.reduce((sum, alloc) => sum + alloc, 0)
+    if (Math.abs(totalAllocation - 100) > 0.01) {
+      throw new Error('Traffic allocation must sum to 100%')
+    }
+
+    // Validate variant weights
+    const totalWeight = config.variants.reduce((sum, variant) => sum + variant.weight, 0)
+    if (Math.abs(totalWeight - 100) > 0.01) {
+      throw new Error('Variant weights must sum to 100%')
+    }
+  }
+
+  /**
+   * Set up HTTP interceptors for error handling
+   */
+  private setupInterceptors(): void {
+    this.http.interceptors.response.use(
+      response => response,
+      error => {
+        if (error.response?.status === 401) {
+          // Handle unauthorized access
+          console.error('Unauthorized access to A/B testing API')
+        } else if (error.response?.status === 403) {
+          // Handle forbidden access (tenant isolation)
+          console.error('Access forbidden - tenant isolation violation')
+        } else if (error.response?.status >= 500) {
+          // Handle server errors
+          console.error('A/B testing service server error:', error.response.data)
+        }
+
+        return Promise.reject(error)
+      }
+    )
+  }
+
+  /**
+   * Set up socket listeners for real-time updates
+   */
+  private setupSocketListeners(): void {
+    if (!this.socket) return
+
+    this.socket.on('experiment:updated', (data: Experiment) => {
+      this.experiments.set(data.id, data)
+    })
+
+    this.socket.on('experiment:deleted', (data: { experimentId: string }) => {
+      this.experiments.delete(data.experimentId)
+    })
+
+    this.socket.on('variant:updated', (data: { variantId: string, variant: Variant }) => {
+      // Update variant in experiments
+      for (const experiment of this.experiments.values()) {
+        const variantIndex = experiment.variants.findIndex(v => v.id === data.variantId)
+        if (variantIndex !== -1) {
+          experiment.variants[variantIndex] = data.variant
+          experiment.updatedAt = new Date()
+          break
+        }
+      }
+    })
+
+    this.socket.on('conversion:tracked', (data: any) => {
+      // Update local metrics
+      const experiment = this.experiments.get(data.experimentId)
+      if (experiment) {
+        const variant = experiment.variants.find(v => v.id === data.variantId)
+        if (variant) {
+          variant.conversions++
+          variant.conversionRate = variant.visitors > 0 ? variant.conversions / variant.visitors : 0
+        }
+      }
     })
   }
 
-  private sendConversionEvent(testId: string, variantId: string, goalId: string, value: number): void {
-    fetch('/api/ab-tests/conversions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Session-ID': this.sessionId
-      },
-      body: JSON.stringify({
-        testId,
-        variantId,
-        goalId,
-        value,
-        userId: this.userId,
-        sessionId: this.sessionId,
-        audience: this.audience,
-        timestamp: new Date().toISOString()
+  /**
+   * Load experiments from backend
+   */
+  private async loadExperiments(): Promise<void> {
+    try {
+      const experiments = await this.getExperiments()
+      experiments.forEach(exp => {
+        this.experiments.set(exp.id, exp)
       })
-    }).catch(error => {
-      console.error('Failed to track A/B test conversion:', error)
-    })
+    } catch (error) {
+      console.error('Failed to load experiments:', error)
+    }
   }
 
-  // Cleanup
-
-  public destroy(): void {
-    this.saveUserAssignments()
-    this.activeTests.clear()
-    this.userAssignments.clear()
-    this.sessionAssignments.clear()
+  /**
+   * Clean up traffic assignments for deleted experiment
+   */
+  private cleanupTrafficAssignments(experimentId: string): void {
+    for (const [key, assignment] of this.trafficAssignments.entries()) {
+      if (assignment.experimentId === experimentId) {
+        this.trafficAssignments.delete(key)
+      }
+    }
   }
+
+  /**
+   * Get CSRF token from meta tag
+   */
+  private getCsrfToken(): string {
+    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+    return token || ''
+  }
+
+  /**
+   * Generate a unique ID for experiments/variants
+   */
+  private generateId(): string {
+    return Math.random().toString(36).substr(2, 9)
+  }
+}
+
+// Export singleton instance factory
+export const createABTestingService = (
+  analyticsService: AnalyticsIntegrationService,
+  tenantId?: string
+): ABTestingService => {
+  return new ABTestingService(analyticsService, tenantId)
 }
