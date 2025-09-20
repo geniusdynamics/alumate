@@ -193,11 +193,11 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import { io, type Socket } from 'socket.io-client'
-import FormFieldComponent from './FormFieldComponent.vue'
-import FormFieldEditor from './FormFieldEditor.vue'
-import FormPreview from './FormPreview.vue'
-import FormSettingsModal from './FormSettingsModal.vue'
-import CRMIntegrationModal from './CRMIntegrationModal.vue'
+import FormFieldComponent from './forms/FormField.vue'
+// import FormFieldEditor from './FormFieldEditor.vue'
+// import FormPreview from './FormPreview.vue'
+// import FormSettingsModal from './FormSettingsModal.vue'
+// import CRMIntegrationModal from './CRMIntegrationModal.vue'
 import type {
   FormConfig,
   FormField,

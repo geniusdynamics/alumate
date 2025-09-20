@@ -3302,7 +3302,7 @@ defineExpose({
 }
 
 .form-textarea {
-  @apply resize-vertical min-h-20;
+  @apply resize-y min-h-20;
 }
 
 .form-actions {

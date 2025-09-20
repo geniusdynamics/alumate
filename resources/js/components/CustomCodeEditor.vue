@@ -154,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted, h } from 'vue'
 
 // Icons
 const CodeIcon = () => h('svg', { class: 'w-4 h-4', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' }, [
@@ -558,7 +558,7 @@ const generatePreviewHTML = (): string => {
       </div>
       <script>
         ${js}
-      </script>
+      ${'</'}script>
     </body>
     </html>
   `
