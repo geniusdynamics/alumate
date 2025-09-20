@@ -1,6 +1,6 @@
-# EduGen OS Documentation
+# Alumate Documentation
 
-**ABOUTME: Main documentation index for the EduGen OS project with organized navigation and cross-references.**
+**ABOUTME: Main documentation index for the Alumate project with organized navigation and cross-references.**
 **ABOUTME: This document provides repository-wide documentation conventions and navigation to all project documentation.**
 
 ## Documentation Structure

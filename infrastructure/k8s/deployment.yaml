@@ -1,35 +1,39 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: alumate-app
+  name: alumni-platform-app
   labels:
-    app: alumate
+    app: alumni-platform
     component: web
+    service: alumni
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: alumate
+      app: alumni-platform
       component: web
   template:
     metadata:
       labels:
-        app: alumate
+        app: alumni-platform
         component: web
+        service: alumni
     spec:
       containers:
-      - name: alumate-web
-        image: alumate:latest
+      - name: alumni-platform-web
+        image: alumni-platform:latest
         ports:
         - containerPort: 8000
           name: http
         env:
         - name: APP_ENV
           value: "production"
+        - name: APP_NAME
+          value: "Alumni Platform"
         - name: CACHE_STORE
-          value: "redis_cluster"
-        - name: REDIS_CLUSTER
-          value: "redis-cluster:6379"
+          value: "redis"
+        - name: REDIS_HOST
+          value: "redis-cluster"
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -62,6 +66,97 @@ spec:
           value: "0.0.0.0"
         - name: OCTANE_PORT
           value: "8000"
+        - name: NEW_RELIC_APP_NAME
+          value: "Alumni Platform Production"
+        - name: NEW_RELIC_LICENSE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: newrelic-secret
+              key: license_key
+        - name: SENTRY_LARAVEL_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-secret
+              key: dsn
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+        volumeMounts:
+        - name: storage
+          mountPath: /var/www/html/storage
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: alumni-platform-storage-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: graduate-tracking-app
+  labels:
+    app: graduate-tracking
+    component: web
+    service: graduate-tracking
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: graduate-tracking
+      component: web
+  template:
+    metadata:
+      labels:
+        app: graduate-tracking
+        component: web
+        service: graduate-tracking
+    spec:
+      containers:
+      - name: graduate-tracking-web
+        image: graduate-tracking:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: APP_NAME
+          value: "Graduate Tracking System"
+        - name: CACHE_STORE
+          value: "redis"
+        - name: REDIS_HOST
+          value: "redis-cluster"
+        - name: DB_CONNECTION
+          value: "pgsql"
+        - name: DB_HOST
+          value: "postgres-service"
         resources:
           requests:
             memory: "256Mi"
@@ -85,13 +180,134 @@ spec:
           periodSeconds: 5
           timeoutSeconds: 3
           failureThreshold: 3
-        volumeMounts:
-        - name: storage
-          mountPath: /var/www/html/storage
-      volumes:
-      - name: storage
-        persistentVolumeClaim:
-          claimName: alumate-storage-pvc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: component-library-app
+  labels:
+    app: component-library
+    component: web
+    service: component-library
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: component-library
+      component: web
+  template:
+    metadata:
+      labels:
+        app: component-library
+        component: web
+        service: component-library
+    spec:
+      containers:
+      - name: component-library-web
+        image: component-library:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: APP_NAME
+          value: "Component Library System"
+        - name: CACHE_STORE
+          value: "redis"
+        - name: REDIS_HOST
+          value: "redis-cluster"
+        - name: DB_CONNECTION
+          value: "pgsql"
+        - name: DB_HOST
+          value: "postgres-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: page-builder-app
+  labels:
+    app: page-builder
+    component: web
+    service: page-builder
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: page-builder
+      component: web
+  template:
+    metadata:
+      labels:
+        app: page-builder
+        component: web
+        service: page-builder
+    spec:
+      containers:
+      - name: page-builder-web
+        image: page-builder:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: APP_ENV
+          value: "production"
+        - name: APP_NAME
+          value: "Vue.js Page Builder System"
+        - name: CACHE_STORE
+          value: "redis"
+        - name: REDIS_HOST
+          value: "redis-cluster"
+        - name: DB_CONNECTION
+          value: "pgsql"
+        - name: DB_HOST
+          value: "postgres-service"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler

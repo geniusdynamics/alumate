@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: alumate-service
+  name: alumni-platform-service
   labels:
-    app: alumate
+    app: alumni-platform
     component: web
+    service: alumni
 spec:
   type: LoadBalancer
   ports:
@@ -17,7 +18,7 @@ spec:
     protocol: TCP
     name: https
   selector:
-    app: alumate
+    app: alumni-platform
     component: web
   sessionAffinity: None
   loadBalancerIP: ""
@@ -25,10 +26,83 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: alumate-internal
+  name: graduate-tracking-service
   labels:
-    app: alumate
+    app: graduate-tracking
     component: web
+    service: graduate-tracking
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: graduate-tracking
+    component: web
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: component-library-service
+  labels:
+    app: component-library
+    component: web
+    service: component-library
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: component-library
+    component: web
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: page-builder-service
+  labels:
+    app: page-builder
+    component: web
+    service: page-builder
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 8000
+    protocol: TCP
+    name: http
+  - port: 443
+    targetPort: 8443
+    protocol: TCP
+    name: https
+  selector:
+    app: page-builder
+    component: web
+  sessionAffinity: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alumni-platform-internal
+  labels:
+    app: alumni-platform
+    component: web
+    service: alumni
 spec:
   type: ClusterIP
   ports:
@@ -37,7 +111,7 @@ spec:
     protocol: TCP
     name: octane
   selector:
-    app: alumate
+    app: alumni-platform
     component: web
 ---
 apiVersion: networking.k8s.io/v1

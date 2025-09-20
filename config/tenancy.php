@@ -33,6 +33,11 @@ return [
         Stancl\Tenancy\Bootstrappers\FilesystemTenancyBootstrapper::class,
         Stancl\Tenancy\Bootstrappers\QueueTenancyBootstrapper::class,
         // Stancl\Tenancy\Bootstrappers\RedisTenancyBootstrapper::class, // Note: phpredis is needed
+
+        // Production-specific bootstrappers
+        ...(env('APP_ENV') === 'production' ? [
+            // Add production-specific bootstrappers here if needed
+        ] : []),
     ],
 
     /**
@@ -195,5 +200,53 @@ return [
     'seeder_parameters' => [
         '--class' => 'DatabaseSeeder', // root seeder class
         // '--force' => true, // This needs to be true to seed tenant databases in production
+    ],
+
+    /**
+     * Production-specific tenancy configuration.
+     * These settings are optimized for production environments.
+     */
+    'production' => [
+        /**
+         * Database partitioning configuration for production.
+         * When enabled, each tenant gets its own dedicated database.
+         */
+        'database_partitioning' => [
+            'enabled' => env('TENANT_DATABASE_PARTITIONING_ENABLED', true),
+            'auto_create_databases' => env('TENANT_AUTO_CREATE_DATABASES', true),
+            'database_prefix' => env('TENANT_DATABASE_PREFIX', 'tenant_'),
+            'max_connections_per_tenant' => env('TENANT_MAX_CONNECTIONS', 10),
+            'connection_pooling' => env('TENANT_CONNECTION_POOLING', true),
+        ],
+
+        /**
+         * Performance optimization settings for production.
+         */
+        'performance' => [
+            'cache_tenant_configs' => env('TENANT_CACHE_CONFIGS', true),
+            'preload_tenant_data' => env('TENANT_PRELOAD_DATA', false),
+            'optimize_queries' => env('TENANT_OPTIMIZE_QUERIES', true),
+            'connection_timeout' => env('TENANT_CONNECTION_TIMEOUT', 30),
+        ],
+
+        /**
+         * Monitoring and logging configuration for production.
+         */
+        'monitoring' => [
+            'log_tenant_queries' => env('TENANT_LOG_QUERIES', false),
+            'track_performance_metrics' => env('TENANT_TRACK_METRICS', true),
+            'alert_on_failures' => env('TENANT_ALERT_FAILURES', true),
+            'health_check_interval' => env('TENANT_HEALTH_CHECK_INTERVAL', 60),
+        ],
+
+        /**
+         * Security settings for production tenant isolation.
+         */
+        'security' => [
+            'strict_domain_isolation' => env('TENANT_STRICT_DOMAIN_ISOLATION', true),
+            'encrypt_tenant_data' => env('TENANT_ENCRYPT_DATA', false),
+            'audit_tenant_actions' => env('TENANT_AUDIT_ACTIONS', true),
+            'rate_limit_tenant_requests' => env('TENANT_RATE_LIMIT', true),
+        ],
     ],
 ];
