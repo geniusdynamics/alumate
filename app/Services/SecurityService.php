@@ -10,10 +10,12 @@ use App\Models\SecurityEvent;
 use App\Models\SessionSecurity;
 use App\Models\TwoFactorAuth;
 use App\Models\User;
+use GeoIp2\Database\Reader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
 // Note: Google2FA package may not be installed, using fallback for secret generation
@@ -273,36 +275,138 @@ class SecurityService extends BaseService
     }
 
     /**
-     * Check if IP is blocked
+     * Check if IP is blocked based on GeoIP location
      */
     public function isIpBlocked(string $ip): bool
     {
-        // Placeholder for IP blocking logic
-        return false;
+        try {
+            $databasePath = storage_path('app/geoip/GeoLite2-City.mmdb');
+
+            // Check if database exists
+            if (!file_exists($databasePath)) {
+                Log::warning('GeoIP database not found at: ' . $databasePath);
+                return false;
+            }
+
+            $reader = new Reader($databasePath);
+            $record = $reader->city($ip);
+
+            // Configure high-risk countries (customize as needed)
+            $riskyCodes = ['CN', 'RU', 'KP', 'IR', 'SY', 'CU', 'VE'];
+
+            if ($record && in_array($record->country->isoCode, $riskyCodes)) {
+                $this->logSecurityEvent(
+                    SecurityEvent::TYPE_SUSPICIOUS_ACTIVITY,
+                    SecurityEvent::SEVERITY_HIGH,
+                    'IP blocked due to high-risk country',
+                    [
+                        'ip_address' => $ip,
+                        'country' => $record->country->name ?? 'Unknown',
+                        'country_code' => $record->country->isoCode ?? 'Unknown',
+                    ]
+                );
+                return true;
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            Log::warning('GeoIP check failed: ' . $e->getMessage(), [
+                'ip' => $ip,
+                'error' => $e->getMessage()
+            ]);
+            return false;
+        }
     }
 
     /**
-     * Check for suspicious patterns
+     * Check for suspicious patterns in request (SQL injection, XSS, etc.)
      */
     public function checkSuspiciousPatterns(Request $request): bool
     {
-        // Placeholder for pattern detection
+        // Check both request content and input parameters
+        $content = $request->getContent();
+        $inputs = array_merge($request->all(), $request->headers->all());
+
+        // Add all input values to content for checking
+        foreach ($inputs as $key => $value) {
+            if (is_string($value)) {
+                $content .= ' ' . $value;
+            }
+        }
+
+        $patterns = [
+            // SQL Injection patterns - simplified
+            '/SELECT.*FROM/i',
+            '/DROP.*TABLE/i',
+            '/INSERT.*INTO/i',
+            '/DELETE.*FROM/i',
+            '/UPDATE.*SET/i',
+            '/UNION.*SELECT/i',
+            '/OR.*1\s*=\s*1/i',
+            '/AND.*1\s*=\s*1/i',
+
+            // XSS patterns
+            '/<script/i',
+            '/javascript:/i',
+            '/on\w+=/i',
+
+            // Command injection patterns
+            '/[;&|`].*rm/i',
+            '/[;&|`].*del/i',
+            '/\$\(/i',
+
+            // Path traversal
+            '/\.\.\//i',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $content)) {
+                $this->logSecurityEvent(
+                    SecurityEvent::TYPE_MALICIOUS_REQUEST,
+                    SecurityEvent::SEVERITY_CRITICAL,
+                    'Suspicious pattern detected in request',
+                    [
+                        'pattern' => $pattern,
+                        'request_path' => $request->path(),
+                        'user_agent' => $request->userAgent(),
+                        'ip_address' => $request->ip(),
+                    ]
+                );
+                return true;
+            }
+        }
+
         return false;
     }
 
     /**
-     * Detect rate limit violations
+     * Detect rate limit violations using Laravel's RateLimiter
      */
-    public function detectRateLimitViolation(string $identifier, int $maxAttempts, int $minutes): bool
+    public function detectRateLimitViolation(string $identifier, int $maxAttempts = 5, int $decayMinutes = 1): bool
     {
-        $key = "rate_limit:{$identifier}";
-        $attempts = Cache::get($key, 0);
+        $key = 'security:' . $identifier;
 
-        if ($attempts >= $maxAttempts) {
+        if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
+            $availableAt = RateLimiter::availableAt($key);
+
+            $this->logSecurityEvent(
+                SecurityEvent::TYPE_RATE_LIMIT_EXCEEDED,
+                SecurityEvent::SEVERITY_MEDIUM,
+                'Rate limit exceeded for identifier',
+                [
+                    'identifier' => $identifier,
+                    'max_attempts' => $maxAttempts,
+                    'decay_minutes' => $decayMinutes,
+                    'available_at' => $availableAt->toDateTimeString(),
+                    'remaining_time' => now()->diffInSeconds($availableAt),
+                ]
+            );
+
             return true;
         }
 
-        Cache::put($key, $attempts + 1, now()->addMinutes($minutes));
+        // Record the attempt
+        RateLimiter::hit($key, $decayMinutes * 60); // Convert minutes to seconds
 
         return false;
     }

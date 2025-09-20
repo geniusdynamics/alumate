@@ -15,13 +15,15 @@ class CareerTimelineService
      */
     public function getTimelineForUser(User $user, ?User $viewerUser = null): array
     {
-        // Get career timeline entries
+        // Get career timeline entries with select to minimize data transfer
         $careerEntries = CareerTimeline::where('user_id', $user->id)
+            ->select(['id', 'user_id', 'company', 'title', 'start_date', 'end_date', 'description', 'is_current', 'achievements', 'location', 'company_logo_url', 'industry', 'employment_type', 'duration_in_months'])
             ->ordered()
             ->get();
 
-        // Get milestones visible to the viewer
+        // Get milestones visible to the viewer with select
         $milestones = CareerMilestone::where('user_id', $user->id)
+            ->select(['id', 'user_id', 'type', 'title', 'description', 'date', 'visibility', 'company', 'organization', 'metadata', 'is_featured'])
             ->visibleTo($viewerUser)
             ->ordered()
             ->get();
@@ -33,8 +35,8 @@ class CareerTimelineService
             'timeline' => $timeline,
             'career_entries' => $careerEntries,
             'milestones' => $milestones,
-            'progression' => $this->calculateCareerProgression($user),
-            'stats' => $this->getCareerStats($user),
+            'progression' => $this->calculateCareerProgression($careerEntries), // Pass loaded data
+            'stats' => $this->getCareerStats($milestones), // Pass loaded data
             'can_edit' => $viewerUser && $viewerUser->id === $user->id,
         ];
     }
@@ -122,11 +124,8 @@ class CareerTimelineService
     /**
      * Calculate career progression metrics
      */
-    public function calculateCareerProgression(User $user): array
+    public function calculateCareerProgression(Collection $careerEntries): array
     {
-        $careerEntries = CareerTimeline::where('user_id', $user->id)
-            ->orderBy('start_date')
-            ->get();
 
         if ($careerEntries->isEmpty()) {
             return [

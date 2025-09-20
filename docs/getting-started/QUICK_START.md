@@ -58,8 +58,8 @@ php artisan config:clear && php artisan cache:clear
 
 ## 📚 Full Documentation
 
-- **Complete Setup**: [README.md](README.md)
-- **Development Guide**: [DEVELOPMENT.md](DEVELOPMENT.md)
+- **Complete Setup**: [README.md](../README.md)
+- **Development Guide**: [DEVELOPMENT.md](../development/DEVELOPMENT.md)
 - **Scripts Documentation**: [scripts/README.md](scripts/README.md)
 
 ---

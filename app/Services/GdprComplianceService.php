@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Models\Lead;
 use App\Models\User;
+use App\Models\CrmIntegration;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use ZipArchive;
+use App\Jobs\SyncLeadToCrm;
 
 class GdprComplianceService
 {
@@ -100,7 +103,8 @@ class GdprComplianceService
 
             // Generate export file
             $filename = 'gdpr_export_' . md5($email) . '_' . now()->format('Y-m-d_H-i-s') . '.json';
-            Storage::disk('local')->put('gdpr_exports/' . $filename, json_encode($personalData, JSON_PRETTY_PRINT));
+            $encryptedData = $this->encrypt(json_encode($personalData, JSON_PRETTY_PRINT));
+            Storage::disk('local')->put('gdpr_exports/' . $filename, $encryptedData);
 
             Log::info('GDPR access request processed', [
                 'email' => $email,
@@ -263,6 +267,16 @@ class GdprComplianceService
                 'leads_processed' => $processed
             ]);
 
+            // Dispatch CRM sync jobs for leads that had consent withdrawn
+            $integration = CrmIntegration::active()->first();
+            if ($integration) {
+                foreach ($leads as $lead) {
+                    if ($lead->crm_id) {
+                        SyncLeadToCrm::dispatch($lead, $integration);
+                    }
+                }
+            }
+
             return [
                 'success' => true,
                 'leads_processed' => $processed,
@@ -379,9 +393,15 @@ class GdprComplianceService
      */
     private function createPortableExport(array $portableData, string $filename): void
     {
-        // In a real implementation, create a ZIP file with CSV files
-        // For now, just store as JSON
-        Storage::disk('local')->put('gdpr_exports/' . $filename, json_encode($portableData, JSON_PRETTY_PRINT));
+        $zipPath = Storage::disk('local')->path('gdpr_exports/' . $filename);
+        $zip = new ZipArchive();
+        if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
+            foreach ($portableData as $fileName => $data) {
+                $csv = $this->arrayToCsv($data);
+                $zip->addFromString($fileName, $csv);
+            }
+            $zip->close();
+        }
     }
 
     /**
@@ -406,6 +426,45 @@ class GdprComplianceService
         Log::info('GDPR retention compliance check', $results);
 
         return $results;
+    }
+
+    /**
+     * Encrypt data using AES-256-CBC
+     */
+    private function encrypt(string $data): string
+    {
+        $key = env('GDPR_ENCRYPTION_KEY');
+        $iv = env('GDPR_IV');
+        return openssl_encrypt($data, 'aes-256-cbc', $key, 0, $iv);
+    }
+
+    /**
+     * Decrypt data using AES-256-CBC
+     */
+    private function decrypt(string $encryptedData): string
+    {
+        $key = env('GDPR_ENCRYPTION_KEY');
+        $iv = env('GDPR_IV');
+        return openssl_decrypt($encryptedData, 'aes-256-cbc', $key, 0, $iv);
+    }
+
+    /**
+     * Convert array to CSV string
+     */
+    private function arrayToCsv(array $data): string
+    {
+        if (empty($data)) return '';
+        $csv = '';
+        $headers = array_keys($data[0]);
+        $csv .= implode(',', array_map(function($header) {
+            return '"' . str_replace('"', '""', $header) . '"';
+        }, $headers)) . "\n";
+        foreach ($data as $row) {
+            $csv .= implode(',', array_map(function($value) {
+                return '"' . str_replace('"', '""', $value ?? '') . '"';
+            }, $row)) . "\n";
+        }
+        return $csv;
     }
 
     /**

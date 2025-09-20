@@ -31,6 +31,15 @@ class AlumniRecommendationService extends BaseService
         $cacheKey = self::CACHE_PREFIX.$user->id;
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($user, $limit) {
+            // Eager load user relationships to avoid N+1 queries
+            $user->load([
+                'circles:id,name,type',
+                'connections' => function ($query) {
+                    $query->where('status', 'accepted')
+                          ->select('id', 'user_id', 'connected_user_id', 'status');
+                }
+            ]);
+
             $candidates = $this->getCandidateUsers($user);
             $scoredRecommendations = collect();
 
@@ -80,9 +89,11 @@ class AlumniRecommendationService extends BaseService
      */
     public function getSharedCircles(User $user, User $candidate): Collection
     {
-        return $user->circles()
-            ->whereIn('circles.id', $candidate->circles()->pluck('circles.id'))
-            ->get();
+        $candidateCircleIds = $candidate->circles->pluck('id');
+
+        return $user->circles->filter(function ($circle) use ($candidateCircleIds) {
+            return $candidateCircleIds->contains($circle->id);
+        });
     }
 
     /**
@@ -90,17 +101,14 @@ class AlumniRecommendationService extends BaseService
      */
     public function getMutualConnections(User $user, User $candidate): Collection
     {
-        $userConnections = $user->connections()
-            ->where('status', 'accepted')
-            ->pluck('connected_user_id');
+        $userConnectionIds = $user->connections->pluck('connected_user_id');
+        $candidateConnectionIds = $candidate->connections->pluck('connected_user_id');
 
-        $candidateConnections = $candidate->connections()
-            ->where('status', 'accepted')
-            ->pluck('connected_user_id');
+        $mutualConnectionIds = $userConnectionIds->intersect($candidateConnectionIds);
 
-        $mutualConnectionIds = $userConnections->intersect($candidateConnections);
-
-        return User::whereIn('id', $mutualConnectionIds)->get();
+        return User::whereIn('id', $mutualConnectionIds)
+            ->select(['id', 'name', 'email'])
+            ->get();
     }
 
     /**
@@ -164,7 +172,16 @@ class AlumniRecommendationService extends BaseService
             ->push($user->id);
 
         return User::whereNotIn('id', $excludeIds)
-            ->with(['circles', 'educations', 'workExperiences'])
+            ->select(['id', 'name', 'email', 'bio', 'location', 'privacy_settings'])
+            ->with([
+                'circles:id,name,type',
+                'educations:id,user_id,institution_name,field_of_study',
+                'workExperiences:id,user_id,industry,skills',
+                'connections' => function ($query) {
+                    $query->where('status', 'accepted')
+                          ->select('id', 'user_id', 'connected_user_id', 'status');
+                }
+            ])
             ->limit(500) // Reasonable limit for processing
             ->get();
     }
@@ -175,7 +192,7 @@ class AlumniRecommendationService extends BaseService
     private function calculateSharedCirclesScore(User $user, User $candidate): float
     {
         $sharedCircles = $this->getSharedCircles($user, $candidate);
-        $userCircleCount = $user->circles()->count();
+        $userCircleCount = $user->circles->count();
 
         if ($userCircleCount === 0) {
             return 0.0;
@@ -197,7 +214,7 @@ class AlumniRecommendationService extends BaseService
     private function calculateMutualConnectionsScore(User $user, User $candidate): float
     {
         $mutualConnections = $this->getMutualConnections($user, $candidate);
-        $userConnectionCount = $user->connections()->where('status', 'accepted')->count();
+        $userConnectionCount = $user->connections->count();
 
         if ($userConnectionCount === 0) {
             return 0.0;
@@ -426,6 +443,8 @@ class AlumniRecommendationService extends BaseService
             ->pluck('connected_user_id')
             ->unique();
 
-        return User::whereIn('id', $secondDegreeIds)->get();
+        return User::whereIn('id', $secondDegreeIds)
+            ->select(['id', 'name', 'email'])
+            ->get();
     }
 }

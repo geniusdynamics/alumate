@@ -52,6 +52,20 @@ class LogUserActivity
     }
 
     /**
+     * Handle user profile updated events.
+     */
+    public function handleUserProfileUpdated(\App\Events\UserProfileUpdated $event)
+    {
+        ActivityLog::create([
+            'user_id' => $event->user->id,
+            'activity' => 'Profile Updated',
+            'description' => 'User profile was updated',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+    }
+
+    /**
      * Register the listeners for the subscriber.
      *
      * @param  \Illuminate\Events\Dispatcher  $events
@@ -71,6 +85,11 @@ class LogUserActivity
         $events->listen(
             Registered::class,
             [LogUserActivity::class, 'handleRegistration']
+        );
+
+        $events->listen(
+            \App\Events\UserProfileUpdated::class,
+            [LogUserActivity::class, 'handleUserProfileUpdated']
         );
     }
 }

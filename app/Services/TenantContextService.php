@@ -101,10 +101,13 @@ class TenantContextService
 
     /**
      * Generate schema name for tenant
+     * Handles UUID tenant IDs by converting them to a safe format
      */
     public function generateSchemaName(string $tenantId): string
     {
-        return 'tenant_' . $tenantId;
+        // For UUIDs, replace hyphens with underscores to create valid schema names
+        $safeTenantId = str_replace('-', '_', $tenantId);
+        return 'tenant_' . $safeTenantId;
     }
 
     /**

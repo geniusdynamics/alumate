@@ -4,16 +4,40 @@ namespace App\Observers;
 
 use App\Jobs\UpdateUserCirclesJob;
 use App\Models\EducationHistory;
+use App\Services\CachingStrategyService;
+use App\Services\ComponentCachingService;
 use Illuminate\Support\Facades\Log;
 
 class EducationHistoryObserver
 {
     /**
+     * Handle the EducationHistory "saving" event.
+     */
+    public function saving(EducationHistory $educationHistory): void
+    {
+        try {
+            app(\App\Services\SecurityService::class)->logDataAccess('education_history', $educationHistory->id, 'update', true, 'observer');
+        } catch (\Exception $e) {
+            Log::error('Failed to log data access in EducationHistoryObserver saving', [
+                'education_history_id' => $educationHistory->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
      * Handle the EducationHistory "created" event.
      */
     public function created(EducationHistory $educationHistory): void
     {
-        $this->updateUserCircles($educationHistory);
+        try {
+            $this->updateUserCircles($educationHistory);
+        } catch (\Exception $e) {
+            Log::error('Failed to handle education history created event', [
+                'education_history_id' => $educationHistory->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -21,7 +45,14 @@ class EducationHistoryObserver
      */
     public function updated(EducationHistory $educationHistory): void
     {
-        $this->updateUserCircles($educationHistory);
+        try {
+            $this->updateUserCircles($educationHistory);
+        } catch (\Exception $e) {
+            Log::error('Failed to handle education history updated event', [
+                'education_history_id' => $educationHistory->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**
@@ -29,7 +60,14 @@ class EducationHistoryObserver
      */
     public function deleted(EducationHistory $educationHistory): void
     {
-        $this->updateUserCircles($educationHistory);
+        try {
+            $this->updateUserCircles($educationHistory);
+        } catch (\Exception $e) {
+            Log::error('Failed to handle education history deleted event', [
+                'education_history_id' => $educationHistory->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

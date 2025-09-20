@@ -143,6 +143,28 @@ return [
             'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
         ],
 
+        /*
+        |--------------------------------------------------------------------------
+        | Redis Cluster Configuration
+        |--------------------------------------------------------------------------
+        |
+        | Redis cluster configuration for horizontal scaling and high availability.
+        | Supports multiple Redis nodes for distributed caching.
+        |
+        */
+
+        'redis_cluster' => [
+            'driver' => 'redis',
+            'connection' => 'cluster',
+            'lock_connection' => 'cluster',
+            'options' => [
+                'cluster' => env('REDIS_CLUSTER', 'redis'),
+                'parameters' => [
+                    'password' => env('REDIS_PASSWORD'),
+                ],
+            ],
+        ],
+
         'dynamodb' => [
             'driver' => 'dynamodb',
             'key' => env('AWS_ACCESS_KEY_ID'),

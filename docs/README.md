@@ -61,49 +61,49 @@ docs/
 ### Task-Specific Documentation
 
 #### Database and Core Systems
-- [Database Schema Models](task-01-database-schema-models-recap.md) - Database structure and model relationships
-- [User Management System](task-02-user-management-system-recap.md) - User authentication and authorization
-- [Multi-Tenant Enhancement](task-03-multi-tenant-enhancement-recap.md) - Multi-tenancy implementation
+- [Database Schema Models](tasks/$1) - Database structure and model relationships
+- [User Management System](tasks/$1) - User authentication and authorization
+- [Multi-Tenant Enhancement](tasks/$1) - Multi-tenancy implementation
 
 #### Graduate Management
-- [Graduate Profile Management](task-04-graduate-profile-management-recap.md) - Graduate profile features and workflows
-- [Graduate Import/Export Enhancement](task-05-graduate-import-export-enhancement-recap.md) - Data import/export capabilities
-- [Course Management Enhancement](task-06-course-management-enhancement-recap.md) - Academic course management
+- [Graduate Profile Management](tasks/$1) - Graduate profile features and workflows
+- [Graduate Import/Export Enhancement](tasks/$1) - Data import/export capabilities
+- [Course Management Enhancement](tasks/$1) - Academic course management
 
 #### Employment and Employer Features
-- [Employer Registration Verification](task-07-employer-registration-verification-recap.md) - Employer onboarding and verification
-- [Job Posting Management](task-08-job-posting-management-recap.md) - Job posting creation and management
+- [Employer Registration Verification](tasks/$1) - Employer onboarding and verification
+- [Job Posting Management](tasks/$1) - Job posting creation and management
 
 #### Communication and Notifications
-- [Notification System](task-09-notification-system-recap.md) - System-wide notification implementation
-- [Communication Messaging](task-10-communication-messaging-recap.md) - Inter-user messaging capabilities
+- [Notification System](tasks/$1) - System-wide notification implementation
+- [Communication Messaging](tasks/$1) - Inter-user messaging capabilities
 
 #### Search and Analytics
-- [Search Matching System](task-11-search-matching-system-recap.md) - Advanced search and matching algorithms
-- [Analytics Reporting System](task-13-analytics-reporting-system-recap.md) - Comprehensive analytics and reporting
-- [Role-Based Dashboards](task-14-role-based-dashboards-recap.md) - User role-specific dashboard views
+- [Search Matching System](tasks/$1) - Advanced search and matching algorithms
+- [Analytics Reporting System](tasks/$1) - Comprehensive analytics and reporting
+- [Role-Based Dashboards](tasks/$1) - User role-specific dashboard views
 
 #### Security and Quality
-- [Security Audit System](task-12-security-audit-system-recap.md) - Security monitoring and audit trails
-- [Testing Framework](task-15-testing-framework-recap.md) - Comprehensive testing strategy and implementation
+- [Security Audit System](tasks/$1) - Security monitoring and audit trails
+- [Testing Framework](tasks/$1) - Comprehensive testing strategy and implementation
 
 #### System Integration and Performance
-- [System Integration](task-16-system-integration-recap.md) - Third-party integrations and API management
-- [Performance Optimization](task-17-performance-optimization-recap.md) - System performance tuning and optimization
-- [Documentation and Training](task-18-documentation-training-recap.md) - User documentation and training materials
-- [Final System Integration Testing](task-19-final-system-integration-testing-recap.md) - End-to-end system testing
+- [System Integration](tasks/$1) - Third-party integrations and API management
+- [Performance Optimization](tasks/$1) - System performance tuning and optimization
+- [Documentation and Training](tasks/$1) - User documentation and training materials
+- [Final System Integration Testing](tasks/$1) - End-to-end system testing
 
 ### Platform Analysis and Integration
-- [Mighty Networks Circle Features Analysis](task-20-mighty-networks-circle-features-analysis.md) - Third-party platform integration analysis
-- [CRM Integrations](CRM_INTEGRATIONS.md) - Customer relationship management integrations
-- [Deep Dive Analysis Report](DEEP_DIVE_ANALYSIS_REPORT.md) - Comprehensive system analysis
-- [Circle and Group Implementation](circle-and-group-implementation.md) - Social features implementation
-- [User Experience Flows](user-experience-flows.md) - User journey and experience design
+- [Mighty Networks Circle Features Analysis](tasks/$1) - Third-party platform integration analysis
+- [CRM Integrations](integrations/CRM_INTEGRATIONS.md) - Customer relationship management integrations
+- [Deep Dive Analysis Report](development/DEEP_DIVE_ANALYSIS_REPORT.md) - Comprehensive system analysis
+- [Circle and Group Implementation](architecture/circle-and-group-implementation.md) - Social features implementation
+- [User Experience Flows](design/user-experience-flows.md) - User journey and experience design
 
 ### Workflow and Process Documentation
-- [Graduate Tracking System Workflow](graduate-tracking-system-workflow.md) - Graduate tracking implementation process
-- [Deep Dive Platform Transformation](deep-dive-platform-transformation-recap.md) - Platform evolution and transformation
-- [Safe Helpers Implementation](step5-safe-helpers-implementation.md) - Safe helper function implementations
+- [Graduate Tracking System Workflow](workflows/graduate-tracking-system-workflow.md) - Graduate tracking implementation process
+- [Deep Dive Platform Transformation](development/deep-dive-platform-transformation-recap.md) - Platform evolution and transformation
+- [Safe Helpers Implementation](development/step5-safe-helpers-implementation.md) - Safe helper function implementations
 
 ## 🔗 Cross-Reference Links
 
@@ -111,18 +111,18 @@ docs/
 - **Controller Documentation**: [HomepageController](backend/controllers/HomepageController.md)
 - **Migration Guides**: [Backend Migrations](migration/backend/)
 - **API Documentation**: Referenced in controller docs
-- **Testing Strategies**: [Testing Framework](task-15-testing-framework-recap.md)
+- **Testing Strategies**: [Testing Framework](tasks/$1)
 
 ### Integration Points
-- **System Architecture**: [System Integration](task-16-system-integration-recap.md)
-- **Performance Monitoring**: [Performance Optimization](task-17-performance-optimization-recap.md)
-- **Security Framework**: [Security Audit System](task-12-security-audit-system-recap.md)
-- **Analytics Integration**: [Analytics Reporting System](task-13-analytics-reporting-system-recap.md)
+- **System Architecture**: [System Integration](tasks/$1)
+- **Performance Monitoring**: [Performance Optimization](tasks/$1)
+- **Security Framework**: [Security Audit System](tasks/$1)
+- **Analytics Integration**: [Analytics Reporting System](tasks/$1)
 
 ### User-Facing Documentation
-- **User Experience**: [User Experience Flows](user-experience-flows.md)
-- **Role-Based Features**: [Role-Based Dashboards](task-14-role-based-dashboards-recap.md)
-- **Training Materials**: [Documentation and Training](task-18-documentation-training-recap.md)
+- **User Experience**: [User Experience Flows](design/user-experience-flows.md)
+- **Role-Based Features**: [Role-Based Dashboards](tasks/$1)
+- **Training Materials**: [Documentation and Training](tasks/$1)
 
 ## 📋 Documentation Standards
 
@@ -151,22 +151,22 @@ Each documentation file should include:
 ## 🚀 Getting Started
 
 ### For Developers
-1. Start with [Database Schema Models](task-01-database-schema-models-recap.md) for system foundation
-2. Review [User Management System](task-02-user-management-system-recap.md) for authentication
+1. Start with [Database Schema Models](tasks/$1) for system foundation
+2. Review [User Management System](tasks/$1) for authentication
 3. Examine [HomepageController](backend/controllers/HomepageController.md) for implementation patterns
-4. Check [Testing Framework](task-15-testing-framework-recap.md) for development best practices
+4. Check [Testing Framework](tasks/$1) for development best practices
 
 ### For System Administrators
 1. Review [Migration Documentation](migration/backend/) for deployment procedures
-2. Examine [Security Audit System](task-12-security-audit-system-recap.md) for security requirements
-3. Check [Performance Optimization](task-17-performance-optimization-recap.md) for system tuning
-4. Study [System Integration](task-16-system-integration-recap.md) for external dependencies
+2. Examine [Security Audit System](tasks/$1) for security requirements
+3. Check [Performance Optimization](tasks/$1) for system tuning
+4. Study [System Integration](tasks/$1) for external dependencies
 
 ### For Product Managers
-1. Start with [User Experience Flows](user-experience-flows.md) for user journey understanding
-2. Review [Role-Based Dashboards](task-14-role-based-dashboards-recap.md) for feature overview
-3. Examine [Analytics Reporting System](task-13-analytics-reporting-system-recap.md) for metrics
-4. Check [CRM Integrations](CRM_INTEGRATIONS.md) for business tool integration
+1. Start with [User Experience Flows](design/user-experience-flows.md) for user journey understanding
+2. Review [Role-Based Dashboards](tasks/$1) for feature overview
+3. Examine [Analytics Reporting System](tasks/$1) for metrics
+4. Check [CRM Integrations](integrations/CRM_INTEGRATIONS.md) for business tool integration
 
 ## 📈 Documentation Maintenance
 

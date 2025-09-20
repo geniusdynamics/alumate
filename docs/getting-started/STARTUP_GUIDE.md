@@ -70,8 +70,8 @@ php artisan serve --host=127.0.0.1 --port=8080
 
 ## Documentation Locations
 
-- **Complete Setup**: [README.md](README.md)
-- **Development Guide**: [DEVELOPMENT.md](DEVELOPMENT.md)
+- **Complete Setup**: [README.md](../README.md)
+- **Development Guide**: [DEVELOPMENT.md](../development/DEVELOPMENT.md)
 - **Quick Reference**: [QUICK_START.md](QUICK_START.md)
 - **Welcome Page**: http://127.0.0.1:8080 (shows accounts interactively)
 

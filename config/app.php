@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Alumate'),
 
     /*
     |--------------------------------------------------------------------------
@@ -155,7 +155,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\TenancyServiceProvider::class, // Temporarily disabled for debugging
+        App\Providers\TenancyServiceProvider::class,
     ],
 
     /*

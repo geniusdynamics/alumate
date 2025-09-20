@@ -25,6 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
             \App\Http\Middleware\SecurityMonitoring::class,
             \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\SecurityMiddleware::class,
+            \App\Http\Middleware\SanitizeInput::class,
         ]);
 
         // Register Spatie Permission middleware

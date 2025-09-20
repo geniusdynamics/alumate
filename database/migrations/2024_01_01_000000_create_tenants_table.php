@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tenants', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->string('name');
+        Schema::table('tenants', function (Blueprint $table) {
+            $table->string('name')->nullable();
             $table->string('address')->nullable();
             $table->string('contact_information')->nullable();
             $table->string('plan')->nullable();
-            $table->timestamps();
-            $table->json('data')->nullable();
         });
     }
 

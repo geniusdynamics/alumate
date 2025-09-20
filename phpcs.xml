@@ -5,11 +5,7 @@
     <!-- Include the PSR1 and PSR2 standards -->
     <rule ref="PSR1"/>
     <rule ref="PSR2"/>
-
-    <!-- Include the Laravel coding standards -->
-    <rule ref="Laravel">
-        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes.DeclareStrictTypesMissing"/>
-    </rule>
+    <rule ref="PSR12"/>
 
     <!-- Set the minimum PHP version -->
     <config name="minimum_supported_wp_version" value="7.4"/>
@@ -26,4 +22,3 @@
     <exclude-pattern>./storage</exclude-pattern>
     <exclude-pattern>./vendor</exclude-pattern>
 </ruleset>
-
