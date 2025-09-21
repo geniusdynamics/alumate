@@ -9,21 +9,21 @@ const props = defineProps({
 
 const getLevelBadge = (level) => {
     const badges = {
-        'certificate': 'bg-green-100 text-green-800',
-        'diploma': 'bg-blue-100 text-blue-800',
-        'advanced_diploma': 'bg-purple-100 text-purple-800',
-        'degree': 'bg-indigo-100 text-indigo-800',
-        'other': 'bg-gray-100 text-gray-800',
+        certificate: 'bg-green-100 text-green-800',
+        diploma: 'bg-blue-100 text-blue-800',
+        advanced_diploma: 'bg-purple-100 text-purple-800',
+        degree: 'bg-indigo-100 text-indigo-800',
+        other: 'bg-gray-100 text-gray-800',
     };
     return badges[level] || 'bg-gray-100 text-gray-800';
 };
 
 const getStudyModeBadge = (mode) => {
     const badges = {
-        'full_time': 'bg-blue-100 text-blue-800',
-        'part_time': 'bg-yellow-100 text-yellow-800',
-        'online': 'bg-green-100 text-green-800',
-        'hybrid': 'bg-purple-100 text-purple-800',
+        full_time: 'bg-blue-100 text-blue-800',
+        part_time: 'bg-yellow-100 text-yellow-800',
+        online: 'bg-green-100 text-green-800',
+        hybrid: 'bg-purple-100 text-purple-800',
     };
     return badges[mode] || 'bg-gray-100 text-gray-800';
 };
@@ -58,20 +58,21 @@ const formatCurrency = (amount) => {
     <AppLayout>
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Course: {{ course.name }}
-                </h2>
+                <h2 class="text-xl font-semibold leading-tight text-gray-800">Course: {{ course.name }}</h2>
                 <div class="flex gap-2">
-                    <Link :href="route('courses.analytics', course.id)" 
-                          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md">
+                    <Link
+                        :href="route('courses.analytics', course.id)"
+                        class="rounded-md bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700"
+                    >
                         View Analytics
                     </Link>
-                    <Link :href="route('courses.edit', course.id)" 
-                          class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md">
+                    <Link
+                        :href="route('courses.edit', course.id)"
+                        class="rounded-md bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700"
+                    >
                         Edit Course
                     </Link>
-                    <Link :href="route('courses.index')" 
-                          class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-md">
+                    <Link :href="route('courses.index')" class="rounded-md bg-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-400">
                         Back to Courses
                     </Link>
                 </div>
@@ -79,28 +80,25 @@ const formatCurrency = (amount) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                
+            <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <!-- Course Overview -->
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6">
-                        <div class="flex items-start justify-between mb-4">
+                        <div class="mb-4 flex items-start justify-between">
                             <div>
                                 <h3 class="text-2xl font-bold text-gray-900">{{ course.name }}</h3>
                                 <p class="text-lg text-gray-600">{{ course.code }}</p>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <span :class="['inline-flex px-2 py-1 text-xs font-semibold rounded-full', getLevelBadge(course.level)]">
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span :class="['inline-flex rounded-full px-2 py-1 text-xs font-semibold', getLevelBadge(course.level)]">
                                         {{ course.level?.replace('_', ' ').toUpperCase() }}
                                     </span>
-                                    <span :class="['inline-flex px-2 py-1 text-xs font-semibold rounded-full', getStudyModeBadge(course.study_mode)]">
+                                    <span :class="['inline-flex rounded-full px-2 py-1 text-xs font-semibold', getStudyModeBadge(course.study_mode)]">
                                         {{ course.study_mode?.replace('_', ' ').toUpperCase() }}
                                     </span>
-                                    <span v-if="course.is_featured" 
-                                          class="inline-flex px-2 py-1 text-xs bg-yellow-100 text-yellow-800 rounded-full">
+                                    <span v-if="course.is_featured" class="inline-flex rounded-full bg-yellow-100 px-2 py-1 text-xs text-yellow-800">
                                         Featured
                                     </span>
-                                    <span v-if="!course.is_active" 
-                                          class="inline-flex px-2 py-1 text-xs bg-red-100 text-red-800 rounded-full">
+                                    <span v-if="!course.is_active" class="inline-flex rounded-full bg-red-100 px-2 py-1 text-xs text-red-800">
                                         Inactive
                                     </span>
                                 </div>
@@ -108,26 +106,25 @@ const formatCurrency = (amount) => {
                             <div class="text-right">
                                 <div class="text-sm text-gray-600">Duration</div>
                                 <div class="text-lg font-semibold text-gray-900">{{ formatDuration(course.duration_months) }}</div>
-                                <div v-if="course.department" class="text-sm text-gray-600 mt-1">{{ course.department }}</div>
+                                <div v-if="course.department" class="mt-1 text-sm text-gray-600">{{ course.department }}</div>
                             </div>
                         </div>
-                        
+
                         <div v-if="course.description" class="mb-6">
-                            <h4 class="text-lg font-medium text-gray-900 mb-2">Description</h4>
+                            <h4 class="mb-2 text-lg font-medium text-gray-900">Description</h4>
                             <p class="text-gray-700">{{ course.description }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <!-- Course Details -->
-                    <div class="lg:col-span-2 space-y-6">
-                        
+                    <div class="space-y-6 lg:col-span-2">
                         <!-- Prerequisites -->
-                        <div v-if="course.prerequisites && course.prerequisites.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div v-if="course.prerequisites && course.prerequisites.length > 0" class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Prerequisites</h3>
-                                <ul class="list-disc list-inside space-y-1">
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Prerequisites</h3>
+                                <ul class="list-inside list-disc space-y-1">
                                     <li v-for="prerequisite in course.prerequisites" :key="prerequisite" class="text-gray-700">
                                         {{ prerequisite }}
                                     </li>
@@ -136,12 +133,18 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Required Skills -->
-                        <div v-if="course.required_skills && course.required_skills.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div
+                            v-if="course.required_skills && course.required_skills.length > 0"
+                            class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
+                        >
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Required Skills</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Required Skills</h3>
                                 <div class="flex flex-wrap gap-2">
-                                    <span v-for="skill in course.required_skills" :key="skill"
-                                          class="inline-flex px-3 py-1 text-sm bg-red-100 text-red-800 rounded-full">
+                                    <span
+                                        v-for="skill in course.required_skills"
+                                        :key="skill"
+                                        class="inline-flex rounded-full bg-red-100 px-3 py-1 text-sm text-red-800"
+                                    >
                                         {{ skill }}
                                     </span>
                                 </div>
@@ -149,12 +152,15 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Skills Gained -->
-                        <div v-if="course.skills_gained && course.skills_gained.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div v-if="course.skills_gained && course.skills_gained.length > 0" class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Skills You'll Gain</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Skills You'll Gain</h3>
                                 <div class="flex flex-wrap gap-2">
-                                    <span v-for="skill in course.skills_gained" :key="skill"
-                                          class="inline-flex px-3 py-1 text-sm bg-green-100 text-green-800 rounded-full">
+                                    <span
+                                        v-for="skill in course.skills_gained"
+                                        :key="skill"
+                                        class="inline-flex rounded-full bg-green-100 px-3 py-1 text-sm text-green-800"
+                                    >
                                         {{ skill }}
                                     </span>
                                 </div>
@@ -162,12 +168,15 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Career Paths -->
-                        <div v-if="course.career_paths && course.career_paths.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div v-if="course.career_paths && course.career_paths.length > 0" class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Career Paths</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Career Paths</h3>
                                 <div class="flex flex-wrap gap-2">
-                                    <span v-for="path in course.career_paths" :key="path"
-                                          class="inline-flex px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">
+                                    <span
+                                        v-for="path in course.career_paths"
+                                        :key="path"
+                                        class="inline-flex rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800"
+                                    >
                                         {{ path }}
                                     </span>
                                 </div>
@@ -175,10 +184,13 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Learning Outcomes -->
-                        <div v-if="course.learning_outcomes && course.learning_outcomes.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div
+                            v-if="course.learning_outcomes && course.learning_outcomes.length > 0"
+                            class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
+                        >
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Learning Outcomes</h3>
-                                <ul class="list-disc list-inside space-y-1">
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Learning Outcomes</h3>
+                                <ul class="list-inside list-disc space-y-1">
                                     <li v-for="outcome in course.learning_outcomes" :key="outcome" class="text-gray-700">
                                         {{ outcome }}
                                     </li>
@@ -187,19 +199,29 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Recent Graduates -->
-                        <div v-if="analytics.recent_graduates && analytics.recent_graduates.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div
+                            v-if="analytics.recent_graduates && analytics.recent_graduates.length > 0"
+                            class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
+                        >
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Graduates</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Recent Graduates</h3>
                                 <div class="space-y-3">
-                                    <div v-for="graduate in analytics.recent_graduates" :key="graduate.id" 
-                                         class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div
+                                        v-for="graduate in analytics.recent_graduates"
+                                        :key="graduate.id"
+                                        class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                                    >
                                         <div>
                                             <div class="font-medium text-gray-900">{{ graduate.name }}</div>
                                             <div class="text-sm text-gray-600">Graduated: {{ graduate.graduation_year }}</div>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-sm font-medium text-gray-900">{{ graduate.employment_status?.replace('_', ' ').toUpperCase() }}</div>
-                                            <div v-if="graduate.current_job_title" class="text-xs text-gray-600">{{ graduate.current_job_title }}</div>
+                                            <div class="text-sm font-medium text-gray-900">
+                                                {{ graduate.employment_status?.replace('_', ' ').toUpperCase() }}
+                                            </div>
+                                            <div v-if="graduate.current_job_title" class="text-xs text-gray-600">
+                                                {{ graduate.current_job_title }}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -207,12 +229,18 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Matching Jobs -->
-                        <div v-if="analytics.matching_jobs && analytics.matching_jobs.length > 0" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div
+                            v-if="analytics.matching_jobs && analytics.matching_jobs.length > 0"
+                            class="overflow-hidden bg-white shadow-sm sm:rounded-lg"
+                        >
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Related Job Opportunities</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Related Job Opportunities</h3>
                                 <div class="space-y-3">
-                                    <div v-for="job in analytics.matching_jobs" :key="job.id" 
-                                         class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div
+                                        v-for="job in analytics.matching_jobs"
+                                        :key="job.id"
+                                        class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                                    >
                                         <div>
                                             <div class="font-medium text-gray-900">{{ job.title }}</div>
                                             <div class="text-sm text-gray-600">{{ job.employer?.company_name }}</div>
@@ -229,11 +257,10 @@ const formatCurrency = (amount) => {
 
                     <!-- Statistics Sidebar -->
                     <div class="space-y-6">
-                        
                         <!-- Quick Stats -->
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Course Statistics</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Course Statistics</h3>
                                 <div class="space-y-4">
                                     <div class="flex justify-between">
                                         <span class="text-sm text-gray-600">Total Enrolled</span>
@@ -260,17 +287,15 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Employment Trends -->
-                        <div v-if="analytics.employment_trends" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div v-if="analytics.employment_trends" class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Employment Trends</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Employment Trends</h3>
                                 <div class="space-y-3">
-                                    <div v-for="(trend, year) in analytics.employment_trends" :key="year" 
-                                         class="flex items-center justify-between">
+                                    <div v-for="(trend, year) in analytics.employment_trends" :key="year" class="flex items-center justify-between">
                                         <span class="text-sm text-gray-600">{{ year }}</span>
                                         <div class="flex items-center">
-                                            <div class="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                                                <div class="bg-indigo-600 h-2 rounded-full" 
-                                                     :style="`width: ${trend.rate}%`"></div>
+                                            <div class="mr-2 h-2 w-16 rounded-full bg-gray-200">
+                                                <div class="h-2 rounded-full bg-indigo-600" :style="`width: ${trend.rate}%`"></div>
                                             </div>
                                             <span class="text-sm font-medium text-gray-900">{{ trend.rate }}%</span>
                                         </div>
@@ -280,20 +305,26 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Course Actions -->
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Actions</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Actions</h3>
                                 <div class="space-y-2">
-                                    <Link :href="route('graduates.index', { course_id: course.id })" 
-                                          class="block w-full text-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                                    <Link
+                                        :href="route('graduates.index', { course_id: course.id })"
+                                        class="block w-full rounded-md bg-blue-600 px-4 py-2 text-center text-white hover:bg-blue-700"
+                                    >
                                         View Graduates
                                     </Link>
-                                    <Link :href="route('jobs.index', { course_id: course.id })" 
-                                          class="block w-full text-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                                    <Link
+                                        :href="route('jobs.index', { course_id: course.id })"
+                                        class="block w-full rounded-md bg-green-600 px-4 py-2 text-center text-white hover:bg-green-700"
+                                    >
                                         View Related Jobs
                                     </Link>
-                                    <Link :href="route('courses.analytics', course.id)" 
-                                          class="block w-full text-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+                                    <Link
+                                        :href="route('courses.analytics', course.id)"
+                                        class="block w-full rounded-md bg-purple-600 px-4 py-2 text-center text-white hover:bg-purple-700"
+                                    >
                                         Detailed Analytics
                                     </Link>
                                 </div>
@@ -301,9 +332,9 @@ const formatCurrency = (amount) => {
                         </div>
 
                         <!-- Course Metadata -->
-                        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                        <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div class="p-6">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Course Information</h3>
+                                <h3 class="mb-4 text-lg font-medium text-gray-900">Course Information</h3>
                                 <div class="space-y-3">
                                     <div>
                                         <span class="text-sm text-gray-600">Created</span>

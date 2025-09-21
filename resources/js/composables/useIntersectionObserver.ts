@@ -1,65 +1,62 @@
-import { ref, onMounted, onUnmounted, type Ref } from 'vue'
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 interface UseIntersectionObserverOptions {
-  threshold?: number | number[]
-  root?: Element | null
-  rootMargin?: string
+    threshold?: number | number[];
+    root?: Element | null;
+    rootMargin?: string;
 }
 
-export function useIntersectionObserver(
-  target: Ref<Element | undefined>,
-  options: UseIntersectionObserverOptions = {}
-) {
-  const isIntersecting = ref(false)
-  const isSupported = ref(false)
-  
-  let observer: IntersectionObserver | null = null
+export function useIntersectionObserver(target: Ref<Element | undefined>, options: UseIntersectionObserverOptions = {}) {
+    const isIntersecting = ref(false);
+    const isSupported = ref(false);
 
-  const cleanup = () => {
-    if (observer) {
-      observer.disconnect()
-      observer = null
-    }
-  }
+    let observer: IntersectionObserver | null = null;
 
-  const observe = () => {
-    if (!target.value || !isSupported.value) return
-
-    cleanup()
-
-    observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0]
-        if (entry) {
-          isIntersecting.value = entry.isIntersecting
+    const cleanup = () => {
+        if (observer) {
+            observer.disconnect();
+            observer = null;
         }
-      },
-      {
-        threshold: options.threshold ?? 0.1,
-        root: options.root ?? null,
-        rootMargin: options.rootMargin ?? '0px'
-      }
-    )
+    };
 
-    observer.observe(target.value)
-  }
+    const observe = () => {
+        if (!target.value || !isSupported.value) return;
 
-  onMounted(() => {
-    isSupported.value = typeof window !== 'undefined' && 'IntersectionObserver' in window
-    
-    if (isSupported.value && target.value) {
-      observe()
-    }
-  })
+        cleanup();
 
-  onUnmounted(() => {
-    cleanup()
-  })
+        observer = new IntersectionObserver(
+            (entries) => {
+                const entry = entries[0];
+                if (entry) {
+                    isIntersecting.value = entry.isIntersecting;
+                }
+            },
+            {
+                threshold: options.threshold ?? 0.1,
+                root: options.root ?? null,
+                rootMargin: options.rootMargin ?? '0px',
+            },
+        );
 
-  return {
-    isIntersecting,
-    isSupported,
-    observe,
-    cleanup
-  }
+        observer.observe(target.value);
+    };
+
+    onMounted(() => {
+        isSupported.value = typeof window !== 'undefined' && 'IntersectionObserver' in window;
+
+        if (isSupported.value && target.value) {
+            observe();
+        }
+    });
+
+    onUnmounted(() => {
+        cleanup();
+    });
+
+    return {
+        isIntersecting,
+        isSupported,
+        observe,
+        cleanup,
+    };
 }

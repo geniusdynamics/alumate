@@ -56,6 +56,14 @@ return [
         'redis' => [
             'driver' => 'redis',
             'connection' => 'default',
+            'throttle' => [
+                'messages_per_second' => 100, // Limit to 100 messages per second per channel
+                'burst_size' => 200, // Allow bursts up to 200 messages
+            ],
+        ],
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'default',
         ],
 
         'log' => [

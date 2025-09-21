@@ -4,7 +4,7 @@
         <button
             v-if="variant === 'simple'"
             @click="toggleTheme"
-            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors touch-target"
+            class="touch-target rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
             :title="`Switch to ${isDarkMode ? 'light' : 'dark'} mode`"
         >
             <SunIcon v-if="isDarkMode" class="h-5 w-5 text-yellow-500" />
@@ -15,7 +15,7 @@
         <div v-else-if="variant === 'dropdown'" class="relative">
             <button
                 @click="showDropdown = !showDropdown"
-                class="flex items-center space-x-2 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors touch-target"
+                class="touch-target flex items-center space-x-2 rounded-lg bg-gray-100 p-2 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700"
                 :title="getThemeLabel(currentTheme)"
             >
                 <component :is="getThemeIcon(resolvedTheme)" class="h-5 w-5" />
@@ -26,7 +26,7 @@
             <!-- Dropdown Menu -->
             <div
                 v-if="showDropdown"
-                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                class="absolute right-0 z-50 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
                 @click.stop
             >
                 <div class="py-1">
@@ -34,12 +34,12 @@
                         v-for="theme in themeOptions"
                         :key="theme.value"
                         @click="selectTheme(theme.value)"
-                        class="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        :class="{ 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300': currentTheme === theme.value }"
+                        class="flex w-full items-center space-x-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                        :class="{ 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300': currentTheme === theme.value }"
                     >
                         <component :is="theme.icon" class="h-4 w-4" />
                         <span>{{ theme.label }}</span>
-                        <CheckIcon v-if="currentTheme === theme.value" class="h-4 w-4 ml-auto" />
+                        <CheckIcon v-if="currentTheme === theme.value" class="ml-auto h-4 w-4" />
                     </button>
                 </div>
             </div>
@@ -64,15 +64,17 @@
         </div>
 
         <!-- Segmented Control -->
-        <div v-else-if="variant === 'segmented'" class="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+        <div v-else-if="variant === 'segmented'" class="flex rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
             <button
                 v-for="theme in themeOptions"
                 :key="theme.value"
                 @click="selectTheme(theme.value)"
-                class="flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors touch-target"
-                :class="currentTheme === theme.value 
-                    ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' 
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'"
+                class="touch-target flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium transition-colors"
+                :class="
+                    currentTheme === theme.value
+                        ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
+                        : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                "
             >
                 <component :is="theme.icon" class="h-4 w-4" />
                 <span v-if="showLabel">{{ theme.label }}</span>
@@ -80,98 +82,88 @@
         </div>
 
         <!-- Backdrop for dropdown -->
-        <div
-            v-if="showDropdown"
-            class="fixed inset-0 z-40"
-            @click="showDropdown = false"
-        ></div>
+        <div v-if="showDropdown" class="fixed inset-0 z-40" @click="showDropdown = false"></div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useTheme } from '@/composables/useTheme'
-import {
-    SunIcon,
-    MoonIcon,
-    ComputerDesktopIcon,
-    ChevronDownIcon,
-    CheckIcon
-} from '@heroicons/vue/24/outline'
+import { useTheme } from '@/composables/useTheme';
+import { CheckIcon, ChevronDownIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps({
     variant: {
         type: String,
         default: 'simple', // simple, dropdown, switch, segmented
-        validator: (value) => ['simple', 'dropdown', 'switch', 'segmented'].includes(value)
+        validator: (value) => ['simple', 'dropdown', 'switch', 'segmented'].includes(value),
     },
     showLabel: {
         type: Boolean,
-        default: false
+        default: false,
     },
     size: {
         type: String,
         default: 'md', // sm, md, lg
-        validator: (value) => ['sm', 'md', 'lg'].includes(value)
-    }
-})
+        validator: (value) => ['sm', 'md', 'lg'].includes(value),
+    },
+});
 
-const { currentTheme, resolvedTheme, isDarkMode, setTheme, toggleTheme, themes } = useTheme()
-const showDropdown = ref(false)
+const { currentTheme, resolvedTheme, isDarkMode, setTheme, toggleTheme, themes } = useTheme();
+const showDropdown = ref(false);
 
 const themeOptions = [
     {
         value: themes.LIGHT,
         label: 'Light',
-        icon: SunIcon
+        icon: SunIcon,
     },
     {
         value: themes.DARK,
         label: 'Dark',
-        icon: MoonIcon
+        icon: MoonIcon,
     },
     {
         value: themes.SYSTEM,
         label: 'System',
-        icon: ComputerDesktopIcon
-    }
-]
+        icon: ComputerDesktopIcon,
+    },
+];
 
 const getThemeIcon = (theme) => {
     switch (theme) {
         case themes.DARK:
-            return MoonIcon
+            return MoonIcon;
         case themes.LIGHT:
-            return SunIcon
+            return SunIcon;
         default:
-            return ComputerDesktopIcon
+            return ComputerDesktopIcon;
     }
-}
+};
 
 const getThemeLabel = (theme) => {
-    const option = themeOptions.find(opt => opt.value === theme)
-    return option ? option.label : 'System'
-}
+    const option = themeOptions.find((opt) => opt.value === theme);
+    return option ? option.label : 'System';
+};
 
 const selectTheme = (theme) => {
-    setTheme(theme)
-    showDropdown.value = false
-}
+    setTheme(theme);
+    showDropdown.value = false;
+};
 
 // Close dropdown on escape key
 const handleEscape = (e) => {
     if (e.key === 'Escape' && showDropdown.value) {
-        showDropdown.value = false
+        showDropdown.value = false;
     }
-}
+};
 
 onMounted(() => {
-    document.addEventListener('keydown', handleEscape)
-})
+    document.addEventListener('keydown', handleEscape);
+});
 
 onUnmounted(() => {
-    document.removeEventListener('keydown', handleEscape)
-})
+    document.removeEventListener('keydown', handleEscape);
+});
 </script>
 
 <style scoped>
@@ -185,7 +177,7 @@ onUnmounted(() => {
 }
 
 /* Switch animation */
-.theme-toggle [role="switch"] span {
+.theme-toggle [role='switch'] span {
     transition: transform 0.2s ease-in-out;
 }
 

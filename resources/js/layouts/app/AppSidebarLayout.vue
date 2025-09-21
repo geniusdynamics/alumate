@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import AppContent from '@/components/AppContent.vue';
 import AppShell from '@/components/AppShell.vue';
-import MainSidebar from '@/components/MainSidebar.vue';
 import AppSidebarHeader from '@/components/AppSidebarHeader.vue';
+import MainSidebar from '@/components/MainSidebar.vue';
 import type { BreadcrumbItemType } from '@/types';
 
 interface Props {

@@ -1,19 +1,7 @@
 <template>
     <div :class="cn('animate-spin', sizeClasses[size])" v-bind="$attrs">
-        <svg
-            class="h-full w-full"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-        >
-            <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-            />
+        <svg class="h-full w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
             <path
                 class="opacity-75"
                 fill="currentColor"

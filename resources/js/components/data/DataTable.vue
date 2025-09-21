@@ -130,7 +130,7 @@ const pageNumbers = computed(() => {
             <div class="flex items-center justify-between">
                 <CardTitle v-if="title">{{ title }}</CardTitle>
                 <div v-if="searchable" class="relative max-w-sm">
-                    <Search class="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                    <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input v-model="searchQuery" placeholder="Search..." class="pl-10" />
                 </div>
             </div>
@@ -138,10 +138,10 @@ const pageNumbers = computed(() => {
 
         <CardContent>
             <div class="relative">
-                <div v-if="loading" class="bg-background/50 absolute inset-0 z-10 flex items-center justify-center rounded-md backdrop-blur-sm">
+                <div v-if="loading" class="absolute inset-0 z-10 flex items-center justify-center rounded-md bg-background/50 backdrop-blur-sm">
                     <div class="flex items-center space-x-2">
-                        <div class="border-primary h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"></div>
-                        <span class="text-muted-foreground text-sm">Loading...</span>
+                        <div class="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                        <span class="text-sm text-muted-foreground">Loading...</span>
                     </div>
                 </div>
 
@@ -152,7 +152,7 @@ const pageNumbers = computed(() => {
                                 <TableHead
                                     v-for="column in columns"
                                     :key="column.key"
-                                    :class="[column.sortable ? 'hover:text-foreground cursor-pointer select-none' : '']"
+                                    :class="[column.sortable ? 'cursor-pointer select-none hover:text-foreground' : '']"
                                     @click="handleSort(column)"
                                 >
                                     <div class="flex items-center space-x-2">
@@ -175,7 +175,7 @@ const pageNumbers = computed(() => {
                                 <TableCell :colspan="columns.length" class="h-24 text-center">
                                     <div class="flex flex-col items-center justify-center space-y-2">
                                         <div class="text-muted-foreground">No data available</div>
-                                        <div class="text-muted-foreground/70 text-sm">Try adjusting your search or filters</div>
+                                        <div class="text-sm text-muted-foreground/70">Try adjusting your search or filters</div>
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -194,7 +194,7 @@ const pageNumbers = computed(() => {
             <!-- Pagination -->
             <div v-if="pagination" class="flex items-center justify-between space-x-2 py-4">
                 <div class="flex items-center space-x-2">
-                    <span class="text-muted-foreground text-sm">
+                    <span class="text-sm text-muted-foreground">
                         Showing {{ pagination.from }} to {{ pagination.to }} of {{ pagination.total }} results
                     </span>
                     <Select :model-value="pagination.per_page.toString()" @update:model-value="handlePerPageChange">
@@ -207,7 +207,7 @@ const pageNumbers = computed(() => {
                             </SelectItem>
                         </SelectContent>
                     </Select>
-                    <span class="text-muted-foreground text-sm">per page</span>
+                    <span class="text-sm text-muted-foreground">per page</span>
                 </div>
 
                 <div class="flex items-center space-x-1">

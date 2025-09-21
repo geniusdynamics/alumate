@@ -28,17 +28,13 @@ const handleSubmit = (e: Event) => {
         <div class="space-y-4">
             <slot name="fields" />
         </div>
-        
+
         <div class="space-y-4">
-            <Button 
-                type="submit" 
-                class="w-full" 
-                :disabled="disabled || isLoading"
-            >
+            <Button type="submit" class="w-full" :disabled="disabled || isLoading">
                 <LoaderCircle v-if="isLoading" class="mr-2 h-4 w-4 animate-spin" />
                 {{ submitText }}
             </Button>
-            
+
             <slot name="footer" />
         </div>
     </form>

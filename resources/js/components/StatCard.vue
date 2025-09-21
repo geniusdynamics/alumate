@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white overflow-hidden shadow rounded-lg">
+    <div class="overflow-hidden rounded-lg bg-white shadow">
         <div class="p-5">
             <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -7,7 +7,7 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                     <dl>
-                        <dt class="text-sm font-medium text-gray-500 truncate">{{ title }}</dt>
+                        <dt class="truncate text-sm font-medium text-gray-500">{{ title }}</dt>
                         <dd>
                             <div class="text-lg font-medium text-gray-900">{{ formattedValue }}</div>
                         </dd>
@@ -25,21 +25,21 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
 import {
-    BuildingOfficeIcon,
-    UsersIcon,
     AcademicCapIcon,
     BriefcaseIcon,
-    CurrencyDollarIcon,
+    BuildingOfficeIcon,
     ChartBarIcon,
-    DocumentTextIcon,
-    ShieldCheckIcon,
-    ClockIcon,
-    EyeIcon,
     CheckCircleIcon,
+    ClockIcon,
+    CurrencyDollarIcon,
+    DocumentTextIcon,
+    EyeIcon,
+    ShieldCheckIcon,
+    UsersIcon,
     XCircleIcon,
 } from '@heroicons/vue/24/outline';
+import { computed } from 'vue';
 
 const props = defineProps({
     title: {
@@ -106,7 +106,7 @@ const formattedValue = computed(() => {
 
 const changeColorClass = computed(() => {
     if (!props.change) return '';
-    
+
     if (props.change.startsWith('+')) {
         return 'text-green-600';
     } else if (props.change.startsWith('-')) {

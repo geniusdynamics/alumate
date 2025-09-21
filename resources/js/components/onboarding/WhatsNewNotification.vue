@@ -1,23 +1,20 @@
 <template>
-    <div class="fixed top-4 right-4 z-50 max-w-sm">
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+    <div class="fixed right-4 top-4 z-50 max-w-sm">
+        <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <!-- Header -->
-            <div class="p-4 bg-gradient-to-r from-green-500 to-blue-600">
+            <div class="bg-gradient-to-r from-green-500 to-blue-600 p-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <SparklesIcon class="w-5 h-5 text-white" />
+                        <div class="flex h-8 w-8 items-center justify-center rounded-full bg-white bg-opacity-20">
+                            <SparklesIcon class="h-5 w-5 text-white" />
                         </div>
                         <div>
-                            <h3 class="text-white font-semibold">What's New</h3>
-                            <p class="text-green-100 text-sm">{{ updates.length }} new update{{ updates.length !== 1 ? 's' : '' }}</p>
+                            <h3 class="font-semibold text-white">What's New</h3>
+                            <p class="text-sm text-green-100">{{ updates.length }} new update{{ updates.length !== 1 ? 's' : '' }}</p>
                         </div>
                     </div>
-                    <button
-                        @click="$emit('close')"
-                        class="text-white hover:text-green-100"
-                    >
-                        <XMarkIcon class="w-5 h-5" />
+                    <button @click="$emit('close')" class="text-white hover:text-green-100">
+                        <XMarkIcon class="h-5 w-5" />
                     </button>
                 </div>
             </div>
@@ -27,15 +24,14 @@
                 <div
                     v-for="update in updates"
                     :key="update.id"
-                    class="p-4 border-b border-gray-200 dark:border-gray-700 last:border-b-0"
-                    :class="{ 'bg-blue-50 dark:bg-blue-900 bg-opacity-30': !update.read }"
+                    class="border-b border-gray-200 p-4 last:border-b-0 dark:border-gray-700"
+                    :class="{ 'bg-blue-50 bg-opacity-30 dark:bg-blue-900': !update.read }"
                 >
                     <!-- Update Header -->
-                    <div class="flex items-start justify-between mb-2">
+                    <div class="mb-2 flex items-start justify-between">
                         <div class="flex items-center space-x-2">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center"
-                                 :class="getUpdateTypeStyle(update.type)">
-                                <component :is="getUpdateIcon(update.type)" class="w-3 h-3" />
+                            <div class="flex h-6 w-6 items-center justify-center rounded-full" :class="getUpdateTypeStyle(update.type)">
+                                <component :is="getUpdateIcon(update.type)" class="h-3 w-3" />
                             </div>
                             <div>
                                 <h4 class="text-sm font-semibold text-gray-900 dark:text-white">
@@ -48,26 +44,22 @@
                         </div>
                         <span
                             v-if="!update.read"
-                            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+                            class="inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                         >
                             New
                         </span>
                     </div>
 
                     <!-- Update Content -->
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                    <p class="mb-3 text-sm text-gray-700 dark:text-gray-300">
                         {{ update.description }}
                     </p>
 
                     <!-- Update Features -->
                     <div v-if="update.features && update.features.length > 0" class="mb-3">
-                        <ul class="text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                            <li
-                                v-for="feature in update.features"
-                                :key="feature"
-                                class="flex items-center space-x-2"
-                            >
-                                <CheckCircleIcon class="w-3 h-3 text-green-500 flex-shrink-0" />
+                        <ul class="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                            <li v-for="feature in update.features" :key="feature" class="flex items-center space-x-2">
+                                <CheckCircleIcon class="h-3 w-3 flex-shrink-0 text-green-500" />
                                 <span>{{ feature }}</span>
                             </li>
                         </ul>
@@ -79,7 +71,7 @@
                             v-for="action in update.actions"
                             :key="action.label"
                             @click="performUpdateAction(update, action)"
-                            class="text-xs bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded font-medium"
+                            class="rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700"
                         >
                             {{ action.label }}
                         </button>
@@ -88,26 +80,19 @@
             </div>
 
             <!-- Footer -->
-            <div class="p-4 bg-gray-50 dark:bg-gray-700">
+            <div class="bg-gray-50 p-4 dark:bg-gray-700">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-2">
                         <input
                             id="auto-show-updates"
                             v-model="autoShowUpdates"
                             type="checkbox"
-                            class="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        >
-                        <label for="auto-show-updates" class="text-xs text-gray-600 dark:text-gray-400">
-                            Show new updates automatically
-                        </label>
+                            class="h-3 w-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <label for="auto-show-updates" class="text-xs text-gray-600 dark:text-gray-400"> Show new updates automatically </label>
                     </div>
-                    
-                    <button
-                        @click="viewAllUpdates"
-                        class="text-xs text-blue-600 hover:text-blue-500 font-medium"
-                    >
-                        View All
-                    </button>
+
+                    <button @click="viewAllUpdates" class="text-xs font-medium text-blue-600 hover:text-blue-500">View All</button>
                 </div>
             </div>
         </div>
@@ -115,75 +100,79 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { format } from 'date-fns'
 import {
-    XMarkIcon,
-    SparklesIcon,
-    CheckCircleIcon,
-    PlusIcon,
     ArrowPathIcon,
     BugAntIcon,
+    CheckCircleIcon,
+    PlusIcon,
+    RocketLaunchIcon,
     ShieldCheckIcon,
-    RocketLaunchIcon
-} from '@heroicons/vue/24/outline'
+    SparklesIcon,
+    XMarkIcon,
+} from '@heroicons/vue/24/outline';
+import { format } from 'date-fns';
+import { ref } from 'vue';
 
 const props = defineProps({
     updates: {
         type: Array,
-        required: true
-    }
-})
+        required: true,
+    },
+});
 
-const emit = defineEmits(['close', 'view-details'])
+const emit = defineEmits(['close', 'view-details']);
 
-const autoShowUpdates = ref(true)
+const autoShowUpdates = ref(true);
 
 const getUpdateTypeStyle = (type) => {
     const styles = {
-        'feature': 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400',
-        'improvement': 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400',
-        'bugfix': 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400',
-        'security': 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400',
-        'announcement': 'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-400'
-    }
-    return styles[type] || styles.feature
-}
+        feature: 'bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-400',
+        improvement: 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400',
+        bugfix: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900 dark:text-yellow-400',
+        security: 'bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-400',
+        announcement: 'bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-400',
+    };
+    return styles[type] || styles.feature;
+};
 
 const getUpdateIcon = (type) => {
     const icons = {
-        'feature': PlusIcon,
-        'improvement': ArrowPathIcon,
-        'bugfix': BugAntIcon,
-        'security': ShieldCheckIcon,
-        'announcement': RocketLaunchIcon
-    }
-    return icons[type] || PlusIcon
-}
+        feature: PlusIcon,
+        improvement: ArrowPathIcon,
+        bugfix: BugAntIcon,
+        security: ShieldCheckIcon,
+        announcement: RocketLaunchIcon,
+    };
+    return icons[type] || PlusIcon;
+};
 
 const formatDate = (dateString) => {
-    return format(new Date(dateString), 'MMM d, yyyy')
-}
+    return format(new Date(dateString), 'MMM d, yyyy');
+};
 
 const performUpdateAction = (update, action) => {
     if (action.type === 'navigate') {
-        emit('view-details', { ...update, route: action.url })
+        emit('view-details', { ...update, route: action.url });
     } else if (action.type === 'modal') {
-        window.dispatchEvent(new CustomEvent('show-update-modal', {
-            detail: { update, action }
-        }))
+        window.dispatchEvent(
+            new CustomEvent('show-update-modal', {
+                detail: { update, action },
+            }),
+        );
     } else if (action.type === 'feature-spotlight') {
-        window.dispatchEvent(new CustomEvent('show-feature-spotlight', {
-            detail: { feature: action.feature }
-        }))
+        window.dispatchEvent(
+            new CustomEvent('show-feature-spotlight', {
+                detail: { feature: action.feature },
+            }),
+        );
     }
-}
+};
 
 const viewAllUpdates = () => {
     // Save auto-show preference
-    localStorage.setItem('autoShowUpdates', autoShowUpdates.value.toString())
-    
+    localStorage.setItem('autoShowUpdates', autoShowUpdates.value.toString());
+
     // Navigate to updates page
-    window.location.href = '/updates'
-}
+    window.location.href = '/updates';
+};
 </script>

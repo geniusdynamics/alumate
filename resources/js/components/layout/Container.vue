@@ -35,12 +35,9 @@ const paddingClasses = {
     xl: 'px-12 py-8',
 };
 
-const containerClasses = [
-    'w-full',
-    maxWidthClasses[props.maxWidth],
-    paddingClasses[props.padding],
-    props.center ? 'mx-auto' : '',
-].filter(Boolean).join(' ');
+const containerClasses = ['w-full', maxWidthClasses[props.maxWidth], paddingClasses[props.padding], props.center ? 'mx-auto' : '']
+    .filter(Boolean)
+    .join(' ');
 </script>
 
 <template>

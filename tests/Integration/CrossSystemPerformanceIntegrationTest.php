@@ -581,4 +581,230 @@ class CrossSystemPerformanceIntegrationTest extends TestCase
             ];
         }
     }
+
+    public function test_analytics_tenant_isolation_under_concurrent_load()
+    {
+        $startTime = microtime(true);
+
+        // Create additional tenants for analytics testing
+        $analyticsTenant2 = Tenant::factory()->create(['name' => 'Analytics Test University 2']);
+        $analyticsTenant3 = Tenant::factory()->create(['name' => 'Analytics Test University 3']);
+
+        $analyticsTenants = [$this->tenant1, $analyticsTenant2, $analyticsTenant3];
+        $isolationViolations = 0;
+        $totalRequests = 0;
+
+        foreach ($analyticsTenants as $tenant) {
+            // Simulate 500 concurrent requests per tenant for analytics endpoints
+            $results = $this->simulateAnalyticsConcurrentLoad($tenant, 500, 30);
+            $totalRequests += $results['total_requests'];
+
+            // Check for cross-tenant data leakage in analytics data
+            if ($results['cross_tenant_data_leakage']) {
+                $isolationViolations++;
+            }
+
+            $this->assertLessThan(300, $results['avg_response_time'], "Analytics for tenant {$tenant->id} should be under 300ms");
+            $this->assertGreaterThan(95, $results['success_rate'], "Analytics success rate for tenant {$tenant->id} should be >95%");
+        }
+
+        $endTime = microtime(true);
+        $totalTime = ($endTime - $startTime) * 1000;
+
+        $this->assertEquals(0, $isolationViolations, 'No analytics tenant isolation violations should occur');
+        $this->assertGreaterThan(1500, $totalRequests, 'Should handle >1500 total analytics requests across tenants');
+        $this->assertLessThan(15000, $totalTime, 'Analytics tenant isolation test should complete within 15 seconds');
+    }
+
+    public function test_cross_system_analytics_performance_integration()
+    {
+        $startTime = microtime(true);
+
+        // Create test data for analytics performance
+        $this->createAnalyticsPerformanceTestData();
+
+        // Simulate complex cross-system analytics workflow
+        $promises = [];
+        $concurrentUsers = 25;
+
+        for ($i = 0; $i < $concurrentUsers; $i++) {
+            $user = $this->testUsers[$i];
+            $promises[] = $this->simulateCrossSystemAnalyticsWorkflow($user);
+        }
+
+        // Wait for all workflows to complete
+        foreach ($promises as $promise) {
+            $this->assertTrue($promise['success']);
+            $this->assertArrayHasKey('analytics_steps', $promise);
+            $this->assertGreaterThan(2, count($promise['analytics_steps']));
+            $this->assertLessThan(500, $promise['total_time'], 'Individual analytics workflow should be under 500ms');
+        }
+
+        $endTime = microtime(true);
+        $totalTime = ($endTime - $startTime) * 1000;
+
+        // Cross-system analytics performance requirements
+        $this->assertLessThan(15000, $totalTime, 'Cross-system analytics should complete within 15 seconds');
+        $this->assertGreaterThan(0, $concurrentUsers, 'All analytics workflows should succeed');
+    }
+
+    protected function simulateAnalyticsConcurrentLoad(Tenant $tenant, int $concurrentRequests, int $duration): array
+    {
+        $startTime = microtime(true);
+        $endTime = $startTime + $duration;
+
+        $metrics = [
+            'requests_sent' => 0,
+            'requests_successful' => 0,
+            'requests_failed' => 0,
+            'total_response_time' => 0,
+            'response_times' => [],
+            'cross_tenant_data_leakage' => false,
+        ];
+
+        while (microtime(true) < $endTime) {
+            $batchSize = min(20, $concurrentRequests);
+            for ($i = 0; $i < $batchSize; $i++) {
+                $user = $this->testUsers[$metrics['requests_sent'] % count($this->testUsers)];
+                $result = $this->executeAnalyticsRequest($user, $tenant);
+
+                $metrics['requests_sent']++;
+                if ($result['success']) {
+                    $metrics['requests_successful']++;
+                    $metrics['total_response_time'] += $result['response_time'];
+                    $metrics['response_times'][] = $result['response_time'];
+
+                    // Check for cross-tenant data leakage
+                    if ($result['cross_tenant_data']) {
+                        $metrics['cross_tenant_data_leakage'] = true;
+                    }
+                } else {
+                    $metrics['requests_failed']++;
+                }
+            }
+
+            usleep(100000); // 100ms delay
+        }
+
+        $totalTime = microtime(true) - $startTime;
+
+        return [
+            'total_requests' => $metrics['requests_sent'],
+            'successful_requests' => $metrics['requests_successful'],
+            'failed_requests' => $metrics['requests_failed'],
+            'avg_response_time' => $metrics['response_times'] ? array_sum($metrics['response_times']) / count($metrics['response_times']) : 0,
+            'success_rate' => $metrics['requests_sent'] > 0 ? ($metrics['requests_successful'] / $metrics['requests_sent']) * 100 : 0,
+            'cross_tenant_data_leakage' => $metrics['cross_tenant_data_leakage'],
+            'test_duration' => $totalTime,
+        ];
+    }
+
+    protected function executeAnalyticsRequest(User $user, Tenant $tenant): array
+    {
+        $startTime = microtime(true);
+
+        try {
+            // Simulate analytics API call with tenant context
+            $response = $this->actingAs($user)->getJson('/api/analytics/metrics', [
+                'tenant_id' => $tenant->id,
+                'period' => 'weekly'
+            ]);
+
+            $responseTime = (microtime(true) - $startTime) * 1000;
+
+            // Check response data for cross-tenant leakage
+            $responseData = $response->json();
+            $crossTenantData = isset($responseData['data']) &&
+                              is_array($responseData['data']) &&
+                              !empty(array_filter($responseData['data'], fn($item) =>
+                                  isset($item['tenant_id']) && $item['tenant_id'] != $tenant->id
+                              ));
+
+            return [
+                'success' => $response->status() === 200,
+                'response_time' => $responseTime,
+                'cross_tenant_data' => $crossTenantData,
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'response_time' => (microtime(true) - $startTime) * 1000,
+                'cross_tenant_data' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    protected function simulateCrossSystemAnalyticsWorkflow(User $user): array
+    {
+        $analyticsSteps = [];
+        $startTime = microtime(true);
+
+        try {
+            // Step 1: Fetch analytics metrics
+            $response1 = $this->actingAs($user)->getJson('/api/analytics/metrics');
+            $analyticsSteps[] = ['step' => 'metrics_fetch', 'success' => $response1->isOk(), 'time' => microtime(true) - $startTime];
+
+            // Step 2: Fetch leaderboard data
+            $response2 = $this->actingAs($user)->getJson('/api/analytics/leaderboard');
+            $analyticsSteps[] = ['step' => 'leaderboard_fetch', 'success' => $response2->isOk(), 'time' => microtime(true) - $startTime];
+
+            // Step 3: Fetch heatmap data
+            $response3 = $this->actingAs($user)->getJson('/api/analytics/heatmap?page_url=/dashboard');
+            $analyticsSteps[] = ['step' => 'heatmap_fetch', 'success' => $response3->isOk(), 'time' => microtime(true) - $startTime];
+
+            $endTime = microtime(true);
+            $totalTime = ($endTime - $startTime) * 1000;
+
+            $success = array_reduce($analyticsSteps, function($carry, $step) {
+                return $carry && $step['success'];
+            }, true);
+
+            return [
+                'success' => $success,
+                'analytics_steps' => $analyticsSteps,
+                'total_time' => $totalTime,
+                'user_id' => $user->id
+            ];
+
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'analytics_steps' => $analyticsSteps,
+                'user_id' => $user->id
+            ];
+        }
+    }
+
+    protected function createAnalyticsPerformanceTestData(): void
+    {
+        // Create analytics events for performance testing
+        foreach ($this->testUsers as $user) {
+            \App\Models\AnalyticsEvent::factory()->count(5)->create([
+                'tenant_id' => $this->tenant1->id,
+                'user_id' => $user->id,
+                'event_type' => 'page_view',
+                'event_data' => json_encode(['page' => '/dashboard', 'duration' => rand(10, 300)]),
+            ]);
+        }
+
+        // Create heatmap data
+        \App\Models\HeatMapData::factory()->count(200)->create([
+            'tenant_id' => $this->tenant1->id,
+            'page_url' => '/alumni/dashboard',
+            'x' => rand(0, 1920),
+            'y' => rand(0, 1080),
+            'intensity' => rand(1, 100),
+        ]);
+
+        // Create A/B test data
+        \App\Models\ABTest::factory()->create([
+            'tenant_id' => $this->tenant1->id,
+            'name' => 'Analytics Dashboard Test',
+            'status' => 'active',
+            'variants' => json_encode(['A' => 'Default View', 'B' => 'Enhanced View']),
+        ]);
+    }
+    }
 }

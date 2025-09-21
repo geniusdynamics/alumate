@@ -1,9 +1,5 @@
 <template>
-    <button
-        :type="type"
-        :class="classes"
-        :disabled="disabled"
-    >
+    <button :type="type" :class="classes" :disabled="disabled">
         <slot />
     </button>
 </template>

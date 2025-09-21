@@ -9,7 +9,7 @@ class HttpService {
             timeout: 10000,
             headers: {
                 'Content-Type': 'application/json',
-                'Accept': 'application/json',
+                Accept: 'application/json',
                 'X-Requested-With': 'XMLHttpRequest',
             },
         });
@@ -28,7 +28,7 @@ class HttpService {
                 }
                 return config;
             },
-            (error) => Promise.reject(error)
+            (error) => Promise.reject(error),
         );
 
         // Response interceptor
@@ -43,7 +43,7 @@ class HttpService {
                     window.location.reload();
                 }
                 return Promise.reject(error);
-            }
+            },
         );
     }
 
@@ -67,11 +67,7 @@ class HttpService {
         return this.api.delete(url, config);
     }
 
-    async upload<T = any>(
-        url: string,
-        data: FormData,
-        onUploadProgress?: (progressEvent: any) => void
-    ): Promise<AxiosResponse<T>> {
+    async upload<T = any>(url: string, data: FormData, onUploadProgress?: (progressEvent: any) => void): Promise<AxiosResponse<T>> {
         return this.api.post(url, data, {
             headers: {
                 'Content-Type': 'multipart/form-data',

@@ -20,15 +20,13 @@ const submit = () => {
 
     <AppLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Add Education History
-            </h2>
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">Add Education History</h2>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 bg-white border-b border-gray-200">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                    <div class="border-b border-gray-200 bg-white p-6">
                         <form @submit.prevent="submit">
                             <div>
                                 <label for="institution_name">Institution Name</label>
@@ -50,7 +48,7 @@ const submit = () => {
                                 <label for="end_year">End Year</label>
                                 <input id="end_year" type="number" v-model="form.end_year" required />
                             </div>
-                            <div class="flex items-center justify-end mt-4">
+                            <div class="mt-4 flex items-center justify-end">
                                 <button type="submit">Save</button>
                             </div>
                         </form>

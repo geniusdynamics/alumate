@@ -1,17 +1,17 @@
 <template>
-    <div class="bg-gray-800 border border-gray-700 rounded-lg p-6">
+    <div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
         <div class="flex items-center">
             <div class="flex-shrink-0">
-                <div :class="iconBgClass" class="p-3 rounded-lg">
+                <div :class="iconBgClass" class="rounded-lg p-3">
                     <component :is="iconComponent" class="h-6 w-6 text-white" />
                 </div>
             </div>
             <div class="ml-4 flex-1">
                 <div class="text-2xl font-bold text-white">{{ formattedValue }}</div>
                 <div class="text-sm text-gray-400">{{ title }}</div>
-                <div v-if="change" class="flex items-center mt-1">
+                <div v-if="change" class="mt-1 flex items-center">
                     <span :class="changeColorClass" class="text-sm font-medium">{{ change }}</span>
-                    <span class="text-xs text-gray-500 ml-1">vs last month</span>
+                    <span class="ml-1 text-xs text-gray-500">vs last month</span>
                 </div>
             </div>
         </div>
@@ -19,21 +19,21 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import {
-    BuildingOfficeIcon,
-    UsersIcon,
     AcademicCapIcon,
     BriefcaseIcon,
-    CurrencyDollarIcon,
+    BuildingOfficeIcon,
     ChartBarIcon,
-    DocumentTextIcon,
-    ShieldCheckIcon,
-    ClockIcon,
-    EyeIcon,
     CheckCircleIcon,
+    ClockIcon,
+    CurrencyDollarIcon,
+    DocumentTextIcon,
+    EyeIcon,
+    ShieldCheckIcon,
+    UsersIcon,
     XCircleIcon,
-} from '@heroicons/vue/24/outline'
+} from '@heroicons/vue/24/outline';
+import { computed } from 'vue';
 
 const props = defineProps({
     title: {
@@ -56,7 +56,7 @@ const props = defineProps({
         type: String,
         default: null,
     },
-})
+});
 
 const iconComponents = {
     BuildingOfficeIcon,
@@ -71,11 +71,11 @@ const iconComponents = {
     EyeIcon,
     CheckCircleIcon,
     XCircleIcon,
-}
+};
 
 const iconComponent = computed(() => {
-    return iconComponents[props.icon] || ChartBarIcon
-})
+    return iconComponents[props.icon] || ChartBarIcon;
+});
 
 const iconBgClass = computed(() => {
     const colors = {
@@ -87,25 +87,25 @@ const iconBgClass = computed(() => {
         indigo: 'bg-indigo-500',
         pink: 'bg-pink-500',
         gray: 'bg-gray-500',
-    }
-    return colors[props.color] || colors.blue
-})
+    };
+    return colors[props.color] || colors.blue;
+});
 
 const formattedValue = computed(() => {
     if (typeof props.value === 'number') {
-        return props.value.toLocaleString()
+        return props.value.toLocaleString();
     }
-    return props.value
-})
+    return props.value;
+});
 
 const changeColorClass = computed(() => {
-    if (!props.change) return ''
-    
+    if (!props.change) return '';
+
     if (props.change.startsWith('+')) {
-        return 'text-green-400'
+        return 'text-green-400';
     } else if (props.change.startsWith('-')) {
-        return 'text-red-400'
+        return 'text-red-400';
     }
-    return 'text-gray-400'
-})
+    return 'text-gray-400';
+});
 </script>

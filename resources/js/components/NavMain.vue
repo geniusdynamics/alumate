@@ -25,35 +25,25 @@ const groupedItems = computed(() => {
     const groups: NavGroup[] = [
         {
             label: 'Main',
-            items: props.items.filter(item => 
-                ['Dashboard'].includes(item.title)
-            )
+            items: props.items.filter((item) => ['Dashboard'].includes(item.title)),
         },
         {
             label: 'Social & Networking',
-            items: props.items.filter(item => 
-                ['Social Timeline', 'Alumni Directory'].includes(item.title)
-            )
+            items: props.items.filter((item) => ['Social Timeline', 'Alumni Directory'].includes(item.title)),
         },
         {
             label: 'Career & Jobs',
-            items: props.items.filter(item => 
-                ['Career Center', 'Job Dashboard'].includes(item.title)
-            )
+            items: props.items.filter((item) => ['Career Center', 'Job Dashboard'].includes(item.title)),
         },
         {
             label: 'Community',
-            items: props.items.filter(item => 
-                ['Events', 'Success Stories'].includes(item.title)
-            )
+            items: props.items.filter((item) => ['Events', 'Success Stories'].includes(item.title)),
         },
         {
             label: 'Personal',
-            items: props.items.filter(item => 
-                ['My Profile', 'Admin Dashboard', 'Employer Dashboard'].includes(item.title)
-            )
-        }
-    ].filter(group => group.items.length > 0);
+            items: props.items.filter((item) => ['My Profile', 'Admin Dashboard', 'Employer Dashboard'].includes(item.title)),
+        },
+    ].filter((group) => group.items.length > 0);
 
     return groups;
 });
@@ -72,9 +62,9 @@ const getTourAttribute = (title: string) => {
         'Alumni Directory': 'alumni-directory',
         'Career Center': 'career-center',
         'Job Dashboard': 'job-dashboard',
-        'Events': 'events',
+        Events: 'events',
         'Success Stories': 'success-stories',
-        'Dashboard': 'dashboard'
+        Dashboard: 'dashboard',
     };
     return tourMap[title] || null;
 };
@@ -82,32 +72,24 @@ const getTourAttribute = (title: string) => {
 
 <template>
     <div class="space-y-2">
-        <SidebarGroup 
-            v-for="group in groupedItems" 
-            :key="group.label" 
-            class="px-2 py-0"
-        >
+        <SidebarGroup v-for="group in groupedItems" :key="group.label" class="px-2 py-0">
             <SidebarGroupLabel>{{ group.label }}</SidebarGroupLabel>
             <SidebarMenu>
                 <SidebarMenuItem v-for="item in group.items" :key="item.title">
-                    <SidebarMenuButton 
-                        as-child 
-                        :is-active="isActiveRoute(item.href)" 
+                    <SidebarMenuButton
+                        as-child
+                        :is-active="isActiveRoute(item.href)"
                         :tooltip="item.title"
                         :aria-label="`Navigate to ${item.title}`"
-                        class="focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+                        class="transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
-                        <Link 
+                        <Link
                             :href="item.href"
                             :aria-current="isActiveRoute(item.href) ? 'page' : undefined"
                             :data-tour="getTourAttribute(item.title)"
                             class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground focus:outline-none"
                         >
-                            <component 
-                                :is="item.icon" 
-                                class="h-4 w-4 flex-shrink-0"
-                                :aria-hidden="true"
-                            />
+                            <component :is="item.icon" class="h-4 w-4 flex-shrink-0" :aria-hidden="true" />
                             <span class="truncate">{{ item.title }}</span>
                         </Link>
                     </SidebarMenuButton>

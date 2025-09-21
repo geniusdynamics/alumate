@@ -13,7 +13,5 @@ const props = defineProps({
     value: String,
 });
 
-const classes = computed(() => [
-    'block font-medium text-sm text-gray-700 dark:text-gray-300',
-]);
+const classes = computed(() => ['block font-medium text-sm text-gray-700 dark:text-gray-300']);
 </script>

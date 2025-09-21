@@ -176,6 +176,44 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: alumni-platform-redis-sidecar
+  labels:
+    app: alumni-platform
+    component: redis-sidecar
+    service: analytics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+    name: redis-analytics
+  selector:
+    app: alumni-platform
+    component: web
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-api-service
+  labels:
+    app: alumni-platform
+    component: analytics-api
+    service: analytics
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: analytics-api
+  selector:
+    app: alumni-platform
+    component: web
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: postgres-service
   labels:
     app: postgres

@@ -1,35 +1,31 @@
 <template>
     <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <!-- Background overlay -->
-            <div 
-                class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" 
-                aria-hidden="true"
-                @click="$emit('close')"
-            ></div>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" @click="$emit('close')"></div>
 
             <!-- Modal panel -->
-            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div
+                class="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle dark:bg-gray-800"
+            >
                 <form @submit.prevent="saveGoal">
-                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 dark:bg-gray-800">
                         <div class="sm:flex sm:items-start">
-                            <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
+                            <div class="mt-3 w-full text-center sm:mt-0 sm:text-left">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white" id="modal-title">
                                     {{ goal?.id ? 'Edit Goal' : 'Add New Goal' }}
                                 </h3>
-                                
+
                                 <div class="mt-6 space-y-4">
                                     <!-- Goal Title -->
                                     <div>
-                                        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Goal Title *
-                                        </label>
+                                        <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300"> Goal Title * </label>
                                         <input
                                             id="title"
                                             v-model="form.title"
                                             type="text"
                                             required
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                             placeholder="e.g., Get promoted to Senior Developer"
                                         />
                                         <div v-if="errors.title" class="mt-1 text-sm text-red-600">
@@ -46,7 +42,7 @@
                                             id="description"
                                             v-model="form.description"
                                             rows="3"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                             placeholder="Describe your goal and what achieving it means to you..."
                                         ></textarea>
                                         <div v-if="errors.description" class="mt-1 text-sm text-red-600">
@@ -56,14 +52,12 @@
 
                                     <!-- Goal Category -->
                                     <div>
-                                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            Category *
-                                        </label>
+                                        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300"> Category * </label>
                                         <select
                                             id="category"
                                             v-model="form.category"
                                             required
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                         >
                                             <option value="">Select a category</option>
                                             <option value="career_advancement">Career Advancement</option>
@@ -89,7 +83,7 @@
                                             id="target_date"
                                             v-model="form.target_date"
                                             type="date"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                         />
                                         <div v-if="errors.target_date" class="mt-1 text-sm text-red-600">
                                             {{ errors.target_date }}
@@ -104,7 +98,7 @@
                                         <select
                                             id="priority"
                                             v-model="form.priority"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                         >
                                             <option value="low">Low</option>
                                             <option value="medium">Medium</option>
@@ -125,7 +119,7 @@
                                             id="success_criteria"
                                             v-model="form.success_criteria"
                                             rows="2"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                             placeholder="How will you know when you've achieved this goal?"
                                         ></textarea>
                                         <div v-if="errors.success_criteria" class="mt-1 text-sm text-red-600">
@@ -144,7 +138,7 @@
                                             type="number"
                                             min="0"
                                             max="100"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm"
+                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                         />
                                         <div v-if="errors.progress" class="mt-1 text-sm text-red-600">
                                             {{ errors.progress }}
@@ -155,18 +149,18 @@
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 dark:bg-gray-700">
                         <button
                             type="submit"
                             :disabled="processing"
-                            class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            class="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 sm:ml-3 sm:w-auto sm:text-sm"
                         >
-                            {{ processing ? 'Saving...' : (goal?.id ? 'Update Goal' : 'Create Goal') }}
+                            {{ processing ? 'Saving...' : goal?.id ? 'Update Goal' : 'Create Goal' }}
                         </button>
                         <button
                             type="button"
                             @click="$emit('close')"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-500"
+                            class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:mt-0 sm:w-auto sm:text-sm dark:border-gray-500 dark:bg-gray-600 dark:text-gray-300 dark:hover:bg-gray-500"
                         >
                             Cancel
                         </button>
@@ -178,20 +172,20 @@
 </template>
 
 <script setup>
-import { ref, reactive, watch } from 'vue'
-import { router } from '@inertiajs/vue3'
+import { router } from '@inertiajs/vue3';
+import { reactive, ref } from 'vue';
 
 const props = defineProps({
     goal: {
         type: Object,
-        default: null
-    }
-})
+        default: null,
+    },
+});
 
-const emit = defineEmits(['close', 'saved'])
+const emit = defineEmits(['close', 'saved']);
 
-const processing = ref(false)
-const errors = ref({})
+const processing = ref(false);
+const errors = ref({});
 
 const form = reactive({
     title: props.goal?.title || '',
@@ -200,35 +194,33 @@ const form = reactive({
     target_date: props.goal?.target_date || '',
     priority: props.goal?.priority || 'medium',
     success_criteria: props.goal?.success_criteria || '',
-    progress: props.goal?.progress || 0
-})
+    progress: props.goal?.progress || 0,
+});
 
 const saveGoal = async () => {
-    processing.value = true
-    errors.value = {}
+    processing.value = true;
+    errors.value = {};
 
     try {
-        const url = props.goal?.id 
-            ? route('api.career.goals.update', props.goal.id)
-            : route('api.career.goals.store')
-        
-        const method = props.goal?.id ? 'put' : 'post'
+        const url = props.goal?.id ? route('api.career.goals.update', props.goal.id) : route('api.career.goals.store');
+
+        const method = props.goal?.id ? 'put' : 'post';
 
         await router[method](url, form, {
             preserveState: true,
             onSuccess: () => {
-                emit('saved')
+                emit('saved');
             },
             onError: (responseErrors) => {
-                errors.value = responseErrors
+                errors.value = responseErrors;
             },
             onFinish: () => {
-                processing.value = false
-            }
-        })
+                processing.value = false;
+            },
+        });
     } catch (error) {
-        console.error('Error saving goal:', error)
-        processing.value = false
+        console.error('Error saving goal:', error);
+        processing.value = false;
     }
-}
+};
 </script>

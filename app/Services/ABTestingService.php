@@ -1,560 +1,403 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Models\ABTest;
+use App\Models\ABTestAssignment;
+use App\Models\ABTestConversion;
+use App\Models\AnalyticsEvent;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
+/**
+ * A/B Testing Service for managing experiments and tracking results
+ *
+ * Handles test creation, variant assignment, exposure tracking, and conversion analysis
+ * with tenant isolation and statistical significance calculation.
+ */
 class ABTestingService extends BaseService
 {
     /**
-     * Get the variant for a user in a specific test
+     * Create a new A/B test
+     *
+     * @param array{name: string, description?: string, variants: array, audience_criteria?: array, goal_event: string} $data
+     * @return string Test ID
      */
-    public function getVariant(string $testId, string $userId, string $audience): array
+    public function createTest(array $data): string
+    {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
+        if (!$tenantId) {
+            throw new \RuntimeException('No tenant context available');
+        }
+
+        $test = ABTest::create([
+            'name' => $data['name'],
+            'description' => $data['description'] ?? '',
+            'variants' => $data['variants'],
+            'distribution' => $this->calculateDistribution($data['variants']),
+            'status' => 'active',
+            'started_at' => now(),
+            'goal_metric' => $data['goal_event'],
+            'target_audience' => $data['audience_criteria']['audience'] ?? null,
+        ]);
+
+        Log::info('A/B test created', [
+            'test_id' => $test->id,
+            'tenant_id' => $tenantId,
+            'name' => $data['name'],
+        ]);
+
+        return (string) $test->id;
+    }
+
+    /**
+     * Get test by ID
+     */
+    public function getTest(int $id): ?ABTest
+    {
+        $tenantId = $this->tenantContext->getCurrentTenantId();
+        if (!$tenantId) {
+            return null;
+        }
+
+        return ABTest::where('id', $id)->first();
+    }
+
+    /**
+     * Update test
+     */
+    public function updateTest(int $id, array $data): bool
+    {
+        $test = $this->getTest($id);
+        if (!$test) {
+            return false;
+        }
+
+        $updateData = [];
+        if (isset($data['name'])) {
+            $updateData['name'] = $data['name'];
+        }
+        if (isset($data['description'])) {
+            $updateData['description'] = $data['description'];
+        }
+        if (isset($data['variants'])) {
+            $updateData['variants'] = $data['variants'];
+            $updateData['distribution'] = $this->calculateDistribution($data['variants']);
+        }
+        if (isset($data['status'])) {
+            $updateData['status'] = $data['status'];
+        }
+
+        return $test->update($updateData);
+    }
+
+    /**
+     * Delete test
+     */
+    public function deleteTest(int $id): bool
+    {
+        $test = $this->getTest($id);
+        if (!$test) {
+            return false;
+        }
+
+        return $test->delete();
+    }
+
+    /**
+     * Assign variant to user/session
+     *
+     * @param string $userIdOrSessionId User ID or session ID
+     * @param int $testId Test ID
+     * @return string Variant name
+     */
+    public function assignVariant(string $userIdOrSessionId, int $testId): string
     {
         $test = $this->getTest($testId);
-
-        if (! $test || ! $test['active']) {
-            // Log missing test or inactive test as warning since it's an A/B test anomaly
-            if (! $test) {
-                logger()->warning('A/B test not found, using control variant', [
-                    'test_id' => $testId,
-                    'user_id' => $userId,
-                    'audience' => $audience,
-                ]);
-            }
-
-            return $this->getControlVariant($test);
+        if (!$test || $test->status !== 'active') {
+            return 'control';
         }
 
-        // Check if user is in the target audience
-        if (! empty($test['target_audience']) && $test['target_audience'] !== $audience) {
-            logger()->warning('User not in target audience for A/B test, using control variant', [
-                'test_id' => $testId,
-                'user_id' => $userId,
-                'user_audience' => $audience,
-                'target_audience' => $test['target_audience'],
-            ]);
-
-            return $this->getControlVariant($test);
+        // Check cache first for consistent assignment
+        $cacheKey = "ab_assignment_{$testId}_{$userIdOrSessionId}";
+        $cachedVariant = Cache::get($cacheKey);
+        if ($cachedVariant) {
+            return $cachedVariant;
         }
 
-        // Get consistent variant assignment based on user ID
-        $hash = $this->hashUserId($userId, $testId);
-        $variant = $this->assignVariant($hash, $test['variants']);
+        // Generate hash for deterministic assignment
+        $hash = crc32($userIdOrSessionId . $testId) & 0x7FFFFFFF;
+        $variant = $this->selectVariantByHash($hash, $test->variants, $test->distribution);
 
-        // Track variant assignment
-        $this->trackVariantAssignment($testId, $variant['id'], $userId, $audience);
+        // Cache assignment for performance
+        Cache::put($cacheKey, $variant, 86400); // 24 hours
+
+        // Record assignment in database
+        ABTestAssignment::create([
+            'ab_test_id' => $testId,
+            'user_id' => is_numeric($userIdOrSessionId) ? (int) $userIdOrSessionId : null,
+            'session_id' => $userIdOrSessionId,
+            'variant' => $variant,
+            'assigned_at' => now(),
+        ]);
 
         return $variant;
     }
 
     /**
-     * Track a conversion event for A/B testing
+     * Get test results with metrics and statistical significance
+     *
+     * @param int $testId Test ID
+     * @param array{start_date?: string, end_date?: string} $dateRange
+     * @return array{test: ABTest, variants: array, overall_significance: bool}
      */
-    public function trackConversion(string $testId, string $variantId, string $goal, string $userId, array $additionalData = []): void
-    {
-        try {
-            $conversionData = [
-                'test_id' => $testId,
-                'variant_id' => $variantId,
-                'goal' => $goal,
-                'user_id' => $userId,
-                'timestamp' => now(),
-                'additional_data' => $additionalData,
-                'session_id' => session()->getId(),
-                'user_agent' => request()->userAgent(),
-                'ip' => request()->ip(),
-            ];
-
-            // Store conversion in cache for immediate access
-            $cacheKey = "ab_conversion_{$testId}_{$variantId}_{$goal}_".date('Y-m-d');
-            $conversions = Cache::get($cacheKey, []);
-            $conversions[] = $conversionData;
-            Cache::put($cacheKey, $conversions, 86400); // 24 hours
-
-            // Log for permanent storage
-            Log::info('AB Test Conversion', $conversionData);
-
-        } catch (\Exception $e) {
-            logger()->error('A/B test conversion tracking failed', [
-                'error' => $e->getMessage(),
-                'test_id' => $testId,
-                'variant_id' => $variantId,
-                'goal' => $goal,
-                'user_id' => $userId,
-                'audience' => $this->getCurrentAudience(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-        }
-    }
-
-    /**
-     * Get test configuration
-     */
-    public function getTest(string $testId): ?array
-    {
-        $tests = $this->getTestConfigurations();
-
-        return $tests[$testId] ?? null;
-    }
-
-    /**
-     * Get all active tests for a user
-     */
-    public function getActiveTests(string $userId, string $audience): array
-    {
-        $tests = $this->getTestConfigurations();
-        $activeTests = [];
-
-        foreach ($tests as $testId => $test) {
-            if ($test['active'] &&
-                (empty($test['target_audience']) || $test['target_audience'] === $audience)) {
-
-                $variant = $this->getVariant($testId, $userId, $audience);
-                $activeTests[$testId] = [
-                    'test' => $test,
-                    'variant' => $variant,
-                ];
-            }
-        }
-
-        return $activeTests;
-    }
-
-    /**
-     * Get test results and statistics
-     */
-    public function getTestResults(string $testId): array
+    public function getResults(int $testId, array $dateRange = []): array
     {
         $test = $this->getTest($testId);
-        if (! $test) {
-            return [];
+        if (!$test) {
+            return ['test' => null, 'variants' => [], 'overall_significance' => false];
         }
 
-        $results = [];
-        foreach ($test['variants'] as $variant) {
-            $results[$variant['id']] = [
-                'variant' => $variant,
-                'assignments' => $this->getVariantAssignments($testId, $variant['id']),
-                'conversions' => $this->getVariantConversions($testId, $variant['id']),
-                'conversion_rate' => $this->calculateConversionRate($testId, $variant['id']),
-                'statistical_significance' => $this->calculateStatisticalSignificance($testId, $variant['id']),
+        $startDate = isset($dateRange['start_date']) ? Carbon::parse($dateRange['start_date']) : $test->started_at;
+        $endDate = isset($dateRange['end_date']) ? Carbon::parse($dateRange['end_date']) : now();
+
+        $variants = [];
+        $totalImpressions = 0;
+        $totalConversions = 0;
+
+        foreach ($test->variants as $variant) {
+            $variantName = $variant['name'];
+            $impressions = $this->getImpressions($testId, $variantName, $startDate, $endDate);
+            $conversions = $this->getConversions($testId, $variantName, $startDate, $endDate);
+
+            $conversionRate = $impressions > 0 ? ($conversions / $impressions) * 100 : 0;
+
+            $variants[$variantName] = [
+                'name' => $variantName,
+                'impressions' => $impressions,
+                'conversions' => $conversions,
+                'conversion_rate' => round($conversionRate, 2),
             ];
+
+            $totalImpressions += $impressions;
+            $totalConversions += $conversions;
         }
+
+        $overallSignificance = $this->calculateOverallSignificance($variants);
 
         return [
             'test' => $test,
-            'results' => $results,
-            'winner' => $this->determineWinner($results),
-            'confidence_level' => $this->calculateConfidenceLevel($results),
+            'variants' => $variants,
+            'overall_significance' => $overallSignificance,
         ];
     }
 
     /**
-     * Create a new A/B test
+     * Record exposure (impression) for A/B test
      */
-    public function createTest(array $testData): string
+    public function recordExposure(int $eventId): void
     {
-        $testId = Str::slug($testData['name']).'_'.time();
+        $event = AnalyticsEvent::find($eventId);
+        if (!$event || !isset($event->properties['ab_variant'])) {
+            return;
+        }
 
-        $test = [
-            'id' => $testId,
-            'name' => $testData['name'],
-            'description' => $testData['description'] ?? '',
-            'target_audience' => $testData['target_audience'] ?? null,
-            'variants' => $testData['variants'],
-            'conversion_goals' => $testData['conversion_goals'],
-            'traffic_allocation' => $testData['traffic_allocation'] ?? 100,
-            'start_date' => $testData['start_date'] ?? now(),
-            'end_date' => $testData['end_date'] ?? null,
-            'active' => $testData['active'] ?? true,
-            'created_at' => now(),
-            'created_by' => auth()->id(),
-        ];
+        $variant = $event->properties['ab_variant'];
+        $testId = $event->properties['ab_test_id'] ?? null;
 
-        // Store test configuration
-        $this->storeTestConfiguration($testId, $test);
+        if (!$testId) {
+            return;
+        }
 
-        return $testId;
+        // Update cache for quick access
+        $cacheKey = "ab_impressions_{$testId}_{$variant}_" . now()->format('Y-m-d');
+        $impressions = Cache::get($cacheKey, 0);
+        Cache::put($cacheKey, $impressions + 1, 86400);
+
+        Log::debug('A/B test exposure recorded', [
+            'event_id' => $eventId,
+            'test_id' => $testId,
+            'variant' => $variant,
+        ]);
     }
 
     /**
-     * Update test status
+     * Record conversion for A/B test
      */
-    public function updateTestStatus(string $testId, bool $active): bool
+    public function recordConversion(int $eventId): void
     {
+        $event = AnalyticsEvent::find($eventId);
+        if (!$event || !isset($event->properties['ab_variant'])) {
+            return;
+        }
+
+        $variant = $event->properties['ab_variant'];
+        $testId = $event->properties['ab_test_id'] ?? null;
+
+        if (!$testId) {
+            return;
+        }
+
+        // Check if this matches the goal event
         $test = $this->getTest($testId);
-        if (! $test) {
-            return false;
+        if (!$test || $event->event_type !== $test->goal_metric) {
+            return;
         }
 
-        $test['active'] = $active;
-        $test['updated_at'] = now();
+        // Record conversion
+        ABTestConversion::create([
+            'ab_test_id' => $testId,
+            'variant' => $variant,
+            'user_id' => $event->user_id,
+            'session_id' => $event->session_id,
+            'event_id' => $eventId,
+            'converted_at' => $event->occurred_at,
+        ]);
 
-        return $this->storeTestConfiguration($testId, $test);
+        // Update cache
+        $cacheKey = "ab_conversions_{$testId}_{$variant}_" . now()->format('Y-m-d');
+        $conversions = Cache::get($cacheKey, 0);
+        Cache::put($cacheKey, $conversions + 1, 86400);
+
+        Log::debug('A/B test conversion recorded', [
+            'event_id' => $eventId,
+            'test_id' => $testId,
+            'variant' => $variant,
+            'goal' => $test->goal_metric,
+        ]);
     }
 
     /**
-     * Get test configurations (mock data - replace with database)
+     * Calculate distribution array from variants
      */
-    private function getTestConfigurations(): array
+    private function calculateDistribution(array $variants): array
     {
-        return Cache::remember('ab_test_configurations', 3600, function () {
-            return [
-                'hero_message_dual_audience' => [
-                    'id' => 'hero_message_dual_audience',
-                    'name' => 'Hero Message Dual Audience Test',
-                    'description' => 'Testing different hero messages for individual vs institutional audiences',
-                    'target_audience' => null, // Both audiences
-                    'variants' => [
-                        [
-                            'id' => 'control',
-                            'name' => 'Control',
-                            'weight' => 34,
-                            'component_overrides' => [
-                                'individual' => [
-                                    'headline' => 'Accelerate Your Career Through Alumni Connections',
-                                    'subtitle' => 'Join thousands of alumni advancing their careers through meaningful professional networking',
-                                ],
-                                'institutional' => [
-                                    'headline' => 'Transform Alumni Engagement with Your Branded Platform',
-                                    'subtitle' => 'Increase alumni participation by 300% with custom mobile apps and comprehensive analytics',
-                                ],
-                            ],
-                        ],
-                        [
-                            'id' => 'career_focus',
-                            'name' => 'Career Focus',
-                            'weight' => 33,
-                            'component_overrides' => [
-                                'individual' => [
-                                    'headline' => 'Unlock Your Career Potential with Alumni Network',
-                                    'subtitle' => 'Connect with successful alumni and fast-track your career growth with proven strategies',
-                                ],
-                                'institutional' => [
-                                    'headline' => 'Build a Thriving Alumni Community',
-                                    'subtitle' => 'Engage alumni with branded apps, powerful analytics, and comprehensive management tools',
-                                ],
-                            ],
-                        ],
-                        [
-                            'id' => 'success_focus',
-                            'name' => 'Success Focus',
-                            'weight' => 33,
-                            'component_overrides' => [
-                                'individual' => [
-                                    'headline' => 'Your Next Career Move Starts Here',
-                                    'subtitle' => 'Leverage the power of alumni connections for career success and professional growth',
-                                ],
-                                'institutional' => [
-                                    'headline' => 'The Complete Alumni Engagement Solution',
-                                    'subtitle' => 'From mobile apps to analytics - everything you need to build a thriving alumni community',
-                                ],
-                            ],
-                        ],
-                    ],
-                    'conversion_goals' => [
-                        'individual' => ['trial_signup', 'waitlist_join', 'hero_cta_click'],
-                        'institutional' => ['demo_request', 'case_study_download', 'contact_sales'],
-                    ],
-                    'traffic_allocation' => 100,
-                    'start_date' => now()->subDays(7),
-                    'end_date' => now()->addDays(30),
-                    'active' => true,
-                    'created_at' => now()->subDays(7),
-                ],
-                'cta_button_text' => [
-                    'id' => 'cta_button_text',
-                    'name' => 'CTA Button Text Test',
-                    'description' => 'Testing different CTA button texts for conversion optimization',
-                    'target_audience' => 'individual',
-                    'variants' => [
-                        [
-                            'id' => 'control',
-                            'name' => 'Control - Start Free Trial',
-                            'weight' => 50,
-                            'component_overrides' => [
-                                'primary_cta_text' => 'Start Free Trial',
-                            ],
-                        ],
-                        [
-                            'id' => 'variant_a',
-                            'name' => 'Join Now',
-                            'weight' => 50,
-                            'component_overrides' => [
-                                'primary_cta_text' => 'Join Now',
-                            ],
-                        ],
-                    ],
-                    'conversion_goals' => ['trial_signup', 'hero_cta_click'],
-                    'traffic_allocation' => 50,
-                    'start_date' => now()->subDays(3),
-                    'end_date' => now()->addDays(14),
-                    'active' => true,
-                    'created_at' => now()->subDays(3),
-                ],
-            ];
-        });
-    }
-
-    /**
-     * Store test configuration
-     */
-    private function storeTestConfiguration(string $testId, array $test): bool
-    {
-        try {
-            $tests = Cache::get('ab_test_configurations', []);
-            $tests[$testId] = $test;
-            Cache::put('ab_test_configurations', $tests, 86400);
-
-            // Also log for persistence
-            Log::info('AB Test Configuration Updated', [
-                'test_id' => $testId,
-                'test' => $test,
-            ]);
-
-            return true;
-        } catch (\Exception $e) {
-            logger()->error('A/B test configuration storage failed', [
-                'error' => $e->getMessage(),
-                'test_id' => $testId,
-                'audience' => $test['target_audience'] ?? 'unknown',
-                'trace' => $e->getTraceAsString(),
-            ]);
-
-            return false;
-        }
-    }
-
-    /**
-     * Hash user ID for consistent variant assignment
-     */
-    private function hashUserId(string $userId, string $testId): int
-    {
-        return crc32($userId.$testId) & 0x7FFFFFFF;
-    }
-
-    /**
-     * Assign variant based on hash and weights
-     */
-    private function assignVariant(int $hash, array $variants): array
-    {
-        // Validate variants structure
-        if (empty($variants) || ! is_array($variants)) {
-            logger()->warning('A/B test variants array is empty or invalid', [
-                'variants' => $variants,
-                'hash' => $hash,
-            ]);
-
-            return $this->getDefaultControlVariant();
-        }
-
         $totalWeight = array_sum(array_column($variants, 'weight'));
+        $distribution = [];
 
-        // Validate weights sum to avoid division by zero or invalid distribution
-        if ($totalWeight <= 0) {
-            logger()->warning('A/B test variants have invalid weight distribution', [
-                'total_weight' => $totalWeight,
-                'variants_count' => count($variants),
-            ]);
-
-            return $variants[0] ?? $this->getDefaultControlVariant();
+        foreach ($variants as $variant) {
+            $distribution[$variant['name']] = $totalWeight > 0 ? $variant['weight'] / $totalWeight : 0;
         }
 
-        $randomValue = $hash % $totalWeight;
+        return $distribution;
+    }
 
-        $currentWeight = 0;
-        foreach ($variants as $variant) {
-            // Validate variant structure
-            if (! isset($variant['weight']) || ! is_numeric($variant['weight'])) {
-                logger()->warning('A/B test variant has invalid weight', [
-                    'variant' => $variant,
-                ]);
+    /**
+     * Select variant based on hash and distribution
+     */
+    private function selectVariantByHash(int $hash, array $variants, array $distribution): string
+    {
+        $randomValue = $hash % 1000000; // Use large modulus for better distribution
+        $cumulative = 0;
 
-                continue;
-            }
-
-            $currentWeight += $variant['weight'];
-            if ($randomValue < $currentWeight) {
-                return $variant;
+        foreach ($distribution as $variantName => $probability) {
+            $cumulative += $probability * 1000000;
+            if ($randomValue < $cumulative) {
+                return $variantName;
             }
         }
 
         // Fallback to first variant
-        return $variants[0] ?? $this->getDefaultControlVariant();
+        return array_key_first($distribution) ?? 'control';
     }
 
     /**
-     * Get control variant
+     * Get impressions for variant in date range
      */
-    private function getControlVariant(?array $test): array
+    private function getImpressions(int $testId, string $variant, Carbon $startDate, Carbon $endDate): int
     {
-        if (! $test || empty($test['variants'])) {
-            return [
-                'id' => 'control',
-                'name' => 'Control',
-                'component_overrides' => [],
-            ];
+        // Try cache first
+        $cacheKey = "ab_impressions_{$testId}_{$variant}_" . $startDate->format('Y-m-d');
+        $cached = Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
         }
 
-        // Return first variant as control
-        return $test['variants'][0];
+        // Query database
+        $count = AnalyticsEvent::whereBetween('occurred_at', [$startDate, $endDate])
+            ->where('event_type', 'page_view') // Assuming impressions are page views
+            ->whereJsonContains('properties->ab_test_id', $testId)
+            ->whereJsonContains('properties->ab_variant', $variant)
+            ->count();
+
+        Cache::put($cacheKey, $count, 3600); // Cache for 1 hour
+        return $count;
     }
 
     /**
-     * Track variant assignment
+     * Get conversions for variant in date range
      */
-    private function trackVariantAssignment(string $testId, string $variantId, string $userId, string $audience): void
+    private function getConversions(int $testId, string $variant, Carbon $startDate, Carbon $endDate): int
     {
-        try {
-            $assignmentData = [
-                'test_id' => $testId,
-                'variant_id' => $variantId,
-                'user_id' => $userId,
-                'audience' => $audience,
-                'timestamp' => now(),
-                'session_id' => session()->getId(),
-                'user_agent' => request()->userAgent(),
-                'ip' => request()->ip(),
-            ];
-
-            // Store assignment in cache
-            $cacheKey = "ab_assignment_{$testId}_{$variantId}_".date('Y-m-d');
-            $assignments = Cache::get($cacheKey, []);
-            $assignments[] = $assignmentData;
-            Cache::put($cacheKey, $assignments, 86400);
-
-            // Log for permanent storage
-            Log::info('AB Test Assignment', $assignmentData);
-
-        } catch (\Exception $e) {
-            logger()->error('A/B test assignment tracking failed', [
-                'error' => $e->getMessage(),
-                'test_id' => $testId,
-                'variant_id' => $variantId,
-                'user_id' => $userId,
-                'audience' => $audience,
-                'trace' => $e->getTraceAsString(),
-            ]);
-        }
-    }
-
-    /**
-     * Get variant assignments count
-     */
-    private function getVariantAssignments(string $testId, string $variantId): int
-    {
-        // Mock implementation - replace with database query
-        $cacheKey = "ab_assignment_{$testId}_{$variantId}_".date('Y-m-d');
-        $assignments = Cache::get($cacheKey, []);
-
-        return count($assignments);
-    }
-
-    /**
-     * Get variant conversions count
-     */
-    private function getVariantConversions(string $testId, string $variantId): int
-    {
-        // Mock implementation - replace with database query
-        $cacheKey = "ab_conversion_{$testId}_{$variantId}_*";
-        $totalConversions = 0;
-
-        // This is simplified - in production, you'd query the database
-        for ($i = 0; $i < 7; $i++) {
-            $date = now()->subDays($i)->format('Y-m-d');
-            $dailyKey = "ab_conversion_{$testId}_{$variantId}_goal_{$date}";
-            $conversions = Cache::get($dailyKey, []);
-            $totalConversions += count($conversions);
+        // Try cache first
+        $cacheKey = "ab_conversions_{$testId}_{$variant}_" . $startDate->format('Y-m-d');
+        $cached = Cache::get($cacheKey);
+        if ($cached !== null) {
+            return $cached;
         }
 
-        return $totalConversions;
+        // Query database
+        $count = ABTestConversion::where('ab_test_id', $testId)
+            ->where('variant', $variant)
+            ->whereBetween('converted_at', [$startDate, $endDate])
+            ->count();
+
+        Cache::put($cacheKey, $count, 3600); // Cache for 1 hour
+        return $count;
     }
 
     /**
-     * Calculate conversion rate
+     * Calculate overall statistical significance using chi-square test
      */
-    private function calculateConversionRate(string $testId, string $variantId): float
+    private function calculateOverallSignificance(array $variants): bool
     {
-        $assignments = $this->getVariantAssignments($testId, $variantId);
-        $conversions = $this->getVariantConversions($testId, $variantId);
-
-        if ($assignments === 0) {
-            return 0.0;
+        if (count($variants) < 2) {
+            return false;
         }
 
-        return round(($conversions / $assignments) * 100, 2);
-    }
+        $totalImpressions = array_sum(array_column($variants, 'impressions'));
+        $totalConversions = array_sum(array_column($variants, 'conversions'));
 
-    /**
-     * Calculate statistical significance (simplified)
-     */
-    private function calculateStatisticalSignificance(string $testId, string $variantId): float
-    {
-        // Simplified calculation - in production, use proper statistical methods
-        $assignments = $this->getVariantAssignments($testId, $variantId);
-
-        if ($assignments < 100) {
-            return 0.0; // Not enough data
+        if ($totalImpressions < 100 || $totalConversions < 10) {
+            return false; // Not enough data
         }
 
-        // Mock significance calculation
-        return min(95.0, ($assignments / 1000) * 95);
-    }
+        // Simple chi-square calculation for significance
+        $expectedConversionRate = $totalConversions / $totalImpressions;
+        $chiSquare = 0;
 
-    /**
-     * Determine test winner
-     */
-    private function determineWinner(array $results): ?array
-    {
-        $winner = null;
-        $highestConversionRate = 0;
-
-        foreach ($results as $variantId => $result) {
-            if ($result['conversion_rate'] > $highestConversionRate &&
-                $result['statistical_significance'] >= 95) {
-                $highestConversionRate = $result['conversion_rate'];
-                $winner = [
-                    'variant_id' => $variantId,
-                    'conversion_rate' => $result['conversion_rate'],
-                    'significance' => $result['statistical_significance'],
-                ];
+        foreach ($variants as $variant) {
+            $expectedConversions = $variant['impressions'] * $expectedConversionRate;
+            if ($expectedConversions > 0) {
+                $chiSquare += pow($variant['conversions'] - $expectedConversions, 2) / $expectedConversions;
             }
         }
 
-        return $winner;
+        // Chi-square critical value for 95% confidence with df = k-1
+        $degreesOfFreedom = count($variants) - 1;
+        $criticalValue = $this->getChiSquareCriticalValue($degreesOfFreedom, 0.95);
+
+        return $chiSquare > $criticalValue;
     }
 
     /**
-     * Calculate overall confidence level
+     * Get chi-square critical value (simplified approximation)
      */
-    private function calculateConfidenceLevel(array $results): float
+    private function getChiSquareCriticalValue(int $df, float $confidence): float
     {
-        $significances = array_column($results, 'statistical_significance');
-
-        return empty($significances) ? 0.0 : max($significances);
-    }
-
-    /**
-     * Get default control variant for fallback scenarios
-     */
-    private function getDefaultControlVariant(): array
-    {
-        return [
-            'id' => 'control',
-            'name' => 'Control (Default)',
-            'weight' => 100,
-            'component_overrides' => [],
+        // Simplified critical values for common degrees of freedom
+        $criticalValues = [
+            1 => 3.84,  // 95% confidence
+            2 => 5.99,
+            3 => 7.81,
+            4 => 9.49,
+            5 => 11.07,
         ];
-    }
 
-    /**
-     * Get current audience from request context
-     */
-    private function getCurrentAudience(): string
-    {
-        return request()->header('X-Audience', 'unknown');
+        return $criticalValues[$df] ?? 9.49; // Default to df=4
     }
 }

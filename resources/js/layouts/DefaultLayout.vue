@@ -1,21 +1,20 @@
 <script setup lang="ts">
-import { Head, usePage } from '@inertiajs/vue3';
-import { computed, onMounted, ref } from 'vue';
-import { Sidebar } from '@/components/ui/sidebar';
 import AppHeader from '@/components/layout/AppHeader.vue';
 import AppSidebar from '@/components/layout/AppSidebar.vue';
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
-import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
-import OnboardingSystem from '@/components/onboarding/OnboardingSystem.vue';
-import MobileNavigation from '@/components/MobileNavigation.vue';
 import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
+import MobileNavigation from '@/components/MobileNavigation.vue';
+import OnboardingSystem from '@/components/onboarding/OnboardingSystem.vue';
 import PWAIntegration from '@/Components/PWA/PWAIntegration.vue';
 import RealTimeStatus from '@/Components/RealTimeStatus.vue';
-import { initializeTheme } from '@/composables/useTheme';
-import { MagnifyingGlassIcon, BellIcon } from '@heroicons/vue/24/outline';
-import type { BreadcrumbItemType } from '@/types';
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
 import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
+import { initializeTheme } from '@/composables/useTheme';
+import type { BreadcrumbItemType } from '@/types';
+import { BellIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed, onMounted, ref } from 'vue';
 
 interface Props {
     title?: string;
@@ -83,12 +82,12 @@ const handleOnlineMode = (event: any) => {
 <template>
     <div>
         <Head :title="title" />
-        
+
         <!-- Mobile Hamburger Menu -->
         <MobileHamburgerMenu class="lg:hidden" />
-        
+
         <!-- Mobile Header for smaller screens -->
-        <div class="lg:hidden sticky-mobile">
+        <div class="sticky-mobile lg:hidden">
             <div class="flex items-center justify-between px-4 py-3">
                 <div class="flex items-center space-x-3">
                     <img
@@ -104,7 +103,7 @@ const handleOnlineMode = (event: any) => {
                     <!-- Mobile search button -->
                     <button
                         @click="openMobileSearch"
-                        class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg touch-target"
+                        class="touch-target rounded-lg p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                         aria-label="Search"
                     >
                         <MagnifyingGlassIcon class="h-5 w-5" />
@@ -112,25 +111,28 @@ const handleOnlineMode = (event: any) => {
                     <!-- Mobile notifications button -->
                     <button
                         @click="openMobileNotifications"
-                        class="relative p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 rounded-lg touch-target"
+                        class="touch-target relative rounded-lg p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                         aria-label="Notifications"
                     >
                         <BellIcon class="h-5 w-5" />
-                        <span v-if="page.props.auth?.unreadNotifications" class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center">
+                        <span
+                            v-if="page.props.auth?.unreadNotifications"
+                            class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500"
+                        >
                             <span class="text-xs text-white">{{ page.props.auth.unreadNotifications }}</span>
                         </span>
                     </button>
                 </div>
             </div>
         </div>
-        
+
         <SidebarProvider>
             <AppSidebar class="hidden lg:block" />
             <SidebarInset>
                 <AppHeader :breadcrumbs="breadcrumbs" class="hidden lg:block" />
                 <div class="flex flex-1 flex-col gap-4 lg:p-4">
                     <!-- Real-time Updates Component -->
-                    <RealTimeUpdates 
+                    <RealTimeUpdates
                         :show-activity-feed="false"
                         :show-post-updates="true"
                         :show-connection-status="true"
@@ -138,17 +140,17 @@ const handleOnlineMode = (event: any) => {
                         :show-job-updates="true"
                         :show-mentorship-updates="true"
                     />
-                    
-                    <div v-if="flash.success" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+
+                    <div v-if="flash.success" class="relative rounded border border-green-400 bg-green-100 px-4 py-3 text-green-700" role="alert">
                         <strong class="font-bold">Success!</strong>
                         <span class="block sm:inline">{{ flash.success }}</span>
                     </div>
                     <slot />
                 </div>
-                
+
                 <!-- User Flow Integration Component -->
                 <UserFlowIntegration />
-                
+
                 <!-- Onboarding System -->
                 <OnboardingSystem />
             </SidebarInset>
@@ -156,9 +158,9 @@ const handleOnlineMode = (event: any) => {
 
         <!-- Mobile Navigation -->
         <MobileNavigation ref="mobileNavigationRef" />
-        
+
         <!-- PWA Integration -->
-        <PWAIntegration 
+        <PWAIntegration
             :enable-push-notifications="true"
             :enable-install-prompt="true"
             :enable-offline-indicator="true"
@@ -168,13 +170,8 @@ const handleOnlineMode = (event: any) => {
             @offline-mode="handleOfflineMode"
             @online-mode="handleOnlineMode"
         />
-        
+
         <!-- Real-time Connection Status -->
-        <RealTimeStatus 
-            :position="'bottom-right'"
-            :show-details="false"
-            class="fixed"
-        />
+        <RealTimeStatus :position="'bottom-right'" :show-details="false" class="fixed" />
     </div>
 </template>
-

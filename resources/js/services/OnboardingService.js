@@ -16,15 +16,15 @@ class OnboardingService {
             {
                 id: 'welcome',
                 title: 'Welcome to the Alumni Platform!',
-                description: 'Let\'s take a quick tour to help you discover all the amazing features available.',
+                description: "Let's take a quick tour to help you discover all the amazing features available.",
                 target: null,
                 position: 'center',
                 icon: 'rocket',
                 tips: [
                     'This tour will take about 2 minutes',
                     'You can skip any step or restart the tour later',
-                    'Click anywhere outside to pause the tour'
-                ]
+                    'Click anywhere outside to pause the tour',
+                ],
             },
             {
                 id: 'navigation',
@@ -36,8 +36,8 @@ class OnboardingService {
                 tips: [
                     'Use the search bar to quickly find features',
                     'Your most-used features will appear at the top',
-                    'Click the hamburger menu on mobile'
-                ]
+                    'Click the hamburger menu on mobile',
+                ],
             },
             {
                 id: 'dashboard',
@@ -49,8 +49,8 @@ class OnboardingService {
                 tips: [
                     'Widgets are customizable - drag to reorder',
                     'Click the + button to add more widgets',
-                    'Your dashboard adapts to your usage patterns'
-                ]
+                    'Your dashboard adapts to your usage patterns',
+                ],
             },
             {
                 id: 'social-timeline',
@@ -62,8 +62,8 @@ class OnboardingService {
                 tips: [
                     'Share career updates, achievements, and insights',
                     'Engage with posts through likes, comments, and shares',
-                    'Use hashtags to increase visibility'
-                ]
+                    'Use hashtags to increase visibility',
+                ],
             },
             {
                 id: 'alumni-directory',
@@ -75,8 +75,8 @@ class OnboardingService {
                 tips: [
                     'Use advanced filters to find specific alumni',
                     'Send personalized connection requests',
-                    'View mutual connections and shared experiences'
-                ]
+                    'View mutual connections and shared experiences',
+                ],
             },
             {
                 id: 'career-center',
@@ -88,8 +88,8 @@ class OnboardingService {
                 tips: [
                     'Jobs are ranked by your network connections',
                     'Request introductions through mutual contacts',
-                    'Track your applications and follow up'
-                ]
+                    'Track your applications and follow up',
+                ],
             },
             {
                 id: 'events',
@@ -101,8 +101,8 @@ class OnboardingService {
                 tips: [
                     'RSVP to events and add them to your calendar',
                     'Connect with other attendees before events',
-                    'Share event highlights and photos'
-                ]
+                    'Share event highlights and photos',
+                ],
             },
             {
                 id: 'profile-completion',
@@ -114,14 +114,10 @@ class OnboardingService {
                 interactive: {
                     type: 'action',
                     buttonText: 'Complete Profile',
-                    action: 'navigate-to-profile'
+                    action: 'navigate-to-profile',
                 },
-                tips: [
-                    'Add your work experience and education',
-                    'Upload a professional photo',
-                    'Include your interests and skills'
-                ]
-            }
+                tips: ['Add your work experience and education', 'Upload a professional photo', 'Include your interests and skills'],
+            },
         ];
     }
 
@@ -130,7 +126,7 @@ class OnboardingService {
      */
     getRoleSpecificTour(userRole) {
         const baseTour = [...this.tourSteps];
-        
+
         switch (userRole) {
             case 'student':
                 return baseTour.concat([
@@ -144,8 +140,8 @@ class OnboardingService {
                         tips: [
                             'Browse mentors by industry and expertise',
                             'Send thoughtful mentorship requests',
-                            'Be specific about what you want to learn'
-                        ]
+                            'Be specific about what you want to learn',
+                        ],
                     },
                     {
                         id: 'success-stories',
@@ -154,14 +150,10 @@ class OnboardingService {
                         target: '[data-tour="success-stories"]',
                         position: 'bottom',
                         icon: 'trophy',
-                        tips: [
-                            'Read stories from your field of interest',
-                            'Connect with featured alumni',
-                            'Share your own achievements'
-                        ]
-                    }
+                        tips: ['Read stories from your field of interest', 'Connect with featured alumni', 'Share your own achievements'],
+                    },
                 ]);
-                
+
             case 'employer':
                 return baseTour.concat([
                     {
@@ -174,11 +166,11 @@ class OnboardingService {
                         tips: [
                             'Target specific schools and graduation years',
                             'Highlight alumni connections at your company',
-                            'Use the referral system for better matches'
-                        ]
-                    }
+                            'Use the referral system for better matches',
+                        ],
+                    },
                 ]);
-                
+
             case 'admin':
                 return baseTour.concat([
                     {
@@ -188,11 +180,7 @@ class OnboardingService {
                         target: '[data-tour="analytics"]',
                         position: 'bottom',
                         icon: 'chart',
-                        tips: [
-                            'Monitor platform usage and engagement',
-                            'Track fundraising and event success',
-                            'Export data for external reporting'
-                        ]
+                        tips: ['Monitor platform usage and engagement', 'Track fundraising and event success', 'Export data for external reporting'],
                     },
                     {
                         id: 'fundraising',
@@ -201,14 +189,10 @@ class OnboardingService {
                         target: '[data-tour="fundraising"]',
                         position: 'bottom',
                         icon: 'currency',
-                        tips: [
-                            'Create compelling campaign stories',
-                            'Segment donors for targeted outreach',
-                            'Automate thank you messages'
-                        ]
-                    }
+                        tips: ['Create compelling campaign stories', 'Segment donors for targeted outreach', 'Automate thank you messages'],
+                    },
                 ]);
-                
+
             default:
                 return baseTour;
         }
@@ -219,21 +203,23 @@ class OnboardingService {
      */
     getOnboardingState() {
         const stored = localStorage.getItem(this.storageKey);
-        return stored ? JSON.parse(stored) : {
-            hasCompletedOnboarding: false,
-            hasSkippedOnboarding: false,
-            completedSteps: [],
-            lastActiveStep: 0,
-            profileCompletionDismissed: false,
-            featureDiscoveryViewed: false,
-            exploredFeatures: [],
-            whatsNewViewed: [],
-            preferences: {
-                showTips: true,
-                autoShowUpdates: true,
-                tourSpeed: 'normal'
-            }
-        };
+        return stored
+            ? JSON.parse(stored)
+            : {
+                  hasCompletedOnboarding: false,
+                  hasSkippedOnboarding: false,
+                  completedSteps: [],
+                  lastActiveStep: 0,
+                  profileCompletionDismissed: false,
+                  featureDiscoveryViewed: false,
+                  exploredFeatures: [],
+                  whatsNewViewed: [],
+                  preferences: {
+                      showTips: true,
+                      autoShowUpdates: true,
+                      tourSpeed: 'normal',
+                  },
+              };
     }
 
     /**
@@ -249,9 +235,9 @@ class OnboardingService {
     markOnboardingCompleted() {
         const state = this.getOnboardingState();
         state.hasCompletedOnboarding = true;
-        state.completedSteps = this.tourSteps.map(step => step.id);
+        state.completedSteps = this.tourSteps.map((step) => step.id);
         this.saveOnboardingState(state);
-        
+
         // Send completion event to backend
         this.sendOnboardingEvent('completed');
     }
@@ -263,7 +249,7 @@ class OnboardingService {
         const state = this.getOnboardingState();
         state.hasSkippedOnboarding = true;
         this.saveOnboardingState(state);
-        
+
         // Send skip event to backend
         this.sendOnboardingEvent('skipped');
     }
@@ -313,7 +299,7 @@ class OnboardingService {
      */
     markWhatsNewViewed(updateIds = []) {
         const state = this.getOnboardingState();
-        updateIds.forEach(id => {
+        updateIds.forEach((id) => {
             if (!state.whatsNewViewed.includes(id)) {
                 state.whatsNewViewed.push(id);
             }
@@ -349,20 +335,20 @@ class OnboardingService {
                     'Click in the text area to start writing',
                     'Add images, videos, or links to enrich your post',
                     'Choose your audience (circles, groups, or public)',
-                    'Click "Post" to share with your network'
+                    'Click "Post" to share with your network',
                 ],
                 tips: [
                     'Posts with images get 3x more engagement',
                     'Use @mentions to notify specific alumni',
-                    'Add relevant hashtags to increase discoverability'
+                    'Add relevant hashtags to increase discoverability',
                 ],
                 actions: [
                     {
                         label: 'Try It Now',
                         type: 'event',
-                        event: 'focus-post-creator'
-                    }
-                ]
+                        event: 'focus-post-creator',
+                    },
+                ],
             },
             'alumni-search': {
                 title: 'Search Alumni',
@@ -371,14 +357,14 @@ class OnboardingService {
                     'Enter a name, company, or skill in the search box',
                     'Use filters to narrow down results',
                     'Click on profiles to learn more',
-                    'Send connection requests with personal messages'
+                    'Send connection requests with personal messages',
                 ],
                 tips: [
                     'Search by graduation year to find classmates',
                     'Filter by location to find local alumni',
-                    'Look for mutual connections for warm introductions'
+                    'Look for mutual connections for warm introductions',
                 ],
-                learnMoreUrl: '/help/alumni-search'
+                learnMoreUrl: '/help/alumni-search',
             },
             'job-matching': {
                 title: 'Job Recommendations',
@@ -387,21 +373,21 @@ class OnboardingService {
                     'Browse jobs ranked by your network connections',
                     'Click "View Details" to see full job descriptions',
                     'Look for alumni connections at companies',
-                    'Request introductions through mutual contacts'
+                    'Request introductions through mutual contacts',
                 ],
                 tips: [
                     'Jobs with alumni connections are highlighted',
                     'Update your profile to get better matches',
-                    'Set up job alerts for specific criteria'
+                    'Set up job alerts for specific criteria',
                 ],
                 actions: [
                     {
                         label: 'Update Profile',
                         type: 'navigate',
-                        url: '/profile/edit'
-                    }
-                ]
-            }
+                        url: '/profile/edit',
+                    },
+                ],
+            },
         };
 
         return helpContent[elementId] || null;
@@ -416,13 +402,13 @@ class OnboardingService {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
                 },
                 body: JSON.stringify({
                     event_type: eventType,
                     data: data,
-                    timestamp: new Date().toISOString()
-                })
+                    timestamp: new Date().toISOString(),
+                }),
             });
         } catch (error) {
             console.error('Failed to send onboarding event:', error);
@@ -438,9 +424,9 @@ class OnboardingService {
 
         const rect = targetElement.getBoundingClientRect();
         const position = {
-            x: rect.left + (rect.width / 2),
+            x: rect.left + rect.width / 2,
             y: rect.bottom,
-            placement: 'bottom'
+            placement: 'bottom',
         };
 
         // Adjust placement if tooltip would go off screen
@@ -449,18 +435,22 @@ class OnboardingService {
             position.placement = 'top';
         }
 
-        window.dispatchEvent(new CustomEvent('show-contextual-help', {
-            detail: { content: helpContent, position }
-        }));
+        window.dispatchEvent(
+            new CustomEvent('show-contextual-help', {
+                detail: { content: helpContent, position },
+            }),
+        );
     }
 
     /**
      * Show feature spotlight
      */
     showFeatureSpotlight(feature) {
-        window.dispatchEvent(new CustomEvent('show-feature-spotlight', {
-            detail: { feature }
-        }));
+        window.dispatchEvent(
+            new CustomEvent('show-feature-spotlight', {
+                detail: { feature },
+            }),
+        );
     }
 
     /**

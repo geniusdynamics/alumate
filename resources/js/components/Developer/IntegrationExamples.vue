@@ -1,300 +1,288 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        Integration Examples
-      </h3>
-      <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-        Common integration patterns and use cases with complete code examples
-      </p>
-    </div>
-
-    <div class="p-6">
-      <!-- Use Case Selection -->
-      <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          Select Integration Use Case
-        </label>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <button
-            v-for="useCase in useCases"
-            :key="useCase.id"
-            @click="selectedUseCase = useCase"
-            :class="[
-              'p-4 border rounded-lg text-left transition-colors',
-              selectedUseCase?.id === useCase.id
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-            ]"
-          >
-            <div class="flex items-center gap-3 mb-2">
-              <component :is="useCase.icon" class="w-6 h-6 text-blue-600 dark:text-blue-400" />
-              <div class="font-medium text-gray-900 dark:text-white">
-                {{ useCase.title }}
-              </div>
-            </div>
-            <div class="text-sm text-gray-600 dark:text-gray-400">
-              {{ useCase.description }}
-            </div>
-            <div class="flex flex-wrap gap-1 mt-2">
-              <span
-                v-for="tech in useCase.technologies"
-                :key="tech"
-                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-              >
-                {{ tech }}
-              </span>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <!-- Selected Use Case Details -->
-      <div v-if="selectedUseCase" class="space-y-6">
-        <!-- Overview -->
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-            {{ selectedUseCase.title }} Integration
-          </h4>
-          <p class="text-sm text-blue-700 dark:text-blue-300 mb-3">
-            {{ selectedUseCase.overview }}
-          </p>
-          
-          <!-- Requirements -->
-          <div class="mb-3">
-            <h5 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
-              Requirements:
-            </h5>
-            <ul class="text-sm text-blue-700 dark:text-blue-300 list-disc list-inside space-y-1">
-              <li v-for="req in selectedUseCase.requirements" :key="req">{{ req }}</li>
-            </ul>
-          </div>
-          
-          <!-- Estimated Implementation Time -->
-          <div class="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <span>Estimated implementation time: {{ selectedUseCase.estimatedTime }}</span>
-          </div>
+    <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div class="border-b border-gray-200 p-6 dark:border-gray-700">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Integration Examples</h3>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Common integration patterns and use cases with complete code examples</p>
         </div>
 
-        <!-- Implementation Steps -->
-        <div>
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-            Implementation Steps
-          </h4>
-          
-          <div class="space-y-4">
-            <div
-              v-for="(step, index) in selectedUseCase.steps"
-              :key="index"
-              class="border border-gray-200 dark:border-gray-600 rounded-lg"
-            >
-              <div class="px-4 py-3 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-600 rounded-t-lg">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <span class="inline-flex items-center justify-center w-6 h-6 bg-blue-600 text-white text-xs font-medium rounded-full">
-                      {{ index + 1 }}
-                    </span>
-                    <span class="font-medium text-gray-900 dark:text-white">
-                      {{ step.title }}
-                    </span>
-                  </div>
-                  <button
-                    @click="step.expanded = !step.expanded"
-                    class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
-                  >
-                    {{ step.expanded ? 'Collapse' : 'Expand' }}
-                  </button>
-                </div>
-              </div>
-              
-              <div v-if="step.expanded" class="p-4 space-y-4">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                  {{ step.description }}
-                </p>
-                
-                <!-- Code Example -->
-                <div v-if="step.code">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      {{ step.codeLanguage || 'Code' }}
-                    </span>
+        <div class="p-6">
+            <!-- Use Case Selection -->
+            <div class="mb-6">
+                <label class="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300"> Select Integration Use Case </label>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <button
-                      @click="copyToClipboard(step.code)"
-                      class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+                        v-for="useCase in useCases"
+                        :key="useCase.id"
+                        @click="selectedUseCase = useCase"
+                        :class="[
+                            'rounded-lg border p-4 text-left transition-colors',
+                            selectedUseCase?.id === useCase.id
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                : 'border-gray-200 hover:border-gray-300 dark:border-gray-600 dark:hover:border-gray-500',
+                        ]"
                     >
-                      Copy Code
+                        <div class="mb-2 flex items-center gap-3">
+                            <component :is="useCase.icon" class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            <div class="font-medium text-gray-900 dark:text-white">
+                                {{ useCase.title }}
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600 dark:text-gray-400">
+                            {{ useCase.description }}
+                        </div>
+                        <div class="mt-2 flex flex-wrap gap-1">
+                            <span
+                                v-for="tech in useCase.technologies"
+                                :key="tech"
+                                class="inline-flex items-center rounded bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+                            >
+                                {{ tech }}
+                            </span>
+                        </div>
                     </button>
-                  </div>
-                  <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                    <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto"><code>{{ step.code }}</code></pre>
-                  </div>
                 </div>
-                
-                <!-- Configuration -->
-                <div v-if="step.config">
-                  <div class="flex items-center justify-between mb-2">
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                      Configuration
-                    </span>
-                    <button
-                      @click="copyToClipboard(step.config)"
-                      class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
-                    >
-                      Copy Config
-                    </button>
-                  </div>
-                  <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                    <pre class="text-sm text-gray-800 dark:text-gray-200 overflow-x-auto"><code>{{ step.config }}</code></pre>
-                  </div>
-                </div>
-                
-                <!-- Notes -->
-                <div v-if="step.notes" class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-                  <div class="flex items-start gap-2">
-                    <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div class="text-sm text-yellow-700 dark:text-yellow-300">
-                      <strong>Note:</strong> {{ step.notes }}
+            </div>
+
+            <!-- Selected Use Case Details -->
+            <div v-if="selectedUseCase" class="space-y-6">
+                <!-- Overview -->
+                <div class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
+                    <h4 class="mb-2 text-sm font-medium text-blue-800 dark:text-blue-200">{{ selectedUseCase.title }} Integration</h4>
+                    <p class="mb-3 text-sm text-blue-700 dark:text-blue-300">
+                        {{ selectedUseCase.overview }}
+                    </p>
+
+                    <!-- Requirements -->
+                    <div class="mb-3">
+                        <h5 class="mb-1 text-sm font-medium text-blue-800 dark:text-blue-200">Requirements:</h5>
+                        <ul class="list-inside list-disc space-y-1 text-sm text-blue-700 dark:text-blue-300">
+                            <li v-for="req in selectedUseCase.requirements" :key="req">{{ req }}</li>
+                        </ul>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Testing & Validation -->
-        <div v-if="selectedUseCase.testing">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-            Testing & Validation
-          </h4>
-          
-          <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-            <h5 class="text-sm font-medium text-green-800 dark:text-green-200 mb-3">
-              Test Your Integration
-            </h5>
-            
-            <div class="space-y-3">
-              <div v-for="test in selectedUseCase.testing" :key="test.name">
-                <div class="flex items-center justify-between">
-                  <span class="text-sm text-green-700 dark:text-green-300">
-                    {{ test.name }}
-                  </span>
-                  <button
-                    @click="runTest(test)"
-                    class="text-sm text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200 font-medium"
-                  >
-                    Run Test
-                  </button>
+                    <!-- Estimated Implementation Time -->
+                    <div class="flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            ></path>
+                        </svg>
+                        <span>Estimated implementation time: {{ selectedUseCase.estimatedTime }}</span>
+                    </div>
                 </div>
-                <p class="text-xs text-green-600 dark:text-green-400 mt-1">
-                  {{ test.description }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <!-- Common Issues & Troubleshooting -->
-        <div v-if="selectedUseCase.troubleshooting">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-            Common Issues & Troubleshooting
-          </h4>
-          
-          <div class="space-y-3">
-            <div
-              v-for="issue in selectedUseCase.troubleshooting"
-              :key="issue.problem"
-              class="border border-gray-200 dark:border-gray-600 rounded-lg p-4"
-            >
-              <h5 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                {{ issue.problem }}
-              </h5>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                {{ issue.cause }}
-              </p>
-              <div class="text-sm text-green-700 dark:text-green-300">
-                <strong>Solution:</strong> {{ issue.solution }}
-              </div>
-            </div>
-          </div>
-        </div>
+                <!-- Implementation Steps -->
+                <div>
+                    <h4 class="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">Implementation Steps</h4>
 
-        <!-- Additional Resources -->
-        <div v-if="selectedUseCase.resources">
-          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
-            Additional Resources
-          </h4>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <a
-              v-for="resource in selectedUseCase.resources"
-              :key="resource.title"
-              :href="resource.url"
-              target="_blank"
-              class="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
-            >
-              <component :is="resource.icon" class="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              <div>
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ resource.title }}
+                    <div class="space-y-4">
+                        <div
+                            v-for="(step, index) in selectedUseCase.steps"
+                            :key="index"
+                            class="rounded-lg border border-gray-200 dark:border-gray-600"
+                        >
+                            <div class="rounded-t-lg border-b border-gray-200 bg-gray-50 px-4 py-3 dark:border-gray-600 dark:bg-gray-800">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-medium text-white"
+                                        >
+                                            {{ index + 1 }}
+                                        </span>
+                                        <span class="font-medium text-gray-900 dark:text-white">
+                                            {{ step.title }}
+                                        </span>
+                                    </div>
+                                    <button
+                                        @click="step.expanded = !step.expanded"
+                                        class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                                    >
+                                        {{ step.expanded ? 'Collapse' : 'Expand' }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div v-if="step.expanded" class="space-y-4 p-4">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">
+                                    {{ step.description }}
+                                </p>
+
+                                <!-- Code Example -->
+                                <div v-if="step.code">
+                                    <div class="mb-2 flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            {{ step.codeLanguage || 'Code' }}
+                                        </span>
+                                        <button
+                                            @click="copyToClipboard(step.code)"
+                                            class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                                        >
+                                            Copy Code
+                                        </button>
+                                    </div>
+                                    <div class="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
+                                        <pre class="overflow-x-auto text-sm text-gray-800 dark:text-gray-200"><code>{{ step.code }}</code></pre>
+                                    </div>
+                                </div>
+
+                                <!-- Configuration -->
+                                <div v-if="step.config">
+                                    <div class="mb-2 flex items-center justify-between">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300"> Configuration </span>
+                                        <button
+                                            @click="copyToClipboard(step.config)"
+                                            class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-200"
+                                        >
+                                            Copy Config
+                                        </button>
+                                    </div>
+                                    <div class="rounded-lg bg-gray-50 p-4 dark:bg-gray-900">
+                                        <pre class="overflow-x-auto text-sm text-gray-800 dark:text-gray-200"><code>{{ step.config }}</code></pre>
+                                    </div>
+                                </div>
+
+                                <!-- Notes -->
+                                <div
+                                    v-if="step.notes"
+                                    class="rounded-lg border border-yellow-200 bg-yellow-50 p-3 dark:border-yellow-800 dark:bg-yellow-900/20"
+                                >
+                                    <div class="flex items-start gap-2">
+                                        <svg
+                                            class="mt-0.5 h-4 w-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
+                                            fill="currentColor"
+                                            viewBox="0 0 20 20"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                                clip-rule="evenodd"
+                                            ></path>
+                                        </svg>
+                                        <div class="text-sm text-yellow-700 dark:text-yellow-300"><strong>Note:</strong> {{ step.notes }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="text-xs text-gray-600 dark:text-gray-400">
-                  {{ resource.description }}
+
+                <!-- Testing & Validation -->
+                <div v-if="selectedUseCase.testing">
+                    <h4 class="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">Testing & Validation</h4>
+
+                    <div class="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-800 dark:bg-green-900/20">
+                        <h5 class="mb-3 text-sm font-medium text-green-800 dark:text-green-200">Test Your Integration</h5>
+
+                        <div class="space-y-3">
+                            <div v-for="test in selectedUseCase.testing" :key="test.name">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-green-700 dark:text-green-300">
+                                        {{ test.name }}
+                                    </span>
+                                    <button
+                                        @click="runTest(test)"
+                                        class="text-sm font-medium text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+                                    >
+                                        Run Test
+                                    </button>
+                                </div>
+                                <p class="mt-1 text-xs text-green-600 dark:text-green-400">
+                                    {{ test.description }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-              <svg class="w-4 h-4 text-gray-400 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-              </svg>
-            </a>
-          </div>
+
+                <!-- Common Issues & Troubleshooting -->
+                <div v-if="selectedUseCase.troubleshooting">
+                    <h4 class="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">Common Issues & Troubleshooting</h4>
+
+                    <div class="space-y-3">
+                        <div
+                            v-for="issue in selectedUseCase.troubleshooting"
+                            :key="issue.problem"
+                            class="rounded-lg border border-gray-200 p-4 dark:border-gray-600"
+                        >
+                            <h5 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                                {{ issue.problem }}
+                            </h5>
+                            <p class="mb-2 text-sm text-gray-600 dark:text-gray-400">
+                                {{ issue.cause }}
+                            </p>
+                            <div class="text-sm text-green-700 dark:text-green-300"><strong>Solution:</strong> {{ issue.solution }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Resources -->
+                <div v-if="selectedUseCase.resources">
+                    <h4 class="mb-4 text-sm font-medium text-gray-700 dark:text-gray-300">Additional Resources</h4>
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <a
+                            v-for="resource in selectedUseCase.resources"
+                            :key="resource.title"
+                            :href="resource.url"
+                            target="_blank"
+                            class="flex items-center gap-3 rounded-lg border border-gray-200 p-3 transition-colors hover:border-gray-300 dark:border-gray-600 dark:hover:border-gray-500"
+                        >
+                            <component :is="resource.icon" class="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                            <div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ resource.title }}
+                                </div>
+                                <div class="text-xs text-gray-600 dark:text-gray-400">
+                                    {{ resource.description }}
+                                </div>
+                            </div>
+                            <svg class="ml-auto h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                ></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { 
-  CodeBracketIcon, 
-  BellIcon, 
-  ChartBarIcon, 
-  UserGroupIcon,
-  CogIcon,
-  DocumentTextIcon,
-  BookOpenIcon,
-  VideoCameraIcon
-} from '@heroicons/vue/24/outline'
+import { BellIcon, BookOpenIcon, ChartBarIcon, DocumentTextIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
+import { ref } from 'vue';
 
-const selectedUseCase = ref(null)
+const selectedUseCase = ref(null);
 
 const useCases = [
-  {
-    id: 'real-time-notifications',
-    title: 'Real-time Notifications',
-    description: 'Implement real-time notifications for user activities',
-    icon: BellIcon,
-    technologies: ['WebSockets', 'Webhooks', 'Push API'],
-    overview: 'Set up real-time notifications to keep users engaged with instant updates about connections, posts, events, and other activities.',
-    estimatedTime: '2-4 hours',
-    requirements: [
-      'Alumni Platform API access',
-      'Webhook endpoint capability',
-      'Push notification service (optional)',
-      'WebSocket support (for real-time updates)'
-    ],
-    steps: [
-      {
-        title: 'Set up Webhook Endpoint',
-        description: 'Create a secure webhook endpoint to receive real-time events from the Alumni Platform.',
-        expanded: false,
-        codeLanguage: 'Node.js/Express',
-        code: `const express = require('express');
+    {
+        id: 'real-time-notifications',
+        title: 'Real-time Notifications',
+        description: 'Implement real-time notifications for user activities',
+        icon: BellIcon,
+        technologies: ['WebSockets', 'Webhooks', 'Push API'],
+        overview: 'Set up real-time notifications to keep users engaged with instant updates about connections, posts, events, and other activities.',
+        estimatedTime: '2-4 hours',
+        requirements: [
+            'Alumni Platform API access',
+            'Webhook endpoint capability',
+            'Push notification service (optional)',
+            'WebSocket support (for real-time updates)',
+        ],
+        steps: [
+            {
+                title: 'Set up Webhook Endpoint',
+                description: 'Create a secure webhook endpoint to receive real-time events from the Alumni Platform.',
+                expanded: false,
+                codeLanguage: 'Node.js/Express',
+                code: `const express = require('express');
 const crypto = require('crypto');
 const app = express();
 
@@ -367,14 +355,14 @@ function handleEventRegistration(data) {
 app.listen(3000, () => {
   console.log('Webhook server running on port 3000');
 });`,
-        notes: 'Make sure to use HTTPS in production and store your webhook secret securely.'
-      },
-      {
-        title: 'Register Webhook with Alumni Platform',
-        description: 'Register your webhook endpoint with the Alumni Platform API.',
-        expanded: false,
-        codeLanguage: 'JavaScript',
-        code: `const alumniApi = require('@alumni-platform/api-client');
+                notes: 'Make sure to use HTTPS in production and store your webhook secret securely.',
+            },
+            {
+                title: 'Register Webhook with Alumni Platform',
+                description: 'Register your webhook endpoint with the Alumni Platform API.',
+                expanded: false,
+                codeLanguage: 'JavaScript',
+                code: `const alumniApi = require('@alumni-platform/api-client');
 
 const api = new alumniApi({
   baseURL: 'https://your-alumni-platform.com/api',
@@ -402,14 +390,14 @@ async function registerWebhook() {
 }
 
 registerWebhook();`,
-        notes: 'Store the webhook ID for future reference and management.'
-      },
-      {
-        title: 'Implement Push Notifications',
-        description: 'Set up push notifications for mobile and web clients.',
-        expanded: false,
-        codeLanguage: 'JavaScript',
-        code: `const webpush = require('web-push');
+                notes: 'Store the webhook ID for future reference and management.',
+            },
+            {
+                title: 'Implement Push Notifications',
+                description: 'Set up push notifications for mobile and web clients.',
+                expanded: false,
+                codeLanguage: 'JavaScript',
+                code: `const webpush = require('web-push');
 
 // Configure web push
 webpush.setVapidDetails(
@@ -481,72 +469,72 @@ self.addEventListener('push', event => {
   event.waitUntil(
     self.registration.showNotification(data.title, options)
   );
-});`
-      }
-    ],
-    testing: [
-      {
-        name: 'Webhook Delivery Test',
-        description: 'Test that your webhook endpoint receives and processes events correctly'
-      },
-      {
-        name: 'Push Notification Test',
-        description: 'Verify push notifications are delivered to subscribed devices'
-      },
-      {
-        name: 'Signature Verification Test',
-        description: 'Ensure webhook signatures are properly validated for security'
-      }
-    ],
-    troubleshooting: [
-      {
-        problem: 'Webhook not receiving events',
-        cause: 'URL not reachable or returning non-200 status codes',
-        solution: 'Verify your webhook URL is publicly accessible and returns 200 OK for POST requests'
-      },
-      {
-        problem: 'Push notifications not working',
-        cause: 'Invalid VAPID keys or subscription expired',
-        solution: 'Check VAPID configuration and handle subscription renewal gracefully'
-      }
-    ],
-    resources: [
-      {
-        title: 'Webhook Security Guide',
-        description: 'Best practices for webhook security',
-        url: '#',
-        icon: DocumentTextIcon
-      },
-      {
-        title: 'Push API Documentation',
-        description: 'Complete guide to web push notifications',
-        url: '#',
-        icon: BookOpenIcon
-      }
-    ]
-  },
-  
-  {
-    id: 'analytics-dashboard',
-    title: 'Analytics Dashboard',
-    description: 'Build custom analytics dashboards with Alumni Platform data',
-    icon: ChartBarIcon,
-    technologies: ['React', 'Chart.js', 'REST API'],
-    overview: 'Create comprehensive analytics dashboards to track alumni engagement, career outcomes, and platform usage metrics.',
-    estimatedTime: '4-8 hours',
-    requirements: [
-      'Alumni Platform API access with analytics permissions',
-      'Frontend framework (React, Vue, Angular)',
-      'Charting library (Chart.js, D3.js, etc.)',
-      'Data visualization components'
-    ],
-    steps: [
-      {
-        title: 'Set up API Client',
-        description: 'Initialize the Alumni Platform API client with proper authentication.',
-        expanded: false,
-        codeLanguage: 'React',
-        code: `import { AlumniPlatformAPI } from '@alumni-platform/api-client';
+});`,
+            },
+        ],
+        testing: [
+            {
+                name: 'Webhook Delivery Test',
+                description: 'Test that your webhook endpoint receives and processes events correctly',
+            },
+            {
+                name: 'Push Notification Test',
+                description: 'Verify push notifications are delivered to subscribed devices',
+            },
+            {
+                name: 'Signature Verification Test',
+                description: 'Ensure webhook signatures are properly validated for security',
+            },
+        ],
+        troubleshooting: [
+            {
+                problem: 'Webhook not receiving events',
+                cause: 'URL not reachable or returning non-200 status codes',
+                solution: 'Verify your webhook URL is publicly accessible and returns 200 OK for POST requests',
+            },
+            {
+                problem: 'Push notifications not working',
+                cause: 'Invalid VAPID keys or subscription expired',
+                solution: 'Check VAPID configuration and handle subscription renewal gracefully',
+            },
+        ],
+        resources: [
+            {
+                title: 'Webhook Security Guide',
+                description: 'Best practices for webhook security',
+                url: '#',
+                icon: DocumentTextIcon,
+            },
+            {
+                title: 'Push API Documentation',
+                description: 'Complete guide to web push notifications',
+                url: '#',
+                icon: BookOpenIcon,
+            },
+        ],
+    },
+
+    {
+        id: 'analytics-dashboard',
+        title: 'Analytics Dashboard',
+        description: 'Build custom analytics dashboards with Alumni Platform data',
+        icon: ChartBarIcon,
+        technologies: ['React', 'Chart.js', 'REST API'],
+        overview: 'Create comprehensive analytics dashboards to track alumni engagement, career outcomes, and platform usage metrics.',
+        estimatedTime: '4-8 hours',
+        requirements: [
+            'Alumni Platform API access with analytics permissions',
+            'Frontend framework (React, Vue, Angular)',
+            'Charting library (Chart.js, D3.js, etc.)',
+            'Data visualization components',
+        ],
+        steps: [
+            {
+                title: 'Set up API Client',
+                description: 'Initialize the Alumni Platform API client with proper authentication.',
+                expanded: false,
+                codeLanguage: 'React',
+                code: `import { AlumniPlatformAPI } from '@alumni-platform/api-client';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 const ApiContext = createContext();
@@ -576,14 +564,14 @@ export const useApi = () => {
     throw new Error('useApi must be used within ApiProvider');
   }
   return api;
-};`
-      },
-      {
-        title: 'Create Analytics Hook',
-        description: 'Build a custom React hook to fetch and manage analytics data.',
-        expanded: false,
-        codeLanguage: 'React Hook',
-        code: `import { useState, useEffect } from 'react';
+};`,
+            },
+            {
+                title: 'Create Analytics Hook',
+                description: 'Build a custom React hook to fetch and manage analytics data.',
+                expanded: false,
+                codeLanguage: 'React Hook',
+                code: `import { useState, useEffect } from 'react';
 import { useApi } from './ApiProvider';
 
 export function useAnalytics(period = '30d', refreshInterval = 300000) {
@@ -625,14 +613,14 @@ export function useAnalytics(period = '30d', refreshInterval = 300000) {
   }, [period, refreshInterval]);
   
   return { data, loading, error, refresh: fetchAnalytics };
-}`
-      },
-      {
-        title: 'Build Dashboard Components',
-        description: 'Create reusable dashboard components for different metrics.',
-        expanded: false,
-        codeLanguage: 'React Component',
-        code: `import { Line, Bar, Doughnut } from 'react-chartjs-2';
+}`,
+            },
+            {
+                title: 'Build Dashboard Components',
+                description: 'Create reusable dashboard components for different metrics.',
+                expanded: false,
+                codeLanguage: 'React Component',
+                code: `import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -767,46 +755,42 @@ export function AnalyticsDashboard() {
       </div>
     </div>
   );
-}`
-      }
-    ],
-    testing: [
-      {
-        name: 'API Connection Test',
-        description: 'Verify API credentials and data access permissions'
-      },
-      {
-        name: 'Chart Rendering Test',
-        description: 'Test chart components with sample data'
-      },
-      {
-        name: 'Real-time Updates Test',
-        description: 'Verify dashboard updates with fresh data'
-      }
-    ]
-  },
-  
-  {
-    id: 'user-sync',
-    title: 'User Data Synchronization',
-    description: 'Sync user data between Alumni Platform and external systems',
-    icon: UserGroupIcon,
-    technologies: ['REST API', 'Webhooks', 'Cron Jobs'],
-    overview: 'Keep user data synchronized between the Alumni Platform and your existing systems like CRM, HR platforms, or student information systems.',
-    estimatedTime: '3-6 hours',
-    requirements: [
-      'Alumni Platform API access',
-      'External system API access',
-      'Database or data storage',
-      'Scheduled job capability'
-    ],
-    steps: [
-      {
-        title: 'Set up Data Mapping',
-        description: 'Define how data fields map between systems.',
-        expanded: false,
-        codeLanguage: 'JavaScript',
-        code: `// Data mapping configuration
+}`,
+            },
+        ],
+        testing: [
+            {
+                name: 'API Connection Test',
+                description: 'Verify API credentials and data access permissions',
+            },
+            {
+                name: 'Chart Rendering Test',
+                description: 'Test chart components with sample data',
+            },
+            {
+                name: 'Real-time Updates Test',
+                description: 'Verify dashboard updates with fresh data',
+            },
+        ],
+    },
+
+    {
+        id: 'user-sync',
+        title: 'User Data Synchronization',
+        description: 'Sync user data between Alumni Platform and external systems',
+        icon: UserGroupIcon,
+        technologies: ['REST API', 'Webhooks', 'Cron Jobs'],
+        overview:
+            'Keep user data synchronized between the Alumni Platform and your existing systems like CRM, HR platforms, or student information systems.',
+        estimatedTime: '3-6 hours',
+        requirements: ['Alumni Platform API access', 'External system API access', 'Database or data storage', 'Scheduled job capability'],
+        steps: [
+            {
+                title: 'Set up Data Mapping',
+                description: 'Define how data fields map between systems.',
+                expanded: false,
+                codeLanguage: 'JavaScript',
+                code: `// Data mapping configuration
 const fieldMapping = {
   // Alumni Platform -> External System
   'name': 'full_name',
@@ -858,14 +842,14 @@ function mapExternalToAlumni(externalData) {
   }
   
   return mapped;
-}`
-      },
-      {
-        title: 'Implement Sync Service',
-        description: 'Create a service to handle bidirectional data synchronization.',
-        expanded: false,
-        codeLanguage: 'Node.js',
-        code: `const { AlumniPlatformAPI } = require('@alumni-platform/api-client');
+}`,
+            },
+            {
+                title: 'Implement Sync Service',
+                description: 'Create a service to handle bidirectional data synchronization.',
+                expanded: false,
+                codeLanguage: 'Node.js',
+                code: `const { AlumniPlatformAPI } = require('@alumni-platform/api-client');
 const ExternalAPI = require('./external-api-client');
 
 class UserSyncService {
@@ -990,14 +974,14 @@ class UserSyncService {
   }
 }
 
-module.exports = UserSyncService;`
-      },
-      {
-        title: 'Schedule Sync Jobs',
-        description: 'Set up automated synchronization using cron jobs or task schedulers.',
-        expanded: false,
-        codeLanguage: 'Node.js + Cron',
-        code: `const cron = require('node-cron');
+module.exports = UserSyncService;`,
+            },
+            {
+                title: 'Schedule Sync Jobs',
+                description: 'Set up automated synchronization using cron jobs or task schedulers.',
+                expanded: false,
+                codeLanguage: 'Node.js + Cron',
+                code: `const cron = require('node-cron');
 const UserSyncService = require('./user-sync-service');
 
 const syncService = new UserSyncService();
@@ -1053,37 +1037,37 @@ async function sendAlert(title, message) {
   // Implement your alerting mechanism
   // e.g., Slack, email, PagerDuty, etc.
   console.error(\`ALERT: \${title} - \${message}\`);
-}`
-      }
-    ],
-    testing: [
-      {
-        name: 'Data Mapping Test',
-        description: 'Verify field mappings work correctly for sample data'
-      },
-      {
-        name: 'Sync Direction Test',
-        description: 'Test both directions of synchronization'
-      },
-      {
-        name: 'Error Handling Test',
-        description: 'Test behavior when APIs are unavailable or return errors'
-      }
-    ]
-  }
+}`,
+            },
+        ],
+        testing: [
+            {
+                name: 'Data Mapping Test',
+                description: 'Verify field mappings work correctly for sample data',
+            },
+            {
+                name: 'Sync Direction Test',
+                description: 'Test both directions of synchronization',
+            },
+            {
+                name: 'Error Handling Test',
+                description: 'Test behavior when APIs are unavailable or return errors',
+            },
+        ],
+    },
 ];
 
 const copyToClipboard = async (text) => {
-  try {
-    await navigator.clipboard.writeText(text)
-    // Show success message
-  } catch (err) {
-    console.error('Failed to copy:', err)
-  }
-}
+    try {
+        await navigator.clipboard.writeText(text);
+        // Show success message
+    } catch (err) {
+        console.error('Failed to copy:', err);
+    }
+};
 
 const runTest = (test) => {
-  console.log('Running test:', test.name)
-  // Implement test execution logic
-}
+    console.log('Running test:', test.name);
+    // Implement test execution logic
+};
 </script>

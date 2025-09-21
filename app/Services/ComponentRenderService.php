@@ -7,6 +7,8 @@ use App\Models\ComponentInstance;
 use App\Models\ComponentTheme;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
+use App\Models\AnalyticsEvent;
+use Illuminate\Support\Facades\Auth;
 
 class ComponentRenderService
 {
@@ -75,6 +77,25 @@ class ComponentRenderService
             // Cache the result for performance
             if (($options['use_cache'] ?? true) && app()->bound('cache')) {
                 Cache::put($cacheKey, $result, self::CACHE_DURATION);
+            // Track component render analytics
+            if (Auth::check()) {
+                AnalyticsEvent::create([
+                    'event_type' => 'component_render',
+                    'event_category' => 'component_analytics',
+                    'user_id' => Auth::id(),
+                    'tenant_id' => app(\App\Services\TenantContextService::class)->getCurrentTenantId(),
+                    'event_data' => [
+                        'component_id' => $component->id,
+                        'component_name' => $component->name,
+                        'component_category' => $component->category,
+                        'component_type' => $component->type,
+                        'render_context' => $options['context'] ?? 'unknown',
+                        'timestamp' => now(),
+                    ],
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]);
+            }
             }
 
             return $result;

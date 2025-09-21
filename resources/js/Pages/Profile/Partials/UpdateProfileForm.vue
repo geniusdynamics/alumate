@@ -24,9 +24,7 @@ const submit = () => {
         <header>
             <h2 class="text-lg font-medium text-gray-900">Update Profile</h2>
 
-            <p class="mt-1 text-sm text-gray-600">
-                Update your profile information.
-            </p>
+            <p class="mt-1 text-sm text-gray-600">Update your profile information.</p>
         </header>
 
         <form @submit.prevent="submit" class="mt-6 space-y-6">

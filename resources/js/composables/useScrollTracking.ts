@@ -1,40 +1,40 @@
-﻿import { ref, onMounted, onUnmounted } from 'vue'
+﻿import { onMounted, onUnmounted, ref } from 'vue';
 
 export function useScrollTracking() {
-  const scrollDepth = ref(0)
-  const isScrolling = ref(false)
+    const scrollDepth = ref(0);
+    const isScrolling = ref(false);
 
-  let scrollTimeout: number | undefined
+    let scrollTimeout: number | undefined;
 
-  const handleScroll = () => {
-    if (typeof window === 'undefined') return
+    const handleScroll = () => {
+        if (typeof window === 'undefined') return;
 
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop
-    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
-    const currentScrollDepth = Math.round((scrollTop / scrollHeight) * 100)
-    
-    scrollDepth.value = Math.max(scrollDepth.value, currentScrollDepth)
-    isScrolling.value = true
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const currentScrollDepth = Math.round((scrollTop / scrollHeight) * 100);
 
-    clearTimeout(scrollTimeout)
-    scrollTimeout = window.setTimeout(() => {
-      isScrolling.value = false
-    }, 150)
-  }
+        scrollDepth.value = Math.max(scrollDepth.value, currentScrollDepth);
+        isScrolling.value = true;
 
-  onMounted(() => {
-    window.addEventListener('scroll', handleScroll, { passive: true })
-  })
+        clearTimeout(scrollTimeout);
+        scrollTimeout = window.setTimeout(() => {
+            isScrolling.value = false;
+        }, 150);
+    };
 
-  onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll)
-    if (scrollTimeout) {
-      clearTimeout(scrollTimeout)
-    }
-  })
+    onMounted(() => {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+    });
 
-  return {
-    scrollDepth,
-    isScrolling
-  }
+    onUnmounted(() => {
+        window.removeEventListener('scroll', handleScroll);
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout);
+        }
+    });
+
+    return {
+        scrollDepth,
+        isScrolling,
+    };
 }

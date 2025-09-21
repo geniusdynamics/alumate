@@ -15,9 +15,6 @@ withDefaults(defineProps<Props>(), {
 <template>
     <div :class="['flex items-center', $props.class]">
         <AppLogoIcon class="h-8 w-8" />
-        <span v-if="showText" class="ml-2 text-xl font-bold text-gray-900">
-            Starter Kit
-        </span>
+        <span v-if="showText" class="ml-2 text-xl font-bold text-gray-900"> Starter Kit </span>
     </div>
 </template>
-

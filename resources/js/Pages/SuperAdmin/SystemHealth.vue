@@ -1,11 +1,11 @@
 <template>
     <div class="min-h-screen bg-gray-50">
         <Head title="System Health" />
-        
+
         <!-- Header -->
         <div class="bg-white shadow">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-6">
+            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between py-6">
                     <div>
                         <h1 class="text-3xl font-bold text-gray-900">System Health</h1>
                         <p class="mt-1 text-sm text-gray-600">Monitor system performance and health metrics</p>
@@ -14,14 +14,14 @@
                         <button
                             @click="refreshHealth"
                             :disabled="isRefreshing"
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                         >
                             <ArrowPathIcon class="-ml-1 mr-2 h-5 w-5" :class="{ 'animate-spin': isRefreshing }" />
                             {{ isRefreshing ? 'Refreshing...' : 'Refresh' }}
                         </button>
                         <Link
                             :href="route('super-admin.dashboard')"
-                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                            class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                         >
                             <ArrowLeftIcon class="-ml-1 mr-2 h-5 w-5" />
                             Back to Dashboard
@@ -32,10 +32,10 @@
         </div>
 
         <!-- Main Content -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- System Status Overview -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-lg shadow p-6">
+            <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div class="rounded-lg bg-white p-6 shadow">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <CircleStackIcon class="h-8 w-8" :class="getStatusColor(health.database?.status)" />
@@ -45,14 +45,12 @@
                             <p class="text-sm" :class="getStatusColor(health.database?.status)">
                                 {{ health.database?.status || 'Unknown' }}
                             </p>
-                            <p class="text-xs text-gray-500">
-                                Response: {{ health.database?.response_time || 'N/A' }}
-                            </p>
+                            <p class="text-xs text-gray-500">Response: {{ health.database?.response_time || 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="rounded-lg bg-white p-6 shadow">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <BoltIcon class="h-8 w-8" :class="getStatusColor(health.cache?.status)" />
@@ -62,14 +60,12 @@
                             <p class="text-sm" :class="getStatusColor(health.cache?.status)">
                                 {{ health.cache?.status || 'Unknown' }}
                             </p>
-                            <p class="text-xs text-gray-500">
-                                Hit Rate: {{ health.cache?.hit_rate || 'N/A' }}
-                            </p>
+                            <p class="text-xs text-gray-500">Hit Rate: {{ health.cache?.hit_rate || 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="rounded-lg bg-white p-6 shadow">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <QueueListIcon class="h-8 w-8" :class="getStatusColor(health.queue?.status)" />
@@ -79,14 +75,12 @@
                             <p class="text-sm" :class="getStatusColor(health.queue?.status)">
                                 {{ health.queue?.status || 'Unknown' }}
                             </p>
-                            <p class="text-xs text-gray-500">
-                                Jobs: {{ health.queue?.pending_jobs || 0 }} pending
-                            </p>
+                            <p class="text-xs text-gray-500">Jobs: {{ health.queue?.pending_jobs || 0 }} pending</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-lg shadow p-6">
+                <div class="rounded-lg bg-white p-6 shadow">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <ServerIcon class="h-8 w-8" :class="getStatusColor(health.storage?.status)" />
@@ -96,30 +90,28 @@
                             <p class="text-sm" :class="getStatusColor(health.storage?.status)">
                                 {{ health.storage?.status || 'Unknown' }}
                             </p>
-                            <p class="text-xs text-gray-500">
-                                Usage: {{ health.storage?.usage || 'N/A' }}
-                            </p>
+                            <p class="text-xs text-gray-500">Usage: {{ health.storage?.usage || 'N/A' }}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
                 <!-- Performance Metrics -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
+                <div class="rounded-lg bg-white shadow">
+                    <div class="border-b border-gray-200 px-6 py-4">
                         <h2 class="text-lg font-medium text-gray-900">Performance Metrics</h2>
                     </div>
                     <div class="p-6">
                         <div class="space-y-6">
                             <!-- Response Time -->
                             <div>
-                                <div class="flex items-center justify-between mb-2">
+                                <div class="mb-2 flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">Average Response Time</span>
                                     <span class="text-sm text-gray-900">{{ health.performance?.response_time || 'N/A' }}</span>
                                 </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div 
+                                <div class="h-2 w-full rounded-full bg-gray-200">
+                                    <div
                                         class="h-2 rounded-full transition-all duration-300"
                                         :class="getPerformanceBarColor(health.performance?.response_time_score || 0)"
                                         :style="{ width: `${health.performance?.response_time_score || 0}%` }"
@@ -129,12 +121,12 @@
 
                             <!-- Memory Usage -->
                             <div>
-                                <div class="flex items-center justify-between mb-2">
+                                <div class="mb-2 flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">Memory Usage</span>
                                     <span class="text-sm text-gray-900">{{ health.performance?.memory_usage || 'N/A' }}</span>
                                 </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div 
+                                <div class="h-2 w-full rounded-full bg-gray-200">
+                                    <div
                                         class="h-2 rounded-full transition-all duration-300"
                                         :class="getUsageBarColor(health.performance?.memory_usage_percent || 0)"
                                         :style="{ width: `${health.performance?.memory_usage_percent || 0}%` }"
@@ -144,12 +136,12 @@
 
                             <!-- CPU Usage -->
                             <div>
-                                <div class="flex items-center justify-between mb-2">
+                                <div class="mb-2 flex items-center justify-between">
                                     <span class="text-sm font-medium text-gray-700">CPU Usage</span>
                                     <span class="text-sm text-gray-900">{{ health.performance?.cpu_usage || 'N/A' }}</span>
                                 </div>
-                                <div class="w-full bg-gray-200 rounded-full h-2">
-                                    <div 
+                                <div class="h-2 w-full rounded-full bg-gray-200">
+                                    <div
                                         class="h-2 rounded-full transition-all duration-300"
                                         :class="getUsageBarColor(health.performance?.cpu_usage_percent || 0)"
                                         :style="{ width: `${health.performance?.cpu_usage_percent || 0}%` }"
@@ -167,15 +159,15 @@
                 </div>
 
                 <!-- Security Status -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
+                <div class="rounded-lg bg-white shadow">
+                    <div class="border-b border-gray-200 px-6 py-4">
                         <h2 class="text-lg font-medium text-gray-900">Security Status</h2>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <ShieldCheckIcon class="h-5 w-5 mr-2" :class="getStatusColor(health.security?.ssl_status)" />
+                                    <ShieldCheckIcon class="mr-2 h-5 w-5" :class="getStatusColor(health.security?.ssl_status)" />
                                     <span class="text-sm text-gray-700">SSL Certificate</span>
                                 </div>
                                 <span class="text-sm" :class="getStatusColor(health.security?.ssl_status)">
@@ -185,7 +177,7 @@
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <LockClosedIcon class="h-5 w-5 mr-2" :class="getStatusColor(health.security?.firewall_status)" />
+                                    <LockClosedIcon class="mr-2 h-5 w-5" :class="getStatusColor(health.security?.firewall_status)" />
                                     <span class="text-sm text-gray-700">Firewall</span>
                                 </div>
                                 <span class="text-sm" :class="getStatusColor(health.security?.firewall_status)">
@@ -195,17 +187,15 @@
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <ExclamationTriangleIcon class="h-5 w-5 mr-2 text-yellow-500" />
+                                    <ExclamationTriangleIcon class="mr-2 h-5 w-5 text-yellow-500" />
                                     <span class="text-sm text-gray-700">Security Alerts</span>
                                 </div>
-                                <span class="text-sm text-gray-900">
-                                    {{ health.security?.alerts_count || 0 }} active
-                                </span>
+                                <span class="text-sm text-gray-900"> {{ health.security?.alerts_count || 0 }} active </span>
                             </div>
 
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <ClockIcon class="h-5 w-5 mr-2 text-gray-400" />
+                                    <ClockIcon class="mr-2 h-5 w-5 text-gray-400" />
                                     <span class="text-sm text-gray-700">Last Security Scan</span>
                                 </div>
                                 <span class="text-sm text-gray-900">
@@ -217,15 +207,15 @@
                 </div>
 
                 <!-- Backup Status -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
+                <div class="rounded-lg bg-white shadow">
+                    <div class="border-b border-gray-200 px-6 py-4">
                         <h2 class="text-lg font-medium text-gray-900">Backup Status</h2>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
-                                    <CloudArrowUpIcon class="h-5 w-5 mr-2" :class="getStatusColor(health.backups?.status)" />
+                                    <CloudArrowUpIcon class="mr-2 h-5 w-5" :class="getStatusColor(health.backups?.status)" />
                                     <span class="text-sm text-gray-700">Backup System</span>
                                 </div>
                                 <span class="text-sm" :class="getStatusColor(health.backups?.status)">
@@ -256,23 +246,26 @@
 
                             <div class="flex items-center justify-between">
                                 <span class="text-sm text-gray-700">Retention Period</span>
-                                <span class="text-sm text-gray-900">
-                                    {{ health.backups?.retention_days || 'N/A' }} days
-                                </span>
+                                <span class="text-sm text-gray-900"> {{ health.backups?.retention_days || 'N/A' }} days </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- System Alerts -->
-                <div class="bg-white rounded-lg shadow">
-                    <div class="px-6 py-4 border-b border-gray-200">
+                <div class="rounded-lg bg-white shadow">
+                    <div class="border-b border-gray-200 px-6 py-4">
                         <h2 class="text-lg font-medium text-gray-900">System Alerts</h2>
                     </div>
                     <div class="p-6">
                         <div v-if="health.alerts?.length" class="space-y-3">
-                            <div v-for="alert in health.alerts" :key="alert.id" class="flex items-start space-x-3 p-3 rounded-lg" :class="getAlertBgClass(alert.severity)">
-                                <component :is="getAlertIcon(alert.severity)" class="h-5 w-5 mt-0.5" :class="getAlertIconClass(alert.severity)" />
+                            <div
+                                v-for="alert in health.alerts"
+                                :key="alert.id"
+                                class="flex items-start space-x-3 rounded-lg p-3"
+                                :class="getAlertBgClass(alert.severity)"
+                            >
+                                <component :is="getAlertIcon(alert.severity)" class="mt-0.5 h-5 w-5" :class="getAlertIconClass(alert.severity)" />
                                 <div class="flex-1">
                                     <p class="text-sm font-medium" :class="getAlertTextClass(alert.severity)">
                                         {{ alert.title }}
@@ -280,13 +273,13 @@
                                     <p class="text-sm" :class="getAlertDescriptionClass(alert.severity)">
                                         {{ alert.description }}
                                     </p>
-                                    <p class="text-xs mt-1" :class="getAlertDescriptionClass(alert.severity)">
+                                    <p class="mt-1 text-xs" :class="getAlertDescriptionClass(alert.severity)">
                                         {{ formatDate(alert.created_at) }}
                                     </p>
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="text-center py-8">
+                        <div v-else class="py-8 text-center">
                             <CheckCircleIcon class="mx-auto h-12 w-12 text-green-400" />
                             <h3 class="mt-2 text-sm font-medium text-gray-900">No Active Alerts</h3>
                             <p class="mt-1 text-sm text-gray-500">All systems are operating normally.</p>
@@ -299,24 +292,24 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
 import {
     ArrowLeftIcon,
     ArrowPathIcon,
-    CircleStackIcon,
     BoltIcon,
+    CheckCircleIcon,
+    CircleStackIcon,
+    ClockIcon,
+    CloudArrowUpIcon,
+    ExclamationTriangleIcon,
+    LockClosedIcon,
     QueueListIcon,
     ServerIcon,
     ShieldCheckIcon,
-    LockClosedIcon,
-    ExclamationTriangleIcon,
-    ClockIcon,
-    CloudArrowUpIcon,
-    CheckCircleIcon,
     XCircleIcon,
 } from '@heroicons/vue/24/outline';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';
+import { ref } from 'vue';
 
 const props = defineProps({
     health: Object,
@@ -326,10 +319,10 @@ const isRefreshing = ref(false);
 
 const getStatusColor = (status) => {
     const colors = {
-        'healthy': 'text-green-600',
-        'warning': 'text-yellow-600',
-        'critical': 'text-red-600',
-        'unknown': 'text-gray-600',
+        healthy: 'text-green-600',
+        warning: 'text-yellow-600',
+        critical: 'text-red-600',
+        unknown: 'text-gray-600',
     };
     return colors[status?.toLowerCase()] || 'text-gray-600';
 };
@@ -348,45 +341,45 @@ const getUsageBarColor = (usage) => {
 
 const getAlertBgClass = (severity) => {
     const classes = {
-        'critical': 'bg-red-50',
-        'warning': 'bg-yellow-50',
-        'info': 'bg-blue-50',
+        critical: 'bg-red-50',
+        warning: 'bg-yellow-50',
+        info: 'bg-blue-50',
     };
     return classes[severity] || 'bg-gray-50';
 };
 
 const getAlertIconClass = (severity) => {
     const classes = {
-        'critical': 'text-red-400',
-        'warning': 'text-yellow-400',
-        'info': 'text-blue-400',
+        critical: 'text-red-400',
+        warning: 'text-yellow-400',
+        info: 'text-blue-400',
     };
     return classes[severity] || 'text-gray-400';
 };
 
 const getAlertTextClass = (severity) => {
     const classes = {
-        'critical': 'text-red-800',
-        'warning': 'text-yellow-800',
-        'info': 'text-blue-800',
+        critical: 'text-red-800',
+        warning: 'text-yellow-800',
+        info: 'text-blue-800',
     };
     return classes[severity] || 'text-gray-800';
 };
 
 const getAlertDescriptionClass = (severity) => {
     const classes = {
-        'critical': 'text-red-700',
-        'warning': 'text-yellow-700',
-        'info': 'text-blue-700',
+        critical: 'text-red-700',
+        warning: 'text-yellow-700',
+        info: 'text-blue-700',
     };
     return classes[severity] || 'text-gray-700';
 };
 
 const getAlertIcon = (severity) => {
     const icons = {
-        'critical': XCircleIcon,
-        'warning': ExclamationTriangleIcon,
-        'info': CheckCircleIcon,
+        critical: XCircleIcon,
+        warning: ExclamationTriangleIcon,
+        info: CheckCircleIcon,
     };
     return icons[severity] || CheckCircleIcon;
 };

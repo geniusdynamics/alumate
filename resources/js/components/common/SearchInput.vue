@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -20,8 +20,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
     'update:modelValue': [value: string];
-    'search': [value: string];
-    'clear': [];
+    search: [value: string];
+    clear: [];
 }>();
 
 const inputValue = ref(props.modelValue);
@@ -30,15 +30,15 @@ let debounceTimer: NodeJS.Timeout | null = null;
 const handleInput = (e: Event) => {
     const target = e.target as HTMLInputElement;
     const value = target.value;
-    
+
     inputValue.value = value;
     emit('update:modelValue', value);
-    
+
     // Clear existing timer
     if (debounceTimer) {
         clearTimeout(debounceTimer);
     }
-    
+
     // Set new timer
     debounceTimer = setTimeout(() => {
         emit('search', value);
@@ -49,20 +49,23 @@ const clearSearch = () => {
     inputValue.value = '';
     emit('update:modelValue', '');
     emit('clear');
-    
+
     if (debounceTimer) {
         clearTimeout(debounceTimer);
     }
 };
 
-watch(() => props.modelValue, (newValue) => {
-    inputValue.value = newValue;
-});
+watch(
+    () => props.modelValue,
+    (newValue) => {
+        inputValue.value = newValue;
+    },
+);
 </script>
 
 <template>
     <div class="relative">
-        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
         <Input
             :value="inputValue"
             @input="handleInput"
@@ -75,7 +78,7 @@ watch(() => props.modelValue, (newValue) => {
             variant="ghost"
             size="sm"
             @click="clearSearch"
-            class="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8 p-0 hover:bg-transparent"
+            class="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2 transform p-0 hover:bg-transparent"
         >
             <X class="h-4 w-4" />
         </Button>

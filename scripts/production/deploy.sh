@@ -148,6 +148,10 @@ run_migrations() {
     php artisan migrate --force
 
     # Run tenant migrations
+    # Run analytics-specific migrations
+    log_info "Running analytics migrations..."
+    php artisan migrate --path=database/migrations/analytics --force
+    php artisan tenants:migrate --path=database/migrations/analytics --force
     php artisan tenants:migrate --force
 
     log_success "Database migrations completed"
@@ -181,6 +185,10 @@ optimize_application() {
         php artisan config:cache
         php artisan route:cache
         php artisan view:cache
+    # Warm up analytics caches
+    log_info "Warming up analytics caches..."
+    php artisan queue:work --once --name=analytics-cache-warmer --queue=analytics-cache
+    php artisan analytics:optimize-cache
         php artisan optimize
     fi
 
@@ -239,6 +247,15 @@ health_checks() {
     local health_url="${APP_URL:-http://localhost}/health"
     if command_exists curl; then
         if curl -f -s "$health_url" > /dev/null; then
+    # Check analytics API health
+    local analytics_api_url="${APP_URL:-http://localhost}/api/analytics/health"
+    if command_exists curl; then
+        if curl -f -s "$analytics_api_url" > /dev/null; then
+            log_success "Analytics API health check passed"
+        else
+            log_warning "Analytics API health check failed"
+        fi
+    fi
             log_success "Application health check passed"
         else
             log_warning "Application health check failed"

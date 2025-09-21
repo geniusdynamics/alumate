@@ -1,13 +1,24 @@
 <script setup lang="ts">
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { usePage, Link } from '@inertiajs/vue3';
 import AppLogo from '@/components/common/AppLogo.vue';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ChevronUp } from 'lucide-vue-next';
 import NotificationDropdown from '@/components/NotificationDropdown.vue';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarFooter,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarHeader,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from '@/components/ui/sidebar';
+import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/lib/navigation';
+import { Link, usePage } from '@inertiajs/vue3';
+import { ChevronUp } from 'lucide-vue-next';
 import { computed } from 'vue';
-import { graduateMenuItems, employerMenuItems, institutionAdminMenuItems, superAdminMenuItems, personalMenuItems } from '@/lib/navigation';
 
 const page = usePage();
 const user = computed(() => page.props.auth?.user);
@@ -26,7 +37,6 @@ const can = (item: any) => {
 };
 
 const renderableMenu = (items: any[]) => items.filter(can);
-
 </script>
 
 <template>
@@ -45,7 +55,7 @@ const renderableMenu = (items: any[]) => items.filter(can);
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
-        
+
         <SidebarContent class="space-y-4">
             <!-- Graduate Menu -->
             <SidebarGroup v-if="hasRole('graduate') && renderableMenu(graduateMenuItems).length > 0">
@@ -122,7 +132,7 @@ const renderableMenu = (items: any[]) => items.filter(can);
                 </SidebarGroupContent>
             </SidebarGroup>
         </SidebarContent>
-        
+
         <SidebarFooter>
             <SidebarMenu>
                 <SidebarMenuItem>
@@ -142,12 +152,8 @@ const renderableMenu = (items: any[]) => items.filter(can);
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent class="w-56" align="end" side="top">
-                            <DropdownMenuItem :as="Link" :href="route('settings.profile')">
-                                Settings
-                            </DropdownMenuItem>
-                            <DropdownMenuItem :as="Link" :href="route('logout')" method="post">
-                                Logout
-                            </DropdownMenuItem>
+                            <DropdownMenuItem :as="Link" :href="route('settings.profile')"> Settings </DropdownMenuItem>
+                            <DropdownMenuItem :as="Link" :href="route('logout')" method="post"> Logout </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </SidebarMenuItem>
@@ -155,4 +161,3 @@ const renderableMenu = (items: any[]) => items.filter(can);
         </SidebarFooter>
     </Sidebar>
 </template>
-

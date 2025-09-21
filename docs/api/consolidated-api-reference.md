@@ -10,11 +10,12 @@ This document provides a comprehensive reference for all APIs across the four in
 4. [Component Library System APIs](#component-library-system-apis)
 5. [Page Builder System APIs](#page-builder-system-apis)
 6. [Shared Endpoints](#shared-endpoints)
-7. [Rate Limiting](#rate-limiting)
-8. [Error Handling](#error-handling)
-9. [Data Formats](#data-formats)
-10. [SDKs](#sdks)
-11. [Examples](#examples)
+7. [Analytics API Endpoints (v1)](#analytics-api-endpoints-v1)
+8. [Rate Limiting](#rate-limiting)
+9. [Error Handling](#error-handling)
+10. [Data Formats](#data-formats)
+11. [SDKs](#sdks)
+12. [Examples](#examples)
 
 ## Authentication
 
@@ -1089,6 +1090,424 @@ Retrieves analytics metrics.
 #### Mark All as Read
 
 **PUT** `/api/v1/notifications/read-all`
+
+## Analytics API Endpoints (v1)
+
+The Analytics API provides endpoints for tracking user events, collecting heatmap data, running A/B tests, and monitoring gamification metrics. All endpoints are tenant-isolated and support real-time data processing.
+
+### Event Tracking
+
+#### Track User Event
+
+**POST** `/api/v1/analytics/events`
+
+Records a user interaction event for engagement analysis.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `event_type` | string | Yes | Type of event (e.g., page_view, button_click, form_submit) |
+| `user_id` | integer | No | User identifier (auto-scoped from token if not provided) |
+| `metadata` | JSON object | No | Additional event data |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X POST https://api.alumni-platform.com/api/v1/analytics/events \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "event_type": "page_view",
+    "metadata": {
+      "page_url": "/career-network",
+      "referrer": "https://google.com",
+      "user_agent": "Mozilla/5.0..."
+    }
+  }'
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `201` | Event created successfully |
+| `200` | Event processed with ID: `{ "success": true, "event_id": "uuid" }` |
+
+**Errors:**
+- `400`: Invalid data provided
+- `401`: Unauthorized access
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
+
+#### Get Events
+
+**GET** `/api/v1/analytics/events`
+
+Retrieves tracked events with optional filtering.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `date_range` | string | No | Date range filter (format: "2024-01-01,2024-01-31") |
+| `filters` | JSON object | No | Additional filters (event_type, user_id, etc.) |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X GET "https://api.alumni-platform.com/api/v1/analytics/events?date_range=2024-01-01,2024-01-31&filters[event_type]=page_view" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `200` | Successfully retrieved events: `{ "data": [...], "meta": {...} }` |
+| `204` | No events found |
+
+**Errors:**
+- `400`: Invalid date range or filters
+- `401`: Unauthorized access
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
+
+### Heatmaps
+
+#### Get Heatmap Data
+
+**GET** `/api/v1/analytics/heatmaps/{page_id}`
+
+Retrieves heatmap data for a specific page.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `page_id` | string | Yes | Page identifier |
+| `zoom_level` | integer | No | Zoom level for heatmap granularity |
+| `date_range` | string | No | Date range filter (format: "2024-01-01,2024-01-31") |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X GET "https://api.alumni-platform.com/api/v1/analytics/heatmaps/career-network-page?zoom_level=2&date_range=2024-01-01,2024-01-31" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `200` | Successfully retrieved heatmap data: `{ "data": {...}, "meta": {...} }` |
+| `204` | No heatmap data found |
+
+**Errors:**
+- `400`: Invalid page_id or parameters
+- `401`: Unauthorized access
+- `404`: Page not found
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `50`: Internal server error
+
+#### Record Heatmap Click
+
+**POST** `/api/v1/analytics/heatmaps/record-click`
+
+Records a user click for heatmap generation.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `page_id` | string | Yes | Page identifier |
+| `x_coordinate` | integer | Yes | X coordinate of click |
+| `y_coordinate` | integer | Yes | Y coordinate of click |
+| `element_id` | string | No | ID of clicked element |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X POST https://api.alumni-platform.com/api/v1/analytics/heatmaps/record-click \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "page_id": "career-network-page",
+    "x_coordinate": 350,
+    "y_coordinate": 220,
+    "element_id": "cta-button"
+  }'
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `201` | Click recorded successfully |
+| `200` | Click processed with ID: `{ "success": true, "click_id": "uuid" }` |
+
+**Errors:**
+- `400`: Invalid coordinates or page_id
+- `401`: Unauthorized access
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
+
+### A/B Testing
+
+#### Create A/B Test
+
+**POST** `/api/v1/analytics/ab-tests`
+
+Creates a new A/B test for component variants.
+
+**Authentication:** Bearer token (admin role)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | string | Yes | Name of the A/B test |
+| `variants` | array | Yes | Array of test variants |
+| `goals` | array | Yes | Array of test goals |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X POST https://api.alumni-platform.com/api/v1/analytics/ab-tests \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Homepage CTA Button Test",
+    "variants": [
+      { "id": "A", "config": { "color": "blue" } },
+      { "id": "B", "config": { "color": "green" } }
+    ],
+    "goals": ["click", "conversion"]
+  }'
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `201` | A/B test created successfully: `{ "data": {...} }` |
+| `200` | A/B test processed |
+
+**Errors:**
+- `400`: Invalid test configuration
+- `401`: Unauthorized access
+- `403`: Insufficient permissions (admin required)
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
+
+#### Get A/B Test Results
+
+**GET** `/api/v1/analytics/ab-tests/{id}`
+
+Retrieves results for a specific A/B test.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | string | Yes | A/B test identifier |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X GET "https://api.alumni-platform.com/api/v1/analytics/ab-tests/test-123" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `200` | Successfully retrieved test results: `{ "data": { "stats": {...}, "p_value": 0.05 }, "meta": {...} }` |
+| `204` | Test not found or no results available |
+
+**Errors:**
+- `400`: Invalid test ID
+- `401`: Unauthorized access
+- `404`: Test not found
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
+
+#### Assign Variant
+
+**POST** `/api/v1/analytics/ab-tests/{id}/assign-variant`
+
+Assigns a variant to a user for an A/B test.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | string | Yes | A/B test identifier |
+| `user_id` | integer | Yes | User identifier |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X POST https://api.alumni-platform.com/api/v1/analytics/ab-tests/test-123/assign-variant \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": 456
+  }'
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `200` | Variant assigned successfully: `{ "data": { "variant": "A" } }` |
+| `201` | New assignment created |
+
+**Errors:**
+- `400`: Invalid test ID or user ID
+- `401`: Unauthorized access
+- `404`: Test not found
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
+
+### Gamification Metrics
+
+#### Record Gamification Event
+
+**POST** `/api/v1/analytics/gamification/events`
+
+Records a gamification event (e.g., points earned, achievements unlocked).
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `action` | string | Yes | Gamification action (e.g., login, profile_complete, event_attend) |
+| `points` | integer | Yes | Points awarded for the action |
+| `user_id` | integer | No | User identifier (auto-scoped from token if not provided) |
+| `metadata` | JSON object | No | Additional event data |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X POST https://api.alumni-platform.com/api/v1/analytics/gamification/events \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "profile_complete",
+    "points": 50,
+    "metadata": {
+      "completion_percentage": 100
+    }
+  }'
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `201` | Gamification event recorded successfully |
+| `200` | Event processed with ID: `{ "success": true, "event_id": "uuid" }` |
+
+**Errors:**
+- `400`: Invalid action or points value
+- `401`: Unauthorized access
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
+
+#### Get Leaderboard
+
+**GET** `/api/v1/analytics/gamification/leaderboards`
+
+Retrieves gamification leaderboard with optional time period filtering.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `period` | string | No | Time period filter (week, month, year, all_time) |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X GET "https://api.alumni-platform.com/api/v1/analytics/gamification/leaderboards?period=month" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `200` | Successfully retrieved leaderboard: `{ "data": [...], "meta": {...} }` |
+| `204` | No leaderboard data found |
+
+**Errors:**
+- `400`: Invalid period parameter
+- `401`: Unauthorized access
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `50`: Internal server error
+
+#### Get User Progress
+
+**GET** `/api/v1/analytics/gamification/user/{id}/progress`
+
+Retrieves gamification progress for a specific user.
+
+**Authentication:** Bearer token (user/admin roles)
+
+**Parameters:**
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `id` | integer | Yes | User identifier |
+| `tenant_id` | string | No | Tenant identifier (auto-scoped) |
+
+**Request Example:**
+
+```bash
+curl -X GET "https://api.alumni-platform.com/api/v1/analytics/gamification/user/456/progress" \
+  -H "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9..."
+```
+
+**Response:**
+
+| Status Code | Description |
+|-------------|-------------|
+| `200` | Successfully retrieved user progress: `{ "data": {...}, "meta": {...} }` |
+| `204` | No progress data found for user |
+
+**Errors:**
+- `400`: Invalid user ID
+- `401`: Unauthorized access
+- `404`: User not found
+- `429`: Rate limit exceeded (1000 requests/hour)
+- `500`: Internal server error
 
 ## Rate Limiting
 

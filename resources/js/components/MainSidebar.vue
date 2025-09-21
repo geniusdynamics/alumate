@@ -5,19 +5,7 @@ import NavUser from '@/components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
-import { 
-    BookOpen, 
-    Folder, 
-    LayoutGrid, 
-    Users, 
-    Briefcase, 
-    Calendar, 
-    Trophy, 
-    MessageSquare,
-    MapPin,
-    GraduationCap,
-    Heart
-} from 'lucide-vue-next';
+import { BookOpen, Briefcase, Calendar, Folder, GraduationCap, Heart, LayoutGrid, MessageSquare, Trophy, Users } from 'lucide-vue-next';
 import SidebarLogo from './SidebarLogo.vue';
 import HelpButton from './onboarding/HelpButton.vue';
 

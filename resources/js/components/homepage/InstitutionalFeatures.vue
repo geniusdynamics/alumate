@@ -1,11 +1,11 @@
 <template>
-  <section class="institutional-features">
-    <!-- Component placeholder for institutional features -->
-    <div class="container mx-auto px-4">
-      <h2 class="text-3xl font-bold text-center mb-8">Enterprise Solutions</h2>
-      <!-- Institutional features will be implemented in later tasks -->
-    </div>
-  </section>
+    <section class="institutional-features">
+        <!-- Component placeholder for institutional features -->
+        <div class="container mx-auto px-4">
+            <h2 class="mb-8 text-center text-3xl font-bold">Enterprise Solutions</h2>
+            <!-- Institutional features will be implemented in later tasks -->
+        </div>
+    </section>
 </template>
 
 <script setup lang="ts">
@@ -14,6 +14,6 @@
 
 <style scoped>
 .institutional-features {
-  @apply py-16 bg-white;
+    @apply bg-white py-16;
 }
 </style>

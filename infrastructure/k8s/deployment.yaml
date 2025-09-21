@@ -80,11 +80,11 @@ spec:
               key: dsn
         resources:
           requests:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "2Gi"
+            cpu: "2000m"
           limits:
-            memory: "1Gi"
-            cpu: "1000m"
+            memory: "2Gi"
+            cpu: "2000m"
         livenessProbe:
           httpGet:
             path: /health
@@ -112,10 +112,38 @@ spec:
         volumeMounts:
         - name: storage
           mountPath: /var/www/html/storage
+       - name: redis-sidecar
+         image: redis:7-alpine
+         ports:
+         - containerPort: 6379
+           name: redis
+         env:
+         - name: REDIS_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: redis-secret
+               key: password
+         resources:
+           requests:
+             memory: "256Mi"
+             cpu: "100m"
+           limits:
+             memory: "512Mi"
+             cpu: "200m"
+         volumeMounts:
+         - name: redis-data
+           mountPath: /data
       volumes:
       - name: storage
         persistentVolumeClaim:
           claimName: alumni-platform-storage-pvc
+       volumes:
+       - name: storage
+         persistentVolumeClaim:
+           claimName: alumni-platform-storage-pvc
+       - name: redis-data
+         persistentVolumeClaim:
+           claimName: redis-data-pvc
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -162,8 +190,8 @@ spec:
             memory: "256Mi"
             cpu: "250m"
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "2Gi"
+            cpu: "2000m"
         livenessProbe:
           httpGet:
             path: /health
@@ -226,8 +254,8 @@ spec:
             memory: "256Mi"
             cpu: "250m"
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "2Gi"
+            cpu: "2000m"
         livenessProbe:
           httpGet:
             path: /health
@@ -290,8 +318,8 @@ spec:
             memory: "256Mi"
             cpu: "250m"
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: "2Gi"
+            cpu: "2000m"
         livenessProbe:
           httpGet:
             path: /health

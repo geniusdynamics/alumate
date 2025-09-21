@@ -810,7 +810,7 @@ Route::prefix('analytics')->group(function () {
 // Analytics routes
 Route::prefix('analytics')->group(function () {
     // Event tracking endpoints
-    Route::post('events', [App\Http\Controllers\AnalyticsController::class, 'storeEvents']);
+    Route::post('events', [App\Http\Controllers\Api\AnalyticsController::class, 'storeEvents'])->middleware(['auth:sanctum', 'throttle:analytics_events']);
     Route::post('conversion', [App\Http\Controllers\AnalyticsController::class, 'storeConversion']);
     Route::post('error', [App\Http\Controllers\AnalyticsController::class, 'storeError']);
 
@@ -822,21 +822,16 @@ Route::prefix('analytics')->group(function () {
 });
 
 // A/B Testing routes
-Route::prefix('ab-tests')->group(function () {
-    // Public endpoints for test participation
-    Route::get('active', [App\Http\Controllers\ABTestController::class, 'getActiveTests']);
-    Route::post('assignments', [App\Http\Controllers\ABTestController::class, 'storeAssignment']);
-    Route::post('conversions', [App\Http\Controllers\ABTestController::class, 'storeConversion']);
+Route::middleware(['auth:sanctum', 'throttle:api'])->prefix('ab-tests')->group(function () {
+    // Test management endpoints
+    Route::get('/', [App\Http\Controllers\Api\AbTestController::class, 'index']);
+    Route::post('/', [App\Http\Controllers\Api\AbTestController::class, 'store']);
+    Route::get('{id}', [App\Http\Controllers\Api\AbTestController::class, 'show']);
+    Route::put('{id}', [App\Http\Controllers\Api\AbTestController::class, 'update']);
+    Route::delete('{id}', [App\Http\Controllers\Api\AbTestController::class, 'destroy']);
 
-    // Test results and statistics
-    Route::get('{testId}/results', [App\Http\Controllers\ABTestController::class, 'getTestResults']);
-    Route::get('{testId}/statistics', [App\Http\Controllers\ABTestController::class, 'getTestStatistics']);
-
-    // Admin endpoints for test management (add auth middleware in production)
-    Route::get('/', [App\Http\Controllers\ABTestController::class, 'getAllTests']);
-    Route::post('/', [App\Http\Controllers\ABTestController::class, 'createTest']);
-    Route::patch('{testId}', [App\Http\Controllers\ABTestController::class, 'updateTest']);
-    Route::delete('{testId}', [App\Http\Controllers\ABTestController::class, 'deleteTest']);
+    // Test results endpoint
+    Route::get('{id}/results', [App\Http\Controllers\Api\AbTestController::class, 'results']);
 });
 
 // Performance monitoring routes
@@ -903,6 +898,10 @@ Route::middleware(['auth:sanctum', 'role:admin|super_admin'])->prefix('analytics
         Route::post('track', [App\Http\Controllers\Api\AnalyticsController::class, 'trackEmailEvent']);
         Route::get('dashboard', [App\Http\Controllers\Api\AnalyticsController::class, 'getEmailDashboard']);
     });
+
+    // Heat Map routes
+    Route::get('heatmaps/{pageUrl}', [App\Http\Controllers\Api\AnalyticsController::class, 'getHeatMapData'])->middleware('throttle:analytics_heatmaps');
+    Route::post('heatmaps/generate', [App\Http\Controllers\Api\AnalyticsController::class, 'generateHeatMapData'])->middleware('throttle:analytics_heatmaps');
 });
 
 // Calendar Integration routes

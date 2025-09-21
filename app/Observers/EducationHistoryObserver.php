@@ -6,6 +6,7 @@ use App\Jobs\UpdateUserCirclesJob;
 use App\Models\EducationHistory;
 use App\Services\CachingStrategyService;
 use App\Services\ComponentCachingService;
+use App\Models\AnalyticsEvent;
 use Illuminate\Support\Facades\Log;
 
 class EducationHistoryObserver
@@ -31,6 +32,24 @@ class EducationHistoryObserver
     public function created(EducationHistory $educationHistory): void
     {
         try {
+            // Track education history creation for career analytics
+            AnalyticsEvent::create([
+                'event_type' => 'education_added',
+                'event_category' => 'career_analytics',
+                'user_id' => $educationHistory->user_id,
+                'tenant_id' => $educationHistory->tenant_id ?? null,
+                'event_data' => [
+                    'education_id' => $educationHistory->id,
+                    'institution' => $educationHistory->institution,
+                    'degree' => $educationHistory->degree,
+                    'field_of_study' => $educationHistory->field_of_study,
+                    'graduation_year' => $educationHistory->graduation_year,
+                    'timestamp' => now(),
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
             $this->updateUserCircles($educationHistory);
         } catch (\Exception $e) {
             Log::error('Failed to handle education history created event', [
@@ -46,6 +65,24 @@ class EducationHistoryObserver
     public function updated(EducationHistory $educationHistory): void
     {
         try {
+            // Track education history update for career analytics
+            AnalyticsEvent::create([
+                'event_type' => 'education_updated',
+                'event_category' => 'career_analytics',
+                'user_id' => $educationHistory->user_id,
+                'tenant_id' => $educationHistory->tenant_id ?? null,
+                'event_data' => [
+                    'education_id' => $educationHistory->id,
+                    'institution' => $educationHistory->institution,
+                    'degree' => $educationHistory->degree,
+                    'field_of_study' => $educationHistory->field_of_study,
+                    'graduation_year' => $educationHistory->graduation_year,
+                    'timestamp' => now(),
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
             $this->updateUserCircles($educationHistory);
         } catch (\Exception $e) {
             Log::error('Failed to handle education history updated event', [
@@ -61,6 +98,24 @@ class EducationHistoryObserver
     public function deleted(EducationHistory $educationHistory): void
     {
         try {
+            // Track education history deletion for career analytics
+            AnalyticsEvent::create([
+                'event_type' => 'education_deleted',
+                'event_category' => 'career_analytics',
+                'user_id' => $educationHistory->user_id,
+                'tenant_id' => $educationHistory->tenant_id ?? null,
+                'event_data' => [
+                    'education_id' => $educationHistory->id,
+                    'institution' => $educationHistory->institution,
+                    'degree' => $educationHistory->degree,
+                    'field_of_study' => $educationHistory->field_of_study,
+                    'graduation_year' => $educationHistory->graduation_year,
+                    'timestamp' => now(),
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
             $this->updateUserCircles($educationHistory);
         } catch (\Exception $e) {
             Log::error('Failed to handle education history deleted event', [

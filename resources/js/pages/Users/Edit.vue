@@ -54,7 +54,7 @@ const submit = () => {
                     <div class="grid gap-2">
                         <Label for="password">Password</Label>
                         <Input id="password" v-model="form.password" type="password" />
-                        <p class="text-muted-foreground text-sm">Leave blank to keep the current password.</p>
+                        <p class="text-sm text-muted-foreground">Leave blank to keep the current password.</p>
                         <InputError :message="form.errors.password" />
                     </div>
 

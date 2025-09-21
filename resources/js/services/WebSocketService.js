@@ -10,7 +10,7 @@ class WebSocketService {
         this.reconnectDelay = 1000;
         this.listeners = new Map();
         this.channels = new Map();
-        
+
         this.init();
     }
 
@@ -31,7 +31,7 @@ class WebSocketService {
                 auth: {
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-                        'Authorization': `Bearer ${this.getAuthToken()}`,
+                        Authorization: `Bearer ${this.getAuthToken()}`,
                     },
                 },
                 authEndpoint: '/broadcasting/auth',
@@ -39,7 +39,7 @@ class WebSocketService {
 
             this.setupConnectionHandlers();
             this.isConnected = true;
-            
+
             console.log('WebSocket service initialized successfully');
         } catch (error) {
             console.error('Failed to initialize WebSocket service:', error);
@@ -52,9 +52,10 @@ class WebSocketService {
      */
     getAuthToken() {
         // Try to get token from various sources
-        const token = localStorage.getItem('auth_token') || 
-                     sessionStorage.getItem('auth_token') ||
-                     document.querySelector('meta[name="api-token"]')?.getAttribute('content');
+        const token =
+            localStorage.getItem('auth_token') ||
+            sessionStorage.getItem('auth_token') ||
+            document.querySelector('meta[name="api-token"]')?.getAttribute('content');
         return token;
     }
 
@@ -105,9 +106,9 @@ class WebSocketService {
 
         this.reconnectAttempts++;
         const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-        
+
         console.log(`Scheduling reconnection attempt ${this.reconnectAttempts} in ${delay}ms`);
-        
+
         setTimeout(() => {
             this.reconnect();
         }, delay);
@@ -150,7 +151,7 @@ class WebSocketService {
         }
 
         const fullChannelName = `private-${channelName}`;
-        
+
         if (this.channels.has(fullChannelName)) {
             return this.channels.get(fullChannelName);
         }
@@ -170,7 +171,7 @@ class WebSocketService {
         }
 
         const fullChannelName = `presence-${channelName}`;
-        
+
         if (this.channels.has(fullChannelName)) {
             return this.channels.get(fullChannelName);
         }
@@ -187,13 +188,9 @@ class WebSocketService {
         if (!this.echo) return;
 
         // Try different channel name formats
-        const channelVariants = [
-            channelName,
-            `private-${channelName}`,
-            `presence-${channelName}`
-        ];
+        const channelVariants = [channelName, `private-${channelName}`, `presence-${channelName}`];
 
-        channelVariants.forEach(variant => {
+        channelVariants.forEach((variant) => {
             if (this.channels.has(variant)) {
                 this.echo.leave(channelName);
                 this.channels.delete(variant);
@@ -297,7 +294,7 @@ class WebSocketService {
      */
     emit(event, data = null) {
         if (this.listeners.has(event)) {
-            this.listeners.get(event).forEach(callback => {
+            this.listeners.get(event).forEach((callback) => {
                 try {
                     callback(data);
                 } catch (error) {
@@ -335,12 +332,12 @@ class WebSocketService {
                     console.warn(`Error leaving channel ${channelName}:`, error);
                 }
             });
-            
+
             this.channels.clear();
             this.echo.disconnect();
             this.echo = null;
         }
-        
+
         this.isConnected = false;
         this.listeners.clear();
     }

@@ -5,12 +5,15 @@ This directory contains a comprehensive set of CTA components designed for the a
 ## Components Overview
 
 ### CTABase.vue
+
 The main wrapper component that handles routing to specific CTA types and provides common functionality like analytics tracking and A/B testing.
 
 ### CTAButton.vue
+
 A versatile button component with multiple styles, sizes, and interactive states.
 
 **Features:**
+
 - Multiple styles: primary, secondary, outline, ghost, link
 - Multiple sizes: xs, sm, md, lg, xl
 - Icon support with positioning options
@@ -21,31 +24,34 @@ A versatile button component with multiple styles, sizes, and interactive states
 - Conversion tracking
 
 **Usage:**
+
 ```vue
 <CTAButton
-  :config="{
-    text: 'Join Our Network',
-    url: '/signup',
-    style: 'primary',
-    size: 'lg',
-    icon: {
-      name: 'arrow-right',
-      position: 'right'
-    },
-    trackingParams: {
-      utm_source: 'homepage',
-      utm_medium: 'cta_button'
-    }
-  }"
-  @click="handleClick"
-  @conversion="handleConversion"
+    :config="{
+        text: 'Join Our Network',
+        url: '/signup',
+        style: 'primary',
+        size: 'lg',
+        icon: {
+            name: 'arrow-right',
+            position: 'right',
+        },
+        trackingParams: {
+            utm_source: 'homepage',
+            utm_medium: 'cta_button',
+        },
+    }"
+    @click="handleClick"
+    @conversion="handleConversion"
 />
 ```
 
 ### CTABanner.vue
+
 A full-width banner component for hero sections and promotional content.
 
 **Features:**
+
 - Multiple layouts: left-aligned, center-aligned, right-aligned, split
 - Multiple heights: compact, medium, large, full-screen
 - Background image support with overlay
@@ -55,31 +61,34 @@ A full-width banner component for hero sections and promotional content.
 - Content positioning options
 
 **Usage:**
+
 ```vue
 <CTABanner
-  :config="{
-    title: 'Connect with Alumni Worldwide',
-    subtitle: 'Your next opportunity awaits',
-    layout: 'center-aligned',
-    height: 'large',
-    primaryCTA: {
-      text: 'Get Started',
-      url: '/signup',
-      style: 'primary',
-      size: 'lg'
-    },
-    backgroundImage: {
-      url: '/images/hero-bg.jpg',
-      alt: 'Alumni networking'
-    }
-  }"
+    :config="{
+        title: 'Connect with Alumni Worldwide',
+        subtitle: 'Your next opportunity awaits',
+        layout: 'center-aligned',
+        height: 'large',
+        primaryCTA: {
+            text: 'Get Started',
+            url: '/signup',
+            style: 'primary',
+            size: 'lg',
+        },
+        backgroundImage: {
+            url: '/images/hero-bg.jpg',
+            alt: 'Alumni networking',
+        },
+    }"
 />
 ```
 
 ### CTAInlineLink.vue
+
 A contextual link component for use within content.
 
 **Features:**
+
 - Multiple styles: default, underline, button-like, arrow, external
 - Icon support
 - External link detection and indicators
@@ -88,33 +97,35 @@ A contextual link component for use within content.
 - Keyboard shortcuts
 
 **Usage:**
+
 ```vue
 <CTAInlineLink
-  :config="{
-    text: 'Learn more about our platform',
-    url: '/about',
-    style: 'arrow',
-    size: 'base',
-    openInNewTab: false
-  }"
+    :config="{
+        text: 'Learn more about our platform',
+        url: '/about',
+        style: 'arrow',
+        size: 'base',
+        openInNewTab: false,
+    }"
 />
 ```
 
 ## Configuration Types
 
 ### CTAComponentConfig
+
 The main configuration interface that determines which type of CTA to render.
 
 ```typescript
 interface CTAComponentConfig {
-  type: 'button' | 'banner' | 'inline-link'
-  buttonConfig?: CTAButtonConfig
-  bannerConfig?: CTABannerConfig
-  inlineLinkConfig?: CTAInlineLinkConfig
-  theme?: 'default' | 'minimal' | 'modern' | 'classic'
-  colorScheme?: 'default' | 'primary' | 'secondary' | 'accent'
-  trackingEnabled?: boolean
-  abTest?: ABTestConfig
+    type: 'button' | 'banner' | 'inline-link';
+    buttonConfig?: CTAButtonConfig;
+    bannerConfig?: CTABannerConfig;
+    inlineLinkConfig?: CTAInlineLinkConfig;
+    theme?: 'default' | 'minimal' | 'modern' | 'classic';
+    colorScheme?: 'default' | 'primary' | 'secondary' | 'accent';
+    trackingEnabled?: boolean;
+    abTest?: ABTestConfig;
 }
 ```
 
@@ -134,23 +145,23 @@ Components support A/B testing through the `useABTesting` composable:
 
 ```typescript
 const abTestConfig = {
-  enabled: true,
-  testId: 'signup_button_test',
-  variants: [
-    {
-      id: 'control',
-      name: 'Original',
-      weight: 50,
-      config: { buttonConfig: { text: 'Join Now' } }
-    },
-    {
-      id: 'variant_a',
-      name: 'Action Focused',
-      weight: 50,
-      config: { buttonConfig: { text: 'Start Today' } }
-    }
-  ]
-}
+    enabled: true,
+    testId: 'signup_button_test',
+    variants: [
+        {
+            id: 'control',
+            name: 'Original',
+            weight: 50,
+            config: { buttonConfig: { text: 'Join Now' } },
+        },
+        {
+            id: 'variant_a',
+            name: 'Action Focused',
+            weight: 50,
+            config: { buttonConfig: { text: 'Start Today' } },
+        },
+    ],
+};
 ```
 
 ### Accessibility Features
@@ -170,9 +181,9 @@ Components use CSS custom properties for theming:
 
 ```css
 .cta-button {
-  background-color: var(--cta-bg, theme('colors.blue.600'));
-  color: var(--cta-text, theme('colors.white'));
-  border-color: var(--cta-border, transparent);
+    background-color: var(--cta-bg, theme('colors.blue.600'));
+    color: var(--cta-text, theme('colors.white'));
+    border-color: var(--cta-border, transparent);
 }
 ```
 
@@ -195,24 +206,27 @@ Components use CSS custom properties for theming:
 The `ctaSampleData.ts` file provides comprehensive sample configurations for all CTA types and audience segments:
 
 ```typescript
-import { getCTASampleData } from '@/data/ctaSampleData'
+import { getCTASampleData } from '@/data/ctaSampleData';
 
 // Get sample CTAs for individual audience
-const individualCTAs = getCTASampleData('individual')
+const individualCTAs = getCTASampleData('individual');
 
 // Get specific CTA type sample
-const buttonSample = getSampleCTAByType('button')
+const buttonSample = getSampleCTAByType('button');
 ```
 
 ## Composables
 
 ### useAnalytics
+
 Handles all analytics tracking for CTA interactions.
 
 ### useABTesting
+
 Manages A/B test variant assignment and tracking.
 
 ### useConversionTracking
+
 Tracks conversion events and attribution data.
 
 ## Testing
@@ -224,6 +238,7 @@ Components include comprehensive test coverage:
 - **Vue Component Tests**: Vue-specific functionality and rendering
 
 Run tests with:
+
 ```bash
 php artisan test --filter=CTA
 ```
@@ -238,6 +253,7 @@ php artisan test --filter=CTA
 ## Browser Support
 
 Components are tested and supported in:
+
 - Chrome 90+
 - Firefox 88+
 - Safari 14+

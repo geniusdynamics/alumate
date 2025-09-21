@@ -5,30 +5,30 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
-import Chart from 'chart.js/auto'
+import Chart from 'chart.js/auto';
+import { nextTick, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     data: {
         type: Object,
-        required: true
+        required: true,
     },
     type: {
         type: String,
-        default: 'line'
+        default: 'line',
     },
     height: {
         type: Number,
-        default: 400
+        default: 400,
     },
     options: {
         type: Object,
-        default: () => ({})
-    }
-})
+        default: () => ({}),
+    },
+});
 
-const chartCanvas = ref(null)
-let chartInstance = null
+const chartCanvas = ref(null);
+let chartInstance = null;
 
 const defaultOptions = {
     responsive: true,
@@ -40,29 +40,29 @@ const defaultOptions = {
         tooltip: {
             mode: 'index',
             intersect: false,
-        }
+        },
     },
     scales: {
         x: {
             display: true,
             grid: {
-                display: false
-            }
+                display: false,
+            },
         },
         y: {
             display: true,
             beginAtZero: true,
             grid: {
-                color: 'rgba(0, 0, 0, 0.1)'
-            }
-        }
+                color: 'rgba(0, 0, 0, 0.1)',
+            },
+        },
     },
     interaction: {
         mode: 'nearest',
         axis: 'x',
-        intersect: false
-    }
-}
+        intersect: false,
+    },
+};
 
 const getChartConfig = () => {
     const config = {
@@ -70,96 +70,103 @@ const getChartConfig = () => {
         data: props.data,
         options: {
             ...defaultOptions,
-            ...props.options
-        }
-    }
+            ...props.options,
+        },
+    };
 
     // Customize based on chart type
     if (props.type === 'line') {
         config.options.elements = {
             line: {
-                tension: 0.4
+                tension: 0.4,
             },
             point: {
                 radius: 4,
-                hoverRadius: 6
-            }
-        }
+                hoverRadius: 6,
+            },
+        };
     }
 
     if (props.type === 'bar') {
         config.options.scales.x.grid = {
-            display: false
-        }
+            display: false,
+        };
     }
 
     if (props.type === 'area') {
-        config.type = 'line'
+        config.type = 'line';
         if (config.data.datasets) {
-            config.data.datasets.forEach(dataset => {
-                dataset.fill = true
-                dataset.backgroundColor = dataset.backgroundColor || 'rgba(99, 102, 241, 0.1)'
-            })
+            config.data.datasets.forEach((dataset) => {
+                dataset.fill = true;
+                dataset.backgroundColor = dataset.backgroundColor || 'rgba(99, 102, 241, 0.1)';
+            });
         }
     }
 
     if (props.type === 'funnel') {
-        config.type = 'bar'
-        config.options.indexAxis = 'y'
+        config.type = 'bar';
+        config.options.indexAxis = 'y';
         config.options.scales = {
             x: {
-                beginAtZero: true
+                beginAtZero: true,
             },
             y: {
                 grid: {
-                    display: false
-                }
-            }
-        }
+                    display: false,
+                },
+            },
+        };
     }
 
-    return config
-}
+    return config;
+};
 
 const createChart = () => {
     if (chartInstance) {
-        chartInstance.destroy()
+        chartInstance.destroy();
     }
 
     if (!chartCanvas.value || !props.data) {
-        return
+        return;
     }
 
-    const ctx = chartCanvas.value.getContext('2d')
-    chartInstance = new Chart(ctx, getChartConfig())
-}
+    const ctx = chartCanvas.value.getContext('2d');
+    chartInstance = new Chart(ctx, getChartConfig());
+};
 
 const updateChart = () => {
     if (!chartInstance || !props.data) {
-        return
+        return;
     }
 
-    chartInstance.data = props.data
-    chartInstance.update('active')
-}
+    chartInstance.data = props.data;
+    chartInstance.update('active');
+};
 
 onMounted(() => {
     nextTick(() => {
-        createChart()
-    })
-})
+        createChart();
+    });
+});
 
-watch(() => props.data, () => {
-    if (chartInstance) {
-        updateChart()
-    } else {
-        createChart()
-    }
-}, { deep: true })
+watch(
+    () => props.data,
+    () => {
+        if (chartInstance) {
+            updateChart();
+        } else {
+            createChart();
+        }
+    },
+    { deep: true },
+);
 
-watch(() => props.type, () => {
-    createChart()
-})
+watch(
+    () => props.type,
+    () => {
+        createChart();
+    },
+);
 </script>
 
 <style scoped>

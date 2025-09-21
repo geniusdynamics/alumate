@@ -1,6 +1,6 @@
-import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
-import { usePage } from '@inertiajs/vue3';
 import webSocketService from '@/Services/WebSocketService';
+import { usePage } from '@inertiajs/vue3';
+import { computed, onUnmounted, ref, watch } from 'vue';
 
 export function useRealTimeUpdates() {
     const page = usePage();
@@ -55,13 +55,10 @@ export function useRealTimeUpdates() {
     const listenForTimelineUpdates = (callback) => {
         if (!currentUser.value) return null;
 
-        const unsubscribe = webSocketService.listenForTimelineUpdates(
-            currentUser.value.id,
-            (data) => {
-                lastActivity.value = new Date();
-                callback(data);
-            }
-        );
+        const unsubscribe = webSocketService.listenForTimelineUpdates(currentUser.value.id, (data) => {
+            lastActivity.value = new Date();
+            callback(data);
+        });
 
         if (unsubscribe) {
             unsubscribeFunctions.value.push(unsubscribe);
@@ -74,13 +71,10 @@ export function useRealTimeUpdates() {
      * Listen for post engagement updates
      */
     const listenForPostEngagement = (postId, callback) => {
-        const unsubscribe = webSocketService.listenForPostEngagement(
-            postId,
-            (data) => {
-                lastActivity.value = new Date();
-                callback(data);
-            }
-        );
+        const unsubscribe = webSocketService.listenForPostEngagement(postId, (data) => {
+            lastActivity.value = new Date();
+            callback(data);
+        });
 
         if (unsubscribe) {
             unsubscribeFunctions.value.push(unsubscribe);
@@ -95,13 +89,10 @@ export function useRealTimeUpdates() {
     const listenForConnectionRequests = (callback) => {
         if (!currentUser.value) return null;
 
-        const unsubscribe = webSocketService.listenForConnectionRequests(
-            currentUser.value.id,
-            (data) => {
-                lastActivity.value = new Date();
-                callback(data);
-            }
-        );
+        const unsubscribe = webSocketService.listenForConnectionRequests(currentUser.value.id, (data) => {
+            lastActivity.value = new Date();
+            callback(data);
+        });
 
         if (unsubscribe) {
             unsubscribeFunctions.value.push(unsubscribe);
@@ -114,13 +105,10 @@ export function useRealTimeUpdates() {
      * Listen for circle activity
      */
     const listenForCircleActivity = (circleId, callback) => {
-        const unsubscribe = webSocketService.listenForCircleActivity(
-            circleId,
-            (data) => {
-                lastActivity.value = new Date();
-                callback(data);
-            }
-        );
+        const unsubscribe = webSocketService.listenForCircleActivity(circleId, (data) => {
+            lastActivity.value = new Date();
+            callback(data);
+        });
 
         if (unsubscribe) {
             unsubscribeFunctions.value.push(unsubscribe);
@@ -133,13 +121,10 @@ export function useRealTimeUpdates() {
      * Listen for group activity
      */
     const listenForGroupActivity = (groupId, callback) => {
-        const unsubscribe = webSocketService.listenForGroupActivity(
-            groupId,
-            (data) => {
-                lastActivity.value = new Date();
-                callback(data);
-            }
-        );
+        const unsubscribe = webSocketService.listenForGroupActivity(groupId, (data) => {
+            lastActivity.value = new Date();
+            callback(data);
+        });
 
         if (unsubscribe) {
             unsubscribeFunctions.value.push(unsubscribe);
@@ -152,12 +137,10 @@ export function useRealTimeUpdates() {
      * Listen for public timeline updates
      */
     const listenForPublicTimeline = (callback) => {
-        const unsubscribe = webSocketService.listenForPublicTimeline(
-            (data) => {
-                lastActivity.value = new Date();
-                callback(data);
-            }
-        );
+        const unsubscribe = webSocketService.listenForPublicTimeline((data) => {
+            lastActivity.value = new Date();
+            callback(data);
+        });
 
         if (unsubscribe) {
             unsubscribeFunctions.value.push(unsubscribe);
@@ -185,7 +168,7 @@ export function useRealTimeUpdates() {
      */
     const disconnect = () => {
         // Call all unsubscribe functions
-        unsubscribeFunctions.value.forEach(unsubscribe => {
+        unsubscribeFunctions.value.forEach((unsubscribe) => {
             try {
                 unsubscribe();
             } catch (error) {
@@ -200,13 +183,17 @@ export function useRealTimeUpdates() {
     };
 
     // Auto-connect when user is available
-    watch(currentUser, (newUser) => {
-        if (newUser && !isConnected.value) {
-            connect();
-        } else if (!newUser && isConnected.value) {
-            disconnect();
-        }
-    }, { immediate: true });
+    watch(
+        currentUser,
+        (newUser) => {
+            if (newUser && !isConnected.value) {
+                connect();
+            } else if (!newUser && isConnected.value) {
+                disconnect();
+            }
+        },
+        { immediate: true },
+    );
 
     // Cleanup on unmount
     onUnmounted(() => {
@@ -311,7 +298,7 @@ export function useTimelineRealTime() {
         }
 
         return () => {
-            unsubscribeFunctions.forEach(unsubscribe => unsubscribe());
+            unsubscribeFunctions.forEach((unsubscribe) => unsubscribe());
         };
     };
 

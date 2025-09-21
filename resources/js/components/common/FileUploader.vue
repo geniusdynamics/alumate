@@ -1,69 +1,62 @@
 <template>
     <div class="file-uploader-container">
-        <div 
+        <div
             @dragover.prevent="isDragOver = true"
             @dragleave="isDragOver = false"
             @drop.prevent="handleDrop"
-            :class="[
-                'file-uploader',
-                { 'drag-over': isDragOver },
-                { 'disabled': disabled }
-            ]"
+            :class="['file-uploader', { 'drag-over': isDragOver }, { disabled: disabled }]"
         >
-            <input 
-                type="file" 
-                @change="uploadFile" 
-                :multiple="multiple" 
-                :accept="accept"
-                :disabled="disabled"
-                class="hidden" 
-                ref="fileInput" 
-            />
-            
+            <input type="file" @change="uploadFile" :multiple="multiple" :accept="accept" :disabled="disabled" class="hidden" ref="fileInput" />
+
             <div class="upload-area" @click="triggerFileSelect">
                 <div class="upload-icon">
-                    <svg class="w-12 h-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    <svg class="h-12 w-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        ></path>
                     </svg>
                 </div>
                 <div class="upload-text">
                     <p class="text-lg font-medium text-foreground">Drop files here or click to upload</p>
-                    <p class="text-sm text-muted-foreground mt-1">
+                    <p class="mt-1 text-sm text-muted-foreground">
                         {{ acceptedFormats ? `Accepted formats: ${acceptedFormats}` : 'Any file type' }}
                         {{ maxSize ? ` • Max size: ${formatFileSize(maxSize)}` : '' }}
                     </p>
                 </div>
             </div>
         </div>
-        
+
         <!-- File List -->
         <div v-if="files.length > 0" class="mt-4 space-y-2">
             <div v-for="file in files" :key="file.id" class="file-item">
                 <div class="flex items-center space-x-3">
                     <div class="file-icon">
-                        <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        <svg class="h-5 w-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            ></path>
                         </svg>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-foreground truncate">{{ file.name }}</p>
+                    <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium text-foreground">{{ file.name }}</p>
                         <p class="text-xs text-muted-foreground">{{ formatFileSize(file.size) }}</p>
                     </div>
                     <div class="flex items-center space-x-2">
                         <div v-if="file.uploading" class="flex items-center space-x-2">
-                            <div class="w-32 bg-muted rounded-full h-2">
-                                <div class="bg-primary h-2 rounded-full transition-all duration-300" :style="{ width: file.progress + '%' }"></div>
+                            <div class="h-2 w-32 rounded-full bg-muted">
+                                <div class="h-2 rounded-full bg-primary transition-all duration-300" :style="{ width: file.progress + '%' }"></div>
                             </div>
                             <span class="text-xs text-muted-foreground">{{ file.progress }}%</span>
                         </div>
-                        <div v-else-if="file.error" class="text-red-500 text-xs">{{ file.error }}</div>
-                        <div v-else-if="file.uploaded" class="text-green-500 text-xs">✓ Uploaded</div>
-                        <button 
-                            @click="removeFile(file.id)"
-                            class="text-red-500 hover:text-red-700 text-xs"
-                        >
-                            Remove
-                        </button>
+                        <div v-else-if="file.error" class="text-xs text-red-500">{{ file.error }}</div>
+                        <div v-else-if="file.uploaded" class="text-xs text-green-500">✓ Uploaded</div>
+                        <button @click="removeFile(file.id)" class="text-xs text-red-500 hover:text-red-700">Remove</button>
                     </div>
                 </div>
             </div>
@@ -72,11 +65,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import LoadingButton from '@/components/loaders/LoadingButton.vue';
-import { useToast } from '@/composables/useToast';
-import Skeleton from '@/components/loaders/Skeleton.vue';
 import { fileUploadService } from '@/services/fileUploadService';
+import { computed, ref } from 'vue';
 
 interface Props {
     multiple?: boolean;
@@ -117,7 +107,10 @@ const isDragOver = ref(false);
 
 const acceptedFormats = computed(() => {
     if (!props.accept) return null;
-    return props.accept.split(',').map(format => format.trim().replace('.', '')).join(', ');
+    return props.accept
+        .split(',')
+        .map((format) => format.trim().replace('.', ''))
+        .join(', ');
 });
 
 const triggerFileSelect = () => {
@@ -142,7 +135,7 @@ const uploadFile = (event: Event) => {
 
 const processFiles = (fileList: FileList) => {
     const newFiles: FileItem[] = [];
-    
+
     for (const file of fileList) {
         const fileItem: FileItem = {
             id: Date.now() + Math.random().toString(36).substr(2, 9),
@@ -153,7 +146,7 @@ const processFiles = (fileList: FileList) => {
             uploaded: false,
             progress: 0,
         };
-        
+
         // Validate file size
         if (props.maxSize && file.size > props.maxSize) {
             fileItem.error = `File size exceeds ${formatFileSize(props.maxSize)}`;
@@ -162,17 +155,17 @@ const processFiles = (fileList: FileList) => {
             newFiles.push(fileItem);
         }
     }
-    
+
     if (!props.multiple) {
         files.value = newFiles;
     } else {
         files.value.push(...newFiles);
     }
-    
+
     emit('files-selected', newFiles);
-    
+
     // Auto-upload files
-    newFiles.forEach(file => {
+    newFiles.forEach((file) => {
         if (!file.error) {
             uploadFileToServer(file);
         }
@@ -181,10 +174,10 @@ const processFiles = (fileList: FileList) => {
 
 const uploadFileToServer = async (fileItem: FileItem) => {
     fileItem.uploading = true;
-    
+
     const formData = new FormData();
     formData.append('file', fileItem.file);
-    
+
     try {
         const response = await fileUploadService.uploadFile(fileItem.file, (progress) => {
             fileItem.progress = progress.percentage;
@@ -207,7 +200,7 @@ const uploadFileToServer = async (fileItem: FileItem) => {
 };
 
 const removeFile = (fileId: string) => {
-    files.value = files.value.filter(file => file.id !== fileId);
+    files.value = files.value.filter((file) => file.id !== fileId);
 };
 
 const formatFileSize = (bytes: number): string => {
@@ -221,7 +214,7 @@ const formatFileSize = (bytes: number): string => {
 
 <style scoped>
 .file-uploader {
-    @apply border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center transition-all duration-200 cursor-pointer hover:border-muted-foreground/50;
+    @apply cursor-pointer rounded-lg border-2 border-dashed border-muted-foreground/25 p-8 text-center transition-all duration-200 hover:border-muted-foreground/50;
 }
 
 .file-uploader.drag-over {
@@ -229,11 +222,11 @@ const formatFileSize = (bytes: number): string => {
 }
 
 .file-uploader.disabled {
-    @apply opacity-50 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-50;
 }
 
 .file-item {
-    @apply p-3 border border-border rounded-lg bg-card;
+    @apply rounded-lg border border-border bg-card p-3;
 }
 
 .upload-area {
@@ -248,4 +241,3 @@ const formatFileSize = (bytes: number): string => {
     @apply text-center;
 }
 </style>
-

@@ -28,10 +28,7 @@ class FileUploadService {
     /**
      * Upload a single file
      */
-    async uploadFile(
-        file: File,
-        onProgress?: (progress: UploadProgress) => void
-    ): Promise<UploadResponse> {
+    async uploadFile(file: File, onProgress?: (progress: UploadProgress) => void): Promise<UploadResponse> {
         try {
             const formData = new FormData();
             formData.append('file', file);
@@ -39,14 +36,16 @@ class FileUploadService {
             const response = await httpService.upload<UploadResponse>(
                 '/api/upload',
                 formData,
-                onProgress ? (progressEvent) => {
-                    const progress: UploadProgress = {
-                        loaded: progressEvent.loaded,
-                        total: progressEvent.total,
-                        percentage: Math.round((progressEvent.loaded * 100) / progressEvent.total),
-                    };
-                    onProgress(progress);
-                } : undefined
+                onProgress
+                    ? (progressEvent) => {
+                          const progress: UploadProgress = {
+                              loaded: progressEvent.loaded,
+                              total: progressEvent.total,
+                              percentage: Math.round((progressEvent.loaded * 100) / progressEvent.total),
+                          };
+                          onProgress(progress);
+                      }
+                    : undefined,
             );
 
             return response.data;
@@ -63,10 +62,7 @@ class FileUploadService {
     /**
      * Upload multiple files
      */
-    async uploadFiles(
-        files: File[],
-        onProgress?: (progress: UploadProgress) => void
-    ): Promise<UploadResponse> {
+    async uploadFiles(files: File[], onProgress?: (progress: UploadProgress) => void): Promise<UploadResponse> {
         try {
             const formData = new FormData();
             files.forEach((file, index) => {
@@ -76,14 +72,16 @@ class FileUploadService {
             const response = await httpService.upload<UploadResponse>(
                 '/api/upload/multiple',
                 formData,
-                onProgress ? (progressEvent) => {
-                    const progress: UploadProgress = {
-                        loaded: progressEvent.loaded,
-                        total: progressEvent.total,
-                        percentage: Math.round((progressEvent.loaded * 100) / progressEvent.total),
-                    };
-                    onProgress(progress);
-                } : undefined
+                onProgress
+                    ? (progressEvent) => {
+                          const progress: UploadProgress = {
+                              loaded: progressEvent.loaded,
+                              total: progressEvent.total,
+                              percentage: Math.round((progressEvent.loaded * 100) / progressEvent.total),
+                          };
+                          onProgress(progress);
+                      }
+                    : undefined,
             );
 
             return response.data;
@@ -119,11 +117,14 @@ class FileUploadService {
     /**
      * Validate file before upload
      */
-    validateFile(file: File, options: {
-        maxSize?: number;
-        allowedTypes?: string[];
-        maxFiles?: number;
-    } = {}): { valid: boolean; error?: string } {
+    validateFile(
+        file: File,
+        options: {
+            maxSize?: number;
+            allowedTypes?: string[];
+            maxFiles?: number;
+        } = {},
+    ): { valid: boolean; error?: string } {
         const { maxSize = 10 * 1024 * 1024, allowedTypes = [], maxFiles = 1 } = options;
 
         // Check file size

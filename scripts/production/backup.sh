@@ -103,6 +103,15 @@ backup_database() {
                 log_info "Backed up tenant schema: $schema"
             fi
         done
+    # Backup analytics tables specifically
+    log_info "Backing up analytics tables..."
+    local analytics_backup="$BACKUP_DB_DIR/analytics_backup.sql"
+    # Export analytics-related tables
+    pg_dump -h "$db_host" -p "$db_port" -U "$db_user" -d "$db_name" \
+           --no-password --format=custom --compress=6 \
+           --table=analytics_events --table=heat_map_data --table=ab_test_results \
+           --table=component_analytics --file="$analytics_backup"
+    log_success "Analytics tables backup completed: $analytics_backup"
     fi
 
     # Unset password

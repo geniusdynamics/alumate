@@ -329,6 +329,14 @@ Route::get('/discussions', [\App\Http\Controllers\DiscussionController::class, '
 Route::get('/discussions/{discussion}', [\App\Http\Controllers\DiscussionController::class, 'show'])->name('discussions.show');
 
 // Public Alumni & Stories routes (accessible without authentication)
+// Analytics-enabled Alumni Directory Route
+Route::middleware(['auth'])->prefix('alumni')->name('alumni.')->group(function () {
+    Route::get('directory', [\App\Http\Controllers\AlumniController::class, 'directory'])->name('directory')
+        ->middleware('analytics.ab-test:alumni_directory_variant');
+    Route::get('recommendations', [\App\Http\Controllers\AlumniController::class, 'recommendations'])->name('recommendations');
+    Route::get('connections', [\App\Http\Controllers\AlumniController::class, 'connections'])->name('connections');
+    Route::get('map', [\App\Http\Controllers\AlumniController::class, 'map'])->name('map');
+});
 Route::get('/alumni', [\App\Http\Controllers\AlumniController::class, 'publicDirectory'])->name('alumni.public.directory');
 Route::get('/alumni/map', [\App\Http\Controllers\AlumniController::class, 'publicMap'])->name('alumni.public.map');
 Route::get('/stories', [\App\Http\Controllers\SuccessStoryController::class, 'publicIndex'])->name('stories.public.index');
@@ -359,6 +367,21 @@ Route::middleware(['auth'])->prefix('career')->name('career.')->group(function (
     Route::get('mentorship-hub', [\App\Http\Controllers\CareerController::class, 'mentorshipHub'])->name('mentorship-hub');
 });
 
+// Analytics-enabled Page Builder Routes
+Route::middleware(['auth'])->prefix('page-builder')->name('page-builder.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\PageBuilderController::class, 'index'])->name('index')
+        ->middleware('analytics.funnel:start');
+    Route::get('create', [\App\Http\Controllers\PageBuilderController::class, 'create'])->name('create')
+        ->middleware('analytics.funnel:step_create');
+    Route::post('/', [\App\Http\Controllers\PageBuilderController::class, 'store'])->name('store')
+        ->middleware('analytics.funnel:step_save');
+    Route::get('{page}/edit', [\App\Http\Controllers\PageBuilderController::class, 'edit'])->name('edit')
+        ->middleware('analytics.funnel:step_edit');
+    Route::put('{page}', [\App\Http\Controllers\PageBuilderController::class, 'update'])->name('update')
+        ->middleware('analytics.funnel:step_update');
+    Route::post('{page}/publish', [\App\Http\Controllers\PageBuilderController::class, 'publish'])->name('publish')
+        ->middleware('analytics.funnel:complete');
+});
 // Job Matching Routes
 Route::middleware(['auth'])->prefix('jobs')->name('jobs.')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\JobController::class, 'dashboard'])->name('dashboard');

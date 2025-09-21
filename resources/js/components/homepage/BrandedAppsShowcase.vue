@@ -1,8 +1,8 @@
 ﻿<template>
-  <div class="branded-apps-showcase">
-    <h2>Branded Apps Showcase</h2>
-    <p>Coming soon...</p>
-  </div>
+    <div class="branded-apps-showcase">
+        <h2>Branded Apps Showcase</h2>
+        <p>Coming soon...</p>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -11,6 +11,6 @@
 
 <style scoped>
 .branded-apps-showcase {
-  padding: 2rem;
+    padding: 2rem;
 }
 </style>

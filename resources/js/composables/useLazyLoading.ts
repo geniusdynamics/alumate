@@ -1,152 +1,141 @@
-import { ref, onMounted, onUnmounted, type Ref } from 'vue'
+import { onMounted, onUnmounted, ref, type Ref } from 'vue';
 
 export interface LazyLoadOptions {
-  rootMargin?: string
-  threshold?: number | number[]
-  once?: boolean
+    rootMargin?: string;
+    threshold?: number | number[];
+    once?: boolean;
 }
 
-export function useLazyLoading(
-  target: Ref<HTMLElement | null>,
-  callback: () => void,
-  options: LazyLoadOptions = {}
-) {
-  const isIntersecting = ref(false)
-  const hasLoaded = ref(false)
-  
-  const {
-    rootMargin = '50px',
-    threshold = 0.1,
-    once = true
-  } = options
+export function useLazyLoading(target: Ref<HTMLElement | null>, callback: () => void, options: LazyLoadOptions = {}) {
+    const isIntersecting = ref(false);
+    const hasLoaded = ref(false);
 
-  let observer: IntersectionObserver | null = null
+    const { rootMargin = '50px', threshold = 0.1, once = true } = options;
 
-  const startObserving = () => {
-    if (!target.value || !('IntersectionObserver' in window)) {
-      // Fallback for browsers without IntersectionObserver
-      callback()
-      hasLoaded.value = true
-      return
-    }
+    let observer: IntersectionObserver | null = null;
 
-    observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          isIntersecting.value = entry.isIntersecting
-          
-          if (entry.isIntersecting && (!once || !hasLoaded.value)) {
-            callback()
-            hasLoaded.value = true
-            
-            if (once) {
-              observer?.unobserve(entry.target)
-            }
-          }
-        })
-      },
-      {
-        rootMargin,
-        threshold
-      }
-    )
+    const startObserving = () => {
+        if (!target.value || !('IntersectionObserver' in window)) {
+            // Fallback for browsers without IntersectionObserver
+            callback();
+            hasLoaded.value = true;
+            return;
+        }
 
-    observer.observe(target.value)
-  }
+        observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    isIntersecting.value = entry.isIntersecting;
 
-  const stopObserving = () => {
-    if (observer && target.value) {
-      observer.unobserve(target.value)
-      observer.disconnect()
-      observer = null
-    }
-  }
+                    if (entry.isIntersecting && (!once || !hasLoaded.value)) {
+                        callback();
+                        hasLoaded.value = true;
 
-  onMounted(() => {
-    startObserving()
-  })
+                        if (once) {
+                            observer?.unobserve(entry.target);
+                        }
+                    }
+                });
+            },
+            {
+                rootMargin,
+                threshold,
+            },
+        );
 
-  onUnmounted(() => {
-    stopObserving()
-  })
+        observer.observe(target.value);
+    };
 
-  return {
-    isIntersecting,
-    hasLoaded,
-    startObserving,
-    stopObserving
-  }
+    const stopObserving = () => {
+        if (observer && target.value) {
+            observer.unobserve(target.value);
+            observer.disconnect();
+            observer = null;
+        }
+    };
+
+    onMounted(() => {
+        startObserving();
+    });
+
+    onUnmounted(() => {
+        stopObserving();
+    });
+
+    return {
+        isIntersecting,
+        hasLoaded,
+        startObserving,
+        stopObserving,
+    };
 }
 
 // Composable for lazy loading images
 export function useLazyImage(src: string, options: LazyLoadOptions = {}) {
-  const imageRef = ref<HTMLImageElement | null>(null)
-  const isLoaded = ref(false)
-  const isError = ref(false)
-  const currentSrc = ref('')
+    const imageRef = ref<HTMLImageElement | null>(null);
+    const isLoaded = ref(false);
+    const isError = ref(false);
+    const currentSrc = ref('');
 
-  const loadImage = () => {
-    if (isLoaded.value || !src) return
+    const loadImage = () => {
+        if (isLoaded.value || !src) return;
 
-    const img = new Image()
-    
-    img.onload = () => {
-      currentSrc.value = src
-      isLoaded.value = true
-      isError.value = false
-    }
-    
-    img.onerror = () => {
-      isError.value = true
-      isLoaded.value = false
-    }
-    
-    img.src = src
-  }
+        const img = new Image();
 
-  useLazyLoading(imageRef, loadImage, options)
+        img.onload = () => {
+            currentSrc.value = src;
+            isLoaded.value = true;
+            isError.value = false;
+        };
 
-  return {
-    imageRef,
-    currentSrc,
-    isLoaded,
-    isError
-  }
+        img.onerror = () => {
+            isError.value = true;
+            isLoaded.value = false;
+        };
+
+        img.src = src;
+    };
+
+    useLazyLoading(imageRef, loadImage, options);
+
+    return {
+        imageRef,
+        currentSrc,
+        isLoaded,
+        isError,
+    };
 }
 
 // Composable for lazy loading components
-export function useLazyComponent(
-  loadComponent: () => Promise<any>,
-  options: LazyLoadOptions = {}
-) {
-  const containerRef = ref<HTMLElement | null>(null)
-  const component = ref(null)
-  const isLoading = ref(false)
-  const isError = ref(false)
+export function useLazyComponent(loadComponent: () => Promise<any>, options: LazyLoadOptions = {}) {
+    const containerRef = ref<HTMLElement | null>(null);
+    const component = ref(null);
+    const isLoading = ref(false);
+    const isError = ref(false);
 
-  const loadComponentAsync = async () => {
-    if (component.value || isLoading.value) return
+    const loadComponentAsync = async () => {
+        if (component.value || isLoading.value) return;
 
-    isLoading.value = true
-    isError.value = false
+        isLoading.value = true;
+        isError.value = false;
 
-    try {
-      const loadedComponent = await loadComponent()
-      component.value = loadedComponent.default || loadedComponent
-    } catch (error) {
-      console.error('Error loading component:', error)
-      isError.value = true
-    } finally {
-      isLoading.value = false
-    }
-  }
+        try {
+            const loadedComponent = await loadComponent();
+            component.value = loadedComponent.default || loadedComponent;
+        } catch (error) {
+            console.error('Error loading component:', error);
+            isError.value = true;
+        } finally {
+            isLoading.value = false;
+        }
+    };
 
-  useLazyLoading(containerRef, loadComponentAsync, options)
+    useLazyLoading(containerRef, loadComponentAsync, options);
 
-  return {
-    containerRef,
-    component,
-    isLoading,
-    isError
-  }
+    return {
+        containerRef,
+        component,
+        isLoading,
+        isError,
+    };
 }

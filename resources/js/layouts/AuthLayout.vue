@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
 import AppLogo from '@/components/common/AppLogo.vue';
+import { Head } from '@inertiajs/vue3';
 
 interface Props {
     title?: string;
@@ -14,16 +14,16 @@ withDefaults(defineProps<Props>(), {
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8 bg-background">
+    <div class="flex min-h-screen flex-col justify-center bg-background px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <Head :title="title" />
-        
-        <div class="w-full max-w-md mx-auto">
+
+        <div class="mx-auto w-full max-w-md">
             <div class="flex flex-col items-center space-y-6">
                 <div class="flex justify-center">
                     <AppLogo class="h-10 w-auto" />
                 </div>
-                
-                <div class="text-center space-y-2">
+
+                <div class="space-y-2 text-center">
                     <h1 class="text-2xl font-semibold tracking-tight text-foreground">
                         {{ title }}
                     </h1>
@@ -31,8 +31,8 @@ withDefaults(defineProps<Props>(), {
                         {{ description }}
                     </p>
                 </div>
-                
-                <div class="w-full bg-card border rounded-lg p-6 shadow-sm">
+
+                <div class="w-full rounded-lg border bg-card p-6 shadow-sm">
                     <slot />
                 </div>
             </div>

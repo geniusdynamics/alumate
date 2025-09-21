@@ -2,10 +2,10 @@
 // This allows explicit control over which functions are imported
 
 // Theme Management - prioritize useTheme over useAppearance
-export { default as useTheme } from './useTheme.js'
+export { default as useTheme } from './useTheme.js';
 
 // Debounce - use local implementation over @vueuse/core
-export { default as useDebounce } from './useDebounce.js'
+export { default as useDebounce } from './useDebounce.js';
 
 // Other composables - only export if they don't exist as individual files
 // Commented out to prevent auto-import conflicts
@@ -16,16 +16,14 @@ export { default as useDebounce } from './useDebounce.js'
 // export { default as useRealTimeUpdates } from './useRealTimeUpdates.ts'
 
 // Don't re-export VueUse composables - let auto-import handle them
-// export { 
-//   useLocalStorage, 
-//   useSessionStorage, 
-//   useToggle, 
+// export {
+//   useLocalStorage,
+//   useSessionStorage,
+//   useToggle,
 //   useCounter,
 //   useMouse,
 //   useWindowSize
 // } from '@vueuse/core'
 
 // Type definitions
-export type {
-  // Add any type exports if needed
-}
+export type {};

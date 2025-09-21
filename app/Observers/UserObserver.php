@@ -9,6 +9,8 @@ use App\Services\GroupManager;
 use App\Services\CachingStrategyService;
 use App\Services\ComponentCachingService;
 use Illuminate\Support\Facades\Log;
+use App\Models\AnalyticsEvent;
+use App\Services\HeatMapService;
 
 class UserObserver
 {
@@ -19,17 +21,20 @@ class UserObserver
     protected CachingStrategyService $cachingStrategyService;
 
     protected ComponentCachingService $componentCachingService;
+    protected HeatMapService $heatMapService;
 
     public function __construct(
         CircleManager $circleManager,
         GroupManager $groupManager,
         CachingStrategyService $cachingStrategyService,
-        ComponentCachingService $componentCachingService
+        ComponentCachingService $componentCachingService,
+        HeatMapService $heatMapService
     ) {
         $this->circleManager = $circleManager;
         $this->groupManager = $groupManager;
         $this->cachingStrategyService = $cachingStrategyService;
         $this->componentCachingService = $componentCachingService;
+        $this->heatMapService = $heatMapService;
     }
 
     /**
@@ -59,6 +64,28 @@ class UserObserver
             // Generate circles for the new user
             $this->circleManager->generateCirclesForUser($user);
 
+            // Track user registration analytics
+            AnalyticsEvent::create([
+                'event_type' => 'user_registration',
+                'event_category' => 'learning_analytics',
+                'user_id' => $user->id,
+                'tenant_id' => $user->tenant_id ?? null,
+                'event_data' => [
+                    'user_type' => $user->role,
+                    'registration_method' => 'platform',
+                    'timestamp' => now(),
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
+            // Track heatmap data for registration
+            $this->heatMapService->trackEvent('user_registration', [
+                'user_id' => $user->id,
+                'page' => 'registration',
+                'action' => 'complete',
+                'coordinates' => ['x' => 0, 'y' => 0], // Default coordinates
+            ]);
             // Auto-join school groups
             $this->groupManager->autoJoinSchoolGroups($user);
 
@@ -86,6 +113,21 @@ class UserObserver
                 // Dispatch job to update circles in the background
                 UpdateUserCirclesJob::dispatch($user);
 
+                // Track career analytics for education updates
+                AnalyticsEvent::create([
+                    'event_type' => 'career_progress_update',
+                    'event_category' => 'career_analytics',
+                    'user_id' => $user->id,
+                    'tenant_id' => $user->tenant_id ?? null,
+                    'event_data' => [
+                        'update_type' => 'education_history',
+                        'timestamp' => now(),
+                        'education_count' => $user->educations()->count(),
+                    ],
+                    'ip_address' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ]);
+
                 Log::info('Dispatched circle update job for user', [
                     'user_id' => $user->id,
                 ]);
@@ -101,11 +143,66 @@ class UserObserver
     }
 
     /**
+     * Track user login analytics
+     */
+    public function login(User $user): void
+    {
+        try {
+            // Track login analytics for learning platform
+            AnalyticsEvent::create([
+                'event_type' => 'user_login',
+                'event_category' => 'learning_analytics',
+                'user_id' => $user->id,
+                'tenant_id' => $user->tenant_id ?? null,
+                'event_data' => [
+                    'user_type' => $user->role,
+                    'login_method' => 'platform',
+                    'timestamp' => now(),
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
+            // Track heatmap data for login
+            $this->heatMapService->trackEvent('user_login', [
+                'user_id' => $user->id,
+                'page' => 'login',
+                'action' => 'complete',
+                'coordinates' => ['x' => 0, 'y' => 0],
+            ]);
+
+            Log::info('Tracked user login analytics', [
+                'user_id' => $user->id,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to track user login analytics', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
      * Handle the User "deleted" event.
      */
     public function deleted(User $user): void
     {
         try {
+            // Track user deletion analytics
+            AnalyticsEvent::create([
+                'event_type' => 'user_deletion',
+                'event_category' => 'platform_analytics',
+                'user_id' => $user->id,
+                'tenant_id' => $user->tenant_id ?? null,
+                'event_data' => [
+                    'user_type' => $user->role,
+                    'deletion_reason' => 'account_removal',
+                    'timestamp' => now(),
+                ],
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+
             // Remove user from all circles
             $circles = $user->circles;
             foreach ($circles as $circle) {
