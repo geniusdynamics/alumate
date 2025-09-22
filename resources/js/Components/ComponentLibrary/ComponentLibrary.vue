@@ -228,17 +228,10 @@
 import { useAnalytics } from '@/Composables/useAnalytics';
 import { useDebounce } from '@/Composables/useDebounce';
 import { useUserPreferences } from '@/Composables/useUserPreferences';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentLibrary.vue
-import type { Component, ComponentCategory } from '@/Types/components';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
-
-// Import child components
-=======
 import type { Component, ComponentCategory } from '@/types/Components';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 // Import child Components
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentLibrary.vue
 import Icon from '@/Components/Common/Icon.vue';
 import ComponentCard from './ComponentCard.vue';
 import ComponentPreviewModal from './ComponentPreviewModal.vue';

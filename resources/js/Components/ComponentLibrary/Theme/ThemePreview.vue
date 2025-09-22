@@ -252,11 +252,7 @@
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
 import { useNotifications } from '@/Composables/useNotifications';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/ThemePreview.vue
-import type { GrapeJSThemeData, ThemeExportOptions, ThemePerformanceData } from '@/Types/components';
-=======
 import type { GrapeJSThemeData, ThemeExportOptions, ThemePerformanceData } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/ThemePreview.vue
 import { computed, onMounted, ref, watch } from 'vue';
 import AccessibilityAnalysis from './AccessibilityAnalysis.vue';
 import ComponentCoverage from './ComponentCoverage.vue';

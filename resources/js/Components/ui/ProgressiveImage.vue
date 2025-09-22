@@ -217,19 +217,3 @@ if (typeof window !== 'undefined') {
   }
 }
 </style>
-<<<<<<< HEAD:resources/js/components/ui/ProgressiveImage.vue
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/ui/ProgressiveImage.vue

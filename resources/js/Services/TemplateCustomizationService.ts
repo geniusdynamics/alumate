@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/services/TemplateCustomizationService.ts
-import type { BrandCustomization, ContentCustomization, TemplateCustomizationAPIResponse, TemplateCustomizationConfig } from '@/Types/components';
-=======
 import type { BrandCustomization, ContentCustomization, TemplateCustomizationAPIResponse, TemplateCustomizationConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/TemplateCustomizationService.ts
 import { httpService } from './httpService';
 
 class TemplateCustomizationService {

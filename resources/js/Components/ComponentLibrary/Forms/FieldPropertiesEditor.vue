@@ -299,11 +299,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/FieldPropertiesEditor.vue
-import type { FormField } from '@/Types/components';
-=======
 import type { FormField } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/FieldPropertiesEditor.vue
 import { ref, watch } from 'vue';
 
 interface Props {

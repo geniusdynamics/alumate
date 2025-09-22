@@ -165,11 +165,7 @@
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
 import { useScrollTracking } from '@/Composables/useScrollTracking';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Testimonials/TestimonialBase.vue
-import type { Testimonial, TestimonialComponentConfig, TestimonialFilterConfig } from '@/Types/components';
-=======
 import type { Testimonial, TestimonialComponentConfig, TestimonialFilterConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Testimonials/TestimonialBase.vue
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 // Import child Components

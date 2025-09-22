@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { FieldProps } from './interface'
-<<<<<<< HEAD:resources/js/components/ui/auto-form/AutoFormFieldDate.vue
-import { cn } from '@/Lib/utils'
-=======
 import { cn } from '@/lib/utils'
->>>>>>> origin/db1:resources/js/Components/ui/auto-form/AutoFormFieldDate.vue
 import { Button } from '@/Components/ui/button'
 import { Calendar } from '@/Components/ui/calendar'
 import { FormControl, FormDescription, FormField, FormItem, FormMessage } from '@/Components/ui/form'

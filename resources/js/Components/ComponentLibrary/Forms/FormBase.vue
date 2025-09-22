@@ -202,11 +202,7 @@
 import { useFormAutoSave } from '@/Composables/useFormAutoSave';
 import { useFormSubmission } from '@/Composables/useFormSubmission';
 import { useFormValidation } from '@/Composables/useFormValidation';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/FormBase.vue
-import type { FormComponentConfig } from '@/Types/components';
-=======
 import type { FormComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/FormBase.vue
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import FormFieldRenderer from './FormFieldRenderer.vue';
 

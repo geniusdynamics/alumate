@@ -1,5 +1,3 @@
-<<<<<<< HEAD:resources/js/components/homepage/HeroSection.vue
-=======
 <template>
     <section class="hero-section" role="banner" aria-label="Homepage hero section">
         <!-- Video Background -->
@@ -531,4 +529,3 @@ onUnmounted(() => {
     }
 }
 </style>
->>>>>>> origin/db1:resources/js/Components/homepage/HeroSection.vue

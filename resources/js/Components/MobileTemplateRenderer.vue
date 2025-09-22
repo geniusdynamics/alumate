@@ -223,12 +223,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { ComputerDesktopIcon, DevicePhoneMobileIcon, DeviceTabletIcon } from '@heroicons/vue/24/outline';
 
 // Types
-<<<<<<< HEAD:resources/js/components/MobileTemplateRenderer.vue
-import type { Template, ViewportType } from '@/Types/components';
-=======
 import type { Template, ViewportType } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/MobileTemplateRenderer.vue
-
 // Custom touch interaction event type
 interface TouchInteractionEvent {
     type: 'touchstart' | 'touchend' | 'touchmove';

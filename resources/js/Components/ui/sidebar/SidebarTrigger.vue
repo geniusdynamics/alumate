@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
-<<<<<<< HEAD:resources/js/components/ui/sidebar/SidebarTrigger.vue
-import { cn } from '@/Lib/utils'
-=======
 import { cn } from '@/lib/utils'
->>>>>>> origin/db1:resources/js/Components/ui/sidebar/SidebarTrigger.vue
 import { Button } from '@/Components/ui/button'
 import { PanelLeft } from 'lucide-vue-next'
 import { useSidebar } from './utils'

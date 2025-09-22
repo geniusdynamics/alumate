@@ -5,11 +5,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import VueGrapeJSWrapper from '../VueGrapeJSWrapper.vue';
 
-<<<<<<< HEAD:resources/js/components/__tests__/VueGrapeJSWrapper.integration.test.ts
-// Mock services
-=======
 // Mock Services
->>>>>>> origin/db1:resources/js/Components/__tests__/VueGrapeJSWrapper.integration.test.ts
 vi.mock('@/Services/PageExportService');
 vi.mock('@/Services/PageBackupService');
 vi.mock('@/Services/PageMigrationService');

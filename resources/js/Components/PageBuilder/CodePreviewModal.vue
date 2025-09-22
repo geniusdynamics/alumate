@@ -460,18 +460,3 @@ onMounted(() => {
   }
 })
 </script>
-<<<<<<< HEAD:resources/js/components/PageBuilder/CodePreviewModal.vue
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/PageBuilder/CodePreviewModal.vue

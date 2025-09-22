@@ -7,12 +7,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-<<<<<<< HEAD
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1
-
 // Sample Hero Components
 const sampleHeroComponents: Component[] = [
     {

@@ -290,11 +290,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/ThemeEditorModal.vue
-import type { GrapeJSThemeData } from '@/Types/components';
-=======
 import type { GrapeJSThemeData } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/ThemeEditorModal.vue
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

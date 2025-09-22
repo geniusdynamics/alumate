@@ -115,11 +115,7 @@
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
 import { useScrollTracking } from '@/Composables/useScrollTracking';
-<<<<<<< HEAD:resources/js/components/homepage/StickyHeaderCTA.vue
-import type { AudienceType, CTAClickEvent, StickyHeaderCTAData } from '@/Types/homepage';
-=======
 import type { AudienceType, CTAClickEvent, StickyHeaderCTAData } from '@/types/homepage';
->>>>>>> origin/db1:resources/js/Components/homepage/StickyHeaderCTA.vue
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {

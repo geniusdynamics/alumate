@@ -15,11 +15,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/Components/ui/sidebar';
-<<<<<<< HEAD:resources/js/components/layout/AppSidebar.vue
-import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/Lib/navigation';
-=======
 import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/lib/navigation';
->>>>>>> origin/db1:resources/js/Components/layout/AppSidebar.vue
 import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronUp } from 'lucide-vue-next';
 import { computed } from 'vue';

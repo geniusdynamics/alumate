@@ -259,11 +259,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/SharePreviewModal.vue
-import type { Component, ComponentCategory } from '@/Types/components';
-=======
 import type { Component, ComponentCategory } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/SharePreviewModal.vue
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 interface ShareSettings {

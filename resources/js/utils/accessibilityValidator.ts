@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import type { AccessibilityMetadata, ResponsiveComponentConfig } from '@/Types/components';
-=======
 import type { AccessibilityMetadata, ResponsiveComponentConfig } from '@/types/Components';
->>>>>>> origin/db1
-
 export interface AccessibilityValidationResult {
     valid: boolean;
     score: number; // 0-100

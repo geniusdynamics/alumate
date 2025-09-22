@@ -1,5 +1,3 @@
-<<<<<<< HEAD:resources/js/components/homepage/SectionCTA.vue
-=======
 <template>
     <div class="section-cta" :class="[`cta-${cta.placement}`, `cta-${cta.style || 'default'}`, { 'cta-sticky': cta.sticky }]">
         <div class="cta-container">
@@ -727,4 +725,3 @@ onMounted(() => {
     }
 }
 </style>
->>>>>>> origin/db1:resources/js/Components/homepage/SectionCTA.vue

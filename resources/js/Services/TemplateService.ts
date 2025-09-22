@@ -5,11 +5,7 @@ import type {
     TemplatePreviewConfig,
     TemplateSearchParams,
     TemplateUsageStats,
-<<<<<<< HEAD:resources/js/services/TemplateService.ts
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/TemplateService.ts
 import { httpService } from './httpService';
 
 class TemplateService {

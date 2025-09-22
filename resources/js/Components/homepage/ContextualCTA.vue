@@ -105,11 +105,7 @@
 
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/homepage/ContextualCTA.vue
-import type { AudienceType, ContextualCTAData, CTAClickEvent } from '@/Types/homepage';
-=======
 import type { AudienceType, ContextualCTAData, CTAClickEvent } from '@/types/homepage';
->>>>>>> origin/db1:resources/js/Components/homepage/ContextualCTA.vue
 import { onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {

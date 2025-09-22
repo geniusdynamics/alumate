@@ -15,22 +15,4 @@ export type {
     MediaPerformance,
     MediaType,
     TouchGestureConfig,
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Media/index.ts
-} from '@/Types/components';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Media/index.ts

@@ -277,11 +277,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentComparisonTable.vue
-import type { AudienceType, Component, ComponentCategory } from '@/Types/components';
-=======
 import type { AudienceType, Component, ComponentCategory } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentComparisonTable.vue
 import { computed } from 'vue';
 
 interface Props {

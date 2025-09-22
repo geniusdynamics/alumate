@@ -145,13 +145,8 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentPreviewFrame.vue
-import type { AudienceType, Component } from '@/Types/components';
-import { generateSampleData } from '@/Utils/sampleDataGenerator';
-=======
 import type { AudienceType, Component } from '@/types/Components';
 import { generateSampleData } from '@/utils/sampleDataGenerator';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentPreviewFrame.vue
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Import component bases for preview

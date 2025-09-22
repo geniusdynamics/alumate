@@ -42,11 +42,7 @@
 
 <script setup lang="ts">
 import { useIntersectionObserver } from '@/Composables/useIntersectionObserver';
-<<<<<<< HEAD:resources/js/components/common/ResponsiveImage.vue
-import type { MediaAsset } from '@/Types/components';
-=======
 import type { MediaAsset } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/common/ResponsiveImage.vue
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

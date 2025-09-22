@@ -1,10 +1,5 @@
 // Form Template Customization System
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/templates/customization.ts
-import type { FormComponentConfig, FormField, FormTemplate } from '@/Types/components';
-=======
 import type { FormComponentConfig, FormField, FormTemplate } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/templates/customization.ts
-
 export interface TemplateCustomization {
     id: string;
     templateId: string;

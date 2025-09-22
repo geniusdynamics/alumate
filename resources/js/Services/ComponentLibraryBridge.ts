@@ -21,12 +21,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-<<<<<<< HEAD:resources/js/services/ComponentLibraryBridge.ts
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/ComponentLibraryBridge.ts
-
 // Enhanced interfaces for new functionality
 interface ComponentCategoryData {
     id: string;

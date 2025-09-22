@@ -271,11 +271,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/ContrastCheckerModal.vue
-import type { BrandColor } from '@/Types/components';
-=======
 import type { BrandColor } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/ContrastCheckerModal.vue
 import { computed, ref } from 'vue';
 
 interface Props {

@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/composables/useFormAutoSave.ts
-import type { FormComponentConfig } from '@/Types/components';
-=======
 import type { FormComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Composables/useFormAutoSave.ts
 import { ref } from 'vue';
 
 export function useFormAutoSave(config: FormComponentConfig, formData: Record<string, any>) {

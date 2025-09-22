@@ -1,5 +1,3 @@
-<<<<<<< HEAD:resources/js/components/homepage/ConversionCTAs.vue
-=======
 <template>
     <div class="conversion-ctas">
         <!-- Simple Strategic CTA Placement -->
@@ -195,4 +193,3 @@ onMounted(() => {
     }
 }
 </style>
->>>>>>> origin/db1:resources/js/Components/homepage/ConversionCTAs.vue

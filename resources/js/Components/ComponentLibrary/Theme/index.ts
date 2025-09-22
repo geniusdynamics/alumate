@@ -37,22 +37,4 @@ export type {
     ThemePreviewDevice,
     ThemeUsageStats,
     ThemeValidationResult,
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/index.ts
-} from '@/Types/components';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/index.ts

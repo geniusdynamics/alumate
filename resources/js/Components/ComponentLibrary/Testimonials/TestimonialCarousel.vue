@@ -117,11 +117,7 @@
 
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Testimonials/TestimonialCarousel.vue
-import type { Testimonial, TestimonialCarouselConfig, VideoSettings } from '@/Types/components';
-=======
 import type { Testimonial, TestimonialCarouselConfig, VideoSettings } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Testimonials/TestimonialCarousel.vue
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 // Import child Components

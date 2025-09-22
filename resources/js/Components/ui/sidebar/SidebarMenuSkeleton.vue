@@ -1,9 +1,5 @@
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ui/sidebar/SidebarMenuSkeleton.vue
-import { cn } from '@/Lib/utils'
-=======
 import { cn } from '@/lib/utils'
->>>>>>> origin/db1:resources/js/Components/ui/sidebar/SidebarMenuSkeleton.vue
 import { Skeleton } from '@/Components/ui/skeleton'
 import { computed, type HTMLAttributes } from 'vue'
 

@@ -159,11 +159,7 @@
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
 import { useIntersectionObserver } from '@/Composables/useIntersectionObserver';
-<<<<<<< HEAD:resources/js/components/common/ResponsiveVideo.vue
-import type { MediaAsset } from '@/Types/components';
-=======
 import type { MediaAsset } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/common/ResponsiveVideo.vue
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface VideoQuality {

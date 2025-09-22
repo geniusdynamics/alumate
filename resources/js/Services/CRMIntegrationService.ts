@@ -1,10 +1,5 @@
 // CRM Integration Service for Form Templates
-<<<<<<< HEAD:resources/js/services/CRMIntegrationService.ts
-import type { FormSubmissionConfig } from '@/Types/components';
-=======
 import type { FormSubmissionConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/CRMIntegrationService.ts
-
 export interface CRMProvider {
     name: string;
     endpoint: string;

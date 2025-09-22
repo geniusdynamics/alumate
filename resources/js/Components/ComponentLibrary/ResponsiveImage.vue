@@ -77,13 +77,8 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ResponsiveImage.vue
-import type { MediaAsset } from '@/Types/components';
-import { createLazyLoadObserver, generateResponsiveImageSources, preloadImage } from '@/Utils/mediaOptimization';
-=======
 import type { MediaAsset } from '@/types/Components';
 import { createLazyLoadObserver, generateResponsiveImageSources, preloadImage } from '@/utils/mediaOptimization';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ResponsiveImage.vue
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface Props {

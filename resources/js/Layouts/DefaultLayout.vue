@@ -11,11 +11,7 @@ import { SidebarInset, SidebarProvider } from '@/Components/ui/sidebar';
 import UserFlowIntegration from '@/Components/UserFlowIntegration.vue';
 import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
 import { initializeTheme } from '@/Composables/useTheme';
-<<<<<<< HEAD:resources/js/layouts/DefaultLayout.vue
-import type { BreadcrumbItemType } from '@/Types';
-=======
 import type { BreadcrumbItemType } from '@/types';
->>>>>>> origin/db1:resources/js/Layouts/DefaultLayout.vue
 import { BellIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';

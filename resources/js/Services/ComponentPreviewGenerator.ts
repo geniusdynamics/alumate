@@ -14,12 +14,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-<<<<<<< HEAD:resources/js/services/ComponentPreviewGenerator.ts
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/ComponentPreviewGenerator.ts
-
 export interface PreviewOptions {
     width?: number;
     height?: number;

@@ -65,11 +65,7 @@
 
 <script setup lang="ts">
 import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/CTAs/CTABanner.vue
-import type { CTABannerConfig, CTAComponentConfig } from '@/Types/components';
-=======
 import type { CTABannerConfig, CTAComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/CTAs/CTABanner.vue
 import { computed } from 'vue';
 import CTAButton from './CTAButton.vue';
 

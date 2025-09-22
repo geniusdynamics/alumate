@@ -210,12 +210,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 // Types
-<<<<<<< HEAD:resources/js/components/FontSelector.vue
-import type { FontCustomization } from '@/Types/components';
-=======
 import type { FontCustomization } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/FontSelector.vue
-
 // Props
 interface Props {
     modelValue: FontCustomization;

@@ -245,11 +245,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/TemplateCustomizer.vue
-import type { FieldCustomizationOptions, FormField, FormTemplate } from '@/Types/components';
-=======
 import type { FieldCustomizationOptions, FormField, FormTemplate } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/TemplateCustomizer.vue
 import { CheckCircleIcon, ChevronDownIcon, ChevronUpIcon, PencilIcon, TrashIcon, XCircleIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref } from 'vue';
 import FieldEditorModal from './FieldEditorModal.vue';

@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/composables/useFormValidation.ts
-import type { FormComponentConfig, FormField, FormValidationConfig } from '@/Types/components';
-=======
 import type { FormComponentConfig, FormField, FormValidationConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Composables/useFormValidation.ts
 import { computed, ref, watch } from 'vue';
 
 export function useFormValidation(config: FormComponentConfig, formData: Record<string, any>) {

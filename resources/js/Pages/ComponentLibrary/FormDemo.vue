@@ -189,11 +189,7 @@
 <script setup lang="ts">
 import { FormBase, FormBuilder } from '@/Components/ComponentLibrary/Forms';
 import { contactTemplate, demoRequestTemplate, formTemplates, leadCaptureTemplate } from '@/Components/ComponentLibrary/Forms/templates';
-<<<<<<< HEAD
-import type { FormComponentConfig } from '@/Types/components';
-=======
 import type { FormComponentConfig } from '@/types/Components';
->>>>>>> origin/db1
 import { ref } from 'vue';
 
 // Refs

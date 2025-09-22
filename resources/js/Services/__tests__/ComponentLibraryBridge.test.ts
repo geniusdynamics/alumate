@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/services/__tests__/ComponentLibraryBridge.test.ts
-import type { Component, ComponentCategory, HeroComponentConfig } from '@/Types/components';
-=======
 import type { Component, ComponentCategory, HeroComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/__tests__/ComponentLibraryBridge.test.ts
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComponentLibraryBridge } from '../ComponentLibraryBridge';
 

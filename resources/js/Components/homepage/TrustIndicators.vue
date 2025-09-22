@@ -1,5 +1,3 @@
-<<<<<<< HEAD:resources/js/components/homepage/TrustIndicators.vue
-=======
 <template>
     <div>
         <!-- Security and Privacy Section -->
@@ -578,4 +576,3 @@ const scalabilityInfo = computed<ScalabilityInfo[]>(() => [
 <style scoped>
 /* Component styles handled by child Components */
 </style>
->>>>>>> origin/db1:resources/js/Components/homepage/TrustIndicators.vue

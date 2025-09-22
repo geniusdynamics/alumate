@@ -2,11 +2,7 @@
 import Heading from '@/Components/Heading.vue';
 import { Button } from '@/Components/ui/button';
 import { Separator } from '@/Components/ui/separator';
-<<<<<<< HEAD:resources/js/layouts/settings/Layout.vue
-import { type NavItem } from '@/Types';
-=======
 import { type NavItem } from '@/types';
->>>>>>> origin/db1:resources/js/Layouts/settings/Layout.vue
 import { Link, usePage } from '@inertiajs/vue3';
 
 const sidebarNavItems: NavItem[] = [

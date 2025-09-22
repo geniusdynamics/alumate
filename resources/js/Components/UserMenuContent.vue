@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import UserInfo from '@/Components/UserInfo.vue';
 import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/Components/ui/dropdown-menu';
-<<<<<<< HEAD:resources/js/components/UserMenuContent.vue
-import type { User } from '@/Types';
-=======
 import type { User } from '@/types';
->>>>>>> origin/db1:resources/js/Components/UserMenuContent.vue
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
 

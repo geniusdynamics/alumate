@@ -16,11 +16,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/Co
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/Components/ui/tooltip';
 import UserMenuContent from '@/Components/UserMenuContent.vue';
 import { getInitials } from '@/Composables/useInitials';
-<<<<<<< HEAD:resources/js/components/AppHeader.vue
-import type { BreadcrumbItem, NavItem } from '@/Types';
-=======
 import type { BreadcrumbItem, NavItem } from '@/types';
->>>>>>> origin/db1:resources/js/Components/AppHeader.vue
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
 import { computed } from 'vue';

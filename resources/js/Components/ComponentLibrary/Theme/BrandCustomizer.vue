@@ -417,11 +417,7 @@ import type {
     BrandGuidelines,
     BrandLogo,
     BrandTemplate,
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/BrandCustomizer.vue
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/BrandCustomizer.vue
 import { router } from '@inertiajs/vue3';
 import { onMounted, ref, watch } from 'vue';
 import BrandAnalyticsModal from './BrandAnalyticsModal.vue';

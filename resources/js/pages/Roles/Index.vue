@@ -3,12 +3,7 @@ import { Head, Link, router } from '@inertiajs/vue3';
 
 import DataTable, { type Column, type PaginationData } from '@/Components/data/DataTable.vue';
 import { useDataTable } from '@/Composables/useDataTable';
-<<<<<<< HEAD
-import type { BreadcrumbItemType, Role } from '@/Types';
-=======
 import type { BreadcrumbItemType, Role } from '@/types/index.d';
->>>>>>> origin/db1
-
 import { Edit, MoreHorizontal, Plus, Trash } from 'lucide-vue-next';
 
 interface Props {

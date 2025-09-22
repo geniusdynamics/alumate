@@ -50,11 +50,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/FieldEditorModal.vue
-import type { FormField } from '@/Types/components';
-=======
 import type { FormField } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/FieldEditorModal.vue
 import { ref } from 'vue';
 import FieldPropertiesEditor from './FieldPropertiesEditor.vue';
 

@@ -65,12 +65,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ValidationDisplay.vue
-import type { ValidationResult } from '@/Utils/heroConfigValidator';
-=======
 import type { ValidationResult } from '@/utils/heroConfigValidator';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ValidationDisplay.vue
-
 interface Props {
     validationResult: ValidationResult;
 }

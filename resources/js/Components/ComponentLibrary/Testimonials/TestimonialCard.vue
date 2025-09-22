@@ -151,17 +151,10 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Testimonials/TestimonialCard.vue
-import type { Testimonial, VideoSettings } from '@/Types/components';
-import { computed } from 'vue';
-
-// Import child components
-=======
 import type { Testimonial, VideoSettings } from '@/types/Components';
 import { computed } from 'vue';
 
 // Import child Components
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Testimonials/TestimonialCard.vue
 import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
 
 interface TestimonialCardConfig {

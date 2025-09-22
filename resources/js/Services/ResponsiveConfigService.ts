@@ -8,12 +8,7 @@ import type {
     ResponsiveComponentVariant,
     ResponsiveConfig,
     TailwindStyleMapping,
-<<<<<<< HEAD:resources/js/services/ResponsiveConfigService.ts
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/ResponsiveConfigService.ts
-
 /**
  * Service for managing responsive configurations and device-specific variants
  * Integrates with GrapeJS Device Manager for seamless responsive design

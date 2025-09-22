@@ -17,12 +17,7 @@ export type {
     ImageBlock,
     TemplateCustomizationConfig,
     TextBlock,
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Customization/index.ts
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Customization/index.ts
-
 export {
     ColorPicker as TemplateColorPicker,
     ContentEditor as TemplateContentEditor,

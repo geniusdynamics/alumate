@@ -9,22 +9,4 @@ export { default as FormFieldRenderer } from './FormFieldRenderer.vue';
 export * from './templates';
 
 // Re-export types
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/index.ts
-export type { FormComponentConfig, FormField, FormFieldType, FormTemplate, FormValidationConfig } from '@/Types/components';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
 export type { FormComponentConfig, FormField, FormFieldType, FormTemplate, FormValidationConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/index.ts

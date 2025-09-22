@@ -304,12 +304,7 @@ import { useDebounceFn } from '@vueuse/core';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 // Types
-<<<<<<< HEAD:resources/js/components/ContentEditor.vue
-import type { ContentBlock, ContentCustomization, ContentEditorState } from '@/Types/components';
-=======
 import type { ContentBlock, ContentCustomization, ContentEditorState } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ContentEditor.vue
-
 // Icons
 import {
     ChatBubbleLeftRightIcon,

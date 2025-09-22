@@ -500,12 +500,7 @@ import type {
   BrandCustomization,
   ContentCustomization,
   TemplateCustomizationConfig
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Customization/TemplateCustomizer.vue
-} from '@/Types/components'
-=======
 } from '@/types/Components'
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Customization/TemplateCustomizer.vue
-
 // Navigation icons (placeholder imports - replace with actual icons)
 const PaletteIcon = () => import('@heroicons/vue/outline/PaletteIcon.vue').then(m => m.default)
 const DocumentTextIcon = () => import('@heroicons/vue/outline/DocumentTextIcon.vue').then(m => m.default)
@@ -1354,19 +1349,3 @@ onBeforeUnmount(() => {
   padding: 0;
   margin: -1px;
   overflow:
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Customization/TemplateCustomizer.vue
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Customization/TemplateCustomizer.vue

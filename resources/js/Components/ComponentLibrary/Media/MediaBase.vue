@@ -43,11 +43,7 @@
 
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Media/MediaBase.vue
-import type { MediaComponentConfig } from '@/Types/components';
-=======
 import type { MediaComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Media/MediaBase.vue
 import { computed, provide } from 'vue';
 
 interface Props {

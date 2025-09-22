@@ -1,5 +1,3 @@
-<<<<<<< HEAD:resources/js/layouts/HomepageLayout.vue
-=======
 <template>
     <div class="homepage-layout">
         <!-- Enhanced SEO Head -->
@@ -355,4 +353,3 @@ onUnmounted(() => {
     }
 }
 </style>
->>>>>>> origin/db1:resources/js/Layouts/HomepageLayout.vue

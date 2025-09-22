@@ -38,11 +38,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Icon.vue';
-<<<<<<< HEAD:resources/js/components/homepage/AudienceSelector.vue
-import { AudienceDetectionResult, AudiencePreference, AudienceType, DetectionFactor } from '@/Types/homepage';
-=======
 import { AudienceDetectionResult, AudiencePreference, AudienceType, DetectionFactor } from '@/types/homepage';
->>>>>>> origin/db1:resources/js/Components/homepage/AudienceSelector.vue
 import { onMounted, ref, watch } from 'vue';
 
 // Props

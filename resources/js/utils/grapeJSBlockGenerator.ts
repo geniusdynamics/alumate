@@ -16,12 +16,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-<<<<<<< HEAD
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1
-
 export interface GrapeJSBlockGeneratorOptions {
     includePreviewImages?: boolean;
     generateResponsiveVariants?: boolean;

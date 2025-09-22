@@ -162,11 +162,7 @@
 
 <script setup lang="ts">
 import { templateService } from '@/Services/TemplateService';
-<<<<<<< HEAD:resources/js/components/TemplateCard.vue
-import type { Template, ViewMode } from '@/Types/components';
-=======
 import type { Template, ViewMode } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/TemplateCard.vue
 import { computed } from 'vue';
 
 // Props

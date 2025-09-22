@@ -15,12 +15,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-<<<<<<< HEAD
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1
-
 export interface SerializationOptions {
     includeMetadata?: boolean;
     preserveIds?: boolean;

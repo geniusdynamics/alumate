@@ -1,10 +1,6 @@
 <script setup>
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
-<<<<<<< HEAD:resources/js/components/MobileNavigation.vue
-import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/Lib/navigation';
-=======
 import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/lib/navigation';
->>>>>>> origin/db1:resources/js/Components/MobileNavigation.vue
 import { Bars3Icon, BriefcaseIcon, HomeIcon, UsersIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';

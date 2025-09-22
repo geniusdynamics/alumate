@@ -9,12 +9,7 @@ import type {
     StatisticsComponentConfig,
     Testimonial,
     TestimonialComponentConfig,
-<<<<<<< HEAD
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1
-
 interface SampleDataVariation {
     variation: 'default' | 'minimal' | 'rich' | 'localized';
     contentLength: 'short' | 'medium' | 'long';

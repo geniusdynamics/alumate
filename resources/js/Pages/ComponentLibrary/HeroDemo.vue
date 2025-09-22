@@ -110,13 +110,8 @@
 <script setup lang="ts">
 import { HeroEmployer, HeroIndividual, HeroInstitution, getHeroConfigForAudience } from '@/Components/ComponentLibrary/Hero';
 import ValidationDisplay from '@/Components/ComponentLibrary/ValidationDisplay.vue';
-<<<<<<< HEAD
-import type { AudienceType, HeroComponentConfig } from '@/Types/components';
-import { validateHeroConfig } from '@/Utils/heroConfigValidator';
-=======
 import type { AudienceType, HeroComponentConfig } from '@/types/Components';
 import { validateHeroConfig } from '@/utils/heroConfigValidator';
->>>>>>> origin/db1
 import { computed, ref, watch } from 'vue';
 
 const selectedAudience = ref<AudienceType>('individual');

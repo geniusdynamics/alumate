@@ -48,11 +48,7 @@
 
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/CTAs/CTABase.vue
-import type { CTAComponentConfig } from '@/Types/components';
-=======
 import type { CTAComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/CTAs/CTABase.vue
 import { computed, onMounted } from 'vue';
 import CTABanner from './CTABanner.vue';
 import CTAButton from './CTAButton.vue';

@@ -74,11 +74,7 @@
 
 <script setup lang="ts">
 import AnimatedCounter from '@/Components/ui/AnimatedCounter.vue';
-<<<<<<< HEAD:resources/js/components/homepage/PlatformStatistics.vue
-import type { AudienceType, PlatformStatistic } from '@/Types/homepage';
-=======
 import type { AudienceType, PlatformStatistic } from '@/types/homepage';
->>>>>>> origin/db1:resources/js/Components/homepage/PlatformStatistics.vue
 import { useIntersectionObserver } from '@vueuse/core';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 

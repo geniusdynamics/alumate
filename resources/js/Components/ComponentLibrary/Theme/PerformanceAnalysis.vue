@@ -278,11 +278,7 @@
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
 import { useNotifications } from '@/Composables/useNotifications';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/PerformanceAnalysis.vue
-import type { GrapeJSThemeData, ThemePerformanceData } from '@/Types/components';
-=======
 import type { GrapeJSThemeData, ThemePerformanceData } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/PerformanceAnalysis.vue
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

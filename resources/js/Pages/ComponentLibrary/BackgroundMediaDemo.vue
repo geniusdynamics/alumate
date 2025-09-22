@@ -81,11 +81,7 @@
 <script setup lang="ts">
 import HeroBase from '@/Components/ComponentLibrary/Hero/HeroBase.vue';
 import { heroMediaSamples } from '@/Data/heroSampleData';
-<<<<<<< HEAD
-import type { HeroComponentConfig } from '@/Types/components';
-=======
 import type { HeroComponentConfig } from '@/types/Components';
->>>>>>> origin/db1
 import { computed, ref } from 'vue';
 
 // Media type selection

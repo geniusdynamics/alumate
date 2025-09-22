@@ -166,11 +166,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/ColorEditorModal.vue
-import type { BrandColor } from '@/Types/components';
-=======
 import type { BrandColor } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/ColorEditorModal.vue
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

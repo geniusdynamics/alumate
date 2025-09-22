@@ -1,9 +1,4 @@
-<<<<<<< HEAD:resources/js/services/ComponentGroupingService.ts
-import type { Component, ComponentCategory, ComponentGroup, ComponentRelationship } from '@/Types/components';
-=======
 import type { Component, ComponentCategory, ComponentGroup, ComponentRelationship } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/ComponentGroupingService.ts
-
 /**
  * Service for managing component grouping and relationships for GrapeJS operations
  */

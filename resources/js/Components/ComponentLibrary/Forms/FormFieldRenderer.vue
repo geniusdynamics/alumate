@@ -261,11 +261,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/FormFieldRenderer.vue
-import type { FormField } from '@/Types/components';
-=======
 import type { FormField } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/FormFieldRenderer.vue
 import { computed } from 'vue';
 
 interface Props {

@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
-=======
 import type { MediaAsset, MediaComponentConfig } from '@/types/Components';
->>>>>>> origin/db1
-
 // Sample media assets
 export const sampleImages: MediaAsset[] = [
     {

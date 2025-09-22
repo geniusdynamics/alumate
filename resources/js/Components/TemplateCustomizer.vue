@@ -364,12 +364,7 @@ import type {
     TemplateCustomizationConfig,
     UndoRedoSnapshot,
     ViewportType,
-<<<<<<< HEAD:resources/js/components/TemplateCustomizer.vue
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/TemplateCustomizer.vue
-
 // Props
 interface Props {
     modelValue: TemplateCustomizationConfig;

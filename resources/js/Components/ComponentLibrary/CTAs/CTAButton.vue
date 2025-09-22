@@ -71,11 +71,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/CTAs/CTAButton.vue
-import type { CTAButtonConfig, CTAComponentConfig } from '@/Types/components';
-=======
 import type { CTAButtonConfig, CTAComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/CTAs/CTAButton.vue
 import { computed, nextTick, ref } from 'vue';
 
 interface Props {

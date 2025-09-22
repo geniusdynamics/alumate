@@ -204,11 +204,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/BrandAnalyticsModal.vue
-import type { BrandAnalytics } from '@/Types/components';
-=======
 import type { BrandAnalytics } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/BrandAnalyticsModal.vue
 import { computed } from 'vue';
 
 interface Props {

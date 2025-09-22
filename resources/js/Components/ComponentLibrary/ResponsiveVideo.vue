@@ -137,13 +137,8 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ResponsiveVideo.vue
-import type { MediaAsset } from '@/Types/components';
-import { createLazyLoadObserver, generateVideoSources } from '@/Utils/mediaOptimization';
-=======
 import type { MediaAsset } from '@/types/Components';
 import { createLazyLoadObserver, generateVideoSources } from '@/utils/mediaOptimization';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ResponsiveVideo.vue
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ResponsiveImage from './ResponsiveImage.vue';
 

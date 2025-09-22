@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/composables/useFormSubmission.ts
-import type { FormComponentConfig } from '@/Types/components';
-=======
 import type { FormComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Composables/useFormSubmission.ts
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 

@@ -1,5 +1,3 @@
-<<<<<<< HEAD:resources/js/components/navigation/HomepageNavigation.vue
-=======
 <script setup lang="ts">
 import AppLogoIcon from '@/Components/common/AppLogoIcon.vue';
 import SearchInput from '@/Components/common/SearchInput.vue';
@@ -385,4 +383,3 @@ onUnmounted(() => {
     }
 }
 </style>
->>>>>>> origin/db1:resources/js/Components/navigation/HomepageNavigation.vue

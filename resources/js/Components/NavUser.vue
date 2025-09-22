@@ -2,11 +2,7 @@
 import UserInfo from '@/Components/UserInfo.vue';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/Components/ui/sidebar';
-<<<<<<< HEAD:resources/js/components/NavUser.vue
-import { type SharedData, type User } from '@/Types';
-=======
 import { type SharedData, type User } from '@/types';
->>>>>>> origin/db1:resources/js/Components/NavUser.vue
 import { usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown } from 'lucide-vue-next';
 import UserMenuContent from './UserMenuContent.vue';

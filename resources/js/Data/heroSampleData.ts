@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import type { HeroComponentConfig, HeroSampleData } from '@/Types/components';
-=======
 import type { HeroComponentConfig, HeroSampleData } from '@/types/Components';
->>>>>>> origin/db1
-
 export const heroSampleData: HeroSampleData = {
     individual: {
         headline: 'Your Success Story Starts Here',

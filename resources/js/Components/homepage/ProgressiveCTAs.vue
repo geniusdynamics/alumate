@@ -91,11 +91,7 @@
 
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/homepage/ProgressiveCTAs.vue
-import type { AudienceType, CTAClickEvent, EngagementLevel, MicroCTA, ProgressiveCTA, UrgencyIndicator } from '@/Types/homepage';
-=======
 import type { AudienceType, CTAClickEvent, EngagementLevel, MicroCTA, ProgressiveCTA, UrgencyIndicator } from '@/types/homepage';
->>>>>>> origin/db1:resources/js/Components/homepage/ProgressiveCTAs.vue
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

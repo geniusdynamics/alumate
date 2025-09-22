@@ -89,11 +89,7 @@
 
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Media/MediaComponent.vue
-import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
-=======
 import type { MediaAsset, MediaComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Media/MediaComponent.vue
 import { computed } from 'vue';
 import ImageGallery from './ImageGallery.vue';
 import InteractiveDemo from './InteractiveDemo.vue';

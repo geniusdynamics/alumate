@@ -592,17 +592,10 @@
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
 import { useDebounce } from '@/Composables/useDebounce';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentConfigurator.vue
-import type { Component, ComponentCategory } from '@/Types/components';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-
-// Import child components
-=======
 import type { Component, ComponentCategory } from '@/types/Components';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Import child Components
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentConfigurator.vue
 import Icon from '@/Components/Common/Icon.vue';
 
 interface ConfigurationField {

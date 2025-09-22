@@ -4,13 +4,8 @@
 
 <script setup lang="ts">
 import { getHeroConfigForAudience } from '@/Data/heroSampleData';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Hero/HeroInstitution.vue
-import type { HeroComponentConfig } from '@/Types/components';
-import { abTestingService, heroABTestConfigs, useABTest } from '@/Utils/abTesting';
-=======
 import type { HeroComponentConfig } from '@/types/Components';
 import { abTestingService, heroABTestConfigs, useABTest } from '@/utils/abTesting';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Hero/HeroInstitution.vue
 import { computed, onMounted } from 'vue';
 import HeroBase from './HeroBase.vue';
 

@@ -3,11 +3,7 @@ import NavFooter from '@/Components/NavFooter.vue';
 import NavMain from '@/Components/NavMain.vue';
 import NavUser from '@/Components/NavUser.vue';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/Components/ui/sidebar';
-<<<<<<< HEAD:resources/js/components/MainSidebar.vue
-import { type NavItem } from '@/Types';
-=======
 import { type NavItem } from '@/types';
->>>>>>> origin/db1:resources/js/Components/MainSidebar.vue
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Briefcase, Calendar, Folder, GraduationCap, Heart, LayoutGrid, MessageSquare, Trophy, Users } from 'lucide-vue-next';
 import SidebarLogo from './SidebarLogo.vue';

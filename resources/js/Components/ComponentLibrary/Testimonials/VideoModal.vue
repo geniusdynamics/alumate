@@ -160,17 +160,10 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Testimonials/VideoModal.vue
-import type { Testimonial, VideoSettings } from '@/Types/components';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-
-// Import child components
-=======
 import type { Testimonial, VideoSettings } from '@/types/Components';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Import child Components
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Testimonials/VideoModal.vue
 import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
 import ResponsiveVideo from '@/Components/Common/ResponsiveVideo.vue';
 

@@ -132,13 +132,8 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Hero/HeroBase.vue
-import type { CTAButton, HeroComponentConfig } from '@/Types/components';
-import { getBackgroundGradient, getVariantStyleClasses } from '@/Utils/variantStyling';
-=======
 import type { CTAButton, HeroComponentConfig } from '@/types/Components';
 import { getBackgroundGradient, getVariantStyleClasses } from '@/utils/variantStyling';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Hero/HeroBase.vue
 import { computed, nextTick, onMounted, ref } from 'vue';
 import ResponsiveImage from '../ResponsiveImage.vue';
 import ResponsiveVideo from '../ResponsiveVideo.vue';

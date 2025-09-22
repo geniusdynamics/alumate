@@ -82,11 +82,7 @@
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
 import { useAudienceDetection } from '@/Composables/useAudienceDetection';
-<<<<<<< HEAD:resources/js/components/homepage/ExitIntentPopup.vue
-import type { AudienceType, ExitIntentOffer } from '@/Types/homepage';
-=======
 import type { AudienceType, ExitIntentOffer } from '@/types/homepage';
->>>>>>> origin/db1:resources/js/Components/homepage/ExitIntentPopup.vue
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {

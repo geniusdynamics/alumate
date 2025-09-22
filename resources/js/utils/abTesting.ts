@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import type { ABTestConfig, HeroComponentConfig } from '@/Types/components';
-=======
 import type { ABTestConfig, HeroComponentConfig } from '@/types/Components';
->>>>>>> origin/db1
-
 interface ABTestSession {
     testId: string;
     variant: string;

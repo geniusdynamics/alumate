@@ -3,12 +3,7 @@
  * Handles responsive images, WebP support, CDN integration, and mobile optimization
  */
 
-<<<<<<< HEAD
-import type { MediaAsset } from '@/Types/components';
-=======
 import type { MediaAsset } from '@/types/Components';
->>>>>>> origin/db1
-
 export interface MediaOptimizationConfig {
     cdnBaseUrl?: string;
     enableWebP?: boolean;

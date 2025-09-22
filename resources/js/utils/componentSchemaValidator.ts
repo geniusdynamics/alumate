@@ -19,12 +19,7 @@ import type {
     StatisticsComponentConfig,
     Testimonial,
     TestimonialComponentConfig,
-<<<<<<< HEAD
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1
-
 export interface ValidationResult {
     valid: boolean;
     errors: ValidationError[];

@@ -125,11 +125,7 @@
 
 <script setup lang="ts">
 import { useStatistics } from '@/Composables/useStatistics';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Hero/StatisticsDisplay.vue
-import type { StatisticCounter } from '@/Types/components';
-=======
 import type { StatisticCounter } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Hero/StatisticsDisplay.vue
 import { computed, ref } from 'vue';
 import AnimatedCounter from './AnimatedCounter.vue';
 

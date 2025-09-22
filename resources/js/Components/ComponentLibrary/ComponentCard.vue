@@ -158,11 +158,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentCard.vue
-import type { Component, ComponentCategory } from '@/Types/components';
-=======
 import type { Component, ComponentCategory } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentCard.vue
 import { computed } from 'vue';
 
 interface Props {

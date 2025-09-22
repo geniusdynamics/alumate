@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import type { AudienceType, CTAABTestVariant, CTABannerConfig, CTAButtonConfig, CTAComponentConfig, CTAInlineLinkConfig } from '@/Types/components';
-=======
 import type { AudienceType, CTAABTestVariant, CTABannerConfig, CTAButtonConfig, CTAComponentConfig, CTAInlineLinkConfig } from '@/types/Components';
->>>>>>> origin/db1
-
 // Sample CTA Button Configurations
 export const sampleCTAButtons: Record<string, CTAButtonConfig> = {
     primarySignup: {

@@ -145,11 +145,7 @@
 
 <script setup lang="ts">
 import { templateService } from '@/Services/TemplateService';
-<<<<<<< HEAD:resources/js/components/TemplatePreview.vue
-import type { Template, TemplatePreviewConfig, ViewportType } from '@/Types/components';
-=======
 import type { Template, TemplatePreviewConfig, ViewportType } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/TemplatePreview.vue
 import { ComputerDesktopIcon, DevicePhoneMobileIcon, DeviceTabletIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref, watch } from 'vue';
 

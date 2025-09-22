@@ -136,19 +136,3 @@ const retry = async () => {
   @apply w-full;
 }
 </style>
-<<<<<<< HEAD:resources/js/components/ui/LazyComponent.vue
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/ui/LazyComponent.vue

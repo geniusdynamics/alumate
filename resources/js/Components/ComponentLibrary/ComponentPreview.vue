@@ -530,17 +530,10 @@
 <script setup lang="ts">
 import { useAnalytics } from '@/Composables/useAnalytics';
 import { useDebounce } from '@/Composables/useDebounce';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentPreview.vue
-import type { AudienceType, Component, ComponentCategory } from '@/Types/components';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-
-// Import child components
-=======
 import type { AudienceType, Component, ComponentCategory } from '@/types/Components';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Import child Components
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentPreview.vue
 import Icon from '@/Components/Common/Icon.vue';
 import ComponentPreviewFrame from './ComponentPreviewFrame.vue';
 import SharePreviewModal from './SharePreviewModal.vue';

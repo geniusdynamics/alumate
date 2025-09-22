@@ -17,11 +17,7 @@ import {
 } from '@/Components/ui/dropdown-menu';
 import { Separator } from '@/Components/ui/separator';
 import { SidebarTrigger } from '@/Components/ui/sidebar';
-<<<<<<< HEAD:resources/js/components/layout/AppHeader.vue
-import type { BreadcrumbItemType } from '@/Types';
-=======
 import type { BreadcrumbItemType } from '@/types';
->>>>>>> origin/db1:resources/js/Components/layout/AppHeader.vue
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { LogOut, Plus, Settings, User } from 'lucide-vue-next';
 import { computed, ref } from 'vue';

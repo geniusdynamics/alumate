@@ -243,11 +243,7 @@
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
 import { useNotifications } from '@/Composables/useNotifications';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/ExportOptions.vue
-import type { GrapeJSThemeData, ThemeExportOptions } from '@/Types/components';
-=======
 import type { GrapeJSThemeData, ThemeExportOptions } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/ExportOptions.vue
 import { computed, onMounted, ref } from 'vue';
 
 interface Props {

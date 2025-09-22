@@ -250,11 +250,7 @@
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
 import { useNotifications } from '@/Composables/useNotifications';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/SharePreviewModal.vue
-import type { GrapeJSThemeData } from '@/Types/components';
-=======
 import type { GrapeJSThemeData } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/SharePreviewModal.vue
 import { computed, reactive, ref } from 'vue';
 
 interface Props {

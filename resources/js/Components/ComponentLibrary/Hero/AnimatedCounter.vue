@@ -48,11 +48,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Hero/AnimatedCounter.vue
-import type { StatisticCounter } from '@/Types/components';
-=======
 import type { StatisticCounter } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Hero/AnimatedCounter.vue
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface Props {

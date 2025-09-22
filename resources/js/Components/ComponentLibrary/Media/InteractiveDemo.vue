@@ -262,11 +262,7 @@
 import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
 import ResponsiveVideo from '@/Components/Common/ResponsiveVideo.vue';
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Media/InteractiveDemo.vue
-import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
-=======
 import type { MediaAsset, MediaComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Media/InteractiveDemo.vue
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { MediaBase } from './index';
 

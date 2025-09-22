@@ -185,11 +185,7 @@
 <script setup lang="ts">
 import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
 import { useAnalytics } from '@/Composables/useAnalytics';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Media/ImageGallery.vue
-import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
-=======
 import type { MediaAsset, MediaComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Media/ImageGallery.vue
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { MediaBase } from './index';
 

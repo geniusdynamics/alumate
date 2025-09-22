@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/composables/useConversionTracking.ts
-import type { CTAConversionEvent, CTATrackingParams } from '@/Types/components';
-=======
 import type { CTAConversionEvent, CTATrackingParams } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Composables/useConversionTracking.ts
 import { computed, ref } from 'vue';
 import { useAnalytics } from './useAnalytics';
 

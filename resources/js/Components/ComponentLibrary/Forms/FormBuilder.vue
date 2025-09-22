@@ -211,11 +211,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/FormBuilder.vue
-import type { FormComponentConfig, FormField, FormFieldType } from '@/Types/components';
-=======
 import type { FormComponentConfig, FormField, FormFieldType } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/FormBuilder.vue
 import { computed, reactive, ref } from 'vue';
 import FieldEditorModal from './FieldEditorModal.vue';
 import FieldPropertiesEditor from './FieldPropertiesEditor.vue';

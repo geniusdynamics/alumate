@@ -250,11 +250,7 @@ import type {
     TemplateSearchParams,
     ViewMode,
     ViewportType,
-<<<<<<< HEAD:resources/js/components/TemplateLibrary.vue
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/TemplateLibrary.vue
 import { useDebounceFn } from '@vueuse/core';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 

@@ -8,11 +8,7 @@
 
 <script setup lang="ts">
 import { Button, buttonVariants } from '@/Components/ui/button';
-<<<<<<< HEAD:resources/js/components/loaders/LoadingButton.vue
-import { cn } from '@/Utils/cn';
-=======
 import { cn } from '@/utils/cn';
->>>>>>> origin/db1:resources/js/Components/loaders/LoadingButton.vue
 import type { VariantProps } from 'class-variance-authority';
 import Spinner from './Spinner.vue';
 

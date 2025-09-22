@@ -194,19 +194,3 @@ defineExpose({
   isOpen
 })
 </script>
-<<<<<<< HEAD:resources/js/components/ui/Modal.vue
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/ui/Modal.vue

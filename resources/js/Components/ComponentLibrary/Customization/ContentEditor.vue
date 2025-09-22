@@ -427,11 +427,7 @@
 </template>
 
 <script setup lang="ts">
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Customization/ContentEditor.vue
-import { ContentBlock } from '@/Types/components';
-=======
 import { ContentBlock } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Customization/ContentEditor.vue
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 // Template refs

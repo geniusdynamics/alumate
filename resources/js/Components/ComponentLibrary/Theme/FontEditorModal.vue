@@ -229,11 +229,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/FontEditorModal.vue
-import type { BrandFont } from '@/Types/components';
-=======
 import type { BrandFont } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/FontEditorModal.vue
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

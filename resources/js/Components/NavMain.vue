@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/Components/ui/sidebar';
-<<<<<<< HEAD:resources/js/components/NavMain.vue
-import { type NavItem, type SharedData } from '@/Types';
-=======
 import { type NavItem, type SharedData } from '@/types';
->>>>>>> origin/db1:resources/js/Components/NavMain.vue
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 

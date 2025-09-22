@@ -57,11 +57,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/CTAs/CTAInlineLink.vue
-import type { CTAComponentConfig, CTAInlineLinkConfig } from '@/Types/components';
-=======
 import type { CTAComponentConfig, CTAInlineLinkConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/CTAs/CTAInlineLink.vue
 import { computed, ref } from 'vue';
 
 interface Props {

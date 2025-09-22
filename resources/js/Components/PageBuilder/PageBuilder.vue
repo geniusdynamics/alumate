@@ -204,13 +204,8 @@ import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from
 import { useRoute, useRouter } from 'vue-router';
 import { usePageBuilder } from '../../Composables/usePageBuilder';
 import { useToast } from '../../Composables/useToast';
-<<<<<<< HEAD:resources/js/components/PageBuilder/PageBuilder.vue
-import { autoSaveService } from '../../services/AutoSaveService';
-import { realTimeEditingService } from '../../services/RealTimeEditingService';
-=======
 import { autoSaveService } from '../../Services/AutoSaveService';
 import { realTimeEditingService } from '../../Services/RealTimeEditingService';
->>>>>>> origin/db1:resources/js/Components/PageBuilder/PageBuilder.vue
 import Icon from '../ui/Icon.vue';
 import VueGrapeJSWrapper from '../VueGrapeJSWrapper.vue';
 import AdvancedStylingPanel from './AdvancedStylingPanel.vue';

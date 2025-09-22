@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
 import { useInitials } from '@/Composables/useInitials';
-<<<<<<< HEAD:resources/js/components/UserInfo.vue
-import type { User } from '@/Types';
-=======
 import type { User } from '@/types';
->>>>>>> origin/db1:resources/js/Components/UserInfo.vue
 import { computed } from 'vue';
 
 interface Props {

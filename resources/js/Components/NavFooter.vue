@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/Components/ui/sidebar';
-<<<<<<< HEAD:resources/js/components/NavFooter.vue
-import { type NavItem } from '@/Types';
-=======
 import { type NavItem } from '@/types';
->>>>>>> origin/db1:resources/js/Components/NavFooter.vue
-
 interface Props {
     items: NavItem[];
     class?: string;

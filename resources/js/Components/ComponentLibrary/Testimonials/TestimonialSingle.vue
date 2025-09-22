@@ -125,17 +125,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Testimonials/TestimonialSingle.vue
-import type { Testimonial } from '@/Types/components'
-import { useAnalytics } from '@/Composables/useAnalytics'
-
-// Import child components
-=======
 import type { Testimonial } from '@/types/Components'
 import { useAnalytics } from '@/Composables/useAnalytics'
 
 // Import child Components
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Testimonials/TestimonialSingle.vue
 import ResponsiveVideo from '@/Components/Common/ResponsiveVideo.vue'
 import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue'
 import { count } from 'console'
@@ -438,22 +431,3 @@ const handleShare = async () => {
     }
 }
 </style>
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Testimonials/TestimonialSingle.vue
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Testimonials/TestimonialSingle.vue

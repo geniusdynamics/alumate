@@ -893,11 +893,7 @@ import { componentLibraryBridge } from '@/Services/ComponentLibraryBridge';
 import { pageBackupService, type BackupOptions, type BackupResult } from '@/Services/PageBackupService';
 import { pageExportService, type ExportOptions, type ExportResult } from '@/Services/PageExportService';
 import { pageMigrationService, type Migration, type MigrationConfig } from '@/Services/PageMigrationService';
-<<<<<<< HEAD:resources/js/components/VueGrapeJSWrapper.vue
-import type { Component, EditorState, GrapeJSConfig, Page } from '@/Types/components';
-=======
 import type { Component, EditorState, GrapeJSConfig, Page } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/VueGrapeJSWrapper.vue
 import type { Editor } from 'grapesjs';
 import grapesjs from 'grapesjs';
 import { io, type Socket } from 'socket.io-client';

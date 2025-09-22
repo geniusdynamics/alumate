@@ -1,5 +1,3 @@
-<<<<<<< HEAD:resources/js/components/homepage/calculator/CalculatorResults.vue
-=======
 <template>
     <div class="calculator-results" :class="{ visible: isVisible }">
         <!-- Header -->
@@ -485,4 +483,3 @@ onMounted(() => {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 </style>
->>>>>>> origin/db1:resources/js/Components/homepage/calculator/CalculatorResults.vue

@@ -3,12 +3,7 @@ import type {
   TailwindStyleMapping,
   DeviceType,
   BreakpointName
-<<<<<<< HEAD:resources/js/services/TailwindMappingService.ts
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/TailwindMappingService.ts
-
 /**
  * Service for mapping Tailwind CSS classes to GrapeJS Style Manager
  * Provides responsive design integration and class management
@@ -630,19 +625,3 @@ export class TailwindMappingService {
 }
 export d
 efault TailwindMappingService;
-<<<<<<< HEAD:resources/js/services/TailwindMappingService.ts
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Services/TailwindMappingService.ts

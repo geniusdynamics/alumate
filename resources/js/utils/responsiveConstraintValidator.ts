@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import type { ComponentConstraints, DeviceType, ResponsiveComponentConfig, ResponsiveConstraint } from '@/Types/components';
-=======
 import type { ComponentConstraints, DeviceType, ResponsiveComponentConfig, ResponsiveConstraint } from '@/types/Components';
->>>>>>> origin/db1
-
 export interface ConstraintValidationResult {
     valid: boolean;
     errors: ConstraintViolation[];

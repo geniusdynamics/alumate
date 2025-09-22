@@ -1,10 +1,5 @@
 // Form Templates
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Forms/templates/index.ts
-import type { FormTemplate } from '@/Types/components';
-=======
 import type { FormTemplate } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Forms/templates/index.ts
-
 export const individualSignupTemplate: FormTemplate = {
     id: 'individual-signup',
     name: 'Individual Alumni Signup',

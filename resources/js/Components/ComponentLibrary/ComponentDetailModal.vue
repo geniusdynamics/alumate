@@ -340,11 +340,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentDetailModal.vue
-import type { AudienceType, Component, ComponentCategory } from '@/Types/components';
-=======
 import type { AudienceType, Component, ComponentCategory } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentDetailModal.vue
 import { computed, ref, watch } from 'vue';
 
 interface ComponentUsageStats {

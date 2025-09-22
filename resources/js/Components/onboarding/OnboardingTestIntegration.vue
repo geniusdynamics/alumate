@@ -278,18 +278,3 @@ const addTestResult = (message, success) => {
 }
 </script>
 </template>
-<<<<<<< HEAD:resources/js/components/onboarding/OnboardingTestIntegration.vue
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/onboarding/OnboardingTestIntegration.vue

@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/composables/useFormErrorState.ts
-import type { FormComponentConfig } from '@/Types/components';
-=======
 import type { FormComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Composables/useFormErrorState.ts
 import { computed, reactive, ref, watch } from 'vue';
 
 export interface FormErrorState {

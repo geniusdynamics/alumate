@@ -257,11 +257,7 @@
 
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/TemplateEditorModal.vue
-import type { BrandAssets, BrandColor, BrandTemplate } from '@/Types/components';
-=======
 import type { BrandAssets, BrandColor, BrandTemplate } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/TemplateEditorModal.vue
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

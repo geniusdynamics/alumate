@@ -65,8 +65,4 @@ export type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/index.ts
-} from '../../Types/components';
-=======
 } from '../../types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/index.ts

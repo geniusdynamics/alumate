@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
-<<<<<<< HEAD:resources/js/components/ui/sidebar/SidebarInput.vue
-import { cn } from '@/Lib/utils'
-=======
 import { cn } from '@/lib/utils'
->>>>>>> origin/db1:resources/js/Components/ui/sidebar/SidebarInput.vue
 import { Input } from '@/Components/ui/input'
 
 const props = defineProps<{

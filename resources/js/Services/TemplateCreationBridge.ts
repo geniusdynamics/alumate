@@ -14,12 +14,7 @@ import type {
     GrapeJSTrait,
     Template,
     TemplateCategory,
-<<<<<<< HEAD:resources/js/services/TemplateCreationBridge.ts
-} from '@/Types/components';
-=======
 } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Services/TemplateCreationBridge.ts
-
 // Enhanced interfaces for template functionality
 interface TemplateCategoryData {
     id: string;

@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
-<<<<<<< HEAD:resources/js/components/ui/sidebar/SidebarSeparator.vue
-import { cn } from '@/Lib/utils'
-=======
 import { cn } from '@/lib/utils'
->>>>>>> origin/db1:resources/js/Components/ui/sidebar/SidebarSeparator.vue
 import { Separator } from '@/Components/ui/separator'
 
 const props = defineProps<{

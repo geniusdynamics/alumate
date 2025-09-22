@@ -3,11 +3,7 @@
  */
 
 import { statisticsService, type StatisticData } from '@/Services/StatisticsService';
-<<<<<<< HEAD:resources/js/composables/useStatistics.ts
-import type { StatisticCounter } from '@/Types/components';
-=======
 import type { StatisticCounter } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Composables/useStatistics.ts
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 export interface UseStatisticsOptions {

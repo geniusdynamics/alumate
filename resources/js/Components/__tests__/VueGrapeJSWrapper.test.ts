@@ -1,8 +1,4 @@
-<<<<<<< HEAD:resources/js/components/__tests__/VueGrapeJSWrapper.test.ts
-import type { Component, CTAButton, GrapeJSConfig, HeroComponentConfig } from '@/Types/components';
-=======
 import type { Component, CTAButton, GrapeJSConfig, HeroComponentConfig } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/__tests__/VueGrapeJSWrapper.test.ts
 import { flushPromises, mount } from '@vue/test-utils';
 import { io, type Socket } from 'socket.io-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

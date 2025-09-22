@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-import type { HeroComponentConfig } from '@/Types/components';
-=======
 import type { HeroComponentConfig } from '@/types/Components';
->>>>>>> origin/db1
-
 export interface VariantStyleClasses {
     hero: string[];
     headline: string[];

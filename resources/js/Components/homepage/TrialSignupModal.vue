@@ -217,11 +217,7 @@
 
 <script setup lang="ts">
 import LoadingSpinner from '@/Components/ui/LoadingSpinner.vue';
-<<<<<<< HEAD:resources/js/components/homepage/TrialSignupModal.vue
-import type { TrialSignupData } from '@/Types/homepage';
-=======
 import type { TrialSignupData } from '@/types/homepage';
->>>>>>> origin/db1:resources/js/Components/homepage/TrialSignupModal.vue
 import { CheckCircleIcon, CheckIcon, ExclamationTriangleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { reactive, ref, watch } from 'vue';
 

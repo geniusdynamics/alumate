@@ -268,11 +268,7 @@
 <script setup lang="ts">
 import Icon from '@/Components/Common/Icon.vue';
 import { useNotifications } from '@/Composables/useNotifications';
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/Theme/ComponentCoverage.vue
-import type { GrapeJSThemeData } from '@/Types/components';
-=======
 import type { GrapeJSThemeData } from '@/types/Components';
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/Theme/ComponentCoverage.vue
 import { computed, onMounted, ref } from 'vue';
 
 interface Props {

@@ -419,20 +419,12 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, watch, nextTick } from 'vue'
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentBrowser.vue
-import type { ComponentCategory, Component, AudienceType } from '@/Types/components'
-=======
 import type { ComponentCategory, Component, AudienceType } from '@/types/Components'
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentBrowser.vue
 import { useDebounce } from '@/Composables/useDebounce'
 import { useAnalytics } from '@/Composables/useAnalytics'
 import { useUserPreferences } from '@/Composables/useUserPreferences'
 
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentBrowser.vue
-// Import child components
-=======
 // Import child Components
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentBrowser.vue
 import Icon from '@/Components/Common/Icon.vue'
 import ComponentSkeleton from './ComponentSkeleton.vue'
 import ComponentBrowserCard from './ComponentBrowserCard.vue'
@@ -1180,22 +1172,3 @@ watch([selectedCategory, selectedAudienceType, selectedRating, showFavoritesOnly
   }
 }
 </style>
-<<<<<<< HEAD:resources/js/components/ComponentLibrary/ComponentBrowser.vue
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Components/ComponentLibrary/ComponentBrowser.vue

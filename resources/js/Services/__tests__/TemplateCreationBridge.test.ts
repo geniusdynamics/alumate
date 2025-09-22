@@ -1,12 +1,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { TemplateCreationBridge } from '../TemplateCreationBridge'
-<<<<<<< HEAD:resources/js/services/__tests__/TemplateCreationBridge.test.ts
-import type { Template, TemplateCategory } from '@/Types/components'
-=======
 import type { Template, TemplateCategory } from '@/types/Components'
->>>>>>> origin/db1:resources/js/Services/__tests__/TemplateCreationBridge.test.ts
-
 // Mock fetch for API calls
 vi.mocked(global.fetch)
 
@@ -461,19 +456,3 @@ describe('TemplateCreationBridge', () => {
       const invalidLanding: Partial<Template> = {
         ...mockTemplate,
         structure
-<<<<<<< HEAD:resources/js/services/__tests__/TemplateCreationBridge.test.ts
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
->>>>>>> origin/db1:resources/js/Services/__tests__/TemplateCreationBridge.test.ts
