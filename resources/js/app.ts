@@ -1,21 +1,5 @@
 import "../css/app.css";
 
-<<<<<<< HEAD
-import { createInertiaApp } from '@inertiajs/vue3';
-import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import type { DefineComponent } from 'vue';
-import { createApp, h } from 'vue';
-import Toast from 'vue-toastification';
-import 'vue-toastification/dist/index.css';
-import { ZiggyVue } from 'ziggy-js';
-import { initializeTheme } from './Composables/useAppearance';
-import './pwa.js';
-import { performanceService } from './services/PerformanceService';
-import { preloadService } from './services/PreloadService';
-import { bundleAnalyzer } from './Utils/bundle-analyzer';
-import { preloadCriticalResources } from './Utils/lazy-loading';
-import { performanceOptimizer } from './Utils/performance-optimizer';
-=======
 import { createInertiaApp } from "@inertiajs/vue3";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import type { DefineComponent } from "vue";
@@ -30,7 +14,6 @@ import { preloadService } from "./Services/PreloadService";
 import { bundleAnalyzer } from "./utils/bundle-analyzer";
 import { preloadCriticalResources } from "./utils/lazy-loading";
 import { performanceOptimizer } from "./utils/performance-optimizer";
->>>>>>> origin/db1
 
 // Extend ImportMeta interface for Vite...
 declare module "vite/client" {
