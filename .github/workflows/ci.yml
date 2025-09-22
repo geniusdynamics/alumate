@@ -5,10 +5,12 @@ on:
     branches:
       - develop
       - main
+      - db
   pull_request:
     branches:
       - develop
       - main
+      - db
 
 jobs:
   lint-and-format:
