@@ -35,7 +35,7 @@ export function preloadComponent(loader: AsyncComponentLoader): Promise<Componen
 }
 
 /**
- * Lazy load route components with automatic chunk naming
+ * Lazy load route Components with automatic chunk naming
  */
 export function lazyRoute(path: string, chunkName?: string) {
     return () => {

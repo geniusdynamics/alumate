@@ -296,7 +296,7 @@
 import SkillsInput from '@/Components/SkillsInput.vue';
 
 export default {
-    components: {
+    Components: {
         SkillsInput,
     },
 

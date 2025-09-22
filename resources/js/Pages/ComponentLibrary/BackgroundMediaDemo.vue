@@ -81,7 +81,11 @@
 <script setup lang="ts">
 import HeroBase from '@/Components/ComponentLibrary/Hero/HeroBase.vue';
 import { heroMediaSamples } from '@/Data/heroSampleData';
+<<<<<<< HEAD
 import type { HeroComponentConfig } from '@/Types/components';
+=======
+import type { HeroComponentConfig } from '@/types/Components';
+>>>>>>> origin/db1
 import { computed, ref } from 'vue';
 
 // Media type selection
@@ -235,7 +239,7 @@ const features = [
     },
     {
         title: 'CDN Integration',
-        description: 'Seamless integration with CDN services for global content delivery and automatic image optimization.',
+        description: 'Seamless integration with CDN Services for global content delivery and automatic image optimization.',
     },
     {
         title: 'Mobile First',

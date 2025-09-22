@@ -5,7 +5,7 @@
             <div class="mb-8 text-center">
                 <h1 class="mb-4 text-3xl font-bold text-gray-900 dark:text-white">Form Component Library Demo</h1>
                 <p class="mx-auto max-w-3xl text-lg text-gray-600 dark:text-gray-300">
-                    Explore our comprehensive form components with drag-and-drop field builder, real-time validation, and mobile-optimized design.
+                    Explore our comprehensive form Components with drag-and-drop field builder, real-time validation, and mobile-optimized design.
                 </p>
             </div>
 
@@ -189,7 +189,11 @@
 <script setup lang="ts">
 import { FormBase, FormBuilder } from '@/Components/ComponentLibrary/Forms';
 import { contactTemplate, demoRequestTemplate, formTemplates, leadCaptureTemplate } from '@/Components/ComponentLibrary/Forms/templates';
+<<<<<<< HEAD
 import type { FormComponentConfig } from '@/Types/components';
+=======
+import type { FormComponentConfig } from '@/types/Components';
+>>>>>>> origin/db1
 import { ref } from 'vue';
 
 // Refs
@@ -223,7 +227,7 @@ const features = [
         icon: 'CursorArrowRaysIcon',
         iconBg: 'bg-blue-100 dark:bg-blue-900/30',
         iconColor: 'text-blue-600 dark:text-blue-400',
-        items: ['Visual field arrangement', 'Real-time preview', 'Field property editor', 'Responsive layouts'],
+        items: ['Visual field arrangement', 'Real-time preview', 'Field property editor', 'Responsive Layouts'],
     },
     {
         title: 'Real-time Validation',
@@ -315,7 +319,7 @@ const getCategoryColor = (category: string) => {
     return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
 };
 
-// Icon components (simplified)
+// Icon Components (simplified)
 const CursorArrowRaysIcon = {
     template:
         '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"/></svg>',

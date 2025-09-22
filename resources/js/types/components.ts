@@ -83,7 +83,7 @@ export interface ComponentGroup {
   id: string;
   name: string;
   description?: string;
-  components: string[]; // Component IDs
+  Components: string[]; // Component IDs
   category?: ComponentCategory;
   tags?: string[];
   grapeJSCategory?: string;
@@ -664,7 +664,7 @@ export interface GrapeJSComponentDefinition {
   type: string;
   tagName?: string;
   attributes?: Record<string, any>;
-  components?: string | GrapeJSComponentDefinition[];
+  Components?: string | GrapeJSComponentDefinition[];
   traits?: GrapeJSTrait[];
   style?: Record<string, any>;
   void?: boolean;
@@ -712,7 +712,7 @@ export interface ComponentGrapeJSMetadata {
 export interface GrapeJSSerializationData {
   html: string;
   css: string;
-  components: any[];
+  Components: any[];
   styles: any[];
   assets: any[];
 }
@@ -1342,7 +1342,7 @@ export interface BrandAnalytics {
 
 // Template Component Types
 export type TemplateAudienceType = 'individual' | 'institution' | 'employer' | 'general';
-export type TemplateCampaignType = 'onboarding' | 'event_promotion' | 'donation' | 'networking' | 'career_services' | 'recruiting' | 'leadership' | 'marketing';
+export type TemplateCampaignType = 'onboarding' | 'event_promotion' | 'donation' | 'networking' | 'career_Services' | 'recruiting' | 'leadership' | 'marketing';
 export type TemplateCategory = 'landing' | 'homepage' | 'form' | 'email' | 'social';
 export type ViewportType = 'desktop' | 'tablet' | 'mobile';
 export type ViewMode = 'grid' | 'list';
@@ -1761,7 +1761,7 @@ export interface ThemeEditorState {
   isNew: boolean
   saving: boolean
   validating: boolean
-  previewMode: 'components' | 'styleguide' | 'accessibility'
+  previewMode: 'Components' | 'styleguide' | 'accessibility'
   currentDevice: 'desktop' | 'tablet' | 'mobile'
 }
 

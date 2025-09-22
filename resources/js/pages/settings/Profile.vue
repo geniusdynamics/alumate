@@ -2,7 +2,11 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 import SettingsLayout from '@/Layouts/settings/Layout.vue';
+<<<<<<< HEAD
 import { type BreadcrumbItem, type SharedData, type User } from '@/Types';
+=======
+import { type BreadcrumbItem, type SharedData, type User } from '@/types';
+>>>>>>> origin/db1
 
 interface Props {
     mustVerifyEmail: boolean;

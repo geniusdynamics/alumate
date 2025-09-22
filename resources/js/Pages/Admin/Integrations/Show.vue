@@ -326,7 +326,11 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import TestResultsModal from '@/Components/Admin/Integrations/TestResultsModal.vue';
+=======
+import TestResultsModal from '@/Components/admin/Integrations/TestResultsModal.vue';
+>>>>>>> origin/db1
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import {
     ArrowLeftIcon,

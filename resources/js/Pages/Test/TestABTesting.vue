@@ -79,10 +79,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+<<<<<<< HEAD
 import ABTestForm from '../../components/Analytics/ABTestForm.vue';
 import ABTestManager from '../../components/Analytics/ABTestManager.vue';
 import ABTestResults from '../../components/Analytics/ABTestResults.vue';
 import type { ABTestData } from '../../Types/analytics';
+=======
+import ABTestForm from '../../Components/Analytics/ABTestForm.vue';
+import ABTestManager from '../../Components/Analytics/ABTestManager.vue';
+import ABTestResults from '../../Components/Analytics/ABTestResults.vue';
+import type { ABTestData } from '../../types/analytics';
+>>>>>>> origin/db1
 
 // Test state
 const showForm = ref(false);

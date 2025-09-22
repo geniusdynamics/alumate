@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import type { BackgroundMedia, CTAButton, HeroComponentConfig, StatisticCounter } from '@/Types/components';
+=======
+import type { BackgroundMedia, CTAButton, HeroComponentConfig, StatisticCounter } from '@/types/Components';
+>>>>>>> origin/db1
 
 export interface ValidationError {
     field: string;

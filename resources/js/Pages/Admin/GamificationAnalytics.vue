@@ -7,5 +7,5 @@
 </template>
 
 <script setup lang="ts">
-import GamificationDashboard from '../../components/Analytics/GamificationDashboard.vue';
+import GamificationDashboard from '../../Components/Analytics/GamificationDashboard.vue';
 </script>

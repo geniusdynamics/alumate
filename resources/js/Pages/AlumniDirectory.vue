@@ -195,7 +195,7 @@ import DirectoryFilters from '../Components/DirectoryFilters.vue';
 
 export default {
     name: 'AlumniDirectory',
-    components: {
+    Components: {
         Head,
         AppLayout,
         MobileHamburgerMenu,

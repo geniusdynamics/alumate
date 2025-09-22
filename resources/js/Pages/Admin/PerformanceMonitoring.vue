@@ -5,7 +5,11 @@
 </template>
 
 <script setup lang="ts">
+<<<<<<< HEAD
 import PerformanceMonitoring from '@/Components/Admin/PerformanceMonitoring.vue';
+=======
+import PerformanceMonitoring from '@/Components/admin/PerformanceMonitoring.vue';
+>>>>>>> origin/db1
 import AdminLayout from '@/Components/AdminLayout.vue';
 import { ChartBarIcon, CogIcon, CpuChipIcon, ServerIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 

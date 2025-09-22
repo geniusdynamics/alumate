@@ -268,7 +268,11 @@
 
 <script setup lang="ts">
 import StatisticsDisplay from '@/Components/ComponentLibrary/Hero/StatisticsDisplay.vue';
+<<<<<<< HEAD
 import type { StatisticCounter } from '@/Types/components';
+=======
+import type { StatisticCounter } from '@/types/Components';
+>>>>>>> origin/db1
 import { reactive, ref } from 'vue';
 
 // Demo configuration

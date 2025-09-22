@@ -10,7 +10,11 @@ import { Checkbox } from '@/Components/ui/checkbox';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+<<<<<<< HEAD
 import type { BreadcrumbItemType, Permission } from '@/Types';
+=======
+import type { BreadcrumbItemType, Permission } from '@/types/index.d';
+>>>>>>> origin/db1
 
 const props = defineProps<{
     permissions: Permission[];

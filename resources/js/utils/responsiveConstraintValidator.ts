@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import type { ComponentConstraints, DeviceType, ResponsiveComponentConfig, ResponsiveConstraint } from '@/Types/components';
+=======
+import type { ComponentConstraints, DeviceType, ResponsiveComponentConfig, ResponsiveConstraint } from '@/types/Components';
+>>>>>>> origin/db1
 
 export interface ConstraintValidationResult {
     valid: boolean;
@@ -27,7 +31,7 @@ export interface AutoFixSuggestion {
 
 /**
  * Validates responsive design constraints for component compliance
- * Ensures components meet accessibility and usability standards across devices
+ * Ensures Components meet accessibility and usability standards across devices
  */
 export class ResponsiveConstraintValidator {
     private static instance: ResponsiveConstraintValidator;

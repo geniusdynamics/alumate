@@ -205,7 +205,7 @@
                         </div>
 
                         <div class="space-y-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">See how your theme choices look across different components.</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">See how your theme choices look across different Components.</p>
 
                             <!-- Sample Components -->
                             <div class="space-y-3">

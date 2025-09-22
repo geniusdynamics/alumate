@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import type { ABTestConfig, HeroComponentConfig } from '@/Types/components';
+=======
+import type { ABTestConfig, HeroComponentConfig } from '@/types/Components';
+>>>>>>> origin/db1
 
 interface ABTestSession {
     testId: string;
@@ -173,7 +177,7 @@ class ABTestingService {
 export const abTestingService = new ABTestingService();
 
 /**
- * Hook for using A/B testing in Vue components
+ * Hook for using A/B testing in Vue Components
  */
 export function useABTest(config: ABTestConfig, userId?: string) {
     const variant = abTestingService.getVariant(config, userId);
@@ -198,7 +202,7 @@ export function useABTest(config: ABTestConfig, userId?: string) {
 }
 
 /**
- * Predefined A/B test configurations for hero components
+ * Predefined A/B test configurations for hero Components
  */
 export const heroABTestConfigs = {
     individual: {

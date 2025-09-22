@@ -176,7 +176,7 @@
         </div>
 
         <!-- Create Integration Modal -->
-        <IntegrationCreateModal
+        <CreateModal
             v-if="showCreateModal"
             :integration-types="integrationTypes"
             :selected-type="selectedType"
@@ -190,8 +190,13 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import IntegrationCreateModal from '@/Components/Admin/Integrations/CreateModal.vue';
 import TestResultsModal from '@/Components/Admin/Integrations/TestResultsModal.vue';
+=======
+import CreateModal from '@/Components/admin/Integrations/CreateModal.vue';
+import TestResultsModal from '@/Components/admin/Integrations/TestResultsModal.vue';
+>>>>>>> origin/db1
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import {
     ArrowPathIcon,

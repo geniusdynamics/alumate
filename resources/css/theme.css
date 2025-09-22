@@ -429,7 +429,7 @@
     @apply rotate-0 scale-100;
 }
 
-/* Enhanced theme-aware components */
+/* Enhanced theme-aware Components */
 .theme-card {
     @apply border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800;
     @apply shadow-sm transition-shadow duration-200 hover:shadow-md;

@@ -52,7 +52,7 @@ function submit() {
             <Card>
                 <CardHeader>
                     <CardTitle>External System Integrations</CardTitle>
-                    <CardDescription>Connect your institution's portal to other services.</CardDescription>
+                    <CardDescription>Connect your institution's portal to other Services.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div default-value="email" class="w-full">

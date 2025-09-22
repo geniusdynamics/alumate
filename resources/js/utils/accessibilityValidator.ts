@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import type { AccessibilityMetadata, ResponsiveComponentConfig } from '@/Types/components';
+=======
+import type { AccessibilityMetadata, ResponsiveComponentConfig } from '@/types/Components';
+>>>>>>> origin/db1
 
 export interface AccessibilityValidationResult {
     valid: boolean;
@@ -162,7 +166,7 @@ export class AccessibilityValidator {
         if (recommendedTag) {
             recommendations.push({
                 category: 'semantic',
-                message: `Consider using ${recommendedTag} for ${componentType} components`,
+                message: `Consider using ${recommendedTag} for ${componentType} Components`,
                 impact: 'medium',
                 implementation: `Wrap component content in appropriate semantic elements`,
             });
@@ -209,7 +213,7 @@ export class AccessibilityValidator {
         if (keyboardNavigation.skipLink === undefined) {
             recommendations.push({
                 category: 'keyboard',
-                message: 'Consider adding skip links for complex components',
+                message: 'Consider adding skip links for complex Components',
                 impact: 'low',
                 implementation: 'Add "Skip to main content" or similar navigation aids',
             });

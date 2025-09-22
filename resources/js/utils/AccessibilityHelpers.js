@@ -1,7 +1,7 @@
 /**
  * Accessibility Helpers Utility
  *
- * Provides utility functions and composables for implementing
+ * Provides utility functions and Composables for implementing
  * WCAG 2.1 AA compliant accessibility features throughout the
  * Modern Alumni Platform.
  */
