@@ -186,7 +186,7 @@
                         <li>• Don't desktop-first design</li>
                         <li>• Avoid fixed pixel values</li>
                         <li>• Don't hide content on mobile</li>
-                        <li>• Avoid complex layouts on small screens</li>
+                        <li>• Avoid complex Layouts on small screens</li>
                         <li>• Don't use hover-only interactions</li>
                     </ul>
                 </div>

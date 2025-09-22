@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -24,7 +24,7 @@ const form = useForm({
     established_year: props.employer.established_year || '',
     employee_count: props.employer.employee_count || '',
     business_locations: props.employer.business_locations || [],
-    services_products: props.employer.services_products || [],
+    Services_products: props.employer.Services_products || [],
     employer_benefits: props.employer.employer_benefits || [],
     notification_preferences: props.employer.notification_preferences || {},
 });
@@ -46,13 +46,13 @@ const removeLocation = (index) => {
 
 const addService = () => {
     if (newService.value.trim()) {
-        form.services_products.push(newService.value.trim());
+        form.Services_products.push(newService.value.trim());
         newService.value = '';
     }
 };
 
 const removeService = (index) => {
-    form.services_products.splice(index, 1);
+    form.Services_products.splice(index, 1);
 };
 
 const addBenefit = () => {
@@ -398,7 +398,7 @@ const formatDate = (date) => {
 
                             <div class="mb-4 space-y-2">
                                 <div
-                                    v-for="(service, index) in form.services_products"
+                                    v-for="(service, index) in form.Services_products"
                                     :key="index"
                                     class="flex items-center justify-between rounded bg-gray-50 p-2"
                                 >

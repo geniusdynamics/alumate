@@ -1,4 +1,4 @@
-import type { HeroComponentConfig } from '@/types/components';
+import type { HeroComponentConfig } from '@/types/Components';
 
 export interface VariantStyleClasses {
     hero: string[];

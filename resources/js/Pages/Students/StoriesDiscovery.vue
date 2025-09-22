@@ -216,7 +216,7 @@
 import AlumniConnectionCard from '@/Components/AlumniConnectionCard.vue';
 import Pagination from '@/Components/Pagination.vue';
 import StudentStoryCard from '@/Components/StudentStoryCard.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import {
     AcademicCapIcon,
     BookOpenIcon,

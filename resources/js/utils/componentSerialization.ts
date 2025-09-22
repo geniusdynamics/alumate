@@ -2,7 +2,7 @@
  * Component Serialization Utilities for GrapeJS Integration
  *
  * This module provides utilities for serializing and deserializing
- * Component Library components to/from GrapeJS data format.
+ * Component Library Components to/from GrapeJS data format.
  */
 
 import type {
@@ -15,7 +15,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/types/Components';
 
 export interface SerializationOptions {
     includeMetadata?: boolean;
@@ -33,7 +33,7 @@ export interface SerializationResult {
 
 export interface DeserializationResult {
     success: boolean;
-    components?: Component[];
+    Components?: Component[];
     errors?: string[];
     warnings?: string[];
 }
@@ -52,15 +52,15 @@ export class ComponentSerializer {
     }
 
     /**
-     * Serialize Component Library components to GrapeJS format
+     * Serialize Component Library Components to GrapeJS format
      */
-    serialize(components: Component[]): SerializationResult {
+    serialize(Components: Component[]): SerializationResult {
         try {
             const errors: string[] = [];
             const warnings: string[] = [];
 
-            // Validate components before serialization
-            const validComponents = components.filter((component) => {
+            // Validate Components before serialization
+            const validComponents = Components.filter((component) => {
                 const validation = this.validateComponent(component);
                 if (!validation.valid) {
                     errors.push(`Component ${component.id}: ${validation.errors.join(', ')}`);
@@ -72,7 +72,7 @@ export class ComponentSerializer {
             if (validComponents.length === 0) {
                 return {
                     success: false,
-                    errors: ['No valid components to serialize', ...errors],
+                    errors: ['No valid Components to serialize', ...errors],
                 };
             }
 
@@ -80,7 +80,7 @@ export class ComponentSerializer {
             const grapeJSData: GrapeJSSerializationData = {
                 html: this.generateHTML(validComponents),
                 css: this.generateCSS(validComponents),
-                components: this.generateComponents(validComponents),
+                Components: this.generateComponents(validComponents),
                 styles: this.generateStyles(validComponents),
                 assets: this.generateAssets(validComponents),
             };
@@ -112,7 +112,7 @@ export class ComponentSerializer {
         try {
             const errors: string[] = [];
             const warnings: string[] = [];
-            const components: Component[] = [];
+            const Components: Component[] = [];
 
             // Validate GrapeJS data structure
             if (!this.validateGrapeJSData(data)) {
@@ -122,8 +122,8 @@ export class ComponentSerializer {
                 };
             }
 
-            // Extract components from GrapeJS data
-            data.components.forEach((grapeComponent, index) => {
+            // Extract Components from GrapeJS data
+            data.Components.forEach((grapeComponent, index) => {
                 try {
                     const component = this.extractComponent(grapeComponent, data);
                     if (component) {
@@ -134,7 +134,7 @@ export class ComponentSerializer {
                                 warnings.push(`Component ${index}: ${validation.errors.join(', ')}`);
                             }
                         }
-                        components.push(component);
+                        Components.push(component);
                     }
                 } catch (error) {
                     errors.push(`Failed to extract component ${index}: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -142,8 +142,8 @@ export class ComponentSerializer {
             });
 
             return {
-                success: components.length > 0,
-                components,
+                success: Components.length > 0,
+                Components,
                 errors: errors.length > 0 ? errors : undefined,
                 warnings: warnings.length > 0 ? warnings : undefined,
             };
@@ -169,7 +169,7 @@ export class ComponentSerializer {
                 'data-tenant-id': component.tenantId,
                 class: `component-${component.category} component-${component.type}`,
             },
-            components: this.generateComponentContent(component),
+            Components: this.generateComponentContent(component),
             style: this.generateComponentStyles(component),
             traits: this.generateComponentTraits(component),
         };
@@ -222,8 +222,8 @@ export class ComponentSerializer {
 
     // Private methods for serialization
 
-    private generateHTML(components: Component[]): string {
-        return components
+    private generateHTML(Components: Component[]): string {
+        return Components
             .map((component) => {
                 const htmlContent = this.generateComponentHTML(component);
                 return `<!-- Component: ${component.name} (${component.id}) -->\n${htmlContent}`;
@@ -231,10 +231,10 @@ export class ComponentSerializer {
             .join('\n\n');
     }
 
-    private generateCSS(components: Component[]): string {
+    private generateCSS(Components: Component[]): string {
         const cssRules: string[] = [];
 
-        components.forEach((component) => {
+        Components.forEach((component) => {
             const componentCSS = this.generateComponentCSS(component);
             if (componentCSS) {
                 cssRules.push(`/* Component: ${component.name} (${component.id}) */`);
@@ -245,14 +245,14 @@ export class ComponentSerializer {
         return cssRules.join('\n\n');
     }
 
-    private generateComponents(components: Component[]): any[] {
-        return components.map((component) => this.componentToGrapeJS(component));
+    private generateComponents(Components: Component[]): any[] {
+        return Components.map((component) => this.componentToGrapeJS(component));
     }
 
-    private generateStyles(components: Component[]): any[] {
+    private generateStyles(Components: Component[]): any[] {
         const styles: any[] = [];
 
-        components.forEach((component) => {
+        Components.forEach((component) => {
             const componentStyles = this.extractComponentStyleRules(component);
             styles.push(...componentStyles);
         });
@@ -260,11 +260,11 @@ export class ComponentSerializer {
         return styles;
     }
 
-    private generateAssets(components: Component[]): any[] {
+    private generateAssets(Components: Component[]): any[] {
         const assets: any[] = [];
         const assetMap = new Map<string, any>();
 
-        components.forEach((component) => {
+        Components.forEach((component) => {
             const componentAssets = this.extractComponentAssets(component);
             componentAssets.forEach((asset) => {
                 if (!assetMap.has(asset.src)) {
@@ -451,7 +451,7 @@ export class ComponentSerializer {
     // Private methods for deserialization
 
     private validateGrapeJSData(data: GrapeJSSerializationData): boolean {
-        return !!(data.html && data.css && data.components && Array.isArray(data.components));
+        return !!(data.html && data.css && data.Components && Array.isArray(data.Components));
     }
 
     private extractComponent(grapeComponent: any, grapeJSData: GrapeJSSerializationData): Component | null {

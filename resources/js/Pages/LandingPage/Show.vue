@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import ContactForm from '@/components/ContactForm.vue';
+import ContactForm from '@/Components/ContactForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed, onMounted } from 'vue';
 

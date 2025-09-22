@@ -53,8 +53,8 @@
 <script setup>
 import ChatInterface from '@/Components/Messaging/ChatInterface.vue';
 import ConversationList from '@/Components/Messaging/ConversationList.vue';
-import { useAuthStore } from '@/stores/auth';
-import { useMessagingStore } from '@/stores/messaging';
+import { useAuthStore } from '@/Stores/auth';
+import { useMessagingStore } from '@/Stores/messaging';
 import { Head } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 

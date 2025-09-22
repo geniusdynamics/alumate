@@ -52,7 +52,7 @@
 import AdvancedSearch from '@/Components/AdvancedSearch.vue';
 import SavedSearches from '@/Components/SavedSearches.vue';
 import SearchAnalytics from '@/Components/SearchAnalytics.vue';
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import { BookmarkIcon } from '@heroicons/vue/24/outline';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';

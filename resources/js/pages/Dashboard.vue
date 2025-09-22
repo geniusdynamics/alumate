@@ -220,10 +220,10 @@ import EventsWidget from '@/Components/DashboardWidgets/EventsWidget.vue';
 import JobRecommendationsWidget from '@/Components/DashboardWidgets/JobRecommendationsWidget.vue';
 import QuickActionsWidget from '@/Components/DashboardWidgets/QuickActionsWidget.vue';
 import SocialActivityWidget from '@/Components/DashboardWidgets/SocialActivityWidget.vue';
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
-import PullToRefresh from '@/components/PullToRefresh.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import PullToRefresh from '@/Components/PullToRefresh.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import {
     AcademicCapIcon,
     BellIcon,

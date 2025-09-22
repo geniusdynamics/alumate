@@ -2,7 +2,7 @@
  * GrapeJS Block Generator Utilities
  *
  * This module provides utilities for generating GrapeJS block definitions
- * from Component Library components with proper categorization and metadata.
+ * from Component Library Components with proper categorization and metadata.
  */
 
 import type {
@@ -16,7 +16,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/types/Components';
 
 export interface GrapeJSBlockGeneratorOptions {
     includePreviewImages?: boolean;
@@ -40,8 +40,8 @@ export class GrapeJSBlockGenerator {
     /**
      * Generate GrapeJS block metadata for all component categories
      */
-    generateAllBlocks(components: Component[]): GrapeJSBlockMetadata[] {
-        return components.map((component) => this.generateBlock(component));
+    generateAllBlocks(Components: Component[]): GrapeJSBlockMetadata[] {
+        return Components.map((component) => this.generateBlock(component));
     }
 
     /**
@@ -109,14 +109,14 @@ export class GrapeJSBlockGenerator {
                 class: `hero-section hero-${config.audienceType} hero-${config.layout}`,
                 role: 'banner',
             },
-            components: [
+            Components: [
                 {
                     type: 'hero-background',
                     tagName: 'div',
                     attributes: {
                         class: 'hero-background absolute inset-0',
                     },
-                    components: this.generateHeroBackgroundContent(config),
+                    Components: this.generateHeroBackgroundContent(config),
                 },
                 {
                     type: 'hero-content',
@@ -124,14 +124,14 @@ export class GrapeJSBlockGenerator {
                     attributes: {
                         class: 'hero-content relative z-10 container mx-auto px-4',
                     },
-                    components: [
+                    Components: [
                         {
                             type: 'text',
                             tagName: `h${config.headingLevel}`,
                             attributes: {
                                 class: 'hero-headline text-4xl md:text-6xl font-bold mb-6',
                             },
-                            components: config.headline,
+                            Components: config.headline,
                         },
                         ...(config.subheading
                             ? [
@@ -141,7 +141,7 @@ export class GrapeJSBlockGenerator {
                                       attributes: {
                                           class: 'hero-subheading text-xl md:text-2xl mb-8',
                                       },
-                                      components: config.subheading,
+                                      Components: config.subheading,
                                   },
                               ]
                             : []),
@@ -153,7 +153,7 @@ export class GrapeJSBlockGenerator {
                                       attributes: {
                                           class: 'hero-description text-lg mb-8',
                                       },
-                                      components: config.description,
+                                      Components: config.description,
                                   },
                               ]
                             : []),
@@ -165,7 +165,7 @@ export class GrapeJSBlockGenerator {
                                       attributes: {
                                           class: 'hero-cta-container flex flex-wrap gap-4',
                                       },
-                                      components: config.ctaButtons.map((cta) => ({
+                                      Components: config.ctaButtons.map((cta) => ({
                                           type: 'link',
                                           tagName: 'a',
                                           attributes: {
@@ -173,7 +173,7 @@ export class GrapeJSBlockGenerator {
                                               class: `cta-button cta-${cta.style} cta-${cta.size}`,
                                               'data-cta-id': cta.id,
                                           },
-                                          components: cta.text,
+                                          Components: cta.text,
                                       })),
                                   },
                               ]
@@ -186,21 +186,21 @@ export class GrapeJSBlockGenerator {
                                       attributes: {
                                           class: 'hero-statistics mt-12 grid grid-cols-2 md:grid-cols-4 gap-8',
                                       },
-                                      components: config.statistics.map((stat) => ({
+                                      Components: config.statistics.map((stat) => ({
                                           type: 'statistic-item',
                                           tagName: 'div',
                                           attributes: {
                                               class: 'statistic-item text-center',
                                               'data-statistic-id': stat.id,
                                           },
-                                          components: [
+                                          Components: [
                                               {
                                                   type: 'text',
                                                   tagName: 'div',
                                                   attributes: {
                                                       class: 'statistic-value text-3xl font-bold',
                                                   },
-                                                  components: String(stat.value),
+                                                  Components: String(stat.value),
                                               },
                                               {
                                                   type: 'text',
@@ -208,7 +208,7 @@ export class GrapeJSBlockGenerator {
                                                   attributes: {
                                                       class: 'statistic-label text-sm',
                                                   },
-                                                  components: stat.label,
+                                                  Components: stat.label,
                                               },
                                           ],
                                       })),
@@ -289,7 +289,7 @@ export class GrapeJSBlockGenerator {
                 action: config.submission.action,
                 novalidate: true,
             },
-            components: [
+            Components: [
                 ...(config.title
                     ? [
                           {
@@ -298,7 +298,7 @@ export class GrapeJSBlockGenerator {
                               attributes: {
                                   class: 'form-title text-2xl font-bold mb-4',
                               },
-                              components: config.title,
+                              Components: config.title,
                           },
                       ]
                     : []),
@@ -310,7 +310,7 @@ export class GrapeJSBlockGenerator {
                               attributes: {
                                   class: 'form-description text-gray-600 mb-6',
                               },
-                              components: config.description,
+                              Components: config.description,
                           },
                       ]
                     : []),
@@ -320,14 +320,14 @@ export class GrapeJSBlockGenerator {
                     attributes: {
                         class: `form-fields ${this.getFormLayoutClasses(config.layout)}`,
                     },
-                    components: config.fields.map((field) => ({
+                    Components: config.fields.map((field) => ({
                         type: 'form-field',
                         tagName: 'div',
                         attributes: {
                             class: `form-field form-field-${field.type}`,
                             'data-field-name': field.name,
                         },
-                        components: [
+                        Components: [
                             {
                                 type: 'text',
                                 tagName: 'label',
@@ -335,7 +335,7 @@ export class GrapeJSBlockGenerator {
                                     for: field.id,
                                     class: 'form-label block text-sm font-medium mb-2',
                                 },
-                                components: field.label,
+                                Components: field.label,
                             },
                             {
                                 type: 'form-input',
@@ -359,7 +359,7 @@ export class GrapeJSBlockGenerator {
                         type: 'submit',
                         class: 'form-submit bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700',
                     },
-                    components: 'Submit',
+                    Components: 'Submit',
                 },
             ],
             traits: [
@@ -421,28 +421,28 @@ export class GrapeJSBlockGenerator {
                 role: 'region',
                 'aria-label': 'Customer testimonials',
             },
-            components: [
+            Components: [
                 {
                     type: 'testimonial-container',
                     tagName: 'div',
                     attributes: {
                         class: `testimonial-container ${this.getTestimonialLayoutClasses(config.layout)}`,
                     },
-                    components: config.testimonials.slice(0, 3).map((testimonial) => ({
+                    Components: config.testimonials.slice(0, 3).map((testimonial) => ({
                         type: 'testimonial-item',
                         tagName: 'div',
                         attributes: {
                             class: 'testimonial-item bg-white p-6 rounded-lg shadow-md',
                             'data-testimonial-id': testimonial.id,
                         },
-                        components: [
+                        Components: [
                             {
                                 type: 'text',
                                 tagName: 'blockquote',
                                 attributes: {
                                     class: 'testimonial-quote text-lg italic mb-4',
                                 },
-                                components: `"${testimonial.content.quote}"`,
+                                Components: `"${testimonial.content.quote}"`,
                             },
                             {
                                 type: 'testimonial-author',
@@ -450,7 +450,7 @@ export class GrapeJSBlockGenerator {
                                 attributes: {
                                     class: 'testimonial-author flex items-center',
                                 },
-                                components: [
+                                Components: [
                                     ...(config.showAuthorPhoto && testimonial.author.photo
                                         ? [
                                               {
@@ -467,14 +467,14 @@ export class GrapeJSBlockGenerator {
                                     {
                                         type: 'author-info',
                                         tagName: 'div',
-                                        components: [
+                                        Components: [
                                             {
                                                 type: 'text',
                                                 tagName: 'div',
                                                 attributes: {
                                                     class: 'author-name font-semibold',
                                                 },
-                                                components: testimonial.author.name,
+                                                Components: testimonial.author.name,
                                             },
                                             ...(config.showAuthorTitle && testimonial.author.title
                                                 ? [
@@ -484,7 +484,7 @@ export class GrapeJSBlockGenerator {
                                                           attributes: {
                                                               class: 'author-title text-sm text-gray-600',
                                                           },
-                                                          components: testimonial.author.title,
+                                                          Components: testimonial.author.title,
                                                       },
                                                   ]
                                                 : []),
@@ -552,28 +552,28 @@ export class GrapeJSBlockGenerator {
                 role: 'region',
                 'aria-label': 'Statistics and metrics',
             },
-            components: [
+            Components: [
                 {
                     type: 'statistics-container',
                     tagName: 'div',
                     attributes: {
                         class: `statistics-container ${this.getStatisticsLayoutClasses(config.layout)}`,
                     },
-                    components: [
+                    Components: [
                         {
                             type: 'statistic-item',
                             tagName: 'div',
                             attributes: {
                                 class: 'statistic-item text-center p-6',
                             },
-                            components: [
+                            Components: [
                                 {
                                     type: 'text',
                                     tagName: 'div',
                                     attributes: {
                                         class: 'statistic-value text-4xl font-bold text-blue-600 mb-2',
                                     },
-                                    components: '10,000+',
+                                    Components: '10,000+',
                                 },
                                 {
                                     type: 'text',
@@ -581,7 +581,7 @@ export class GrapeJSBlockGenerator {
                                     attributes: {
                                         class: 'statistic-label text-lg text-gray-700',
                                     },
-                                    components: 'Alumni Connected',
+                                    Components: 'Alumni Connected',
                                 },
                             ],
                         },
@@ -591,14 +591,14 @@ export class GrapeJSBlockGenerator {
                             attributes: {
                                 class: 'statistic-item text-center p-6',
                             },
-                            components: [
+                            Components: [
                                 {
                                     type: 'text',
                                     tagName: 'div',
                                     attributes: {
                                         class: 'statistic-value text-4xl font-bold text-green-600 mb-2',
                                     },
-                                    components: '95%',
+                                    Components: '95%',
                                 },
                                 {
                                     type: 'text',
@@ -606,7 +606,7 @@ export class GrapeJSBlockGenerator {
                                     attributes: {
                                         class: 'statistic-label text-lg text-gray-700',
                                     },
-                                    components: 'Success Rate',
+                                    Components: 'Success Rate',
                                 },
                             ],
                         },
@@ -668,14 +668,14 @@ export class GrapeJSBlockGenerator {
                 class: `cta-component cta-${config.type}`,
                 role: config.type === 'banner' ? 'banner' : undefined,
             },
-            components: [
+            Components: [
                 {
                     type: 'cta-content',
                     tagName: 'div',
                     attributes: {
                         class: `cta-content ${config.type === 'banner' ? 'text-center py-16 px-8' : 'inline-block'}`,
                     },
-                    components: [
+                    Components: [
                         ...(config.type === 'banner' && config.bannerConfig?.title
                             ? [
                                   {
@@ -684,7 +684,7 @@ export class GrapeJSBlockGenerator {
                                       attributes: {
                                           class: 'cta-title text-3xl font-bold mb-4',
                                       },
-                                      components: config.bannerConfig.title,
+                                      Components: config.bannerConfig.title,
                                   },
                               ]
                             : []),
@@ -696,7 +696,7 @@ export class GrapeJSBlockGenerator {
                                       attributes: {
                                           class: 'cta-subtitle text-xl mb-8',
                                       },
-                                      components: config.bannerConfig.subtitle,
+                                      Components: config.bannerConfig.subtitle,
                                   },
                               ]
                             : []),
@@ -708,7 +708,7 @@ export class GrapeJSBlockGenerator {
                                 class: this.getCTAClasses(config),
                                 'data-cta-tracking': JSON.stringify(ctaConfig?.trackingParams || {}),
                             },
-                            components: ctaConfig?.text || 'Click Here',
+                            Components: ctaConfig?.text || 'Click Here',
                         },
                     ],
                 },
@@ -775,21 +775,21 @@ export class GrapeJSBlockGenerator {
                 role: 'region',
                 'aria-label': 'Media content',
             },
-            components: [
+            Components: [
                 {
                     type: 'media-container',
                     tagName: 'div',
                     attributes: {
                         class: `media-container ${this.getMediaLayoutClasses(config.layout)}`,
                     },
-                    components: config.mediaAssets.slice(0, 6).map((asset, index) => ({
+                    Components: config.mediaAssets.slice(0, 6).map((asset, index) => ({
                         type: 'media-item',
                         tagName: 'div',
                         attributes: {
                             class: 'media-item',
                             'data-media-id': asset.id,
                         },
-                        components: [
+                        Components: [
                             asset.type === 'image'
                                 ? {
                                       type: 'image',
@@ -872,16 +872,16 @@ export class GrapeJSBlockGenerator {
                 'data-component-id': component.id,
                 class: 'component-placeholder',
             },
-            components: [
+            Components: [
                 {
                     type: 'text',
                     tagName: 'h3',
-                    components: component.name,
+                    Components: component.name,
                 },
                 {
                     type: 'text',
                     tagName: 'p',
-                    components: component.description || 'Component content will be rendered here',
+                    Components: component.description || 'Component content will be rendered here',
                 },
             ],
             style: {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
-import SettingsLayout from '@/layouts/settings/Layout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import SettingsLayout from '@/Layouts/settings/Layout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 import { type BreadcrumbItem } from '@/types';

@@ -195,8 +195,8 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import CreateScholarshipModal from '@/components/Scholarships/CreateScholarshipModal.vue';
-import ScholarshipCard from '@/components/Scholarships/ScholarshipCard.vue';
+import CreateScholarshipModal from '@/Components/Scholarships/CreateScholarshipModal.vue';
+import ScholarshipCard from '@/Components/Scholarships/ScholarshipCard.vue';
 import { AcademicCapIcon, ClockIcon, CurrencyDollarIcon, MagnifyingGlassIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref } from 'vue';
 

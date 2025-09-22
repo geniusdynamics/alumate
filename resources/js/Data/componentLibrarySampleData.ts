@@ -7,7 +7,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/types/Components';
 
 // Sample Hero Components
 const sampleHeroComponents: Component[] = [
@@ -381,7 +381,7 @@ const sampleMediaComponents: Component[] = [
     },
 ];
 
-// Combine all sample components
+// Combine all sample Components
 export const sampleComponents: Component[] = [
     ...sampleHeroComponents,
     ...sampleFormComponents,
@@ -391,7 +391,7 @@ export const sampleComponents: Component[] = [
     ...sampleMediaComponents,
 ];
 
-// Sample components organized by category
+// Sample Components organized by category
 export const sampleComponentsByCategory: Record<ComponentCategory, Component[]> = {
     hero: sampleHeroComponents,
     forms: sampleFormComponents,
@@ -425,7 +425,7 @@ export function searchComponents(query: string): Component[] {
 
 export function getPopularComponents(limit: number = 6): Component[] {
     // In a real implementation, this would be based on usage statistics
-    // For now, return featured components
+    // For now, return featured Components
     return sampleComponents.filter((component) => component.isActive).slice(0, limit);
 }
 

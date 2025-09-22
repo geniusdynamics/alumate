@@ -154,17 +154,17 @@
 </template>
 
 <script setup>
-import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue';
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
-import PullToRefresh from '@/components/PullToRefresh.vue';
-import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import SmartLoader from '@/components/ui/SmartLoader.vue';
-import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
-import { LoadingPresets, useSpecificLoading } from '@/composables/useLoadingStates';
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
-import AppLayout from '@/layouts/AppLayout.vue';
-import userFlowIntegration from '@/services/UserFlowIntegration';
+import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import PullToRefresh from '@/Components/PullToRefresh.vue';
+import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import SmartLoader from '@/Components/ui/SmartLoader.vue';
+import UserFlowIntegration from '@/Components/UserFlowIntegration.vue';
+import { LoadingPresets, useSpecificLoading } from '@/Composables/useLoadingStates';
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import userFlowIntegration from '@/Services/UserFlowIntegration';
 import { BriefcaseIcon, ChatBubbleLeftRightIcon, CheckCircleIcon, ClockIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { Head, Link } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';

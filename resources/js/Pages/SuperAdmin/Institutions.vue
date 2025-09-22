@@ -157,7 +157,7 @@
 </template>
 
 <script setup>
-import StatCard from '@/components/StatCard.vue';
+import StatCard from '@/Components/StatCard.vue';
 import { AcademicCapIcon, BookOpenIcon, BuildingOfficeIcon, ExclamationTriangleIcon, PlusIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';

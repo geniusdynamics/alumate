@@ -9,7 +9,7 @@ import type {
     StatisticsComponentConfig,
     Testimonial,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/types/Components';
 
 interface SampleDataVariation {
     variation: 'default' | 'minimal' | 'rich' | 'localized';

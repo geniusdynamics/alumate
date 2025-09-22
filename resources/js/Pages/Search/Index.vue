@@ -166,7 +166,7 @@ import SortDropdown from './Components/SortDropdown.vue';
 import ViewToggle from './Components/ViewToggle.vue';
 
 export default {
-    components: {
+    Components: {
         AppLayout,
         SearchForm,
         SavedSearchCard,

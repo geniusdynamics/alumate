@@ -124,20 +124,20 @@ import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { useToast } from 'vue-toastification';
 
 // Component imports
-import AlertIcon from '@/components/monitoring/AlertIcon.vue';
-import AlertModal from '@/components/monitoring/AlertModal.vue';
-import AlertsSummary from '@/components/monitoring/AlertsSummary.vue';
-import ComponentAnalytics from '@/components/monitoring/ComponentAnalytics.vue';
-import DetailedMetrics from '@/components/monitoring/DetailedMetrics.vue';
-import ErrorRateChart from '@/components/monitoring/ErrorRateChart.vue';
-import HealthScoreCard from '@/components/monitoring/HealthScoreCard.vue';
-import KpiCards from '@/components/monitoring/KpiCards.vue';
-import PerformanceChart from '@/components/monitoring/PerformanceChart.vue';
-import RecentActivity from '@/components/monitoring/RecentActivity.vue';
-import SecurityIncidents from '@/components/monitoring/SecurityIncidents.vue';
-import SystemHealthList from '@/components/monitoring/SystemHealthList.vue';
-import SystemOverviewCard from '@/components/monitoring/SystemOverviewCard.vue';
-import TrafficTrends from '@/components/monitoring/TrafficTrends.vue';
+import AlertIcon from '@/Components/monitoring/AlertIcon.vue';
+import AlertModal from '@/Components/monitoring/AlertModal.vue';
+import AlertsSummary from '@/Components/monitoring/AlertsSummary.vue';
+import ComponentAnalytics from '@/Components/monitoring/ComponentAnalytics.vue';
+import DetailedMetrics from '@/Components/monitoring/DetailedMetrics.vue';
+import ErrorRateChart from '@/Components/monitoring/ErrorRateChart.vue';
+import HealthScoreCard from '@/Components/monitoring/HealthScoreCard.vue';
+import KpiCards from '@/Components/monitoring/KpiCards.vue';
+import PerformanceChart from '@/Components/monitoring/PerformanceChart.vue';
+import RecentActivity from '@/Components/monitoring/RecentActivity.vue';
+import SecurityIncidents from '@/Components/monitoring/SecurityIncidents.vue';
+import SystemHealthList from '@/Components/monitoring/SystemHealthList.vue';
+import SystemOverviewCard from '@/Components/monitoring/SystemOverviewCard.vue';
+import TrafficTrends from '@/Components/monitoring/TrafficTrends.vue';
 
 // Reactive data
 const dashboardData = ref({});

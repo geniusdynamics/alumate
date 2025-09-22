@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import CreateCourseForm from '@/Pages/Courses/Partials/CreateCourseForm.vue';
 import { Head } from '@inertiajs/vue3';
 </script>

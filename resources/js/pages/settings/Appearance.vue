@@ -205,7 +205,7 @@
                         </div>
 
                         <div class="space-y-4">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">See how your theme choices look across different components.</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">See how your theme choices look across different Components.</p>
 
                             <!-- Sample Components -->
                             <div class="space-y-3">
@@ -239,10 +239,10 @@
 </template>
 
 <script setup>
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import { useTheme } from '@/composables/useTheme';
-import AppLayout from '@/layouts/AppLayout.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import { useTheme } from '@/Composables/useTheme';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { ComputerDesktopIcon, DevicePhoneMobileIcon, EyeIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
 import { Head, Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';

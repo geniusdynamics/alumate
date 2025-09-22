@@ -1,4 +1,4 @@
-import type { BackgroundMedia, CTAButton, HeroComponentConfig, StatisticCounter } from '@/types/components';
+import type { BackgroundMedia, CTAButton, HeroComponentConfig, StatisticCounter } from '@/types/Components';
 
 export interface ValidationError {
     field: string;

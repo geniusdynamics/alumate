@@ -301,7 +301,7 @@
 <script setup lang="ts">
 import AlumniMap from '@/Components/AlumniMap.vue';
 import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 

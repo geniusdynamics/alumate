@@ -180,7 +180,7 @@ const demoPostId = ref(1);
 const loadedPosts = ref([]);
 const recentActivity = ref([]);
 
-// Real-time composables
+// Real-time Composables
 const { getConnectionStats } = useRealTimeUpdates();
 const { newPosts, hasNewPosts, startListening: startTimelineListening, getNewPosts } = useTimelineRealTime();
 const { connectionRequests, hasNewConnectionRequests, startListening: startConnectionListening, clearConnectionRequests } = useConnectionRealTime();

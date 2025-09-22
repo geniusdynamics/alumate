@@ -521,4 +521,4 @@ export type {
     HeroSampleData,
     MediaAsset,
     StatisticCounter,
-} from './components';
+} from './Components';

@@ -239,7 +239,7 @@
 <script setup>
 import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
 import MentorCard from '@/Components/MentorCard.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { AcademicCapIcon, CalendarIcon, ChartBarIcon, MagnifyingGlassIcon, UserGroupIcon, UserIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format, formatDistanceToNow } from 'date-fns';

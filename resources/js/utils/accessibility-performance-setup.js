@@ -4,7 +4,7 @@
  * Initializes accessibility and performance monitoring for the application
  */
 
-import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
+import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
 import performanceMonitor from './performance-monitor';
 
 /**
@@ -188,7 +188,7 @@ function setupKeyboardNavigation() {
 
         // Escape: Close modals and dropdowns
         if (e.key === 'Escape') {
-            // This would be handled by individual components
+            // This would be handled by individual Components
             // but we can add global handling here if needed
             const openModals = document.querySelectorAll('[role="dialog"][aria-modal="true"]');
             openModals.forEach((modal) => {

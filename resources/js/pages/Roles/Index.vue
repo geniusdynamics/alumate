@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 
-import DataTable, { type Column, type PaginationData } from '@/components/data/DataTable.vue';
-import { useDataTable } from '@/composables/useDataTable';
+import DataTable, { type Column, type PaginationData } from '@/Components/data/DataTable.vue';
+import { useDataTable } from '@/Composables/useDataTable';
 import type { BreadcrumbItemType, Role } from '@/types/index.d';
 
 import { Edit, MoreHorizontal, Plus, Trash } from 'lucide-vue-next';

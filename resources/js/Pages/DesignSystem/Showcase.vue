@@ -168,7 +168,7 @@
                 </section>
 
                 <!-- Components Section -->
-                <section v-if="activeSection === 'components'" class="space-y-8">
+                <section v-if="activeSection === 'Components'" class="space-y-8">
                     <div>
                         <h2 class="mb-6 text-3xl font-bold">Components</h2>
 
@@ -447,7 +447,7 @@ const sections = [
     { id: 'colors', name: 'Colors' },
     { id: 'typography', name: 'Typography' },
     { id: 'spacing', name: 'Spacing' },
-    { id: 'components', name: 'Components' },
+    { id: 'Components', name: 'Components' },
     { id: 'mobile', name: 'Mobile' },
     { id: 'accessibility', name: 'Accessibility' },
     { id: 'loading', name: 'Loading States' },
@@ -498,7 +498,7 @@ const SpacingExample = {
 };
 
 export default {
-    components: {
+    Components: {
         ColorSwatch,
         SpacingExample,
     },

@@ -2,13 +2,13 @@
  * GrapeJS Integration Main Module
  *
  * This module provides the main integration layer between the Component Library System
- * and GrapeJS Page Builder, orchestrating all the integration services and utilities.
+ * and GrapeJS Page Builder, orchestrating all the integration Services and utilities.
  */
 
-import type { Component, GrapeJSBlockMetadata } from '@/types/components';
+import type { Component, GrapeJSBlockMetadata } from '@/types/Components';
 
-import { componentLibraryBridge } from '@/services/ComponentLibraryBridge';
-import { componentPreviewGenerator } from '@/services/ComponentPreviewGenerator';
+import { componentLibraryBridge } from '@/Services/ComponentLibraryBridge';
+import { componentPreviewGenerator } from '@/Services/ComponentPreviewGenerator';
 import { componentSchemaValidator } from '@/utils/componentSchemaValidator';
 import { componentSerializer } from '@/utils/componentSerialization';
 import { grapeJSBlockGenerator } from '@/utils/grapeJSBlockGenerator';
@@ -92,9 +92,9 @@ export class GrapeJSIntegration {
     }
 
     /**
-     * Register Component Library components with GrapeJS
+     * Register Component Library Components with GrapeJS
      */
-    async registerComponents(components: Component[]): Promise<ComponentRegistrationResult> {
+    async registerComponents(Components: Component[]): Promise<ComponentRegistrationResult> {
         const result: ComponentRegistrationResult = {
             registered: 0,
             failed: 0,
@@ -102,9 +102,9 @@ export class GrapeJSIntegration {
             blocks: [],
         };
 
-        this.log(`Registering ${components.length} components with GrapeJS`);
+        this.log(`Registering ${Components.length} Components with GrapeJS`);
 
-        for (const component of components) {
+        for (const component of Components) {
             try {
                 // Validate component if validation is enabled
                 if (this.options.enableValidation) {
@@ -253,7 +253,7 @@ export class GrapeJSIntegration {
             const editorData = {
                 html: this.editor.getHtml(),
                 css: this.editor.getCss(),
-                components: this.editor.getComponents().toJSON(),
+                Components: this.editor.getComponents().toJSON(),
                 styles: this.editor.getStyle().toJSON(),
                 assets: this.editor.getAssets().toJSON(),
             };
@@ -270,11 +270,11 @@ export class GrapeJSIntegration {
 
             return {
                 success: true,
-                data: serializationResult.components,
+                data: serializationResult.Components,
                 warnings: serializationResult.warnings,
                 metadata: {
                     exportedAt: new Date().toISOString(),
-                    componentCount: serializationResult.components?.length || 0,
+                    componentCount: serializationResult.Components?.length || 0,
                 },
             };
         } catch (error) {
@@ -286,9 +286,9 @@ export class GrapeJSIntegration {
     }
 
     /**
-     * Import Component Library components into editor
+     * Import Component Library Components into editor
      */
-    async importFromComponentLibrary(components: Component[]): Promise<IntegrationResult> {
+    async importFromComponentLibrary(Components: Component[]): Promise<IntegrationResult> {
         if (!this.editor) {
             return {
                 success: false,
@@ -297,8 +297,8 @@ export class GrapeJSIntegration {
         }
 
         try {
-            // Serialize components to GrapeJS format
-            const serializationResult = componentSerializer.serialize(components);
+            // Serialize Components to GrapeJS format
+            const serializationResult = componentSerializer.serialize(Components);
 
             if (!serializationResult.success) {
                 return {
@@ -309,7 +309,7 @@ export class GrapeJSIntegration {
 
             // Load into editor
             const grapeJSData = serializationResult.data!;
-            this.editor.setComponents(grapeJSData.components);
+            this.editor.setComponents(grapeJSData.Components);
             this.editor.setStyle(grapeJSData.styles);
 
             return {
@@ -317,7 +317,7 @@ export class GrapeJSIntegration {
                 warnings: serializationResult.warnings,
                 metadata: {
                     importedAt: new Date().toISOString(),
-                    componentCount: components.length,
+                    componentCount: Components.length,
                 },
             };
         } catch (error) {
@@ -329,7 +329,7 @@ export class GrapeJSIntegration {
     }
 
     /**
-     * Get all registered components
+     * Get all registered Components
      */
     getRegisteredComponents(): Component[] {
         return Array.from(this.registeredComponents.values());

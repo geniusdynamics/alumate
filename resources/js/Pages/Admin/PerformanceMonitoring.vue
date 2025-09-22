@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-import PerformanceMonitoring from '@/Components/Admin/PerformanceMonitoring.vue';
-import AdminLayout from '@/components/AdminLayout.vue';
+import PerformanceMonitoring from '@/Components/admin/PerformanceMonitoring.vue';
+import AdminLayout from '@/Components/AdminLayout.vue';
 import { ChartBarIcon, CogIcon, CpuChipIcon, ServerIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 
 const navigationItems = [

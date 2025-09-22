@@ -1,4 +1,4 @@
-import type { MediaAsset, MediaComponentConfig } from '@/types/components';
+import type { MediaAsset, MediaComponentConfig } from '@/types/Components';
 
 // Sample media assets
 export const sampleImages: MediaAsset[] = [

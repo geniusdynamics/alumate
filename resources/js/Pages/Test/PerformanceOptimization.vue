@@ -42,7 +42,7 @@
                     </button>
                 </div>
 
-                <!-- Dynamically loaded components -->
+                <!-- Dynamically loaded Components -->
                 <div class="mt-6 space-y-6">
                     <div v-if="chartComponent" class="rounded-lg bg-white p-6 shadow dark:bg-gray-800">
                         <h3 class="mb-4 text-lg font-semibold">Chart Component (Lazy Loaded)</h3>

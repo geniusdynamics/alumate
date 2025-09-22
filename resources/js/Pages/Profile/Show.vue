@@ -1,9 +1,9 @@
 <script setup>
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
-import PullToRefresh from '@/components/PullToRefresh.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import { LoadingPresets, useSpecificLoading } from '@/composables/useLoadingStates';
-import AppLayout from '@/layouts/AppLayout.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import PullToRefresh from '@/Components/PullToRefresh.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import { LoadingPresets, useSpecificLoading } from '@/Composables/useLoadingStates';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import {
     AcademicCapIcon,
     BriefcaseIcon,

@@ -19,7 +19,7 @@ import type {
     StatisticsComponentConfig,
     Testimonial,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/types/Components';
 
 export interface ValidationResult {
     valid: boolean;
@@ -863,7 +863,7 @@ export class ComponentSchemaValidator {
             if (!config.headingLevel || config.headingLevel < 1 || config.headingLevel > 6) {
                 errors.push({
                     field: 'headingLevel',
-                    message: 'Hero components should have a valid heading level (1-6) for accessibility',
+                    message: 'Hero Components should have a valid heading level (1-6) for accessibility',
                     code: 'ACCESSIBILITY_HEADING_LEVEL',
                     severity: 'warning',
                 });

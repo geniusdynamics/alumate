@@ -157,9 +157,9 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import AchievementCelebration from '@/components/AchievementCelebration.vue';
-import AchievementCard from '@/components/Achievements/AchievementCard.vue';
-import CreateAchievementModal from '@/components/Achievements/CreateAchievementModal.vue';
+import AchievementCelebration from '@/Components/AchievementCelebration.vue';
+import AchievementCard from '@/Components/Achievements/AchievementCard.vue';
+import CreateAchievementModal from '@/Components/Achievements/CreateAchievementModal.vue';
 import { AcademicCapIcon, BriefcaseIcon, MagnifyingGlassIcon, RocketLaunchIcon, TrophyIcon } from '@heroicons/vue/24/outline';
 import { Link } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';

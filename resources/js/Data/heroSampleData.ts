@@ -1,4 +1,4 @@
-import type { HeroComponentConfig, HeroSampleData } from '@/types/components';
+import type { HeroComponentConfig, HeroSampleData } from '@/types/Components';
 
 export const heroSampleData: HeroSampleData = {
     individual: {

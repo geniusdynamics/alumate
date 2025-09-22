@@ -124,7 +124,7 @@
                 <li>Check server status and logs</li>
                 <li>Verify network connectivity</li>
                 <li>Review recent deployments</li>
-                <li>Check database and cache services</li>
+                <li>Check database and cache Services</li>
             </ul>
         </div>
     @elseif($alert['type'] === 'performance')

@@ -607,7 +607,7 @@ class PerformanceMonitor {
 // Create singleton instance
 const performanceMonitor = new PerformanceMonitor();
 
-// Export for use in components
+// Export for use in Components
 export default performanceMonitor;
 
 // Export utilities for component use
