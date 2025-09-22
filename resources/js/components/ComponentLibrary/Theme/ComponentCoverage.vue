@@ -266,9 +266,9 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import { useNotifications } from '@/composables/useNotifications';
-import type { GrapeJSThemeData } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import { useNotifications } from '@/Composables/useNotifications';
+import type { GrapeJSThemeData } from '@/Types/components';
 import { computed, onMounted, ref } from 'vue';
 
 interface Props {
@@ -1307,5 +1307,8 @@ onMounted(() => {
     @apply flex items-center rounded-md bg-gray-100 px-4 py-2 font-medium text-gray-700 transition-colors duration-200 hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600;
 }
 </style>
+
+
+
 
 

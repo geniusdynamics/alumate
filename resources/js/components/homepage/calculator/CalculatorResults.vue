@@ -251,8 +251,8 @@
 </template>
 
 <script setup lang="ts">
-import AnimatedCounter from '@/components/ui/AnimatedCounter.vue';
-import type { CalculationResult, CalculatorInput } from '@/types/homepage';
+import AnimatedCounter from '@/Components/ui/AnimatedCounter.vue';
+import type { CalculationResult, CalculatorInput } from '@/Types/homepage';
 import { onMounted, ref } from 'vue';
 
 // Props
@@ -483,4 +483,6 @@ onMounted(() => {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 </style>
+
+
 

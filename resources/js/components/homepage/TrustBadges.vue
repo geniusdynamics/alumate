@@ -134,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType, CompanyLogo, TrustBadge } from '@/types/homepage';
+import type { AudienceType, CompanyLogo, TrustBadge } from '@/Types/homepage';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {
@@ -538,4 +538,5 @@ defineExpose({
     }
 }
 </style>
+
 

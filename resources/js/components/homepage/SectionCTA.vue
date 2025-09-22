@@ -121,8 +121,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { AudienceType, CTAClickEvent, SectionCTAData } from '@/types/homepage';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { AudienceType, CTAClickEvent, SectionCTAData } from '@/Types/homepage';
 import { onMounted, ref } from 'vue';
 
 interface Props {
@@ -725,5 +725,7 @@ onMounted(() => {
     }
 }
 </style>
+
+
 
 

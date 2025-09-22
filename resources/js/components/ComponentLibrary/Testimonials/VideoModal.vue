@@ -160,12 +160,12 @@
 </template>
 
 <script setup lang="ts">
-import type { Testimonial, VideoSettings } from '@/types/components';
+import type { Testimonial, VideoSettings } from '@/Types/components';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Import child components
-import ResponsiveImage from '@/components/Common/ResponsiveImage.vue';
-import ResponsiveVideo from '@/components/Common/ResponsiveVideo.vue';
+import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
+import ResponsiveVideo from '@/Components/Common/ResponsiveVideo.vue';
 
 interface Props {
     testimonial: Testimonial;
@@ -444,4 +444,6 @@ watch(isOpen, (open) => {
     outline-offset: -2px;
 }
 </style>
+
+
 

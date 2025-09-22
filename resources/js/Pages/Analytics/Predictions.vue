@@ -252,8 +252,8 @@
 </template>
 
 <script setup>
-import Modal from '@/components/Modal.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import Modal from '@/Components/Modal.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -358,3 +358,5 @@ const getConfidenceClass = (confidence) => {
     return classes[confidence] || classes.low;
 };
 </script>
+
+

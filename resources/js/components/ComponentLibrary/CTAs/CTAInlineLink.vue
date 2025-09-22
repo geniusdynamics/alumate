@@ -56,8 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { CTAComponentConfig, CTAInlineLinkConfig } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { CTAComponentConfig, CTAInlineLinkConfig } from '@/Types/components';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -384,4 +384,6 @@ const handleBlur = () => {
     }
 }
 </style>
+
+
 

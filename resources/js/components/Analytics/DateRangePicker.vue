@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue';
+import Icon from '@/Components/Icon.vue';
 import { ref, watch } from 'vue';
 
 interface Props {
@@ -209,3 +209,4 @@ watch(
     }
 }
 </style>
+

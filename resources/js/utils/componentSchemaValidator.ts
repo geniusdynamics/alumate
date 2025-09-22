@@ -19,7 +19,7 @@ import type {
     StatisticsComponentConfig,
     Testimonial,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/Types/components';
 
 export interface ValidationResult {
     valid: boolean;
@@ -999,4 +999,5 @@ export class ComponentSchemaValidator {
 
 // Export singleton instance
 export const componentSchemaValidator = new ComponentSchemaValidator();
+
 

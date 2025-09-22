@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/utils/cn';
+import { cn } from '@/Utils/cn';
 
 interface Props {
     size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -29,3 +29,4 @@ const sizeClasses = {
     xl: 'h-12 w-12',
 };
 </script>
+

@@ -37,5 +37,6 @@ export type {
     ThemePreviewDevice,
     ThemeUsageStats,
     ThemeValidationResult,
-} from '@/types/components';
+} from '@/Types/components';
+
 

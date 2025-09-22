@@ -39,7 +39,7 @@
 </template>
 
 <script setup>
-import { useUserPreferences } from '@/composables/useUserPreferences';
+import { useUserPreferences } from '@/Composables/useUserPreferences';
 import { useOnboardingStore } from '@/Stores/onboardingStore';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onMounted, reactive, ref } from 'vue';
@@ -319,6 +319,7 @@ defineExpose({
     z-index: 9999;
 }
 </style>
+
 
 
 

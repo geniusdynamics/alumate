@@ -267,8 +267,8 @@
 </template>
 
 <script setup lang="ts">
-import StatisticsDisplay from '@/components/ComponentLibrary/Hero/StatisticsDisplay.vue';
-import type { StatisticCounter } from '@/types/components';
+import StatisticsDisplay from '@/Components/ComponentLibrary/Hero/StatisticsDisplay.vue';
+import type { StatisticCounter } from '@/Types/components';
 import { reactive, ref } from 'vue';
 
 // Demo configuration
@@ -495,4 +495,6 @@ const formatTime = (date: Date): string => {
     @apply bg-gray-500 dark:bg-gray-400;
 }
 </style>
+
+
 

@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
 import { formatDistanceToNow } from 'date-fns';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
@@ -239,4 +239,5 @@ onUnmounted(() => {
     animation: pulse-red 2s infinite;
 }
 </style>
+
 

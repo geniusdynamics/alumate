@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
-import { type NavItem } from '@/types';
+import { SidebarGroup, SidebarGroupContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/Components/ui/sidebar';
+import { type NavItem } from '@/Types';
 
 interface Props {
     items: NavItem[];
@@ -26,4 +26,6 @@ defineProps<Props>();
         </SidebarGroupContent>
     </SidebarGroup>
 </template>
+
+
 

@@ -251,8 +251,8 @@
 </template>
 
 <script setup>
-import Modal from '@/components/Modal.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import Modal from '@/Components/Modal.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { ClockIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
@@ -438,3 +438,5 @@ const formatCellValue = (value) => {
     return String(value);
 };
 </script>
+
+

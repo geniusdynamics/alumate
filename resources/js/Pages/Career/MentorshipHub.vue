@@ -204,16 +204,16 @@
 </template>
 
 <script setup>
-import BecomeMentorModal from '@/components/BecomeMentorModal.vue';
-import LearningResources from '@/components/LearningResources.vue';
-import MentorDirectory from '@/components/MentorDirectory.vue';
-import MentorshipDashboard from '@/components/MentorshipDashboard.vue';
-import MentorshipGoalCard from '@/components/MentorshipGoalCard.vue';
-import MentorshipGoalModal from '@/components/MentorshipGoalModal.vue';
-import MentorshipRequestModal from '@/components/MentorshipRequestModal.vue';
-import SessionScheduler from '@/components/SessionScheduler.vue';
-import UpcomingSessionCard from '@/components/UpcomingSessionCard.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
+import LearningResources from '@/Components/LearningResources.vue';
+import MentorDirectory from '@/Components/MentorDirectory.vue';
+import MentorshipDashboard from '@/Components/MentorshipDashboard.vue';
+import MentorshipGoalCard from '@/Components/MentorshipGoalCard.vue';
+import MentorshipGoalModal from '@/Components/MentorshipGoalModal.vue';
+import MentorshipRequestModal from '@/Components/MentorshipRequestModal.vue';
+import SessionScheduler from '@/Components/SessionScheduler.vue';
+import UpcomingSessionCard from '@/Components/UpcomingSessionCard.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { BriefcaseIcon, CalendarIcon, ChartBarIcon, FlagIcon, UserGroupIcon, UserPlusIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
@@ -338,3 +338,5 @@ const handleSessionScheduled = () => {
     router.reload({ only: ['upcomingSessions'] });
 };
 </script>
+
+

@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import OnboardingService from '@/services/OnboardingService.js';
+import OnboardingService from '@/Services/OnboardingService.js';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import FeatureIntroModal from './FeatureIntroModal.vue';
@@ -176,3 +176,4 @@ defineExpose({
     z-index: 9999;
 }
 </style>
+

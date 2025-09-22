@@ -125,8 +125,8 @@
 </template>
 
 <script setup lang="ts">
-import AnimatedCounter from '@/components/ui/AnimatedCounter.vue';
-import type { AudienceType, CTAButton, CTAClickEvent, HeroSectionProps, PlatformStatistic } from '@/types/homepage';
+import AnimatedCounter from '@/Components/ui/AnimatedCounter.vue';
+import type { AudienceType, CTAButton, CTAClickEvent, HeroSectionProps, PlatformStatistic } from '@/Types/homepage';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {
@@ -529,4 +529,6 @@ onUnmounted(() => {
     }
 }
 </style>
+
+
 

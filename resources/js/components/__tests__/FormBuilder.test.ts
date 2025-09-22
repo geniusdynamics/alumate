@@ -1,4 +1,4 @@
-import type { CRMIntegration, FieldType, FormConfig, FormField } from '@/types/forms';
+import type { CRMIntegration, FieldType, FormConfig, FormField } from '@/Types/forms';
 import { flushPromises, mount } from '@vue/test-utils';
 import axios from 'axios';
 import { io, type Socket } from 'socket.io-client';
@@ -556,4 +556,5 @@ describe('FormBuilder.vue', () => {
         });
     });
 });
+
 

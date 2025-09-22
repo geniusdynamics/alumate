@@ -384,8 +384,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue';
-import AdminLayout from '@/layouts/AdminLayout.vue';
+import Icon from '@/Components/Icon.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 
@@ -1134,3 +1134,5 @@ const handleBannerUpload = (event: Event) => {
     @apply flex items-center justify-end space-x-3 border-t border-gray-200 p-6 dark:border-gray-700;
 }
 </style>
+
+

@@ -150,7 +150,7 @@
 </template>
 
 <script setup>
-import AdminLayout from '@/components/AdminLayout.vue';
+import AdminLayout from '@/Components/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -231,3 +231,4 @@ const toggleMaintenanceMode = () => {
     console.log('Toggling maintenance mode');
 };
 </script>
+

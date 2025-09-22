@@ -150,9 +150,9 @@
 </template>
 
 <script setup lang="ts">
-import CreateSuccessStoryModal from '@/components/SuccessStories/CreateSuccessStoryModal.vue';
-import SuccessStoryCard from '@/components/SuccessStories/SuccessStoryCard.vue';
-import ViewSuccessStoryModal from '@/components/SuccessStories/ViewSuccessStoryModal.vue';
+import CreateSuccessStoryModal from '@/Components/SuccessStories/CreateSuccessStoryModal.vue';
+import SuccessStoryCard from '@/Components/SuccessStories/SuccessStoryCard.vue';
+import ViewSuccessStoryModal from '@/Components/SuccessStories/ViewSuccessStoryModal.vue';
 import { debounce } from 'lodash';
 import { computed, onMounted, reactive, ref } from 'vue';
 
@@ -404,3 +404,4 @@ const formatAchievementType = (type: string) => {
         .join(' ');
 };
 </script>
+

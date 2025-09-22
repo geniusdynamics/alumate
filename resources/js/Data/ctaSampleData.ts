@@ -1,4 +1,4 @@
-import type { AudienceType, CTAABTestVariant, CTABannerConfig, CTAButtonConfig, CTAComponentConfig, CTAInlineLinkConfig } from '@/types/components';
+import type { AudienceType, CTAABTestVariant, CTABannerConfig, CTAButtonConfig, CTAComponentConfig, CTAInlineLinkConfig } from '@/Types/components';
 
 // Sample CTA Button Configurations
 export const sampleCTAButtons: Record<string, CTAButtonConfig> = {
@@ -464,4 +464,5 @@ export function getSampleCTAByType(type: 'button' | 'banner' | 'inline-link'): C
     const allSamples = Object.values(sampleCTAComponents).flat();
     return allSamples.find((cta) => cta.type === type) || allSamples[0];
 }
+
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import AdminLayout from '@/layouts/AdminLayout.vue';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
@@ -73,3 +73,5 @@ onMounted(() => {
         </div>
     </AdminLayout>
 </template>
+
+

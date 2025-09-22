@@ -118,8 +118,8 @@
 </template>
 
 <script setup lang="ts">
-import { customCodeStorageService, type CustomCode } from '@/services/CustomCodeStorageService';
-import { customCodeValidationService, type ValidationResult } from '@/services/CustomCodeValidationService';
+import { customCodeStorageService, type CustomCode } from '@/Services/CustomCodeStorageService';
+import { customCodeValidationService, type ValidationResult } from '@/Services/CustomCodeValidationService';
 import { CodeBracketIcon, CpuChipIcon, DocumentTextIcon, PencilIcon, PlusIcon, SwatchIcon, TrashIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref, watch } from 'vue';
 import CustomCodeEditor from './CustomCodeEditor.vue';
@@ -324,3 +324,4 @@ defineExpose({
     getCodesByType: (type: 'html' | 'css' | 'javascript') => customCodes.value.filter((c) => c.type === type && c.isActive),
 });
 </script>
+

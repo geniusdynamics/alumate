@@ -1,4 +1,4 @@
-import type { AccessibilityMetadata, ResponsiveComponentConfig } from '@/types/components';
+import type { AccessibilityMetadata, ResponsiveComponentConfig } from '@/Types/components';
 
 export interface AccessibilityValidationResult {
     valid: boolean;
@@ -865,4 +865,5 @@ export class AccessibilityValidator {
 }
 
 export default AccessibilityValidator;
+
 

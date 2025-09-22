@@ -2,7 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { groupBy } from 'lodash-es';
 
-import type { BreadcrumbItemType, Permission, Role } from '@/types/index.d';
+import type { BreadcrumbItemType, Permission, Role } from '@/Types/index.d';
 
 const props = defineProps<{
     role: Role;
@@ -76,4 +76,5 @@ const submit = () => {
         </Card>
     </DefaultLayout>
 </template>
+
 

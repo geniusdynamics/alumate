@@ -338,7 +338,7 @@
 </template>
 
 <script setup lang="ts">
-import { templateService } from '@/services/TemplateService';
+import { templateService } from '@/Services/TemplateService';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import ColorPicker from './ColorPicker.vue';
 import ContentEditor from './ContentEditor.vue';
@@ -364,7 +364,7 @@ import type {
     TemplateCustomizationConfig,
     UndoRedoSnapshot,
     ViewportType,
-} from '@/types/components';
+} from '@/Types/components';
 
 // Props
 interface Props {
@@ -1105,4 +1105,6 @@ onBeforeUnmount(() => {
     }
 }
 </style>
+
+
 

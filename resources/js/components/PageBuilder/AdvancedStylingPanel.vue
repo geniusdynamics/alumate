@@ -352,7 +352,7 @@
 </template>
 
 <script setup lang="ts">
-import { TailwindStyleManager, type StylePreset, type TailwindColor, type TailwindFont } from '@/services/TailwindStyleManager';
+import { TailwindStyleManager, type StylePreset, type TailwindColor, type TailwindFont } from '@/Services/TailwindStyleManager';
 import { computed, onMounted, ref, watch } from 'vue';
 import Icon from '../ui/Icon.vue';
 
@@ -1149,3 +1149,4 @@ onMounted(() => {
     @apply px-3 py-1 text-xs font-medium text-yellow-600 transition-colors hover:text-yellow-800;
 }
 </style>
+

@@ -51,8 +51,8 @@
 </template>
 
 <script setup>
-import ChatInterface from '@/components/Messaging/ChatInterface.vue';
-import ConversationList from '@/components/Messaging/ConversationList.vue';
+import ChatInterface from '@/Components/Messaging/ChatInterface.vue';
+import ConversationList from '@/Components/Messaging/ConversationList.vue';
 import { useAuthStore } from '@/Stores/auth';
 import { useMessagingStore } from '@/Stores/messaging';
 import { Head } from '@inertiajs/vue3';
@@ -263,6 +263,7 @@ onUnmounted(() => {
     @apply bg-gray-400 dark:bg-gray-500;
 }
 </style>
+
 
 
 

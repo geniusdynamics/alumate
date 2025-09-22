@@ -173,7 +173,7 @@
 </template>
 
 <script setup lang="ts">
-import type { StoryFilter } from '@/types/homepage';
+import type { StoryFilter } from '@/Types/homepage';
 import { computed, ref, watch } from 'vue';
 
 interface Props {
@@ -440,4 +440,5 @@ watch(
     }
 }
 </style>
+
 

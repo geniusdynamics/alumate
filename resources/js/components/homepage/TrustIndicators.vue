@@ -35,7 +35,7 @@ import type {
     SecurityCertification,
     TrainingProgram,
     VerificationProcess,
-} from '@/types/homepage';
+} from '@/Types/homepage';
 import { computed } from 'vue';
 import IntegrationEcosystem from './IntegrationEcosystem.vue';
 import SecurityPrivacy from './SecurityPrivacy.vue';
@@ -576,4 +576,5 @@ const scalabilityInfo = computed<ScalabilityInfo[]>(() => [
 <style scoped>
 /* Component styles handled by child components */
 </style>
+
 

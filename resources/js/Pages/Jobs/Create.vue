@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import CreateJobForm from '@/Pages/Jobs/Partials/CreateJobForm.vue';
 import { Head } from '@inertiajs/vue3';
 </script>
@@ -23,3 +23,4 @@ import { Head } from '@inertiajs/vue3';
         </div>
     </AppLayout>
 </template>
+

@@ -187,9 +187,9 @@
 </template>
 
 <script setup lang="ts">
-import { FormBase, FormBuilder } from '@/components/ComponentLibrary/Forms';
-import { contactTemplate, demoRequestTemplate, formTemplates, leadCaptureTemplate } from '@/components/ComponentLibrary/Forms/templates';
-import type { FormComponentConfig } from '@/types/components';
+import { FormBase, FormBuilder } from '@/Components/ComponentLibrary/Forms';
+import { contactTemplate, demoRequestTemplate, formTemplates, leadCaptureTemplate } from '@/Components/ComponentLibrary/Forms/templates';
+import type { FormComponentConfig } from '@/Types/components';
 import { ref } from 'vue';
 
 // Refs
@@ -374,4 +374,6 @@ const CogIcon = {
     background: #9ca3af;
 }
 </style>
+
+
 

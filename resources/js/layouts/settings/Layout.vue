@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import Heading from '@/components/Heading.vue';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
-import { type NavItem } from '@/types';
+import Heading from '@/Components/Heading.vue';
+import { Button } from '@/Components/ui/button';
+import { Separator } from '@/Components/ui/separator';
+import { type NavItem } from '@/Types';
 import { Link, usePage } from '@inertiajs/vue3';
 
 const sidebarNavItems: NavItem[] = [
@@ -56,4 +56,6 @@ const currentPath = page.props.ziggy?.location ? new URL(page.props.ziggy.locati
         </div>
     </div>
 </template>
+
+
 

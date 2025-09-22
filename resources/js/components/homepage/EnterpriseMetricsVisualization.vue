@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InstitutionalResult } from '@/types/homepage';
+import type { InstitutionalResult } from '@/Types/homepage';
 import { computed } from 'vue';
 
 interface EnterpriseMetric extends InstitutionalResult {
@@ -245,4 +245,5 @@ const formatNumber = (value: number): string => {
     }
 }
 </style>
+
 

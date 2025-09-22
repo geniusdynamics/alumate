@@ -270,8 +270,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { BrandColor } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { BrandColor } from '@/Types/components';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -683,4 +683,6 @@ const exportReport = () => {
     @apply h-6 w-6 cursor-pointer rounded border-2 border-white shadow-sm transition-transform duration-200 hover:scale-110;
 }
 </style>
+
+
 

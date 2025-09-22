@@ -252,7 +252,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CareerProgression, PlatformImpact, SuccessMetric } from '@/types/homepage';
+import type { CareerProgression, PlatformImpact, SuccessMetric } from '@/Types/homepage';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -782,4 +782,5 @@ const toggleView = () => {
     }
 }
 </style>
+
 

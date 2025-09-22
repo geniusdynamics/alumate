@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import MetricCard from '@/components/Analytics/MetricCard.vue';
+import MetricCard from '@/Components/Analytics/MetricCard.vue';
 
 const props = defineProps({
     metrics: {
@@ -90,3 +90,4 @@ const calculateTrend = (metric) => {
     };
 };
 </script>
+

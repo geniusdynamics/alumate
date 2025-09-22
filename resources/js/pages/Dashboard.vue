@@ -215,15 +215,15 @@
 </template>
 
 <script setup>
-import AlumniSuggestionsWidget from '@/components/DashboardWidgets/AlumniSuggestionsWidget.vue';
-import EventsWidget from '@/components/DashboardWidgets/EventsWidget.vue';
-import JobRecommendationsWidget from '@/components/DashboardWidgets/JobRecommendationsWidget.vue';
-import QuickActionsWidget from '@/components/DashboardWidgets/QuickActionsWidget.vue';
-import SocialActivityWidget from '@/components/DashboardWidgets/SocialActivityWidget.vue';
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
-import PullToRefresh from '@/components/PullToRefresh.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import AlumniSuggestionsWidget from '@/Components/DashboardWidgets/AlumniSuggestionsWidget.vue';
+import EventsWidget from '@/Components/DashboardWidgets/EventsWidget.vue';
+import JobRecommendationsWidget from '@/Components/DashboardWidgets/JobRecommendationsWidget.vue';
+import QuickActionsWidget from '@/Components/DashboardWidgets/QuickActionsWidget.vue';
+import SocialActivityWidget from '@/Components/DashboardWidgets/SocialActivityWidget.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import PullToRefresh from '@/Components/PullToRefresh.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import {
     AcademicCapIcon,
     BellIcon,
@@ -279,3 +279,5 @@ const refreshDashboard = async () => {
     window.location.reload();
 };
 </script>
+
+

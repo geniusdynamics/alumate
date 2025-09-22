@@ -217,18 +217,18 @@
 </template>
 
 <script setup>
-import EventCard from '@/components/EventCard.vue';
-import EventConnectionRecommendations from '@/components/EventConnectionRecommendations.vue';
-import EventDetailModal from '@/components/EventDetailModal.vue';
-import EventFeedbackModal from '@/components/EventFeedbackModal.vue';
-import EventFilters from '@/components/EventFilters.vue';
-import EventRegistrationModal from '@/components/EventRegistrationModal.vue';
-import Pagination from '@/components/Pagination.vue';
-import ReunionCard from '@/components/ReunionCard.vue';
-import VirtualEventViewer from '@/components/VirtualEventViewer.vue';
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
-import AppLayout from '@/layouts/AppLayout.vue';
-import userFlowIntegration from '@/services/UserFlowIntegration';
+import EventCard from '@/Components/EventCard.vue';
+import EventConnectionRecommendations from '@/Components/EventConnectionRecommendations.vue';
+import EventDetailModal from '@/Components/EventDetailModal.vue';
+import EventFeedbackModal from '@/Components/EventFeedbackModal.vue';
+import EventFilters from '@/Components/EventFilters.vue';
+import EventRegistrationModal from '@/Components/EventRegistrationModal.vue';
+import Pagination from '@/Components/Pagination.vue';
+import ReunionCard from '@/Components/ReunionCard.vue';
+import VirtualEventViewer from '@/Components/VirtualEventViewer.vue';
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import userFlowIntegration from '@/Services/UserFlowIntegration';
 import { CalendarIcon, PlusIcon, VideoCameraIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';
@@ -429,4 +429,8 @@ const closeModals = () => {
     virtualEvent.value = null;
 };
 </script>
+
+
+
+
 

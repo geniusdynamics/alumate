@@ -80,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CalculatorInput } from '@/types/homepage';
+import type { CalculatorInput } from '@/Types/homepage';
 import { computed } from 'vue';
 
 // Props
@@ -224,4 +224,5 @@ const handleNext = () => {
     @apply border-blue-600 bg-blue-600;
 }
 </style>
+
 

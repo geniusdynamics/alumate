@@ -15,9 +15,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import { useAudienceDetection } from '@/composables/useAudienceDetection';
-import type { AudienceType, CTAButton, CTAClickEvent, EngagementLevel, ExitIntentOffer, StrategicCTA } from '@/types/homepage';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import { useAudienceDetection } from '@/Composables/useAudienceDetection';
+import type { AudienceType, CTAButton, CTAClickEvent, EngagementLevel, ExitIntentOffer, StrategicCTA } from '@/Types/homepage';
 import { computed, onMounted, ref, withDefaults } from 'vue';
 import ContextualCTA from './ContextualCTA.vue';
 import SectionCTA from './SectionCTA.vue';
@@ -193,5 +193,7 @@ onMounted(() => {
     }
 }
 </style>
+
+
 
 

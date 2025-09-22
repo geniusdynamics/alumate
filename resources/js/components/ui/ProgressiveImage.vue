@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useLazyImage } from '@/composables/useLazyLoading'
+import { useLazyImage } from '@/Composables/useLazyLoading'
 
 interface Props {
   src: string
@@ -217,3 +217,4 @@ if (typeof window !== 'undefined') {
   }
 }
 </style>
+

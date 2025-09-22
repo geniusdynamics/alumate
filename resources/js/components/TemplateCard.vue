@@ -161,8 +161,8 @@
 </template>
 
 <script setup lang="ts">
-import { templateService } from '@/services/TemplateService';
-import type { Template, ViewMode } from '@/types/components';
+import { templateService } from '@/Services/TemplateService';
+import type { Template, ViewMode } from '@/Types/components';
 import { computed } from 'vue';
 
 // Props
@@ -452,4 +452,6 @@ const handleCardClick = () => {
     }
 }
 </style>
+
+
 

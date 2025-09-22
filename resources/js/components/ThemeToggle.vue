@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { useTheme } from '@/composables/useTheme';
+import { useTheme } from '@/Composables/useTheme';
 import { CheckIcon, ChevronDownIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
 import { onMounted, onUnmounted, ref } from 'vue';
 
@@ -197,4 +197,5 @@ onUnmounted(() => {
     }
 }
 </style>
+
 

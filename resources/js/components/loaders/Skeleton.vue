@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/utils/cn';
+import { cn } from '@/Utils/cn';
 
 interface Props {
     className?: string;
@@ -15,3 +15,4 @@ const props = withDefaults(defineProps<Props>(), {
     className: '',
 });
 </script>
+

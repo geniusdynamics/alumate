@@ -1,4 +1,4 @@
-import webSocketService from '@/services/WebSocketService';
+import webSocketService from '@/Services/WebSocketService';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onUnmounted, ref, watch } from 'vue';
 
@@ -357,3 +357,4 @@ export function useConnectionRealTime() {
         clearConnectionUpdates,
     };
 }
+

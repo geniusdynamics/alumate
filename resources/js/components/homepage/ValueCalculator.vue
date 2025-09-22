@@ -112,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CalculationResult, CalculatorInput, CalculatorStep } from '@/types/homepage';
+import type { CalculationResult, CalculatorInput, CalculatorStep } from '@/Types/homepage';
 import { computed, onMounted, ref } from 'vue';
 
 // Step Components (will be created)
@@ -383,4 +383,5 @@ onMounted(() => {
     }
 }
 </style>
+
 

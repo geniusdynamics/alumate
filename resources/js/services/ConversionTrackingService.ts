@@ -7,7 +7,7 @@ import type {
     ConversionMetrics,
     HeatMapData,
     UserBehaviorEvent,
-} from '@/types/homepage';
+} from '@/Types/homepage';
 
 export class ConversionTrackingService {
     private onlineListener: () => void;
@@ -498,4 +498,5 @@ export class ConversionTrackingService {
         clearInterval(this.batchIntervalId);
     }
 }
+
 

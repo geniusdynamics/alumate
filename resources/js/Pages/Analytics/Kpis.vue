@@ -176,9 +176,9 @@
 </template>
 
 <script setup>
-import AnalyticsChart from '@/components/AnalyticsChart.vue';
-import Modal from '@/components/Modal.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import AnalyticsChart from '@/Components/AnalyticsChart.vue';
+import Modal from '@/Components/Modal.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -394,3 +394,5 @@ const getDetailedTrendChartOptions = () => {
     };
 };
 </script>
+
+

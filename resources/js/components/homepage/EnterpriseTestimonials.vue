@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InstitutionTestimonial, InstitutionalCaseStudy } from '@/types/homepage';
+import type { InstitutionTestimonial, InstitutionalCaseStudy } from '@/Types/homepage';
 import { ref } from 'vue';
 import InstitutionalTestimonialCard from './InstitutionalTestimonialCard.vue';
 import InstitutionalVideoModal from './InstitutionalVideoModal.vue';
@@ -179,4 +179,5 @@ const formatMetricLabel = (metric: string): string => {
     @apply bg-white py-16;
 }
 </style>
+
 

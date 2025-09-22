@@ -192,16 +192,16 @@
 </template>
 
 <script setup>
-import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue';
-import PeopleYouMayKnow from '@/components/PeopleYouMayKnow.vue';
-import PostComments from '@/components/PostComments.vue';
-import PostCreator from '@/components/PostCreator.vue';
-import PostReactions from '@/components/PostReactions.vue';
-import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
-import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
-import AppLayout from '@/layouts/AppLayout.vue';
-import userFlowIntegration from '@/services/UserFlowIntegration';
+import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
+import PeopleYouMayKnow from '@/Components/PeopleYouMayKnow.vue';
+import PostComments from '@/Components/PostComments.vue';
+import PostCreator from '@/Components/PostCreator.vue';
+import PostReactions from '@/Components/PostReactions.vue';
+import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
+import UserFlowIntegration from '@/Components/UserFlowIntegration.vue';
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import userFlowIntegration from '@/Services/UserFlowIntegration';
 import {
     ChatBubbleLeftIcon,
     EllipsisHorizontalIcon,
@@ -371,4 +371,8 @@ const canEditPost = (post) => {
     return post.user.id === props.auth?.user?.id;
 };
 </script>
+
+
+
+
 

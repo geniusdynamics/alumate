@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@/components/ui';
+import { Icon } from '@/Components/ui';
 import { computed, onMounted, ref, watch } from 'vue';
 
 // Props
@@ -237,3 +237,4 @@ onMounted(() => {
     @apply rounded-md border-2;
 }
 </style>
+

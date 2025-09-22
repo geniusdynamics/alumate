@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FormLabel } from '@/components/ui/form'
+import { FormLabel } from '@/Components/ui/form'
 
 defineProps<{
   required?: boolean
@@ -12,3 +12,4 @@ defineProps<{
     <span v-if="required" class="text-destructive"> *</span>
   </FormLabel>
 </template>
+

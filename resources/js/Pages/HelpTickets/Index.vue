@@ -152,8 +152,8 @@
 </template>
 
 <script setup>
-import Pagination from '@/components/Pagination.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import Pagination from '@/Components/Pagination.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 import { reactive } from 'vue';
@@ -214,3 +214,5 @@ const formatDate = (date) => {
     });
 };
 </script>
+
+

@@ -80,9 +80,9 @@
     </div>
 </template>
 <script setup lang="ts">
-import HomepageNavigation from '@/components/navigation/HomepageNavigation.vue';
-import { accessibilityService } from '@/services/AccessibilityService';
-import { seoService } from '@/services/SEOService';
+import HomepageNavigation from '@/Components/navigation/HomepageNavigation.vue';
+import { accessibilityService } from '@/Services/AccessibilityService';
+import { seoService } from '@/Services/SEOService';
 import { Head } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted } from 'vue';
 interface Props {
@@ -353,3 +353,5 @@ onUnmounted(() => {
     }
 }
 </style>
+
+

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import AppLogo from '@/components/common/AppLogo.vue';
-import NotificationDropdown from '@/components/NotificationDropdown.vue';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import AppLogo from '@/Components/common/AppLogo.vue';
+import NotificationDropdown from '@/Components/NotificationDropdown.vue';
+import { Avatar, AvatarFallback } from '@/Components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
 import {
     Sidebar,
     SidebarContent,
@@ -14,7 +14,7 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from '@/components/ui/sidebar';
+} from '@/Components/ui/sidebar';
 import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/lib/navigation';
 import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronUp } from 'lucide-vue-next';
@@ -161,3 +161,4 @@ const renderableMenu = (items: any[]) => items.filter(can);
         </SidebarFooter>
     </Sidebar>
 </template>
+

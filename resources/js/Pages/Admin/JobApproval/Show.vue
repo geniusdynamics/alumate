@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -412,3 +412,4 @@ const reject = () => {
         </div>
     </AppLayout>
 </template>
+

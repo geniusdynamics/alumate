@@ -247,8 +247,8 @@
 </template>
 
 <script setup>
-import AdminLayout from '@/components/AdminLayout.vue';
-import DarkStatCard from '@/components/DarkStatCard.vue';
+import AdminLayout from '@/Components/AdminLayout.vue';
+import DarkStatCard from '@/Components/DarkStatCard.vue';
 import {
     BriefcaseIcon,
     BuildingOfficeIcon,
@@ -365,3 +365,4 @@ const formatTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 };
 </script>
+

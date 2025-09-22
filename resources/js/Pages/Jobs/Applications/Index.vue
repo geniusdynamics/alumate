@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
 
@@ -581,3 +581,4 @@ const quickStatusUpdate = (application, newStatus) => {
     overflow: hidden;
 }
 </style>
+

@@ -15,5 +15,6 @@ export type {
     MediaPerformance,
     MediaType,
     TouchGestureConfig,
-} from '@/types/components';
+} from '@/Types/components';
+
 

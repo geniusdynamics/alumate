@@ -181,10 +181,10 @@
 </template>
 
 <script>
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
-import MobileSearchInterface from '@/components/MobileSearchInterface.vue';
-import PullToRefresh from '@/components/PullToRefresh.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import MobileSearchInterface from '@/Components/MobileSearchInterface.vue';
+import PullToRefresh from '@/Components/PullToRefresh.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { ArrowDownIcon, ArrowUpIcon, MagnifyingGlassIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Head, router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
@@ -442,3 +442,5 @@ export default {
     }
 }
 </style>
+
+

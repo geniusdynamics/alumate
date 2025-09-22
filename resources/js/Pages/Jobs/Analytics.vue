@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -394,3 +394,4 @@ const getPerformanceText = (rate) => {
         </div>
     </AppLayout>
 </template>
+

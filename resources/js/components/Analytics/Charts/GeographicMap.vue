@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue';
+import Icon from '@/Components/Icon.vue';
 import { computed, ref } from 'vue';
 
 interface LocationData {
@@ -196,3 +196,4 @@ const getLocationPercentage = (count: number): number => {
     @apply block text-lg font-semibold text-gray-900 dark:text-white;
 }
 </style>
+

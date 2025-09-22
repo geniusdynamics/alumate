@@ -1,4 +1,4 @@
-import type { ComponentConstraints, DeviceType, ResponsiveComponentConfig, ResponsiveConstraint } from '@/types/components';
+import type { ComponentConstraints, DeviceType, ResponsiveComponentConfig, ResponsiveConstraint } from '@/Types/components';
 
 export interface ConstraintValidationResult {
     valid: boolean;
@@ -731,4 +731,5 @@ export class ResponsiveConstraintValidator {
 }
 
 export default ResponsiveConstraintValidator;
+
 

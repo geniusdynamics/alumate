@@ -194,8 +194,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/ui/Icon.vue';
-import { useCollaboration } from '@/composables/useCollaboration';
+import Icon from '@/Components/ui/Icon.vue';
+import { useCollaboration } from '@/Composables/useCollaboration';
 import { onMounted, onUnmounted } from 'vue';
 
 interface CollaborationSession {
@@ -345,4 +345,6 @@ const formatTime = (dateString: string) => {
     min-height: 0;
 }
 </style>
+
+
 

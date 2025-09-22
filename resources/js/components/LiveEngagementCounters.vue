@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePostRealTime } from '@/composables/useRealTimeUpdates';
+import { usePostRealTime } from '@/Composables/useRealTimeUpdates';
 import { ChatBubbleLeftIcon, FaceSmileIcon, HeartIcon, ShareIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';
@@ -390,4 +390,5 @@ onMounted(() => {
     animation: pulse-soft 2s infinite;
 }
 </style>
+
 

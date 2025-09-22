@@ -165,8 +165,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { BrandColor } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { BrandColor } from '@/Types/components';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -501,4 +501,6 @@ watch(
     @apply rounded-full px-2 py-1 text-xs font-medium;
 }
 </style>
+
+
 

@@ -406,8 +406,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import { useNotifications } from '@/composables/useNotifications';
+import Icon from '@/Components/Common/Icon.vue';
+import { useNotifications } from '@/Composables/useNotifications';
 import type {
     BrandAnalytics,
     BrandAssets,
@@ -417,7 +417,7 @@ import type {
     BrandGuidelines,
     BrandLogo,
     BrandTemplate,
-} from '@/types/components';
+} from '@/Types/components';
 import { router } from '@inertiajs/vue3';
 import { onMounted, ref, watch } from 'vue';
 import BrandAnalyticsModal from './BrandAnalyticsModal.vue';
@@ -1328,5 +1328,8 @@ onMounted(() => {
     @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50;
 }
 </style>
+
+
+
 
 

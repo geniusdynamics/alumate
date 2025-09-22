@@ -134,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@/components/ui';
+import { Icon } from '@/Components/ui';
 import { computed } from 'vue';
 
 interface FormField {
@@ -210,3 +210,4 @@ const handleDrop = (event: DragEvent) => {
     opacity: 1;
 }
 </style>
+

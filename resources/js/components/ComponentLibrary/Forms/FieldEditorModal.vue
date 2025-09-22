@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FormField } from '@/types/components';
+import type { FormField } from '@/Types/components';
 import { ref } from 'vue';
 import FieldPropertiesEditor from './FieldPropertiesEditor.vue';
 
@@ -94,4 +94,5 @@ const saveField = () => {
     z-index: 50;
 }
 </style>
+
 

@@ -144,7 +144,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CalculatorInput } from '@/types/homepage';
+import type { CalculatorInput } from '@/Types/homepage';
 import { computed } from 'vue';
 
 // Props
@@ -216,4 +216,5 @@ const handleNext = () => {
     background: #e5e7eb;
 }
 </style>
+
 

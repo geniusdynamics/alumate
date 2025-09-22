@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLogo from '@/components/common/AppLogo.vue';
+import AppLogo from '@/Components/common/AppLogo.vue';
 import { Head } from '@inertiajs/vue3';
 
 interface Props {
@@ -39,3 +39,4 @@ withDefaults(defineProps<Props>(), {
         </div>
     </div>
 </template>
+

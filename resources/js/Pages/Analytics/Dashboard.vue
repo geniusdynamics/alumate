@@ -151,23 +151,23 @@ import axios from 'axios';
 import { computed, onMounted, reactive, ref } from 'vue';
 
 // Components
-import AlertsPanel from '@/components/Analytics/AlertsPanel.vue';
-import AnalyticsTable from '@/components/Analytics/AnalyticsTable.vue';
-import DeviceBreakdownChart from '@/components/Analytics/Charts/DeviceBreakdownChart.vue';
-import EngagementChart from '@/components/Analytics/Charts/EngagementChart.vue';
-import FeatureUsageChart from '@/components/Analytics/Charts/FeatureUsageChart.vue';
-import GeographicMap from '@/components/Analytics/Charts/GeographicMap.vue';
-import GroupParticipationChart from '@/components/Analytics/Charts/GroupParticipationChart.vue';
-import NetworkDensityGauge from '@/components/Analytics/Charts/NetworkDensityGauge.vue';
-import PeakUsageChart from '@/components/Analytics/Charts/PeakUsageChart.vue';
-import PostActivityChart from '@/components/Analytics/Charts/PostActivityChart.vue';
-import UserActivityChart from '@/components/Analytics/Charts/UserActivityChart.vue';
-import CustomReportModal from '@/components/Analytics/CustomReportModal.vue';
-import DateRangePicker from '@/components/Analytics/DateRangePicker.vue';
-import ExportModal from '@/components/Analytics/ExportModal.vue';
-import SummaryCard from '@/components/Analytics/SummaryCard.vue';
-import Icon from '@/components/Icon.vue';
-import type { AnalyticsData, ExportConfig, ReportConfig } from '@/types';
+import AlertsPanel from '@/Components/Analytics/AlertsPanel.vue';
+import AnalyticsTable from '@/Components/Analytics/AnalyticsTable.vue';
+import DeviceBreakdownChart from '@/Components/Analytics/Charts/DeviceBreakdownChart.vue';
+import EngagementChart from '@/Components/Analytics/Charts/EngagementChart.vue';
+import FeatureUsageChart from '@/Components/Analytics/Charts/FeatureUsageChart.vue';
+import GeographicMap from '@/Components/Analytics/Charts/GeographicMap.vue';
+import GroupParticipationChart from '@/Components/Analytics/Charts/GroupParticipationChart.vue';
+import NetworkDensityGauge from '@/Components/Analytics/Charts/NetworkDensityGauge.vue';
+import PeakUsageChart from '@/Components/Analytics/Charts/PeakUsageChart.vue';
+import PostActivityChart from '@/Components/Analytics/Charts/PostActivityChart.vue';
+import UserActivityChart from '@/Components/Analytics/Charts/UserActivityChart.vue';
+import CustomReportModal from '@/Components/Analytics/CustomReportModal.vue';
+import DateRangePicker from '@/Components/Analytics/DateRangePicker.vue';
+import ExportModal from '@/Components/Analytics/ExportModal.vue';
+import SummaryCard from '@/Components/Analytics/SummaryCard.vue';
+import Icon from '@/Components/Icon.vue';
+import type { AnalyticsData, ExportConfig, ReportConfig } from '@/Types';
 
 // Types
 interface SummaryMetric {
@@ -471,4 +471,6 @@ onMounted(() => {
     @apply mr-2;
 }
 </style>
+
+
 

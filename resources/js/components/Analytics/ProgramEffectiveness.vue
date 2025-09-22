@@ -151,7 +151,7 @@
 </template>
 
 <script setup lang="ts">
-import MetricCard from '@/components/Analytics/MetricCard.vue';
+import MetricCard from '@/Components/Analytics/MetricCard.vue';
 import { computed } from 'vue';
 
 interface ProgramData {
@@ -241,3 +241,4 @@ const getTrendIcon = (trend: string): string => {
     return trendIcons[trend] || '➡️';
 };
 </script>
+

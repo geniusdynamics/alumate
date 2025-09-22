@@ -886,14 +886,14 @@
 </template>
 
 <script setup lang="ts">
-import { createABTestingService, type ABTestingService } from '@/services/ABTestingService';
-import { analyticsService } from '@/services/AnalyticsIntegrationService';
-import { brandConfigService } from '@/services/BrandConfigService';
-import { componentLibraryBridge } from '@/services/ComponentLibraryBridge';
-import { pageBackupService, type BackupOptions, type BackupResult } from '@/services/PageBackupService';
-import { pageExportService, type ExportOptions, type ExportResult } from '@/services/PageExportService';
-import { pageMigrationService, type Migration, type MigrationConfig } from '@/services/PageMigrationService';
-import type { Component, EditorState, GrapeJSConfig, Page } from '@/types/components';
+import { createABTestingService, type ABTestingService } from '@/Services/ABTestingService';
+import { analyticsService } from '@/Services/AnalyticsIntegrationService';
+import { brandConfigService } from '@/Services/BrandConfigService';
+import { componentLibraryBridge } from '@/Services/ComponentLibraryBridge';
+import { pageBackupService, type BackupOptions, type BackupResult } from '@/Services/PageBackupService';
+import { pageExportService, type ExportOptions, type ExportResult } from '@/Services/PageExportService';
+import { pageMigrationService, type Migration, type MigrationConfig } from '@/Services/PageMigrationService';
+import type { Component, EditorState, GrapeJSConfig, Page } from '@/Types/components';
 import type { Editor } from 'grapesjs';
 import grapesjs from 'grapesjs';
 import { io, type Socket } from 'socket.io-client';
@@ -3267,4 +3267,6 @@ defineExpose({
     @apply rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500;
 }
 </style>
+
+
 

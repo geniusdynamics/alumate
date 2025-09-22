@@ -1,5 +1,5 @@
 // Form Templates
-import type { FormTemplate } from '@/types/components';
+import type { FormTemplate } from '@/Types/components';
 
 export const individualSignupTemplate: FormTemplate = {
     id: 'individual-signup',
@@ -1015,4 +1015,5 @@ export const getTemplatesByCategory = (category: string): FormTemplate[] => {
 export const getTemplatesByAudience = (audienceType: string): FormTemplate[] => {
     return formTemplates.filter((template) => template.audienceType === audienceType);
 };
+
 

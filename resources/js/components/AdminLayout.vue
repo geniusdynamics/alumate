@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import NavLink from '@/components/NavLink.vue';
+import NavLink from '@/Components/NavLink.vue';
 import { ArrowRightOnRectangleIcon, BellIcon, Cog6ToothIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 
@@ -106,3 +106,4 @@ const logout = () => {
     router.post(route('logout'));
 };
 </script>
+

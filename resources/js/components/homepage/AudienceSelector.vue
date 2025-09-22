@@ -37,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue';
-import { AudienceDetectionResult, AudiencePreference, AudienceType, DetectionFactor } from '@/types/homepage';
+import Icon from '@/Components/Icon.vue';
+import { AudienceDetectionResult, AudiencePreference, AudienceType, DetectionFactor } from '@/Types/homepage';
 import { onMounted, ref, watch } from 'vue';
 
 // Props
@@ -328,4 +328,6 @@ watch(
     }
 }
 </style>
+
+
 

@@ -203,8 +203,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { BrandAnalytics } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { BrandAnalytics } from '@/Types/components';
 import { computed } from 'vue';
 
 interface Props {
@@ -386,4 +386,6 @@ const removeUnusedAsset = (assetName: string) => {
     @apply ml-4 flex-shrink-0;
 }
 </style>
+
+
 

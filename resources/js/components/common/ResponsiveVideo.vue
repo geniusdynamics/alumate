@@ -157,9 +157,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import { useIntersectionObserver } from '@/composables/useIntersectionObserver';
-import type { MediaAsset } from '@/types/components';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import { useIntersectionObserver } from '@/Composables/useIntersectionObserver';
+import type { MediaAsset } from '@/Types/components';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface VideoQuality {
@@ -816,5 +816,7 @@ onUnmounted(() => {
     outline-offset: 2px;
 }
 </style>
+
+
 
 

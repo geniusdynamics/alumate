@@ -196,7 +196,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CareerProgression, SuccessMetric } from '@/types/homepage';
+import type { CareerProgression, SuccessMetric } from '@/Types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -816,4 +816,5 @@ watch(
     }
 }
 </style>
+
 

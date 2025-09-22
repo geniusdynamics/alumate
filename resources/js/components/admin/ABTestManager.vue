@@ -466,7 +466,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ABTestResult, ABTestStatistics } from '@/types/homepage';
+import type { ABTestResult, ABTestStatistics } from '@/Types/homepage';
 import { onMounted, reactive, ref } from 'vue';
 
 // State
@@ -766,4 +766,5 @@ onMounted(() => {
     @apply mx-auto max-w-7xl p-6;
 }
 </style>
+
 

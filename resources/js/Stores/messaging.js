@@ -1,4 +1,4 @@
-import webSocketService from '@/services/WebSocketService';
+import webSocketService from '@/Services/WebSocketService';
 import axios from 'axios';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
@@ -527,3 +527,4 @@ export const useMessagingStore = defineStore('messaging', () => {
         initialize,
     };
 });
+

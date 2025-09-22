@@ -247,10 +247,10 @@
 </template>
 
 <script setup>
-import Pagination from '@/components/Pagination.vue';
-import SpeakerCard from '@/components/SpeakerCard.vue';
-import SpeakingEventCard from '@/components/SpeakingEventCard.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import Pagination from '@/Components/Pagination.vue';
+import SpeakerCard from '@/Components/SpeakerCard.vue';
+import SpeakingEventCard from '@/Components/SpeakingEventCard.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { MicrophoneIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
@@ -303,3 +303,5 @@ const handleViewEventDetails = (eventId) => {
     router.visit(route('speaker-bureau.event', eventId));
 };
 </script>
+
+

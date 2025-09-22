@@ -170,9 +170,9 @@
 </template>
 
 <script setup>
-import GoalModal from '@/components/GoalModal.vue';
-import MilestoneCard from '@/components/MilestoneCard.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import GoalModal from '@/Components/GoalModal.vue';
+import MilestoneCard from '@/Components/MilestoneCard.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { BriefcaseIcon, FlagIcon, MagnifyingGlassIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -239,3 +239,5 @@ const handleGoalSaved = () => {
     router.reload();
 };
 </script>
+
+

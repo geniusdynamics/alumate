@@ -137,8 +137,8 @@
 </template>
 
 <script setup lang="ts">
-import type { MediaAsset } from '@/types/components';
-import { createLazyLoadObserver, generateVideoSources } from '@/utils/mediaOptimization';
+import type { MediaAsset } from '@/Types/components';
+import { createLazyLoadObserver, generateVideoSources } from '@/Utils/mediaOptimization';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import ResponsiveImage from './ResponsiveImage.vue';
 
@@ -548,4 +548,6 @@ video[data-object-fit='fill'] {
     }
 }
 </style>
+
+
 

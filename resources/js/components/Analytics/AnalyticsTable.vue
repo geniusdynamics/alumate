@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue';
+import Icon from '@/Components/Icon.vue';
 import { computed, ref } from 'vue';
 
 interface Column {
@@ -269,3 +269,4 @@ const refreshTable = () => {
     @apply text-sm text-gray-700 dark:text-gray-300;
 }
 </style>
+

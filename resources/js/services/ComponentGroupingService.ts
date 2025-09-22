@@ -1,4 +1,4 @@
-import type { Component, ComponentCategory, ComponentGroup, ComponentRelationship } from '@/types/components';
+import type { Component, ComponentCategory, ComponentGroup, ComponentRelationship } from '@/Types/components';
 
 /**
  * Service for managing component grouping and relationships for GrapeJS operations
@@ -551,4 +551,5 @@ export class ComponentGroupingService {
 }
 
 export default ComponentGroupingService;
+
 

@@ -199,10 +199,10 @@
 </template>
 
 <script setup lang="ts">
-import { useFormAutoSave } from '@/composables/useFormAutoSave';
-import { useFormSubmission } from '@/composables/useFormSubmission';
-import { useFormValidation } from '@/composables/useFormValidation';
-import type { FormComponentConfig } from '@/types/components';
+import { useFormAutoSave } from '@/Composables/useFormAutoSave';
+import { useFormSubmission } from '@/Composables/useFormSubmission';
+import { useFormValidation } from '@/Composables/useFormValidation';
+import type { FormComponentConfig } from '@/Types/components';
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import FormFieldRenderer from './FormFieldRenderer.vue';
 
@@ -533,5 +533,7 @@ const loadRecaptcha = () => {
     }
 }
 </style>
+
+
 
 

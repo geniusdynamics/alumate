@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import GraduateActions from '@/Pages/Graduates/Partials/GraduateActions.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -574,3 +574,4 @@ const exportGraduates = () => {
         </div>
     </AppLayout>
 </template>
+

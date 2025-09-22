@@ -88,8 +88,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { MediaAsset, MediaComponentConfig } from '@/types/components';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
 import { computed } from 'vue';
 import ImageGallery from './ImageGallery.vue';
 import InteractiveDemo from './InteractiveDemo.vue';
@@ -506,5 +506,7 @@ const handleRetry = () => {
     }
 }
 </style>
+
+
 
 

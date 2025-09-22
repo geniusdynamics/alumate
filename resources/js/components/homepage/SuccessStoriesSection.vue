@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { AudienceType } from '@/types/homepage';
+import { AudienceType } from '@/Types/homepage';
 
 interface Props {
     audience: AudienceType;
@@ -24,4 +24,5 @@ defineProps<Props>();
     @apply bg-gray-50 py-16;
 }
 </style>
+
 

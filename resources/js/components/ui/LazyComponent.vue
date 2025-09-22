@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useLazyComponent } from '@/composables/useLazyLoading'
+import { useLazyComponent } from '@/Composables/useLazyLoading'
 
 interface Props {
   componentLoader: () => Promise<any>
@@ -136,3 +136,4 @@ const retry = async () => {
   @apply w-full;
 }
 </style>
+

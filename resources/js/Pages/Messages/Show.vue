@@ -127,7 +127,7 @@
 </template>
 
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -166,3 +166,4 @@ const deleteMessage = () => {
     }
 };
 </script>
+

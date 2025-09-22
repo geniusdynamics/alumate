@@ -237,9 +237,9 @@
 </template>
 
 <script setup>
-import BecomeMentorModal from '@/components/BecomeMentorModal.vue';
-import MentorCard from '@/components/MentorCard.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
+import MentorCard from '@/Components/MentorCard.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { AcademicCapIcon, CalendarIcon, ChartBarIcon, MagnifyingGlassIcon, UserGroupIcon, UserIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -305,3 +305,5 @@ const handleMentorProfileCreated = () => {
     router.reload();
 };
 </script>
+
+

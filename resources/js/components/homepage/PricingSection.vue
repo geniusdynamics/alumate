@@ -178,7 +178,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType, ComparisonFeature, PricingPlan } from '@/types/homepage';
+import type { AudienceType, ComparisonFeature, PricingPlan } from '@/Types/homepage';
 import { CheckIcon, ClockIcon, CurrencyDollarIcon, ShieldCheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref } from 'vue';
 
@@ -468,4 +468,5 @@ onMounted(() => {
     }
 }
 </style>
+
 

@@ -163,9 +163,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import { useScrollTracking } from '@/composables/useScrollTracking';
-import type { Testimonial, TestimonialComponentConfig, TestimonialFilterConfig } from '@/types/components';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import { useScrollTracking } from '@/Composables/useScrollTracking';
+import type { Testimonial, TestimonialComponentConfig, TestimonialFilterConfig } from '@/Types/components';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 // Import child components
@@ -554,5 +554,7 @@ watch(
     }
 }
 </style>
+
+
 
 

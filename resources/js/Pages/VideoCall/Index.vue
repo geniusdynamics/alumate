@@ -162,11 +162,11 @@ import { ClockIcon, VideoCameraIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 
-import CallCard from '@/components/VideoCall/CallCard.vue';
-import CallSkeleton from '@/components/VideoCall/CallSkeleton.vue';
-import CoffeeChatModal from '@/components/VideoCall/CoffeeChatModal.vue';
-import CoffeeChatRequestCard from '@/components/VideoCall/CoffeeChatRequestCard.vue';
-import ScheduleCallModal from '@/components/VideoCall/ScheduleCallModal.vue';
+import CallCard from '@/Components/VideoCall/CallCard.vue';
+import CallSkeleton from '@/Components/VideoCall/CallSkeleton.vue';
+import CoffeeChatModal from '@/Components/VideoCall/CoffeeChatModal.vue';
+import CoffeeChatRequestCard from '@/Components/VideoCall/CoffeeChatRequestCard.vue';
+import ScheduleCallModal from '@/Components/VideoCall/ScheduleCallModal.vue';
 
 // Custom coffee icon component
 const CoffeeIcon = {
@@ -364,3 +364,4 @@ onMounted(() => {
     background-color: #f9fafb;
 }
 </style>
+

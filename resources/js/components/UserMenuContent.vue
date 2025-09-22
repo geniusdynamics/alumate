@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import UserInfo from '@/components/UserInfo.vue';
-import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import type { User } from '@/types';
+import UserInfo from '@/Components/UserInfo.vue';
+import { DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from '@/Components/ui/dropdown-menu';
+import type { User } from '@/Types';
 import { Link, router } from '@inertiajs/vue3';
 import { LogOut, Settings } from 'lucide-vue-next';
 
@@ -39,4 +39,6 @@ defineProps<Props>();
         </Link>
     </DropdownMenuItem>
 </template>
+
+
 

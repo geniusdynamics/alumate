@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
 import InputError from './InputError.vue';
 
 interface Props {
@@ -57,3 +57,4 @@ const handleInput = (e: Event) => {
         <InputError :message="error" />
     </div>
 </template>
+

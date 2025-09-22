@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { CTAComponentConfig } from '@/types/components';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { CTAComponentConfig } from '@/Types/components';
 import { computed, onMounted } from 'vue';
 import CTABanner from './CTABanner.vue';
 import CTAButton from './CTAButton.vue';
@@ -164,5 +164,7 @@ onMounted(() => {
     @apply opacity-100;
 }
 </style>
+
+
 
 

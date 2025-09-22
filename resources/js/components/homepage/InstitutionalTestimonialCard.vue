@@ -80,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InstitutionTestimonial } from '@/types/homepage';
+import type { InstitutionTestimonial } from '@/Types/homepage';
 
 interface Props {
     testimonial: InstitutionTestimonial;
@@ -115,4 +115,5 @@ const formatMetricLabel = (metric: string): string => {
     @apply border-blue-200;
 }
 </style>
+
 
