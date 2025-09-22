@@ -174,10 +174,10 @@
 </template>
 
 <script setup lang="ts">
-import ResponsiveImage from '@/components/Common/ResponsiveImage.vue';
-import ResponsiveVideo from '@/components/Common/ResponsiveVideo.vue';
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { MediaAsset, MediaComponentConfig } from '@/types/components';
+import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
+import ResponsiveVideo from '@/Components/Common/ResponsiveVideo.vue';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
 import { computed, onMounted, reactive, ref } from 'vue';
 import { MediaBase } from './index';
 

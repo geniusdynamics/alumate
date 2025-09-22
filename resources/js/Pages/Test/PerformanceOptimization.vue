@@ -181,12 +181,12 @@
 </template>
 
 <script setup lang="ts">
-import LazyImage from '@/components/Performance/LazyImage.vue';
-import PerformanceDashboard from '@/components/Performance/PerformanceDashboard.vue';
-import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
-import { bundleAnalyzer } from '@/utils/bundle-analyzer';
-import { createLazyComponent, dynamicImportWithRetry } from '@/utils/lazy-loading';
-import { performanceOptimizer } from '@/utils/performance-optimizer';
+import LazyImage from '@/Components/Performance/LazyImage.vue';
+import PerformanceDashboard from '@/Components/Performance/PerformanceDashboard.vue';
+import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
+import { bundleAnalyzer } from '@/Utils/bundle-analyzer';
+import { createLazyComponent, dynamicImportWithRetry } from '@/Utils/lazy-loading';
+import { performanceOptimizer } from '@/Utils/performance-optimizer';
 import { computed, onMounted, ref } from 'vue';
 
 // Performance monitoring
@@ -236,7 +236,7 @@ const loadChartComponent = async () => {
         const module = await dynamicImportWithRetry(() => import('chart.js'));
         // Create a simple chart component
         chartComponent.value = createLazyComponent(() =>
-            import('@/components/Charts/LineChart.vue').catch(() => {
+            import('@/Components/Charts/LineChart.vue').catch(() => {
                 // Fallback to a simple div if component doesn't exist
                 return {
                     template: '<div class="h-64 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">Chart Component Loaded</div>',
@@ -256,7 +256,7 @@ const loadMapComponent = async () => {
     loadingMap.value = true;
     try {
         mapComponent.value = createLazyComponent(() =>
-            import('@/components/AlumniMap.vue').catch(() => {
+            import('@/Components/AlumniMap.vue').catch(() => {
                 return {
                     template: '<div class="h-64 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">Map Component Loaded</div>',
                 };
@@ -275,7 +275,7 @@ const loadSearchComponent = async () => {
     loadingSearch.value = true;
     try {
         searchComponent.value = createLazyComponent(() =>
-            import('@/components/AdvancedSearch.vue').catch(() => {
+            import('@/Components/AdvancedSearch.vue').catch(() => {
                 return {
                     template:
                         '<div class="h-32 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">Advanced Search Component Loaded</div>',

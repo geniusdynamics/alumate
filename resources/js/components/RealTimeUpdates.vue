@@ -146,8 +146,8 @@
 </template>
 
 <script setup>
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
-import userFlowIntegration from '@/services/UserFlowIntegration';
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
+import userFlowIntegration from '@/Services/UserFlowIntegration';
 import {
     AcademicCapIcon,
     BriefcaseIcon,

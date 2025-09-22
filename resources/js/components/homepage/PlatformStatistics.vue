@@ -73,8 +73,8 @@
 </template>
 
 <script setup lang="ts">
-import AnimatedCounter from '@/components/ui/AnimatedCounter.vue';
-import type { AudienceType, PlatformStatistic } from '@/types/homepage';
+import AnimatedCounter from '@/Components/ui/AnimatedCounter.vue';
+import type { AudienceType, PlatformStatistic } from '@/Types/homepage';
 import { useIntersectionObserver } from '@vueuse/core';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 

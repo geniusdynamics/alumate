@@ -177,7 +177,7 @@
 <script setup lang="ts">
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
-import type { ABTestApiResponse, ABTestData } from '../../types/analytics';
+import type { ABTestApiResponse, ABTestData } from '../../Types/analytics';
 import ABTestForm from './ABTestForm.vue';
 import ABTestResults from './ABTestResults.vue';
 

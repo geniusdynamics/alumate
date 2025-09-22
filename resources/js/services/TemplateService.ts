@@ -5,7 +5,7 @@ import type {
     TemplatePreviewConfig,
     TemplateSearchParams,
     TemplateUsageStats,
-} from '@/types/components';
+} from '@/Types/components';
 import { httpService } from './httpService';
 
 class TemplateService {

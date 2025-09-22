@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import type { StatisticCounter } from '@/types/components';
+import type { StatisticCounter } from '@/Types/components';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface Props {

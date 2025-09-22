@@ -80,9 +80,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import { useAudienceDetection } from '@/composables/useAudienceDetection';
-import type { AudienceType, ExitIntentOffer } from '@/types/homepage';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import { useAudienceDetection } from '@/Composables/useAudienceDetection';
+import type { AudienceType, ExitIntentOffer } from '@/Types/homepage';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {

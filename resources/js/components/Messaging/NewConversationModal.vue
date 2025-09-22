@@ -187,7 +187,7 @@
 </template>
 
 <script setup>
-import { useMessagingStore } from '@/stores/messaging';
+import { useMessagingStore } from '@/Stores/messaging';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
 

@@ -65,4 +65,4 @@ export type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '../../types/components';
+} from '../../Types/components';

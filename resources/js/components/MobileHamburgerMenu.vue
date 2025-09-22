@@ -245,7 +245,7 @@
 </template>
 
 <script setup>
-import { useTheme } from '@/composables/useTheme';
+import { useTheme } from '@/Composables/useTheme';
 import {
     AcademicCapIcon,
     ArrowRightOnRectangleIcon,

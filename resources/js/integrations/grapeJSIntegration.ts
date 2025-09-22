@@ -5,13 +5,13 @@
  * and GrapeJS Page Builder, orchestrating all the integration services and utilities.
  */
 
-import type { Component, GrapeJSBlockMetadata } from '@/types/components';
+import type { Component, GrapeJSBlockMetadata } from '@/Types/components';
 
-import { componentLibraryBridge } from '@/services/ComponentLibraryBridge';
-import { componentPreviewGenerator } from '@/services/ComponentPreviewGenerator';
-import { componentSchemaValidator } from '@/utils/componentSchemaValidator';
-import { componentSerializer } from '@/utils/componentSerialization';
-import { grapeJSBlockGenerator } from '@/utils/grapeJSBlockGenerator';
+import { componentLibraryBridge } from '@/Services/ComponentLibraryBridge';
+import { componentPreviewGenerator } from '@/Services/ComponentPreviewGenerator';
+import { componentSchemaValidator } from '@/Utils/componentSchemaValidator';
+import { componentSerializer } from '@/Utils/componentSerialization';
+import { grapeJSBlockGenerator } from '@/Utils/grapeJSBlockGenerator';
 
 export interface GrapeJSIntegrationOptions {
     enablePreviewGeneration?: boolean;

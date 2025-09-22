@@ -215,7 +215,7 @@
 import axios from 'axios';
 import Chart from 'chart.js/auto';
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import type { ABTestApiResponse, ABTestResults, ABTestResultsProps } from '../../types/analytics';
+import type { ABTestApiResponse, ABTestResults, ABTestResultsProps } from '../../Types/analytics';
 
 // Props
 const props = withDefaults(defineProps<ABTestResultsProps>(), {

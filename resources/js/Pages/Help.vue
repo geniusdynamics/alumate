@@ -138,7 +138,7 @@
 </template>
 
 <script setup>
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
+import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
     ChevronDownIcon,

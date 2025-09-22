@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
-import type { BreadcrumbItemType } from '@/types';
+import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import type { BreadcrumbItemType } from '@/Types';
 
 interface Props {
     title?: string;

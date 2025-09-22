@@ -205,9 +205,9 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/ui/Icon.vue';
-import { usePageBuilder } from '@/composables/usePageBuilder';
-import { useVersionControl } from '@/composables/useVersionControl';
+import Icon from '@/Components/ui/Icon.vue';
+import { usePageBuilder } from '@/Composables/usePageBuilder';
+import { useVersionControl } from '@/Composables/useVersionControl';
 import { onMounted, ref } from 'vue';
 import VersionComparison from './VersionComparison.vue';
 

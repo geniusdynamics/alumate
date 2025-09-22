@@ -250,9 +250,9 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import { useNotifications } from '@/composables/useNotifications';
-import type { GrapeJSThemeData, ThemeExportOptions, ThemePerformanceData } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import { useNotifications } from '@/Composables/useNotifications';
+import type { GrapeJSThemeData, ThemeExportOptions, ThemePerformanceData } from '@/Types/components';
 import { computed, onMounted, ref, watch } from 'vue';
 import AccessibilityAnalysis from './AccessibilityAnalysis.vue';
 import ComponentCoverage from './ComponentCoverage.vue';

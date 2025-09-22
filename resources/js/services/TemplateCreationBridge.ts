@@ -14,7 +14,7 @@ import type {
     GrapeJSTrait,
     Template,
     TemplateCategory,
-} from '@/types/components';
+} from '@/Types/components';
 
 // Enhanced interfaces for template functionality
 interface TemplateCategoryData {

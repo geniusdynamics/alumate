@@ -239,10 +239,10 @@
 </template>
 
 <script setup>
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
-import ThemeToggle from '@/components/ThemeToggle.vue';
-import { useTheme } from '@/composables/useTheme';
-import AppLayout from '@/layouts/AppLayout.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import { useTheme } from '@/Composables/useTheme';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { ComputerDesktopIcon, DevicePhoneMobileIcon, EyeIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
 import { Head, Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';

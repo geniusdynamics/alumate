@@ -85,8 +85,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { AudienceType, CTAButton, CTAClickEvent, FloatingCTAContent } from '@/types/homepage';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { AudienceType, CTAButton, CTAClickEvent, FloatingCTAContent } from '@/Types/homepage';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {

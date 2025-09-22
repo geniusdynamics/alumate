@@ -180,7 +180,7 @@
 <script setup lang="ts">
 import { CalendarIcon, ChartBarIcon, ChatBubbleLeftRightIcon, CheckIcon, CogIcon, DevicePhoneMobileIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref } from 'vue';
-import type { AdminDashboard, DemoRequestData } from '../../types/homepage';
+import type { AdminDashboard, DemoRequestData } from '../../Types/homepage';
 import AnimatedCounter from '../ui/AnimatedCounter.vue';
 import LoadingSpinner from '../ui/LoadingSpinner.vue';
 import DemoRequestModal from './DemoRequestModal.vue';

@@ -211,7 +211,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FormComponentConfig, FormField, FormFieldType } from '@/types/components';
+import type { FormComponentConfig, FormField, FormFieldType } from '@/Types/components';
 import { computed, reactive, ref } from 'vue';
 import FieldEditorModal from './FieldEditorModal.vue';
 import FieldPropertiesEditor from './FieldPropertiesEditor.vue';

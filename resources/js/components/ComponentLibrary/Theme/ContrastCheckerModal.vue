@@ -270,8 +270,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { BrandColor } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { BrandColor } from '@/Types/components';
 import { computed, ref } from 'vue';
 
 interface Props {

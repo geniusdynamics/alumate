@@ -280,7 +280,7 @@
 </template>
 
 <script setup>
-import CampaignBuilder from '@/components/EmailMarketing/CampaignBuilder.vue';
+import CampaignBuilder from '@/Components/EmailMarketing/CampaignBuilder.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 

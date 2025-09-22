@@ -205,8 +205,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { AudienceType, Component, ComponentCategory } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { AudienceType, Component, ComponentCategory } from '@/Types/components';
 import { computed } from 'vue';
 
 interface ComponentUsageStats {

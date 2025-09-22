@@ -1,4 +1,4 @@
-import type { AudienceType, CTAABTestVariant, CTABannerConfig, CTAButtonConfig, CTAComponentConfig, CTAInlineLinkConfig } from '@/types/components';
+import type { AudienceType, CTAABTestVariant, CTABannerConfig, CTAButtonConfig, CTAComponentConfig, CTAInlineLinkConfig } from '@/Types/components';
 
 // Sample CTA Button Configurations
 export const sampleCTAButtons: Record<string, CTAButtonConfig> = {

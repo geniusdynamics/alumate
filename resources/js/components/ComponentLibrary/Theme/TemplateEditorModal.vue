@@ -256,8 +256,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { BrandAssets, BrandColor, BrandTemplate } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { BrandAssets, BrandColor, BrandTemplate } from '@/Types/components';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

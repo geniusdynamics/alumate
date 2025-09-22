@@ -148,7 +148,7 @@
 </template>
 
 <script setup>
-import { useDebouncedRef } from '@/composables/useDebounce';
+import { useDebouncedRef } from '@/Composables/useDebounce';
 import {
     AcademicCapIcon,
     BriefcaseIcon,

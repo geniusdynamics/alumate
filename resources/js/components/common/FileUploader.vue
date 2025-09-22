@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { fileUploadService } from '@/services/fileUploadService';
+import { fileUploadService } from '@/Services/fileUploadService';
 import { computed, ref } from 'vue';
 
 interface Props {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils';
+import { cn } from '@/Lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 
 const badgeVariants = cva(

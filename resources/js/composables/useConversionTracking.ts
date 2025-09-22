@@ -1,4 +1,4 @@
-import type { CTAConversionEvent, CTATrackingParams } from '@/types/components';
+import type { CTAConversionEvent, CTATrackingParams } from '@/Types/components';
 import { computed, ref } from 'vue';
 import { useAnalytics } from './useAnalytics';
 

@@ -8,7 +8,7 @@ import type {
     UserBadge,
     ActivityTimelineEntry,
     GamificationStore
-} from '../types/gamification';
+} from '../Types/gamification';
 
 export const useGamificationStore = defineStore('gamification', (): GamificationStore => {
     // State

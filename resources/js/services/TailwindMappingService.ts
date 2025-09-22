@@ -3,7 +3,7 @@ import type {
   TailwindStyleMapping,
   DeviceType,
   BreakpointName
-} from '@/types/components';
+} from '@/Types/components';
 
 /**
  * Service for mapping Tailwind CSS classes to GrapeJS Style Manager

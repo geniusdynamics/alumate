@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/Composables/useToast';
 import { ChatBubbleLeftIcon, EyeIcon, HeartIcon, ShareIcon, TagIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';

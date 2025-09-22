@@ -1,4 +1,4 @@
-import type { BrandCustomization, ContentCustomization, TemplateCustomizationAPIResponse, TemplateCustomizationConfig } from '@/types/components';
+import type { BrandCustomization, ContentCustomization, TemplateCustomizationAPIResponse, TemplateCustomizationConfig } from '@/Types/components';
 import { httpService } from './httpService';
 
 class TemplateCustomizationService {

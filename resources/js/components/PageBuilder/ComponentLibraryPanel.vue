@@ -160,8 +160,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import { useComponentLibrary } from '../../composables/useComponentLibrary';
-import { useToast } from '../../composables/useToast';
+import { useComponentLibrary } from '../../Composables/useComponentLibrary';
+import { useToast } from '../../Composables/useToast';
 import Icon from '../ui/Icon.vue';
 import ComponentPreviewModal from './ComponentPreviewModal.vue';
 

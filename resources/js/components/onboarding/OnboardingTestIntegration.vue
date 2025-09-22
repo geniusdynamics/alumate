@@ -96,7 +96,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import OnboardingService from '@/services/OnboardingService.js'
+import OnboardingService from '@/Services/OnboardingService.js'
 
 const onboardingState = reactive({
     has_completed_onboarding: false,

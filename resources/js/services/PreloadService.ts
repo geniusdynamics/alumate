@@ -1,4 +1,4 @@
-import { getAssetUrl, shouldSkipAssetPreloading, shouldSkipPreloading } from '../utils/asset-url-helper';
+import { getAssetUrl, shouldSkipAssetPreloading, shouldSkipPreloading } from '../Utils/asset-url-helper';
 import { cdnService } from './CDNService';
 
 export interface PreloadResource {

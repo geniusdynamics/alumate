@@ -42,8 +42,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { MediaComponentConfig } from '@/types/components';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { MediaComponentConfig } from '@/Types/components';
 import { computed, provide } from 'vue';
 
 interface Props {

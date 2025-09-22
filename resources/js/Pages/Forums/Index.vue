@@ -133,10 +133,10 @@ import { ChatBubbleLeftRightIcon, MagnifyingGlassIcon, PlusIcon } from '@heroico
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 
-import CreateForumModal from '@/components/Forums/CreateForumModal.vue';
-import ForumCard from '@/components/Forums/ForumCard.vue';
-import ForumSearch from '@/components/Forums/ForumSearch.vue';
-import ForumSkeleton from '@/components/Forums/ForumSkeleton.vue';
+import CreateForumModal from '@/Components/Forums/CreateForumModal.vue';
+import ForumCard from '@/Components/Forums/ForumCard.vue';
+import ForumSearch from '@/Components/Forums/ForumSearch.vue';
+import ForumSkeleton from '@/Components/Forums/ForumSkeleton.vue';
 
 // Props
 const props = defineProps({

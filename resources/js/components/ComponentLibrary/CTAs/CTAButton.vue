@@ -70,8 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { CTAButtonConfig, CTAComponentConfig } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { CTAButtonConfig, CTAComponentConfig } from '@/Types/components';
 import { computed, nextTick, ref } from 'vue';
 
 interface Props {

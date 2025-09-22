@@ -218,7 +218,7 @@
 </template>
 
 <script setup>
-import { apiEndpoints } from '@/data/apiDocumentation.js';
+import { apiEndpoints } from '@/Data/apiDocumentation.js';
 import { computed, reactive, ref } from 'vue';
 
 const generating = ref(false);

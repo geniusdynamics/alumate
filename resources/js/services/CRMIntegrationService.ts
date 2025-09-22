@@ -1,5 +1,5 @@
 // CRM Integration Service for Form Templates
-import type { FormSubmissionConfig } from '@/types/components';
+import type { FormSubmissionConfig } from '@/Types/components';
 
 export interface CRMProvider {
     name: string;

@@ -210,7 +210,7 @@
 import { computed, onMounted, ref, watch } from 'vue';
 
 // Types
-import type { FontCustomization } from '@/types/components';
+import type { FontCustomization } from '@/Types/components';
 
 // Props
 interface Props {

@@ -8,7 +8,7 @@ import type {
     ScrollTrackingEvent,
     SectionViewEvent,
     UserBehaviorEvent,
-} from '@/types/homepage';
+} from '@/Types/homepage';
 
 export interface AnalyticsConfig {
     batchSize: number;

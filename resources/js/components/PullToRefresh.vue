@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { usePullToRefresh } from '@/composables/useSwipeGestures';
+import { usePullToRefresh } from '@/Composables/useSwipeGestures';
 import { ArrowDownIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({

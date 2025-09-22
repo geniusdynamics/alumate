@@ -144,8 +144,8 @@
 </template>
 
 <script setup lang="ts">
-import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
-import { bundleAnalyzer } from '@/utils/bundle-analyzer';
+import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
+import { bundleAnalyzer } from '@/Utils/bundle-analyzer';
 import { ArrowPathIcon, CheckCircleIcon, ExclamationTriangleIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
 import { Chart, registerables } from 'chart.js';
 import { computed, onMounted, onUnmounted, ref } from 'vue';

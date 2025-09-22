@@ -204,7 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
+import Icon from '@/Components/Common/Icon.vue';
 import { computed, ref, watch } from 'vue';
 
 const emit = defineEmits<{

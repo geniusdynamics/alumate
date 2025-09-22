@@ -264,8 +264,8 @@
 </template>
 
 <script setup lang="ts">
-import type { CustomCode } from '@/services/CustomCodeStorageService';
-import { customCodeValidationService, type ValidationResult } from '@/services/CustomCodeValidationService';
+import type { CustomCode } from '@/Services/CustomCodeStorageService';
+import { customCodeValidationService, type ValidationResult } from '@/Services/CustomCodeValidationService';
 import {
     BoltIcon,
     CheckCircleIcon,

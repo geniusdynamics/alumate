@@ -1,4 +1,4 @@
-import type { ABTestConfig, HeroComponentConfig } from '@/types/components';
+import type { ABTestConfig, HeroComponentConfig } from '@/Types/components';
 
 interface ABTestSession {
     testId: string;

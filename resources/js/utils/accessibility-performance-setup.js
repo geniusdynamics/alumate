@@ -4,7 +4,7 @@
  * Initializes accessibility and performance monitoring for the application
  */
 
-import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
+import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
 import performanceMonitor from './performance-monitor';
 
 /**

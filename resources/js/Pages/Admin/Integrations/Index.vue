@@ -190,9 +190,9 @@
 </template>
 
 <script setup>
-import IntegrationCreateModal from '@/components/Admin/Integrations/CreateModal.vue';
-import TestResultsModal from '@/components/Admin/Integrations/TestResultsModal.vue';
-import AdminLayout from '@/layouts/AdminLayout.vue';
+import IntegrationCreateModal from '@/Components/Admin/Integrations/CreateModal.vue';
+import TestResultsModal from '@/Components/Admin/Integrations/TestResultsModal.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import {
     ArrowPathIcon,
     CalendarIcon,

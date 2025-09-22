@@ -222,8 +222,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { Component, ComponentCategory } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { Component, ComponentCategory } from '@/Types/components';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 // Import component bases for preview

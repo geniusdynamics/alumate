@@ -711,7 +711,7 @@
 </template>
 
 <script setup lang="ts">
-import type { IntegrationEcosystemProps, PlatformIntegration, TrainingProgram } from '@/types/homepage';
+import type { IntegrationEcosystemProps, PlatformIntegration, TrainingProgram } from '@/Types/homepage';
 import { computed, ref } from 'vue';
 
 interface Props extends /* @vue-ignore */ IntegrationEcosystemProps {}
@@ -816,17 +816,3 @@ const formatDate = (date: Date) => {
 <style scoped>
 /* Additional custom styles if needed */
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

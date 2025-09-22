@@ -104,8 +104,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { AudienceType, ContextualCTAData, CTAClickEvent } from '@/types/homepage';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { AudienceType, ContextualCTAData, CTAClickEvent } from '@/Types/homepage';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {

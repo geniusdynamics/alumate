@@ -237,8 +237,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useTemplateLibrary } from '../../composables/useTemplateLibrary';
-import { useToast } from '../../composables/useToast';
+import { useTemplateLibrary } from '../../Composables/useTemplateLibrary';
+import { useToast } from '../../Composables/useToast';
 import Icon from '../ui/Icon.vue';
 import TemplatePreviewModal from './TemplatePreviewModal.vue';
 

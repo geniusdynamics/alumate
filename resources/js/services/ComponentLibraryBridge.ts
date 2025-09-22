@@ -21,7 +21,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/Types/components';
 
 // Enhanced interfaces for new functionality
 interface ComponentCategoryData {

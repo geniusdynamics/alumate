@@ -111,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InstitutionTestimonial } from '@/types/homepage';
+import type { InstitutionTestimonial } from '@/Types/homepage';
 import { nextTick, ref, watch } from 'vue';
 
 interface Props {

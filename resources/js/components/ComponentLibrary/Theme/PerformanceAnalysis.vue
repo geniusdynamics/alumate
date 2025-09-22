@@ -276,9 +276,9 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import { useNotifications } from '@/composables/useNotifications';
-import type { GrapeJSThemeData, ThemePerformanceData } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import { useNotifications } from '@/Composables/useNotifications';
+import type { GrapeJSThemeData, ThemePerformanceData } from '@/Types/components';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

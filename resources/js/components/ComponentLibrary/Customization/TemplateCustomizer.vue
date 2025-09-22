@@ -500,7 +500,7 @@ import type {
   BrandCustomization,
   ContentCustomization,
   TemplateCustomizationConfig
-} from '@/types/components'
+} from '@/Types/components'
 
 // Navigation icons (placeholder imports - replace with actual icons)
 const PaletteIcon = () => import('@heroicons/vue/outline/PaletteIcon.vue').then(m => m.default)

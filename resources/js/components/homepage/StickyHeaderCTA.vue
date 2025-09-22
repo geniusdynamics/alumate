@@ -113,9 +113,9 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import { useScrollTracking } from '@/composables/useScrollTracking';
-import type { AudienceType, CTAClickEvent, StickyHeaderCTAData } from '@/types/homepage';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import { useScrollTracking } from '@/Composables/useScrollTracking';
+import type { AudienceType, CTAClickEvent, StickyHeaderCTAData } from '@/Types/homepage';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 interface Props {

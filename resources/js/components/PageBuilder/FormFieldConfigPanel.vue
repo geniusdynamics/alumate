@@ -240,7 +240,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@/components/ui';
+import { Icon } from '@/Components/ui';
 import { computed, reactive, ref, watch } from 'vue';
 
 // ... (component logic will be added in the next part)

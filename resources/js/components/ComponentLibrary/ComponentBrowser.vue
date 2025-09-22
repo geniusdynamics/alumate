@@ -419,13 +419,13 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted, watch, nextTick } from 'vue'
-import type { ComponentCategory, Component, AudienceType } from '@/types/components'
-import { useDebounce } from '@/composables/useDebounce'
-import { useAnalytics } from '@/composables/useAnalytics'
-import { useUserPreferences } from '@/composables/useUserPreferences'
+import type { ComponentCategory, Component, AudienceType } from '@/Types/components'
+import { useDebounce } from '@/Composables/useDebounce'
+import { useAnalytics } from '@/Composables/useAnalytics'
+import { useUserPreferences } from '@/Composables/useUserPreferences'
 
 // Import child components
-import Icon from '@/components/Common/Icon.vue'
+import Icon from '@/Components/Common/Icon.vue'
 import ComponentSkeleton from './ComponentSkeleton.vue'
 import ComponentBrowserCard from './ComponentBrowserCard.vue'
 import ComponentComparisonTable from './ComponentComparisonTable.vue'

@@ -289,7 +289,7 @@ function verifyWebhookSignature(payload, signature, secret) {
 </template>
 
 <script setup>
-import { enhancedWebhookEvents } from '@/data/completeApiDocumentation.js';
+import { enhancedWebhookEvents } from '@/Data/completeApiDocumentation.js';
 import { computed, ref, watch } from 'vue';
 
 const webhookUrl = ref('');

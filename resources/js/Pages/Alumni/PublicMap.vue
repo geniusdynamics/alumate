@@ -163,7 +163,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AlumniProfile, InstitutionOption } from '@/types';
+import type { AlumniProfile, InstitutionOption } from '@/Types';
 import { Link } from '@inertiajs/vue3';
 
 interface Props {

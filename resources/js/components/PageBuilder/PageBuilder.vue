@@ -202,8 +202,8 @@
 import { usePage } from '@inertiajs/vue3';
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { usePageBuilder } from '../../composables/usePageBuilder';
-import { useToast } from '../../composables/useToast';
+import { usePageBuilder } from '../../Composables/usePageBuilder';
+import { useToast } from '../../Composables/useToast';
 import { autoSaveService } from '../../services/AutoSaveService';
 import { realTimeEditingService } from '../../services/RealTimeEditingService';
 import Icon from '../ui/Icon.vue';

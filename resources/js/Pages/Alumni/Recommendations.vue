@@ -149,9 +149,9 @@
 </template>
 
 <script setup>
-import ConnectionInsights from '@/components/ConnectionInsights.vue';
-import RecommendationCard from '@/components/RecommendationCard.vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import ConnectionInsights from '@/Components/ConnectionInsights.vue';
+import RecommendationCard from '@/Components/RecommendationCard.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { ChatBubbleLeftIcon, UserGroupIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { reactive } from 'vue';

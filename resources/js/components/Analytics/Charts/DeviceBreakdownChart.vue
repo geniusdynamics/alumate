@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Icon.vue';
+import Icon from '@/Components/Icon.vue';
 
 interface Props {
     data: Record<string, number>;

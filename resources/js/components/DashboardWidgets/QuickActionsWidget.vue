@@ -127,7 +127,7 @@
 </template>
 
 <script setup>
-import PostCreatorModal from '@/components/PostCreatorModal.vue';
+import PostCreatorModal from '@/Components/PostCreatorModal.vue';
 import {
     AcademicCapIcon,
     BoltIcon,

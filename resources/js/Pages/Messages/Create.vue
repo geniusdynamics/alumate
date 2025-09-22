@@ -129,7 +129,7 @@
 </template>
 
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 import { ref } from 'vue';

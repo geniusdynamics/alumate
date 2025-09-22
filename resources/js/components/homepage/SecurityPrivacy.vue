@@ -257,7 +257,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SecurityCertification, SecurityPrivacyProps } from '@/types/homepage';
+import type { SecurityCertification, SecurityPrivacyProps } from '@/Types/homepage';
 import { ref } from 'vue';
 
 interface Props extends /* @vue-ignore */ SecurityPrivacyProps {}

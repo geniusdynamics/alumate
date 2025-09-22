@@ -64,8 +64,8 @@
 </template>
 
 <script setup lang="ts">
-import ResponsiveImage from '@/components/Common/ResponsiveImage.vue';
-import type { CTABannerConfig, CTAComponentConfig } from '@/types/components';
+import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
+import type { CTABannerConfig, CTAComponentConfig } from '@/Types/components';
 import { computed } from 'vue';
 import CTAButton from './CTAButton.vue';
 

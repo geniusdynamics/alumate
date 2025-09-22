@@ -169,7 +169,7 @@
 </template>
 
 <script setup>
-import BaseModal from '@/components/ui/BaseModal.vue';
+import BaseModal from '@/Components/ui/BaseModal.vue';
 import {
     AcademicCapIcon,
     BriefcaseIcon,

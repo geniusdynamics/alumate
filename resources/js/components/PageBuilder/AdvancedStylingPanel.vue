@@ -352,7 +352,7 @@
 </template>
 
 <script setup lang="ts">
-import { TailwindStyleManager, type StylePreset, type TailwindColor, type TailwindFont } from '@/services/TailwindStyleManager';
+import { TailwindStyleManager, type StylePreset, type TailwindColor, type TailwindFont } from '@/Services/TailwindStyleManager';
 import { computed, onMounted, ref, watch } from 'vue';
 import Icon from '../ui/Icon.vue';
 

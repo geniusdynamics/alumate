@@ -163,7 +163,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CalculatorInput } from '@/types/homepage';
+import type { CalculatorInput } from '@/Types/homepage';
 
 // Props
 interface Props {

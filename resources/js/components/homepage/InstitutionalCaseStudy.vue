@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InstitutionalCaseStudy } from '@/types/homepage';
+import type { InstitutionalCaseStudy } from '@/Types/homepage';
 
 interface Props {
     caseStudy: InstitutionalCaseStudy;

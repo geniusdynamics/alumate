@@ -9,7 +9,7 @@ import {
 
   useForwardProps,
 } from 'reka-ui'
-import { cn } from '@/lib/utils'
+import { cn } from '@/Lib/utils'
 
 const props = defineProps<RadioGroupItemProps & { class?: HTMLAttributes['class'] }>()
 

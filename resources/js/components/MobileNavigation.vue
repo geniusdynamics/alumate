@@ -1,6 +1,6 @@
 <script setup>
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/lib/navigation';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
+import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/Lib/navigation';
 import { Bars3Icon, BriefcaseIcon, HomeIcon, UsersIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';

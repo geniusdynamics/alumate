@@ -116,8 +116,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import type { Testimonial, TestimonialCarouselConfig, VideoSettings } from '@/types/components';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import type { Testimonial, TestimonialCarouselConfig, VideoSettings } from '@/Types/components';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 // Import child components

@@ -3,14 +3,14 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 import { groupBy } from 'lodash-es';
 import { computed } from 'vue';
 
-import InputError from '@/components/InputError.vue';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import DefaultLayout from '@/layouts/DefaultLayout.vue';
-import type { BreadcrumbItemType, Permission } from '@/types/index.d';
+import InputError from '@/Components/InputError.vue';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Checkbox } from '@/Components/ui/checkbox';
+import { Input } from '@/Components/ui/input';
+import { Label } from '@/Components/ui/label';
+import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import type { BreadcrumbItemType, Permission } from '@/Types';
 
 const props = defineProps<{
     permissions: Permission[];

@@ -2,7 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { groupBy } from 'lodash-es';
 
-import type { BreadcrumbItemType, Permission, Role } from '@/types/index.d';
+import type { BreadcrumbItemType, Permission, Role } from '@/Types';
 
 const props = defineProps<{
     role: Role;

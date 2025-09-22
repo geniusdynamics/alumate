@@ -126,7 +126,7 @@ import type {
     HeatMapInteraction,
     HeatMapPoint,
     HeatMapViewerProps,
-} from '../../types/analytics';
+} from '../../Types/analytics';
 
 // Props
 const props = withDefaults(defineProps<HeatMapViewerProps>(), {

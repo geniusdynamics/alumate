@@ -111,7 +111,7 @@
 </template>
 
 <script setup>
-import BaseModal from '@/components/ui/BaseModal.vue';
+import BaseModal from '@/Components/ui/BaseModal.vue';
 import { PhotoIcon, VideoCameraIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { reactive, ref } from 'vue';
 

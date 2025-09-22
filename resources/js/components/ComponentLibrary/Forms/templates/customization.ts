@@ -1,5 +1,5 @@
 // Form Template Customization System
-import type { FormComponentConfig, FormField, FormTemplate } from '@/types/components';
+import type { FormComponentConfig, FormField, FormTemplate } from '@/Types/components';
 
 export interface TemplateCustomization {
     id: string;

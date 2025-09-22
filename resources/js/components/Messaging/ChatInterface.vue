@@ -254,8 +254,8 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '@/stores/auth';
-import { useMessagingStore } from '@/stores/messaging';
+import { useAuthStore } from '@/Stores/auth';
+import { useMessagingStore } from '@/Stores/messaging';
 import { formatDistanceToNow } from 'date-fns';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import MessageBubble from './MessageBubble.vue';

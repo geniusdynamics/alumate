@@ -147,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AlumniProfile } from '@/types';
+import type { AlumniProfile } from '@/Types';
 import { computed } from 'vue';
 
 // Props

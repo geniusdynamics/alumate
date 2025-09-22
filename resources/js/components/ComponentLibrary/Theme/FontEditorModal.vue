@@ -228,8 +228,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/Common/Icon.vue';
-import type { BrandFont } from '@/types/components';
+import Icon from '@/Components/Common/Icon.vue';
+import type { BrandFont } from '@/Types/components';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {

@@ -528,13 +528,13 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/composables/useAnalytics';
-import { useDebounce } from '@/composables/useDebounce';
-import type { AudienceType, Component, ComponentCategory } from '@/types/components';
+import { useAnalytics } from '@/Composables/useAnalytics';
+import { useDebounce } from '@/Composables/useDebounce';
+import type { AudienceType, Component, ComponentCategory } from '@/Types/components';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Import child components
-import Icon from '@/components/Common/Icon.vue';
+import Icon from '@/Components/Common/Icon.vue';
 import ComponentPreviewFrame from './ComponentPreviewFrame.vue';
 import SharePreviewModal from './SharePreviewModal.vue';
 

@@ -124,8 +124,8 @@
 </template>
 
 <script setup lang="ts">
-import { useStatistics } from '@/composables/useStatistics';
-import type { StatisticCounter } from '@/types/components';
+import { useStatistics } from '@/Composables/useStatistics';
+import type { StatisticCounter } from '@/Types/components';
 import { computed, ref } from 'vue';
 import AnimatedCounter from './AnimatedCounter.vue';
 

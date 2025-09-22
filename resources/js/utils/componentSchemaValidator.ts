@@ -19,7 +19,7 @@ import type {
     StatisticsComponentConfig,
     Testimonial,
     TestimonialComponentConfig,
-} from '@/types/components';
+} from '@/Types/components';
 
 export interface ValidationResult {
     valid: boolean;

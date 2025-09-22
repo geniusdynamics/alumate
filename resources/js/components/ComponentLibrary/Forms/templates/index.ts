@@ -1,5 +1,5 @@
 // Form Templates
-import type { FormTemplate } from '@/types/components';
+import type { FormTemplate } from '@/Types/components';
 
 export const individualSignupTemplate: FormTemplate = {
     id: 'individual-signup',

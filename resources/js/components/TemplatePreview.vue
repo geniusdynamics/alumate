@@ -144,8 +144,8 @@
 </template>
 
 <script setup lang="ts">
-import { templateService } from '@/services/TemplateService';
-import type { Template, TemplatePreviewConfig, ViewportType } from '@/types/components';
+import { templateService } from '@/Services/TemplateService';
+import type { Template, TemplatePreviewConfig, ViewportType } from '@/Types/components';
 import { ComputerDesktopIcon, DevicePhoneMobileIcon, DeviceTabletIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref, watch } from 'vue';
 

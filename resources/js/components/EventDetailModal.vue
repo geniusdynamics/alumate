@@ -313,7 +313,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEventsStore } from '@/stores/eventsStore';
+import { useEventsStore } from '@/Stores/eventsStore';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import {
     BuildingOfficeIcon,

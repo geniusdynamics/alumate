@@ -140,8 +140,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/ui/Icon.vue';
-import { useVersionControl } from '@/composables/useVersionControl';
+import Icon from '@/Components/ui/Icon.vue';
+import { useVersionControl } from '@/Composables/useVersionControl';
 import { ref } from 'vue';
 
 interface PageVersion {

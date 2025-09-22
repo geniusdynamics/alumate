@@ -1,4 +1,4 @@
-import type { FormComponentConfig } from '@/types/components';
+import type { FormComponentConfig } from '@/Types/components';
 import { ref } from 'vue';
 
 export function useFormAutoSave(config: FormComponentConfig, formData: Record<string, any>) {

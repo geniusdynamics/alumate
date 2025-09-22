@@ -1,4 +1,4 @@
-import type { FormComponentConfig } from '@/types/components';
+import type { FormComponentConfig } from '@/Types/components';
 import { computed, reactive, ref, watch } from 'vue';
 
 export interface FormErrorState {

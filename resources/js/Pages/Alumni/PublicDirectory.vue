@@ -230,7 +230,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CourseOption, DirectoryResponse, InstitutionOption } from '@/types';
+import type { CourseOption, DirectoryResponse, InstitutionOption } from '@/Types';
 import { Link, router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 import { reactive } from 'vue';

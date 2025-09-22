@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EngagementEvent, Post } from '@/types';
+import type { EngagementEvent, Post } from '@/Types';
 import { format } from 'date-fns';
 import { defineEmits, defineProps } from 'vue';
 

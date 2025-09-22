@@ -82,7 +82,7 @@
 </template>
 
 <script setup>
-import { useSwipeableTabs } from '@/composables/useSwipeGestures';
+import { useSwipeableTabs } from '@/Composables/useSwipeGestures';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
 import { onMounted, ref, watch } from 'vue';
 

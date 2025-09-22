@@ -82,7 +82,7 @@ import { ref } from 'vue';
 import ABTestForm from '../../components/Analytics/ABTestForm.vue';
 import ABTestManager from '../../components/Analytics/ABTestManager.vue';
 import ABTestResults from '../../components/Analytics/ABTestResults.vue';
-import type { ABTestData } from '../../types/analytics';
+import type { ABTestData } from '../../Types/analytics';
 
 // Test state
 const showForm = ref(false);

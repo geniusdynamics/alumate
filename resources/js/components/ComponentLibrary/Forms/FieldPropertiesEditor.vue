@@ -299,7 +299,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FormField } from '@/types/components';
+import type { FormField } from '@/Types/components';
 import { ref, watch } from 'vue';
 
 interface Props {

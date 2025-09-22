@@ -167,15 +167,15 @@
     </AppLayout>
 </template>
 <script setup lang="ts">
-import BaseButton from '@/components/ui/BaseButton.vue';
-import ContextualLoader from '@/components/ui/ContextualLoader.vue';
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
-import SkeletonCard from '@/components/ui/SkeletonCard.vue';
-import SkeletonList from '@/components/ui/SkeletonList.vue';
-import SmartLoader from '@/components/ui/SmartLoader.vue';
-import { useLoadingStates } from '@/composables/useLoadingStates';
-import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
-import AppLayout from '@/layouts/AppLayout.vue';
+import BaseButton from '@/Components/ui/BaseButton.vue';
+import ContextualLoader from '@/Components/ui/ContextualLoader.vue';
+import LoadingSpinner from '@/Components/ui/LoadingSpinner.vue';
+import SkeletonCard from '@/Components/ui/SkeletonCard.vue';
+import SkeletonList from '@/Components/ui/SkeletonList.vue';
+import SmartLoader from '@/Components/ui/SmartLoader.vue';
+import { useLoadingStates } from '@/Composables/useLoadingStates';
+import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 

@@ -53,8 +53,8 @@
 </template>
 
 <script setup>
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
-import userFlowIntegration from '@/services/UserFlowIntegration';
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
+import userFlowIntegration from '@/Services/UserFlowIntegration';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { usePage } from '@inertiajs/vue3';
 import { onMounted, reactive } from 'vue';
