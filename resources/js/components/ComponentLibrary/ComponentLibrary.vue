@@ -225,14 +225,14 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/Composables/useAnalytics';
-import { useDebounce } from '@/Composables/useDebounce';
-import { useUserPreferences } from '@/Composables/useUserPreferences';
-import type { Component, ComponentCategory } from '@/Types/components';
+import { useAnalytics } from '@/composables/useAnalytics';
+import { useDebounce } from '@/composables/useDebounce';
+import { useUserPreferences } from '@/composables/useUserPreferences';
+import type { Component, ComponentCategory } from '@/types/components';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
 // Import child components
-import Icon from '@/Components/Common/Icon.vue';
+import Icon from '@/components/Common/Icon.vue';
 import ComponentCard from './ComponentCard.vue';
 import ComponentPreviewModal from './ComponentPreviewModal.vue';
 import ComponentSkeleton from './ComponentSkeleton.vue';
@@ -784,6 +784,18 @@ watch(searchQuery, () => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

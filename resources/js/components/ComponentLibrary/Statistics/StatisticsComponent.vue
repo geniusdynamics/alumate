@@ -98,8 +98,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/Composables/useAnalytics';
-import { useStatisticsData, type StatisticsDataItem } from '@/Composables/useStatisticsData';
+import { useAnalytics } from '@/composables/useAnalytics';
+import { useStatisticsData, type StatisticsDataItem } from '@/composables/useStatisticsData';
 import { computed, onMounted, ref, watch } from 'vue';
 import type { CounterTrend } from './AnimatedCounter.vue';
 import AnimatedCounter from './AnimatedCounter.vue';
@@ -434,5 +434,17 @@ watch(
     @apply mb-6;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

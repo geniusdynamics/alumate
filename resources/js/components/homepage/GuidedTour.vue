@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType } from '@/Types/homepage';
+import type { AudienceType } from '@/types/homepage';
 import { computed, onMounted, ref } from 'vue';
 
 interface TourStep {
@@ -211,5 +211,17 @@ onMounted(() => {
     z-index: 9999;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

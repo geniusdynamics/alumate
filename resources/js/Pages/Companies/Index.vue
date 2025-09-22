@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 defineProps({
@@ -45,4 +45,16 @@ const reject = (employerId) => {
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 

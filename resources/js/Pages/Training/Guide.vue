@@ -325,7 +325,7 @@
 </template>
 
 <script setup>
-import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -474,4 +474,16 @@ const submitFeedback = async () => {
     }
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 

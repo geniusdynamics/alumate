@@ -294,7 +294,7 @@
 </template>
 
 <script setup>
-import AdminLayout from '@/Components/AdminLayout.vue';
+import AdminLayout from '@/components/AdminLayout.vue';
 import { ArrowLeftIcon, DocumentArrowDownIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';
@@ -412,4 +412,14 @@ const exportReport = async () => {
     }
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

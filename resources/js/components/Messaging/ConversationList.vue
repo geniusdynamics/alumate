@@ -163,8 +163,8 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '@/Stores/auth';
-import { useMessagingStore } from '@/Stores/messaging';
+import { useAuthStore } from '@/stores/auth';
+import { useMessagingStore } from '@/stores/messaging';
 import { formatDistanceToNow } from 'date-fns';
 import { computed, onMounted, ref, watch } from 'vue';
 import NewConversationModal from './NewConversationModal.vue';
@@ -347,6 +347,18 @@ watch(
     @apply px-3 py-1.5 text-xs;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

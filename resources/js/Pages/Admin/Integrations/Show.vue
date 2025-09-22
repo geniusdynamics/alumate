@@ -326,8 +326,8 @@
 </template>
 
 <script setup>
-import TestResultsModal from '@/Components/Admin/Integrations/TestResultsModal.vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import TestResultsModal from '@/components/Admin/Integrations/TestResultsModal.vue';
+import AdminLayout from '@/layouts/AdminLayout.vue';
 import {
     ArrowLeftIcon,
     ArrowPathIcon,
@@ -487,5 +487,17 @@ const copyWebhookUrl = async () => {
     }
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

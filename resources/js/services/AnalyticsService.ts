@@ -8,7 +8,7 @@ import type {
     ScrollTrackingEvent,
     SectionViewEvent,
     UserBehaviorEvent,
-} from '@/Types/homepage';
+} from '@/types/homepage';
 
 export interface AnalyticsConfig {
     batchSize: number;
@@ -733,5 +733,17 @@ export class AnalyticsService {
         window.removeEventListener('unhandledrejection', () => {});
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 

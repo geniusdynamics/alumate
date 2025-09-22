@@ -133,9 +133,9 @@
 </template>
 
 <script setup>
-import EventCard from '@/Components/EventCard.vue';
-import Pagination from '@/Components/Pagination.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import EventCard from '@/components/EventCard.vue';
+import Pagination from '@/components/Pagination.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { CalendarIcon } from '@heroicons/vue/24/outline';
 import { Head, router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
@@ -203,5 +203,17 @@ const handleEventUnregistration = (eventId) => {
     });
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

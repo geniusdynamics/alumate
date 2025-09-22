@@ -261,8 +261,8 @@
 </template>
 
 <script setup lang="ts">
-import LoadingSpinner from '@/Components/ui/LoadingSpinner.vue';
-import type { DemoRequestData } from '@/Types/homepage';
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
+import type { DemoRequestData } from '@/types/homepage';
 import { CheckCircleIcon, CheckIcon, ExclamationTriangleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { reactive, ref, watch } from 'vue';
 
@@ -497,6 +497,18 @@ input[type='checkbox']:checked {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

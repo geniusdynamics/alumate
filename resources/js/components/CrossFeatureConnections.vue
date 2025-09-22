@@ -87,13 +87,13 @@
 </template>
 
 <script setup>
-import AlumniCard from '@/Components/AlumniCard.vue';
-import AlumniProfile from '@/Components/AlumniProfile.vue';
-import CareerEntryModal from '@/Components/CareerEntryModal.vue';
-import JobCard from '@/Components/JobCard.vue';
-import PostReactions from '@/Components/PostReactions.vue';
-import SkillsProfile from '@/Components/SkillsProfile.vue';
-import userFlowIntegration from '@/Services/UserFlowIntegration';
+import AlumniCard from '@/components/AlumniCard.vue';
+import AlumniProfile from '@/components/AlumniProfile.vue';
+import CareerEntryModal from '@/components/CareerEntryModal.vue';
+import JobCard from '@/components/JobCard.vue';
+import PostReactions from '@/components/PostReactions.vue';
+import SkillsProfile from '@/components/SkillsProfile.vue';
+import userFlowIntegration from '@/services/UserFlowIntegration';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onMounted, reactive, ref } from 'vue';
 
@@ -483,5 +483,17 @@ const closeCareerModal = () => {
     margin-bottom: 1.5rem;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

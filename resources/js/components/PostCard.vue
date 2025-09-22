@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EngagementEvent, Post } from '@/Types';
+import type { EngagementEvent, Post } from '@/types';
 import { format } from 'date-fns';
 import { defineEmits, defineProps } from 'vue';
 
@@ -111,5 +111,17 @@ const handleShare = (): void => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

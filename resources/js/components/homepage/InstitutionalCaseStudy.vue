@@ -156,7 +156,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InstitutionalCaseStudy } from '@/Types/homepage';
+import type { InstitutionalCaseStudy } from '@/types/homepage';
 
 interface Props {
     caseStudy: InstitutionalCaseStudy;
@@ -187,5 +187,17 @@ const formatMetricLabel = (metric: string): string => {
     @apply border border-gray-200;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

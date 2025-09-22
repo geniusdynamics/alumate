@@ -245,7 +245,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FieldCustomizationOptions, FormField, FormTemplate } from '@/Types/components';
+import type { FieldCustomizationOptions, FormField, FormTemplate } from '@/types/components';
 import { CheckCircleIcon, ChevronDownIcon, ChevronUpIcon, PencilIcon, TrashIcon, XCircleIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref } from 'vue';
 import FieldEditorModal from './FieldEditorModal.vue';
@@ -496,5 +496,17 @@ onMounted(() => {
     @apply max-h-96 overflow-y-auto;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

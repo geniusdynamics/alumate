@@ -245,11 +245,11 @@
 </template>
 
 <script setup>
-import CareerEntryModal from '@/Components/CareerEntryModal.vue';
-import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
-import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
-import UserFlowIntegration from '@/Components/UserFlowIntegration.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import CareerEntryModal from '@/components/CareerEntryModal.vue';
+import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue';
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { BriefcaseIcon, CheckCircleIcon, FlagIcon, PencilIcon, TrophyIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 import { Head, Link } from '@inertiajs/vue3';
 import { format } from 'date-fns';
@@ -280,5 +280,17 @@ const handleEntrySaved = () => {
     window.location.reload();
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

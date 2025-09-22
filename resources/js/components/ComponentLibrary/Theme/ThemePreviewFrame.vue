@@ -305,8 +305,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Common/Icon.vue';
-import type { GrapeJSThemeData, ThemePerformanceData } from '@/Types/components';
+import Icon from '@/components/Common/Icon.vue';
+import type { GrapeJSThemeData, ThemePerformanceData } from '@/types/components';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -1193,6 +1193,18 @@ onMounted(() => {
     @apply transition-shadow duration-300 hover:shadow-lg;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

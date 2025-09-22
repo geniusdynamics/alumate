@@ -138,7 +138,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AlumniProfile, StoryFilter, SuccessStory } from '@/Types/homepage';
+import type { AlumniProfile, StoryFilter, SuccessStory } from '@/types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 import SuccessStoryCard from './SuccessStoryCard.vue';
 import SuccessStoryFilters from './SuccessStoryFilters.vue';
@@ -544,5 +544,17 @@ onMounted(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

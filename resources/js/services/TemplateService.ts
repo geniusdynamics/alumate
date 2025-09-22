@@ -5,7 +5,7 @@ import type {
     TemplatePreviewConfig,
     TemplateSearchParams,
     TemplateUsageStats,
-} from '@/Types/components';
+} from '@/types/components';
 import { httpService } from './httpService';
 
 class TemplateService {
@@ -231,5 +231,17 @@ class TemplateService {
 
 export const templateService = new TemplateService();
 export default templateService;
+
+
+
+
+
+
+
+
+
+
+
+
 
 

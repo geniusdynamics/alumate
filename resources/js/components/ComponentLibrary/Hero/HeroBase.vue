@@ -131,9 +131,9 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
-import type { CTAButton, HeroComponentConfig } from '@/Types/components';
-import { getBackgroundGradient, getVariantStyleClasses } from '@/Utils/variantStyling';
+import Icon from '@/components/Icon.vue';
+import type { CTAButton, HeroComponentConfig } from '@/types/components';
+import { getBackgroundGradient, getVariantStyleClasses } from '@/utils/variantStyling';
 import { computed, nextTick, onMounted, ref } from 'vue';
 import ResponsiveImage from '../ResponsiveImage.vue';
 import ResponsiveVideo from '../ResponsiveVideo.vue';
@@ -531,6 +531,18 @@ video {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

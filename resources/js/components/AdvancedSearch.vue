@@ -122,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from '@/Composables/useToast';
+import { useToast } from '@/composables/useToast';
 import { BookmarkIcon, FunnelIcon as FilterIcon, MagnifyingGlassIcon as SearchIcon } from '@heroicons/vue/24/outline';
 import { debounce } from 'lodash-es';
 import { computed, onMounted, reactive, ref, watch } from 'vue';
@@ -511,5 +511,17 @@ onMounted(() => {
     @apply text-gray-600;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

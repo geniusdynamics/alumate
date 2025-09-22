@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from '@/Composables/useToast';
+import { useToast } from '@/composables/useToast';
 import {
     BookmarkIcon,
     BriefcaseIcon,
@@ -522,5 +522,17 @@ const saveJob = async () => {
     @apply rounded bg-yellow-200 px-1 text-yellow-900;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

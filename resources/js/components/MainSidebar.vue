@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import NavFooter from '@/Components/NavFooter.vue';
-import NavMain from '@/Components/NavMain.vue';
-import NavUser from '@/Components/NavUser.vue';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/Components/ui/sidebar';
-import { type NavItem } from '@/Types';
+import NavFooter from '@/components/NavFooter.vue';
+import NavMain from '@/components/NavMain.vue';
+import NavUser from '@/components/NavUser.vue';
+import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
 import { BookOpen, Briefcase, Calendar, Folder, GraduationCap, Heart, LayoutGrid, MessageSquare, Trophy, Users } from 'lucide-vue-next';
 import SidebarLogo from './SidebarLogo.vue';
@@ -121,6 +121,18 @@ const footerNavItems: NavItem[] = [
         </SidebarFooter>
     </Sidebar>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

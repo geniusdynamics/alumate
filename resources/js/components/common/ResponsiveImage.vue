@@ -41,8 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { useIntersectionObserver } from '@/Composables/useIntersectionObserver';
-import type { MediaAsset } from '@/Types/components';
+import { useIntersectionObserver } from '@/composables/useIntersectionObserver';
+import type { MediaAsset } from '@/types/components';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -267,6 +267,18 @@ onMounted(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

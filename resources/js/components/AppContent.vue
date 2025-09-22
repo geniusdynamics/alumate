@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SidebarInset } from '@/Components/ui/sidebar';
+import { SidebarInset } from '@/components/ui/sidebar';
 import { computed } from 'vue';
 
 interface Props {
@@ -19,4 +19,14 @@ const className = computed(() => props.class);
         <slot />
     </main>
 </template>
+
+
+
+
+
+
+
+
+
+
 

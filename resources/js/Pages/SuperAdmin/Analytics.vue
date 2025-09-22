@@ -225,7 +225,7 @@
 </template>
 
 <script setup>
-import AdminLayout from '@/Components/AdminLayout.vue';
+import AdminLayout from '@/components/AdminLayout.vue';
 import {
     AcademicCapIcon,
     ArrowLeftIcon,
@@ -264,4 +264,14 @@ const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

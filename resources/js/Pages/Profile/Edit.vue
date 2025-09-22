@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import UpdateProfileForm from '@/Pages/Profile/Partials/UpdateProfileForm.vue';
 import { Head } from '@inertiajs/vue3';
 
@@ -28,4 +28,16 @@ defineProps({
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 

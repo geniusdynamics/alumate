@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import UserInfo from '@/Components/UserInfo.vue';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/Components/ui/dropdown-menu';
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/Components/ui/sidebar';
-import { type SharedData, type User } from '@/Types';
+import UserInfo from '@/components/UserInfo.vue';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar';
+import { type SharedData, type User } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown } from 'lucide-vue-next';
 import UserMenuContent from './UserMenuContent.vue';
@@ -34,6 +34,18 @@ const { isMobile, state } = useSidebar();
         </SidebarMenuItem>
     </SidebarMenu>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -374,10 +374,10 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
-import VirtualEventControls from '@/Components/VirtualEventControls.vue';
-import VirtualEventViewer from '@/Components/VirtualEventViewer.vue';
-import { useToast } from '@/Composables/useToast';
+import Icon from '@/components/Icon.vue';
+import VirtualEventControls from '@/components/VirtualEventControls.vue';
+import VirtualEventViewer from '@/components/VirtualEventViewer.vue';
+import { useToast } from '@/composables/useToast';
 import { computed, ref } from 'vue';
 
 interface Event {
@@ -761,6 +761,18 @@ const handleMeetingAction = (action: string, data?: any) => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

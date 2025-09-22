@@ -26,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
+import Icon from '@/components/Icon.vue';
 
 interface Props {
     data: Record<string, number>;
@@ -115,4 +115,14 @@ const getDeviceColor = (device: string): string => {
     @apply h-2 rounded-full transition-all duration-300;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
 

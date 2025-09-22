@@ -500,7 +500,7 @@ import type {
   BrandCustomization,
   ContentCustomization,
   TemplateCustomizationConfig
-} from '@/Types/components'
+} from '@/types/components'
 
 // Navigation icons (placeholder imports - replace with actual icons)
 const PaletteIcon = () => import('@heroicons/vue/outline/PaletteIcon.vue').then(m => m.default)
@@ -1350,4 +1350,16 @@ onBeforeUnmount(() => {
   padding: 0;
   margin: -1px;
   overflow:
+
+
+
+
+
+
+
+
+
+
+
+
 

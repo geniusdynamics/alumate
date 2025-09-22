@@ -163,11 +163,11 @@
 </template>
 
 <script setup lang="ts">
-import EventCard from '@/Components/EventCard.vue';
-import EventDetailModal from '@/Components/EventDetailModal.vue';
-import EventFilters from '@/Components/EventFilters.vue';
-import EventFormModal from '@/Components/EventFormModal.vue';
-import { useEventsStore } from '@/Stores/eventsStore';
+import EventCard from '@/components/EventCard.vue';
+import EventDetailModal from '@/components/EventDetailModal.vue';
+import EventFilters from '@/components/EventFilters.vue';
+import EventFormModal from '@/components/EventFormModal.vue';
+import { useEventsStore } from '@/stores/eventsStore';
 import { CalendarIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { onMounted, reactive, ref } from 'vue';
 
@@ -395,6 +395,18 @@ onMounted(() => {
     loadRecommendedEvents();
 });
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

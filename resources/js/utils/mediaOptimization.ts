@@ -3,7 +3,7 @@
  * Handles responsive images, WebP support, CDN integration, and mobile optimization
  */
 
-import type { MediaAsset } from '@/Types/components';
+import type { MediaAsset } from '@/types/components';
 
 export interface MediaOptimizationConfig {
     cdnBaseUrl?: string;
@@ -431,5 +431,17 @@ export const generateVideoSources = (asset: MediaAsset & any) => mediaOptimizer.
 export const createLazyLoadObserver = (callback: (entries: IntersectionObserverEntry[]) => void) => mediaOptimizer.createLazyLoadObserver(callback);
 
 export const preloadImage = (url: string) => mediaOptimizer.preloadImage(url);
+
+
+
+
+
+
+
+
+
+
+
+
 
 

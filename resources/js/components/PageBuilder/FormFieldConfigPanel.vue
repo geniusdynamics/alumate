@@ -240,7 +240,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@/Components/ui';
+import { Icon } from '@/components/ui';
 import { computed, reactive, ref, watch } from 'vue';
 
 // ... (component logic will be added in the next part)
@@ -454,4 +454,14 @@ const toggleCrmMapping = () => {
     }
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

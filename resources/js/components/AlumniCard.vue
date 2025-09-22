@@ -147,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AlumniProfile } from '@/Types';
+import type { AlumniProfile } from '@/types';
 import { computed } from 'vue';
 
 // Props
@@ -250,5 +250,17 @@ const isOnline = computed(() => {
     box-shadow: 0 0 0 2px white;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

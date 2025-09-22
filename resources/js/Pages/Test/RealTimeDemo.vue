@@ -170,9 +170,9 @@
 </template>
 
 <script setup lang="ts">
-import LiveEngagementCounters from '@/Components/LiveEngagementCounters.vue';
-import RealTimeStatus from '@/Components/RealTimeStatus.vue';
-import { useConnectionRealTime, useRealTimeUpdates, useTimelineRealTime } from '@/Composables/useRealTimeUpdates';
+import LiveEngagementCounters from '@/components/LiveEngagementCounters.vue';
+import RealTimeStatus from '@/components/RealTimeStatus.vue';
+import { useConnectionRealTime, useRealTimeUpdates, useTimelineRealTime } from '@/composables/useRealTimeUpdates';
 import { onMounted, onUnmounted, ref } from 'vue';
 
 // Demo data
@@ -324,6 +324,18 @@ onUnmounted(() => {
     animation: fade-in 0.3s ease-out;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

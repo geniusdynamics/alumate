@@ -427,7 +427,7 @@
 </template>
 
 <script setup lang="ts">
-import { ContentBlock } from '@/Types/components';
+import { ContentBlock } from '@/types/components';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 // Template refs
@@ -1289,5 +1289,17 @@ onBeforeUnmount(() => {
     border: 0;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

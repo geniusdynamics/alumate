@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
 defineProps({
@@ -35,4 +35,16 @@ defineProps({
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 

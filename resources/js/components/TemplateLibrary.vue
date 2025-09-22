@@ -239,7 +239,7 @@
 </template>
 
 <script setup lang="ts">
-import { templateService } from '@/Services/TemplateService';
+import { templateService } from '@/services/TemplateService';
 import type {
     Template,
     TemplateAudienceType,
@@ -250,7 +250,7 @@ import type {
     TemplateSearchParams,
     ViewMode,
     ViewportType,
-} from '@/Types/components';
+} from '@/types/components';
 import { useDebounceFn } from '@vueuse/core';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
@@ -868,6 +868,18 @@ onBeforeUnmount(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

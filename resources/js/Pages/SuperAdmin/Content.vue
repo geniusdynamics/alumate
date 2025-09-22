@@ -108,8 +108,8 @@
 </template>
 
 <script setup>
-import AdminLayout from '@/Components/AdminLayout.vue';
-import DarkStatCard from '@/Components/DarkStatCard.vue';
+import AdminLayout from '@/components/AdminLayout.vue';
+import DarkStatCard from '@/components/DarkStatCard.vue';
 import { Head } from '@inertiajs/vue3';
 import { format } from 'date-fns';
 import { computed } from 'vue';
@@ -186,4 +186,14 @@ const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMM dd, yyyy');
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

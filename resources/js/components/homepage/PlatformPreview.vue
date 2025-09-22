@@ -349,7 +349,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType } from '@/Types/homepage';
+import type { AudienceType } from '@/types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 import GuidedTour from './GuidedTour.vue';
 import HotspotDetail from './HotspotDetail.vue';
@@ -1023,5 +1023,17 @@ defineExpose({
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

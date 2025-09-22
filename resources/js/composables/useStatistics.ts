@@ -2,8 +2,8 @@
  * Vue composable for managing statistics with real-time updates
  */
 
-import { statisticsService, type StatisticData } from '@/Services/StatisticsService';
-import type { StatisticCounter } from '@/Types/components';
+import { statisticsService, type StatisticData } from '@/services/StatisticsService';
+import type { StatisticCounter } from '@/types/components';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 export interface UseStatisticsOptions {
@@ -333,6 +333,18 @@ export function useStatistic(statistic: StatisticCounter, options: UseStatistics
         reload: () => loadStatistic(statistic),
     };
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

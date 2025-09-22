@@ -8,7 +8,7 @@ import type {
     ResponsiveComponentVariant,
     ResponsiveConfig,
     TailwindStyleMapping,
-} from '@/Types/components';
+} from '@/types/components';
 
 /**
  * Service for managing responsive configurations and device-specific variants
@@ -855,5 +855,17 @@ export class ResponsiveConfigService {
 }
 
 export default ResponsiveConfigService;
+
+
+
+
+
+
+
+
+
+
+
+
 
 

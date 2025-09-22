@@ -339,8 +339,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Common/Icon.vue';
-import type { AudienceType, Component, ComponentCategory } from '@/Types/components';
+import Icon from '@/components/Common/Icon.vue';
+import type { AudienceType, Component, ComponentCategory } from '@/types/components';
 import { computed, ref, watch } from 'vue';
 
 interface ComponentUsageStats {
@@ -609,6 +609,18 @@ watch(
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -125,12 +125,12 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { Testimonial } from '@/Types/components'
-import { useAnalytics } from '@/Composables/useAnalytics'
+import type { Testimonial } from '@/types/components'
+import { useAnalytics } from '@/composables/useAnalytics'
 
 // Import child components
-import ResponsiveVideo from '@/Components/Common/ResponsiveVideo.vue'
-import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue'
+import ResponsiveVideo from '@/components/Common/ResponsiveVideo.vue'
+import ResponsiveImage from '@/components/Common/ResponsiveImage.vue'
 import { count } from 'console'
 import { after } from 'lodash-es'
 import { before } from 'lodash-es'
@@ -431,6 +431,18 @@ const handleShare = async () => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

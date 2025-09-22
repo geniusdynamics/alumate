@@ -13,8 +13,8 @@
 </template>
 
 <script setup lang="ts">
-import CampaignList from '@/Components/Fundraising/CampaignList.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import CampaignList from '@/components/Fundraising/CampaignList.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -25,5 +25,17 @@ const canCreateCampaign = computed(() => {
     return user && (user.roles?.includes('admin') || user.roles?.includes('institution_admin') || user.roles?.includes('alumni'));
 });
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

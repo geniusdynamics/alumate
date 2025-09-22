@@ -93,7 +93,7 @@
 
 <script setup>
 import { computed, watchEffect } from 'vue'
-import { useModal } from '@/Composables/useModal'
+import { useModal } from '@/composables/useModal'
 
 const props = defineProps({
   modelValue: {
@@ -194,4 +194,16 @@ defineExpose({
   isOpen
 })
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 

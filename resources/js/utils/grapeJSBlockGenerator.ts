@@ -16,7 +16,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/Types/components';
+} from '@/types/components';
 
 export interface GrapeJSBlockGeneratorOptions {
     includePreviewImages?: boolean;
@@ -1088,5 +1088,17 @@ export class GrapeJSBlockGenerator {
 
 // Export singleton instance
 export const grapeJSBlockGenerator = new GrapeJSBlockGenerator();
+
+
+
+
+
+
+
+
+
+
+
+
 
 

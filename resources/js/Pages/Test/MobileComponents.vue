@@ -225,8 +225,8 @@
 </template>
 
 <script setup>
-import SwipeableTabNavigation from '@/Components/Mobile/SwipeableTabNavigation.vue';
-import TouchOptimizedControls from '@/Components/Mobile/TouchOptimizedControls.vue';
+import SwipeableTabNavigation from '@/components/Mobile/SwipeableTabNavigation.vue';
+import TouchOptimizedControls from '@/components/Mobile/TouchOptimizedControls.vue';
 import {
     AtSymbolIcon,
     ChatBubbleLeftIcon,
@@ -321,4 +321,14 @@ const hideToast = () => {
     @apply mb-4 text-lg font-semibold text-gray-900 dark:text-white;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
 

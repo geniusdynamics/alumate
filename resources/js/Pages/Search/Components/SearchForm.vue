@@ -293,7 +293,7 @@
 </template>
 
 <script>
-import SkillsInput from '@/Components/SkillsInput.vue';
+import SkillsInput from '@/components/SkillsInput.vue';
 
 export default {
     components: {
@@ -423,4 +423,14 @@ export default {
     },
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

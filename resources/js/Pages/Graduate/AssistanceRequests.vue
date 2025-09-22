@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -416,4 +416,16 @@ const formatDate = (date) => {
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 

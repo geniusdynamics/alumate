@@ -7,7 +7,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/Types/components';
+} from '@/types/components';
 
 // Sample Hero Components
 const sampleHeroComponents: Component[] = [
@@ -469,5 +469,17 @@ export const componentMetadata: Record<string, { thumbnailUrl?: string; tags?: s
 };
 
 export default sampleComponents;
+
+
+
+
+
+
+
+
+
+
+
+
 
 

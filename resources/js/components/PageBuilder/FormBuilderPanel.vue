@@ -87,8 +87,8 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@/Components/ui';
-import { useFormBuilder } from '@/Composables/useFormBuilder';
+import { Icon } from '@/components/ui';
+import { useFormBuilder } from '@/composables/useFormBuilder';
 import { onMounted, reactive } from 'vue';
 
 interface FormConfig {
@@ -135,6 +135,18 @@ const addField = (fieldType: string, fieldConfig: any) => {
     emit('fieldAdded', fieldType, fieldConfig);
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

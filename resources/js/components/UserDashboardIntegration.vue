@@ -273,8 +273,8 @@
 </template>
 
 <script setup>
-import PostCreator from '@/Components/PostCreator.vue';
-import userFlowIntegration from '@/Services/UserFlowIntegration';
+import PostCreator from '@/components/PostCreator.vue';
+import userFlowIntegration from '@/services/UserFlowIntegration';
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -508,5 +508,17 @@ const formatDate = (dateString) => {
     position: relative;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

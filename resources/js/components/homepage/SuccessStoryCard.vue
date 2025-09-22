@@ -200,7 +200,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SuccessMetric, SuccessStory } from '@/Types/homepage';
+import type { SuccessMetric, SuccessStory } from '@/types/homepage';
 import { computed, ref } from 'vue';
 import BeforeAfterComparison from './BeforeAfterComparison.vue';
 import CareerProgressionTimeline from './CareerProgressionTimeline.vue';
@@ -580,5 +580,17 @@ const handleLinkedInClick = (url: string) => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,4 +1,4 @@
-import type { HeroComponentConfig } from '@/Types/components';
+import type { HeroComponentConfig } from '@/types/components';
 
 export interface VariantStyleClasses {
     hero: string[];
@@ -253,5 +253,17 @@ export function getBackgroundGradient(colorScheme?: string, audienceType?: strin
             };
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 

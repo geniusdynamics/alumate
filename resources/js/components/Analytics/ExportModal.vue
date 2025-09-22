@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
+import Icon from '@/components/Icon.vue';
 import { reactive, ref } from 'vue';
 
 const emit = defineEmits<{
@@ -168,4 +168,14 @@ const handleExport = async () => {
     @apply dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
 

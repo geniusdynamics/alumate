@@ -377,7 +377,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType, FeatureStatistic, InstitutionalFeature, PlatformFeature } from '@/Types/homepage';
+import type { AudienceType, FeatureStatistic, InstitutionalFeature, PlatformFeature } from '@/types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 import FeatureComparisonMatrix from './FeatureComparisonMatrix.vue';
 
@@ -1006,5 +1006,17 @@ defineExpose({
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

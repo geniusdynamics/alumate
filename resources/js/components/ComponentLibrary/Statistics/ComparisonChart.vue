@@ -148,8 +148,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/Composables/useAnalytics';
-import { useIntersectionObserver } from '@/Composables/useIntersectionObserver';
+import { useAnalytics } from '@/composables/useAnalytics';
+import { useIntersectionObserver } from '@/composables/useIntersectionObserver';
 import { computed, onMounted, ref, watch } from 'vue';
 
 // Icons
@@ -603,5 +603,17 @@ onMounted(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

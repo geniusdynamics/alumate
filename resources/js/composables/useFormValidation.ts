@@ -1,4 +1,4 @@
-import type { FormComponentConfig, FormField, FormValidationConfig } from '@/Types/components';
+import type { FormComponentConfig, FormField, FormValidationConfig } from '@/types/components';
 import { computed, ref, watch } from 'vue';
 
 export function useFormValidation(config: FormComponentConfig, formData: Record<string, any>) {
@@ -711,5 +711,17 @@ export function useFormValidation(config: FormComponentConfig, formData: Record<
         checkPasswordStrength,
     };
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 

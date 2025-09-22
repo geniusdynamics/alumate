@@ -1,4 +1,4 @@
-import type { HeroComponentConfig, HeroSampleData } from '@/Types/components';
+import type { HeroComponentConfig, HeroSampleData } from '@/types/components';
 
 export const heroSampleData: HeroSampleData = {
     individual: {
@@ -435,5 +435,17 @@ export const defaultHeroConfig: HeroComponentConfig = {
     },
     lazyLoad: true,
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 

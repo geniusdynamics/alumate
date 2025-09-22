@@ -259,10 +259,10 @@
 </template>
 
 <script setup lang="ts">
-import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
-import ResponsiveVideo from '@/Components/Common/ResponsiveVideo.vue';
-import { useAnalytics } from '@/Composables/useAnalytics';
-import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
+import ResponsiveImage from '@/components/Common/ResponsiveImage.vue';
+import ResponsiveVideo from '@/components/Common/ResponsiveVideo.vue';
+import { useAnalytics } from '@/composables/useAnalytics';
+import type { MediaAsset, MediaComponentConfig } from '@/types/components';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { MediaBase } from './index';
 
@@ -935,6 +935,18 @@ onUnmounted(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

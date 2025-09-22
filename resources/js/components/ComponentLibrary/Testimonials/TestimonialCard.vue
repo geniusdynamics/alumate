@@ -151,11 +151,11 @@
 </template>
 
 <script setup lang="ts">
-import type { Testimonial, VideoSettings } from '@/Types/components';
+import type { Testimonial, VideoSettings } from '@/types/components';
 import { computed } from 'vue';
 
 // Import child components
-import ResponsiveImage from '@/Components/Common/ResponsiveImage.vue';
+import ResponsiveImage from '@/components/Common/ResponsiveImage.vue';
 
 interface TestimonialCardConfig {
     showAuthorPhoto?: boolean;
@@ -375,6 +375,18 @@ const formatDuration = (seconds: number): string => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

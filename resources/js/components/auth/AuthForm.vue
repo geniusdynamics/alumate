@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button } from '@/Components/ui/button';
+import { Button } from '@/components/ui/button';
 import { LoaderCircle } from 'lucide-vue-next';
 
 interface Props {
@@ -39,4 +39,14 @@ const handleSubmit = (e: Event) => {
         </div>
     </form>
 </template>
+
+
+
+
+
+
+
+
+
+
 

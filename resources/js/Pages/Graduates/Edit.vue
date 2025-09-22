@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import ProfileCompletionProgress from '@/Pages/Graduates/Partials/ProfileCompletionProgress.vue';
 import UpdateGraduateForm from '@/Pages/Graduates/Partials/UpdateGraduateForm.vue';
 import { Head, Link } from '@inertiajs/vue3';
@@ -46,4 +46,16 @@ defineProps({
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 

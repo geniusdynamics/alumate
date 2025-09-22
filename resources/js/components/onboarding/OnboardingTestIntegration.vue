@@ -96,7 +96,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
-import OnboardingService from '@/Services/OnboardingService.js'
+import OnboardingService from '@/services/OnboardingService.js'
 
 const onboardingState = reactive({
     has_completed_onboarding: false,
@@ -278,3 +278,15 @@ const addTestResult = (message, success) => {
 }
 </script>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+

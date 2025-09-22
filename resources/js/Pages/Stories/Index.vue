@@ -158,9 +158,9 @@
 </template>
 
 <script setup>
-import Pagination from '@/Components/Pagination.vue';
-import SuccessStoryCard from '@/Components/SuccessStories/SuccessStoryCard.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import Pagination from '@/components/Pagination.vue';
+import SuccessStoryCard from '@/components/SuccessStories/SuccessStoryCard.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { StarIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { reactive } from 'vue';
@@ -209,5 +209,17 @@ const clearFilters = () => {
     @apply border-2 border-yellow-200 dark:border-yellow-600;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

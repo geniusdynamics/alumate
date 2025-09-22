@@ -6,7 +6,7 @@ import type {
     HeatMapScroll,
     HeatMapTimeSpent,
     UserBehaviorEvent,
-} from '@/Types/homepage';
+} from '@/types/homepage';
 
 export class HeatMapService {
     private sessionId: string;
@@ -528,5 +528,17 @@ export class HeatMapService {
         this.clearData();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 

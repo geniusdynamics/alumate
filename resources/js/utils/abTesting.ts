@@ -1,4 +1,4 @@
-import type { ABTestConfig, HeroComponentConfig } from '@/Types/components';
+import type { ABTestConfig, HeroComponentConfig } from '@/types/components';
 
 interface ABTestSession {
     testId: string;
@@ -294,5 +294,17 @@ export const heroABTestConfigs = {
         ],
     },
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 

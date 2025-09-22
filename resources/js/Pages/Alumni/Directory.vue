@@ -171,16 +171,16 @@
 </template>
 
 <script setup>
-import AlumniCard from '@/Components/AlumniCard.vue';
-import AlumniProfile from '@/Components/AlumniProfile.vue';
-import ConnectionRequestModal from '@/Components/ConnectionRequestModal.vue';
-import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
-import Pagination from '@/Components/Pagination.vue';
-import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
-import UserFlowIntegration from '@/Components/UserFlowIntegration.vue';
-import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
-import AppLayout from '@/Layouts/AppLayout.vue';
-import userFlowIntegration from '@/Services/UserFlowIntegration';
+import AlumniCard from '@/components/AlumniCard.vue';
+import AlumniProfile from '@/components/AlumniProfile.vue';
+import ConnectionRequestModal from '@/components/ConnectionRequestModal.vue';
+import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue';
+import Pagination from '@/components/Pagination.vue';
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
+import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
+import AppLayout from '@/layouts/AppLayout.vue';
+import userFlowIntegration from '@/services/UserFlowIntegration';
 import { UsersIcon } from '@heroicons/vue/24/outline';
 import { Head, router } from '@inertiajs/vue3';
 import { onMounted, reactive, ref } from 'vue';
@@ -281,6 +281,18 @@ const closeConnectionModal = () => {
     selectedAlumniForConnection.value = null;
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

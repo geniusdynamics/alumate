@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import GraduateActions from '@/Pages/Graduates/Partials/GraduateActions.vue';
 import ProfileCompletionProgress from '@/Pages/Graduates/Partials/ProfileCompletionProgress.vue';
 import UpdateEmploymentForm from '@/Pages/Graduates/Partials/UpdateEmploymentForm.vue';
@@ -437,4 +437,16 @@ const formatCurrency = (amount) => {
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 

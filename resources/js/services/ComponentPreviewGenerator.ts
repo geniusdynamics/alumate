@@ -14,7 +14,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/Types/components';
+} from '@/types/components';
 
 export interface PreviewOptions {
     width?: number;
@@ -657,5 +657,17 @@ export class ComponentPreviewGenerator {
 
 // Export singleton instance
 export const componentPreviewGenerator = new ComponentPreviewGenerator();
+
+
+
+
+
+
+
+
+
+
+
+
 
 

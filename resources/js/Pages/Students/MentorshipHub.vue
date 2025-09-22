@@ -257,12 +257,12 @@
 </template>
 
 <script setup>
-import ActiveMentorshipCard from '@/Components/ActiveMentorshipCard.vue';
-import MentorshipGoalCard from '@/Components/MentorshipGoalCard.vue';
-import MentorshipGoalModal from '@/Components/MentorshipGoalModal.vue';
-import StudentMentorCard from '@/Components/StudentMentorCard.vue';
-import UpcomingSessionCard from '@/Components/UpcomingSessionCard.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import ActiveMentorshipCard from '@/components/ActiveMentorshipCard.vue';
+import MentorshipGoalCard from '@/components/MentorshipGoalCard.vue';
+import MentorshipGoalModal from '@/components/MentorshipGoalModal.vue';
+import StudentMentorCard from '@/components/StudentMentorCard.vue';
+import UpcomingSessionCard from '@/components/UpcomingSessionCard.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { BookOpenIcon, BriefcaseIcon, FlagIcon, MagnifyingGlassIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';
@@ -350,5 +350,17 @@ const handleGoalSaved = () => {
     router.reload();
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

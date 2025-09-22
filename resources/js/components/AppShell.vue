@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { SidebarProvider } from '@/Components/ui/sidebar';
-import { SharedData } from '@/Types';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { SharedData } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 
 interface Props {
@@ -20,6 +20,18 @@ const isOpen = usePage<SharedData>().props.sidebarOpen;
         <slot />
     </SidebarProvider>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 <script setup>
-import UserDashboardIntegration from '@/Components/UserDashboardIntegration.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import UserDashboardIntegration from '@/components/UserDashboardIntegration.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -489,5 +489,17 @@ const applyToJob = (job) => {
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

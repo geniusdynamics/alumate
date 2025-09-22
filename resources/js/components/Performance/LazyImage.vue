@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { createIntersectionObserver } from '@/Utils/lazy-loading';
+import { createIntersectionObserver } from '@/utils/lazy-loading';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface Props {
@@ -244,4 +244,16 @@ watch(
     opacity: 1;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 

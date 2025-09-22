@@ -5,16 +5,28 @@ export { default as HeroIndividual } from './HeroIndividual.vue';
 export { default as HeroInstitution } from './HeroInstitution.vue';
 
 // Re-export types for convenience
-export type { AudienceType, BackgroundMedia, CTAButton, GradientConfig, HeroComponentConfig, MediaAsset, StatisticCounter } from '@/Types/components';
+export type { AudienceType, BackgroundMedia, CTAButton, GradientConfig, HeroComponentConfig, MediaAsset, StatisticCounter } from '@/types/components';
 
 // Re-export sample data
-export { defaultHeroConfig, getHeroConfigForAudience, heroSampleData } from '@/Data/heroSampleData';
+export { defaultHeroConfig, getHeroConfigForAudience, heroSampleData } from '@/data/heroSampleData';
 
 // Re-export A/B testing utilities
-export { abTestingService, heroABTestConfigs, useABTest } from '@/Utils/abTesting';
+export { abTestingService, heroABTestConfigs, useABTest } from '@/utils/abTesting';
 
 // Re-export variant styling utilities
-export { getBackgroundGradient, getVariantStyleClasses } from '@/Utils/variantStyling';
+export { getBackgroundGradient, getVariantStyleClasses } from '@/utils/variantStyling';
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

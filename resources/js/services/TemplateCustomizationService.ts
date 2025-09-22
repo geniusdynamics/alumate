@@ -1,4 +1,4 @@
-import type { BrandCustomization, ContentCustomization, TemplateCustomizationAPIResponse, TemplateCustomizationConfig } from '@/Types/components';
+import type { BrandCustomization, ContentCustomization, TemplateCustomizationAPIResponse, TemplateCustomizationConfig } from '@/types/components';
 import { httpService } from './httpService';
 
 class TemplateCustomizationService {
@@ -441,5 +441,17 @@ class TemplateCustomizationService {
 
 export const templateCustomizationService = new TemplateCustomizationService();
 export default templateCustomizationService;
+
+
+
+
+
+
+
+
+
+
+
+
 
 

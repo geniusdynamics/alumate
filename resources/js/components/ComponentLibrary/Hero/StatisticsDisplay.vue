@@ -124,8 +124,8 @@
 </template>
 
 <script setup lang="ts">
-import { useStatistics } from '@/Composables/useStatistics';
-import type { StatisticCounter } from '@/Types/components';
+import { useStatistics } from '@/composables/useStatistics';
+import type { StatisticCounter } from '@/types/components';
 import { computed, ref } from 'vue';
 import AnimatedCounter from './AnimatedCounter.vue';
 
@@ -450,6 +450,18 @@ const handleRetryAttempt = (statisticId: string, attempt: number) => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

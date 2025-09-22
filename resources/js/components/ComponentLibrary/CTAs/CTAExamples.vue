@@ -398,9 +398,9 @@
 </template>
 
 <script setup lang="ts">
-import { createABTest, createEqualWeightVariants, useABTesting } from '@/Composables/useABTesting';
-import { useConversionTracking } from '@/Composables/useConversionTracking';
-import type { CTAComponentConfig } from '@/Types/components';
+import { createABTest, createEqualWeightVariants, useABTesting } from '@/composables/useABTesting';
+import { useConversionTracking } from '@/composables/useConversionTracking';
+import type { CTAComponentConfig } from '@/types/components';
 import { onMounted, ref } from 'vue';
 import CTABase from './CTABase.vue';
 
@@ -568,6 +568,18 @@ const clearAnalytics = () => {
     @apply inline;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

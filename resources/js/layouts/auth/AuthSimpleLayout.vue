@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AppLogoIcon from '@/Components/AppLogoIcon.vue';
+import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Link } from '@inertiajs/vue3';
 
 defineProps<{
@@ -29,4 +29,14 @@ defineProps<{
         </div>
     </div>
 </template>
+
+
+
+
+
+
+
+
+
+
 

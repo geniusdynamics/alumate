@@ -14,7 +14,7 @@ import type {
     GrapeJSTrait,
     Template,
     TemplateCategory,
-} from '@/Types/components';
+} from '@/types/components';
 
 // Enhanced interfaces for template functionality
 interface TemplateCategoryData {
@@ -1993,5 +1993,17 @@ export class TemplateCreationBridge implements TemplateCreationBridgeInterface {
 
 // Export singleton instance
 export const templateCreationBridge = new TemplateCreationBridge();
+
+
+
+
+
+
+
+
+
+
+
+
 
 

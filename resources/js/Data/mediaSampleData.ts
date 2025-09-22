@@ -1,4 +1,4 @@
-import type { MediaAsset, MediaComponentConfig } from '@/Types/components';
+import type { MediaAsset, MediaComponentConfig } from '@/types/components';
 
 // Sample media assets
 export const sampleImages: MediaAsset[] = [
@@ -432,5 +432,17 @@ export const mediaSampleData = {
 };
 
 export default mediaSampleData;
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import AppHeader from '@/Components/layout/AppHeader.vue';
-import AppSidebar from '@/Components/layout/AppSidebar.vue';
-import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
-import MobileNavigation from '@/Components/MobileNavigation.vue';
-import OnboardingSystem from '@/Components/onboarding/OnboardingSystem.vue';
-import PWAIntegration from '@/Components/PWA/PWAIntegration.vue';
-import RealTimeStatus from '@/Components/RealTimeStatus.vue';
-import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
-import { SidebarInset, SidebarProvider } from '@/Components/ui/sidebar';
-import UserFlowIntegration from '@/Components/UserFlowIntegration.vue';
-import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
-import { initializeTheme } from '@/Composables/useTheme';
-import type { BreadcrumbItemType } from '@/Types';
+import AppHeader from '@/components/layout/AppHeader.vue';
+import AppSidebar from '@/components/layout/AppSidebar.vue';
+import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue';
+import MobileNavigation from '@/components/MobileNavigation.vue';
+import OnboardingSystem from '@/components/onboarding/OnboardingSystem.vue';
+import PWAIntegration from '@/components/PWA/PWAIntegration.vue';
+import RealTimeStatus from '@/components/RealTimeStatus.vue';
+import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
+import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
+import { initializeTheme } from '@/composables/useTheme';
+import type { BreadcrumbItemType } from '@/types';
 import { BellIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { Head, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
@@ -175,6 +175,18 @@ const handleOnlineMode = (event: any) => {
         <RealTimeStatus :position="'bottom-right'" :show-details="false" class="fixed" />
     </div>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

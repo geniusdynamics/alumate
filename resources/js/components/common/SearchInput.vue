@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Button } from '@/Components/ui/button';
-import { Input } from '@/Components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Search, X } from 'lucide-vue-next';
 import { ref, watch } from 'vue';
 
@@ -84,4 +84,14 @@ watch(
         </Button>
     </div>
 </template>
+
+
+
+
+
+
+
+
+
+
 

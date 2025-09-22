@@ -245,7 +245,7 @@
 </template>
 
 <script setup>
-import { useTheme } from '@/Composables/useTheme';
+import { useTheme } from '@/composables/useTheme';
 import {
     AcademicCapIcon,
     ArrowRightOnRectangleIcon,
@@ -429,5 +429,17 @@ defineExpose({
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

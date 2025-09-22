@@ -64,8 +64,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
-import type { ValidationResult } from '@/Utils/heroConfigValidator';
+import Icon from '@/components/Icon.vue';
+import type { ValidationResult } from '@/utils/heroConfigValidator';
 
 interface Props {
     validationResult: ValidationResult;
@@ -73,5 +73,17 @@ interface Props {
 
 defineProps<Props>();
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

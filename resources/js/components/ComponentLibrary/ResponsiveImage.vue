@@ -77,8 +77,8 @@
 </template>
 
 <script setup lang="ts">
-import type { MediaAsset } from '@/Types/components';
-import { createLazyLoadObserver, generateResponsiveImageSources, preloadImage } from '@/Utils/mediaOptimization';
+import type { MediaAsset } from '@/types/components';
+import { createLazyLoadObserver, generateResponsiveImageSources, preloadImage } from '@/utils/mediaOptimization';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 interface Props {
@@ -350,6 +350,18 @@ onUnmounted(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

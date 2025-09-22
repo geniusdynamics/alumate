@@ -3,7 +3,7 @@ export { default as ContentEditor } from './ContentEditor.vue';
 export { default as FontSelector } from './FontSelector.vue';
 export { default as TemplateCustomizer } from './TemplateCustomizer.vue';
 
-export { templateCustomizationService } from '@/Services/TemplateCustomizationService';
+export { templateCustomizationService } from '@/services/TemplateCustomizationService';
 
 // Re-export types for convenience
 export type {
@@ -17,7 +17,7 @@ export type {
     ImageBlock,
     TemplateCustomizationConfig,
     TextBlock,
-} from '@/Types/components';
+} from '@/types/components';
 
 export {
     ColorPicker as TemplateColorPicker,
@@ -25,6 +25,18 @@ export {
     TemplateCustomizer as TemplateCustomizationInterface,
     FontSelector as TemplateFontSelector,
 } from '.';
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
-import type { BreadcrumbItemType, Role, User } from '@/Types/index.d';
+import type { BreadcrumbItemType, Role, User } from '@/types/index.d';
 
 const props = defineProps<{
     user: User;
@@ -86,5 +86,17 @@ const submit = () => {
         </Card>
     </DefaultLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

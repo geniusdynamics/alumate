@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MainLogoIcon from '@/Components/MainLogoIcon.vue';
+import MainLogoIcon from '@/components/MainLogoIcon.vue';
 </script>
 
 <template>
@@ -10,4 +10,14 @@ import MainLogoIcon from '@/Components/MainLogoIcon.vue';
         <span class="mb-0.5 truncate font-semibold leading-none">Laravel Starter Kit</span>
     </div>
 </template>
+
+
+
+
+
+
+
+
+
+
 

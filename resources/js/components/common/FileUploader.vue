@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { fileUploadService } from '@/Services/fileUploadService';
+import { fileUploadService } from '@/services/fileUploadService';
 import { computed, ref } from 'vue';
 
 interface Props {
@@ -241,4 +241,16 @@ const formatFileSize = (bytes: number): string => {
     @apply text-center;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 

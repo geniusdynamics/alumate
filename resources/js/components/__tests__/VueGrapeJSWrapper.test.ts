@@ -1,4 +1,4 @@
-import type { Component, CTAButton, GrapeJSConfig, HeroComponentConfig } from '@/Types/components';
+import type { Component, CTAButton, GrapeJSConfig, HeroComponentConfig } from '@/types/components';
 import { flushPromises, mount } from '@vue/test-utils';
 import { io, type Socket } from 'socket.io-client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -19,7 +19,7 @@ const mockComponentLibraryBridge = {
     searchComponents: vi.fn(),
     trackComponentUsage: vi.fn(),
 };
-vi.mock('@/Services/ComponentLibraryBridge', () => ({
+vi.mock('@/services/ComponentLibraryBridge', () => ({
     componentLibraryBridge: mockComponentLibraryBridge,
 }));
 
@@ -40,7 +40,7 @@ const mockVersionControlService = {
     restoreVersion: vi.fn(),
     computeDiff: vi.fn(),
 };
-vi.mock('@/Services/VersionControlService', () => ({
+vi.mock('@/services/VersionControlService', () => ({
     VersionControlService: mockVersionControlService,
 }));
 
@@ -48,7 +48,7 @@ vi.mock('@/Services/VersionControlService', () => ({
 const mockBrandConfigService = {
     getBrandConfig: vi.fn(),
 };
-vi.mock('@/Services/BrandConfigService', () => ({
+vi.mock('@/services/BrandConfigService', () => ({
     brandConfigService: mockBrandConfigService,
 }));
 
@@ -625,6 +625,18 @@ describe('VueGrapeJSWrapper.vue', () => {
         });
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

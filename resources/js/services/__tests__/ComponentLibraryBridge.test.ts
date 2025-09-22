@@ -1,4 +1,4 @@
-import type { Component, ComponentCategory, HeroComponentConfig } from '@/Types/components';
+import type { Component, ComponentCategory, HeroComponentConfig } from '@/types/components';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ComponentLibraryBridge } from '../ComponentLibraryBridge';
 
@@ -474,5 +474,17 @@ describe('ComponentLibraryBridge', () => {
         });
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 

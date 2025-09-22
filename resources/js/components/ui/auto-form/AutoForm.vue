@@ -2,7 +2,7 @@
 import type { FormContext, GenericObject } from 'vee-validate'
 import type { z, ZodAny } from 'zod'
 import type { Config, ConfigItem, Dependency, Shape } from './interface'
-import { Form } from '@/Components/ui/form'
+import { Form } from '@/components/ui/form'
 import { toTypedSchema } from '@vee-validate/zod'
 import { computed, toRefs } from 'vue'
 import AutoFormField from './AutoFormField.vue'
@@ -103,4 +103,14 @@ const formComponentProps = computed(() => {
     <slot :shapes="shapes" />
   </component>
 </template>
+
+
+
+
+
+
+
+
+
+
 

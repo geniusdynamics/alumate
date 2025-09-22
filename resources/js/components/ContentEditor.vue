@@ -304,7 +304,7 @@ import { useDebounceFn } from '@vueuse/core';
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 // Types
-import type { ContentBlock, ContentCustomization, ContentEditorState } from '@/Types/components';
+import type { ContentBlock, ContentCustomization, ContentEditorState } from '@/types/components';
 
 // Icons
 import {
@@ -1156,5 +1156,17 @@ onBeforeUnmount(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

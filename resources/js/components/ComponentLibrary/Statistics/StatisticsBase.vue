@@ -35,8 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/Composables/useAnalytics';
-import { useIntersectionObserver } from '@/Composables/useIntersectionObserver';
+import { useAnalytics } from '@/composables/useAnalytics';
+import { useIntersectionObserver } from '@/composables/useIntersectionObserver';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 export interface StatisticItem {
@@ -388,5 +388,17 @@ onUnmounted(() => {
     @apply rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

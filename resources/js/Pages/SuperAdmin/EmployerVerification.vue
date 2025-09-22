@@ -99,7 +99,7 @@
 </template>
 
 <script setup>
-import StatCard from '@/Components/StatCard.vue';
+import StatCard from '@/components/StatCard.vue';
 import { BuildingOfficeIcon, EnvelopeIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';
@@ -135,4 +135,14 @@ const rejectEmployer = (employer) => {
     });
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

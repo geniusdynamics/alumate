@@ -7,8 +7,8 @@
 </template>
 
 <script setup lang="ts">
-import { Button, buttonVariants } from '@/Components/ui/button';
-import { cn } from '@/Utils/cn';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/utils/cn';
 import type { VariantProps } from 'class-variance-authority';
 import Spinner from './Spinner.vue';
 
@@ -40,5 +40,17 @@ const handleClick = (event: MouseEvent) => {
     }
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -1,5 +1,5 @@
 // CRM Integration Service for Form Templates
-import type { FormSubmissionConfig } from '@/Types/components';
+import type { FormSubmissionConfig } from '@/types/components';
 
 export interface CRMProvider {
     name: string;
@@ -447,5 +447,17 @@ export const formSubmissionUtils = {
         return Math.min(Math.max(score, 0), 100); // Clamp between 0-100
     },
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 

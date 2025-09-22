@@ -393,8 +393,8 @@
 </template>
 
 <script setup lang="ts">
-import MeetingPlatformSelector from '@/Components/MeetingPlatformSelector.vue';
-import { useEventsStore } from '@/Stores/eventsStore';
+import MeetingPlatformSelector from '@/components/MeetingPlatformSelector.vue';
+import { useEventsStore } from '@/stores/eventsStore';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, reactive, ref, watch } from 'vue';
@@ -570,6 +570,18 @@ const handleSubmit = async () => {
     }
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

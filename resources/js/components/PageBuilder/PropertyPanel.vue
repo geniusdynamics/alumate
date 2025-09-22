@@ -436,7 +436,7 @@
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@/Components/ui';
+import { Icon } from '@/components/ui';
 import { computed, onMounted, ref, watch } from 'vue';
 
 // Props
@@ -831,4 +831,14 @@ onMounted(() => {
     @apply border border-red-300 bg-red-50 text-red-700 hover:bg-red-100;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
 

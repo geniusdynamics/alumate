@@ -163,7 +163,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AlumniProfile, InstitutionOption } from '@/Types';
+import type { AlumniProfile, InstitutionOption } from '@/types';
 import { Link } from '@inertiajs/vue3';
 
 interface Props {
@@ -183,5 +183,17 @@ interface Props {
 
 const props = defineProps<Props>();
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

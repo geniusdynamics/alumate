@@ -223,7 +223,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { ComputerDesktopIcon, DevicePhoneMobileIcon, DeviceTabletIcon } from '@heroicons/vue/24/outline';
 
 // Types
-import type { Template, ViewportType } from '@/Types/components';
+import type { Template, ViewportType } from '@/types/components';
 
 // Custom touch interaction event type
 interface TouchInteractionEvent {
@@ -964,5 +964,17 @@ watch(
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

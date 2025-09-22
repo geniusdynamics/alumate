@@ -1,14 +1,14 @@
-import { pageBackupService } from '@/Services/PageBackupService';
-import { pageExportService } from '@/Services/PageExportService';
-import { pageMigrationService } from '@/Services/PageMigrationService';
+import { pageBackupService } from '@/services/PageBackupService';
+import { pageExportService } from '@/services/PageExportService';
+import { pageMigrationService } from '@/services/PageMigrationService';
 import { flushPromises, mount } from '@vue/test-utils';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import VueGrapeJSWrapper from '../VueGrapeJSWrapper.vue';
 
 // Mock services
-vi.mock('@/Services/PageExportService');
-vi.mock('@/Services/PageBackupService');
-vi.mock('@/Services/PageMigrationService');
+vi.mock('@/services/PageExportService');
+vi.mock('@/services/PageBackupService');
+vi.mock('@/services/PageMigrationService');
 
 // Mock grapesjs
 vi.mock('grapesjs', () => ({
@@ -17,7 +17,7 @@ vi.mock('grapesjs', () => ({
 const grapesjs = { init: vi.fn() } as any;
 
 // Mock componentLibraryBridge
-vi.mock('@/Services/ComponentLibraryBridge', () => ({
+vi.mock('@/services/ComponentLibraryBridge', () => ({
     componentLibraryBridge: {
         initialize: vi.fn(),
         getRegisteredComponents: vi.fn().mockReturnValue([]),
@@ -495,4 +495,16 @@ describe('VueGrapeJSWrapper - Export/Backup/Migration Integration Tests', () => 
         });
     });
 });
+
+
+
+
+
+
+
+
+
+
+
+
 

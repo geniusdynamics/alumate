@@ -151,8 +151,8 @@
 </template>
 
 <script>
-import Pagination from '@/Components/Pagination.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import Pagination from '@/components/Pagination.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import CourseCard from './Components/CourseCard.vue';
 import CourseListItem from './Components/CourseListItem.vue';
 import GraduateCard from './Components/GraduateCard.vue';
@@ -376,5 +376,17 @@ export default {
     },
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -108,10 +108,10 @@
 </template>
 
 <script setup lang="ts">
-import { HeroEmployer, HeroIndividual, HeroInstitution, getHeroConfigForAudience } from '@/Components/ComponentLibrary/Hero';
-import ValidationDisplay from '@/Components/ComponentLibrary/ValidationDisplay.vue';
-import type { AudienceType, HeroComponentConfig } from '@/Types/components';
-import { validateHeroConfig } from '@/Utils/heroConfigValidator';
+import { HeroEmployer, HeroIndividual, HeroInstitution, getHeroConfigForAudience } from '@/components/ComponentLibrary/Hero';
+import ValidationDisplay from '@/components/ComponentLibrary/ValidationDisplay.vue';
+import type { AudienceType, HeroComponentConfig } from '@/types/components';
+import { validateHeroConfig } from '@/utils/heroConfigValidator';
 import { computed, ref, watch } from 'vue';
 
 const selectedAudience = ref<AudienceType>('individual');
@@ -161,6 +161,18 @@ const handleABTestConversion = (event: CustomEvent) => {
     // In a real app, this would send data to your analytics service
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

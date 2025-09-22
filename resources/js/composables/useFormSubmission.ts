@@ -1,4 +1,4 @@
-import type { FormComponentConfig } from '@/Types/components';
+import type { FormComponentConfig } from '@/types/components';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -190,5 +190,17 @@ export function useFormSubmission(config: FormComponentConfig) {
         resetSubmission,
     };
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 

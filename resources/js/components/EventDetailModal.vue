@@ -313,7 +313,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEventsStore } from '@/Stores/eventsStore';
+import { useEventsStore } from '@/stores/eventsStore';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import {
     BuildingOfficeIcon,
@@ -666,6 +666,18 @@ const handleAddToCalendar = (credentials: any) => {
     // This would add the meeting to calendar
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

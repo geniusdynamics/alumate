@@ -138,7 +138,7 @@
 </template>
 
 <script setup>
-import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
     ChevronDownIcon,
@@ -230,4 +230,16 @@ const reportIssue = () => {
     window.open('https://github.com/your-repo/issues/new', '_blank');
 };
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
 

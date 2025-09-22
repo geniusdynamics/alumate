@@ -169,7 +169,7 @@
 </template>
 
 <script setup>
-import BaseModal from '@/Components/ui/BaseModal.vue';
+import BaseModal from '@/components/ui/BaseModal.vue';
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -279,4 +279,14 @@ const showRelatedFeature = (relatedFeature) => {
     animation: slideInUp 0.3s ease-out;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
 

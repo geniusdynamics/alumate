@@ -216,8 +216,8 @@
 </template>
 
 <script setup lang="ts">
-import LoadingSpinner from '@/Components/ui/LoadingSpinner.vue';
-import type { TrialSignupData } from '@/Types/homepage';
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
+import type { TrialSignupData } from '@/types/homepage';
 import { CheckCircleIcon, CheckIcon, ExclamationTriangleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { reactive, ref, watch } from 'vue';
 
@@ -416,6 +416,18 @@ select:focus {
     animation: slideIn 0.3s ease-out;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

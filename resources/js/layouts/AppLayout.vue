@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import DefaultLayout from '@/Layouts/DefaultLayout.vue';
-import type { BreadcrumbItemType } from '@/Types';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
+import type { BreadcrumbItemType } from '@/types';
 
 interface Props {
     title?: string;
@@ -18,6 +18,18 @@ withDefaults(defineProps<Props>(), {
         <slot />
     </DefaultLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -254,8 +254,8 @@
 </template>
 
 <script setup>
-import { useAuthStore } from '@/Stores/auth';
-import { useMessagingStore } from '@/Stores/messaging';
+import { useAuthStore } from '@/stores/auth';
+import { useMessagingStore } from '@/stores/messaging';
 import { formatDistanceToNow } from 'date-fns';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import MessageBubble from './MessageBubble.vue';
@@ -591,6 +591,18 @@ onUnmounted(() => {
     @apply px-3 py-1.5 text-xs;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

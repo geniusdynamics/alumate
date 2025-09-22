@@ -1,5 +1,5 @@
 <script setup>
-import TextInput from '@/Components/TextInput.vue';
+import TextInput from '@/components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -451,4 +451,14 @@ const submit = () => {
         </form>
     </section>
 </template>
+
+
+
+
+
+
+
+
+
+
 

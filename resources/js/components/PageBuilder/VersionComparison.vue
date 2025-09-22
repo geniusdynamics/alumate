@@ -140,8 +140,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/ui/Icon.vue';
-import { useVersionControl } from '@/Composables/useVersionControl';
+import Icon from '@/components/ui/Icon.vue';
+import { useVersionControl } from '@/composables/useVersionControl';
 import { ref } from 'vue';
 
 interface PageVersion {
@@ -254,6 +254,18 @@ if (selectedVersion1.value && !selectedVersion2.value && props.versions.length >
     height: auto;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

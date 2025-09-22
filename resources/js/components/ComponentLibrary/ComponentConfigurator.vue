@@ -590,13 +590,13 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/Composables/useAnalytics';
-import { useDebounce } from '@/Composables/useDebounce';
-import type { Component, ComponentCategory } from '@/Types/components';
+import { useAnalytics } from '@/composables/useAnalytics';
+import { useDebounce } from '@/composables/useDebounce';
+import type { Component, ComponentCategory } from '@/types/components';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
 // Import child components
-import Icon from '@/Components/Common/Icon.vue';
+import Icon from '@/components/Common/Icon.vue';
 
 interface ConfigurationField {
     name: string;
@@ -1397,6 +1397,18 @@ watch(
     background-color: rgb(55 65 81);
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

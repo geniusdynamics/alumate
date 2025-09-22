@@ -127,7 +127,7 @@
 </template>
 
 <script setup>
-import PostCreatorModal from '@/Components/PostCreatorModal.vue';
+import PostCreatorModal from '@/components/PostCreatorModal.vue';
 import {
     AcademicCapIcon,
     BoltIcon,
@@ -178,4 +178,14 @@ const dismissFeatureDiscovery = () => {
     localStorage.setItem('feature-discovery-dismissed', 'true');
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

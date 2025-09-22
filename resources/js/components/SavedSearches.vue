@@ -153,7 +153,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from '@/Composables/useToast';
+import { useToast } from '@/composables/useToast';
 import { BellIcon, BookmarkIcon, PencilIcon, PlayIcon, PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { onMounted, reactive, ref } from 'vue';
 import LoadingSpinner from './LoadingSpinner.vue';
@@ -628,5 +628,17 @@ onMounted(() => {
     @apply text-gray-600;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

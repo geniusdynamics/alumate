@@ -79,9 +79,9 @@
 </template>
 
 <script setup lang="ts">
-import HeroBase from '@/Components/ComponentLibrary/Hero/HeroBase.vue';
-import { heroMediaSamples } from '@/Data/heroSampleData';
-import type { HeroComponentConfig } from '@/Types/components';
+import HeroBase from '@/components/ComponentLibrary/Hero/HeroBase.vue';
+import { heroMediaSamples } from '@/data/heroSampleData';
+import type { HeroComponentConfig } from '@/types/components';
 import { computed, ref } from 'vue';
 
 // Media type selection
@@ -266,6 +266,18 @@ pre code {
     transition-duration: 200ms;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

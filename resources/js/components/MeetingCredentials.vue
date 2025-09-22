@@ -192,8 +192,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
-import { useToast } from '@/Composables/useToast';
+import Icon from '@/components/Icon.vue';
+import { useToast } from '@/composables/useToast';
 import { ref } from 'vue';
 
 interface MeetingCredentials {
@@ -383,6 +383,18 @@ code {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

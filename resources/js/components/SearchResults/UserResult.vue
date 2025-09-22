@@ -84,7 +84,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from '@/Composables/useToast';
+import { useToast } from '@/composables/useToast';
 import { AcademicCapIcon, ChatBubbleLeftIcon, MapPinIcon, UserIcon, UserPlusIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -331,5 +331,17 @@ const sendMessage = () => {
     @apply rounded bg-yellow-200 px-1 text-yellow-900;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -21,7 +21,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/Types/components';
+} from '@/types/components';
 
 // Enhanced interfaces for new functionality
 interface ComponentCategoryData {
@@ -2246,5 +2246,17 @@ export class ComponentLibraryBridge implements ComponentLibraryBridgeInterface {
 
 // Export singleton instance
 export const componentLibraryBridge = new ComponentLibraryBridge();
+
+
+
+
+
+
+
+
+
+
+
+
 
 

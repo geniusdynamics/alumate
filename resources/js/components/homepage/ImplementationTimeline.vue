@@ -126,7 +126,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DevelopmentPhase } from '@/Types/homepage';
+import type { DevelopmentPhase } from '@/types/homepage';
 import { computed } from 'vue';
 
 interface Props {
@@ -210,5 +210,17 @@ const formatStatus = (status: string): string => {
     opacity: 0.3;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 

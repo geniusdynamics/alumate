@@ -157,8 +157,8 @@
 </template>
 
 <script setup>
-import AdminLayout from '@/Components/AdminLayout.vue';
-import DarkStatCard from '@/Components/DarkStatCard.vue';
+import AdminLayout from '@/components/AdminLayout.vue';
+import DarkStatCard from '@/components/DarkStatCard.vue';
 import { BellIcon } from '@heroicons/vue/24/outline';
 import { Head } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';
@@ -236,4 +236,14 @@ const formatTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 };
 </script>
+
+
+
+
+
+
+
+
+
+
 

@@ -90,8 +90,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAnalytics } from '@/Composables/useAnalytics';
-import type { AudienceType, CTAClickEvent, EngagementLevel, MicroCTA, ProgressiveCTA, UrgencyIndicator } from '@/Types/homepage';
+import { useAnalytics } from '@/composables/useAnalytics';
+import type { AudienceType, CTAClickEvent, EngagementLevel, MicroCTA, ProgressiveCTA, UrgencyIndicator } from '@/types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface Props {
@@ -684,6 +684,18 @@ onMounted(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

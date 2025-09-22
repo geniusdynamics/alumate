@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import NotificationDropdown from '@/Components/NotificationDropdown.vue';
-import PostCreator from '@/Components/PostCreator.vue';
-import GlobalSearch from '@/Components/GlobalSearch.vue';
-import HelpButton from '@/Components/onboarding/HelpButton.vue';
-import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/Components/ui/breadcrumb';
-import { Button } from '@/Components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '@/Components/ui/dialog';
+import NotificationDropdown from '@/components/NotificationDropdown.vue';
+import PostCreator from '@/components/PostCreator.vue';
+import GlobalSearch from '@/components/GlobalSearch.vue';
+import HelpButton from '@/components/onboarding/HelpButton.vue';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,10 +14,10 @@ import {
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from '@/Components/ui/dropdown-menu';
-import { Separator } from '@/Components/ui/separator';
-import { SidebarTrigger } from '@/Components/ui/sidebar';
-import type { BreadcrumbItemType } from '@/Types';
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import type { BreadcrumbItemType } from '@/types';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import { LogOut, Plus, Settings, User } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
@@ -145,6 +145,18 @@ const handlePostCreated = () => {
         </div>
     </header>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

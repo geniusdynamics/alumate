@@ -9,7 +9,7 @@ import type {
     StatisticsComponentConfig,
     Testimonial,
     TestimonialComponentConfig,
-} from '@/Types/components';
+} from '@/types/components';
 
 interface SampleDataVariation {
     variation: 'default' | 'minimal' | 'rich' | 'localized';
@@ -833,5 +833,17 @@ function getCTAUrlForAudience(audienceType: AudienceType): string {
 }
 
 export default generateSampleData;
+
+
+
+
+
+
+
+
+
+
+
+
 
 

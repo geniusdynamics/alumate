@@ -258,8 +258,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Common/Icon.vue';
-import type { Component, ComponentCategory } from '@/Types/components';
+import Icon from '@/components/Common/Icon.vue';
+import type { Component, ComponentCategory } from '@/types/components';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
 
 interface ShareSettings {
@@ -564,6 +564,18 @@ onUnmounted(() => {
     }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

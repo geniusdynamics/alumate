@@ -204,7 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Common/Icon.vue';
+import Icon from '@/components/Common/Icon.vue';
 import { computed, ref, watch } from 'vue';
 
 const emit = defineEmits<{
@@ -612,4 +612,14 @@ watch(activeTab, () => {
     @apply rounded-md p-2 transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-600;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
 

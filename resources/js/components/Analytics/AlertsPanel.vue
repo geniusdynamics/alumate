@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
+import Icon from '@/components/Icon.vue';
 import { computed, ref } from 'vue';
 
 interface Alert {
@@ -194,4 +194,14 @@ const dismissAlert = (index: number) => {
     @apply mt-2 text-gray-600 dark:text-gray-400;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
 

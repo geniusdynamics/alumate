@@ -15,7 +15,7 @@ import type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '@/Types/components';
+} from '@/types/components';
 
 export interface SerializationOptions {
     includeMetadata?: boolean;
@@ -777,5 +777,17 @@ export class ComponentSerializer {
 
 // Export singleton instance
 export const componentSerializer = new ComponentSerializer();
+
+
+
+
+
+
+
+
+
+
+
+
 
 

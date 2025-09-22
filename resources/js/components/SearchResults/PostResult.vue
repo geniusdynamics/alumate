@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { useToast } from '@/Composables/useToast';
+import { useToast } from '@/composables/useToast';
 import { ChatBubbleLeftIcon, EyeIcon, HeartIcon, ShareIcon, TagIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -331,5 +331,17 @@ const sharePost = () => {
     @apply rounded bg-yellow-200 px-1 text-yellow-900;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
