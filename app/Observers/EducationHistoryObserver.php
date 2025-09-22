@@ -46,8 +46,8 @@ class EducationHistoryObserver
                     'graduation_year' => $educationHistory->graduation_year,
                     'timestamp' => now(),
                 ],
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
+                'ip_address' => request() ? request()->ip() : null,
+                'user_agent' => request() ? request()->userAgent() : null,
             ]);
 
             $this->updateUserCircles($educationHistory);
@@ -79,8 +79,8 @@ class EducationHistoryObserver
                     'graduation_year' => $educationHistory->graduation_year,
                     'timestamp' => now(),
                 ],
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
+                'ip_address' => request() ? request()->ip() : null,
+                'user_agent' => request() ? request()->userAgent() : null,
             ]);
 
             $this->updateUserCircles($educationHistory);
@@ -112,8 +112,8 @@ class EducationHistoryObserver
                     'graduation_year' => $educationHistory->graduation_year,
                     'timestamp' => now(),
                 ],
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
+                'ip_address' => request() ? request()->ip() : null,
+                'user_agent' => request() ? request()->userAgent() : null,
             ]);
 
             $this->updateUserCircles($educationHistory);

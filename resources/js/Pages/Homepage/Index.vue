@@ -12,7 +12,7 @@
 
             <!-- Features Showcase - Lazy load -->
             <LazyComponent
-                :component-loader="() => import('@/components/homepage/FeaturesShowcase.vue')"
+                :component-loader="() => import('@/components/Homepage/FeaturesShowcase.vue')"
                 :component-props="{ audience: currentAudience, features: platformFeatures }"
                 :root-margin="'200px'"
             >
@@ -28,7 +28,7 @@
 
             <!-- Success Stories - Lazy load -->
             <LazyComponent
-                :component-loader="() => import('@/components/homepage/SuccessStoriesSection.vue')"
+                :component-loader="() => import('@/components/Homepage/SuccessStoriesSection.vue')"
                 :component-props="{ audience: currentAudience, stories: successStories }"
                 :root-margin="'200px'"
             >
@@ -40,7 +40,7 @@
             <!-- Value Calculator (Individual) / Admin Dashboard Preview (Institutional) - Lazy load -->
             <LazyComponent
                 v-if="currentAudience === 'individual'"
-                :component-loader="() => import('@/components/homepage/ValueCalculator.vue')"
+                :component-loader="() => import('@/components/Homepage/ValueCalculator.vue')"
                 :component-props="{ onCalculationComplete: handleCalculationComplete }"
                 :root-margin="'100px'"
             >
@@ -51,7 +51,7 @@
 
             <LazyComponent
                 v-if="currentAudience === 'institutional'"
-                :component-loader="() => import('@/components/homepage/AdminDashboardPreview.vue')"
+                :component-loader="() => import('@/components/Homepage/AdminDashboardPreview.vue')"
                 :component-props="{ onDemoRequest: handleDemoRequest }"
                 :root-margin="'100px'"
             >
@@ -63,7 +63,7 @@
             <!-- Branded Apps Showcase (only for institutional audience) - Lazy load -->
             <LazyComponent
                 v-if="currentAudience === 'institutional'"
-                :component-loader="() => import('@/components/homepage/BrandedAppsShowcase.vue')"
+                :component-loader="() => import('@/components/Homepage/BrandedAppsShowcase.vue')"
                 :component-props="{
                     featuredApps: brandedAppsData.featured_apps,
                     customizationOptions: brandedAppsData.customization_options,
@@ -84,7 +84,7 @@
 
             <!-- Platform Preview - Lazy load -->
             <LazyComponent
-                :component-loader="() => import('@/components/homepage/PlatformPreview.vue')"
+                :component-loader="() => import('@/components/Homepage/PlatformPreview.vue')"
                 :component-props="{ audience: currentAudience }"
                 :root-margin="'150px'"
             >
@@ -96,7 +96,7 @@
             <!-- Institutional Features (only for institutional audience) - Lazy load -->
             <LazyComponent
                 v-if="currentAudience === 'institutional'"
-                :component-loader="() => import('@/components/homepage/InstitutionalFeatures.vue')"
+                :component-loader="() => import('@/components/Homepage/InstitutionalFeatures.vue')"
                 :component-props="{ onDemoRequest: handleDemoRequest }"
                 :root-margin="'150px'"
             >
@@ -106,7 +106,7 @@
             </LazyComponent>
             <!-- Pricing Section - Lazy load -->
             <LazyComponent
-                :component-loader="() => import('@/components/homepage/PricingSection.vue')"
+                :component-loader="() => import('@/components/Homepage/PricingSection.vue')"
                 :component-props="{
                     audience: currentAudience,
                     onTrialSignup: handleTrialSignup,
@@ -138,11 +138,11 @@ import { AudienceType, CTAClickEvent } from '@/types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 
 // Layout and Components
-import AudienceSelector from '@/components/homepage/AudienceSelector.vue';
-import ConversionCTAs from '@/components/homepage/ConversionCTAs.vue';
-import HeroSection from '@/components/homepage/HeroSection.vue';
-import SocialProofSection from '@/components/homepage/SocialProofSection.vue';
-import TrustIndicators from '@/components/homepage/TrustIndicators.vue';
+import AudienceSelector from '@/components/Homepage/AudienceSelector.vue';
+import ConversionCTAs from '@/components/Homepage/ConversionCTAs.vue';
+import HeroSection from '@/components/Homepage/HeroSection.vue';
+import SocialProofSection from '@/components/Homepage/SocialProofSection.vue';
+import TrustIndicators from '@/components/Homepage/TrustIndicators.vue';
 import HomepageLayout from '@/layouts/HomepageLayout.vue';
 
 // Performance and Lazy Loading

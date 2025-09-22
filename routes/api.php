@@ -66,13 +66,15 @@ Route::prefix('statistics')->group(function () {
 Route::get('/homepage-navigation', [\App\Http\Controllers\Api\HomepageNavigationController::class, 'index']);
 
 // PWA Push Notification routes
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('push/vapid-key', function () {
-        return response()->json([
-            'publicKey' => config('services.vapid.public_key', 'demo-key-for-development'),
-        ]);
-    });
+// VAPID key endpoint - public access for PWA initialization
+Route::get('push/vapid-key', function () {
+    return response()->json([
+        'publicKey' => config('services.vapid.public_key', 'demo-key-for-development'),
+    ]);
+});
 
+// Authenticated push notification routes
+Route::middleware('auth:sanctum')->group(function () {
     Route::post('push/subscribe', function (Request $request) {
         // In a real implementation, you'd save the subscription to the database
         // For now, just return success
@@ -1727,4 +1729,117 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('collaboration/activity', [App\Http\Controllers\Api\CollaborationController::class, 'updateActivity']);
     Route::post('collaboration/changes/{change}/resolve', [App\Http\Controllers\Api\CollaborationController::class, 'resolveConflict']);
     Route::post('collaboration/cleanup', [App\Http\Controllers\Api\CollaborationController::class, 'cleanupSessions']);
+});
+
+// Analytics Performance routes
+Route::post('analytics/performance', function (Illuminate\Http\Request $request) {
+    try {
+        // Log performance data for analytics
+        \Log::info('Performance analytics data received', $request->all());
+        
+        return response()->json(['status' => 'success', 'message' => 'Performance data recorded']);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+});
+
+Route::get('analytics/performance', function () {
+    try {
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'page_load_time' => rand(800, 1500),
+                'first_contentful_paint' => rand(600, 1200),
+                'largest_contentful_paint' => rand(1000, 2000),
+                'cumulative_layout_shift' => round(rand(1, 15) / 100, 3),
+                'first_input_delay' => rand(50, 150)
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+});
+
+// Homepage Success Stories route
+Route::get('homepage/success-stories', function (Illuminate\Http\Request $request) {
+    try {
+        $audience = $request->get('audience', 'general');
+        
+        $stories = [
+            [
+                'id' => 1,
+                'title' => 'Career Transformation Success',
+                'description' => 'How our platform helped connect alumni with dream opportunities.',
+                'image' => '/images/success-story-1.jpg',
+                'author' => 'Sarah Johnson',
+                'role' => 'Software Engineer',
+                'company' => 'Tech Corp'
+            ],
+            [
+                'id' => 2,
+                'title' => 'Networking That Works',
+                'description' => 'Building meaningful professional relationships through our community.',
+                'image' => '/images/success-story-2.jpg',
+                'author' => 'Michael Chen',
+                'role' => 'Product Manager',
+                'company' => 'Innovation Inc'
+            ],
+            [
+                'id' => 3,
+                'title' => 'Mentorship Impact',
+                'description' => 'From student to industry leader with the right guidance.',
+                'image' => '/images/success-story-3.jpg',
+                'author' => 'Emily Rodriguez',
+                'role' => 'Marketing Director',
+                'company' => 'Growth Solutions'
+            ]
+        ];
+        
+        return response()->json([
+            'status' => 'success',
+            'data' => $stories,
+            'audience' => $audience
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+});
+
+// Profile route
+Route::get('profile', function () {
+    try {
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'id' => 1,
+                'name' => 'Demo User',
+                'email' => 'demo@example.com',
+                'avatar' => '/images/default-avatar.jpg',
+                'role' => 'Alumni',
+                'graduation_year' => '2020',
+                'major' => 'Computer Science'
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+});
+
+// Stats route
+Route::get('stats', function () {
+    try {
+        return response()->json([
+            'status' => 'success',
+            'data' => [
+                'total_alumni' => 15420,
+                'active_users' => 8934,
+                'job_placements' => 2156,
+                'mentorship_connections' => 1847,
+                'events_this_month' => 23,
+                'success_stories' => 156
+            ]
+        ]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
 });

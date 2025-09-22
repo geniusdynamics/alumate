@@ -334,7 +334,7 @@
                 <h3 class="mb-8 text-center text-2xl font-bold text-gray-900">Scalability for Every Institution Size</h3>
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                     <div
-                        v-for="scale in scalabilityInfo || []"
+                        v-for="scale in (scalabilityInfo && scalabilityInfo.length > 0) ? scalabilityInfo : []"
                         :key="scale.id"
                         class="rounded-lg border-2 border-gray-200 bg-white p-6 transition-colors duration-300 hover:border-blue-300"
                         :class="{ 'border-blue-500 bg-blue-50': scale.institutionSize === 'enterprise' }"

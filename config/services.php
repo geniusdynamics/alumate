@@ -51,4 +51,10 @@ return [
         'newrelic_api_key' => env('NEWRELIC_API_KEY'),
     ],
 
+    'vapid' => [
+        'public_key' => env('VAPID_PUBLIC_KEY', 'demo-vapid-public-key-for-development'),
+        'private_key' => env('VAPID_PRIVATE_KEY', 'demo-vapid-private-key-for-development'),
+        'subject' => env('VAPID_SUBJECT', 'mailto:admin@alumate.com'),
+    ],
+
 ];

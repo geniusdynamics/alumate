@@ -21,7 +21,7 @@ import { Briefcase, Menu, Search, X } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
 const page = usePage();
-const auth = computed(() => page.props.auth);
+const auth = computed(() => page.props.auth || { user: null });
 
 // Navigation items state
 const navigationItems = ref([]);
@@ -192,7 +192,7 @@ onUnmounted(() => {
                 <Button variant="ghost" size="icon" class="search-button md:hidden" @click="toggleSearch" aria-label="Search">
                     <Search class="search-icon" />
                 </Button>
-                <div v-if="!auth.user" class="auth-buttons">
+                <div v-if="!auth?.user" class="auth-buttons">
                     <Button variant="ghost" :as-child="true" class="login-button">
                         <Link :href="route('login')">Log In</Link>
                     </Button>
@@ -203,18 +203,18 @@ onUnmounted(() => {
                         <Link :href="route('employer.register')"> <Briefcase class="employer-icon" /> For Employers </Link>
                     </Button>
                 </div>
-                <div v-else class="user-menu">
+                <div v-else-if="auth?.user" class="user-menu">
                     <DropdownMenu>
                         <DropdownMenuTrigger :as-child="true">
                             <Button variant="ghost" size="icon" class="user-avatar-button">
                                 <Avatar class="user-avatar">
-                                    <AvatarImage v-if="auth.user.avatar" :src="auth.user.avatar" :alt="auth.user.name" />
-                                    <AvatarFallback class="user-avatar-fallback">{{ getInitials(auth.user?.name) }}</AvatarFallback>
+                                    <AvatarImage v-if="auth?.user?.avatar" :src="auth?.user?.avatar" :alt="auth?.user?.name" />
+                                    <AvatarFallback class="user-avatar-fallback">{{ getInitials(auth?.user?.name) }}</AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" class="user-dropdown">
-                            <UserMenuContent :user="auth.user" />
+                            <UserMenuContent :user="auth?.user" />
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
@@ -246,7 +246,7 @@ onUnmounted(() => {
                         </template>
                     </template>
                 </div>
-                <div v-if="!auth.user" class="mobile-auth">
+                <div v-if="!auth?.user" class="mobile-auth">
                     <Button variant="default" :as-child="true" class="mobile-auth-button mobile-login" @click="closeMobileMenu">
                         <Link :href="route('login')">Log In</Link>
                     </Button>

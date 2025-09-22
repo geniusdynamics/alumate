@@ -236,7 +236,10 @@ class SecurityService extends BaseService
                                 'pattern_matched' => $pattern,
                                 'input_value' => $input,
                                 'request_path' => $request->path(),
-                            ]
+                            ],
+                            null,
+                            $request->ip(),
+                            $request->userAgent()
                         );
 
                         return true;
@@ -251,16 +254,17 @@ class SecurityService extends BaseService
     /**
      * Log security event
      */
-    public function logSecurityEvent(string $type, string $severity, string $description, array $metadata = [], ?int $userId = null): SecurityEvent
+    public function logSecurityEvent(string $type, string $severity, string $description, array $metadata = [], ?int $userId = null, ?string $ipAddress = null, ?string $userAgent = null): SecurityEvent
     {
+        // Avoid using request() helpers to prevent infinite loops
         $event = SecurityEvent::create([
             'event_type' => $type,
             'severity' => $severity,
             'description' => $description,
             'metadata' => $metadata,
             'user_id' => $userId,
-            'ip_address' => request()->ip(),
-            'user_agent' => request()->userAgent(),
+            'ip_address' => $ipAddress ?? 'unknown',
+            'user_agent' => $userAgent ?? 'unknown',
             'occurred_at' => now(),
         ]);
 
@@ -368,9 +372,10 @@ class SecurityService extends BaseService
                     [
                         'pattern' => $pattern,
                         'request_path' => $request->path(),
-                        'user_agent' => $request->userAgent(),
-                        'ip_address' => $request->ip(),
-                    ]
+                    ],
+                    null,
+                    $request->ip(),
+                    $request->userAgent()
                 );
                 return true;
             }

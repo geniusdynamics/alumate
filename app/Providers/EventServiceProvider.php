@@ -23,25 +23,26 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
-            CheckAchievementsListener::class,
-        ],
-        InstitutionAdminCreated::class => [
-            SendInstitutionAdminCreationNotification::class,
-        ],
-        CareerMilestoneCreated::class => [
-            CheckAchievementsListener::class,
-        ],
-        UserProfileUpdated::class => [
-            CheckAchievementsListener::class,
-        ],
-        ConnectionAccepted::class => [
-            CheckAchievementsListener::class,
-        ],
-        PostCreated::class => [
-            CheckAchievementsListener::class,
-        ],
+        // Temporarily disabled all listeners to fix infinite loop
+        // Registered::class => [
+        //     SendEmailVerificationNotification::class,
+        //     CheckAchievementsListener::class,
+        // ],
+        // InstitutionAdminCreated::class => [
+        //     SendInstitutionAdminCreationNotification::class,
+        // ],
+        // CareerMilestoneCreated::class => [
+        //     CheckAchievementsListener::class,
+        // ],
+        // UserProfileUpdated::class => [
+        //     CheckAchievementsListener::class,
+        // ],
+        // ConnectionAccepted::class => [
+        //     CheckAchievementsListener::class,
+        // ],
+        // PostCreated::class => [
+        //     CheckAchievementsListener::class,
+        // ],
     ];
 
     /**
@@ -50,7 +51,7 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $subscribe = [
-        LogUserActivity::class,
+        // LogUserActivity::class, // Temporarily disabled to fix infinite loop
     ];
 
     /**

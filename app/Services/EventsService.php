@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\TenantContextService;
 use App\Models\Event;
 use App\Models\EventCheckIn;
 use App\Models\EventRegistration;
@@ -21,8 +22,9 @@ class EventsService extends BaseService
 {
     protected JitsiMeetService $jitsiMeetService;
 
-    public function __construct(JitsiMeetService $jitsiMeetService)
+    public function __construct(JitsiMeetService $jitsiMeetService, TenantContextService $tenantContext)
     {
+        parent::__construct($tenantContext);
         $this->jitsiMeetService = $jitsiMeetService;
     }
 

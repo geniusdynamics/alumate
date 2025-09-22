@@ -6,6 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 return new class extends Migration
 {
@@ -100,7 +101,8 @@ return new class extends Migration
             $table->index(['created_at']);
             
             // Full-text search index for title and description
-            DB::statement('CREATE INDEX global_courses_search_idx ON global_courses USING gin(to_tsvector(\'english\', title || \' \' || description))');
+            // Note: PostgreSQL-specific GIN index commented out for SQLite compatibility
+            // DB::statement('CREATE INDEX global_courses_search_idx ON global_courses USING gin(to_tsvector(\'english\', title || \' \' || description))');
         });
 
         // Create tenant_course_offerings table to link global courses to specific tenant implementations
@@ -252,53 +254,59 @@ return new class extends Migration
     {
         $globalCourses = [
             [
-                'id' => DB::raw('gen_random_uuid()'),
+                'id' => (string) Str::uuid(),
                 'global_course_code' => 'MATH-101',
                 'title' => 'College Algebra',
                 'description' => 'Fundamental algebraic concepts including linear equations, quadratic equations, polynomials, and functions.',
                 'credit_hours' => 3,
                 'level' => 'undergraduate',
                 'subject_area' => 'Mathematics',
+                'prerequisites' => null,
                 'learning_outcomes' => json_encode([
                     'Solve linear and quadratic equations',
                     'Graph functions and analyze their properties',
                     'Perform operations with polynomials',
                     'Apply algebraic concepts to real-world problems'
                 ]),
+                'competencies' => null,
                 'delivery_method' => 'in_person',
                 'typical_duration_weeks' => 16,
                 'typical_workload_hours_per_week' => 6.0,
                 'difficulty_level' => 'beginner',
                 'tags' => json_encode(['algebra', 'mathematics', 'foundational']),
+                'metadata' => null,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'id' => DB::raw('gen_random_uuid()'),
+                'id' => (string) Str::uuid(),
                 'global_course_code' => 'ENG-101',
                 'title' => 'English Composition I',
                 'description' => 'Introduction to academic writing, critical thinking, and research skills.',
                 'credit_hours' => 3,
                 'level' => 'undergraduate',
                 'subject_area' => 'English',
+                'prerequisites' => null,
                 'learning_outcomes' => json_encode([
                     'Write clear and coherent essays',
                     'Develop critical thinking skills',
                     'Conduct basic research and cite sources',
                     'Analyze and interpret texts'
                 ]),
+                'competencies' => null,
                 'delivery_method' => 'hybrid',
                 'typical_duration_weeks' => 16,
                 'typical_workload_hours_per_week' => 5.0,
                 'difficulty_level' => 'beginner',
                 'tags' => json_encode(['writing', 'composition', 'critical thinking']),
+                'metadata' => null,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'id' => DB::raw('gen_random_uuid()'),
+                'id' => (string) Str::uuid(),
                 'global_course_code' => 'CS-101',
                 'title' => 'Introduction to Computer Science',
                 'description' => 'Fundamental concepts of computer science including programming, algorithms, and data structures.',
@@ -312,57 +320,65 @@ return new class extends Migration
                     'Work with basic data structures',
                     'Apply problem-solving techniques'
                 ]),
+                'competencies' => null,
                 'delivery_method' => 'in_person',
                 'typical_duration_weeks' => 16,
                 'typical_workload_hours_per_week' => 8.0,
                 'difficulty_level' => 'intermediate',
                 'tags' => json_encode(['programming', 'algorithms', 'computer science']),
+                'metadata' => null,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'id' => DB::raw('gen_random_uuid()'),
+                'id' => (string) Str::uuid(),
                 'global_course_code' => 'BIO-101',
                 'title' => 'General Biology I',
                 'description' => 'Introduction to biological principles including cell structure, genetics, and evolution.',
                 'credit_hours' => 4,
                 'level' => 'undergraduate',
                 'subject_area' => 'Biology',
+                'prerequisites' => null,
                 'learning_outcomes' => json_encode([
                     'Understand cell structure and function',
                     'Explain basic genetic principles',
                     'Describe evolutionary processes',
                     'Apply scientific method to biological questions'
                 ]),
+                'competencies' => null,
                 'delivery_method' => 'in_person',
                 'typical_duration_weeks' => 16,
                 'typical_workload_hours_per_week' => 7.0,
                 'difficulty_level' => 'intermediate',
                 'tags' => json_encode(['biology', 'science', 'laboratory']),
+                'metadata' => null,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'id' => DB::raw('gen_random_uuid()'),
+                'id' => (string) Str::uuid(),
                 'global_course_code' => 'HIST-101',
                 'title' => 'World History I',
                 'description' => 'Survey of world civilizations from ancient times to 1500 CE.',
                 'credit_hours' => 3,
                 'level' => 'undergraduate',
                 'subject_area' => 'History',
+                'prerequisites' => null,
                 'learning_outcomes' => json_encode([
                     'Analyze historical events and their causes',
                     'Compare different civilizations and cultures',
                     'Evaluate primary and secondary sources',
                     'Understand historical chronology and context'
                 ]),
+                'competencies' => null,
                 'delivery_method' => 'online',
                 'typical_duration_weeks' => 16,
                 'typical_workload_hours_per_week' => 5.0,
                 'difficulty_level' => 'beginner',
                 'tags' => json_encode(['history', 'civilization', 'culture']),
+                'metadata' => null,
                 'is_active' => true,
                 'created_at' => now(),
                 'updated_at' => now()

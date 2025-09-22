@@ -80,7 +80,7 @@ class FormBuilderController extends Controller
             'message' => 'Form deleted successfully'
         ]);
     }
-}
+
     /**
      * Submit form data
      */

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\TenantContextService;
 use App\Models\BrandConfig;
 use App\Models\LandingPage;
 use Illuminate\Support\Facades\Cache;
@@ -19,8 +20,9 @@ class BrandConfigService extends BaseService
 {
     private int $cacheTtl = 3600; // 1 hour
 
-    public function __construct()
+    public function __construct(TenantContextService $tenantContext)
     {
+        parent::__construct($tenantContext);
         // Config should be defined in the models but override here if needed
     }
 

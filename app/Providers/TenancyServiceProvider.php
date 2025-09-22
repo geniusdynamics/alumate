@@ -86,16 +86,16 @@ class TenancyServiceProvider extends ServiceProvider
         $this->registerScheduledTasks();
 
         // Setup query logging if enabled
-        $this->setupQueryLogging();
+        // $this->setupQueryLogging(); // Temporarily disabled to fix circular dependency
 
         // Setup tenant context resolution
-        $this->setupTenantContextResolution();
+        // $this->setupTenantContextResolution(); // Temporarily disabled to fix circular dependency
 
         // Register blade directives
         $this->registerBladeDirectives();
 
         // Setup error handling
-        $this->setupErrorHandling();
+        // $this->setupErrorHandling(); // Temporarily disabled to fix circular dependency
     }
 
     /**

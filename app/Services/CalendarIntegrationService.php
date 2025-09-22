@@ -4,6 +4,7 @@
 
 namespace App\Services;
 
+use App\Services\TenantContextService;
 use App\Models\CalendarConnection;
 use App\Models\Event;
 use App\Models\MentorshipSession;
@@ -26,8 +27,11 @@ class CalendarIntegrationService extends BaseService
 
     public function __construct(
         protected GoogleClient $googleClient,
-        protected Graph $microsoftGraph
-    ) {}
+        protected Graph $microsoftGraph,
+        TenantContextService $tenantContext
+    ) {
+        parent::__construct($tenantContext);
+    }
 
     /**
      * Connect user's calendar to the platform

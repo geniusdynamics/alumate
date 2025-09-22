@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\TenantContextService;
 use App\Jobs\PublishScheduledPostJob;
 use App\Models\Post;
 use App\Models\User;
@@ -23,8 +24,9 @@ class PostService extends BaseService
 {
     protected MediaUploadService $mediaUploadService;
 
-    public function __construct(MediaUploadService $mediaUploadService)
+    public function __construct(MediaUploadService $mediaUploadService, TenantContextService $tenantContext)
     {
+        parent::__construct($tenantContext);
         $this->mediaUploadService = $mediaUploadService;
     }
 
