@@ -444,12 +444,12 @@ X-RateLimit-Reset: 1640995200</code></pre>
 </template>
 
 <script setup>
-import ApiEndpointCard from '@/Components/Developer/ApiEndpointCard.vue';
-import ApiTester from '@/Components/Developer/ApiTester.vue';
-import IntegrationExamples from '@/Components/Developer/IntegrationExamples.vue';
-import PostmanGenerator from '@/Components/Developer/PostmanGenerator.vue';
-import SdkGenerator from '@/Components/Developer/SdkGenerator.vue';
-import WebhookTester from '@/Components/Developer/WebhookTester.vue';
+import ApiEndpointCard from '@/components/Developer/ApiEndpointCard.vue';
+import ApiTester from '@/components/Developer/ApiTester.vue';
+import IntegrationExamples from '@/components/Developer/IntegrationExamples.vue';
+import PostmanGenerator from '@/components/Developer/PostmanGenerator.vue';
+import SdkGenerator from '@/components/Developer/SdkGenerator.vue';
+import WebhookTester from '@/components/Developer/WebhookTester.vue';
 import { completeApiEndpoints, enhancedSdkExamples, enhancedWebhookEvents, errorCodes, rateLimits } from '@/Data/completeApiDocumentation.js';
 import { MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';

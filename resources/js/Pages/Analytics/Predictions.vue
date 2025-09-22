@@ -252,8 +252,8 @@
 </template>
 
 <script setup>
-import Modal from '@/Components/Modal.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import Modal from '@/components/Modal.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 

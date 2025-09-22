@@ -250,7 +250,7 @@
 </template>
 
 <script setup lang="ts">
-import MetricCard from '@/Components/Analytics/MetricCard.vue';
+import MetricCard from '@/components/Analytics/MetricCard.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 // import ConversionChart from './ConversionChart.vue'
 // import TemplateRecommendations from './TemplateRecommendations.vue'

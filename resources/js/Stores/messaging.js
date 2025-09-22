@@ -1,4 +1,4 @@
-import webSocketService from '@/Services/WebSocketService';
+import webSocketService from '@/services/WebSocketService';
 import axios from 'axios';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';

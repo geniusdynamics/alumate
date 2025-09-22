@@ -150,7 +150,7 @@
 </template>
 
 <script setup>
-import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
     ArrowPathIcon,

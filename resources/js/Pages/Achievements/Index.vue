@@ -156,7 +156,7 @@
 </template>
 
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import AchievementCelebration from '@/components/AchievementCelebration.vue';
 import AchievementCard from '@/components/Achievements/AchievementCard.vue';
 import CreateAchievementModal from '@/components/Achievements/CreateAchievementModal.vue';

@@ -299,7 +299,7 @@
 </template>
 
 <script setup lang="ts">
-import AlumniMap from '@/Components/AlumniMap.vue';
+import AlumniMap from '@/components/AlumniMap.vue';
 import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
 import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import { Head, router } from '@inertiajs/vue3';

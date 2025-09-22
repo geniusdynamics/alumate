@@ -384,8 +384,8 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
-import AdminLayout from '@/Layouts/AdminLayout.vue';
+import Icon from '@/components/Icon.vue';
+import AdminLayout from '@/layouts/AdminLayout.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, reactive, ref } from 'vue';
 

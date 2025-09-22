@@ -326,7 +326,7 @@
 </template>
 
 <script setup>
-import TestResultsModal from '@/Components/Admin/Integrations/TestResultsModal.vue';
+import TestResultsModal from '@/components/Admin/Integrations/TestResultsModal.vue';
 import AdminLayout from '@/layouts/AdminLayout.vue';
 import {
     ArrowLeftIcon,

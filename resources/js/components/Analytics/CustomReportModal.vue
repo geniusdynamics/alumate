@@ -63,7 +63,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
+import Icon from '@/components/Icon.vue';
 import { computed, reactive, ref } from 'vue';
 
 const emit = defineEmits<{

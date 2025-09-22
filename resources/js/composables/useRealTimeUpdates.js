@@ -1,4 +1,4 @@
-import webSocketService from '@/Services/WebSocketService';
+import webSocketService from '@/services/WebSocketService';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onUnmounted, ref, watch } from 'vue';
 

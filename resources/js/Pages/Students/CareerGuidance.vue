@@ -286,9 +286,9 @@
 </template>
 
 <script setup>
-import CareerStoryCard from '@/Components/CareerStoryCard.vue';
-import CareerToolCard from '@/Components/CareerToolCard.vue';
-import IndustryInsightCard from '@/Components/IndustryInsightCard.vue';
+import CareerStoryCard from '@/components/CareerStoryCard.vue';
+import CareerToolCard from '@/components/CareerToolCard.vue';
+import IndustryInsightCard from '@/components/IndustryInsightCard.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import {
     AcademicCapIcon,

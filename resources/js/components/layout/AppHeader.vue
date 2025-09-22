@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import NotificationDropdown from '@/Components/NotificationDropdown.vue';
-import PostCreator from '@/Components/PostCreator.vue';
+import NotificationDropdown from '@/components/NotificationDropdown.vue';
+import PostCreator from '@/components/PostCreator.vue';
 import GlobalSearch from '@/components/GlobalSearch.vue';
 import HelpButton from '@/components/onboarding/HelpButton.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';

@@ -136,14 +136,14 @@
 </template>
 
 <script setup>
-import CampaignPerformanceChart from '@/Components/Analytics/Fundraising/CampaignPerformanceChart.vue';
-import DonorAnalytics from '@/Components/Analytics/Fundraising/DonorAnalytics.vue';
-import GivingPatternsAnalysis from '@/Components/Analytics/Fundraising/GivingPatternsAnalysis.vue';
-import GivingTrendsChart from '@/Components/Analytics/Fundraising/GivingTrendsChart.vue';
-import OverviewMetrics from '@/Components/Analytics/Fundraising/OverviewMetrics.vue';
-import PredictiveAnalytics from '@/Components/Analytics/Fundraising/PredictiveAnalytics.vue';
-import ROIAnalysis from '@/Components/Analytics/Fundraising/ROIAnalysis.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import CampaignPerformanceChart from '@/components/Analytics/Fundraising/CampaignPerformanceChart.vue';
+import DonorAnalytics from '@/components/Analytics/Fundraising/DonorAnalytics.vue';
+import GivingPatternsAnalysis from '@/components/Analytics/Fundraising/GivingPatternsAnalysis.vue';
+import GivingTrendsChart from '@/components/Analytics/Fundraising/GivingTrendsChart.vue';
+import OverviewMetrics from '@/components/Analytics/Fundraising/OverviewMetrics.vue';
+import PredictiveAnalytics from '@/components/Analytics/Fundraising/PredictiveAnalytics.vue';
+import ROIAnalysis from '@/components/Analytics/Fundraising/ROIAnalysis.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { onMounted, reactive, ref } from 'vue';
 
 const props = defineProps({

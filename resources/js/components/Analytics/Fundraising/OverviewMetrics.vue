@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import MetricCard from '@/Components/Analytics/MetricCard.vue';
+import MetricCard from '@/components/Analytics/MetricCard.vue';
 
 const props = defineProps({
     metrics: {

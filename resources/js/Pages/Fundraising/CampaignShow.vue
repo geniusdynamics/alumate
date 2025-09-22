@@ -113,11 +113,11 @@
 </template>
 
 <script setup lang="ts">
-import CampaignAnalytics from '@/Components/Fundraising/CampaignAnalytics.vue';
-import CampaignProgress from '@/Components/Fundraising/CampaignProgress.vue';
-import DonationForm from '@/Components/Fundraising/DonationForm.vue';
-import PeerFundraiserCard from '@/Components/Fundraising/PeerFundraiserCard.vue';
-import AppLayout from '@/Layouts/AppLayout.vue';
+import CampaignAnalytics from '@/components/Fundraising/CampaignAnalytics.vue';
+import CampaignProgress from '@/components/Fundraising/CampaignProgress.vue';
+import DonationForm from '@/components/Fundraising/DonationForm.vue';
+import PeerFundraiserCard from '@/components/Fundraising/PeerFundraiserCard.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 

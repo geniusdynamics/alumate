@@ -116,13 +116,13 @@
 </template>
 
 <script setup lang="ts">
-import CareerPathAnalysis from '@/Components/Analytics/CareerPathAnalysis.vue';
-import DemographicOutcomes from '@/Components/Analytics/DemographicOutcomes.vue';
-import IndustryPlacement from '@/Components/Analytics/IndustryPlacement.vue';
-import OverviewMetrics from '@/Components/Analytics/OverviewMetrics.vue';
-import ProgramEffectiveness from '@/Components/Analytics/ProgramEffectiveness.vue';
-import SalaryAnalysis from '@/Components/Analytics/SalaryAnalysis.vue';
-import TrendAnalysis from '@/Components/Analytics/TrendAnalysis.vue';
+import CareerPathAnalysis from '@/components/Analytics/CareerPathAnalysis.vue';
+import DemographicOutcomes from '@/components/Analytics/DemographicOutcomes.vue';
+import IndustryPlacement from '@/components/Analytics/IndustryPlacement.vue';
+import OverviewMetrics from '@/components/Analytics/OverviewMetrics.vue';
+import ProgramEffectiveness from '@/components/Analytics/ProgramEffectiveness.vue';
+import SalaryAnalysis from '@/components/Analytics/SalaryAnalysis.vue';
+import TrendAnalysis from '@/components/Analytics/TrendAnalysis.vue';
 import type {
     AnalyticsOverview,
     CareerPaths,

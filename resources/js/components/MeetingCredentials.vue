@@ -192,7 +192,7 @@
 </template>
 
 <script setup lang="ts">
-import Icon from '@/Components/Icon.vue';
+import Icon from '@/components/Icon.vue';
 import { useToast } from '@/composables/useToast';
 import { ref } from 'vue';
 
