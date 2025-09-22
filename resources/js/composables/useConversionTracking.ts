@@ -366,3 +366,4 @@ function calculateOverallConversionRate(): number {
     // For now, return a placeholder based on conversion count
     return conversionQueue.value.length > 0 ? 0.03 : 0; // 3% placeholder rate
 }
+

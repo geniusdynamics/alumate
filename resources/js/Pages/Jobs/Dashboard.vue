@@ -323,3 +323,4 @@ const closeModals = () => {
     selectedJob.value = null;
 };
 </script>
+

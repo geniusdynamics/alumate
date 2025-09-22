@@ -495,3 +495,4 @@ const formatTime = (date: Date): string => {
     @apply bg-gray-500 dark:bg-gray-400;
 }
 </style>
+

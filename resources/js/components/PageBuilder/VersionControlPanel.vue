@@ -310,3 +310,4 @@ const formatDate = (dateString: string) => {
     min-height: 0;
 }
 </style>
+

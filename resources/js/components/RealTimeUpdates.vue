@@ -146,7 +146,7 @@
 </template>
 
 <script setup>
-import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
+import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates';
 import userFlowIntegration from '@/services/UserFlowIntegration';
 import {
     AcademicCapIcon,
@@ -525,3 +525,4 @@ const formatTimeAgo = (timestamp) => {
     background: #1f2937;
 }
 </style>
+

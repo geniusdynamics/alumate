@@ -111,3 +111,4 @@ const updatePassword = () => {
         </SettingsLayout>
     </AppLayout>
 </template>
+

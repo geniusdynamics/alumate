@@ -522,3 +522,4 @@ const saveJob = async () => {
     @apply rounded bg-yellow-200 px-1 text-yellow-900;
 }
 </style>
+

@@ -683,3 +683,4 @@ const exportReport = () => {
     @apply h-6 w-6 cursor-pointer rounded border-2 border-white shadow-sm transition-transform duration-200 hover:scale-110;
 }
 </style>
+

@@ -855,3 +855,4 @@ export class ResponsiveConfigService {
 }
 
 export default ResponsiveConfigService;
+

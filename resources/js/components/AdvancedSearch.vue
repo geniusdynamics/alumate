@@ -511,3 +511,4 @@ onMounted(() => {
     @apply text-gray-600;
 }
 </style>
+

@@ -245,3 +245,4 @@ const formatNumber = (value: number): string => {
     }
 }
 </style>
+

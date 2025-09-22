@@ -1193,3 +1193,4 @@ onMounted(() => {
     @apply transition-shadow duration-300 hover:shadow-lg;
 }
 </style>
+

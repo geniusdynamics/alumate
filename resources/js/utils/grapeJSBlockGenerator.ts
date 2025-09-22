@@ -1088,3 +1088,4 @@ export class GrapeJSBlockGenerator {
 
 // Export singleton instance
 export const grapeJSBlockGenerator = new GrapeJSBlockGenerator();
+

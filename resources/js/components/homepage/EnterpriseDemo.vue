@@ -497,3 +497,4 @@ input[type='checkbox']:checked {
     }
 }
 </style>
+

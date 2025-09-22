@@ -135,3 +135,4 @@ const addField = (fieldType: string, fieldConfig: any) => {
     emit('fieldAdded', fieldType, fieldConfig);
 };
 </script>
+

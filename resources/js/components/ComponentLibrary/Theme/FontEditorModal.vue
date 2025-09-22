@@ -584,3 +584,4 @@ watch(
     @apply flex items-center gap-2;
 }
 </style>
+

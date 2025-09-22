@@ -430,3 +430,4 @@ watch([selectedPlatform, jitsiSettings, manualSettings], updateModelValue, { dee
     }
 }
 </style>
+

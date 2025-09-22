@@ -514,3 +514,4 @@ export { componentLibraryBridge, componentPreviewGenerator, componentSchemaValid
 
 // Export types
 export type { ComponentRegistrationResult, GrapeJSIntegrationOptions, IntegrationResult };
+

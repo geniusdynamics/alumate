@@ -496,3 +496,4 @@ onMounted(() => {
     @apply max-h-96 overflow-y-auto;
 }
 </style>
+

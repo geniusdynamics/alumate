@@ -21,3 +21,4 @@ withDefaults(defineProps<Props>(), {
         </AppContent>
     </AppShell>
 </template>
+

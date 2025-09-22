@@ -777,3 +777,4 @@ export class ComponentSerializer {
 
 // Export singleton instance
 export const componentSerializer = new ComponentSerializer();
+

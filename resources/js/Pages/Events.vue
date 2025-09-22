@@ -395,3 +395,6 @@ onMounted(() => {
     loadRecommendedEvents();
 });
 </script>
+
+
+

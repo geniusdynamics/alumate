@@ -705,3 +705,5 @@ watch(lightboxOpen, (isOpen) => {
     }
 }
 </style>
+
+

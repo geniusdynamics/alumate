@@ -40,7 +40,7 @@
 
 <script setup>
 import { useUserPreferences } from '@/composables/useUserPreferences';
-import { useOnboardingStore } from '@/stores/onboardingStore';
+import { useOnboardingStore } from '@/Stores/onboardingStore';
 import { usePage } from '@inertiajs/vue3';
 import { computed, onMounted, reactive, ref } from 'vue';
 import ContextualHelp from './ContextualHelp.vue';
@@ -319,3 +319,7 @@ defineExpose({
     z-index: 9999;
 }
 </style>
+
+
+
+

@@ -1015,3 +1015,4 @@ export const getTemplatesByCategory = (category: string): FormTemplate[] => {
 export const getTemplatesByAudience = (audienceType: string): FormTemplate[] => {
     return formTemplates.filter((template) => template.audienceType === audienceType);
 };
+

@@ -253,3 +253,4 @@ export function getBackgroundGradient(colorScheme?: string, audienceType?: strin
             };
     }
 }
+

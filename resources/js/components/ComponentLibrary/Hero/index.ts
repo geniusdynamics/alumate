@@ -8,10 +8,13 @@ export { default as HeroInstitution } from './HeroInstitution.vue';
 export type { AudienceType, BackgroundMedia, CTAButton, GradientConfig, HeroComponentConfig, MediaAsset, StatisticCounter } from '@/types/components';
 
 // Re-export sample data
-export { defaultHeroConfig, getHeroConfigForAudience, heroSampleData } from '@/data/heroSampleData';
+export { defaultHeroConfig, getHeroConfigForAudience, heroSampleData } from '@/Data/heroSampleData';
 
 // Re-export A/B testing utilities
 export { abTestingService, heroABTestConfigs, useABTest } from '@/utils/abTesting';
 
 // Re-export variant styling utilities
 export { getBackgroundGradient, getVariantStyleClasses } from '@/utils/variantStyling';
+
+
+

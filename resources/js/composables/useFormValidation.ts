@@ -711,3 +711,4 @@ export function useFormValidation(config: FormComponentConfig, formData: Record<
         checkPasswordStrength,
     };
 }
+

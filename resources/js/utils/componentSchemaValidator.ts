@@ -999,3 +999,4 @@ export class ComponentSchemaValidator {
 
 // Export singleton instance
 export const componentSchemaValidator = new ComponentSchemaValidator();
+

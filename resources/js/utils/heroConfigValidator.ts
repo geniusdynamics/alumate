@@ -281,3 +281,4 @@ export const validateHeroConfig = (config: Partial<HeroComponentConfig>): Valida
 export const isValidHeroConfig = (config: Partial<HeroComponentConfig>): boolean => {
     return validateHeroConfig(config).isValid;
 };
+

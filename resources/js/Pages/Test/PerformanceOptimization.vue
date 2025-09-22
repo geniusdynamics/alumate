@@ -183,7 +183,7 @@
 <script setup lang="ts">
 import LazyImage from '@/components/Performance/LazyImage.vue';
 import PerformanceDashboard from '@/components/Performance/PerformanceDashboard.vue';
-import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
+import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
 import { bundleAnalyzer } from '@/utils/bundle-analyzer';
 import { createLazyComponent, dynamicImportWithRetry } from '@/utils/lazy-loading';
 import { performanceOptimizer } from '@/utils/performance-optimizer';
@@ -468,3 +468,4 @@ onMounted(() => {
     @apply bg-gray-300 dark:bg-gray-600;
 }
 </style>
+

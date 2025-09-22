@@ -1993,3 +1993,4 @@ export class TemplateCreationBridge implements TemplateCreationBridgeInterface {
 
 // Export singleton instance
 export const templateCreationBridge = new TemplateCreationBridge();
+

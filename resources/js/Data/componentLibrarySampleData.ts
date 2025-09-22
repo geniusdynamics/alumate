@@ -469,3 +469,4 @@ export const componentMetadata: Record<string, { thumbnailUrl?: string; tags?: s
 };
 
 export default sampleComponents;
+

@@ -766,3 +766,4 @@ onMounted(() => {
     @apply mx-auto max-w-7xl p-6;
 }
 </style>
+

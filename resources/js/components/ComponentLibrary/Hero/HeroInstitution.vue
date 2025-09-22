@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { getHeroConfigForAudience } from '@/data/heroSampleData';
+import { getHeroConfigForAudience } from '@/Data/heroSampleData';
 import type { HeroComponentConfig } from '@/types/components';
 import { abTestingService, heroABTestConfigs, useABTest } from '@/utils/abTesting';
 import { computed, onMounted } from 'vue';
@@ -128,3 +128,6 @@ defineExpose({
     variant,
 });
 </script>
+
+
+

@@ -20,3 +20,4 @@ const isOpen = usePage<SharedData>().props.sidebarOpen;
         <slot />
     </SidebarProvider>
 </template>
+

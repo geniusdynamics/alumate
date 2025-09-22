@@ -121,3 +121,4 @@ const footerNavItems: NavItem[] = [
         </SidebarFooter>
     </Sidebar>
 </template>
+

@@ -333,3 +333,4 @@ export function useStatistic(statistic: StatisticCounter, options: UseStatistics
         reload: () => loadStatistic(statistic),
     };
 }
+

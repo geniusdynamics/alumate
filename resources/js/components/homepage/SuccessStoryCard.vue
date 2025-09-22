@@ -580,3 +580,4 @@ const handleLinkedInClick = (url: string) => {
     }
 }
 </style>
+

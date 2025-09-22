@@ -9,7 +9,7 @@ import RealTimeStatus from '@/components/RealTimeStatus.vue';
 import RealTimeUpdates from '@/components/RealTimeUpdates.vue';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import UserFlowIntegration from '@/components/UserFlowIntegration.vue';
-import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
+import { usePerformanceMonitoring } from '@/composables/usePerformanceMonitoring';
 import { initializeTheme } from '@/composables/useTheme';
 import type { BreadcrumbItemType } from '@/types';
 import { BellIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
@@ -175,3 +175,5 @@ const handleOnlineMode = (event: any) => {
         <RealTimeStatus :position="'bottom-right'" :show-details="false" class="fixed" />
     </div>
 </template>
+
+

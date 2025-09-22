@@ -528,3 +528,4 @@ export class HeatMapService {
         this.clearData();
     }
 }
+

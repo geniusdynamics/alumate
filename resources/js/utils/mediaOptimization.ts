@@ -431,3 +431,4 @@ export const generateVideoSources = (asset: MediaAsset & any) => mediaOptimizer.
 export const createLazyLoadObserver = (callback: (entries: IntersectionObserverEntry[]) => void) => mediaOptimizer.createLazyLoadObserver(callback);
 
 export const preloadImage = (url: string) => mediaOptimizer.preloadImage(url);
+

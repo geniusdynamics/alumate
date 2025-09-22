@@ -224,3 +224,4 @@ const handleNext = () => {
     @apply border-blue-600 bg-blue-600;
 }
 </style>
+

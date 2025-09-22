@@ -464,3 +464,4 @@ export function getSampleCTAByType(type: 'button' | 'banner' | 'inline-link'): C
     const allSamples = Object.values(sampleCTAComponents).flat();
     return allSamples.find((cta) => cta.type === type) || allSamples[0];
 }
+

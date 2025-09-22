@@ -98,3 +98,4 @@ const getTourAttribute = (title: string) => {
         </SidebarGroup>
     </div>
 </template>
+

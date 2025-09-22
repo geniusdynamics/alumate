@@ -24,3 +24,4 @@ defineProps<Props>();
     @apply bg-gray-50 py-16;
 }
 </style>
+

@@ -250,3 +250,4 @@ const isOnline = computed(() => {
     box-shadow: 0 0 0 2px white;
 }
 </style>
+

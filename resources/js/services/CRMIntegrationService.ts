@@ -447,3 +447,4 @@ export const formSubmissionUtils = {
         return Math.min(Math.max(score, 0), 100); // Clamp between 0-100
     },
 };
+

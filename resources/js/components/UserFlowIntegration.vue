@@ -177,3 +177,4 @@ const getNotificationClass = (type) => {
     display: none; /* Hidden elements used for data attributes */
 }
 </style>
+

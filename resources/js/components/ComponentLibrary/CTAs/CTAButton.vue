@@ -481,3 +481,4 @@ const createRippleEffect = async (event: MouseEvent) => {
     }
 }
 </style>
+

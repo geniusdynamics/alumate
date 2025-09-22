@@ -388,3 +388,4 @@ onUnmounted(() => {
     @apply rounded-xl bg-white p-6 shadow-lg dark:bg-gray-800;
 }
 </style>
+

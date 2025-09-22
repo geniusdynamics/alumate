@@ -179,3 +179,4 @@ const formatMetricLabel = (metric: string): string => {
     @apply bg-white py-16;
 }
 </style>
+

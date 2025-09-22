@@ -419,3 +419,4 @@ if (typeof window !== 'undefined') {
         initializeAccessibilityAndPerformance();
     }
 }
+

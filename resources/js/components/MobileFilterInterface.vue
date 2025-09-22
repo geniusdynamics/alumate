@@ -652,3 +652,4 @@ input[type='range']::-moz-range-thumb {
     transform: translateY(0);
 }
 </style>
+

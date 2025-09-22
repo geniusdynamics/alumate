@@ -371,3 +371,4 @@ const canEditPost = (post) => {
     return post.user.id === props.auth?.user?.id;
 };
 </script>
+

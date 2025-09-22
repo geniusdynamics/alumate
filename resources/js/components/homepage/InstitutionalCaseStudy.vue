@@ -187,3 +187,4 @@ const formatMetricLabel = (metric: string): string => {
     @apply border border-gray-200;
 }
 </style>
+

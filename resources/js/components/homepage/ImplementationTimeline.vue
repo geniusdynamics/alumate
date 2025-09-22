@@ -210,3 +210,4 @@ const formatStatus = (status: string): string => {
     opacity: 0.3;
 }
 </style>
+

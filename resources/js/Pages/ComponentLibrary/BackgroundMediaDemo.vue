@@ -80,7 +80,7 @@
 
 <script setup lang="ts">
 import HeroBase from '@/components/ComponentLibrary/Hero/HeroBase.vue';
-import { heroMediaSamples } from '@/data/heroSampleData';
+import { heroMediaSamples } from '@/Data/heroSampleData';
 import type { HeroComponentConfig } from '@/types/components';
 import { computed, ref } from 'vue';
 
@@ -266,3 +266,6 @@ pre code {
     transition-duration: 200ms;
 }
 </style>
+
+
+

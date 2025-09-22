@@ -340,3 +340,4 @@ const closeProjectModal = () => {
         </div>
     </AppLayout>
 </template>
+

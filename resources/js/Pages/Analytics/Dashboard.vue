@@ -471,3 +471,4 @@ onMounted(() => {
     @apply mr-2;
 }
 </style>
+
