@@ -10,6 +10,9 @@
             <!-- Social Proof Section - Critical, load immediately -->
             <SocialProofSection :audience="currentAudience" :statistics="platformStatistics" :testimonials="testimonials" />
 
+            <!-- Value Proposition Matrix - Load immediately (important for conversion) -->
+            <ValuePropositionMatrix :audience="currentAudience" @cta-click="handleCTAClick" />
+
             <!-- Features Showcase - Lazy load -->
             <LazyComponent
                 :component-loader="() => import('@/Components/homepage/FeaturesShowcase.vue')"
@@ -143,6 +146,7 @@ import ConversionCTAs from '@/Components/homepage/ConversionCTAs.vue';
 import HeroSection from '@/Components/homepage/HeroSection.vue';
 import SocialProofSection from '@/Components/homepage/SocialProofSection.vue';
 import TrustIndicators from '@/Components/homepage/TrustIndicators.vue';
+import ValuePropositionMatrix from '@/Components/homepage/ValuePropositionMatrix.vue';
 import HomepageLayout from '@/Layouts/HomepageLayout.vue';
 
 // Performance and Lazy Loading
@@ -261,6 +265,24 @@ const heroData = computed(() => {
             backgroundVideo: '/videos/institutional-hero.mp4',
             backgroundImage: '/images/hero/institutional-dashboard.jpg',
         },
+        employer: {
+            headline: 'Access Top Alumni Talent from Leading Universities',
+            subtitle: 'Connect with qualified candidates through exclusive alumni networks and advanced recruitment tools',
+            primaryCTA: {
+                text: 'Start Recruiting',
+                action: 'trial',
+                variant: 'primary',
+                trackingEvent: 'hero_employer_trial_click',
+            },
+            secondaryCTA: {
+                text: 'View Talent Pool',
+                action: 'learn-more',
+                variant: 'secondary',
+                trackingEvent: 'hero_employer_learn_more_click',
+            },
+            backgroundVideo: '/videos/employer-hero.mp4',
+            backgroundImage: '/images/hero/employer-recruitment.jpg',
+        },
     };
 
     const audienceDefaults = defaults[currentAudience.value];
@@ -303,15 +325,37 @@ const heroData = computed(() => {
 });
 
 const strategicCTAs = computed(() => {
+    const getAudienceSpecificCTA = () => {
+        switch (currentAudience.value) {
+            case 'institutional':
+                return {
+                    title: 'Request Demo',
+                    description: 'See how our platform can transform your alumni engagement',
+                    action: 'demo',
+                };
+            case 'employer':
+                return {
+                    title: 'Start Recruiting',
+                    description: 'Access qualified alumni candidates from top universities',
+                    action: 'trial',
+                };
+            default: // individual
+                return {
+                    title: 'Start Free Trial',
+                    description: 'Join thousands of alumni advancing their careers',
+                    action: 'trial',
+                };
+        }
+    };
+
+    const primaryCTA = getAudienceSpecificCTA();
+
     const baseCTAs = [
         {
             id: 'primary-signup',
-            title: currentAudience.value === 'institutional' ? 'Request Demo' : 'Start Free Trial',
-            description:
-                currentAudience.value === 'institutional'
-                    ? 'See how our platform can transform your alumni engagement'
-                    : 'Join thousands of alumni advancing their careers',
-            action: currentAudience.value === 'institutional' ? 'demo' : 'trial',
+            title: primaryCTA.title,
+            description: primaryCTA.description,
+            action: primaryCTA.action,
             variant: 'primary',
             audiences: [currentAudience.value, 'both'],
             priority: 1,
@@ -331,10 +375,32 @@ const strategicCTAs = computed(() => {
 });
 
 const primaryMobileCTA = computed(() => {
+    const getAudienceSpecificMobileCTA = () => {
+        switch (currentAudience.value) {
+            case 'institutional':
+                return {
+                    title: 'Request Demo',
+                    action: 'demo',
+                };
+            case 'employer':
+                return {
+                    title: 'Start Recruiting',
+                    action: 'trial',
+                };
+            default: // individual
+                return {
+                    title: 'Start Free Trial',
+                    action: 'trial',
+                };
+        }
+    };
+
+    const mobileCTA = getAudienceSpecificMobileCTA();
+
     return {
         id: 'mobile-primary',
-        title: currentAudience.value === 'institutional' ? 'Request Demo' : 'Start Free Trial',
-        action: currentAudience.value === 'institutional' ? 'demo' : 'trial',
+        title: mobileCTA.title,
+        action: mobileCTA.action,
         variant: 'primary',
         audience: currentAudience.value,
     };

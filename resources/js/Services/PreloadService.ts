@@ -272,6 +272,11 @@ class PreloadService {
      * Preload resources for next page based on current page
      */
     public preloadNextPageResources(currentPage: string): void {
+        // Skip asset preloading in development mode
+        if (shouldSkipPreloading()) {
+            return;
+        }
+
         const nextPageMap: Record<string, string[]> = {
             homepage: ['/build/assets/auth.js', '/build/assets/dashboard.js', '/api/user/profile'],
             features: ['/build/assets/pricing.js', '/build/assets/testimonials.js'],

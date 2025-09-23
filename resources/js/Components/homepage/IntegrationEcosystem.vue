@@ -4,14 +4,10 @@
             <!-- Section Header -->
             <div class="mb-12 text-center">
                 <h2 class="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-                    {{ audience === 'institutional' ? 'Enterprise Integration Ecosystem' : 'Seamless Integrations' }}
+                    {{ getSectionTitle }}
                 </h2>
                 <p class="mx-auto max-w-3xl text-xl text-gray-600">
-                    {{
-                        audience === 'institutional'
-                            ? 'Connect with your existing systems and scale across your entire institution with our comprehensive integration platform.'
-                            : 'Connect your favorite tools and platforms to create a unified professional networking experience.'
-                    }}
+                    {{ getSectionSubtitle }}
                 </p>
             </div>
 
@@ -752,6 +748,28 @@ const selectedCategory = ref<string>('all');
 const selectedIntegration = ref<PlatformIntegration | null>(null);
 const selectedTrainingProgram = ref<TrainingProgram | null>(null);
 const showApiDocsModal = ref(false);
+
+const getSectionTitle = computed(() => {
+    switch (props.audience) {
+        case 'institutional':
+            return 'Enterprise Integration Ecosystem';
+        case 'employer':
+            return 'Talent Management Integrations';
+        default:
+            return 'Seamless Integrations';
+    }
+});
+
+const getSectionSubtitle = computed(() => {
+    switch (props.audience) {
+        case 'institutional':
+            return 'Connect with your existing systems and scale across your entire institution with our comprehensive integration platform.';
+        case 'employer':
+            return 'Integrate with your HR systems and talent management platforms to streamline recruitment and employee engagement.';
+        default:
+            return 'Connect your favorite tools and platforms to create a unified professional networking experience.';
+    }
+});
 
 const integrationCategories = computed(() => {
     console.log('props.integrations:', props.integrations);

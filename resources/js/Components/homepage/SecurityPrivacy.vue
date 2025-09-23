@@ -4,14 +4,10 @@
             <!-- Section Header -->
             <div class="mb-12 text-center">
                 <h2 class="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-                    {{ audience === 'institutional' ? 'Enterprise Security & Compliance' : 'Your Privacy & Security Matter' }}
+                    {{ getSectionTitle }}
                 </h2>
                 <p class="mx-auto max-w-3xl text-xl text-gray-600">
-                    {{
-                        audience === 'institutional'
-                            ? 'Enterprise-grade security and compliance standards to protect your institution and alumni data.'
-                            : 'We protect your professional information with industry-leading security measures and transparent privacy practices.'
-                    }}
+                    {{ getSectionSubtitle }}
                 </p>
             </div>
 
@@ -257,8 +253,8 @@
 </template>
 
 <script setup lang="ts">
-import type { SecurityCertification, SecurityPrivacyProps } from '@/Types/homepage';
-import { ref } from 'vue';
+import type { SecurityCertification, SecurityPrivacyProps } from '@/types/homepage';
+import { ref, computed } from 'vue';
 
 interface Props extends /* @vue-ignore */ SecurityPrivacyProps {}
 
@@ -284,6 +280,28 @@ const props = withDefaults(defineProps<Props>(), {
         },
     }),
     complianceInfo: () => [],
+});
+
+const getSectionTitle = computed(() => {
+    switch (props.audience) {
+        case 'institutional':
+            return 'Enterprise Security & Compliance';
+        case 'employer':
+            return 'Trusted Partner Security Standards';
+        default:
+            return 'Your Privacy & Security Matter';
+    }
+});
+
+const getSectionSubtitle = computed(() => {
+    switch (props.audience) {
+        case 'institutional':
+            return 'Enterprise-grade security and compliance standards to protect your institution and alumni data.';
+        case 'employer':
+            return 'Industry-leading security measures and compliance standards to protect candidate and company data in our talent marketplace.';
+        default:
+            return 'We protect your professional information with industry-leading security measures and transparent privacy practices.';
+    }
 });
 
 const selectedCertification = ref<SecurityCertification | null>(null);

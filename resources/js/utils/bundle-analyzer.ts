@@ -187,7 +187,7 @@ class BundleAnalyzer {
         // Send to custom analytics endpoint
         if (navigator.sendBeacon) {
             navigator.sendBeacon(
-                '/api/analytics/performance',
+                '/api/performance/analytics',
                 JSON.stringify({
                     event,
                     data,

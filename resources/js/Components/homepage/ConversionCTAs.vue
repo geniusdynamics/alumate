@@ -50,10 +50,14 @@ const strategicCTAsFiltered = computed(() => {
     }
 
     return props.strategicCTAs.filter((cta) => {
-        if (props.audience === 'institutional') {
-            return cta.audiences.includes('institutional') || cta.audiences.includes('both');
+        switch (props.audience) {
+            case 'institutional':
+                return cta.audiences.includes('institutional') || cta.audiences.includes('both');
+            case 'employer':
+                return cta.audiences.includes('employer') || cta.audiences.includes('both');
+            default:
+                return cta.audiences.includes('general') || cta.audiences.includes('both');
         }
-        return cta.audiences.includes('general') || cta.audiences.includes('both');
     });
 });
 

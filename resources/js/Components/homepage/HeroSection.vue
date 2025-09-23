@@ -3,10 +3,10 @@
         <!-- Video Background -->
         <div class="hero-background">
             <video
-                v-if="heroData?.backgroundVideo && !reducedMotion"
+                v-if="computedHeroData?.backgroundVideo && !reducedMotion"
                 ref="videoElement"
                 class="hero-video"
-                :src="heroData.backgroundVideo"
+                :src="computedHeroData.backgroundVideo"
                 autoplay
                 muted
                 loop
@@ -22,21 +22,21 @@
             <div class="hero-container">
                 <div class="hero-text">
                     <h1 class="hero-headline" :id="headlineId">
-                        {{ heroData?.headline || 'Welcome' }}
+                        {{ computedHeroData?.headline || 'Welcome' }}
                     </h1>
                     <p class="hero-subtitle" :aria-describedby="headlineId">
-                        {{ heroData?.subtitle || 'Connect with your alumni network' }}
+                        {{ computedHeroData?.subtitle || 'Connect with your alumni network' }}
                     </p>
 
                     <!-- Statistics Counter -->
                     <div
-                        v-if="heroData?.statisticsHighlight?.length"
+                        v-if="computedHeroData?.statisticsHighlight?.length"
                         class="hero-statistics"
                         ref="statisticsRef"
                         role="region"
                         aria-label="Platform statistics"
                     >
-                        <div v-for="stat in heroData.statisticsHighlight" :key="stat.key" class="hero-stat">
+                        <div v-for="stat in computedHeroData.statisticsHighlight" :key="stat.key" class="hero-stat">
                             <div class="hero-stat-value">
                                 <AnimatedCounter
                                     :target-value="stat.value"
@@ -52,32 +52,32 @@
 
                     <div class="hero-actions">
                         <button
-                            v-if="heroData?.primaryCTA"
+                            v-if="computedHeroData?.primaryCTA"
                             class="hero-cta-primary"
-                            :aria-describedby="heroData.primaryCTA.trackingEvent"
-                            @click="handleCTAClick(heroData.primaryCTA)"
-                            @keydown.enter="handleCTAClick(heroData.primaryCTA)"
-                            @keydown.space.prevent="handleCTAClick(heroData.primaryCTA)"
+                            :aria-describedby="computedHeroData.primaryCTA.trackingEvent"
+                            @click="handleCTAClick(computedHeroData.primaryCTA)"
+                            @keydown.enter="handleCTAClick(computedHeroData.primaryCTA)"
+                            @keydown.space.prevent="handleCTAClick(computedHeroData.primaryCTA)"
                         >
-                            {{ heroData.primaryCTA.text }}
+                            {{ computedHeroData.primaryCTA.text }}
                         </button>
 
                         <button
-                            v-if="heroData?.secondaryCTA"
+                            v-if="computedHeroData?.secondaryCTA"
                             class="hero-cta-secondary"
-                            :aria-describedby="heroData.secondaryCTA.trackingEvent"
-                            @click="handleCTAClick(heroData.secondaryCTA)"
-                            @keydown.enter="handleCTAClick(heroData.secondaryCTA)"
-                            @keydown.space.prevent="handleCTAClick(heroData.secondaryCTA)"
+                            :aria-describedby="computedHeroData.secondaryCTA.trackingEvent"
+                            @click="handleCTAClick(computedHeroData.secondaryCTA)"
+                            @keydown.enter="handleCTAClick(computedHeroData.secondaryCTA)"
+                            @keydown.space.prevent="handleCTAClick(computedHeroData.secondaryCTA)"
                         >
-                            {{ heroData.secondaryCTA.text }}
+                            {{ computedHeroData.secondaryCTA.text }}
                         </button>
                     </div>
                 </div>
 
                 <!-- Rotating Testimonials -->
                 <div
-                    v-if="heroData?.testimonialRotation?.length"
+                    v-if="computedHeroData?.testimonialRotation?.length"
                     class="hero-testimonials"
                     role="region"
                     aria-label="Alumni testimonials"
@@ -108,7 +108,7 @@
                     <!-- Testimonial Navigation -->
                     <div class="hero-testimonial-nav" role="tablist" aria-label="Testimonial navigation">
                         <button
-                            v-for="(testimonial, index) in heroData.testimonialRotation"
+                            v-for="(testimonial, index) in computedHeroData.testimonialRotation"
                             :key="testimonial.id"
                             class="hero-testimonial-dot"
                             :class="{ active: index === currentTestimonialIndex }"
@@ -155,16 +155,38 @@ const reducedMotion = ref(false);
 const headlineId = computed(() => `hero-headline-${Math.random().toString(36).substr(2, 9)}`);
 
 // Computed
+const computedHeroData = computed(() => {
+    if (!props.heroData) return null;
+
+    // Handle A/B test variants
+    const baseData = props.heroData;
+    const variant = baseData.abTestVariant || 'default';
+
+    // Apply audience-specific overrides
+    const audienceOverrides = baseData.audienceOverrides?.[props.audience] || {};
+    const variantOverrides = baseData.variants?.[variant] || {};
+
+    // Ensure employer audience is handled
+    const validAudience = ['individual', 'institutional', 'employer'].includes(props.audience) ? props.audience : 'individual';
+    const finalAudienceOverrides = baseData.audienceOverrides?.[validAudience] || {};
+
+    return {
+        ...baseData,
+        ...variantOverrides,
+        ...finalAudienceOverrides,
+    };
+});
+
 const currentTestimonial = computed(() => {
-    if (!props.heroData?.testimonialRotation?.length) return null;
-    return props.heroData.testimonialRotation[currentTestimonialIndex.value];
+    if (!computedHeroData.value?.testimonialRotation?.length) return null;
+    return computedHeroData.value.testimonialRotation[currentTestimonialIndex.value];
 });
 
 const backgroundImageUrl = computed(() => {
-    if (videoError.value || !props.heroData?.backgroundVideo) {
-        return props.heroData?.backgroundImage || '/images/hero-fallback.jpg';
+    if (videoError.value || !computedHeroData.value?.backgroundVideo) {
+        return computedHeroData.value?.backgroundImage || '/images/hero-fallback.jpg';
     }
-    return props.heroData?.backgroundImage || '/images/hero-fallback.jpg';
+    return computedHeroData.value?.backgroundImage || '/images/hero-fallback.jpg';
 });
 
 // Methods
@@ -218,9 +240,9 @@ const setCurrentTestimonial = (index: number) => {
 };
 
 const nextTestimonial = () => {
-    if (!props.heroData?.testimonialRotation?.length) return;
+    if (!computedHeroData.value?.testimonialRotation?.length) return;
 
-    currentTestimonialIndex.value = (currentTestimonialIndex.value + 1) % props.heroData.testimonialRotation.length;
+    currentTestimonialIndex.value = (currentTestimonialIndex.value + 1) % computedHeroData.value.testimonialRotation.length;
 };
 
 const resetTestimonialInterval = () => {
@@ -228,7 +250,7 @@ const resetTestimonialInterval = () => {
         clearInterval(testimonialInterval.value);
     }
 
-    if (!reducedMotion.value && props.heroData?.testimonialRotation?.length > 1) {
+    if (!reducedMotion.value && computedHeroData.value?.testimonialRotation?.length > 1) {
         testimonialInterval.value = setInterval(nextTestimonial, 5000);
     }
 };
@@ -277,7 +299,7 @@ onMounted(async () => {
     resetTestimonialInterval();
 
     // Preload video if available
-    if (props.heroData?.backgroundVideo && videoElement.value) {
+    if (computedHeroData.value?.backgroundVideo && videoElement.value) {
         videoElement.value.load();
     }
 });

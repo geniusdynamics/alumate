@@ -64,43 +64,91 @@ const trustBadgesRef = ref<InstanceType<typeof TrustBadges>>();
 
 // Computed properties for audience-specific content
 const statisticsTitle = computed(() => {
-    return props.audience === 'institutional' ? 'Trusted by Leading Institutions' : 'Trusted by Alumni Worldwide';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Trusted by Leading Institutions';
+        case 'employer':
+            return 'Trusted by Top Employers';
+        default:
+            return 'Trusted by Alumni Worldwide';
+    }
 });
 
 const statisticsSubtitle = computed(() => {
-    return props.audience === 'institutional'
-        ? 'See how universities and organizations are transforming alumni engagement'
-        : 'Join thousands of professionals advancing their careers through meaningful connections';
+    switch (props.audience) {
+        case 'institutional':
+            return 'See how universities and organizations are transforming alumni engagement';
+        case 'employer':
+            return 'Discover how leading companies are finding and hiring top talent through alumni networks';
+        default:
+            return 'Join thousands of professionals advancing their careers through meaningful connections';
+    }
 });
 
 const testimonialsTitle = computed(() => {
-    return props.audience === 'institutional' ? 'What Institutions Say' : 'What Our Alumni Say';
+    switch (props.audience) {
+        case 'institutional':
+            return 'What Institutions Say';
+        case 'employer':
+            return 'What Employers Say';
+        default:
+            return 'What Our Alumni Say';
+    }
 });
 
 const testimonialsSubtitle = computed(() => {
-    return props.audience === 'institutional'
-        ? 'Hear from administrators who have transformed their alumni communities'
-        : 'Hear from professionals who have transformed their careers through our platform';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Hear from administrators who have transformed their alumni communities';
+        case 'employer':
+            return 'Hear from HR leaders and recruiters who have found exceptional talent through our platform';
+        default:
+            return 'Hear from professionals who have transformed their careers through our platform';
+    }
 });
 
 const trustBadgesTitle = computed(() => {
-    return props.audience === 'institutional' ? 'Enterprise Security & Compliance' : 'Trusted & Secure';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Enterprise Security & Compliance';
+        case 'employer':
+            return 'Enterprise-Grade Security';
+        default:
+            return 'Trusted & Secure';
+    }
 });
 
 const trustBadgesSubtitle = computed(() => {
-    return props.audience === 'institutional'
-        ? 'Meeting the highest standards for institutional data protection and compliance'
-        : 'Your data is protected by industry-leading security standards';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Meeting the highest standards for institutional data protection and compliance';
+        case 'employer':
+            return 'Secure talent acquisition with enterprise-grade data protection and compliance standards';
+        default:
+            return 'Your data is protected by industry-leading security standards';
+    }
 });
 
 const companyLogosTitle = computed(() => {
-    return props.audience === 'institutional' ? 'Trusted by Leading Organizations' : 'Alumni Work At';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Trusted by Leading Organizations';
+        case 'employer':
+            return 'Trusted by Industry Leaders';
+        default:
+            return 'Alumni Work At';
+    }
 });
 
 const companyLogosSubtitle = computed(() => {
-    return props.audience === 'institutional'
-        ? 'Join institutions that trust us with their alumni communities'
-        : 'Join professionals from leading companies worldwide';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Join institutions that trust us with their alumni communities';
+        case 'employer':
+            return 'Join companies that have successfully hired through our platform';
+        default:
+            return 'Join professionals from leading companies worldwide';
+    }
 });
 
 // Methods

@@ -440,36 +440,69 @@ const sectionRef = ref<HTMLElement>();
 
 // Computed properties
 const title = computed(() => {
-    if (props.audience === 'institutional') {
-        return 'Experience Your Branded Alumni Platform';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Experience Your Branded Alumni Platform';
+        case 'employer':
+            return 'Access Top Alumni Talent';
+        default:
+            return props.title;
     }
-    return props.title;
 });
 
 const subtitle = computed(() => {
-    if (props.audience === 'institutional') {
-        return 'See how your institution can transform alumni engagement with our comprehensive platform and branded mobile apps';
+    switch (props.audience) {
+        case 'institutional':
+            return 'See how your institution can transform alumni engagement with our comprehensive platform and branded mobile apps';
+        case 'employer':
+            return 'Connect with qualified alumni candidates through our comprehensive talent platform and recruitment tools';
+        default:
+            return props.subtitle;
     }
-    return props.subtitle;
 });
 
 const ctaDescription = computed(() => {
-    if (props.audience === 'institutional') {
-        return 'Schedule a personalized demo to see how our platform can transform your alumni community engagement.';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Schedule a personalized demo to see how our platform can transform your alumni community engagement.';
+        case 'employer':
+            return 'Discover how our platform can help you find and hire exceptional alumni talent for your organization.';
+        default:
+            return 'Join thousands of alumni who are already advancing their careers through meaningful connections.';
     }
-    return 'Join thousands of alumni who are already advancing their careers through meaningful connections.';
 });
 
 const primaryCTAText = computed(() => {
-    return props.audience === 'institutional' ? 'Request Demo' : 'Start Free Trial';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Request Demo';
+        case 'employer':
+            return 'Access Talent Pool';
+        default:
+            return 'Start Free Trial';
+    }
 });
 
 const secondaryCTAText = computed(() => {
-    return props.audience === 'institutional' ? 'Download Case Studies' : 'Learn More';
+    switch (props.audience) {
+        case 'institutional':
+            return 'Download Case Studies';
+        case 'employer':
+            return 'View Success Stories';
+        default:
+            return 'Learn More';
+    }
 });
 
 const liveDemoUrl = computed(() => {
-    return props.audience === 'institutional' ? '/demo/institutional-platform' : '/demo/alumni-platform';
+    switch (props.audience) {
+        case 'institutional':
+            return '/demo/institutional-platform';
+        case 'employer':
+            return '/demo/employer-platform';
+        default:
+            return '/demo/alumni-platform';
+    }
 });
 
 const deviceTypes = computed((): DeviceType[] => [
@@ -806,12 +839,18 @@ const handlePrimaryCTA = (): void => {
         });
     }
 
-    if (props.audience === 'institutional') {
-        // Navigate to demo request page
-        window.location.href = '/demo-request';
-    } else {
-        // Navigate to trial signup
-        window.location.href = '/register';
+    switch (props.audience) {
+        case 'institutional':
+            // Navigate to demo request page
+            window.location.href = '/demo-request';
+            break;
+        case 'employer':
+            // Navigate to employer talent access page
+            window.location.href = '/employer/talent-access';
+            break;
+        default:
+            // Navigate to trial signup
+            window.location.href = '/register';
     }
 };
 
@@ -824,12 +863,18 @@ const handleSecondaryCTA = (): void => {
         });
     }
 
-    if (props.audience === 'institutional') {
-        // Navigate to case studies
-        window.location.href = '/case-studies';
-    } else {
-        // Navigate to features page
-        window.location.href = '/features';
+    switch (props.audience) {
+        case 'institutional':
+            // Navigate to case studies
+            window.location.href = '/case-studies';
+            break;
+        case 'employer':
+            // Navigate to employer success stories
+            window.location.href = '/employer/success-stories';
+            break;
+        default:
+            // Navigate to features page
+            window.location.href = '/features';
     }
 };
 
