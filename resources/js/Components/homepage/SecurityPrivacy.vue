@@ -1,5 +1,9 @@
 <template>
-    <section class="security-privacy bg-gray-50 py-16">
+    <section class="security-privacy py-16 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-50/80 via-blue-50/40 to-indigo-50/30"></div>
+        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-blue-100/40"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent"></div>
+        
         <div class="container mx-auto px-4">
             <!-- Section Header -->
             <div class="mb-12 text-center">
@@ -18,7 +22,7 @@
                     <div
                         v-for="highlight in privacyHighlights || []"
                         :key="highlight.id"
-                        class="rounded-lg bg-white p-6 shadow-sm transition-shadow duration-300 hover:shadow-md"
+                        class="rounded-2xl bg-white/20 backdrop-blur-xl p-6 shadow-lg transition-all duration-300 hover:shadow-xl border border-white/30 hover:border-white/50 hover:scale-[1.02]"
                     >
                         <div class="mb-4 flex items-center">
                             <div class="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
@@ -52,7 +56,7 @@
                     <div
                         v-for="cert in securityCertifications || []"
                         :key="cert.id"
-                        class="group cursor-pointer rounded-lg bg-white p-4 text-center shadow-sm transition-shadow duration-300 hover:shadow-md"
+                        class="group cursor-pointer rounded-2xl bg-white/20 backdrop-blur-xl p-4 text-center shadow-lg transition-all duration-300 hover:shadow-xl border border-white/30 hover:border-white/50 hover:scale-[1.02]"
                         @click="openCertificationModal(cert)"
                     >
                         <img :src="cert.badge" :alt="cert.name" class="mx-auto mb-3 h-16 w-16 object-contain" />
@@ -67,7 +71,7 @@
 
             <!-- Alumni Verification Process -->
             <div class="mb-16">
-                <div class="rounded-xl bg-white p-8 shadow-sm">
+                <div class="rounded-2xl bg-white/20 backdrop-blur-xl p-8 shadow-xl border border-white/30">
                     <div class="mb-8 text-center">
                         <h3 class="mb-4 text-2xl font-bold text-gray-900">{{ verificationProcess?.title || 'Alumni Verification Process' }}</h3>
                         <p class="mx-auto max-w-2xl text-gray-600">
@@ -121,7 +125,9 @@
 
             <!-- Data Protection Information -->
             <div class="mb-16">
-                <div class="rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-8">
+                <div class="rounded-2xl bg-white/20 backdrop-blur-xl p-8 shadow-xl border border-white/30 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-2xl z-0"></div>
+    <div class="relative z-10">
                     <div class="mb-8 text-center">
                         <h3 class="mb-4 text-2xl font-bold text-gray-900">{{ dataProtection?.title || 'Data Protection & Privacy' }}</h3>
                         <p class="mx-auto max-w-2xl text-gray-600">
@@ -150,7 +156,7 @@
                         </div>
                     </div>
 
-                    <div class="rounded-lg bg-white p-6">
+                    <div class="rounded-lg bg-white/30 backdrop-blur-sm p-6 border border-white/30">
                         <h4 class="mb-4 text-lg font-semibold text-gray-900">Your Rights</h4>
                         <div class="grid gap-6 md:grid-cols-2">
                             <div v-for="right in dataProtection?.userRights || []" :key="right.id" class="border-l-4 border-blue-400 pl-4">
@@ -163,12 +169,13 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Compliance Information -->
             <div class="mb-16">
                 <h3 class="mb-8 text-center text-2xl font-bold text-gray-900">Compliance Standards</h3>
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    <div v-for="compliance in complianceInfo || []" :key="compliance.id" class="rounded-lg bg-white p-6 shadow-sm">
+                    <div v-for="compliance in complianceInfo || []" :key="compliance.id" class="rounded-2xl bg-white/20 backdrop-blur-xl p-6 shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:border-white/50 hover:scale-[1.02]">
                         <div class="mb-4 flex items-center">
                             <img v-if="compliance.badge" :src="compliance.badge" :alt="compliance.standard" class="mr-4 h-12 w-12 object-contain" />
                             <div>
@@ -194,7 +201,7 @@
             </div>
 
             <!-- Contact Information -->
-            <div class="rounded-xl bg-white p-8 text-center shadow-sm">
+            <div class="rounded-2xl bg-white/20 backdrop-blur-xl p-8 text-center shadow-xl border border-white/30">
                 <h3 class="mb-4 text-2xl font-bold text-gray-900">Questions About Privacy or Security?</h3>
                 <p class="mb-6 text-gray-600">Our privacy and security team is here to help.</p>
                 <div class="flex flex-col items-center justify-center space-y-4 md:flex-row md:space-x-8 md:space-y-0">
@@ -223,7 +230,7 @@
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
             @click="closeCertificationModal"
         >
-            <div class="w-full max-w-md rounded-xl bg-white p-6" @click.stop>
+            <div class="w-full max-w-md rounded-2xl bg-white/90 backdrop-blur-xl p-6 border border-white/30 shadow-2xl" @click.stop>
                 <div class="mb-4 flex items-start justify-between">
                     <h3 class="text-xl font-bold text-gray-900">{{ selectedCertification.name }}</h3>
                     <button @click="closeCertificationModal" class="text-gray-400 hover:text-gray-600">

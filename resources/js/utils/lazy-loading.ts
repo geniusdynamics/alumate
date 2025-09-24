@@ -83,12 +83,15 @@ export function lazyLoadImage(img: HTMLImageElement, src: string): void {
  * Preload critical resources
  */
 export function preloadCriticalResources(): void {
-    // Preload critical CSS
-    const criticalCSS = document.createElement('link');
-    criticalCSS.rel = 'preload';
-    criticalCSS.as = 'style';
-    criticalCSS.href = '/build/assets/app.css';
-    document.head.appendChild(criticalCSS);
+    // Only preload in production mode where built assets exist
+    if (import.meta.env.PROD) {
+        // Preload critical CSS
+        const criticalCSS = document.createElement('link');
+        criticalCSS.rel = 'preload';
+        criticalCSS.as = 'style';
+        criticalCSS.href = '/build/assets/app.css';
+        document.head.appendChild(criticalCSS);
+    }
 
     // Note: Font preloading removed as Inter fonts don't exist in this project
     // The project uses 'Instrument Sans' and system fonts instead

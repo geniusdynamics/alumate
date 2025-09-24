@@ -42,7 +42,7 @@
                     <div class="text-gray-600">Average Time to Promotion</div>
                 </div>
                 <div class="text-center">
-                    <div class="mb-2 text-3xl font-bold text-purple-600">85%</div>
+                    <div class="mb-2 text-3xl font-bold text-indigo-600">85%</div>
                     <div class="text-gray-600">Job Placement Success Rate</div>
                 </div>
             </div>
@@ -55,7 +55,7 @@
             >
                 <div class="max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-lg bg-white shadow-2xl" @click.stop>
                     <!-- Modal Header -->
-                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+                    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-6 text-white">
                         <div class="flex items-center justify-between">
                             <div>
                                 <h3 class="text-2xl font-bold">Career Value Calculator</h3>

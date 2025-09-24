@@ -2,7 +2,7 @@
     <div class="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0">
         <div>
             <Link href="/" class="text-2xl font-bold text-gray-900">
-                {{ $page.props.app?.name || 'Laravel' }}
+                {{ $page.props.app?.name || 'Alumate' }}
             </Link>
         </div>
 

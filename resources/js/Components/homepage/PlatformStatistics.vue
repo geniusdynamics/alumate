@@ -1,12 +1,24 @@
 <template>
     <div class="platform-statistics">
-        <div class="container mx-auto px-4">
-            <div class="mb-12 text-center">
-                <h2 class="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
-                    {{ title }}
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 opacity-30 animate-float"></div>
+            <div class="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-gradient-to-tr from-indigo-100 to-cyan-100 opacity-25 animate-float-delayed"></div>
+            <div class="absolute top-1/2 left-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-indigo-100 to-cyan-100 opacity-20 animate-pulse-slow"></div>
+        </div>
+        
+        <div class="container relative mx-auto px-4">
+            <div class="mb-16 text-center">
+                <div class="mb-6">
+                    <span class="inline-block rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg animate-shimmer">
+                        Platform Impact
+                    </span>
+                </div>
+                <h2 class="mb-6 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 bg-clip-text text-4xl font-black text-transparent md:text-5xl lg:text-6xl animate-glow">
+                    {{ audienceSpecificTitle }}
                 </h2>
-                <p class="mx-auto max-w-2xl text-lg text-gray-600">
-                    {{ subtitle }}
+                <p class="mx-auto max-w-3xl text-xl font-medium text-gray-600 leading-relaxed">
+                    {{ audienceSpecificSubtitle }}
                 </p>
             </div>
 
@@ -37,36 +49,70 @@
             </div>
 
             <!-- Statistics Grid -->
-            <div v-else class="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
-                <div v-for="stat in statistics" :key="stat.key" class="group text-center" :class="{ 'animate-fade-in': isVisible }">
-                    <div class="mb-3">
-                        <div
-                            v-if="stat.icon"
-                            class="mx-auto mb-4 h-12 w-12 text-blue-600 transition-colors group-hover:text-blue-700"
-                            v-html="getIconSvg(stat.icon)"
-                        ></div>
-
-                        <div class="mb-2 text-3xl font-bold text-gray-900 md:text-4xl">
-                            <AnimatedCounter
-                                :target-value="stat.value"
-                                :format="stat.format"
-                                :suffix="stat.suffix"
-                                :animate="isVisible && stat.animateOnScroll"
-                                :duration="2000"
-                                :aria-label="`${stat.label}: ${stat.value}${stat.suffix || ''}`"
-                            />
+            <div v-else class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                <div 
+                    v-for="(stat, index) in statistics" 
+                    :key="stat.key" 
+                    class="group relative overflow-hidden rounded-3xl bg-white/20 backdrop-blur-xl border border-white/30 p-8 text-center shadow-xl transition-all duration-700 hover:shadow-2xl hover:scale-105 hover:-translate-y-2" 
+                    :class="{ 'animate-fade-in-up': isVisible }"
+                    :style="{ animationDelay: `${index * 150}ms` }"
+                >
+                    <!-- Card Background Gradient -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-indigo-500/5 rounded-3xl z-0"></div>
+                    
+                    <!-- Hover Glow Effect -->
+                    <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-cyan-500/10 opacity-0 blur-xl transition-opacity duration-700 group-hover:opacity-100"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative z-10">
+                        <!-- Icon Container -->
+                        <div class="mb-6">
+                            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg transition-all duration-700 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-2xl relative overflow-hidden">
+                                <div
+                                    v-if="stat.icon"
+                                    class="h-8 w-8 text-white transition-transform duration-700 group-hover:scale-110 z-10"
+                                    v-html="getIconSvg(stat.icon)"
+                                ></div>
+                                <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent"></div>
+                            </div>
                         </div>
 
-                        <p class="text-sm font-medium text-gray-600 md:text-base">
+                        <!-- Counter -->
+                        <div class="mb-4">
+                            <div class="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 bg-clip-text text-4xl font-black text-transparent md:text-5xl transition-all duration-700 group-hover:scale-110">
+                                <AnimatedCounter
+                                    :target-value="stat.value"
+                                    :format="stat.format"
+                                    :suffix="stat.suffix"
+                                    :animate="isVisible && stat.animateOnScroll"
+                                    :duration="2000"
+                                    :aria-label="`${stat.label}: ${stat.value}${stat.suffix || ''}`"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Label -->
+                        <p class="text-base font-semibold text-gray-700 transition-colors duration-500 group-hover:text-gray-900 group-hover:font-bold">
                             {{ stat.label }}
                         </p>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mt-4 h-1 w-full overflow-hidden rounded-full bg-white/20 backdrop-blur-sm">
+                            <div 
+                                class="h-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-1000 ease-out rounded-full"
+                                :style="{ width: isVisible ? '100%' : '0%', transitionDelay: `${index * 200 + 500}ms` }"
+                            ></div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Last Updated -->
-            <div v-if="lastUpdated && !loading && !error" class="mt-8 text-center">
-                <p class="text-sm text-gray-500">Last updated: {{ formatDate(lastUpdated) }}</p>
+            <div v-if="lastUpdated && !loading && !error" class="mt-12 text-center">
+                <div class="inline-flex items-center rounded-full bg-gray-100/80 backdrop-blur-sm px-4 py-2 text-sm text-gray-600 shadow-sm">
+                    <div class="mr-2 h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+                    Last updated: {{ formatDate(lastUpdated) }}
+                </div>
             </div>
         </div>
     </div>
@@ -295,17 +341,43 @@ defineExpose({
 
 <style scoped>
 .platform-statistics {
-    @apply bg-white py-16;
+    @apply relative bg-gradient-to-br from-slate-50/80 via-blue-50/40 to-indigo-50/30 py-20 overflow-hidden;
+    backdrop-filter: blur(8px);
 }
 
-.animate-fade-in {
-    animation: fadeInUp 0.6s ease-out forwards;
+/* Enhanced Animations */
+.animate-fade-in-up {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    transform: translateY(40px);
 }
 
+.animate-shimmer {
+    background-size: 200% 200%;
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.animate-float {
+    animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+.animate-pulse-slow {
+    animation: pulseSlow 4s ease-in-out infinite;
+}
+
+/* Keyframe Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(40px);
     }
     to {
         opacity: 1;
@@ -313,21 +385,46 @@ defineExpose({
     }
 }
 
-.group:hover .text-blue-600 {
-    @apply text-blue-700;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .platform-statistics {
-        @apply py-12;
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
     }
 }
 
-/* Loading animation */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    }
+    to {
+        text-shadow: 0 0 30px rgba(147, 51, 234, 0.4), 0 0 40px rgba(59, 130, 246, 0.2);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+}
+
+@keyframes pulseSlow {
+    0%, 100% {
+        opacity: 0.2;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(1.05);
+    }
+}
+
 @keyframes pulse {
-    0%,
-    100% {
+    0%, 100% {
         opacity: 1;
     }
     50% {
@@ -339,16 +436,78 @@ defineExpose({
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Card Hover Effects */
+.group:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .platform-statistics {
+        @apply py-16;
+    }
+    
+    .animate-fade-in-up {
+        transform: translateY(20px);
+    }
+}
+
+@media (max-width: 640px) {
+    .platform-statistics {
+        @apply py-12;
+    }
+}
+
 /* Accessibility improvements */
 @media (prefers-reduced-motion: reduce) {
-    .animate-fade-in,
+    .animate-fade-in-up,
+    .animate-shimmer,
+    .animate-glow,
+    .animate-float,
+    .animate-float-delayed,
+    .animate-pulse-slow,
     .animate-pulse {
         animation: none;
     }
 
-    .group:hover .text-blue-600 {
+    .group:hover {
+        transform: none;
         transition: none;
     }
+    
+    .animate-fade-in-up {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* Enhanced backdrop blur support */
+@supports (backdrop-filter: blur(10px)) {
+    .backdrop-blur-sm {
+        backdrop-filter: blur(4px);
+    }
+}
+
+/* Improved focus states for accessibility */
+.group:focus-within {
+    @apply ring-4 ring-blue-500/20 ring-offset-2;
+}
+
+/* Custom scrollbar for better aesthetics */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    @apply bg-gray-100 rounded-full;
+}
+
+::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-blue-400 to-indigo-500 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    @apply from-blue-500 to-indigo-600;
 }
 </style>
 

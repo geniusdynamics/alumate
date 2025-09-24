@@ -114,26 +114,19 @@ export default defineConfig({
 		},
 	},
 
-	// server: {
-	//   host: '127.0.0.1',
-	//   port: 5177,
-	//   hmr: {
-	//     host: '127.0.0.1',
-	//     port: 5177,
-	//   },
-	//   origin: 'http://127.0.0.1:5177',
-	//   cors: {
-	//     origin: ['http://127.0.0.1:8001', 'http://localhost:8001', 'http://127.0.0.1:8080', 'http://localhost:8080', 'http://127.0.0.1:8081', 'http://localhost:8081'],
-	//     credentials: true,
-	//   },
-	//   proxy: {
-	//     '/api': {
-	//       target: 'http://127.0.0.1:8001',
-	//       changeOrigin: true,
-	//       secure: false,
-	//     },
-	//   },
-	// },
+	server: {
+		host: '127.0.0.1',
+		port: 5173,
+		hmr: {
+			host: '127.0.0.1',
+			port: 5173,
+		},
+		origin: 'http://127.0.0.1:5173',
+		cors: {
+			origin: ['http://127.0.0.1:8080', 'http://localhost:8080'],
+			credentials: true,
+		},
+	},
 
 	optimizeDeps: {
 		include: [

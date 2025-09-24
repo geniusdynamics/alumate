@@ -58,29 +58,13 @@
             <h1 class="sr-only">{{ pageTitle }}</h1>
             <slot />
         </main>
-        <!-- Enhanced footer with proper navigation -->
-        <footer id="footer" class="homepage-footer" role="contentinfo">
-            <div class="homepage-container-inner">
-                <div class="footer-content">
-                    <nav class="footer-navigation" role="navigation" aria-label="Footer navigation">
-                        <div class="footer-links">
-                            <a href="/privacy" class="footer-link">Privacy Policy</a>
-                            <a href="/terms" class="footer-link">Terms of Service</a>
-                            <a href="/contact" class="footer-link">Contact</a>
-                            <a href="/accessibility" class="footer-link">Accessibility</a>
-                            <a href="/sitemap" class="footer-link">Sitemap</a>
-                        </div>
-                    </nav>
-                    <div class="footer-copyright">
-                        <p>&copy; {{ currentYear }} Alumni Platform. All rights reserved.</p>
-                    </div>
-                </div>
-            </div>
-        </footer>
+        <!-- Mega Footer -->
+        <MegaFooter />
     </div>
 </template>
 <script setup lang="ts">
 import HomepageNavigation from '@/Components/navigation/HomepageNavigation.vue';
+import MegaFooter from '@/Components/Homepage/MegaFooter.vue';
 import { accessibilityService } from '@/Services/AccessibilityService';
 import { seoService } from '@/Services/SEOService';
 import { Head } from '@inertiajs/vue3';

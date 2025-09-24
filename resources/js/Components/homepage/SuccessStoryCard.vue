@@ -450,7 +450,8 @@ const handleLinkedInClick = (url: string) => {
 }
 
 .milestone-date {
-    @apply min-w-20 text-sm font-medium text-gray-500;
+    min-width: 5rem;
+    @apply text-sm font-medium text-gray-500;
 }
 
 .milestone-content {

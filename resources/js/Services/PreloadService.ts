@@ -1,4 +1,4 @@
-import { getAssetUrl, shouldSkipAssetPreloading, shouldSkipPreloading } from '../Utils/asset-url-helper';
+import { getAssetUrl, shouldSkipAssetPreloading, shouldSkipPreloading, isDevelopment } from '../Utils/asset-url-helper';
 import { cdnService } from './CDNService';
 
 export interface PreloadResource {
@@ -17,8 +17,11 @@ class PreloadService {
      * Preload critical resources for faster page loading
      */
     public preloadCriticalResources(): void {
-        this.preloadCriticalCSS();
-        this.preloadCriticalJS();
+        // Critical CSS - skip in development as Vite handles these
+        if (!isDevelopment()) {
+            this.preloadCriticalCSS();
+            this.preloadCriticalJS();
+        }
 
         // Note: Font preloading removed as Inter fonts don't exist in this project
         // The project uses 'Instrument Sans' and system fonts instead

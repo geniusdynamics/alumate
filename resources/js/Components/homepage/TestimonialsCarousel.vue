@@ -1,29 +1,59 @@
 <template>
-    <div class="testimonials-carousel">
-        <div class="container mx-auto px-4">
-            <div class="mb-12 text-center">
-                <h2 class="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
+    <div class="testimonials-carousel relative overflow-hidden">
+        <!-- Enhanced Background with Gradient Layers -->
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/30"></div>
+        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-blue-100/20"></div>
+        
+        <!-- Animated Background Elements -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-10 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/10 to-indigo-400/10 rounded-full blur-2xl animate-float"></div>
+            <div class="absolute bottom-20 right-1/3 w-32 h-32 bg-gradient-to-br from-indigo-400/10 to-cyan-400/10 rounded-full blur-xl animate-float" style="animation-delay: 2s;"></div>
+            <div class="absolute top-1/2 left-10 w-24 h-24 bg-gradient-to-br from-green-400/10 to-blue-400/10 rounded-full blur-lg animate-float" style="animation-delay: 4s;"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10 py-20">
+            <!-- Enhanced Header Section -->
+            <div class="mb-16 text-center relative">
+                <!-- Decorative Elements -->
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-16 h-1 bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-400 rounded-full animate-shimmer"></div>
+                
+                <div class="inline-block mb-6 px-4 py-2 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full border border-blue-200/50">
+                    <span class="text-sm font-semibold text-blue-700 animate-pulse">✨ Success Stories</span>
+                </div>
+                
+                <h2 class="mb-6 text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-606 animate-glow">
                     {{ title }}
                 </h2>
-                <p class="mx-auto max-w-2xl text-lg text-gray-600">
+                <p class="mx-auto max-w-3xl text-xl text-gray-600 font-medium leading-relaxed">
                     {{ subtitle }}
                 </p>
+                
+                <!-- Decorative Bottom Line -->
+                <div class="mt-8 mx-auto w-24 h-1 bg-gradient-to-r from-transparent via-blue-400 to-transparent rounded-full"></div>
             </div>
 
-            <!-- Persona Filters -->
-            <div v-if="showFilters && personaFilters.length > 0" class="mb-8 flex flex-wrap justify-center gap-2">
+            <!-- Enhanced Persona Filters -->
+            <div v-if="showFilters && personaFilters.length > 0" class="mb-12 flex flex-wrap justify-center gap-3">
                 <button
                     v-for="filter in personaFilters"
                     :key="filter.value"
                     @click="setActiveFilter(filter.value)"
                     :class="[
-                        'rounded-full px-4 py-2 text-sm font-medium transition-colors',
-                        activeFilter === filter.value ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                        'group relative overflow-hidden rounded-2xl px-6 py-3 text-sm font-semibold transition-all duration-500 transform hover:scale-105 hover:shadow-xl',
+                        activeFilter === filter.value 
+                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xl border border-white/30 backdrop-blur-xl animate-pulse' 
+                            : 'bg-white/20 backdrop-blur-xl text-gray-700 hover:bg-gradient-to-r hover:from-blue-400/30 hover:to-indigo-400/30 border border-white/30 hover:border-white/50 hover:text-blue-700 hover:shadow-lg'
                     ]"
                     :aria-pressed="activeFilter === filter.value"
                 >
-                    {{ filter.label }}
-                    <span v-if="filter.count" class="ml-1 text-xs opacity-75"> ({{ filter.count }}) </span>
+                    <!-- Shimmer Effect for Inactive Buttons -->
+                    <div v-if="activeFilter !== filter.value" class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                    
+                    <!-- Glow Effect for Active Button -->
+                    <div v-if="activeFilter === filter.value" class="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-indigo-400/20 animate-pulse"></div>
+                    
+                    <span class="relative z-10">{{ filter.label }}</span>
+                    <span v-if="filter.count" class="relative z-10 ml-2 px-2 py-0.5 text-xs rounded-full" :class="activeFilter === filter.value ? 'bg-white/20' : 'bg-blue-100 text-blue-600'"> {{ filter.count }} </span>
                 </button>
             </div>
 
@@ -81,27 +111,31 @@
                     </div>
                 </div>
 
-                <!-- Navigation Arrows -->
+                <!-- Enhanced Navigation Arrows -->
                 <button
                     v-if="showNavigation && canNavigatePrev"
                     @click="prevSlide"
-                    class="absolute left-0 top-1/2 z-10 -translate-x-4 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg transition-colors hover:bg-gray-50"
+                    class="group absolute left-0 top-1/2 z-10 -translate-x-4 -translate-y-1/2 rounded-full bg-white/90 backdrop-blur-sm p-3 shadow-xl border-2 border-gray-200 transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 hover:border-blue-300 hover:shadow-2xl hover:scale-110 hover:-translate-x-5"
                     aria-label="Previous testimonials"
                 >
-                    <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-6 w-6 text-gray-600 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                     </svg>
+                    <!-- Glow Effect -->
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
                 </button>
 
                 <button
                     v-if="showNavigation && canNavigateNext"
                     @click="nextSlide"
-                    class="absolute right-0 top-1/2 z-10 -translate-y-1/2 translate-x-4 rounded-full bg-white p-2 shadow-lg transition-colors hover:bg-gray-50"
+                    class="group absolute right-0 top-1/2 z-10 -translate-y-1/2 translate-x-4 rounded-full bg-white/90 backdrop-blur-sm p-3 shadow-xl border-2 border-gray-200 transition-all duration-300 hover:bg-gradient-to-r hover:from-blue-500 hover:to-indigo-500 hover:border-blue-300 hover:shadow-2xl hover:scale-110 hover:translate-x-5"
                     aria-label="Next testimonials"
                 >
-                    <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="h-6 w-6 text-gray-600 group-hover:text-white transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
+                    <!-- Glow Effect -->
+                    <div class="absolute inset-0 rounded-full bg-gradient-to-r from-blue-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-pulse"></div>
                 </button>
 
                 <!-- Pagination Dots -->
@@ -567,7 +601,7 @@ defineExpose({
 
 <style scoped>
 .testimonials-carousel {
-    @apply bg-white py-16;
+    @apply absolute inset-0 bg-gradient-to-br from-slate-50/80 via-blue-50/40 to-indigo-50/30;
 }
 
 /* Smooth transitions */

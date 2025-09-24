@@ -595,7 +595,7 @@ watch(
 }
 
 .milestone-achievement {
-    @apply bg-purple-500;
+    @apply bg-indigo-500;
 }
 
 .milestone-default {
@@ -672,7 +672,7 @@ watch(
 }
 
 .metric-business {
-    @apply bg-purple-100 text-purple-600;
+    @apply bg-indigo-100 text-indigo-600;
 }
 
 .metric-network {

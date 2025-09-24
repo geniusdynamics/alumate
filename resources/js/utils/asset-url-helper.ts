@@ -6,7 +6,7 @@
 /**
  * Determines if we're in development mode with Vite dev server running
  */
-function isDevelopment(): boolean {
+export function isDevelopment(): boolean {
     return import.meta.env.DEV || import.meta.env.NODE_ENV === 'development';
 }
 
@@ -14,7 +14,7 @@ function isDevelopment(): boolean {
  * Gets the Vite dev server URL from environment or defaults
  */
 function getViteDevServerUrl(): string {
-    return import.meta.env.VITE_DEV_SERVER_URL || 'http://127.0.0.1:5176';
+    return import.meta.env.VITE_DEV_SERVER_URL || 'http://127.0.0.1:5173';
 }
 
 /**
@@ -24,7 +24,7 @@ function isViteDevServerAvailable(): boolean {
     if (typeof window === 'undefined') return false;
 
     // Check if we're in development and if the hot file exists
-    return isDevelopment() && document.querySelector('link[rel="preload"][href*="127.0.0.1:5176"]') !== null;
+    return isDevelopment() && document.querySelector('link[rel="preload"][href*="127.0.0.1:5173"]') !== null;
 }
 
 /**
@@ -33,13 +33,18 @@ function isViteDevServerAvailable(): boolean {
  * @returns The correct URL for the current environment
  */
 export function getAssetUrl(assetPath: string): string {
-    // In development, return null for build assets since Vite handles module loading
-    // This prevents 404 errors when trying to preload non-existent build assets
+    // In development, skip preloading build assets since Vite handles module loading
+    // Return empty string to prevent 404 errors when trying to preload non-existent build assets
     if (isDevelopment() && assetPath.startsWith('/build/assets/')) {
         return '';
     }
 
-    // Return the original path for production use or non-build assets
+    // For development mode, convert relative paths to absolute URLs if needed
+    if (isDevelopment() && !assetPath.startsWith('http') && !assetPath.startsWith('/')) {
+        return `${getViteDevServerUrl()}/${assetPath}`;
+    }
+
+    // Return the original path for production use or absolute paths
     return assetPath;
 }
 

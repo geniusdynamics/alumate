@@ -857,3 +857,65 @@ Route::middleware(['auth'])->prefix('component-library')->name('component-librar
         return Inertia::render('ComponentLibrary/FormDemo');
     })->name('forms');
 });
+
+// Solution Pages Routes
+Route::group([], function () {
+    Route::get('/community-engagement-hub', function () {
+        return Inertia::render('Solutions/CommunityEngagementHub');
+    })->name('solutions.community-engagement-hub');
+    
+    Route::get('/career-services-hub', function () {
+        return Inertia::render('Solutions/CareerServicesHub');
+    })->name('solutions.career-services-hub');
+    
+    Route::get('/outcome-data-analytics', function () {
+        return Inertia::render('Solutions/OutcomeDataAnalytics');
+    })->name('solutions.outcome-data-analytics');
+    
+    Route::get('/employer-relations-management', function () {
+        return Inertia::render('Solutions/EmployerRelationsManagement');
+    })->name('solutions.employer-relations-management');
+    
+    Route::get('/talent-acquisition', function () {
+        return Inertia::render('Solutions/TalentAcquisition');
+    })->name('solutions.talent-acquisition');
+    
+    Route::get('/recruiting-intelligence', function () {
+        return Inertia::render('Solutions/RecruitingIntelligence');
+    })->name('solutions.recruiting-intelligence');
+    
+    Route::get('/alumni-and-advancement', function () {
+        return Inertia::render('Solutions/AlumniAndAdvancement');
+    })->name('solutions.alumni-and-advancement');
+});
+
+// Use Cases Routes
+Route::group([], function () {
+    Route::get('/alumni-engagement', function () {
+        return Inertia::render('UseCases/AlumniEngagement');
+    })->name('usecases.alumni-engagement');
+    
+    Route::get('/fundraising', function () {
+        return Inertia::render('UseCases/Fundraising');
+    })->name('usecases.fundraising');
+    
+    Route::get('/events', function () {
+        return Inertia::render('UseCases/Events');
+    })->name('usecases.events');
+    
+    Route::get('/communications', function () {
+        return Inertia::render('UseCases/Communications');
+    })->name('usecases.communications');
+    
+    Route::get('/networking', function () {
+        return Inertia::render('UseCases/Networking');
+    })->name('usecases.networking');
+    
+    Route::get('/partnerships', function () {
+        return Inertia::render('UseCases/Partnerships');
+    })->name('usecases.partnerships');
+    
+    Route::get('/recruitment', function () {
+        return Inertia::render('UseCases/Recruitment');
+    })->name('usecases.recruitment');
+});

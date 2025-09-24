@@ -81,7 +81,7 @@
                                             ? 'text-green-600'
                                             : integration.pricing.type === 'paid'
                                               ? `$${integration.pricing.cost}/${integration.pricing.billingPeriod}`
-                                              : 'text-purple-600',
+                                              : 'text-indigo-600',
                                     ]"
                                 >
                                     {{
@@ -142,8 +142,8 @@
                         </div>
 
                         <div class="rounded-lg bg-white p-6 text-center">
-                            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
-                                <i class="fas fa-puzzle-piece text-xl text-purple-600"></i>
+                            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100">
+                                <i class="fas fa-puzzle-piece text-xl text-indigo-600"></i>
                             </div>
                             <h4 class="mb-2 text-lg font-semibold text-gray-900">SDKs</h4>
                             <p class="text-sm text-gray-600">{{ apiDocumentation?.sdks?.length || 0 }} languages</p>
@@ -276,7 +276,7 @@
                                         ? 'bg-green-100 text-green-800'
                                         : program.cost.type === 'included'
                                           ? 'bg-blue-100 text-blue-800'
-                                          : 'bg-purple-100 text-purple-800',
+                                          : 'bg-indigo-100 text-indigo-800',
                                 ]"
                             >
                                 {{ program.cost.type }}

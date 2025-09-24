@@ -5,7 +5,7 @@
 
             <div style="text-align: center; margin-bottom: 30px">
                 <Link href="/" style="font-size: 24px; font-weight: bold; color: #1f2937; text-decoration: none">
-                    {{ $page.props.app?.name || 'Laravel' }}
+                    {{ $page.props.app?.name || 'Alumate' }}
                 </Link>
             </div>
 

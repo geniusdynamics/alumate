@@ -131,7 +131,7 @@
                     <div class="text-sm text-gray-600">Behind Target</div>
                 </div>
                 <div class="text-center">
-                    <div class="mb-1 text-2xl font-bold text-purple-600">{{ averageProgress }}%</div>
+                    <div class="mb-1 text-2xl font-bold text-indigo-600">{{ averageProgress }}%</div>
                     <div class="text-sm text-gray-600">Avg Progress</div>
                 </div>
             </div>
@@ -228,7 +228,7 @@ const getMetricBackgroundColor = (category: string): string => {
     const colors = {
         engagement: 'bg-blue-100',
         financial: 'bg-green-100',
-        operational: 'bg-purple-100',
+        operational: 'bg-indigo-100',
         growth: 'bg-orange-100',
     };
     return colors[category as keyof typeof colors] || 'bg-gray-100';
@@ -238,7 +238,7 @@ const getMetricIconColor = (category: string): string => {
     const colors = {
         engagement: 'text-blue-600',
         financial: 'text-green-600',
-        operational: 'text-purple-600',
+        operational: 'text-indigo-600',
         growth: 'text-orange-600',
     };
     return colors[category as keyof typeof colors] || 'text-gray-600';
@@ -248,7 +248,7 @@ const getProgressBarColor = (category: string): string => {
     const colors = {
         engagement: 'bg-blue-500',
         financial: 'bg-green-500',
-        operational: 'bg-purple-500',
+        operational: 'bg-indigo-500',
         growth: 'bg-orange-500',
     };
     return colors[category as keyof typeof colors] || 'bg-gray-500';

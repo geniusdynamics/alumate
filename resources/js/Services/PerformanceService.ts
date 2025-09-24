@@ -175,18 +175,84 @@ class PerformanceService {
         await new Promise((resolve) => setTimeout(resolve, 1000));
 
         const finalMetrics = this.getMetrics();
+        const timestamp = Date.now();
+        const url = window.location.href;
+        const userAgent = navigator.userAgent;
+
+        // Convert metrics object to array format expected by the API
+        const metricsArray = Object.entries(finalMetrics).map(([name, value]) => ({
+            name,
+            value: typeof value === 'number' ? value : 0,
+            timestamp,
+            url,
+            userAgent,
+            connection: this.getConnectionInfo(),
+        }));
+
+        // Prepare session data
+        const sessionData = {
+            url,
+            referrer: document.referrer || null,
+            userAgent,
+            viewport: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+            },
+            screen: {
+                width: window.screen.width,
+                height: window.screen.height,
+                colorDepth: window.screen.colorDepth,
+            },
+            connection: this.getConnectionInfo(),
+        };
+
+        const payload = {
+            metrics: metricsArray,
+            session: sessionData,
+            timestamp,
+        };
 
         try {
-            await fetch('/api/performance/metrics', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                },
-                body: JSON.stringify(finalMetrics),
-            });
+            // Only report metrics in production or when API is available
+            if (import.meta.env.PROD || await this.isApiAvailable()) {
+                await fetch('/api/performance/metrics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify(payload),
+                });
+            }
         } catch (error) {
             console.warn('Failed to report performance metrics:', error);
+        }
+    }
+
+    private getConnectionInfo(): any {
+        const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+        if (connection) {
+            return {
+                type: connection.effectiveType || connection.type,
+                downlink: connection.downlink,
+                rtt: connection.rtt,
+                saveData: connection.saveData,
+            };
+        }
+        return null;
+    }
+
+    private async isApiAvailable(): Promise<boolean> {
+        try {
+            const response = await fetch('/api/health', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+            return response.ok;
+        } catch (error) {
+            return false;
         }
     }
 

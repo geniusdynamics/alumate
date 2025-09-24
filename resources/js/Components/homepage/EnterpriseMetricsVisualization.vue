@@ -95,7 +95,7 @@
                     <div class="text-sm text-gray-600">Metrics Tracked</div>
                 </div>
                 <div class="text-center">
-                    <div class="mb-1 text-3xl font-bold text-purple-600">
+                    <div class="mb-1 text-3xl font-bold text-indigo-600">
                         {{ verifiedMetrics }}
                     </div>
                     <div class="text-sm text-gray-600">Verified Results</div>
@@ -176,7 +176,7 @@ const getMetricIconBg = (category: string) => {
     const backgrounds = {
         engagement: 'bg-blue-100',
         financial: 'bg-green-100',
-        operational: 'bg-purple-100',
+        operational: 'bg-indigo-100',
         growth: 'bg-orange-100',
     };
     return backgrounds[category as keyof typeof backgrounds] || 'bg-gray-100';
@@ -186,7 +186,7 @@ const getMetricIconColor = (category: string) => {
     const colors = {
         engagement: 'text-blue-600',
         financial: 'text-green-600',
-        operational: 'text-purple-600',
+        operational: 'text-indigo-600',
         growth: 'text-orange-600',
     };
     return colors[category as keyof typeof colors] || 'text-gray-600';

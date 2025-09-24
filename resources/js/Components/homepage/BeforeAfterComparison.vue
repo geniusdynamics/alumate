@@ -619,7 +619,7 @@ const toggleView = () => {
 }
 
 .metric-business {
-    @apply bg-purple-100 text-purple-600;
+    @apply bg-indigo-100 text-indigo-600;
 }
 
 .metric-network {

@@ -228,7 +228,7 @@ const getCareerStageBadgeClass = (stage: string): string => {
     const classMap: Record<string, string> = {
         recent_grad: 'bg-green-100 text-green-800',
         mid_career: 'bg-blue-100 text-blue-800',
-        senior: 'bg-purple-100 text-purple-800',
+        senior: 'bg-indigo-100 text-indigo-800',
         executive: 'bg-red-100 text-red-800',
     };
     return classMap[stage] || 'bg-gray-100 text-gray-800';

@@ -29,7 +29,7 @@ declare module "vite/client" {
 	}
 }
 
-const appName = import.meta.env.VITE_APP_NAME || "Laravel";
+const appName = import.meta.env.VITE_APP_NAME || "Alumate";
 
 // Start performance monitoring
 performanceService.markStart("app-initialization");

@@ -1,12 +1,16 @@
 <template>
-    <section class="pricing-section bg-gradient-to-br from-slate-50 to-blue-50 py-16">
+    <section class="pricing-section py-16 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-50/80 via-blue-50/40 to-indigo-50/30"></div>
+    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-blue-100/40"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent"></div>
+</section>
         <div class="container mx-auto px-4">
             <!-- Section Header -->
-            <div class="mb-12 text-center">
-                <h2 class="mb-4 text-4xl font-bold text-gray-900">
+            <div class="mb-12 text-center relative z-10">
+                <h2 class="mb-4 text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                     {{ currentAudience === 'individual' ? 'Choose Your Plan' : 'Enterprise Solutions' }}
                 </h2>
-                <p class="mx-auto max-w-3xl text-xl text-gray-600">
+                <p class="mx-auto max-w-3xl text-xl text-gray-700">
                     {{
                         currentAudience === 'individual'
                             ? 'Transparent pricing with no hidden fees. Start free and upgrade as you grow.'
@@ -17,12 +21,14 @@
 
             <!-- Audience Toggle -->
             <div class="mb-12 flex justify-center">
-                <div class="rounded-lg bg-white p-1 shadow-md">
+                <div class="rounded-2xl bg-white/20 backdrop-blur-xl p-1 border border-white/30 shadow-xl">
                     <button
                         @click="toggleAudience('individual')"
                         :class="[
-                            'rounded-md px-6 py-3 font-medium transition-all duration-200',
-                            currentAudience === 'individual' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900',
+                            'rounded-2xl px-6 py-3 font-medium transition-all duration-300 backdrop-blur-xl border',
+                            currentAudience === 'individual' 
+                                ? 'bg-gradient-to-r from-blue-600/30 to-purple-600/30 text-white border-white/30 shadow-lg' 
+                                : 'bg-white/10 text-gray-300 border-transparent hover:bg-white/20 hover:text-white',
                         ]"
                     >
                         Individual Alumni
@@ -30,8 +36,10 @@
                     <button
                         @click="toggleAudience('institutional')"
                         :class="[
-                            'rounded-md px-6 py-3 font-medium transition-all duration-200',
-                            currentAudience === 'institutional' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:text-gray-900',
+                            'rounded-2xl px-6 py-3 font-medium transition-all duration-300 backdrop-blur-xl border',
+                            currentAudience === 'institutional' 
+                                ? 'bg-gradient-to-r from-blue-600/30 to-purple-600/30 text-white border-white/30 shadow-lg' 
+                                : 'bg-white/10 text-gray-300 border-transparent hover:bg-white/20 hover:text-white',
                         ]"
                     >
                         Institutions
@@ -45,10 +53,12 @@
                     v-for="plan in currentPlans"
                     :key="plan.id"
                     :class="[
-                        'pricing-card overflow-hidden rounded-xl bg-white shadow-lg transition-all duration-300 hover:shadow-xl',
-                        plan.featured ? 'scale-105 transform ring-2 ring-blue-500' : '',
+                        'pricing-card overflow-hidden rounded-2xl bg-white/20 backdrop-blur-xl shadow-xl transition-all duration-500 hover:shadow-2xl border border-white/30',
+                        plan.featured ? 'scale-105 transform border-2 border-blue-500/50 relative overflow-hidden' : '',
                     ]"
                 >
+                    <div v-if="plan.featured" class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-white/10 rounded-2xl z-0"></div>
+                    <div class="relative z-10">
                     <!-- Plan Header -->
                     <div :class="['p-6 text-center', plan.featured ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' : 'bg-gray-50']">
                         <h3 :class="['mb-2 text-2xl font-bold', plan.featured ? 'text-white' : 'text-gray-900']">
@@ -94,10 +104,10 @@
                         <button
                             @click="handlePlanSelection(plan)"
                             :class="[
-                                'w-full rounded-lg px-4 py-3 font-medium transition-all duration-200',
-                                plan.featured
-                                    ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700 hover:shadow-lg'
-                                    : 'bg-gray-100 text-gray-900 hover:bg-gray-200',
+                                'w-full rounded-2xl px-4 py-3 font-medium transition-all duration-300 border backdrop-blur-xl',
+                                plan.highlighted
+                                    ? 'bg-gradient-to-r from-blue-600/30 to-indigo-600/30 text-white border-white/30 shadow-lg' 
+                                    : 'bg-white/20 backdrop-blur-xl text-gray-700 border-white/30 hover:shadow-lg',
                             ]"
                         >
                             {{ plan.ctaText }}
@@ -118,10 +128,10 @@
                     <p class="text-gray-600">Compare all features across different plans</p>
                 </div>
 
-                <div class="overflow-hidden rounded-xl bg-white shadow-lg">
+                <div class="overflow-hidden rounded-2xl bg-white/20 backdrop-blur-xl border border-white/30 shadow-xl">
                     <div class="overflow-x-auto">
                         <table class="w-full">
-                            <thead class="bg-gray-50">
+                            <thead class="bg-white/30 backdrop-blur-sm">
                                 <tr>
                                     <th class="px-6 py-4 text-left text-sm font-medium text-gray-900">Features</th>
                                     <th v-for="plan in currentPlans" :key="plan.id" class="px-6 py-4 text-center text-sm font-medium text-gray-900">
@@ -129,8 +139,8 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr v-for="feature in comparisonFeatures" :key="feature.name" class="hover:bg-gray-50">
+                            <tbody class="divide-y divide-white/20">
+                                <tr v-for="feature in comparisonFeatures" :key="feature.name" class="hover:bg-white/10 transition-colors duration-200">
                                     <td class="px-6 py-4 text-sm font-medium text-gray-900">
                                         {{ feature.name }}
                                         <div v-if="feature.description" class="mt-1 text-xs text-gray-500">
@@ -155,9 +165,9 @@
 
             <!-- Transparent Pricing Notice -->
             <div class="mt-12 text-center">
-                <div class="mx-auto max-w-4xl rounded-lg bg-white p-6 shadow-md">
-                    <h4 class="mb-3 text-lg font-semibold text-gray-900">Transparent Pricing Promise</h4>
-                    <div class="grid grid-cols-1 gap-6 text-sm text-gray-600 md:grid-cols-3">
+                <div class="mx-auto max-w-4xl rounded-2xl bg-white/20 backdrop-blur-xl p-6 shadow-xl border border-white/30">
+                    <h4 class="mb-3 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Transparent Pricing Promise</h4>
+                    <div class="grid grid-cols-1 gap-6 text-sm text-gray-800 md:grid-cols-3">
                         <div class="flex items-center justify-center">
                             <ShieldCheckIcon class="mr-2 h-5 w-5 text-green-500" />
                             No hidden fees
@@ -174,6 +184,7 @@
                 </div>
             </div>
         </div>
+    </div>
     </section>
 </template>
 
@@ -434,6 +445,7 @@ onMounted(() => {
 <style scoped>
 .pricing-card {
     position: relative;
+    overflow: hidden;
 }
 
 .pricing-card::before {
@@ -443,9 +455,10 @@ onMounted(() => {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+    background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.5s ease;
+    z-index: 10;
 }
 
 .pricing-card:hover::before {
@@ -458,6 +471,37 @@ onMounted(() => {
     justify-content: center;
 }
 
+/* Enhanced glassmorphism effects */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+/* Floating animation for interactive elements */
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+.glass-button {
+    transition: all 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+}
+
+.glass-button:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
 @media (max-width: 768px) {
     .pricing-card {
         margin-bottom: 2rem;
@@ -465,6 +509,10 @@ onMounted(() => {
 
     .grid {
         grid-template-columns: 1fr;
+    }
+    
+    .pricing-card:hover {
+        transform: scale(1) !important; /* Prevent scale on mobile for better UX */
     }
 }
 </style>

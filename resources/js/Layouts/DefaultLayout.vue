@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppHeader from '@/Components/layout/AppHeader.vue';
 import AppSidebar from '@/Components/layout/AppSidebar.vue';
+import MegaFooter from '@/Components/MegaFooter.vue';
 import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
 import MobileNavigation from '@/Components/MobileNavigation.vue';
 import OnboardingSystem from '@/Components/onboarding/OnboardingSystem.vue';
@@ -155,6 +156,9 @@ const handleOnlineMode = (event: any) => {
                 <OnboardingSystem />
             </SidebarInset>
         </SidebarProvider>
+
+        <!-- Mega Footer -->
+        <MegaFooter />
 
         <!-- Mobile Navigation -->
         <MobileNavigation ref="mobileNavigationRef" />

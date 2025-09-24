@@ -2,7 +2,7 @@
  * Performance Optimization Utilities
  */
 
-import { getAssetUrl, shouldSkipAssetPreloading, shouldSkipPreloading } from './asset-url-helper';
+import { getAssetUrl, shouldSkipAssetPreloading, shouldSkipPreloading, isDevelopment } from './asset-url-helper';
 
 interface OptimizationConfig {
     enableLazyLoading: boolean;
@@ -334,11 +334,11 @@ class PerformanceOptimizer {
             return;
         }
 
-        // Preload critical CSS
-        this.preloadResource(getAssetUrl('/build/assets/app.css'), 'style');
-
-        // Preload critical JavaScript
-        this.preloadResource(getAssetUrl('/build/assets/app.js'), 'script');
+        // Preload critical CSS and JS - skip in development as Vite handles these
+        if (!isDevelopment()) {
+            this.preloadResource(getAssetUrl('/build/assets/app.css'), 'style');
+            this.preloadResource(getAssetUrl('/build/assets/app.js'), 'script');
+        }
 
         // Note: Font preloading removed as Inter fonts don't exist in this project
         // The project uses 'Instrument Sans' and system fonts instead
@@ -519,10 +519,24 @@ class PerformanceOptimizer {
         const maxCacheSize = 50;
         const cacheTimeout = 5 * 60 * 1000; // 5 minutes
 
+        // Endpoints that should not be cached
+        const excludedEndpoints = [
+            '/api/performance/metrics',
+            '/api/_boost/browser-logs',
+            '/api/_debugbar',
+            '/api/health'
+        ];
+
         // Intercept fetch requests
         const originalFetch = window.fetch;
         window.fetch = async (input, init) => {
             const url = typeof input === 'string' ? input : input.url;
+
+            // Skip caching for excluded endpoints
+            const isExcluded = excludedEndpoints.some(endpoint => url.includes(endpoint));
+            if (isExcluded) {
+                return originalFetch(input, init);
+            }
 
             // Only cache GET requests to API endpoints
             if ((!init || init.method === 'GET') && url.includes('/api/')) {
@@ -536,26 +550,35 @@ class PerformanceOptimizer {
                 }
             }
 
-            const response = await originalFetch(input, init);
+            try {
+                const response = await originalFetch(input, init);
 
-            // Cache successful GET responses
-            if (response.ok && (!init || init.method === 'GET') && url.includes('/api/')) {
-                const clonedResponse = response.clone();
-                clonedResponse.json().then((data) => {
-                    // Manage cache size
-                    if (cache.size >= maxCacheSize) {
-                        const firstKey = cache.keys().next().value;
-                        cache.delete(firstKey);
+                // Cache successful GET responses (excluding excluded endpoints)
+                if (response.ok && (!init || init.method === 'GET') && url.includes('/api/') && !isExcluded) {
+                    const clonedResponse = response.clone();
+                    try {
+                        const data = await clonedResponse.json();
+                        // Manage cache size
+                        if (cache.size >= maxCacheSize) {
+                            const firstKey = cache.keys().next().value;
+                            cache.delete(firstKey);
+                        }
+
+                        cache.set(url, {
+                            data,
+                            timestamp: Date.now(),
+                        });
+                    } catch (jsonError) {
+                        // Ignore JSON parsing errors for caching
+                        console.debug('Cache: Failed to parse JSON for', url);
                     }
+                }
 
-                    cache.set(url, {
-                        data,
-                        timestamp: Date.now(),
-                    });
-                });
+                return response;
+            } catch (fetchError) {
+                // Re-throw the original error
+                throw fetchError;
             }
-
-            return response;
         };
     }
 

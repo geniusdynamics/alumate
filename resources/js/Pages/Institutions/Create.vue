@@ -8,7 +8,7 @@
                 <div class="flex h-16 justify-between">
                     <div class="flex items-center space-x-8">
                         <Link href="/dashboard" class="text-xl font-semibold text-gray-900">
-                            {{ $page.props.app?.name || 'Laravel' }}
+                            {{ $page.props.app?.name || 'Alumate' }}
                         </Link>
                         <div class="hidden space-x-4 md:flex">
                             <Link href="/dashboard" class="rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900">

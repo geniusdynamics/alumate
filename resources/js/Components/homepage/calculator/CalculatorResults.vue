@@ -69,8 +69,8 @@
             <div class="metric-card">
                 <div class="mb-4 flex items-center justify-between">
                     <div class="flex items-center space-x-3">
-                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100">
-                            <svg class="h-5 w-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
+                            <svg class="h-5 w-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path
                                     stroke-linecap="round"
                                     stroke-linejoin="round"
@@ -82,7 +82,7 @@
                         <h4 class="font-semibold text-gray-900">ROI</h4>
                     </div>
                 </div>
-                <div class="mb-2 text-3xl font-bold text-purple-600">
+                <div class="mb-2 text-3xl font-bold text-indigo-600">
                     <AnimatedCounter :target="result.roiEstimate" suffix="x" :duration="1800" :decimals="1" />
                 </div>
                 <p class="text-sm text-gray-600">Return on networking investment</p>
@@ -91,7 +91,7 @@
         </div>
 
         <!-- Networking Value -->
-        <div class="mb-8 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 p-6">
+        <div class="mb-8 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
             <h4 class="mb-4 text-xl font-bold text-gray-900">Your Networking Value</h4>
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
@@ -242,7 +242,7 @@
                 Calculate Again
             </button>
             <button
-                class="rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-purple-700 hover:shadow-xl"
+                class="rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl"
             >
                 Start Your Free Trial
             </button>

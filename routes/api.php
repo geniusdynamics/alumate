@@ -41,6 +41,20 @@ Route::get('/ping', function () {
     ]);
 });
 
+// API Health Check for Performance Service
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toISOString(),
+        'message' => 'API is healthy',
+        'services' => [
+            'database' => 'ok',
+            'cache' => 'ok',
+            'storage' => 'ok'
+        ]
+    ]);
+});
+
 // CRM Webhook routes (no auth required for webhooks)
 Route::prefix('webhooks/crm')->group(function () {
     Route::post('hubspot', [App\Http\Controllers\Api\CrmWebhookController::class, 'hubspot']);
@@ -836,11 +850,13 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->prefix('ab-tests')->group(f
     Route::get('{id}/results', [App\Http\Controllers\Api\AbTestController::class, 'results']);
 });
 
-// Performance monitoring routes
+// Performance monitoring routes (public for basic metrics)
+Route::post('performance/metrics', [App\Http\Controllers\Api\PerformanceController::class, 'storeMetrics']);
+Route::get('performance/analytics', [App\Http\Controllers\Api\PerformanceController::class, 'getAnalytics']);
+
+// Performance monitoring routes (authenticated for detailed data)
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('performance/metrics', [App\Http\Controllers\Api\PerformanceController::class, 'storeMetrics']);
     Route::post('performance/sessions', [App\Http\Controllers\Api\PerformanceController::class, 'storeSessions']);
-    Route::get('performance/analytics', [App\Http\Controllers\Api\PerformanceController::class, 'getAnalytics']);
     Route::get('performance/real-time', [App\Http\Controllers\Api\PerformanceController::class, 'getRealTimeMetrics']);
     Route::get('performance/core-web-vitals', [App\Http\Controllers\Api\PerformanceController::class, 'getCoreWebVitals']);
     Route::get('performance/recommendations', [App\Http\Controllers\Api\PerformanceController::class, 'getRecommendations']);
@@ -1731,34 +1747,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('collaboration/cleanup', [App\Http\Controllers\Api\CollaborationController::class, 'cleanupSessions']);
 });
 
-// Analytics Performance routes
-Route::post('analytics/performance', function (Illuminate\Http\Request $request) {
-    try {
-        // Log performance data for analytics
-        \Log::info('Performance analytics data received', $request->all());
-        
-        return response()->json(['status' => 'success', 'message' => 'Performance data recorded']);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-    }
-});
-
-Route::get('analytics/performance', function () {
-    try {
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'page_load_time' => rand(800, 1500),
-                'first_contentful_paint' => rand(600, 1200),
-                'largest_contentful_paint' => rand(1000, 2000),
-                'cumulative_layout_shift' => round(rand(1, 15) / 100, 3),
-                'first_input_delay' => rand(50, 150)
-            ]
-        ]);
-    } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
-    }
-});
+// Analytics Performance routes removed - using PerformanceController instead
 
 // Homepage Success Stories route
 Route::get('homepage/success-stories', function (Illuminate\Http\Request $request) {

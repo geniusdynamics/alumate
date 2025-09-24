@@ -31,7 +31,10 @@ class PWAManager {
 
         // Setup periodic sync (if supported) - wait for service worker to be ready
         if (this.swRegistration) {
-            await this.setupPeriodicSync();
+            // Add a small delay to ensure service worker is fully ready
+            setTimeout(async () => {
+                await this.setupPeriodicSync();
+            }, 1000);
         }
 
         console.log('PWA Manager initialized');
@@ -318,29 +321,61 @@ class PWAManager {
             }
 
             try {
-                // Wait for service worker to be ready
-                await navigator.serviceWorker.ready;
-
-                await this.swRegistration.periodicSync.register('background-sync', {
-                    minInterval: 24 * 60 * 60 * 1000, // 24 hours
-                });
-                console.log('Periodic background sync registered');
+                // Wait for service worker to be ready and active
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Check if service worker is actually active
+                if (!registration.active) {
+                    console.warn('Service worker not active, skipping periodic sync setup');
+                    return;
+                }
+                
+                // Register periodic background sync if supported
+                if ('periodicSync' in registration) {
+                    await registration.periodicSync.register('background-sync', {
+                        minInterval: 24 * 60 * 60 * 1000, // 24 hours
+                    });
+                    console.log('Periodic background sync registered');
+                } else {
+                    console.log('Periodic background sync not supported, using fallback');
+                    // Fallback to regular sync
+                    await this.syncOfflineActions();
+                }
             } catch (error) {
-                console.error('Periodic background sync registration failed:', error);
+                console.warn('Periodic background sync registration failed:', error.message);
+                // Graceful fallback to manual sync
+                try {
+                    await this.syncOfflineActions();
+                } catch (fallbackError) {
+                    console.warn('Fallback sync also failed:', fallbackError.message);
+                }
             }
         } else {
-            console.warn('Periodic background sync is not supported');
+            console.log('Background sync not supported, using manual sync');
         }
     }
 
     async syncOfflineActions() {
-        if (this.swRegistration && 'sync' in window.ServiceWorkerRegistration.prototype) {
+        if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
             try {
-                await this.swRegistration.sync.register('background-sync');
-                console.log('Background sync registered');
+                const registration = await navigator.serviceWorker.ready;
+                
+                // Ensure service worker is active before registering sync
+                if (!registration.active) {
+                    console.warn('Service worker not active, cannot register background sync');
+                    return false;
+                }
+                
+                await registration.sync.register('background-sync');
+                console.log('Background sync registered successfully');
+                return true;
             } catch (error) {
-                console.error('Background sync registration failed:', error);
+                console.warn('Background sync registration failed:', error.message);
+                return false;
             }
+        } else {
+            console.log('Background sync not supported in this browser');
+            return false;
         }
     }
 

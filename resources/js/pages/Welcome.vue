@@ -494,7 +494,7 @@
                                 </svg>
                                 Development server is running
                             </p>
-                            <p class="mt-1 font-mono text-sm text-green-600">Laravel: http://127.0.0.1:8080 | Vite: http://127.0.0.1:5176</p>
+                            <p class="mt-1 font-mono text-sm text-green-600">Backend: http://127.0.0.1:8080 | Vite: http://127.0.0.1:5176</p>
                         </div>
                     </div>
                 </div>

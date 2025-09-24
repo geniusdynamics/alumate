@@ -72,13 +72,18 @@ const availabilityConfig = computed(() => {
         },
     };
 
+    // Add null/undefined check for props.level
+    if (!props.level || typeof props.level !== 'string') {
+        return configs.none;
+    }
+
     return configs[props.level] || configs.none;
 });
 
-const availabilityClass = computed(() => availabilityConfig.value.class);
-const availabilityIcon = computed(() => availabilityConfig.value.icon);
-const availabilityText = computed(() => availabilityConfig.value.text);
-const tooltipText = computed(() => availabilityConfig.value.tooltip);
+const availabilityClass = computed(() => availabilityConfig.value?.class || 'no-access');
+const availabilityIcon = computed(() => availabilityConfig.value?.icon || XMarkIcon);
+const availabilityText = computed(() => availabilityConfig.value?.text || 'Not Available');
+const tooltipText = computed(() => availabilityConfig.value?.tooltip || 'Feature not available');
 </script>
 
 <style scoped>
@@ -182,15 +187,15 @@ const tooltipText = computed(() => availabilityConfig.value.tooltip);
 
 /* Priority Access */
 .priority-access .availability-indicator {
-    @apply text-purple-600;
+    @apply text-indigo-600;
 }
 
 .priority-access .availability-text {
-    @apply text-purple-700;
+    @apply text-indigo-700;
 }
 
 .priority-access {
-    @apply rounded-full bg-purple-50 px-3 py-1;
+    @apply rounded-full bg-indigo-50 px-3 py-1;
 }
 
 /* Tooltip arrow */
