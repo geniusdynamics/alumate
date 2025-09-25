@@ -7,7 +7,7 @@
 **Execution Mode**: Use Orchestrator mode for code implementation (apply_diff/write_to_file for changes). Track progress by updating checkboxes [ ] → [-] (in progress) → [x] (done). After each phase, create a dated completion file (e.g., phase1-completion-2025-09-20.md) with outcomes, metrics, timestamps, and lessons. Archive in the folder or subfolder archived-plans/.
 
 **Prerequisites** (Setup Before Starting):
-- Environment: PHP 8.3+ (update XAMPP if needed), Node 18+, Composer 2.x, PostgreSQL 13+, Redis (for caching).
+- Environment: PHP 8.3+ (update XAMPP if needed), Node 18+, Composer 2.x, PostgreSQL 17+, Redis (for caching).
 - Tools: VS Code, Git, Laravel Debugbar (`composer require --dev barryvdh/laravel-debugbar`), phpstan (`composer require --dev phpstan/phpstan`), Pest (`composer require --dev pestphp/pest --dev pestphp/pest-plugin-laravel`), Artillery (`npm i -g artillery`), MaxMind GeoIP (`composer require geoip2/geoip2 maxmind-db/geolite2-city` – register free account for DB).
 - Branching: Work on feature branches (e.g., `improvements/phase1-tenancy`), PR to `improvements/main`. Commit after each sub-task.
 - Testing: After every task/sub-task, run `scripts/testing/run-tests.bat --coverage` (target 85%+ coverage). Use `php artisan tinker` for quick verifications.
@@ -484,7 +484,7 @@
            - db
            - redis
        db:
-         image: postgres:13
+         image: postgres:17
          environment:
            POSTGRES_DB: alumate
            POSTGRES_USER: postgres

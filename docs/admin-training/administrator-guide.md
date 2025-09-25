@@ -43,7 +43,7 @@ The integrated system consists of four main components:
 #### Server Requirements
 
 - PHP 8.3+
-- PostgreSQL 13+
+- PostgreSQL 17+
 - Redis 6+
 - Node.js 18+
 - Composer 2.x

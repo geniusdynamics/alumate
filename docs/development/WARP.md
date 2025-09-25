@@ -8,7 +8,7 @@ This file provides guidance to WARP (warp.dev) when working with code in this re
 - PHP 8.3+ (Specific path: `D:\DevCenter\xampp\php-8.3.23\php.exe`)
 - Node.js 18+
 - Composer 2.x
-- PostgreSQL 13+
+- PostgreSQL 17+
 - Redis (optional, for caching and queues)
 
 ### Quick Start Commands

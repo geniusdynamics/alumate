@@ -248,7 +248,7 @@ class JobApplicationController extends Controller
         // Send notification to employer
         $job->employer->user->notify(new \App\Notifications\JobApplicationNotification($application));
 
-        return redirect()->route('my.applications')->with('success', 'Application submitted successfully!');
+        return redirect()->route('graduate.applications')->with('success', 'Application submitted successfully!');
     }
 
     public function updateStatus(Request $request, JobApplication $application)

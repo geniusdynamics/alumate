@@ -80,7 +80,7 @@ jobs:
       name: ${{ github.event.inputs.environment || 'production' }}
     services:
       postgres:
-        image: postgres:15-alpine
+        image: postgres:17-alpine
         env:
           POSTGRES_DB: test_db
           POSTGRES_USER: postgres

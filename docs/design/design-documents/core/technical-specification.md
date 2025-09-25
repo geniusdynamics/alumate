@@ -1244,7 +1244,7 @@ services:
           memory: 512M
 
   db:
-    image: postgres:13
+    image: postgres:17
     environment:
       - POSTGRES_DB=template_staging
       - POSTGRES_USER=template_user

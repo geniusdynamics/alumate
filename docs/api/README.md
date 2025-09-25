@@ -23,7 +23,7 @@ The Alumni Platform API is a comprehensive REST API that provides programmatic a
 ### Backend
 - **Framework**: Laravel 12.26.4
 - **Language**: PHP 8.3.23
-- **Database**: PostgreSQL 13+
+- **Database**: PostgreSQL 17+
 - **Cache/Queue**: Redis (optional)
 - **API**: REST with Bearer Token Authentication
 

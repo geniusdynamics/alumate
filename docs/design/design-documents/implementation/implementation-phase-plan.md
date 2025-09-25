@@ -40,7 +40,7 @@ The following plan outlines the actual code implementation tasks that need to be
 #### Tasks:
 1. **Set up development environment**
    - Install required software (PHP 8.3+, Node.js 18+, Composer 2.x)
-   - Configure database (PostgreSQL 13+)
+   - Configure database (PostgreSQL 17+)
    - Set up Redis (optional)
    - Initialize Git repository
 

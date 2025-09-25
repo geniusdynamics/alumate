@@ -40,8 +40,8 @@ export const graduateMenuItems = [
     {
         title: 'My Applications',
         icon: Briefcase,
-        href: route('my.applications'),
-        active: route().current('my.applications'),
+        href: route('graduate.applications'),
+        active: route().current('graduate.applications'),
         permission: 'view applications',
     },
     { title: 'Job Dashboard', icon: Briefcase, href: route('jobs.dashboard'), active: route().current('jobs.dashboard*'), permission: 'view jobs' },

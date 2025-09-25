@@ -2014,7 +2014,7 @@ services:
 
   # Database
   database:
-    image: postgres:15
+    image: postgres:17
     environment:
       POSTGRES_DB: alumni_platform
       POSTGRES_USER: postgres

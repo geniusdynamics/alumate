@@ -95,7 +95,7 @@ class JobApplicationTest extends TestCase
             'graduate_id' => $this->graduate->id,
         ]);
 
-        $response = $this->get(route('my.applications'));
+        $response = $this->get(route('graduate.applications'));
 
         $response->assertInertia(function ($page) {
             $this->assertCount(1, $page->component('MyApplications/Index')->prop('applications'));

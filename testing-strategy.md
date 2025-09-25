@@ -1022,7 +1022,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres:13
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: password
         options: >-

@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:13
+        image: postgres:17
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
@@ -829,7 +829,7 @@ services:
       start_period: 40s
 
   database:
-    image: postgres:13
+    image: postgres:17
     environment:
       - POSTGRES_DB=template_production
       - POSTGRES_USER=template_user
