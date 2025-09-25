@@ -10,10 +10,28 @@ use App\Traits\HasPreviousInstitution;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Exception;
 
 class Graduate extends Model
 {
     use HasFactory, HasGraduateAuditLog, HasPreviousInstitution;
+
+    /**
+     * Boot the model
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Ensure we're in a tenant context
+        static::addGlobalScope('tenant_context', function (Builder $builder) {
+            $tenantService = app(TenantContextService::class);
+            if (!$tenantService->getCurrentTenantId()) {
+                throw new Exception('Graduate model requires tenant context. Use TenantContextService::setTenant() first.');
+            }
+        });
+    }
 
     protected $fillable = [
         // 'tenant_id', // Commented out for schema-based tenancy - tenant isolation handled at schema level

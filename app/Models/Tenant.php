@@ -14,6 +14,9 @@ class Tenant extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
         'name',
         'slug',
@@ -25,11 +28,16 @@ class Tenant extends Model
         'subscription_plan',
         'subscription_status',
         'trial_ends_at',
-        'created_by'
+        'created_by',
+        'address',
+        'contact_information',
+        'plan',
+        'data'
     ];
 
     protected $casts = [
         'settings' => 'array',
+        'data' => 'array',
         'trial_ends_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

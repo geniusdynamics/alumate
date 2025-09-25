@@ -71,7 +71,8 @@ class Course extends Model
 
         // Ensure we're in a tenant context
         static::addGlobalScope('tenant_context', function (Builder $builder) {
-            if (!TenantContextService::hasTenant()) {
+            $tenantService = app(TenantContextService::class);
+            if (!$tenantService->getCurrentTenantId()) {
                 throw new Exception('Course model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });

@@ -24,7 +24,8 @@ return new class extends Migration
             $table->text('error_message')->nullable();
             $table->string('redirect_url')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
             

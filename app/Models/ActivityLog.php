@@ -116,8 +116,10 @@ class ActivityLog extends Model
             }
 
             // Auto-detect severity if not set
-            if (empty($log->severity)) {
+            if (empty($log->severity) && !empty($log->action)) {
                 $log->severity = static::detectSeverity($log->action, $log->category);
+            } elseif (empty($log->severity)) {
+                $log->severity = self::SEVERITY_LOW; // Default severity when action is null
             }
         });
     }
@@ -613,7 +615,7 @@ class ActivityLog extends Model
     /**
      * Detect severity based on action and category
      */
-    protected static function detectSeverity(string $action, string $category): string
+    protected static function detectSeverity(string $action, ?string $category): string
     {
         // Critical actions
         if (in_array($action, [self::ACTION_DELETED, 'password_changed', 'permission_changed'])) {
@@ -626,7 +628,7 @@ class ActivityLog extends Model
         }
 
         // Medium severity categories
-        if (in_array($category, [self::CATEGORY_SECURITY, self::CATEGORY_ADMIN, self::CATEGORY_GRADE])) {
+        if ($category && in_array($category, [self::CATEGORY_SECURITY, self::CATEGORY_ADMIN, self::CATEGORY_GRADE])) {
             return self::SEVERITY_MEDIUM;
         }
 

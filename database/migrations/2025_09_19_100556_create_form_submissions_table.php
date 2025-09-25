@@ -26,7 +26,8 @@ return new class extends Migration
             $table->json('crm_sync_error')->nullable();
             $table->json('validation_errors')->nullable();
             $table->enum('status', ['pending', 'processed', 'failed', 'synced'])->default('pending');
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->timestamps();
             
             $table->index(['form_id', 'created_at']);

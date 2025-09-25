@@ -135,7 +135,7 @@ class TenancyServiceProvider extends ServiceProvider
     {
         // Extend database manager to support tenant connections
         $this->app->extend('db', function ($db, $app) {
-            $db->extend('tenant', function ($config, $name) use ($app) {
+            $db->extend('tenant', function ($config, $name) use ($app, $db) {
                 $tenantContext = $app[TenantContextService::class];
                 $currentTenant = $tenantContext->getCurrentTenant();
                 

@@ -1,7 +1,8 @@
 <template>
     <div class="feature-comparison-matrix relative overflow-hidden">
         <!-- Background Effects -->
-        <div class=\"absolute inset-0 bg-gradient-to-br from-blue-50/80 via-indigo-50/30 to-cyan-50/50\"></div>\n            <div class=\"absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-cyan-500/5\"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-blue-50/80 via-indigo-50/30 to-cyan-50/50"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-cyan-500/5"></div>
         
         <!-- Header -->
         <div class="relative z-10 mb-8 flex items-center justify-between">
