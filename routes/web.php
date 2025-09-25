@@ -762,7 +762,7 @@ Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin
 
         // API endpoints for builder
         Route::get('/api/templates', [\App\Http\Controllers\Admin\LandingPageController::class, 'getTemplates'])->name('api.templates');
-        Route::get('/api/components', [\App\Http\Controllers\Admin\LandingPageController::class, 'getComponents'])->name('api.components');
+        Route::get('/api/landing-components', [\App\Http\Controllers\Admin\LandingPageController::class, 'getComponents'])->name('api.landing-components');
     });
 });
 

@@ -148,7 +148,7 @@ class CrossTenantMiddleware
             $tenant = Cache::remember(
                 "tenant_by_subdomain:{$subdomain}",
                 self::TENANT_CACHE_TTL,
-                fn() => Tenant::where('subdomain', $subdomain)->first()
+                fn() => Tenant::where('domain', $subdomain)->first()
             );
             return $tenant?->id;
         }

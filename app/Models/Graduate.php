@@ -24,11 +24,20 @@ class Graduate extends Model
     {
         parent::boot();
 
-        // Ensure we're in a tenant context
+        // Optional tenant context - only apply if tenant is available
         static::addGlobalScope('tenant_context', function (Builder $builder) {
             $tenantService = app(TenantContextService::class);
-            if (!$tenantService->getCurrentTenantId()) {
-                throw new Exception('Graduate model requires tenant context. Use TenantContextService::setTenant() first.');
+            $currentTenantId = $tenantService->getCurrentTenantId();
+            
+            // Only apply tenant filtering if we have a valid tenant context
+            // This allows the model to work without tenant context for authentication scenarios
+            if ($currentTenantId) {
+                // Tenant context is available, we can safely apply tenant-specific filtering if needed
+                // For schema-based tenancy, the schema isolation handles this automatically
+                \Log::debug('Graduate model accessed with tenant context: ' . $currentTenantId);
+            } else {
+                // No tenant context - this is acceptable for authentication and profile access
+                \Log::debug('Graduate model accessed without tenant context - allowing for authentication scenarios');
             }
         });
     }

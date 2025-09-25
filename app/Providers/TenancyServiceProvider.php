@@ -89,7 +89,7 @@ class TenancyServiceProvider extends ServiceProvider
         // $this->setupQueryLogging(); // Temporarily disabled to fix circular dependency
 
         // Setup tenant context resolution
-        // $this->setupTenantContextResolution(); // Temporarily disabled to fix circular dependency
+        $this->setupTenantContextResolution();
 
         // Register blade directives
         $this->registerBladeDirectives();

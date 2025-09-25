@@ -116,12 +116,12 @@ export default defineConfig({
 
 	server: {
 		host: '127.0.0.1',
-		port: 5173,
+		port: 5174,
 		hmr: {
 			host: '127.0.0.1',
-			port: 5173,
+			port: 5174,
 		},
-		origin: 'http://127.0.0.1:5173',
+		origin: 'http://127.0.0.1:5174',
 		cors: {
 			origin: ['http://127.0.0.1:8080', 'http://localhost:8080'],
 			credentials: true,

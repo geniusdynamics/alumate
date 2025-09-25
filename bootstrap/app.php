@@ -16,22 +16,25 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Temporarily disable ALL middleware to test infinite loop
-        // $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
+        $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
         $middleware->web(append: [
-        //     HandleAppearance::class,
+            HandleAppearance::class,
             HandleInertiaRequests::class,
-        //     AddLinkHeadersForPreloadedAssets::class,
-        //     \App\Http\Middleware\SecurityHeaders::class,
+            AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\TenantMiddleware::class,
         ]);
-        // $middleware->alias([
-        //     'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
-        //     'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
-        //     'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-        //     'tenant' => \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
-        //     'api.rate_limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
-        //     'social.rate_limit' => \App\Http\Middleware\SocialRateLimiting::class,
-        // ]);
+        $middleware->api(append: [
+            \App\Http\Middleware\TenantMiddleware::class,
+        ]);
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'tenant' => \App\Http\Middleware\TenantMiddleware::class,
+            'api.rate_limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
+            'social.rate_limit' => \App\Http\Middleware\SocialRateLimiting::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

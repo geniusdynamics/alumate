@@ -52,7 +52,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
         @routes
-        @vite(['resources/css/app.css', 'resources/js/app.ts', "resources/js/Pages/{$page['component']}.vue"])
+        @vite(['resources/css/app.css', 'resources/js/app.ts'])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">

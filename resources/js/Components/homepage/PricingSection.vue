@@ -1,9 +1,9 @@
 <template>
     <section class="pricing-section py-16 relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-slate-50/80 via-blue-50/40 to-indigo-50/30"></div>
-    <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-blue-100/40"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent"></div>
-</section>
+        <div class="absolute inset-0 bg-gradient-to-br from-slate-50/80 via-blue-50/40 to-indigo-50/30"></div>
+        <div class="absolute inset-0 bg-gradient-to-tr from-transparent via-white/50 to-blue-100/40"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-400/10 via-transparent to-transparent"></div>
+        
         <div class="container mx-auto px-4">
             <!-- Section Header -->
             <div class="mb-12 text-center relative z-10">
@@ -59,7 +59,7 @@
                 >
                     <div v-if="plan.featured" class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-white/10 rounded-2xl z-0"></div>
                     <div class="relative z-10">
-                    <!-- Plan Header -->
+                        <!-- Plan Header -->
                     <div :class="['p-6 text-center', plan.featured ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white' : 'bg-gray-50']">
                         <h3 :class="['mb-2 text-2xl font-bold', plan.featured ? 'text-white' : 'text-gray-900']">
                             {{ plan.name }}
@@ -117,6 +117,8 @@
                         <div v-if="plan.additionalInfo" class="mt-4 text-center">
                             <p class="text-xs text-gray-500">{{ plan.additionalInfo }}</p>
                         </div>
+                    </div>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -184,7 +186,6 @@
                 </div>
             </div>
         </div>
-    </div>
     </section>
 </template>
 

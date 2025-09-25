@@ -326,16 +326,152 @@ class TenantContextService
     /**
      * Validate tenant access for the current user
      */
-    public function validateTenantAccess(string $tenantId): bool
+    public function validateTenantAccess(?int $tenantId = null): bool
     {
-        // Basic validation - check if tenant exists and user has access
-        if (!$this->tenantSchemaExists($tenantId)) {
+        $tenantId = $tenantId ?? $this->getCurrentTenantId();
+        
+        if (!$tenantId) {
             return false;
         }
+        
+        $user = auth()->user();
+        if (!$user) {
+            return false;
+        }
+        
+        // Super admins can access any tenant
+        if ($user->hasRole('super_admin')) {
+            return true;
+        }
+        
+        // Check if user belongs to this tenant
+        return $user->tenants()->where('tenant_id', $tenantId)->exists();
+    }
 
-        // Additional access validation logic would go here
-        // For now, we'll assume access is granted if tenant exists
-        return true;
+    /**
+     * Resolve tenant from request (used by TenancyServiceProvider)
+     */
+    public function resolveFromRequest(\Illuminate\Http\Request $request): ?\App\Models\Tenant
+    {
+        // Try multiple resolution strategies
+        $strategies = [
+            'resolveFromSubdomain',
+            'resolveFromDomain', 
+            'resolveFromHeader',
+            'resolveFromParameter',
+            'resolveFromCache'
+        ];
+
+        foreach ($strategies as $strategy) {
+            $tenant = $this->$strategy($request);
+            if ($tenant) {
+                $this->setTenant($tenant->id);
+                return $tenant;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve tenant from subdomain
+     */
+    private function resolveFromSubdomain(\Illuminate\Http\Request $request): ?\App\Models\Tenant
+    {
+        $host = $request->getHost();
+        $parts = explode('.', $host);
+
+        // Check if we have a subdomain (more than 2 parts for .com domains)
+        if (count($parts) >= 3) {
+            $subdomain = $parts[0];
+            
+            // Skip common subdomains
+            if (in_array($subdomain, ['www', 'api', 'admin', 'app'])) {
+                return null;
+            }
+
+            return $this->findTenantByIdentifier($subdomain, 'subdomain');
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve tenant from custom domain
+     */
+    private function resolveFromDomain(\Illuminate\Http\Request $request): ?\App\Models\Tenant
+    {
+        $domain = $request->getHost();
+        return $this->findTenantByIdentifier($domain, 'domain');
+    }
+
+    /**
+     * Resolve tenant from X-Tenant header
+     */
+    private function resolveFromHeader(\Illuminate\Http\Request $request): ?\App\Models\Tenant
+    {
+        $tenantIdentifier = $request->header('X-Tenant');
+        
+        if ($tenantIdentifier) {
+            return $this->findTenantByIdentifier($tenantIdentifier, 'slug');
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve tenant from query parameter
+     */
+    private function resolveFromParameter(\Illuminate\Http\Request $request): ?\App\Models\Tenant
+    {
+        $tenantIdentifier = $request->query('tenant');
+        
+        if ($tenantIdentifier) {
+            return $this->findTenantByIdentifier($tenantIdentifier, 'slug');
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve tenant from cache
+     */
+    public function resolveTenantFromCache(): ?\App\Models\Tenant
+    {
+        $tenantId = $this->getCurrentTenantId();
+        
+        if (!$tenantId) {
+            return null;
+        }
+        
+        $cacheKey = "tenant_model_{$tenantId}";
+        
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function() use ($tenantId) {
+            return \App\Models\Tenant::find($tenantId);
+        });
+    }
+
+    /**
+     * Find tenant by identifier and type
+     */
+    private function findTenantByIdentifier(string $identifier, string $type): ?\App\Models\Tenant
+    {
+        $cacheKey = "tenant_lookup_{$type}_{$identifier}";
+        
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 3600, function() use ($identifier, $type) {
+            $query = \App\Models\Tenant::where('status', 'active');
+            
+            switch ($type) {
+                case 'subdomain':
+                    return $query->where('subdomain', $identifier)->first();
+                case 'domain':
+                    return $query->where('custom_domain', $identifier)->first();
+                case 'slug':
+                    return $query->where('slug', $identifier)->first();
+                default:
+                    return null;
+            }
+        });
     }
 
     /**

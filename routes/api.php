@@ -20,12 +20,19 @@ use App\Http\Controllers\Api\StudentMentorshipController;
 use App\Http\Controllers\Api\StudentProfileController;
 use App\Http\Controllers\Api\TemplateAnalyticsController;
 use App\Http\Controllers\Api\TimelineController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// User profile routes
+Route::middleware('auth:web')->group(function () {
+    Route::get('/user/profile', [UserController::class, 'profile']);
+    Route::put('/user/profile', [UserController::class, 'updateProfile']);
+});
 
 // Test route for social rate limiting
 Route::post('/test/social-action', function (Request $request) {
@@ -78,6 +85,12 @@ Route::prefix('statistics')->group(function () {
 
 // Homepage Navigation
 Route::get('/homepage-navigation', [\App\Http\Controllers\Api\HomepageNavigationController::class, 'index']);
+
+// Homepage API routes
+Route::prefix('homepage')->group(function () {
+    Route::get('stats', [\App\Http\Controllers\Api\HomepageController::class, 'getStatistics']);
+    Route::get('statistics', [\App\Http\Controllers\Api\HomepageController::class, 'getStatistics']);
+});
 
 // PWA Push Notification routes
 // VAPID key endpoint - public access for PWA initialization
@@ -388,17 +401,33 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Scholarship routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('scholarships', App\Http\Controllers\Api\ScholarshipController::class);
+    Route::apiResource('scholarships', App\Http\Controllers\Api\ScholarshipController::class)->names([
+        'index' => 'api.scholarships.index',
+        'store' => 'api.scholarships.store',
+        'show' => 'api.scholarships.show',
+        'update' => 'api.scholarships.update',
+        'destroy' => 'api.scholarships.destroy'
+    ]);
     Route::get('scholarships/{scholarship}/impact-report', [App\Http\Controllers\Api\ScholarshipController::class, 'impactReport']);
     Route::get('user/donor-updates', [App\Http\Controllers\Api\ScholarshipController::class, 'donorUpdates']);
 
     // Scholarship Applications
-    Route::apiResource('scholarships.applications', App\Http\Controllers\Api\ScholarshipApplicationController::class);
+    Route::apiResource('scholarships.applications', App\Http\Controllers\Api\ScholarshipApplicationController::class)->names([
+        'index' => 'api.scholarships.applications.index',
+        'store' => 'api.scholarships.applications.store',
+        'show' => 'api.scholarships.applications.show',
+        'update' => 'api.scholarships.applications.update',
+        'destroy' => 'api.scholarships.applications.destroy'
+    ]);
     Route::post('scholarships/{scholarship}/applications/{application}/review', [App\Http\Controllers\Api\ScholarshipApplicationController::class, 'review']);
     Route::post('scholarships/{scholarship}/applications/{application}/award', [App\Http\Controllers\Api\ScholarshipApplicationController::class, 'award']);
 
     // Scholarship Recipients
-    Route::apiResource('scholarships.recipients', App\Http\Controllers\Api\ScholarshipRecipientController::class)->only(['index', 'show', 'update']);
+    Route::apiResource('scholarships.recipients', App\Http\Controllers\Api\ScholarshipRecipientController::class)->only(['index', 'show', 'update'])->names([
+        'index' => 'api.scholarships.recipients.index',
+        'show' => 'api.scholarships.recipients.show',
+        'update' => 'api.scholarships.recipients.update'
+    ]);
     Route::get('scholarship-recipients/success-stories', [App\Http\Controllers\Api\ScholarshipRecipientController::class, 'successStories']);
 });
 
@@ -497,10 +526,16 @@ Route::middleware('auth:sanctum')->group(function () {
 // Component Library routes
 Route::middleware(['auth:sanctum'])->prefix('components')->name('components.')->group(function () {
     // Standard CRUD operations
-    Route::apiResource('', App\Http\Controllers\Api\ComponentController::class);
+    Route::apiResource('components', App\Http\Controllers\Api\ComponentController::class)->names([
+        'index' => 'components.index',
+        'store' => 'components.store',
+        'show' => 'components.show',
+        'update' => 'components.update',
+        'destroy' => 'components.destroy'
+    ])->parameters(['components' => 'component']);
 
     // Component operations
-    Route::post('{component}/duplicate', [App\Http\Controllers\Api\ComponentController::class, 'duplicate']);
+    Route::post('{component}/duplicate', [App\Http\Controllers\Api\ComponentController::class, 'duplicate'])->name('components.duplicate');
     Route::post('{component}/activate', [App\Http\Controllers\Api\ComponentController::class, 'activate']);
     Route::post('{component}/deactivate', [App\Http\Controllers\Api\ComponentController::class, 'deactivate']);
     Route::get('{component}/preview', [App\Http\Controllers\Api\ComponentController::class, 'preview']);
@@ -542,13 +577,19 @@ Route::middleware(['auth:sanctum'])->prefix('components')->name('components.')->
 // Component Theme Management routes
 Route::middleware(['auth:sanctum'])->prefix('component-themes')->name('component-themes.')->group(function () {
     // Standard CRUD operations
-    Route::apiResource('', App\Http\Controllers\Api\ComponentThemeController::class);
+    Route::apiResource('themes', App\Http\Controllers\Api\ComponentThemeController::class)->names([
+        'index' => 'component-themes.index',
+        'store' => 'component-themes.store',
+        'show' => 'component-themes.show',
+        'update' => 'component-themes.update',
+        'destroy' => 'component-themes.destroy'
+    ])->parameters(['themes' => 'theme']);
 
     // GrapeJS integration endpoints
-    Route::get('grapejs', [App\Http\Controllers\Api\ComponentThemeController::class, 'grapeJSIndex']);
+    Route::get('grapejs', [App\Http\Controllers\Api\ComponentThemeController::class, 'grapeJSIndex'])->name('component-themes.grapejs');
 
     // Theme operations
-    Route::post('{theme}/duplicate', [App\Http\Controllers\Api\ComponentThemeController::class, 'duplicate']);
+    Route::post('{theme}/duplicate', [App\Http\Controllers\Api\ComponentThemeController::class, 'duplicate'])->name('component-themes.duplicate');
     Route::post('{theme}/apply', [App\Http\Controllers\Api\ComponentThemeController::class, 'apply']);
     Route::get('{theme}/preview', [App\Http\Controllers\Api\ComponentThemeController::class, 'preview']);
     Route::get('{theme}/usage', [App\Http\Controllers\Api\ComponentThemeController::class, 'usage']);

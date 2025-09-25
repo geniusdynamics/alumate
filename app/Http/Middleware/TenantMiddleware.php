@@ -15,6 +15,13 @@ use Exception;
 
 class TenantMiddleware
 {
+    protected TenantContextService $tenantContext;
+
+    public function __construct(TenantContextService $tenantContext)
+    {
+        $this->tenantContext = $tenantContext;
+    }
+
     /**
      * Handle an incoming request.
      */
@@ -39,7 +46,7 @@ class TenantMiddleware
             }
 
             // Set tenant context
-            TenantContextService::setTenant($tenant);
+            $this->tenantContext->setTenant($tenant->id);
 
             // Add tenant information to request
             $request->merge(['tenant' => $tenant]);
@@ -156,7 +163,7 @@ class TenantMiddleware
      */
     private function resolveFromCache(Request $request): ?Tenant
     {
-        return TenantContextService::resolveTenantFromCache();
+        return $this->tenantContext->resolveTenantFromCache();
     }
 
     /**
@@ -171,9 +178,9 @@ class TenantMiddleware
             
             switch ($type) {
                 case 'subdomain':
-                    return $query->where('subdomain', $identifier)->first();
+                    return $query->where('domain', $identifier)->first();
                 case 'domain':
-                    return $query->where('custom_domain', $identifier)->first();
+                    return $query->where('domain', $identifier)->first();
                 case 'slug':
                     return $query->where('slug', $identifier)->first();
                 default:
@@ -193,7 +200,14 @@ class TenantMiddleware
             'health-check',
             'telescope/*',
             'horizon/*',
-            '_debugbar/*'
+            '_debugbar/*',
+            'api/homepage/stats',
+            'api/ping',
+            'api/health',
+            'api/user/profile',
+            'api/performance/*',
+            'api/push/vapid-key',
+            'api/webhooks/*'
         ];
 
         foreach ($skipRoutes as $pattern) {
@@ -205,7 +219,10 @@ class TenantMiddleware
         // Skip for certain domains
         $skipDomains = [
             'admin.' . config('app.domain'),
-            'api.' . config('app.domain')
+            'api.' . config('app.domain'),
+            'localhost',
+            '127.0.0.1',
+            '0.0.0.0'
         ];
 
         if (in_array($request->getHost(), $skipDomains)) {
@@ -226,7 +243,7 @@ class TenantMiddleware
         }
 
         // Check if tenant schema exists
-        if (!TenantContextService::schemaExists($tenant->schema_name)) {
+        if (!$this->tenantContext->schemaExists($tenant->schema_name)) {
             Log::error("Tenant schema does not exist", [
                 'tenant_id' => $tenant->id,
                 'schema_name' => $tenant->schema_name
@@ -312,7 +329,7 @@ class TenantMiddleware
     {
         try {
             // Log to activity_logs table in tenant schema
-            TenantContextService::withTenant($tenant, function() use ($request, $tenant) {
+            $this->tenantContext->withTenant($tenant->id, function() use ($request, $tenant) {
                 \DB::table('activity_logs')->insert([
                     'tenant_id' => $tenant->id,
                     'user_id' => auth()->id(),
@@ -378,11 +395,11 @@ class TenantMiddleware
     /**
      * Clean up tenant context after request
      */
-    public function terminate(Request $request, Response $response): void
+    public function terminate(Request $request, $response): void
     {
         try {
             // Clear tenant context to prevent memory leaks
-            TenantContextService::clearTenant();
+            $this->tenantContext->clearContext();
         } catch (Exception $e) {
             Log::error('Error during tenant middleware termination: ' . $e->getMessage());
         }
