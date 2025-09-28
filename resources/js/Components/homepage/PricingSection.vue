@@ -119,7 +119,6 @@
                         </div>
                     </div>
                     </div>
-                    </div>
                 </div>
             </div>
 
@@ -198,16 +197,14 @@ interface Props {
     audience?: AudienceType;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-    audience: 'individual',
-});
+const props = defineProps<Props>();
 
 const emit = defineEmits<{
     planSelected: [plan: PricingPlan];
     audienceChanged: [audience: AudienceType];
 }>();
 
-const currentAudience = ref<AudienceType>(props.audience);
+const currentAudience = ref<AudienceType>(props.audience || 'individual');
 
 // Individual Alumni Plans
 const individualPlans: PricingPlan[] = [
