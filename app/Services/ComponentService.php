@@ -403,22 +403,6 @@ class ComponentService
         return $query->exists();
     }
 
-    /**
-     * Generate a unique slug for a component
-     */
-    protected function generateUniqueSlug(string $name, ?int $ignoreId = null): string
-    {
-        $baseSlug = Str::slug($name);
-        $slug = $baseSlug;
-        $counter = 1;
-
-        while ($this->slugExists($slug, $ignoreId)) {
-            $slug = $baseSlug . '-' . $counter;
-            $counter++;
-        }
-
-        return $slug;
-    }
 
     /**
      * Generate preview data for a component

@@ -474,4 +474,3 @@ class GamificationAnalyticsServiceTest extends TestCase
         $this->assertEquals(50, $leaderboard->last()['total_points']);
     }
 }
-}

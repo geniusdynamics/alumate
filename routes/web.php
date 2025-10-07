@@ -40,6 +40,13 @@ Route::middleware(['auth', 'role:super-admin'])->prefix('monitoring')->name('mon
     });
 });
 
+// Horizon Queue Monitoring Routes (Admin only)
+Route::middleware(['auth', 'role:super-admin'])->group(function () {
+    Route::get('/horizon', function () {
+        return redirect(config('horizon.path'));
+    })->name('horizon');
+});
+
 // Homepage Enhancement Routes
 Route::get('/homepage', [\App\Http\Controllers\HomepageController::class, 'index'])->name('homepage.index');
 Route::get('/homepage/institutional', [\App\Http\Controllers\HomepageController::class, 'institutional'])->name('homepage.institutional');

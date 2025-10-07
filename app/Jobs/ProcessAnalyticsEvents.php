@@ -7,6 +7,9 @@ namespace App\Jobs;
 use App\Models\AnalyticsEvent;
 use App\Models\ComponentAnalytic;
 use App\Services\ABTestingService;
+use App\Services\Analytics\GoogleAnalyticsService;
+use App\Services\Analytics\MatomoService;
+use App\Services\Analytics\SyncService;
 use App\Services\AnalyticsService;
 use App\Services\HeatMapService;
 use App\Services\TenantContextService;
@@ -16,6 +19,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 /**
  * Process analytics events asynchronously
@@ -41,7 +45,10 @@ class ProcessAnalyticsEvents implements ShouldQueue
     public function handle(
         AnalyticsService $analyticsService,
         HeatMapService $heatMapService,
-        TenantContextService $tenantContextService
+        TenantContextService $tenantContextService,
+        GoogleAnalyticsService $googleAnalyticsService,
+        MatomoService $matomoService,
+        SyncService $syncService
     ): void {
         try {
             Log::info('Starting ProcessAnalyticsEvents job', [
@@ -64,7 +71,7 @@ class ProcessAnalyticsEvents implements ShouldQueue
                         continue;
                     }
 
-                    $this->processEvent($event, $analyticsService, $heatMapService);
+                    $this->processEvent($event, $analyticsService, $heatMapService, $googleAnalyticsService, $matomoService);
                     $processed++;
 
                 } catch (\Exception $e) {
@@ -79,6 +86,20 @@ class ProcessAnalyticsEvents implements ShouldQueue
                         'error' => $e->getMessage(),
                     ];
                 }
+            }
+
+            // Run discrepancy detection after processing events
+            try {
+                $syncService->detectDiscrepancies($this->tenantId);
+                Log::info('Discrepancy detection completed after event processing', [
+                    'tenant_id' => $this->tenantId,
+                ]);
+            } catch (Exception $e) {
+                Log::error('Failed to run discrepancy detection after event processing', [
+                    'tenant_id' => $this->tenantId,
+                    'error' => $e->getMessage(),
+                ]);
+                // Don't fail the job for discrepancy detection errors
             }
 
             Log::info('ProcessAnalyticsEvents job completed', [
@@ -109,10 +130,16 @@ class ProcessAnalyticsEvents implements ShouldQueue
     /**
      * Process a single analytics event
      */
-    private function processEvent(AnalyticsEvent $event, AnalyticsService $analyticsService, HeatMapService $heatMapService): void
+    private function processEvent(AnalyticsEvent $event, AnalyticsService $analyticsService, HeatMapService $heatMapService, GoogleAnalyticsService $googleAnalyticsService, MatomoService $matomoService): void
     {
         // Validate compliance flags and enforce retention policies
         $this->validateCompliance($event);
+
+        // Forward event to Google Analytics 4 if compliant
+        if ($event->is_compliant) {
+            $this->forwardToGA4($event, $googleAnalyticsService);
+            $this->forwardToMatomo($event, $matomoService);
+        }
 
         // Aggregate metrics based on event type
         $this->aggregateMetrics($event, $analyticsService);
@@ -310,6 +337,61 @@ class ProcessAnalyticsEvents implements ShouldQueue
     }
 
     /**
+     * Forward event to Google Analytics 4
+     */
+    private function forwardToGA4(AnalyticsEvent $event, GoogleAnalyticsService $googleAnalyticsService): void
+    {
+        try {
+            // Prepare event data for GA4
+            $eventData = [
+                'tenant_id' => $event->tenant_id,
+                'user_segment' => $event->properties['user_segment'] ?? null,
+                'session_id' => $event->session_id,
+                'custom_properties' => $event->properties,
+            ];
+
+            // Forward the event
+            $googleAnalyticsService->forwardEvent($event->event_name, $eventData);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to forward event to GA4', [
+                'event_id' => $event->id,
+                'event_name' => $event->event_name,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Forward event to Matomo
+     */
+    private function forwardToMatomo(AnalyticsEvent $event, MatomoService $matomoService): void
+    {
+        try {
+            // Prepare event data for Matomo
+            $eventData = [
+                'event_type' => $event->event_name,
+                'module' => $event->properties['module'] ?? 'general',
+                'engagement_score' => $event->properties['engagement_score'] ?? $event->value ?? null,
+                'user_id' => $event->user_id,
+                'tenant_id' => $event->tenant_id,
+                'user_segment' => $event->properties['user_segment'] ?? null,
+                'session_id' => $event->session_id,
+            ];
+
+            // Forward the event
+            $matomoService->trackEvent($eventData);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to forward event to Matomo', [
+                'event_id' => $event->id,
+                'event_name' => $event->event_name,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
      * Get the tags that should be assigned to the job.
      */
     public function tags(): array
@@ -317,6 +399,10 @@ class ProcessAnalyticsEvents implements ShouldQueue
         return [
             'analytics',
             'event-processing',
+            'tenant:' . $this->tenantId,
+        ];
+    }
+
     /**
      * Broadcast batched analytics updates via WebSocket
      */
@@ -375,9 +461,6 @@ class ProcessAnalyticsEvents implements ShouldQueue
                 'event_name' => $firstEvent->event_name,
                 'properties' => $firstEvent->properties,
             ],
-        ];
-    }
-            'tenant:' . $this->tenantId,
         ];
     }
 }

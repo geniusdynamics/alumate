@@ -1,0 +1,18 @@
+Attribution Service (Tests\Unit\Services\AttributionService)
+ [ ] Track touch with valid data
+ [ ] Track touch without consent throws exception
+ [ ] Track touch with invalid event type
+ [ ] Track touch with negative value
+ [ ] Calculate attribution last touch
+ [ ] Calculate attribution first touch
+ [ ] Calculate attribution linear
+ [ ] Calculate attribution time decay
+ [ ] Generate budget recommendations returns allocations
+ [ ] Analyze conversion paths identifies common sequences
+ [ ] Calculate attribution handles empty touchpoints
+ [ ] Single touchpoint attribution models
+ [ ] Invalid attribution model defaults to linear
+ [ ] Tenant isolation in attribution calculations
+ [ ] Identify top paths respects limit
+ [ ] Time decay with custom decay rate
+

@@ -864,6 +864,12 @@ Route::prefix('analytics')->group(function () {
     Route::get('pixel/{landingPageId}', [App\Http\Controllers\Api\AnalyticsTrackingController::class, 'pixel']);
 });
 
+// External Analytics Sync routes
+Route::prefix('analytics/external-sync')->group(function () {
+    Route::post('/', [App\Http\Controllers\Api\ExternalSyncController::class, 'sync']);
+    Route::post('/webhook', [App\Http\Controllers\Api\ExternalSyncController::class, 'webhook']);
+    Route::get('/status', [App\Http\Controllers\Api\ExternalSyncController::class, 'status']);
+});
 // Analytics routes
 Route::prefix('analytics')->group(function () {
     // Event tracking endpoints
@@ -876,6 +882,83 @@ Route::prefix('analytics')->group(function () {
     Route::post('reports/{reportType}', [App\Http\Controllers\AnalyticsController::class, 'generateReport']);
     Route::post('export', [App\Http\Controllers\AnalyticsController::class, 'exportData']);
     Route::post('conversion-report', [App\Http\Controllers\AnalyticsController::class, 'getConversionReport']);
+
+    // Cohort analysis endpoints
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('cohorts/create', [App\Http\Controllers\AnalyticsController::class, 'createCohort']);
+        Route::get('cohorts/{cohortId}', [App\Http\Controllers\AnalyticsController::class, 'getCohort']);
+        Route::post('cohorts/compare', [App\Http\Controllers\AnalyticsController::class, 'compareCohorts']);
+        Route::get('cohorts', [App\Http\Controllers\AnalyticsController::class, 'listCohorts']);
+    });
+
+    // New Cohort API endpoints
+    Route::middleware(['auth:sanctum', 'throttle:cohort'])->group(function () {
+        Route::apiResource('cohorts', App\Http\Controllers\Analytics\CohortController::class)->parameters([
+            'cohorts' => 'cohortId'
+        ]);
+        Route::post('cohorts/compare', [App\Http\Controllers\Analytics\CohortController::class, 'compare']);
+    });
+
+    // Attribution analysis endpoints
+    Route::middleware(['throttle:analytics_attribution'])->group(function () {
+        Route::post('attribution/track-touch', [App\Http\Controllers\AnalyticsController::class, 'trackTouchpoint']);
+    });
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('attribution/models/{userId}', [App\Http\Controllers\AnalyticsController::class, 'getUserAttribution']);
+        Route::get('attribution/channels', [App\Http\Controllers\AnalyticsController::class, 'getChannelPerformance']);
+        Route::get('attribution/budget-recommendations', [App\Http\Controllers\AnalyticsController::class, 'getBudgetRecommendations']);
+    });
+
+    // New Attribution API endpoints
+    Route::middleware(['auth:sanctum', 'throttle:attribution'])->group(function () {
+        Route::get('analytics/attribution', [App\Http\Controllers\Analytics\AttributionController::class, 'index']);
+        Route::post('analytics/attribution/touches', [App\Http\Controllers\Analytics\AttributionController::class, 'store']);
+        Route::get('analytics/attribution/{userId?}', [App\Http\Controllers\Analytics\AttributionController::class, 'show']);
+        Route::get('analytics/attribution-summary', [App\Http\Controllers\Analytics\AttributionController::class, 'summary']);
+    });
+
+    // Custom Event endpoints
+    Route::middleware(['throttle:analytics_custom_events'])->group(function () {
+        Route::post('custom-events/define', [App\Http\Controllers\AnalyticsController::class, 'defineCustomEvent']);
+        Route::post('custom-events/track', [App\Http\Controllers\AnalyticsController::class, 'trackCustomEvent'])->middleware('throttle:analytics_tracking');
+        Route::get('custom-events', [App\Http\Controllers\AnalyticsController::class, 'listCustomEvents']);
+        Route::get('custom-events/{eventName}/analysis', [App\Http\Controllers\AnalyticsController::class, 'getEventAnalysis']);
+
+        // New Custom Event System routes
+        Route::get('custom-events/definitions', [App\Http\Controllers\Analytics\CustomEventController::class, 'index']);
+        Route::post('custom-events/definitions', [App\Http\Controllers\Analytics\CustomEventController::class, 'storeDefinition']);
+        Route::post('custom-events/track', [App\Http\Controllers\Analytics\CustomEventController::class, 'track']);
+        Route::get('custom-events/{definition}/analytics', [App\Http\Controllers\Analytics\CustomEventController::class, 'analytics']);
+    });
+
+    // Matomo Analytics endpoints
+    Route::middleware(['throttle:analytics_matomo'])->group(function () {
+        Route::post('matomo/track', [App\Http\Controllers\AnalyticsController::class, 'trackMatomoEvent']);
+        Route::post('matomo/sync-goals', [App\Http\Controllers\AnalyticsController::class, 'syncMatomoGoals']);
+        Route::get('matomo/segments', [App\Http\Controllers\AnalyticsController::class, 'getMatomoSegments']);
+    });
+
+    // Data Synchronization endpoints
+    Route::middleware(['auth:sanctum', 'throttle:analytics_sync'])->group(function () {
+        Route::post('sync/run', [App\Http\Controllers\AnalyticsController::class, 'runSync']);
+        Route::get('sync/status', [App\Http\Controllers\AnalyticsController::class, 'getSyncStatus']);
+    });
+
+    // Insights endpoints
+    Route::middleware(['auth:sanctum', 'throttle:insights'])->group(function () {
+        Route::get('insights', [App\Http\Controllers\Analytics\InsightsController::class, 'index']);
+        Route::post('insights/generate', [App\Http\Controllers\Analytics\InsightsController::class, 'generate']);
+        Route::post('insights/{insightId}/feedback', [App\Http\Controllers\Analytics\InsightsController::class, 'trackFeedback']);
+    });
+
+    // Learning analytics endpoints
+    Route::middleware(['auth:sanctum', 'throttle:learning', \App\Http\Middleware\ConsentMiddleware::class])->group(function () {
+        Route::get('learning', [App\Http\Controllers\Analytics\LearningController::class, 'index']);
+        Route::post('learning', [App\Http\Controllers\Analytics\LearningController::class, 'storeInteraction']);
+        Route::get('learning/{userId}/{courseId}', [App\Http\Controllers\Analytics\LearningController::class, 'show']);
+        Route::patch('learning/{userId}', [App\Http\Controllers\Analytics\LearningController::class, 'updateProgress']);
+    });
 });
 
 // A/B Testing routes
@@ -1790,11 +1873,72 @@ Route::middleware('auth:sanctum')->group(function () {
 
 // Analytics Performance routes removed - using PerformanceController instead
 
+// Privacy API routes (GDPR/CCPA compliance)
+Route::middleware('auth:sanctum')->prefix('privacy')->group(function () {
+    Route::post('consent', [App\Http\Controllers\PrivacyController::class, 'updateConsent']);
+    Route::delete('data', [App\Http\Controllers\PrivacyController::class, 'deleteUserData']);
+    Route::get('report', [App\Http\Controllers\PrivacyController::class, 'getComplianceReport']);
+    Route::get('preferences', [App\Http\Controllers\PrivacyController::class, 'getConsentPreferences']);
+    Route::get('export', [App\Http\Controllers\PrivacyController::class, 'exportUserData']);
+
+    // Enhanced privacy routes for analytics compliance
+    Route::post('consent/grant/{type}', [App\Http\Controllers\Analytics\PrivacyController::class, 'grantConsent']);
+    Route::post('consent/revoke/{type}', [App\Http\Controllers\Analytics\PrivacyController::class, 'revokeConsent']);
+    Route::get('export', [App\Http\Controllers\Analytics\PrivacyController::class, 'export']);
+    Route::post('opt-out-ccpa', [App\Http\Controllers\Analytics\PrivacyController::class, 'optOut']);
+    Route::get('audit-logs', [App\Http\Controllers\Analytics\PrivacyController::class, 'auditLogs']);
+});
+
+// Consent API routes for analytics
+Route::middleware('auth:sanctum')->prefix('consent')->group(function () {
+    Route::post('grant', function (Illuminate\Http\Request $request) {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|in:analytics',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $consentService = app(\App\Services\Analytics\ConsentService::class);
+        $success = $consentService->grantConsent(type: $request->input('type'));
+
+        return response()->json([
+            'success' => $success,
+            'message' => $success ? 'Consent granted successfully' : 'Failed to grant consent',
+        ]);
+    });
+
+    Route::post('revoke', function (Illuminate\Http\Request $request) {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|in:analytics',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $consentService = app(\App\Services\Analytics\ConsentService::class);
+        $success = $consentService->revokeConsent(type: $request->input('type'));
+
+        return response()->json([
+            'success' => $success,
+            'message' => $success ? 'Consent revoked successfully' : 'Failed to revoke consent',
+        ]);
+    });
+});
+
 // Homepage Success Stories route
 Route::get('homepage/success-stories', function (Illuminate\Http\Request $request) {
     try {
         $audience = $request->get('audience', 'general');
-        
+
         $stories = [
             [
                 'id' => 1,
@@ -1824,7 +1968,7 @@ Route::get('homepage/success-stories', function (Illuminate\Http\Request $reques
                 'company' => 'Growth Solutions'
             ]
         ];
-        
+
         return response()->json([
             'status' => 'success',
             'data' => $stories,

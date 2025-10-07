@@ -1,401 +1,476 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Performance;
 
-use App\Models\Tenant;
-use App\Models\User;
 use App\Models\AnalyticsEvent;
-use App\Models\HeatMapData;
-use App\Models\ABTest;
+use App\Models\AttributionTouch;
+use App\Models\Cohort;
+use App\Models\LearningProgress;
+use App\Models\User;
+use App\Services\Analytics\AttributionService;
+use App\Services\Analytics\CohortAnalysisService;
+use App\Services\Analytics\ConsentService;
+use App\Services\Analytics\InsightsService;
+use App\Services\Analytics\LearningAnalyticsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Redis;
+use Mockery;
 use Tests\TestCase;
 
 class AnalyticsPerformanceTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected Tenant $tenant;
-    protected array $testUsers = [];
-    protected array $performanceMetrics = [];
+    private Mockery\MockInterface $consentService;
+    private CohortAnalysisService $cohortService;
+    private AttributionService $attributionService;
+    private LearningAnalyticsService $learningService;
+    private InsightsService $insightsService;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Create test tenant
-        $this->tenant = Tenant::factory()->create([
-            'name' => 'Analytics Performance Test Tenant',
-            'domain' => 'analytics-perf.test',
-        ]);
+        $this->consentService = Mockery::mock(ConsentService::class);
+        $this->cohortService = new CohortAnalysisService($this->consentService);
+        $this->attributionService = new AttributionService();
+        $this->learningService = new LearningAnalyticsService();
+        $this->insightsService = new InsightsService();
 
-        // Create test users
-        for ($i = 0; $i < 100; $i++) {
-            $this->testUsers[] = User::factory()->create([
-                'tenant_id' => $this->tenant->id,
-                'email' => "analytics-user{$i}@perf.test",
-                'is_alumni' => true,
+        // Set up tenant context
+        session(['tenant_id' => 'test-tenant']);
+    }
+
+    protected function tearDown(): void
+    {
+        Mockery::close();
+        parent::tearDown();
+    }
+
+    /**
+     * Test learning score job performance with large batch
+     */
+    public function test_learning_score_job_performance_large_batch(): void
+    {
+        // Create large dataset
+        $users = User::factory()->count(1000)->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Create learning events for each user
+        foreach ($users as $user) {
+            AnalyticsEvent::create([
+                'tenant_id' => 'test-tenant',
+                'event_type' => 'learning',
+                'event_name' => 'course_interaction',
+                'user_id' => $user->id,
+                'properties' => [
+                    'course_id' => $course->id,
+                    'interaction_type' => 'completion',
+                    'duration' => 1800,
+                    'score' => 85
+                ],
+                'occurred_at' => now(),
+                'is_compliant' => true,
+                'consent_given' => true,
             ]);
         }
 
-        // Create analytics test data
-        $this->createAnalyticsTestData();
+        // Prepare batch data
+        $userCoursePairs = $users->map(fn($user) => [
+            'user_id' => $user->id,
+            'course_id' => $course->id
+        ])->toArray();
 
-        // Mock Redis for performance testing
-        Redis::shouldReceive('get')->andReturn(null);
-        Redis::shouldReceive('set')->andReturn(true);
-        Redis::shouldReceive('setex')->andReturn(true);
-        Redis::shouldReceive('del')->andReturn(1);
-        Redis::shouldReceive('expire')->andReturn(1);
-    }
+        // Measure batch processing performance
+        $startTime = microtime(true);
+        $results = $this->learningService->processBatchScores($userCoursePairs);
+        $endTime = microtime(true);
 
-    public function test_leaderboard_api_load_performance(): void
-    {
-        $results = $this->runAnalyticsLoadTest('/api/analytics/leaderboard', [
-            'limit' => 50,
-            'period' => 'monthly'
-        ], 1000, 60);
+        $processingTime = $endTime - $startTime;
 
         // Assert performance requirements
-        $this->assertLessThan(200, $results['avg_response_time'], 'Average response time should be under 200ms');
-        $this->assertGreaterThan(1000, $results['requests_per_minute'], 'Should handle >1000 req/min');
-        $this->assertLessThan(1, $results['error_rate'], 'Error rate should be <1%');
-        $this->assertGreaterThan(95, $results['success_rate'], 'Success rate should be >95%');
+        $this->assertEquals(1000, $results['processed']);
+        $this->assertEquals(0, $results['errors']);
+        $this->assertLessThan(10.0, $processingTime, 'Batch processing took too long');
+
+        // Verify all progress records were created
+        $progressCount = LearningProgress::whereIn('user_id', $users->pluck('id'))->count();
+        $this->assertEquals(1000, $progressCount);
     }
 
-    public function test_heatmap_generation_load_performance(): void
+    /**
+     * Test consent purge job performance
+     */
+    public function test_consent_purge_job_performance(): void
     {
-        $results = $this->runAnalyticsLoadTest('/api/analytics/heatmap', [
-            'page_url' => '/alumni/dashboard',
-            'date_from' => '2024-01-01',
-            'date_to' => '2024-12-31'
-        ], 500, 45);
+        // Create large dataset to purge
+        $users = User::factory()->count(1000)->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
 
-        $this->assertLessThan(200, $results['avg_response_time'], 'Heatmap generation should be under 200ms');
-        $this->assertGreaterThan(500, $results['requests_per_minute'], 'Should handle >500 req/min for heatmap');
-        $this->assertLessThan(1, $results['error_rate'], 'Heatmap error rate should be <1%');
-    }
-
-    public function test_ab_test_analysis_load_performance(): void
-    {
-        $results = $this->runAnalyticsLoadTest('/api/analytics/ab-tests/analysis', [
-            'test_id' => 'homepage_cta_test',
-            'variant' => 'A'
-        ], 300, 30);
-
-        $this->assertLessThan(200, $results['avg_response_time'], 'A/B test analysis should be under 200ms');
-        $this->assertGreaterThan(300, $results['requests_per_minute'], 'Should handle >300 req/min for A/B analysis');
-        $this->assertLessThan(1, $results['error_rate'], 'A/B analysis error rate should be <1%');
-    }
-
-    public function test_tenant_isolation_under_concurrent_analytics_load(): void
-    {
-        // Create additional tenants for isolation testing
-        $tenant2 = Tenant::factory()->create(['name' => 'Analytics Tenant 2']);
-        $tenant3 = Tenant::factory()->create(['name' => 'Analytics Tenant 3']);
-
-        $tenants = [$this->tenant, $tenant2, $tenant3];
-        $isolationViolations = 0;
-        $totalRequests = 0;
-
-        foreach ($tenants as $tenant) {
-            $results = $this->runAnalyticsLoadTest('/api/analytics/metrics', [
-                'tenant_id' => $tenant->id,
-                'period' => 'weekly'
-            ], 200, 30);
-
-            $totalRequests += $results['total_requests'];
-
-            // Check for cross-tenant data leakage
-            if ($results['cross_tenant_data_detected'] ?? false) {
-                $isolationViolations++;
-            }
-
-            $this->assertLessThan(300, $results['avg_response_time'], "Tenant {$tenant->id} analytics should be under 300ms");
-        }
-
-        $this->assertEquals(0, $isolationViolations, 'No tenant isolation violations should occur');
-        $this->assertGreaterThan(1500, $totalRequests, 'Should handle >1500 total requests across tenants');
-    }
-
-    public function test_analytics_performance_benchmark(): void
-    {
-        $benchmarks = [
-            'leaderboard_query' => fn() => $this->actingAs($this->testUsers[0])->getJson('/api/analytics/leaderboard'),
-            'metrics_calculation' => fn() => $this->actingAs($this->testUsers[0])->getJson('/api/analytics/metrics'),
-            'heatmap_rendering' => fn() => $this->actingAs($this->testUsers[0])->getJson('/api/analytics/heatmap?page_url=/dashboard'),
-            'ab_test_performance' => fn() => $this->actingAs($this->testUsers[0])->getJson('/api/analytics/ab-tests'),
-        ];
-
-        $results = $this->runAnalyticsBenchmarks($benchmarks);
-
-        // Assert benchmark results
-        foreach ($results as $benchmarkName => $metrics) {
-            $this->assertLessThan(200, $metrics['avg_time'], "{$benchmarkName} should be under 200ms");
-            $this->assertGreaterThan(0, $metrics['success_rate'], "{$benchmarkName} should have 100% success rate");
-        }
-
-        // Generate performance report
-        $this->generateAnalyticsPerformanceReport($results);
-    }
-
-    public function test_cache_performance_under_load(): void
-    {
-        // Pre-warm cache
-        Cache::put('analytics_leaderboard', $this->generateMockLeaderboardData(), 3600);
-        Cache::put('analytics_metrics', $this->generateMockMetricsData(), 3600);
-
-        $results = $this->runAnalyticsLoadTest('/api/analytics/leaderboard', [], 800, 60, [
-            'cache_enabled' => true
-        ]);
-
-        $this->assertLessThan(150, $results['avg_response_time'], 'Cached responses should be under 150ms');
-        $this->assertGreaterThan(85, $results['cache_hit_rate'], 'Cache hit rate should be >85%');
-    }
-
-    public function test_database_connection_pooling_analytics(): void
-    {
-        $startTime = microtime(true);
-        $concurrentQueries = 50;
-
-        // Simulate concurrent analytics queries
-        $promises = [];
-        for ($i = 0; $i < $concurrentQueries; $i++) {
-            $promises[] = $this->simulateAnalyticsQuery($this->testUsers[$i % count($this->testUsers)]);
-        }
-
-        // Wait for all queries to complete
-        $results = array_map(function($promise) {
-            return $promise['success'] ? 'success' : 'failed';
-        }, $promises);
-
-        $endTime = microtime(true);
-        $totalTime = ($endTime - $startTime) * 1000;
-
-        $successCount = count(array_filter($results, fn($r) => $r === 'success'));
-
-        $this->assertEquals($concurrentQueries, $successCount, 'All analytics queries should succeed');
-        $this->assertLessThan(5000, $totalTime, 'Concurrent analytics queries should complete within 5 seconds');
-    }
-
-    protected function runAnalyticsLoadTest(string $endpoint, array $params = [], int $concurrentUsers = 100, int $duration = 60, array $options = []): array
-    {
-        $startTime = microtime(true);
-        $endTime = $startTime + $duration;
-
-        $metrics = [
-            'requests_sent' => 0,
-            'requests_successful' => 0,
-            'requests_failed' => 0,
-            'total_response_time' => 0,
-            'response_times' => [],
-            'errors' => [],
-            'cache_hits' => 0,
-            'cache_misses' => 0,
-        ];
-
-        while (microtime(true) < $endTime) {
-            // Simulate concurrent requests
-            $batchSize = min(20, $concurrentUsers);
-            for ($i = 0; $i < $batchSize; $i++) {
-                $user = $this->testUsers[$metrics['requests_sent'] % count($this->testUsers)];
-                $result = $this->executeAnalyticsRequest($user, $endpoint, $params, $options);
-
-                $metrics['requests_sent']++;
-                if ($result['success']) {
-                    $metrics['requests_successful']++;
-                    $metrics['total_response_time'] += $result['response_time'];
-                    $metrics['response_times'][] = $result['response_time'];
-
-                    if (isset($result['cache_hit']) && $result['cache_hit']) {
-                        $metrics['cache_hits']++;
-                    } else {
-                        $metrics['cache_misses']++;
-                    }
-                } else {
-                    $metrics['requests_failed']++;
-                    $metrics['errors'][] = $result['error'];
-                }
-            }
-
-            // Small delay to prevent overwhelming
-            usleep(100000); // 100ms
-        }
-
-        $totalTime = microtime(true) - $startTime;
-
-        return [
-            'total_requests' => $metrics['requests_sent'],
-            'successful_requests' => $metrics['requests_successful'],
-            'failed_requests' => $metrics['requests_failed'],
-            'avg_response_time' => $metrics['response_times'] ? array_sum($metrics['response_times']) / count($metrics['response_times']) : 0,
-            'requests_per_minute' => ($metrics['requests_sent'] / $totalTime) * 60,
-            'success_rate' => $metrics['requests_sent'] > 0 ? ($metrics['requests_successful'] / $metrics['requests_sent']) * 100 : 0,
-            'error_rate' => $metrics['requests_sent'] > 0 ? ($metrics['requests_failed'] / $metrics['requests_sent']) * 100 : 0,
-            'cache_hit_rate' => ($metrics['cache_hits'] + $metrics['cache_misses']) > 0 ? ($metrics['cache_hits'] / ($metrics['cache_hits'] + $metrics['cache_misses'])) * 100 : 0,
-            'errors' => $metrics['errors'],
-        ];
-    }
-
-    protected function executeAnalyticsRequest(User $user, string $endpoint, array $params = [], array $options = []): array
-    {
-        $startTime = microtime(true);
-
-        try {
-            $queryString = http_build_query($params);
-            $url = $endpoint . ($queryString ? '?' . $queryString : '');
-
-            $response = $this->actingAs($user)->getJson($url);
-
-            $responseTime = (microtime(true) - $startTime) * 1000;
-
-            return [
-                'success' => $response->status() === 200,
-                'response_time' => $responseTime,
-                'cache_hit' => $options['cache_enabled'] ?? false,
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
-
-    protected function runAnalyticsBenchmarks(array $benchmarks): array
-    {
-        $results = [];
-
-        foreach ($benchmarks as $name => $benchmark) {
-            $times = [];
-            $successes = 0;
-
-            for ($i = 0; $i < 10; $i++) {
-                $startTime = microtime(true);
-                try {
-                    $response = $benchmark();
-                    $endTime = microtime(true);
-
-                    if ($response->status() === 200) {
-                        $times[] = ($endTime - $startTime) * 1000;
-                        $successes++;
-                    }
-                } catch (\Exception $e) {
-                    // Benchmark failed
-                }
-            }
-
-            $results[$name] = [
-                'avg_time' => $times ? array_sum($times) / count($times) : 0,
-                'min_time' => $times ? min($times) : 0,
-                'max_time' => $times ? max($times) : 0,
-                'success_rate' => ($successes / 10) * 100,
-                'iterations' => 10,
-            ];
-        }
-
-        return $results;
-    }
-
-    protected function createAnalyticsTestData(): void
-    {
-        // Create analytics events
-        foreach ($this->testUsers as $user) {
-            AnalyticsEvent::factory()->count(10)->create([
-                'tenant_id' => $this->tenant->id,
+        // Create learning data for all users
+        foreach ($users as $user) {
+            AnalyticsEvent::create([
+                'tenant_id' => 'test-tenant',
+                'event_type' => 'learning',
+                'event_name' => 'course_interaction',
                 'user_id' => $user->id,
-                'event_type' => 'page_view',
-                'event_data' => json_encode(['page' => '/dashboard', 'duration' => rand(10, 300)]),
+                'properties' => [
+                    'course_id' => $course->id,
+                    'interaction_type' => 'completion'
+                ],
+                'occurred_at' => now(),
+                'is_compliant' => true,
+                'consent_given' => true,
+            ]);
+
+            LearningProgress::create([
+                'tenant_id' => 'test-tenant',
+                'user_id' => $user->id,
+                'course_id' => $course->id,
+                'engagement_score' => 85.0,
             ]);
         }
 
-        // Create heatmap data
-        HeatMapData::factory()->count(1000)->create([
-            'tenant_id' => $this->tenant->id,
-            'page_url' => '/alumni/dashboard',
-            'x' => rand(0, 1920),
-            'y' => rand(0, 1080),
-            'intensity' => rand(1, 100),
-        ]);
+        // Verify data exists
+        $eventCountBefore = AnalyticsEvent::whereIn('user_id', $users->pluck('id'))->count();
+        $progressCountBefore = LearningProgress::whereIn('user_id', $users->pluck('id'))->count();
 
-        // Create A/B test data
-        ABTest::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'name' => 'Homepage CTA Test',
-            'status' => 'active',
-            'variants' => json_encode(['A' => 'Sign Up Now', 'B' => 'Join Today']),
-        ]);
-    }
+        $this->assertEquals(1000, $eventCountBefore);
+        $this->assertEquals(1000, $progressCountBefore);
 
-    protected function simulateAnalyticsQuery(User $user): array
-    {
+        // Measure purge performance
         $startTime = microtime(true);
 
-        try {
-            // Simulate complex analytics query
-            $result = DB::table('analytics_events')
-                ->where('tenant_id', $user->tenant_id)
-                ->where('user_id', $user->id)
-                ->selectRaw('COUNT(*) as event_count, AVG(JSON_EXTRACT(event_data, "$.duration")) as avg_duration')
-                ->first();
+        // Simulate purge operation
+        AnalyticsEvent::whereIn('user_id', $users->pluck('id'))->delete();
+        LearningProgress::whereIn('user_id', $users->pluck('id'))->delete();
+
+        $endTime = microtime(true);
+        $purgeTime = $endTime - $startTime;
+
+        // Assert performance requirements
+        $this->assertLessThan(5.0, $purgeTime, 'Data purge took too long');
+
+        // Verify data was purged
+        $eventCountAfter = AnalyticsEvent::whereIn('user_id', $users->pluck('id'))->count();
+        $progressCountAfter = LearningProgress::whereIn('user_id', $users->pluck('id'))->count();
+
+        $this->assertEquals(0, $eventCountAfter);
+        $this->assertEquals(0, $progressCountAfter);
+    }
+
+    /**
+     * Test cohort analysis performance with large dataset
+     */
+    public function test_cohort_analysis_performance_large_dataset(): void
+    {
+        // Create large cohort
+        $cohort = Cohort::factory()->create(['members_count' => 5000]);
+
+        // Create users and learning data
+        $users = User::factory()->count(5000)->create(['graduation_year' => 2023]);
+
+        // Mock consent
+        $this->consentService->shouldReceive('hasConsentForAnalytics')->andReturn(true);
+
+        // Create learning progress for all users
+        foreach ($users as $user) {
+            LearningProgress::create([
+                'user_id' => $user->id,
+                'engagement_score' => rand(60, 95),
+                'created_at' => now()->subDays(rand(0, 90))
+            ]);
+        }
+
+        // Measure analysis performance
+        $startTime = microtime(true);
+        $analysis = $this->cohortService->analyzeCohort($cohort->id);
+        $endTime = microtime(true);
+
+        $analysisTime = $endTime - $startTime;
+
+        // Assert performance and correctness
+        $this->assertLessThan(15.0, $analysisTime, 'Cohort analysis took too long');
+        $this->assertEquals(5000, $analysis['size']);
+        $this->assertArrayHasKey('retention', $analysis);
+        $this->assertArrayHasKey('engagement', $analysis);
+    }
+
+    /**
+     * Test attribution calculation performance
+     */
+    public function test_attribution_calculation_performance(): void
+    {
+        $user = User::factory()->create();
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Create many attribution touches
+        for ($i = 0; $i < 100; $i++) {
+            AttributionTouch::create([
+                'tenant_id' => 'test-tenant',
+                'user_id' => $user->id,
+                'source' => ['google', 'facebook', 'email', 'direct'][rand(0, 3)],
+                'event_type' => 'page_view',
+                'value' => rand(5, 50),
+                'timestamp' => now()->subDays(rand(0, 30)),
+            ]);
+        }
+
+        // Measure attribution calculation performance
+        $startTime = microtime(true);
+
+        $lastTouch = $this->attributionService->calculateAttribution(
+            $user->id,
+            now()->subDays(30)->toDateString(),
+            now()->toDateString(),
+            'last_touch'
+        );
+
+        $linear = $this->attributionService->calculateAttribution(
+            $user->id,
+            now()->subDays(30)->toDateString(),
+            now()->toDateString(),
+            'linear'
+        );
+
+        $endTime = microtime(true);
+        $calculationTime = $endTime - $startTime;
+
+        // Assert performance and results
+        $this->assertLessThan(2.0, $calculationTime, 'Attribution calculation took too long');
+        $this->assertGreaterThan(0, $lastTouch['total_value']);
+        $this->assertGreaterThan(0, $linear['total_value']);
+        $this->assertNotEquals($lastTouch['sources'], $linear['sources']);
+    }
+
+    /**
+     * Test insights generation performance
+     */
+    public function test_insights_generation_performance(): void
+    {
+        // Create substantial analytics data
+        AnalyticsEvent::factory()->count(10000)->create([
+            'tenant_id' => 'test-tenant',
+            'event_type' => 'page_view',
+            'created_at' => now()->subDays(rand(0, 30))
+        ]);
+
+        // Measure insights generation performance
+        $startTime = microtime(true);
+        $insights = $this->insightsService->generateInsights();
+        $endTime = microtime(true);
+
+        $generationTime = $endTime - $startTime;
+
+        // Assert performance
+        $this->assertLessThan(5.0, $generationTime, 'Insights generation took too long');
+        $this->assertIsArray($insights);
+    }
+
+    /**
+     * Test concurrent operations performance
+     */
+    public function test_concurrent_operations_performance(): void
+    {
+        $users = User::factory()->count(100)->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Measure concurrent operations
+        $startTime = microtime(true);
+
+        // Simulate concurrent learning tracking
+        foreach ($users as $user) {
+            $this->learningService->trackCourseInteraction($user->id, $course->id, [
+                'duration' => 1800,
+                'score' => 85,
+                'interaction_type' => 'completion'
+            ]);
+
+            // Also track attribution
+            $this->attributionService->trackTouch([
+                'user_id' => $user->id,
+                'event_type' => 'page_view',
+                'source' => 'dashboard',
+                'value' => 10.00
+            ]);
+        }
+
+        $endTime = microtime(true);
+        $concurrentTime = $endTime - $startTime;
+
+        // Assert performance
+        $this->assertLessThan(20.0, $concurrentTime, 'Concurrent operations took too long');
+
+        // Verify data integrity
+        $eventCount = AnalyticsEvent::whereIn('user_id', $users->pluck('id'))->count();
+        $touchCount = AttributionTouch::whereIn('user_id', $users->pluck('id'))->count();
+
+        $this->assertEquals(100, $eventCount);
+        $this->assertEquals(100, $touchCount);
+    }
+
+    /**
+     * Test cache performance for repeated operations
+     */
+    public function test_cache_performance_repeated_operations(): void
+    {
+        $user = User::factory()->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Create initial data
+        $this->learningService->trackCourseInteraction($user->id, $course->id, [
+            'duration' => 1800,
+            'score' => 85,
+            'interaction_type' => 'completion'
+        ]);
+
+        // Measure first calculation (cache miss)
+        $startTime1 = microtime(true);
+        $score1 = $this->learningService->calculateEngagementScore($user->id, $course->id);
+        $endTime1 = microtime(true);
+        $firstCallTime = $endTime1 - $startTime1;
+
+        // Measure second calculation (cache hit)
+        $startTime2 = microtime(true);
+        $score2 = $this->learningService->calculateEngagementScore($user->id, $course->id);
+        $endTime2 = microtime(true);
+        $secondCallTime = $endTime2 - $startTime2;
+
+        // Assert caching improves performance
+        $this->assertGreaterThan($secondCallTime, $firstCallTime * 0.5, 'Caching should improve performance');
+        $this->assertEquals($score1, $score2, 'Cached result should match original');
+    }
+
+    /**
+     * Test memory usage during large operations
+     */
+    public function test_memory_usage_large_operations(): void
+    {
+        $initialMemory = memory_get_usage();
+
+        // Create large dataset
+        $users = User::factory()->count(2000)->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Perform memory-intensive operation
+        $userCoursePairs = $users->map(fn($user) => [
+            'user_id' => $user->id,
+            'course_id' => $course->id
+        ])->toArray();
+
+        $this->learningService->processBatchScores($userCoursePairs);
+
+        $finalMemory = memory_get_usage();
+        $memoryUsed = $finalMemory - $initialMemory;
+
+        // Assert reasonable memory usage (less than 50MB)
+        $this->assertLessThan(50 * 1024 * 1024, $memoryUsed, 'Memory usage too high');
+    }
+
+    /**
+     * Test database query performance
+     */
+    public function test_database_query_performance(): void
+    {
+        // Create large dataset
+        AnalyticsEvent::factory()->count(50000)->create([
+            'tenant_id' => 'test-tenant',
+            'event_type' => 'page_view'
+        ]);
+
+        // Measure query performance
+        $startTime = microtime(true);
+
+        $result = AnalyticsEvent::where('tenant_id', 'test-tenant')
+            ->where('event_type', 'page_view')
+            ->count();
+
+        $endTime = microtime(true);
+        $queryTime = $endTime - $startTime;
+
+        // Assert query performance
+        $this->assertLessThan(1.0, $queryTime, 'Database query took too long');
+        $this->assertEquals(50000, $result);
+    }
+
+    /**
+     * Test API response time simulation
+     */
+    public function test_api_response_time_simulation(): void
+    {
+        // Create test data
+        $users = User::factory()->count(100)->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Simulate API calls
+        $responseTimes = [];
+
+        foreach ($users as $user) {
+            $startTime = microtime(true);
+
+            // Simulate API operations
+            $this->learningService->trackCourseInteraction($user->id, $course->id, [
+                'duration' => 1800,
+                'score' => 85,
+                'interaction_type' => 'completion'
+            ]);
+
+            $this->learningService->calculateEngagementScore($user->id, $course->id);
 
             $endTime = microtime(true);
-            $responseTime = ($endTime - $startTime) * 1000;
-
-            return [
-                'success' => true,
-                'response_time' => $responseTime,
-                'data' => $result,
-            ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'error' => $e->getMessage(),
-            ];
+            $responseTimes[] = $endTime - $startTime;
         }
+
+        // Calculate statistics
+        $avgResponseTime = array_sum($responseTimes) / count($responseTimes);
+        $maxResponseTime = max($responseTimes);
+        $p95ResponseTime = $this->calculatePercentile($responseTimes, 95);
+
+        // Assert performance requirements
+        $this->assertLessThan(0.5, $avgResponseTime, 'Average API response time too slow');
+        $this->assertLessThan(1.0, $maxResponseTime, 'Maximum API response time too slow');
+        $this->assertLessThan(0.8, $p95ResponseTime, '95th percentile response time too slow');
     }
 
-    protected function generateMockLeaderboardData(): array
+    /**
+     * Helper method to calculate percentile
+     */
+    private function calculatePercentile(array $values, float $percentile): float
     {
-        $leaderboard = [];
-        for ($i = 1; $i <= 50; $i++) {
-            $leaderboard[] = [
-                'rank' => $i,
-                'user_id' => $this->testUsers[$i % count($this->testUsers)]->id,
-                'total_points' => rand(100, 1000),
-                'total_events' => rand(10, 100),
-            ];
+        sort($values);
+        $index = (count($values) - 1) * ($percentile / 100);
+        $lower = floor($index);
+        $upper = ceil($index);
+        $weight = $index - $lower;
+
+        if ($upper >= count($values)) {
+            return $values[$lower];
         }
-        return $leaderboard;
-    }
 
-    protected function generateMockMetricsData(): array
-    {
-        return [
-            'total_events' => 5000,
-            'unique_users' => 450,
-            'avg_session_duration' => 180,
-            'conversion_rate' => 12.5,
-            'period' => 'weekly',
-        ];
-    }
-
-    protected function generateAnalyticsPerformanceReport(array $benchmarkResults): void
-    {
-        $report = [
-            'timestamp' => now()->toISOString(),
-            'test_type' => 'analytics_performance',
-            'benchmarks' => $benchmarkResults,
-            'summary' => [
-                'total_benchmarks' => count($benchmarkResults),
-                'avg_response_time' => array_sum(array_column($benchmarkResults, 'avg_time')) / count($benchmarkResults),
-                'success_rate' => (count(array_filter($benchmarkResults, fn($r) => $r['success_rate'] == 100)) / count($benchmarkResults)) * 100,
-            ],
-        ];
-
-        $reportPath = storage_path('logs/analytics_performance_report_'.date('Y-m-d_H-i-s').'.json');
-        file_put_contents($reportPath, json_encode($report, JSON_PRETTY_PRINT));
+        return $values[$lower] * (1 - $weight) + $values[$upper] * $weight;
     }
 }

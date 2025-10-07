@@ -20,7 +20,6 @@ class AnalyticsApiIntegrationTest extends TestCase
     use RefreshDatabase;
 
     protected $tenancy = true;
-    protected $tenancy = true;
     protected Tenant $tenant;
     protected User $user;
 

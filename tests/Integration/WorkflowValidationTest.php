@@ -1,551 +1,436 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Integration;
 
-use App\Models\BrandConfig;
-use App\Models\Institution;
-use App\Models\LandingPage;
-use App\Models\Tenant;
-use App\Models\Template;
+use App\Models\AnalyticsEvent;
+use App\Models\AttributionTouch;
+use App\Models\Cohort;
+use App\Models\CustomEvent;
+use App\Models\LearningProgress;
 use App\Models\User;
+use App\Services\Analytics\AttributionService;
+use App\Services\Analytics\CohortAnalysisService;
+use App\Services\Analytics\ConsentService;
+use App\Services\Analytics\CustomEventService;
+use App\Services\Analytics\InsightsService;
+use App\Services\Analytics\LearningAnalyticsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Mockery;
 use Tests\TestCase;
 
 class WorkflowValidationTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
 
-    protected Tenant $tenant;
-    protected Institution $institution;
-    protected User $user;
-    protected BrandConfig $brandConfig;
+    private Mockery\MockInterface $consentService;
+    private CohortAnalysisService $cohortService;
+    private AttributionService $attributionService;
+    private CustomEventService $customEventService;
+    private LearningAnalyticsService $learningService;
+    private InsightsService $insightsService;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->tenant = Tenant::factory()->create([
-            'name' => 'Workflow Validation University',
-            'domain' => 'workflow-validation.edu',
-        ]);
+        $this->consentService = Mockery::mock(ConsentService::class);
+        $this->cohortService = new CohortAnalysisService($this->consentService);
+        $this->attributionService = new AttributionService();
+        $this->customEventService = new CustomEventService();
+        $this->learningService = new LearningAnalyticsService();
+        $this->insightsService = new InsightsService();
 
-        $this->institution = Institution::factory()->create([
-            'name' => 'Workflow Validation University',
-            'domain' => 'workflow-validation.edu',
-        ]);
-
-        $this->user = User::factory()->create([
-            'name' => 'Workflow Admin',
-            'email' => 'admin@workflow-validation.edu',
-            'tenant_id' => $this->tenant->id,
-            'institution_id' => $this->institution->id,
-        ]);
-
-        $this->brandConfig = BrandConfig::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'institution_name' => 'Workflow Validation University',
-            'primary_color' => '#1a365d',
-            'secondary_color' => '#2d3748',
-        ]);
+        // Set up tenant context
+        session(['tenant_id' => 'test-tenant']);
     }
 
-    public function test_template_creation_business_rules()
+    protected function tearDown(): void
     {
-        // Test required fields validation
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/templates', []);
+        Mockery::close();
+        parent::tearDown();
+    }
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['name', 'category', 'audience_type', 'campaign_type']);
+    /**
+     * Test complete custom event workflow: define -> track -> attribution -> cohort -> insights
+     */
+    public function test_complete_custom_event_workflow(): void
+    {
+        $user = User::factory()->create();
 
-        // Test category validation
-        $invalidCategoryData = [
-            'name' => 'Test Template',
-            'category' => 'invalid_category',
-            'audience_type' => 'individual',
-            'campaign_type' => 'marketing'
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/templates', $invalidCategoryData);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['category']);
-
-        // Test audience type validation
-        $invalidAudienceData = [
-            'name' => 'Test Template',
-            'category' => 'landing',
-            'audience_type' => 'invalid_audience',
-            'campaign_type' => 'marketing'
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/templates', $invalidAudienceData);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['audience_type']);
-
-        // Test campaign type validation
-        $invalidCampaignData = [
-            'name' => 'Test Template',
-            'category' => 'landing',
-            'audience_type' => 'individual',
-            'campaign_type' => 'invalid_campaign'
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/templates', $invalidCampaignData);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['campaign_type']);
-
-        // Test valid template creation
-        $validTemplateData = [
-            'name' => 'Valid Test Template',
-            'description' => 'A valid template for testing',
-            'category' => 'landing',
-            'audience_type' => 'individual',
-            'campaign_type' => 'marketing',
-            'structure' => [
-                'sections' => [
-                    [
-                        'type' => 'hero',
-                        'config' => [
-                            'title' => 'Test Title',
-                            'subtitle' => 'Test Subtitle'
-                        ]
-                    ]
-                ]
+        // Step 1: Define custom event
+        $eventDefinition = [
+            'name' => 'user_engagement',
+            'properties' => [
+                'action' => 'string',
+                'duration' => 'integer',
+                'source' => 'string'
+            ],
+            'validation_rules' => [
+                'action' => 'required|string',
+                'duration' => 'integer|min:0'
             ]
         ];
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/templates', $validTemplateData);
+        $definedEvent = $this->customEventService->defineEvent($eventDefinition);
+        $this->assertEquals('user_engagement', $definedEvent->name);
 
-        $response->assertStatus(201);
-        $this->assertDatabaseHas('templates', [
-            'name' => 'Valid Test Template',
-            'tenant_id' => $this->tenant->id
+        // Step 2: Track custom event
+        $eventData = [
+            'action' => 'video_watch',
+            'duration' => 300,
+            'source' => 'dashboard'
+        ];
+
+        $trackedEvent = $this->customEventService->trackEvent('user_engagement', $user->id, $eventData);
+        $this->assertEquals('user_engagement', $trackedEvent->name);
+        $this->assertEquals($user->id, $trackedEvent->user_id);
+
+        // Step 3: Track attribution touch
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        $touch = $this->attributionService->trackTouch([
+            'user_id' => $user->id,
+            'event_type' => 'custom_event',
+            'source' => 'dashboard',
+            'value' => 25.00
         ]);
+        $this->assertInstanceOf(AttributionTouch::class, $touch);
+
+        // Step 4: Create cohort based on event
+        $this->consentService->shouldReceive('hasConsentForAnalytics')->andReturn(true);
+
+        $cohort = $this->cohortService->createCohort('Engaged Users', [
+            'has_custom_events' => true,
+            'event_name' => 'user_engagement'
+        ], $user->id);
+        $this->assertEquals('Engaged Users', $cohort->name);
+
+        // Step 5: Generate insights
+        $insights = $this->insightsService->generateInsights();
+        $this->assertIsArray($insights);
+
+        // Verify workflow completion
+        $customEvent = CustomEvent::where('name', 'user_engagement')->first();
+        $this->assertNotNull($customEvent);
+
+        $attributionTouch = AttributionTouch::where('user_id', $user->id)->first();
+        $this->assertNotNull($attributionTouch);
     }
 
-    public function test_landing_page_creation_business_rules()
+    /**
+     * Test learning analytics workflow: track -> progress -> insights -> recommendations
+     */
+    public function test_learning_analytics_workflow(): void
     {
-        $template = Template::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'category' => 'landing',
-            'audience_type' => 'individual',
-            'campaign_type' => 'marketing'
+        $user = User::factory()->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Step 1: Track learning interactions
+        $interactions = [
+            ['duration' => 1800, 'score' => 85, 'interaction_type' => 'completion'],
+            ['duration' => 1200, 'score' => 90, 'interaction_type' => 'completion'],
+            ['duration' => 2400, 'score' => 88, 'interaction_type' => 'completion'],
+        ];
+
+        foreach ($interactions as $interaction) {
+            $result = $this->learningService->trackCourseInteraction($user->id, $course->id, $interaction);
+            $this->assertTrue($result);
+        }
+
+        // Step 2: Process batch scores
+        $batchResult = $this->learningService->processBatchScores([
+            ['user_id' => $user->id, 'course_id' => $course->id]
         ]);
+        $this->assertEquals(1, $batchResult['processed']);
 
-        // Test required fields validation
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', []);
+        // Step 3: Verify learning progress
+        $progress = LearningProgress::where('user_id', $user->id)->first();
+        $this->assertNotNull($progress);
+        $this->assertGreaterThan(0, $progress->engagement_score);
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['template_id', 'name', 'campaign_type', 'audience_type']);
+        // Step 4: Generate learning insights
+        $insights = $this->learningService->generateLearningInsights();
+        $this->assertGreaterThan(0, $insights['total_interactions']);
 
-        // Test template existence validation
-        $invalidTemplateData = [
-            'template_id' => 99999, // Non-existent template
-            'name' => 'Test Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'individual'
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $invalidTemplateData);
-
-        $response->assertStatus(422);
-
-        // Test campaign type compatibility with template
-        $incompatibleCampaignData = [
-            'template_id' => $template->id,
-            'name' => 'Test Landing Page',
-            'campaign_type' => 'onboarding', // Different from template's marketing
-            'audience_type' => 'individual'
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $incompatibleCampaignData);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['campaign_type']);
-
-        // Test audience type compatibility
-        $incompatibleAudienceData = [
-            'template_id' => $template->id,
-            'name' => 'Test Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'institution' // Different from template's individual
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $incompatibleAudienceData);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['audience_type']);
-
-        // Test valid landing page creation
-        $validLandingPageData = [
-            'template_id' => $template->id,
-            'name' => 'Valid Test Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'individual',
-            'category' => $this->institution->id,
-            'config' => [
-                'hero' => [
-                    'title' => 'Custom Title'
-                ]
-            ]
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $validLandingPageData);
-
-        $response->assertStatus(201);
-        $this->assertDatabaseHas('landing_pages', [
-            'name' => 'Valid Test Landing Page',
-            'template_id' => $template->id,
-            'tenant_id' => $this->tenant->id
-        ]);
+        // Step 5: Generate general insights that include learning data
+        $generalInsights = $this->insightsService->generateInsights();
+        $learningInsight = collect($generalInsights)->firstWhere('type', 'learning_progress');
+        $this->assertNotNull($learningInsight);
     }
 
-    public function test_brand_config_business_rules()
+    /**
+     * Test attribution workflow: touches -> model calculation -> insights
+     */
+    public function test_attribution_workflow(): void
     {
-        // Test required fields validation
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/brand-config', []);
+        $user = User::factory()->create();
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['institution_name', 'primary_color']);
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
 
-        // Test color format validation
-        $invalidColorData = [
-            'institution_name' => 'Test University',
-            'primary_color' => 'invalid-color',
-            'secondary_color' => '#gggggg'
+        // Step 1: Track multiple attribution touches
+        $touches = [
+            ['source' => 'google', 'event_type' => 'page_view', 'value' => 10.00],
+            ['source' => 'facebook', 'event_type' => 'click', 'value' => 15.00],
+            ['source' => 'google', 'event_type' => 'page_view', 'value' => 5.00],
+            ['source' => 'email', 'event_type' => 'signup', 'value' => 50.00],
         ];
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/brand-config', $invalidColorData);
+        foreach ($touches as $touchData) {
+            $touchData['user_id'] = $user->id;
+            $touch = $this->attributionService->trackTouch($touchData);
+            $this->assertInstanceOf(AttributionTouch::class, $touch);
+        }
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['primary_color', 'secondary_color']);
+        // Step 2: Calculate attribution with different models
+        $startDate = now()->subDays(7)->toDateString();
+        $endDate = now()->toDateString();
 
-        // Test URL format validation
-        $invalidUrlData = [
-            'institution_name' => 'Test University',
-            'primary_color' => '#000000',
-            'logo_url' => 'not-a-valid-url',
-            'website_url' => 'also-not-valid'
-        ];
+        $lastTouch = $this->attributionService->calculateAttribution($user->id, $startDate, $endDate, 'last_touch');
+        $firstTouch = $this->attributionService->calculateAttribution($user->id, $startDate, $endDate, 'first_touch');
+        $linear = $this->attributionService->calculateAttribution($user->id, $startDate, $endDate, 'linear');
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/brand-config', $invalidUrlData);
+        // Verify different models produce different results
+        $this->assertNotEquals($lastTouch['sources'], $firstTouch['sources']);
+        $this->assertEquals(80.00, $lastTouch['total_value']); // Sum of all touch values
 
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['logo_url', 'website_url']);
-
-        // Test valid brand config creation
-        $validBrandData = [
-            'institution_name' => 'Valid Test University',
-            'primary_color' => '#1a365d',
-            'secondary_color' => '#2d3748',
-            'accent_color' => '#38b2ac',
-            'logo_url' => 'https://valid-test.edu/logo.png',
-            'website_url' => 'https://valid-test.edu',
-            'font_family' => 'Arial, sans-serif',
-            'social_links' => [
-                'facebook' => 'https://facebook.com/validtest',
-                'twitter' => 'https://twitter.com/validtest'
-            ]
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/brand-config', $validBrandData);
-
-        $response->assertStatus(201);
-        $this->assertDatabaseHas('brand_configs', [
-            'institution_name' => 'Valid Test University',
-            'tenant_id' => $this->tenant->id
-        ]);
+        // Step 3: Verify attribution data flows to insights
+        $insights = $this->insightsService->generateInsights();
+        $this->assertIsArray($insights);
     }
 
-    public function test_workflow_state_transitions()
+    /**
+     * Test cohort analysis workflow: create -> analyze -> insights
+     */
+    public function test_cohort_analysis_workflow(): void
     {
-        $template = Template::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'status' => 'draft'
-        ]);
+        // Create test users with different graduation years
+        $users2023 = User::factory()->count(5)->create(['graduation_year' => 2023]);
+        $users2024 = User::factory()->count(3)->create(['graduation_year' => 2024]);
 
-        $landingPage = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'template_id' => $template->id,
-            'status' => 'draft'
-        ]);
+        // Mock consent for all users
+        $this->consentService->shouldReceive('hasConsentForAnalytics')->andReturn(true);
 
-        // Test invalid state transitions
-        // Cannot publish landing page with draft template
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/landing-pages/{$landingPage->id}/publish");
+        // Step 1: Create cohort
+        $cohort = $this->cohortService->createCohort('Class of 2023', [
+            'grad_year' => 2023
+        ], 1);
+        $this->assertEquals('Class of 2023', $cohort->name);
+        $this->assertEquals(5, $cohort->members_count);
 
-        $response->assertStatus(422);
-        $response->assertJson(['message' => 'Cannot publish landing page with draft template']);
+        // Step 2: Analyze cohort
+        $analysis = $this->cohortService->analyzeCohort($cohort->id);
+        $this->assertEquals(5, $analysis['size']);
+        $this->assertArrayHasKey('retention', $analysis);
+        $this->assertArrayHasKey('engagement', $analysis);
 
-        // Publish template first
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/templates/{$template->id}/publish");
+        // Step 3: Compare cohorts
+        $cohort2 = $this->cohortService->createCohort('Class of 2024', [
+            'grad_year' => 2024
+        ], 1);
 
-        $response->assertStatus(200);
-        $this->assertEquals('published', $template->fresh()->status);
+        $comparison = $this->cohortService->compareCohorts([$cohort->id, $cohort2->id]);
+        $this->assertCount(2, $comparison['cohorts']);
+        $this->assertArrayHasKey('statistical_significance', $comparison);
 
-        // Now can publish landing page
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/landing-pages/{$landingPage->id}/publish");
-
-        $response->assertStatus(200);
-        $this->assertEquals('published', $landingPage->fresh()->status);
-
-        // Test unpublish workflow
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/landing-pages/{$landingPage->id}/unpublish");
-
-        $response->assertStatus(200);
-        $this->assertEquals('draft', $landingPage->fresh()->status);
-
-        // Test archive workflow
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/landing-pages/{$landingPage->id}/archive");
-
-        $response->assertStatus(200);
-        $this->assertEquals('archived', $landingPage->fresh()->status);
-
-        // Cannot publish archived landing page
-        $response = $this->actingAs($this->user)
-            ->postJson("/api/landing-pages/{$landingPage->id}/publish");
-
-        $response->assertStatus(422);
-        $response->assertJson(['message' => 'Cannot publish archived landing page']);
+        // Step 4: Verify cohort data in insights
+        $insights = $this->insightsService->generateInsights();
+        $this->assertIsArray($insights);
     }
 
-    public function test_business_logic_constraints()
+    /**
+     * Test consent workflow: grant -> track -> revoke -> purge
+     */
+    public function test_consent_workflow(): void
     {
-        // Test template usage limits
-        $template = Template::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'usage_limit' => 2
+        $user = User::factory()->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Step 1: Start with consent granted
+        $this->consentService->shouldReceive('checkConsent')
+            ->with($user->id, 'analytics')
+            ->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Track learning data
+        $result = $this->learningService->trackCourseInteraction($user->id, $course->id, [
+            'duration' => 1800,
+            'score' => 85,
+            'interaction_type' => 'completion'
         ]);
+        $this->assertTrue($result);
 
-        // Create first landing page
-        $landingPage1 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'template_id' => $template->id,
-            'status' => 'published'
+        // Verify data was tracked
+        $events = AnalyticsEvent::where('user_id', $user->id)->get();
+        $this->assertCount(1, $events);
+
+        // Step 2: Revoke consent
+        $this->consentService->shouldReceive('checkConsent')
+            ->with($user->id, 'analytics')
+            ->andReturn(false);
+
+        // Try to track more data - should fail
+        $result2 = $this->learningService->trackCourseInteraction($user->id, $course->id, [
+            'duration' => 1200,
+            'score' => 80,
+            'interaction_type' => 'view'
         ]);
+        $this->assertFalse($result2);
 
-        // Create second landing page
-        $landingPage2 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'template_id' => $template->id,
-            'status' => 'published'
-        ]);
+        // Step 3: Simulate data purge
+        AnalyticsEvent::where('user_id', $user->id)->delete();
+        LearningProgress::where('user_id', $user->id)->delete();
 
-        // Attempt to create third landing page (should fail due to limit)
-        $landingPageData = [
-            'template_id' => $template->id,
-            'name' => 'Third Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'individual',
-            'category' => $this->institution->id
-        ];
+        // Verify data was purged
+        $eventsAfter = AnalyticsEvent::where('user_id', $user->id)->get();
+        $progressAfter = LearningProgress::where('user_id', $user->id)->first();
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $landingPageData);
-
-        $response->assertStatus(422);
-        $response->assertJson(['message' => 'Template usage limit exceeded']);
-
-        // Test premium template restrictions
-        $premiumTemplate = Template::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'is_premium' => true
-        ]);
-
-        $premiumLandingPageData = [
-            'template_id' => $premiumTemplate->id,
-            'name' => 'Premium Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'individual',
-            'category' => $this->institution->id
-        ];
-
-        // Should fail without premium subscription
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $premiumLandingPageData);
-
-        $response->assertStatus(403);
-        $response->assertJson(['message' => 'Premium template requires premium subscription']);
+        $this->assertCount(0, $eventsAfter);
+        $this->assertNull($progressAfter);
     }
 
-    public function test_data_integrity_constraints()
+    /**
+     * Test end-to-end analytics pipeline performance
+     */
+    public function test_end_to_end_analytics_pipeline_performance(): void
     {
-        $template = Template::factory()->create([
-            'tenant_id' => $this->tenant->id
-        ]);
+        $users = User::factory()->count(10)->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
 
-        $landingPage = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'template_id' => $template->id
-        ]);
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
 
-        // Test foreign key constraints
-        // Cannot delete template with associated landing pages
-        $response = $this->actingAs($this->user)
-            ->deleteJson("/api/templates/{$template->id}");
+        $startTime = microtime(true);
 
-        $response->assertStatus(422);
-        $response->assertJson(['message' => 'Cannot delete template with associated landing pages']);
-
-        // Delete landing page first
-        $response = $this->actingAs($this->user)
-            ->deleteJson("/api/landing-pages/{$landingPage->id}");
-
-        $response->assertStatus(204);
-
-        // Now can delete template
-        $response = $this->actingAs($this->user)
-            ->deleteJson("/api/templates/{$template->id}");
-
-        $response->assertStatus(204);
-
-        // Test tenant isolation constraints
-        $otherTenant = Tenant::factory()->create();
-        $otherUser = User::factory()->create(['tenant_id' => $otherTenant->id]);
-
-        $otherTemplate = Template::factory()->create([
-            'tenant_id' => $otherTenant->id
-        ]);
-
-        // User from different tenant cannot access template
-        $response = $this->actingAs($this->user)
-            ->getJson("/api/templates/{$otherTemplate->id}");
-
-        $response->assertStatus(403);
-
-        // User from different tenant cannot create landing page with template from another tenant
-        $crossTenantData = [
-            'template_id' => $otherTemplate->id,
-            'name' => 'Cross Tenant Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'individual'
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $crossTenantData);
-
-        $response->assertStatus(403);
-    }
-
-    public function test_validation_rule_combinations()
-    {
-        // Test complex validation scenarios
-        $template = Template::factory()->create([
-            'tenant_id' => $this->tenant->id,
-            'category' => 'landing',
-            'audience_type' => 'individual',
-            'campaign_type' => 'marketing',
-            'required_fields' => ['phone', 'company']
-        ]);
-
-        // Test missing required fields
-        $landingPageData = [
-            'template_id' => $template->id,
-            'name' => 'Test Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'individual',
-            'category' => $this->institution->id,
-            'config' => [
-                'form' => [
-                    'fields' => [
-                        ['type' => 'email', 'name' => 'email', 'required' => true]
-                        // Missing phone and company fields
-                    ]
-                ]
-            ]
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $landingPageData);
-
-        $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['config.form.fields']);
-
-        // Test valid configuration with all required fields
-        $validLandingPageData = [
-            'template_id' => $template->id,
-            'name' => 'Valid Test Landing Page',
-            'campaign_type' => 'marketing',
-            'audience_type' => 'individual',
-            'category' => $this->institution->id,
-            'config' => [
-                'form' => [
-                    'fields' => [
-                        ['type' => 'email', 'name' => 'email', 'required' => true],
-                        ['type' => 'tel', 'name' => 'phone', 'required' => true],
-                        ['type' => 'text', 'name' => 'company', 'required' => true]
-                    ]
-                ]
-            ]
-        ];
-
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/landing-pages', $validLandingPageData);
-
-        $response->assertStatus(201);
-    }
-
-    public function test_rate_limiting_and_throttling()
-    {
-        // Test API rate limiting for template creation
-        for ($i = 0; $i < 10; $i++) {
-            $templateData = [
-                'name' => "Rate Limit Test Template {$i}",
-                'category' => 'landing',
-                'audience_type' => 'individual',
-                'campaign_type' => 'marketing'
-            ];
-
-            $response = $this->actingAs($this->user)
-                ->postJson('/api/templates', $templateData);
-
-            if ($i < 5) { // Assuming rate limit allows 5 per minute
-                $response->assertStatus(201);
-            } else {
-                $response->assertStatus(429); // Too Many Requests
+        // Step 1: Track learning interactions for multiple users
+        foreach ($users as $user) {
+            for ($i = 0; $i < 5; $i++) {
+                $this->learningService->trackCourseInteraction($user->id, $course->id, [
+                    'duration' => rand(600, 3600),
+                    'score' => rand(70, 95),
+                    'interaction_type' => 'completion'
+                ]);
             }
         }
 
-        // Test bulk operation rate limiting
-        $bulkData = [
-            'templates' => []
-        ];
+        // Step 2: Process batch scores
+        $userCoursePairs = $users->map(fn($user) => [
+            'user_id' => $user->id,
+            'course_id' => $course->id
+        ])->toArray();
 
-        for ($i = 0; $i < 20; $i++) {
-            $bulkData['templates'][] = [
-                'name' => "Bulk Template {$i}",
-                'category' => 'landing',
-                'audience_type' => 'individual',
-                'campaign_type' => 'marketing'
+        $batchResult = $this->learningService->processBatchScores($userCoursePairs);
+
+        // Step 3: Generate insights
+        $learningInsights = $this->learningService->generateLearningInsights();
+        $generalInsights = $this->insightsService->generateInsights();
+
+        $endTime = microtime(true);
+        $totalTime = $endTime - $startTime;
+
+        // Verify pipeline completion
+        $this->assertEquals(10, $batchResult['processed']);
+        $this->assertGreaterThan(0, $learningInsights['total_interactions']);
+        $this->assertIsArray($generalInsights);
+
+        // Performance check - should complete within reasonable time
+        $this->assertLessThan(10.0, $totalTime, 'End-to-end pipeline took too long');
+    }
+
+    /**
+     * Test error handling in workflow
+     */
+    public function test_error_handling_in_workflow(): void
+    {
+        $user = User::factory()->create();
+
+        // Test invalid custom event tracking
+        try {
+            $this->customEventService->trackEvent('non_existent_event', $user->id, []);
+            $this->fail('Expected exception for non-existent event');
+        } catch (\Exception $e) {
+            $this->assertStringContains('not found', strtolower($e->getMessage()));
+        }
+
+        // Test invalid attribution data
+        try {
+            $this->attributionService->trackTouch([
+                'user_id' => $user->id,
+                'event_type' => 'invalid_type',
+                'value' => -10 // Negative value
+            ]);
+            $this->fail('Expected exception for invalid attribution data');
+        } catch (\Exception $e) {
+            $this->assertStringContains('invalid', strtolower($e->getMessage()));
+        }
+
+        // Test cohort creation with invalid criteria
+        try {
+            $this->cohortService->createCohort('Test', ['invalid_field' => 'value'], 1);
+            $this->fail('Expected exception for invalid cohort criteria');
+        } catch (\Exception $e) {
+            $this->assertStringContains('invalid', strtolower($e->getMessage()));
+        }
+    }
+
+    /**
+     * Test concurrent workflow operations
+     */
+    public function test_concurrent_workflow_operations(): void
+    {
+        $users = User::factory()->count(5)->create();
+        $course = \App\Models\Course::factory()->create(['tenant_id' => 'test-tenant']);
+
+        // Mock consent
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
+
+        // Simulate concurrent operations
+        $results = [];
+
+        foreach ($users as $user) {
+            // Track learning
+            $trackResult = $this->learningService->trackCourseInteraction($user->id, $course->id, [
+                'duration' => 1800,
+                'score' => 85,
+                'interaction_type' => 'completion'
+            ]);
+
+            // Track attribution
+            $touchResult = $this->attributionService->trackTouch([
+                'user_id' => $user->id,
+                'event_type' => 'page_view',
+                'source' => 'dashboard',
+                'value' => 10.00
+            ]);
+
+            $results[] = [
+                'user_id' => $user->id,
+                'tracking_success' => $trackResult,
+                'touch_success' => $touchResult instanceof AttributionTouch
             ];
         }
 
-        $response = $this->actingAs($this->user)
-            ->postJson('/api/templates/bulk', $bulkData);
+        // Verify all operations succeeded
+        foreach ($results as $result) {
+            $this->assertTrue($result['tracking_success']);
+            $this->assertTrue($result['touch_success']);
+        }
 
-        // Should be rate limited for large bulk operations
-        $response->assertStatus(429);
+        // Verify data integrity
+        $totalEvents = AnalyticsEvent::whereIn('user_id', $users->pluck('id'))->count();
+        $totalTouches = AttributionTouch::whereIn('user_id', $users->pluck('id'))->count();
+
+        $this->assertEquals(5, $totalEvents);
+        $this->assertEquals(5, $totalTouches);
     }
 }

@@ -499,7 +499,7 @@ class MigrationCommandTest extends TestCase
         for ($i = 1; $i <= 2; $i++) {
             $courseId = DB::table('courses')->insertGetId([
                 'tenant_id' => $tenant->id,
-                'course_code' => "CS{$i:03d}",
+                'course_code' => sprintf("CS%03d", $i),
                 'course_name' => "Computer Science {$i}",
                 'credits' => 3,
                 'created_at' => now(),

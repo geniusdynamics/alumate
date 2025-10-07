@@ -806,5 +806,4 @@ class CrossSystemPerformanceIntegrationTest extends TestCase
             'variants' => json_encode(['A' => 'Default View', 'B' => 'Enhanced View']),
         ]);
     }
-    }
 }
