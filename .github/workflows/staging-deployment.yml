@@ -10,6 +10,7 @@ on:
       - 'README.md'
       - '.github/**'
       - 'scripts/**'
+      - '!scripts/deploy.production.sh'
   workflow_dispatch:
     inputs:
       environment:
@@ -52,9 +53,7 @@ jobs:
 
       - name: Run security analysis
         run: |
-          if command -v composer audit >/dev/null 2>&1; then
-            composer audit --no-interaction || true
-          fi
+          composer audit --no-interaction
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -66,7 +65,10 @@ jobs:
         run: npm ci --silent
 
       - name: Run dependency security audit
-        run: npm audit --audit-level=high || true
+        run: npm audit --audit-level=high
+
+      - name: TypeScript Type Check
+        run: npx vue-tsc --noEmit
 
   # Build and test the application
   build-and-test:
@@ -149,7 +151,7 @@ jobs:
         run: php artisan tenants:migrate --force --no-interaction
 
       - name: Run PHP tests
-        run: php artisan test --testsuite=Unit --coverage --min=50 || true
+        run: php artisan test --testsuite=Unit --coverage --min=70
 
       - name: Build frontend assets
         run: npm run build --silent
@@ -221,14 +223,38 @@ jobs:
             $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
 
           # Execute deployment
+          scp -i deploy_key -o StrictHostKeyChecking=no \
+            deployment-package/ \
+            $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/app/
+
           ssh -i deploy_key -o StrictHostKeyChecking=no \
             $DEPLOY_USER@$DEPLOY_HOST \
             "cd $DEPLOY_PATH && DEPLOY_ENV=staging ./deploy.production.sh"
 
-      - name: Health check
+      - name: Health check with polling
         run: |
-          sleep 30
-          curl -f https://${{ secrets.STAGING_DOMAIN }}/health-check || exit 1
+          MAX_RETRIES=30
+          RETRY_INTERVAL=10
+          URL="https://${{ secrets.STAGING_DOMAIN }}/health-check"
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Health check attempt $i/$MAX_RETRIES..."
+            if curl -sf --max-time 10 "$URL"; then
+              echo "✅ Health check passed"
+              exit 0
+            fi
+            echo "Health check failed, retrying in ${RETRY_INTERVAL}s..."
+            sleep $RETRY_INTERVAL
+          done
+
+          echo "❌ Health check failed after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Run smoke tests
+        run: |
+          # Install dependencies for smoke tests if needed
+          npm ci --silent
+          npm run test:smoke --run || true
 
       - name: Send notification
         if: always()
@@ -237,10 +263,11 @@ jobs:
           status: ${{ job.status }}
           webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           channel: '#deployments'
-          text: "Staging deployment ${{ job.status }}"
+          text: 'Staging deployment ${{ job.status }}'
           fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
 
   # Deploy to development environment
   deploy-development:
@@ -286,10 +313,24 @@ jobs:
             $DEPLOY_USER@$DEPLOY_HOST \
             "cd $DEPLOY_PATH && DEPLOY_ENV=development ./deploy.production.sh"
 
-      - name: Health check
+      - name: Health check with polling
         run: |
-          sleep 30
-          curl -f https://${{ secrets.DEV_DOMAIN }}/health-check || exit 1
+          MAX_RETRIES=30
+          RETRY_INTERVAL=10
+          URL="https://${{ secrets.DEV_DOMAIN }}/health-check"
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Health check attempt $i/$MAX_RETRIES..."
+            if curl -sf --max-time 10 "$URL"; then
+              echo "✅ Health check passed"
+              exit 0
+            fi
+            echo "Health check failed, retrying in ${RETRY_INTERVAL}s..."
+            sleep $RETRY_INTERVAL
+          done
+
+          echo "❌ Health check failed after $MAX_RETRIES attempts"
+          exit 1
 
       - name: Send notification
         if: always()
@@ -298,7 +339,8 @@ jobs:
           status: ${{ job.status }}
           webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
           channel: '#deployments'
-          text: "Development deployment ${{ job.status }}"
+          text: 'Development deployment ${{ job.status }}'
           fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true

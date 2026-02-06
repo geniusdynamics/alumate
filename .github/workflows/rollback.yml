@@ -21,6 +21,18 @@ on:
         required: false
         type: string
         default: ''
+      restore_database:
+        description: 'Restore database from backup (requires backup file)'
+        required: false
+        type: boolean
+        default: false
+      backup_file:
+        description: 'Backup file name (if restore_database is true)'
+        required: false
+        type: string
+
+env:
+  PHP_VERSION: '8.3'
 
 jobs:
   rollback:
@@ -38,25 +50,40 @@ jobs:
         id: env
         run: |
           echo "DEPLOY_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-          
+
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then
             echo "DEPLOY_HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
             echo "DEPLOY_USER=${{ secrets.PROD_USER }}" >> $GITHUB_ENV
             echo "DEPLOY_KEY=${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=${{ secrets.PROD_PATH }}" >> $GITHUB_ENV
             echo "DEPLOY_CHANNEL=#production-alerts" >> $GITHUB_ENV
+            echo "DB_HOST=${{ secrets.PROD_DB_HOST }}" >> $GITHUB_ENV
+            echo "DB_USERNAME=${{ secrets.PROD_DB_USER }}" >> $GITHUB_ENV
+            echo "DB_PASSWORD=${{ secrets.PROD_DB_PASSWORD }}" >> $GITHUB_ENV
+            echo "DB_DATABASE=${{ secrets.PROD_DB_NAME }}" >> $GITHUB_ENV
+            echo "DOMAIN=${{ secrets.PROD_DOMAIN }}" >> $GITHUB_ENV
           elif [ "${{ github.event.inputs.environment }}" == "staging" ]; then
             echo "DEPLOY_HOST=${{ secrets.STAGING_HOST }}" >> $GITHUB_ENV
             echo "DEPLOY_USER=${{ secrets.STAGING_USER }}" >> $GITHUB_ENV
             echo "DEPLOY_KEY=${{ secrets.STAGING_SSH_KEY }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=${{ secrets.STAGING_PATH }}" >> $GITHUB_ENV
             echo "DEPLOY_CHANNEL=#staging" >> $GITHUB_ENV
+            echo "DB_HOST=${{ secrets.STAGING_DB_HOST }}" >> $GITHUB_ENV
+            echo "DB_USERNAME=${{ secrets.STAGING_DB_USER }}" >> $GITHUB_ENV
+            echo "DB_PASSWORD=${{ secrets.STAGING_DB_PASSWORD }}" >> $GITHUB_ENV
+            echo "DB_DATABASE=${{ secrets.STAGING_DB_NAME }}" >> $GITHUB_ENV
+            echo "DOMAIN=${{ secrets.STAGING_DOMAIN }}" >> $GITHUB_ENV
           else
             echo "DEPLOY_HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
             echo "DEPLOY_USER=${{ secrets.DEV_USER }}" >> $GITHUB_ENV
             echo "DEPLOY_KEY=${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=${{ secrets.DEV_PATH }}" >> $GITHUB_ENV
             echo "DEPLOY_CHANNEL=#development" >> $GITHUB_ENV
+            echo "DB_HOST=${{ secrets.DEV_DB_HOST }}" >> $GITHUB_ENV
+            echo "DB_USERNAME=${{ secrets.DEV_DB_USER }}" >> $GITHUB_ENV
+            echo "DB_PASSWORD=${{ secrets.DEV_DB_PASSWORD }}" >> $GITHUB_ENV
+            echo "DB_DATABASE=${{ secrets.DEV_DB_NAME }}" >> $GITHUB_ENV
+            echo "DOMAIN=${{ secrets.DEV_DOMAIN }}" >> $GITHUB_ENV
           fi
 
       - name: Send rollback notification (start)
@@ -74,6 +101,52 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
+
+      - name: Create pre-rollback backup
+        if: ${{ !github.event.inputs.restore_database }}
+        run: |
+          echo "${{ env.DEPLOY_KEY }}" > deploy_key
+          chmod 600 deploy_key
+
+          PRE_ROLLBACK_BACKUP="pre_rollback_$(date +%Y%m%d_%H%M%S).dump"
+          echo "Creating pre-rollback backup: $PRE_ROLLBACK_BACKUP"
+
+          ssh -i deploy_key -o StrictHostKeyChecking=no \
+            ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} \
+            "PGPASSWORD='${{ env.DB_PASSWORD }}' pg_dump -h ${{ env.DB_HOST }} -U ${{ env.DB_USERNAME }} -d ${{ env.DB_DATABASE }} --compress=9 --format=custom --file='$PRE_ROLLBACK_BACKUP' --no-owner --no-privileges"
+
+          echo "PRE_ROLLBACK_BACKUP=$PRE_ROLLBACK_BACKUP" >> $GITHUB_ENV
+          echo "✅ Pre-rollback backup created"
+
+      - name: Restore database from backup
+        if: ${{ github.event.inputs.restore_database }}
+        run: |
+          if [ -z "${{ github.event.inputs.backup_file }}" ]; then
+            echo "❌ Backup file not specified"
+            exit 1
+          fi
+
+          echo "${{ env.DEPLOY_KEY }}" > deploy_key
+          chmod 600 deploy_key
+
+          BACKUP_FILE="${{ github.event.inputs.backup_file }}"
+          echo "Restoring database from backup: $BACKUP_FILE"
+
+          # Check if backup exists on server
+          if ! ssh -i deploy_key -o StrictHostKeyChecking=no \
+            ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} \
+            "test -f ${{ env.DEPLOY_PATH }}/$BACKUP_FILE"; then
+            echo "❌ Backup file not found on server: $BACKUP_FILE"
+            exit 1
+          fi
+
+          # Restore database
+          ssh -i deploy_key -o StrictHostKeyChecking=no \
+            ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} \
+            "cd ${{ env.DEPLOY_PATH }} && PGPASSWORD='${{ env.DB_PASSWORD }}' pg_restore --clean --if-exists -h ${{ env.DB_HOST }} -U ${{ env.DB_USERNAME }} -d ${{ env.DB_DATABASE }} $BACKUP_FILE"
+
+          echo "✅ Database restored from backup"
 
       - name: Perform rollback
         run: |
@@ -104,15 +177,22 @@ jobs:
 
       - name: Health check after rollback
         run: |
-          sleep 30
-          
-          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
-            curl -f --max-time 10 "https://${{ secrets.PROD_DOMAIN }}/health-check" || exit 1
-          elif [ "${{ github.event.inputs.environment }}" == "staging" ]; then
-            curl -f --max-time 10 "https://${{ secrets.STAGING_DOMAIN }}/health-check" || exit 1
-          else
-            curl -f --max-time 10 "https://${{ secrets.DEV_DOMAIN }}/health-check" || exit 1
-          fi
+          MAX_RETRIES=30
+          RETRY_INTERVAL=10
+          URL="https://${{ env.DOMAIN }}/health-check"
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            echo "Health check attempt $i/$MAX_RETRIES..."
+            if curl -sf --max-time 10 "$URL"; then
+              echo "✅ Rollback health check passed"
+              exit 0
+            fi
+            echo "Health check failed, retrying in ${RETRY_INTERVAL}s..."
+            sleep $RETRY_INTERVAL
+          done
+
+          echo "❌ Rollback health check failed after $MAX_RETRIES attempts"
+          exit 1
 
       - name: Send rollback notification (success)
         if: success()
@@ -129,6 +209,7 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
 
       - name: Send rollback notification (failure)
         if: failure()
@@ -146,8 +227,10 @@ jobs:
           fields: repo,message,commit,author,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        continue-on-error: true
 
       - name: Update deployment status on monitoring
+        if: always()
         run: |
           DEPLOY_STATUS="rollback"
           if [ "${{ github.event.inputs.environment }}" == "production" ]; then

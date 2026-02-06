@@ -12,6 +12,10 @@ on:
       - main
       - db
 
+env:
+  PHP_VERSION: '8.3'
+  NODE_VERSION: '22'
+
 jobs:
   lint-and-format:
     name: Code Quality
@@ -23,7 +27,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl
           tools: composer:v2
 
@@ -41,7 +45,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install Node dependencies
@@ -53,9 +57,13 @@ jobs:
       - name: Run JS Linting (ESLint)
         run: npm run lint
 
+      - name: TypeScript Type Check
+        run: npx vue-tsc --noEmit
+
   unit-tests:
     name: Unit Tests (SQLite)
     runs-on: ubuntu-latest
+    needs: lint-and-format
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -63,7 +71,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           tools: composer:v2
           coverage: xdebug
@@ -100,7 +108,7 @@ jobs:
           path: |
             tests/reports/coverage.unit.xml
             tests/reports/coverage.unit.txt
-          retention-days: 30
+          retention-days: 14
 
       - name: Upload Unit Coverage HTML
         if: always()
@@ -108,13 +116,21 @@ jobs:
         with:
           name: coverage-html-unit
           path: tests/reports/coverage-html.unit
-          retention-days: 30
+          retention-days: 14
+
+      - name: Check Coverage Threshold
+        run: |
+          COVERAGE=$(grep -oP '\d+(\.\d+)?%' tests/reports/coverage.unit.txt | head -1 | tr -d '%')
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "❌ Code coverage ($COVERAGE%) is below minimum threshold (80%)"
+            exit 1
+          fi
+          echo "✅ Code coverage ($COVERAGE%) meets minimum threshold (80%)"
 
   unit-tests-pgsql:
     name: Unit Tests (PostgreSQL)
-    runs-on:
-      - ubuntu-latest
-      - docker
+    runs-on: ubuntu-latest
+    needs: lint-and-format
     services:
       postgres:
         image: postgres:17
@@ -139,7 +155,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
           tools: composer:v2
           coverage: xdebug
@@ -189,7 +205,7 @@ jobs:
           path: |
             tests/reports/coverage.unit.pgsql.xml
             tests/reports/coverage.unit.pgsql.txt
-          retention-days: 30
+          retention-days: 14
 
       - name: Upload Unit Coverage HTML (PostgreSQL)
         if: always()
@@ -197,13 +213,12 @@ jobs:
         with:
           name: coverage-html-unit-pgsql
           path: tests/reports/coverage-html.unit.pgsql
-          retention-days: 30
+          retention-days: 14
 
   integration-tests:
     name: Integration Tests
-    runs-on:
-      - ubuntu-latest
-      - docker
+    runs-on: ubuntu-latest
+    needs: unit-tests
     services:
       postgres:
         image: postgres:17
@@ -228,7 +243,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
           tools: composer:v2
           coverage: xdebug
@@ -268,6 +283,9 @@ jobs:
       - name: Run Migrations
         run: php artisan migrate --force
 
+      - name: Run Tenant Migrations
+        run: php artisan tenants:migrate --force
+
       - name: Run Integration Tests Only
         run: |
           php artisan config:clear
@@ -281,7 +299,7 @@ jobs:
           path: |
             tests/reports/coverage.integration.xml
             tests/reports/coverage.integration.txt
-          retention-days: 30
+          retention-days: 14
 
       - name: Upload Integration Coverage HTML
         if: always()
@@ -289,13 +307,12 @@ jobs:
         with:
           name: coverage-html-integration
           path: tests/reports/coverage-html.integration
-          retention-days: 30
+          retention-days: 14
 
   feature-tests:
     name: Feature Tests
-    runs-on:
-      - ubuntu-latest
-      - docker
+    runs-on: ubuntu-latest
+    needs: unit-tests
     services:
       postgres:
         image: postgres:17
@@ -314,7 +331,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
           tools: composer:v2
           coverage: xdebug
@@ -367,7 +384,7 @@ jobs:
           path: |
             tests/reports/coverage.feature.xml
             tests/reports/coverage.feature.txt
-          retention-days: 30
+          retention-days: 14
 
       - name: Upload Feature Coverage HTML
         if: always()
@@ -375,13 +392,12 @@ jobs:
         with:
           name: coverage-html-feature
           path: tests/reports/coverage-html.feature
-          retention-days: 30
+          retention-days: 14
 
   full-tests-pgsql:
     name: Full Tests (PostgreSQL)
-    runs-on:
-      - ubuntu-latest
-      - docker
+    runs-on: ubuntu-latest
+    needs: [integration-tests, feature-tests]
     services:
       postgres:
         image: postgres:17
@@ -406,7 +422,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
           tools: composer:v2
           coverage: xdebug
@@ -462,7 +478,7 @@ jobs:
           path: |
             tests/reports/coverage.full.pgsql.xml
             tests/reports/coverage.full.pgsql.txt
-          retention-days: 30
+          retention-days: 14
 
       - name: Upload Full Coverage HTML (PostgreSQL)
         if: always()
@@ -470,11 +486,12 @@ jobs:
         with:
           name: coverage-html-full-pgsql
           path: tests/reports/coverage-html.full.pgsql
-          retention-days: 30
+          retention-days: 14
 
   frontend-tests:
     name: Frontend Tests & Build
     runs-on: ubuntu-latest
+    needs: lint-and-format
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -482,7 +499,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: ${{ env.PHP_VERSION }}
           extensions: dom, curl, mbstring, zip, pcntl
           tools: composer:v2
 
@@ -500,7 +517,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install Node dependencies
@@ -512,8 +529,90 @@ jobs:
         env:
           APP_KEY: base64:placeholder-key-for-frontend-build
 
+      - name: TypeScript Type Check
+        run: npx vue-tsc --noEmit
+
       - name: Run Frontend Tests (Vitest)
         run: npm test
 
       - name: Build Frontend Assets
         run: npm run build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: public/build/
+          retention-days: 7
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    needs: lint-and-format
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: dom, curl, mbstring, zip, pcntl
+          tools: composer:v2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run Composer Audit
+        run: composer audit --no-interaction
+        continue-on-error: false
+
+      - name: Run npm Audit
+        run: npm audit --audit-level=high
+        continue-on-error: false
+
+  notify-completion:
+    name: Notify Completion
+    runs-on: ubuntu-latest
+    needs: [unit-tests, integration-tests, feature-tests, frontend-tests, full-tests-pgsql, security-audit]
+    if: always()
+    steps:
+      - name: Test Summary
+        run: |
+          echo "CI Pipeline completed"
+          echo "Unit Tests: ${{ needs.unit-tests.result }}"
+          echo "Integration Tests: ${{ needs.integration-tests.result }}"
+          echo "Feature Tests: ${{ needs.feature-tests.result }}"
+          echo "Frontend Tests: ${{ needs.frontend-tests.result }}"
+          echo "Full Tests: ${{ needs.full-tests-pgsql.result }}"
+          echo "Security Audit: ${{ needs.security-audit.result }}"
+
+      - name: Check for failures
+        run: |
+          if [[ "${{ needs.unit-tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.integration-tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.feature-tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.frontend-tests.result }}" == "failure" ]] || \
+             [[ "${{ needs.full-tests-pgsql.result }}" == "failure" ]] || \
+             [[ "${{ needs.security-audit.result }}" == "failure" ]]; then
+            echo "❌ One or more jobs failed"
+            exit 1
+          fi
+          echo "✅ All jobs passed successfully"
