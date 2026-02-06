@@ -27,15 +27,21 @@
             <directory>tests/EndToEnd</directory>
         </testsuite>
     </testsuites>
-    <source>
+    <coverage>
         <include>
-            <directory>app</directory>
+            <directory suffix=".php">app</directory>
         </include>
         <exclude>
-            <directory>app/Console/Commands</directory>
+            <directory suffix=".php">app/Console/Commands</directory>
             <file>app/Http/Kernel.php</file>
         </exclude>
-    </source>
+        <report>
+            <clover outputFile="tests/reports/coverage.xml"/>
+            <html outputDirectory="tests/reports/coverage-html"/>
+            <text outputFile="tests/reports/coverage.txt" showUncoveredFiles="true"/>
+        </report>
+        <requireMinimumCoverage>80</requireMinimumCoverage>
+    </coverage>
     <php>
         <ini name="memory_limit" value="2G"/>
         <env name="APP_ENV" value="testing"/>
@@ -54,5 +60,6 @@
     <logging>
         <testdoxHtml outputFile="tests/reports/testdox.html"/>
         <testdoxText outputFile="tests/reports/testdox.txt"/>
+        <junit outputFile="tests/reports/junit.xml"/>
     </logging>
 </phpunit>

@@ -23,9 +23,16 @@ use App\Http\Requests\SyncRunRequest;
 use App\Services\Analytics\CustomEventService;
 use App\Services\Analytics\MatomoService;
 use App\Services\Analytics\SyncService;
+use App\Services\TenantContextService;
 
 class AnalyticsController extends Controller
 {
+    protected TenantContextService $tenantContextService;
+
+    public function __construct(TenantContextService $tenantContextService)
+    {
+        $this->tenantContextService = $tenantContextService;
+    }
     /**
      * Store analytics events in batch
      */
@@ -71,9 +78,10 @@ class AnalyticsController extends Controller
 
             // Process events in chunks for better performance
             $chunks = array_chunk($events, 50);
+            $tenantId = $this->getTenantIdForInsert();
 
             foreach ($chunks as $chunk) {
-                $this->processEventChunk($chunk, $sessionId, $userAgent, $ipAddress);
+                $this->processEventChunk($chunk, $sessionId, $userAgent, $ipAddress, $tenantId);
             }
 
             // Update session statistics
@@ -127,6 +135,7 @@ class AnalyticsController extends Controller
             $conversionData['ip_address'] = $request->ip();
             $conversionData['user_agent'] = $request->header('User-Agent');
             $conversionData['created_at'] = now();
+            $conversionData['tenant_id'] = $this->getTenantIdForInsert();
 
             // Store conversion in database
             DB::table('analytics_conversions')->insert($conversionData);
@@ -191,6 +200,7 @@ class AnalyticsController extends Controller
                 'user_agent' => $request->header('User-Agent'),
                 'timestamp' => $request->input('timestamp'),
                 'created_at' => now(),
+                'tenant_id' => $this->getTenantIdForInsert(),
             ];
 
             // Store error in database
@@ -225,6 +235,9 @@ class AnalyticsController extends Controller
      */
     public function getMetrics(Request $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         // Check analytics consent
         $consentService = app(\App\Services\Analytics\ConsentService::class);
         if (!$consentService->hasConsent()) {
@@ -285,6 +298,9 @@ class AnalyticsController extends Controller
      */
     public function generateReport(Request $request, string $reportType): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         $validator = Validator::make($request->all(), [
             'audience' => 'required|in:individual,institutional',
             'timeRange.start' => 'nullable|date',
@@ -331,6 +347,9 @@ class AnalyticsController extends Controller
      */
     public function exportData(Request $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         $validator = Validator::make($request->all(), [
             'format' => 'required|in:json,csv',
             'audience' => 'required|in:individual,institutional',
@@ -376,6 +395,9 @@ class AnalyticsController extends Controller
      */
     public function getConversionReport(Request $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         $validator = Validator::make($request->all(), [
             'audience' => 'required|in:individual,institutional',
             'timeRange.start' => 'nullable|date',
@@ -413,12 +435,13 @@ class AnalyticsController extends Controller
     /**
      * Process a chunk of events
      */
-    private function processEventChunk(array $events, string $sessionId, ?string $userAgent, string $ipAddress): void
+    private function processEventChunk(array $events, string $sessionId, ?string $userAgent, string $ipAddress, string $tenantId): void
     {
         $insertData = [];
 
         foreach ($events as $event) {
             $insertData[] = [
+                'tenant_id' => $tenantId,
                 'event_name' => $event['eventName'],
                 'audience' => $event['audience'],
                 'section' => $event['section'],
@@ -500,6 +523,9 @@ class AnalyticsController extends Controller
      */
     private function calculateMetrics(string $audience, string $startDate, string $endDate): array
     {
+        // Ensure tenant context is applied
+        $this->ensureTenantContext();
+        
         // Page views
         $pageViews = DB::table('analytics_events')
             ->where('audience', $audience)
@@ -602,6 +628,9 @@ class AnalyticsController extends Controller
      */
     private function generateConversionReport(string $audience, ?array $timeRange): array
     {
+        // Ensure tenant context is applied
+        $this->ensureTenantContext();
+        
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -652,6 +681,9 @@ class AnalyticsController extends Controller
      */
     private function generateEngagementReport(string $audience, ?array $timeRange): array
     {
+        // Ensure tenant context is applied
+        $this->ensureTenantContext();
+        
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -692,6 +724,9 @@ class AnalyticsController extends Controller
      */
     private function generatePerformanceReport(string $audience, ?array $timeRange): array
     {
+        // Ensure tenant context is applied
+        $this->ensureTenantContext();
+        
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -735,6 +770,9 @@ class AnalyticsController extends Controller
      */
     private function generateFunnelReport(string $audience, ?array $timeRange): array
     {
+        // Ensure tenant context is applied
+        $this->ensureTenantContext();
+        
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -784,6 +822,9 @@ class AnalyticsController extends Controller
      */
     private function getExportData(string $audience, array $filters): array
     {
+        // Ensure tenant context is applied
+        $this->ensureTenantContext();
+        
         $query = DB::table('analytics_events')
             ->where('audience', $audience);
 
@@ -846,6 +887,9 @@ class AnalyticsController extends Controller
      */
     public function createCohort(CreateCohortRequest $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $cohortAnalysisService = app(CohortAnalysisService::class);
 
@@ -899,6 +943,9 @@ class AnalyticsController extends Controller
      */
     public function getCohort(string $cohortId): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $cohort = Cohort::byTenant($this->getCurrentTenantId())
                 ->where('id', $cohortId)
@@ -963,6 +1010,9 @@ class AnalyticsController extends Controller
      */
     public function compareCohorts(CompareCohortsRequest $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $cohortIds = $request->input('cohort_ids');
             $metrics = $request->input('metrics', ['retention', 'engagement']);
@@ -1006,6 +1056,9 @@ class AnalyticsController extends Controller
      */
     public function listCohorts(Request $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $query = Cohort::byTenant($this->getCurrentTenantId())
                 ->with('creator:id,name,email');
@@ -1068,11 +1121,80 @@ class AnalyticsController extends Controller
 
     /**
      * Get current tenant ID
+     * 
+     * @return string|null Returns the current tenant ID or null if not set
+     * @throws \Exception If tenant context is not available
      */
-    private function getCurrentTenantId(): ?int
+    private function getCurrentTenantId(): ?string
     {
-        // TODO: Implement proper tenant resolution
-        return session('tenant_id') ? (int) session('tenant_id') : 1;
+        $tenantId = $this->tenantContextService->getCurrentTenantId();
+        
+        if (!$tenantId) {
+            Log::warning('Tenant context not available in AnalyticsController', [
+                'method' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'] ?? 'unknown',
+                'user_id' => auth()->id(),
+            ]);
+            throw new \Exception('Tenant context not available. Please ensure you are accessing the application through a valid tenant context.');
+        }
+        
+        return $tenantId;
+    }
+
+    /**
+     * Ensure tenant context is applied to database queries
+     * This method ensures that all queries are executed in the correct tenant schema
+     * 
+     * @throws \Exception If tenant context is not available
+     */
+    private function ensureTenantContext(): void
+    {
+        $tenantId = $this->getCurrentTenantId();
+        $schema = $this->tenantContextService->getCurrentSchema();
+        
+        if ($schema) {
+            // Switch to tenant schema for all queries
+            $this->tenantContextService->switchToTenantSchema($schema);
+        }
+        
+        Log::debug('Tenant context applied for analytics queries', [
+            'tenant_id' => $tenantId,
+            'schema' => $schema,
+        ]);
+    }
+
+    /**
+     * Validate tenant isolation for cross-tenant access prevention
+     * This method should be called at the start of any method that retrieves tenant-specific data
+     * 
+     * @throws \Exception If tenant context is not valid or user doesn't have access
+     */
+    private function validateTenantIsolation(): void
+    {
+        $tenantId = $this->getCurrentTenantId();
+        
+        if (!$tenantId) {
+            throw new \Exception('Tenant context is required for this operation');
+        }
+        
+        // Validate that the current user has access to this tenant
+        if (!$this->tenantContextService->validateTenantAccess($tenantId)) {
+            Log::warning('Tenant access validation failed', [
+                'tenant_id' => $tenantId,
+                'user_id' => auth()->id(),
+                'ip' => request()->ip(),
+            ]);
+            throw new \Exception('You do not have access to this tenant\'s data');
+        }
+    }
+
+    /**
+     * Get the current tenant ID for insert operations
+     * 
+     * @return string The current tenant ID
+     */
+    private function getTenantIdForInsert(): string
+    {
+        return $this->getCurrentTenantId();
     }
 
     // ========================================
@@ -1087,6 +1209,9 @@ class AnalyticsController extends Controller
      */
     public function trackTouchpoint(TrackTouchRequest $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $attributionService = app(AttributionService::class);
 
@@ -1135,6 +1260,9 @@ class AnalyticsController extends Controller
      */
     public function getUserAttribution(int $userId): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $attributionService = app(AttributionService::class);
 
@@ -1173,6 +1301,9 @@ class AnalyticsController extends Controller
      */
     public function getChannelPerformance(): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $attributionService = app(AttributionService::class);
 
@@ -1228,6 +1359,9 @@ class AnalyticsController extends Controller
      */
     public function getBudgetRecommendations(): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $attributionService = app(AttributionService::class);
             $recommendations = $attributionService->generateBudgetRecommendations();
@@ -1404,6 +1538,9 @@ class AnalyticsController extends Controller
      */
     public function defineCustomEvent(DefineEventRequest $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $customEventService = app(CustomEventService::class);
 
@@ -1452,6 +1589,9 @@ class AnalyticsController extends Controller
      */
     public function trackCustomEvent(CustomTrackRequest $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $customEventService = app(CustomEventService::class);
 
@@ -1500,6 +1640,9 @@ class AnalyticsController extends Controller
      */
     public function getEventAnalysis(string $eventName): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $customEventService = app(CustomEventService::class);
 
@@ -1548,6 +1691,9 @@ class AnalyticsController extends Controller
      */
     public function listCustomEvents(Request $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $query = \App\Models\CustomEventDefinition::byTenant($this->getCurrentTenantId());
 
@@ -1727,6 +1873,9 @@ class AnalyticsController extends Controller
      */
     public function runSync(SyncRunRequest $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         try {
             $syncService = app(SyncService::class);
             $tenantId = $this->getCurrentTenantId();
@@ -1763,6 +1912,9 @@ class AnalyticsController extends Controller
      */
     public function getSyncStatus(Request $request): JsonResponse
     {
+        // Validate tenant isolation first
+        $this->validateTenantIsolation();
+        
         $validator = Validator::make($request->all(), [
             'date_range.start' => 'nullable|date',
             'date_range.end' => 'nullable|date',

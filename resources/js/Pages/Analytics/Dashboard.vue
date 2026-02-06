@@ -153,6 +153,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 // Components
 import AlertsPanel from '@/Components/Analytics/AlertsPanel.vue';
 import AnalyticsTable from '@/Components/Analytics/AnalyticsTable.vue';
+import CohortAnalyzer from '@/Components/Analytics/CohortAnalyzer.vue';
 import DeviceBreakdownChart from '@/Components/Analytics/Charts/DeviceBreakdownChart.vue';
 import EngagementChart from '@/Components/Analytics/Charts/EngagementChart.vue';
 import FeatureUsageChart from '@/Components/Analytics/Charts/FeatureUsageChart.vue';

@@ -396,11 +396,16 @@ class MigrateToSchemaTenancy extends Command
         $this->info('💾 Creating database backup...');
         
         try {
-            Artisan::call('backup:database', [
-                '--tag' => 'pre-schema-migration-' . $this->migrationId
+            Artisan::call('backup:create', [
+                '--type' => 'full',
+                '--compress' => true
             ]);
             
             $this->info('✅ Backup created successfully.');
+            
+            // Verify backup was created
+            $this->verifyBackup();
+            
         } catch (Exception $e) {
             $this->warn('⚠️  Backup creation failed: ' . $e->getMessage());
             
@@ -408,6 +413,73 @@ class MigrateToSchemaTenancy extends Command
                 throw new Exception('Migration cancelled due to backup failure.');
             }
         }
+    }
+
+    /**
+     * Verify backup was created successfully
+     */
+    protected function verifyBackup(): void
+    {
+        $this->info('🔍 Verifying backup...');
+        
+        try {
+            // Check if backup log entry exists
+            $backupLog = DB::table('backup_logs')
+                ->where('status', 'completed')
+                ->orderBy('created_at', 'desc')
+                ->first();
+            
+            if (!$backupLog) {
+                throw new Exception('No backup log entry found.');
+            }
+            
+            // Check if backup file exists
+            if ($backupLog->file_path) {
+                $storagePath = storage_path('app/' . $backupLog->file_path);
+                if (!file_exists($storagePath)) {
+                    throw new Exception('Backup file does not exist: ' . $backupLog->file_path);
+                }
+                
+                $fileSize = filesize($storagePath);
+                if ($fileSize === 0) {
+                    throw new Exception('Backup file is empty: ' . $backupLog->file_path);
+                }
+                
+                $this->info('✅ Backup verified successfully.');
+                $this->info('  File: ' . $backupLog->file_path);
+                $this->info('  Size: ' . $this->formatBytes($fileSize));
+                
+                $this->logMigration('Backup verified', [
+                    'backup_id' => $backupLog->id,
+                    'file_path' => $backupLog->file_path,
+                    'file_size' => $fileSize
+                ]);
+            } else {
+                $this->warn('⚠️  Backup file path not found in log entry.');
+            }
+            
+        } catch (Exception $e) {
+            $this->error('❌ Backup verification failed: ' . $e->getMessage());
+            $this->logMigration('Backup verification failed', ['error' => $e->getMessage()]);
+            
+            if (!$this->confirm('Backup verification failed. Continue anyway?')) {
+                throw new Exception('Migration cancelled due to backup verification failure.');
+            }
+        }
+    }
+
+    /**
+     * Format bytes to human readable format
+     */
+    protected function formatBytes(int $bytes, int $precision = 2): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, $precision) . ' ' . $units[$i];
     }
 
     protected function verifyDataIntegrity(): bool
@@ -440,17 +512,270 @@ class MigrateToSchemaTenancy extends Command
     protected function handleRollback(): int
     {
         $tenantId = $this->option('rollback-tenant');
-        $this->warn('🔄 Rollback functionality is not yet implemented.');
-        $this->warn('This would rollback tenant ' . $tenantId . ' from schema-based to hybrid tenancy.');
         
-        // TODO: Implement rollback logic
-        // 1. Verify tenant exists and is schema-migrated
-        // 2. Create backup of current state
-        // 3. Copy data from tenant schema back to main tables with tenant_id
-        // 4. Update tenant record
-        // 5. Drop tenant schema
+        $this->warn('🔄 Starting rollback for tenant: ' . $tenantId);
+        $this->logMigration('Rollback started', ['tenant_id' => $tenantId]);
+
+        try {
+            // Step 1: Verify tenant exists and is schema-migrated
+            if (!$this->verifyTenantForRollback($tenantId)) {
+                return Command::FAILURE;
+            }
+
+            $tenant = Tenant::findOrFail($tenantId);
+            $schemaName = $tenant->schema_name;
+
+            // Step 2: Create backup of current state
+            if (!$this->option('skip-backup')) {
+                $this->createRollbackBackup($tenant);
+            }
+
+            // Step 3: Confirm rollback unless forced
+            if (!$this->option('force')) {
+                $this->warn('⚠️  This will rollback tenant ' . $tenantId . ' from schema-based to hybrid tenancy.');
+                $this->warn('This operation will:');
+                $this->warn('  • Copy all data from tenant schema back to main tables');
+                $this->warn('  • Add tenant_id column to all records');
+                $this->warn('  • Update tenant record to remove schema information');
+                $this->warn('  • Drop the tenant schema');
+                
+                if (!$this->confirm('Do you want to continue with the rollback?')) {
+                    $this->info('Rollback cancelled by user.');
+                    return Command::SUCCESS;
+                }
+            }
+
+            // Step 4: Execute rollback in transaction
+            DB::transaction(function () use ($tenant, $schemaName) {
+                // Copy data from tenant schema back to main tables
+                $this->rollbackDataFromSchema($tenant, $schemaName);
+                
+                // Verify data integrity after rollback
+                $this->verifyRollbackData($tenant, $schemaName);
+                
+                // Update tenant record
+                $this->updateTenantRecordForRollback($tenant);
+                
+                // Drop tenant schema
+                $this->dropTenantSchema($schemaName);
+            });
+
+            $this->info('✅ Rollback completed successfully for tenant: ' . $tenantId);
+            $this->logMigration('Rollback completed', [
+                'tenant_id' => $tenantId,
+                'schema_name' => $schemaName
+            ]);
+
+            return Command::SUCCESS;
+
+        } catch (Exception $e) {
+            $this->error('❌ Rollback failed: ' . $e->getMessage());
+            $this->logMigration('Rollback failed', [
+                'tenant_id' => $tenantId,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return Command::FAILURE;
+        }
+    }
+
+    /**
+     * Verify tenant exists and is eligible for rollback
+     */
+    protected function verifyTenantForRollback(int $tenantId): bool
+    {
+        $this->info('🔍 Verifying tenant for rollback...');
+
+        // Check if tenant exists
+        $tenant = Tenant::find($tenantId);
+        if (!$tenant) {
+            $this->error('Tenant not found: ' . $tenantId);
+            return false;
+        }
+
+        // Check if tenant is schema-migrated
+        if (!$tenant->schema_name || !$tenant->is_schema_migrated) {
+            $this->error('Tenant is not schema-migrated: ' . $tenantId);
+            $this->error('This tenant cannot be rolled back.');
+            return false;
+        }
+
+        // Check if tenant schema exists
+        $schemaExists = DB::select("SELECT schema_name FROM information_schema.schemata WHERE schema_name = ?", [$tenant->schema_name]);
+        if (empty($schemaExists)) {
+            $this->error('Tenant schema does not exist: ' . $tenant->schema_name);
+            return false;
+        }
+
+        // Check if main tables exist and have tenant_id column
+        $tablesToCheck = ['students', 'courses', 'enrollments', 'grades', 'activity_logs'];
+        foreach ($tablesToCheck as $table) {
+            if (!Schema::hasTable($table)) {
+                $this->error('Main table does not exist: ' . $table);
+                return false;
+            }
+
+            $hasTenantIdColumn = Schema::hasColumn($table, 'tenant_id');
+            if (!$hasTenantIdColumn) {
+                $this->error('Main table missing tenant_id column: ' . $table);
+                return false;
+            }
+        }
+
+        $this->info('✅ Tenant verified for rollback.');
+        return true;
+    }
+
+    /**
+     * Create backup before rollback
+     */
+    protected function createRollbackBackup(Tenant $tenant): void
+    {
+        $this->info('💾 Creating pre-rollback backup...');
         
-        return Command::SUCCESS;
+        try {
+            Artisan::call('backup:create', [
+                '--type' => 'full',
+                '--compress' => true
+            ]);
+            
+            $this->info('✅ Pre-rollback backup created successfully.');
+            $this->logMigration('Pre-rollback backup created', ['tenant_id' => $tenant->id]);
+        } catch (Exception $e) {
+            $this->warn('⚠️  Backup creation failed: ' . $e->getMessage());
+            
+            if (!$this->confirm('Continue with rollback without backup?')) {
+                throw new Exception('Rollback cancelled due to backup failure.');
+            }
+        }
+    }
+
+    /**
+     * Rollback data from tenant schema back to main tables
+     */
+    protected function rollbackDataFromSchema(Tenant $tenant, string $schemaName): void
+    {
+        $batchSize = (int) $this->option('batch-size');
+        
+        // Tables to rollback with their tenant_id column
+        $tablesToRollback = [
+            'students' => 'tenant_id',
+            'courses' => 'tenant_id', 
+            'enrollments' => 'tenant_id',
+            'grades' => 'tenant_id',
+            'activity_logs' => 'tenant_id'
+        ];
+
+        foreach ($tablesToRollback as $table => $tenantColumn) {
+            $this->rollbackTableData($table, $tenantColumn, $tenant->id, $schemaName, $batchSize);
+        }
+    }
+
+    /**
+     * Rollback data for a specific table
+     */
+    protected function rollbackTableData(string $table, string $tenantColumn, int $tenantId, string $schemaName, int $batchSize): void
+    {
+        // Check if schema table exists
+        $schemaTableExists = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = ? AND table_name = ?", [$schemaName, $table]);
+        if (empty($schemaTableExists)) {
+            $this->warn("  ⚠️  Schema table {$schemaName}.{$table} does not exist, skipping...");
+            return;
+        }
+
+        $totalRecords = DB::table("{$schemaName}.{$table}")->count();
+        
+        if ($totalRecords === 0) {
+            $this->info("  📊 No records to rollback for table: {$table}");
+            return;
+        }
+
+        $this->info("  🔄 Rolling back {$totalRecords} records from {$schemaName}.{$table}...");
+
+        // Delete existing records for this tenant from main table
+        $deletedCount = DB::table($table)->where($tenantColumn, $tenantId)->delete();
+        $this->info("  🗑️  Deleted {$deletedCount} existing records from main table: {$table}");
+
+        $offset = 0;
+        $insertedCount = 0;
+        
+        while ($offset < $totalRecords) {
+            $records = DB::table("{$schemaName}.{$table}")
+                ->offset($offset)
+                ->limit($batchSize)
+                ->get();
+
+            if ($records->isEmpty()) {
+                break;
+            }
+
+            // Insert records into main table with tenant_id
+            foreach ($records as $record) {
+                $recordArray = (array) $record;
+                $recordArray[$tenantColumn] = $tenantId; // Add tenant_id column
+                
+                DB::table($table)->insert($recordArray);
+                $insertedCount++;
+            }
+
+            $offset += $batchSize;
+        }
+        
+        $this->info("  ✅ Rolled back {$insertedCount} records to main table: {$table}");
+    }
+
+    /**
+     * Verify data integrity after rollback
+     */
+    protected function verifyRollbackData(Tenant $tenant, string $schemaName): void
+    {
+        $this->info("  🔍 Verifying rollback data integrity for tenant {$tenant->id}...");
+        
+        $tablesToVerify = ['students', 'courses', 'enrollments', 'grades', 'activity_logs'];
+        
+        foreach ($tablesToVerify as $table) {
+            // Check if schema table exists
+            $schemaTableExists = DB::select("SELECT table_name FROM information_schema.tables WHERE table_schema = ? AND table_name = ?", [$schemaName, $table]);
+            if (empty($schemaTableExists)) {
+                $this->warn("  ⚠️  Schema table {$schemaName}.{$table} does not exist, skipping verification...");
+                continue;
+            }
+            
+            $schemaCount = DB::table("{$schemaName}.{$table}")->count();
+            $mainCount = DB::table($table)->where('tenant_id', $tenant->id)->count();
+            
+            if ($schemaCount !== $mainCount) {
+                throw new Exception("Rollback verification failed for {$table}: Schema({$schemaCount}) != Main({$mainCount})");
+            }
+        }
+        
+        $this->info("  ✅ Rollback data integrity verified for tenant {$tenant->id}");
+    }
+
+    /**
+     * Update tenant record after rollback
+     */
+    protected function updateTenantRecordForRollback(Tenant $tenant): void
+    {
+        $tenant->update([
+            'schema_name' => null,
+            'is_schema_migrated' => false,
+            'schema_migrated_at' => null
+        ]);
+        
+        $this->info("  ✅ Updated tenant record, removed schema information");
+    }
+
+    /**
+     * Drop tenant schema
+     */
+    protected function dropTenantSchema(string $schemaName): void
+    {
+        $this->info("  🗑️  Dropping schema: {$schemaName}");
+        
+        DB::statement("DROP SCHEMA IF EXISTS {$schemaName} CASCADE");
+        
+        $this->info("  ✅ Dropped schema: {$schemaName}");
     }
 
     protected function logMigration(string $message, array $context = []): void

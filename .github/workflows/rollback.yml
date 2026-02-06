@@ -1,0 +1,158 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
+          - development
+      reason:
+        description: 'Reason for rollback'
+        required: true
+        type: string
+      target_release:
+        description: 'Target release to rollback to (optional, defaults to previous)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  rollback:
+    name: Rollback ${{ github.event.inputs.environment }}
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.inputs.environment }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up environment variables
+        id: env
+        run: |
+          echo "DEPLOY_ENV=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            echo "DEPLOY_HOST=${{ secrets.PROD_HOST }}" >> $GITHUB_ENV
+            echo "DEPLOY_USER=${{ secrets.PROD_USER }}" >> $GITHUB_ENV
+            echo "DEPLOY_KEY=${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
+            echo "DEPLOY_PATH=${{ secrets.PROD_PATH }}" >> $GITHUB_ENV
+            echo "DEPLOY_CHANNEL=#production-alerts" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+            echo "DEPLOY_HOST=${{ secrets.STAGING_HOST }}" >> $GITHUB_ENV
+            echo "DEPLOY_USER=${{ secrets.STAGING_USER }}" >> $GITHUB_ENV
+            echo "DEPLOY_KEY=${{ secrets.STAGING_SSH_KEY }}" >> $GITHUB_ENV
+            echo "DEPLOY_PATH=${{ secrets.STAGING_PATH }}" >> $GITHUB_ENV
+            echo "DEPLOY_CHANNEL=#staging" >> $GITHUB_ENV
+          else
+            echo "DEPLOY_HOST=${{ secrets.DEV_HOST }}" >> $GITHUB_ENV
+            echo "DEPLOY_USER=${{ secrets.DEV_USER }}" >> $GITHUB_ENV
+            echo "DEPLOY_KEY=${{ secrets.DEV_SSH_KEY }}" >> $GITHUB_ENV
+            echo "DEPLOY_PATH=${{ secrets.DEV_PATH }}" >> $GITHUB_ENV
+            echo "DEPLOY_CHANNEL=#development" >> $GITHUB_ENV
+          fi
+
+      - name: Send rollback notification (start)
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          channel: ${{ env.DEPLOY_CHANNEL }}
+          text: |
+            🚨 **Rollback Initiated**
+            Environment: ${{ github.event.inputs.environment }}
+            Reason: ${{ github.event.inputs.reason }}
+            Triggered by: ${{ github.actor }}
+            Commit: ${{ github.sha }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Perform rollback
+        run: |
+          echo "${{ env.DEPLOY_KEY }}" > deploy_key
+          chmod 600 deploy_key
+
+          if [ -n "${{ github.event.inputs.target_release }}" ]; then
+            TARGET_RELEASE=${{ github.event.inputs.target_release }}
+            echo "Rolling back to specific release: $TARGET_RELEASE"
+            
+            ssh -i deploy_key -o StrictHostKeyChecking=no \
+              ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} \
+              "cd ${{ env.DEPLOY_PATH }} && \
+               rm -f current && \
+               ln -sf $TARGET_RELEASE current && \
+               cd current && \
+               php artisan config:cache && \
+               php artisan route:cache && \
+               php artisan up"
+          else
+            echo "Performing automatic rollback to previous release..."
+            
+            ssh -i deploy_key -o StrictHostKeyChecking=no \
+              ${{ env.DEPLOY_USER }}@${{ env.DEPLOY_HOST }} \
+              "cd ${{ env.DEPLOY_PATH }} && \
+               ./deploy.production.sh rollback"
+          fi
+
+      - name: Health check after rollback
+        run: |
+          sleep 30
+          
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            curl -f --max-time 10 "https://${{ secrets.PROD_DOMAIN }}/health-check" || exit 1
+          elif [ "${{ github.event.inputs.environment }}" == "staging" ]; then
+            curl -f --max-time 10 "https://${{ secrets.STAGING_DOMAIN }}/health-check" || exit 1
+          else
+            curl -f --max-time 10 "https://${{ secrets.DEV_DOMAIN }}/health-check" || exit 1
+          fi
+
+      - name: Send rollback notification (success)
+        if: success()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: success
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          channel: ${{ env.DEPLOY_CHANNEL }}
+          text: |
+            ✅ **Rollback Completed Successfully**
+            Environment: ${{ github.event.inputs.environment }}
+            Reason: ${{ github.event.inputs.reason }}
+            Rolled back by: ${{ github.actor }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Send rollback notification (failure)
+        if: failure()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          channel: ${{ env.DEPLOY_CHANNEL }}
+          text: |
+            ❌ **Rollback Failed!**
+            Environment: ${{ github.event.inputs.environment }}
+            Reason: ${{ github.event.inputs.reason }}
+            Failed for: ${{ github.actor }}
+            **Manual intervention required!**
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Update deployment status on monitoring
+        run: |
+          DEPLOY_STATUS="rollback"
+          if [ "${{ github.event.inputs.environment }}" == "production" ]; then
+            curl -X POST "https://api.monitoring.your-domain.com/deployments" \
+              -H "Content-Type: application/json" \
+              -d "{\"status\":\"${DEPLOY_STATUS}\",\"environment\":\"${{ github.event.inputs.environment }}\",\"sha\":\"${{ github.sha }}\",\"reason\":\"${{ github.event.inputs.reason }}\",\"timestamp\":\"$(date -Iseconds)\"}" \
+              --silent --output /dev/null || true
+          fi

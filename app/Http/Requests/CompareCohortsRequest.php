@@ -4,24 +4,82 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Cohort;
+use App\Models\User;
+use App\Services\TenantContextService;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Compare Cohorts Request
  *
  * Validates requests for comparing multiple cohorts with statistical analysis.
+ * Implements role-based access control using Spatie permissions and tenant isolation.
  */
 class CompareCohortsRequest extends FormRequest
 {
+    protected TenantContextService $tenantContextService;
+
+    public function __construct(TenantContextService $tenantContextService)
+    {
+        $this->tenantContextService = $tenantContextService;
+        parent::__construct();
+    }
+
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * Uses Spatie's permission system for role-based access control
+     * and ensures tenant isolation for cohort access.
      */
     public function authorize(): bool
     {
-        // TODO: Implement proper role-based authorization
-        // For now, allow authenticated users
-        return Auth::check();
+        $user = Auth::user();
+
+        // Unauthenticated users are not authorized
+        if (!$user) {
+            return false;
+        }
+
+        // Super admins can compare cohorts across all tenants
+        if ($user->is_super_admin) {
+            return true;
+        }
+
+        // Use Laravel's Gate for policy-based authorization
+        // This ensures consistent authorization across the application
+        return Gate::allows('cohort.compare', $user);
+    }
+
+    /**
+     * Get the authorization failure response.
+     *
+     * Provides a structured error response for unauthorized access attempts.
+     */
+    public function failedAuthorization(): Response
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return Response::deny('You must be logged in to compare cohorts.');
+        }
+
+        if ($user->is_super_admin) {
+            return Response::allow();
+        }
+
+        // Check if user has the required permission
+        if (!$user->can('cohort.compare')) {
+            return Response::deny(
+                'You do not have permission to compare cohorts. ' .
+                'Required permission: view analytics for cohorts. ' .
+                'Contact your administrator if you believe this is an error.'
+            );
+        }
+
+        return Response::deny('You are not authorized to compare cohorts in this tenant.');
     }
 
     /**
@@ -136,6 +194,11 @@ class CompareCohortsRequest extends FormRequest
 
     /**
      * Validate that user has access to all requested cohorts.
+     *
+     * Implements tenant-scoped authorization ensuring:
+     * 1. Super admins can access cohorts from any tenant
+     * 2. Regular users can only access cohorts from their current tenant
+     * 3. Users must have appropriate roles/permissions for cohort comparison
      */
     private function validateCohortAccess($validator): void
     {
@@ -145,9 +208,54 @@ class CompareCohortsRequest extends FormRequest
             return;
         }
 
-        // TODO: Implement tenant-based cohort access validation
-        // For now, assume all cohorts are accessible
-        // This should check that all cohorts belong to the current tenant
+        $user = Auth::user();
+
+        // Super admins can access cohorts from any tenant without restrictions
+        if ($user && $user->is_super_admin) {
+            return;
+        }
+
+        // Verify user has required permission for cohort comparison
+        if (!$user || !$user->can('cohort.compare')) {
+            $validator->errors()->add('cohort_ids', 'You do not have permission to compare cohorts.');
+            return;
+        }
+
+        // Get current tenant ID for non-super admin users
+        $currentTenantId = $this->tenantContextService->getCurrentTenantId();
+
+        if (!$currentTenantId) {
+            $validator->errors()->add('cohort_ids', 'Tenant context is required for cohort comparison.');
+            return;
+        }
+
+        // Verify user has access to the current tenant
+        if (!$user->hasAccessToTenant($currentTenantId)) {
+            $validator->errors()->add('cohort_ids', 'You do not have access to the current tenant.');
+            return;
+        }
+
+        // Fetch all requested cohorts and verify they belong to the current tenant
+        $cohorts = Cohort::whereIn('id', $cohortIds)->get();
+
+        if ($cohorts->count() !== count($cohortIds)) {
+            $validator->errors()->add('cohort_ids', 'One or more selected cohorts do not exist.');
+            return;
+        }
+
+        // Check that all cohorts belong to the current tenant
+        $inaccessibleCohorts = $cohorts->filter(function ($cohort) use ($currentTenantId) {
+            return (string) $cohort->tenant_id !== (string) $currentTenantId;
+        });
+
+        if ($inaccessibleCohorts->isNotEmpty()) {
+            $inaccessibleNames = $inaccessibleCohorts->pluck('name')->implode(', ');
+            $validator->errors()->add(
+                'cohort_ids',
+                "You do not have access to the following cohorts: {$inaccessibleNames}. " .
+                'All cohorts must belong to your current tenant.'
+            );
+        }
     }
 
     /**

@@ -265,6 +265,37 @@ export interface CohortInsight {
     message: string;
     recommendation: string;
     impact: 'low' | 'medium' | 'high';
+    severity?: 'low' | 'medium' | 'high' | 'critical';
+    metric?: string;
+    value?: number;
+    benchmark?: number;
+}
+
+export interface TrendAnalysisData {
+    cohort_id: string;
+    cohort_name: string;
+    period: 'day' | 'week' | 'month';
+    periods_analyzed: number;
+    trends: TrendPoint[];
+    summary: TrendSummary;
+    analyzed_at: string;
+}
+
+export interface TrendPoint {
+    period: string;
+    active_users: number;
+    event_count: number;
+    avg_events_per_user: number;
+    indicator?: 'up' | 'slight_up' | 'neutral' | 'slight_down' | 'down';
+    change_percent?: number;
+}
+
+export interface TrendSummary {
+    overall_trend: 'improving' | 'stable' | 'declining';
+    avg_active_users: number;
+    total_events: number;
+    periods_with_growth: number;
+    periods_with_decline: number;
 }
 
 export interface Insight {
@@ -299,26 +330,6 @@ export interface Trend {
     data_points: { date: string; value: number }[];
     moving_average?: { date: string; value: number }[];
     anomaly: boolean;
-}
-
-export interface Anomaly {
-    metric: string;
-    date: string;
-    description: string;
-    severity: 'low' | 'medium' | 'high' | 'critical';
-    value: number;
-    baseline: number;
-    z_score: number;
-}
-
-export interface Recommendation {
-    type: string;
-    target: string;
-    description: string;
-    expected_impact: string;
-    priority: 'low' | 'medium' | 'high' | 'critical';
-    action: string;
-    attribution_insights?: any;
 }
 
 export interface Anomaly {
@@ -553,20 +564,48 @@ export interface AttributionSummaryResponse {
 }
 
 // Custom Event Management Types
+
+export interface SchemaField {
+    name: string;
+    type: 'string' | 'number' | 'integer' | 'boolean' | 'object' | 'array';
+    required?: boolean;
+    description?: string;
+    default?: any;
+    enum?: any[];
+    minimum?: number;
+    maximum?: number;
+    minLength?: number;
+    maxLength?: number;
+    format?: string;
+    pattern?: string;
+}
+
+export interface EventSchema {
+    type: 'object';
+    properties: Record<string, SchemaField>;
+    required?: string[];
+    additionalProperties?: boolean;
+}
+
 export interface CustomEventDefinition {
     id: number;
     tenant_id: number;
     name: string;
     description: string;
+    category?: 'conversion' | 'engagement' | 'error' | 'custom';
+    schema?: EventSchema;
     parameters_json: Array<{
         name: string;
         type: 'string' | 'number' | 'boolean';
     }>;
     created_by: number;
     status: 'active' | 'inactive';
+    is_active?: boolean;
     created_at: string;
     updated_at: string;
     aggregates?: CustomEventAnalytics;
+    analytics?: CustomEventAnalytics;
+    last_tracked?: string;
 }
 
 export interface CustomEvent {
@@ -599,11 +638,50 @@ export interface TrackEventData {
 export interface CustomEventAnalytics {
     total_events: number;
     unique_users: number;
+    avg_events_per_user?: number;
     time_series: Array<{
         date: string;
         count: number;
     }>;
     aggregates: Record<string, any>;
+    funnel_data?: Array<{
+        event_name: string;
+        count: number;
+        conversion_rate: number;
+    }>;
+    time_distribution?: Array<{
+        hour: number;
+        count: number;
+    }>;
+    correlations?: Array<{
+        event1: string;
+        event2: string;
+        correlation: number;
+    }>;
+    top_events?: Array<{
+        name: string;
+        count: number;
+    }>;
+}
+
+export interface OptimizationSuggestion {
+    type: 'info' | 'improvement' | 'insight' | 'recommendation';
+    title: string;
+    description: string;
+    priority: 'low' | 'medium' | 'high';
+    action?: string;
+    metric?: string;
+    value?: number;
+    benchmark?: number;
+}
+
+export interface OptimizationResponse {
+    success: boolean;
+    data: {
+        definition_id: number;
+        suggestions: OptimizationSuggestion[];
+        generated_at: string;
+    };
 }
 
 export interface CustomEventManagerProps {
@@ -625,6 +703,100 @@ export interface CustomEventAnalyticsResponse {
     success: boolean;
     data: CustomEventAnalytics;
 }
+// Behavior Flow Analysis Types
+export interface BehaviorFlowData {
+    definition_id: number;
+    definition_name: string;
+    period: {
+        start: string;
+        end: string;
+    };
+    flow_graph: {
+        nodes: FlowNode[];
+        edges: FlowEdge[];
+    };
+    metrics: {
+        total_users: number;
+        total_paths: number;
+        avg_path_length: number;
+        unique_events: number;
+    };
+    common_paths: CommonPath[];
+    optimization_suggestions: BehaviorFlowOptimizationSuggestion[];
+}
+
+export interface FlowNode {
+    id: string;
+    name: string;
+    type: 'start' | 'event' | 'end';
+    count: number;
+    percentage: number;
+}
+
+export interface FlowEdge {
+    source: string;
+    target: string;
+    count: number;
+    percentage: number;
+}
+
+export interface CommonPath {
+    path: string[];
+    count: number;
+    percentage: number;
+    avg_time: number;
+}
+
+export interface BehaviorFlowOptimizationSuggestion {
+    type: 'drop_off' | 'path_length' | 'engagement';
+    priority: 'low' | 'medium' | 'high';
+    description: string;
+    recommendation: string;
+    expected_impact: string;
+}
+
+export interface FunnelAnalysisData {
+    definition_id: number;
+    definition_name: string;
+    period: {
+        start: string;
+        end: string;
+    };
+    funnel_steps: FunnelStep[];
+    metrics: {
+        total_users: number;
+        overall_conversion_rate: number;
+        avg_drop_off_rate: number;
+    };
+    drop_off_points: DropOffPoint[];
+    optimization_suggestions: BehaviorFlowOptimizationSuggestion[];
+}
+
+export interface FunnelStep {
+    step: number;
+    event_name: string;
+    users: number;
+    conversion_rate: number;
+    drop_off_rate: number;
+}
+
+export interface DropOffPoint {
+    step: number;
+    event_name: string;
+    drop_off_rate: number;
+    users_lost: number;
+    potential_impact: string;
+}
+
+export interface BehaviorFlowResponse {
+    success: boolean;
+    data: BehaviorFlowData;
+}
+
+export interface FunnelAnalysisResponse {
+    success: boolean;
+    data: FunnelAnalysisData;
+}
 
 // Insights API Response Types
 export interface InsightApiResponse {
@@ -633,6 +805,137 @@ export interface InsightApiResponse {
     message?: string;
     error?: string;
     errors?: Record<string, string[]>;
+}
+
+// Attribution Visualization Types
+export interface AttributionModelComparison {
+    model: string;
+    description: string;
+    sources: ModelSource[];
+    total_value: number;
+}
+
+export interface ModelSource {
+    name: string;
+    value: number;
+    percentage: number;
+    touch_count: number;
+}
+
+export interface ChannelContribution {
+    channel: string;
+    contribution: number;
+    percentage: number;
+    conversions: number;
+    value: number;
+    color: string;
+}
+
+export interface BudgetRecommendation {
+    channel: string;
+    current_percentage: number;
+    recommended_percentage: number;
+    change_amount: number;
+    rationale: string;
+    expected_impact: string;
+    priority: 'low' | 'medium' | 'high';
+    roi: number;
+}
+
+export interface ConversionPath {
+    id: string;
+    steps: ConversionStepData[];
+    total_value: number;
+    touch_count: number;
+    start_date: string;
+    end_date: string;
+}
+
+export interface ConversionStepData {
+    order: number;
+    timestamp: string;
+    channel: string;
+    event_type: string;
+    value: number;
+    is_conversion: boolean;
+}
+
+export interface AttributionTouchpoint {
+    id: string;
+    timestamp: string;
+    channel: string;
+    event_type: string;
+    value: number;
+    campaign?: string;
+    medium?: string;
+    source?: string;
+}
+
+export interface ROIMetrics {
+    channel: string;
+    spend: number;
+    revenue: number;
+    roi: number;
+    roi_percentage: number;
+    conversions: number;
+    cost_per_conversion: number;
+    customer_lifetime_value?: number;
+}
+
+export interface AttributionVisualizationData {
+    model_comparisons: AttributionModelComparison[];
+    channel_contributions: ChannelContribution[];
+    budget_recommendations: BudgetRecommendation[];
+    conversion_paths: ConversionPath[];
+    roi_metrics: ROIMetrics[];
+    period: {
+        start: string;
+        end: string;
+    };
+}
+
+export interface AttributionVisualizationResponse {
+    success: boolean;
+    data: AttributionVisualizationData;
+    insights?: string[];
+    message?: string;
+    error?: string;
+}
+
+export interface ChannelPerformanceResponse {
+    success: boolean;
+    data: Record<string, {
+        total_touches: number;
+        total_value: number;
+        conversion_rate: number;
+        roi: number;
+        roi_category: string;
+    }>;
+    period: {
+        start: string;
+        end: string;
+    };
+    summary: {
+        total_conversions: number;
+        total_conversion_value: number;
+        average_engagement: number;
+        roi_distribution: Record<string, number>;
+        best_performing_channel: string | null;
+    };
+}
+
+export interface BudgetRecommendationsResponse {
+    success: boolean;
+    data: {
+        recommendations: BudgetRecommendation[];
+        total_budget: number;
+        summary: {
+            avg_roi: number;
+            total_expected_revenue: number;
+            optimization_score: number;
+        };
+    };
+    insights: string[];
 }
 
 // Learning Analytics Types

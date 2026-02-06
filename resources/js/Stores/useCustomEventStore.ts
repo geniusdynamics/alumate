@@ -8,7 +8,9 @@ import type {
     DefineEventData,
     TrackEventData,
     CustomEventListResponse,
-    CustomEventAnalyticsResponse
+    CustomEventAnalyticsResponse,
+    OptimizationSuggestion,
+    OptimizationResponse
 } from '../Types/analytics';
 
 export const useCustomEventStore = defineStore('customEvent', () => {
@@ -148,6 +150,27 @@ export const useCustomEventStore = defineStore('customEvent', () => {
         }
     };
 
+    const loadOptimizationSuggestions = async (definitionId: number): Promise<OptimizationResponse> => {
+        loading.value = true;
+        error.value = '';
+
+        try {
+            const response = await axios.get<OptimizationResponse>(`/api/analytics/custom-events/${definitionId}/optimization`);
+            const data = response.data;
+
+            if (data.success) {
+                return data;
+            }
+
+            throw new Error('Failed to load optimization suggestions');
+        } catch (err: any) {
+            error.value = err.response?.data?.message || 'Failed to load optimization suggestions';
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    };
+
     const clearData = () => {
         definitions.value = [];
         events.value = [];
@@ -189,6 +212,7 @@ export const useCustomEventStore = defineStore('customEvent', () => {
         defineEvent,
         trackEvent,
         loadAnalytics,
+        loadOptimizationSuggestions,
         clearData,
         refreshData,
     };

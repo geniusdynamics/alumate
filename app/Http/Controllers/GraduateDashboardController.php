@@ -8,80 +8,97 @@ use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\TenantContextService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
-use Stancl\Tenancy\Facades\Tenancy;
 
 class GraduateDashboardController extends Controller
 {
+    protected TenantContextService $tenantContextService;
+
+    public function __construct(TenantContextService $tenantContextService)
+    {
+        $this->tenantContextService = $tenantContextService;
+    }
+
+    /**
+     * Get the authenticated user's graduate record with proper tenant context
+     */
+    protected function getAuthenticatedGraduate(User $user): ?Graduate
+    {
+        // Ensure user has institution selected
+        if (!$user->institution_id) {
+            return null;
+        }
+
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($user->institution_id);
+
+        // Find graduate record
+        return Graduate::where('user_id', $user->id)->first();
+    }
+
+    /**
+     * Ensure user has valid tenant access
+     */
+    protected function validateTenantAccess(User $user): ?Tenant
+    {
+        if (!$user->institution_id) {
+            return null;
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        
+        if (!$tenant) {
+            return null;
+        }
+
+        // Validate user belongs to this tenant
+        if (!$this->tenantContextService->validateTenantAccess($tenant->id)) {
+            return null;
+        }
+
+        return $tenant;
+    }
+
     public function index()
     {
         $user = Auth::user();
 
-        // Get user's institution (tenant)
-        if (! $user->institution_id) {
+        // Validate tenant access
+        $tenant = $this->validateTenantAccess($user);
+        if (!$tenant) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Please select your institution first.');
         }
 
-        $tenant = Tenant::find($user->institution_id);
-        if (! $tenant) {
-            return redirect()->route('graduates.create')
-                ->with('error', 'Institution not found.');
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($tenant->id);
+
+        // Try to find existing graduate record
+        $graduate = Graduate::where('user_id', $user->id)->first();
+
+        if (!$graduate) {
+            // Create graduate record if it doesn't exist
+            $graduate = Graduate::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'student_id' => 'STU'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                'graduation_year' => now()->year,
+                'employment_status' => 'unemployed',
+                'course_id' => null,
+            ]);
         }
 
-        // Switch to tenant context to access graduate data
-        $graduate = null;
-        $statistics = [];
-        $recentActivities = [];
-        $jobRecommendations = [];
-        $classmateConnections = [];
-
-        Tenancy::initialize($tenant);
-
-        try {
-            // Try to find existing graduate record
-            $graduate = Graduate::where('user_id', $user->id)->first();
-
-            if (! $graduate) {
-                // Create graduate record if it doesn't exist
-                $graduate = Graduate::create([
-                    'tenant_id' => $tenant->id,
-                    'user_id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'student_id' => 'STU'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
-                    'graduation_year' => now()->year,
-                    'employment_status' => 'unemployed',
-                    'course_id' => null, // Will be set later when user selects a course
-                ]);
-            }
-
-            // Get dashboard data
-            $statistics = $this->getDashboardStatistics($graduate);
-            $recentActivities = $this->getRecentActivities($graduate);
-            $jobRecommendations = $this->getJobRecommendations($graduate);
-            $classmateConnections = $this->getClassmateConnections($graduate);
-
-        } finally {
-            // Always end tenancy context
-            Tenancy::end();
-        }
-
-        // Get dashboard statistics
+        // Get dashboard data
         $statistics = $this->getDashboardStatistics($graduate);
-
-        // Get recent activities
         $recentActivities = $this->getRecentActivities($graduate);
-
-        // Get job recommendations
         $jobRecommendations = $this->getJobRecommendations($graduate);
-
-        // Get classmate connections
         $classmateConnections = $this->getClassmateConnections($graduate);
 
-        if (! $graduate) {
+        if (!$graduate) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Unable to access graduate profile.');
         }
@@ -99,26 +116,40 @@ class GraduateDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // TODO: Implement proper tenant-specific graduate access
-        // For now, create a mock graduate profile
-        $graduate = (object) [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'employment_status' => 'employed',
-            'current_job_title' => 'Software Developer',
-            'current_company' => 'Tech Corp',
-            'graduation_year' => 2023,
-            'profile_completion_percentage' => 85.5,
-        ];
+        // Validate tenant access
+        $tenant = $this->validateTenantAccess($user);
+        if (!$tenant) {
+            return redirect()->route('graduates.create')
+                ->with('error', 'Please select your institution first.');
+        }
 
-        // Add mock relationships to the graduate object
-        $graduate->user = (object) ['name' => $graduate->name, 'email' => $graduate->email];
-        $graduate->course = (object) ['name' => 'Computer Science', 'id' => 1];
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($tenant->id);
+
+        // Get graduate record for the authenticated user
+        $graduate = Graduate::where('user_id', $user->id)->first();
+
+        if (!$graduate) {
+            // Create graduate record if it doesn't exist
+            $graduate = Graduate::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'student_id' => 'STU'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                'graduation_year' => now()->year,
+                'employment_status' => 'unemployed',
+                'course_id' => null,
+            ]);
+        }
+
+        if (!$graduate) {
+            return redirect()->route('graduates.create')
+                ->with('error', 'Unable to access graduate profile.');
+        }
 
         return Inertia::render('Graduate/Profile', [
-            'graduate' => $graduate,
-            'profileCompletion' => $graduate->profile_completion_percentage ?? 85.5,
+            'graduate' => $graduate->load(['course']),
+            'profileCompletion' => $graduate->profile_completion_percentage ?? 0,
         ]);
     }
 
@@ -126,13 +157,36 @@ class GraduateDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // TODO: Implement proper tenant-specific graduate access
-        // For now, create a mock graduate profile
-        $graduate = (object) [
-            'id' => $user->id,
-            'skills' => ['PHP', 'Laravel', 'Vue.js', 'JavaScript'],
-            'course_id' => 1,
-        ];
+        // Validate tenant access
+        $tenant = $this->validateTenantAccess($user);
+        if (!$tenant) {
+            return redirect()->route('graduates.create')
+                ->with('error', 'Please select your institution first.');
+        }
+
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($tenant->id);
+
+        // Get graduate record for the authenticated user
+        $graduate = Graduate::where('user_id', $user->id)->first();
+
+        if (!$graduate) {
+            // Create graduate record if it doesn't exist
+            $graduate = Graduate::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'student_id' => 'STU'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                'graduation_year' => now()->year,
+                'employment_status' => 'unemployed',
+                'course_id' => null,
+            ]);
+        }
+
+        if (!$graduate) {
+            return redirect()->route('graduates.create')
+                ->with('error', 'Unable to access graduate profile.');
+        }
 
         $query = Job::with(['employer', 'course', 'applications'])
             ->where('status', 'active')
@@ -197,27 +251,35 @@ class GraduateDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // TODO: Implement proper tenant-specific graduate access
-        // For now, create a mock graduate profile
-        $graduate = (object) [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-        ];
+        // Validate tenant access
+        $tenant = $this->validateTenantAccess($user);
+        if (!$tenant) {
+            return redirect()->route('graduates.create')
+                ->with('error', 'Please select your institution first.');
+        }
 
-        // Mock applications data
-        $applications = collect([
-            (object) [
-                'id' => 1,
-                'status' => 'pending',
-                'created_at' => now()->subDays(2),
-                'job' => (object) [
-                    'title' => 'Software Developer',
-                    'employer' => (object) ['company_name' => 'Tech Corp'],
-                    'course' => (object) ['name' => 'Computer Science'],
-                ],
-            ],
-        ]);
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($tenant->id);
+
+        // Get graduate record for the authenticated user
+        $graduate = Graduate::where('user_id', $user->id)->first();
+
+        if (!$graduate) {
+            // Create graduate record if it doesn't exist
+            $graduate = Graduate::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'student_id' => 'STU'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                'graduation_year' => now()->year,
+                'employment_status' => 'unemployed',
+                'course_id' => null,
+            ]);
+        }
+
+        // Get applications for this graduate
+        $query = JobApplication::with(['job.employer', 'job.course'])
+            ->where('graduate_id', $graduate->id);
 
         // Apply filters
         if ($request->filled('status')) {
@@ -244,9 +306,20 @@ class GraduateDashboardController extends Controller
     public function classmates(Request $request)
     {
         $user = Auth::user();
-        $graduate = $user->graduate;
 
-        if (! $graduate) {
+        // Validate tenant access first
+        $tenant = $this->validateTenantAccess($user);
+        if (!$tenant) {
+            return redirect()->route('graduates.create');
+        }
+
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($tenant->id);
+
+        // Get graduate record with proper tenant context
+        $graduate = Graduate::where('user_id', $user->id)->first();
+
+        if (!$graduate) {
             return redirect()->route('graduates.create');
         }
 
@@ -290,29 +363,43 @@ class GraduateDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // TODO: Implement proper tenant-specific graduate access
-        // For now, create a mock graduate profile
-        $graduate = (object) [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'employment_status' => 'employed',
-            'current_job_title' => 'Software Developer',
-            'current_company' => 'Tech Corp',
-            'graduation_year' => 2023,
-            'profile_completion_percentage' => 85.5,
-        ];
+        // Validate tenant access
+        $tenant = $this->validateTenantAccess($user);
+        if (!$tenant) {
+            return redirect()->route('graduates.create')
+                ->with('error', 'Please select your institution first.');
+        }
+
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($tenant->id);
+
+        // Get graduate record for authenticated user
+        $graduate = Graduate::where('user_id', $user->id)->first();
+
+        if (!$graduate) {
+            // Create graduate record if it doesn't exist
+            $graduate = Graduate::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'student_id' => 'STU'.str_pad($user->id, 6, '0', STR_PAD_LEFT),
+                'graduation_year' => now()->year,
+                'employment_status' => 'unemployed',
+                'course_id' => null,
+            ]);
+        }
 
         $careerHistory = $this->getCareerHistory($graduate);
         $skillsProgress = $this->getSkillsProgress($graduate);
         $achievements = $this->getAchievements($graduate);
 
-        // Add mock relationships to the graduate object
-        $graduate->user = (object) ['name' => $graduate->name, 'email' => $graduate->email];
-        $graduate->course = (object) ['name' => 'Computer Science', 'id' => 1];
+        if (!$graduate) {
+            return redirect()->route('graduates.create')
+                ->with('error', 'Unable to access graduate profile.');
+        }
 
         return Inertia::render('Graduate/CareerProgress', [
-            'graduate' => $graduate,
+            'graduate' => $graduate->load(['course']),
             'careerHistory' => $careerHistory,
             'skillsProgress' => $skillsProgress,
             'achievements' => $achievements,
@@ -322,9 +409,20 @@ class GraduateDashboardController extends Controller
     public function assistanceRequests(Request $request)
     {
         $user = Auth::user();
-        $graduate = $user->graduate;
 
-        if (! $graduate) {
+        // Validate tenant access first
+        $tenant = $this->validateTenantAccess($user);
+        if (!$tenant) {
+            return redirect()->route('graduates.create');
+        }
+
+        // Set tenant context for schema-based tenancy
+        $this->tenantContextService->setTenant($tenant->id);
+
+        // Get graduate record with proper tenant context
+        $graduate = Graduate::where('user_id', $user->id)->first();
+
+        if (!$graduate) {
             return redirect()->route('graduates.create');
         }
 

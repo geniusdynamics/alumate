@@ -16,6 +16,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Models\Export::class => \App\Policies\ExportPolicy::class,
         \App\Models\Backup::class => \App\Policies\BackupPolicy::class,
         \App\Models\Migration::class => \App\Policies\MigrationPolicy::class,
+        \App\Models\Cohort::class => \App\Policies\CohortPolicy::class,
     ];
 
     /**

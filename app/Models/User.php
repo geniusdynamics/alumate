@@ -40,7 +40,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'two_factor_enabled',
         'two_factor_secret',
         'preferences',
-        'metadata'
+        'metadata',
+        'graduation_year',
+        'degree',
     ];
 
     protected $hidden = [
@@ -58,7 +60,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_super_admin' => 'boolean',
         'two_factor_enabled' => 'boolean',
         'preferences' => 'array',
-        'metadata' => 'array'
+        'metadata' => 'array',
+        'graduation_year' => 'integer',
+        'degree' => 'string',
     ];
 
     protected $dates = [
@@ -242,6 +246,38 @@ class User extends Authenticatable implements MustVerifyEmail
     public function gradesAssigned(): HasMany
     {
         return $this->hasMany(Grade::class, 'grader_id');
+    }
+
+    /**
+     * Get graduate profile for this user
+     */
+    public function graduate()
+    {
+        return $this->hasOne(Graduate::class);
+    }
+
+    /**
+     * Get consent records for this user
+     */
+    public function consents(): HasMany
+    {
+        return $this->hasMany(Consent::class);
+    }
+
+    /**
+     * Get learning progress records for this user
+     */
+    public function learningProgress(): HasMany
+    {
+        return $this->hasMany(LearningProgress::class);
+    }
+
+    /**
+     * Get analytics events for this user
+     */
+    public function analyticsEvents(): HasMany
+    {
+        return $this->hasMany(AnalyticsEvent::class);
     }
 
     /**

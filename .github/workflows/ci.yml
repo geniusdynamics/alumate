@@ -54,7 +54,7 @@ jobs:
         run: npm run lint
 
   unit-tests:
-    name: Unit Tests
+    name: Unit Tests (SQLite)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -87,10 +87,117 @@ jobs:
       - name: Generate Application Key
         run: php artisan key:generate
 
-      - name: Run Unit Tests Only
+      - name: Run Unit Tests Only (SQLite)
         run: |
           php artisan config:clear
-          ./vendor/bin/pest --parallel --testsuite=Unit
+          ./vendor/bin/pest --parallel --testsuite=Unit --coverage --coverage-clover=tests/reports/coverage.unit.xml --coverage-html=tests/reports/coverage-html.unit --coverage-text=tests/reports/coverage.unit.txt
+
+      - name: Upload Unit Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-unit
+          path: |
+            tests/reports/coverage.unit.xml
+            tests/reports/coverage.unit.txt
+          retention-days: 30
+
+      - name: Upload Unit Coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-unit
+          path: tests/reports/coverage-html.unit
+          retention-days: 30
+
+  unit-tests-pgsql:
+    name: Unit Tests (PostgreSQL)
+    runs-on:
+      - ubuntu-latest
+      - docker
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup Environment
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/' .env
+          sed -i 's/DB_DATABASE=database\/database.sqlite/DB_DATABASE=test_db/' .env
+          sed -i 's/DB_USERNAME=root/DB_USERNAME=postgres/' .env
+          sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=3306/DB_PORT=5432/' .env
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Run Unit Tests (PostgreSQL)
+        run: |
+          php artisan config:clear
+          ./vendor/bin/pest --parallel --testsuite=Unit --configuration=phpunit.pgsql.xml --coverage --coverage-clover=tests/reports/coverage.unit.pgsql.xml --coverage-html=tests/reports/coverage-html.unit.pgsql --coverage-text=tests/reports/coverage.unit.pgsql.txt
+
+      - name: Upload Unit Test Reports (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-unit-pgsql
+          path: |
+            tests/reports/coverage.unit.pgsql.xml
+            tests/reports/coverage.unit.pgsql.txt
+          retention-days: 30
+
+      - name: Upload Unit Coverage HTML (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-unit-pgsql
+          path: tests/reports/coverage-html.unit.pgsql
+          retention-days: 30
 
   integration-tests:
     name: Integration Tests
@@ -164,7 +271,25 @@ jobs:
       - name: Run Integration Tests Only
         run: |
           php artisan config:clear
-          ./vendor/bin/pest --parallel --testsuite=Integration
+          ./vendor/bin/pest --parallel --testsuite=Integration --coverage --coverage-clover=tests/reports/coverage.integration.xml --coverage-html=tests/reports/coverage-html.integration --coverage-text=tests/reports/coverage.integration.txt
+
+      - name: Upload Integration Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-integration
+          path: |
+            tests/reports/coverage.integration.xml
+            tests/reports/coverage.integration.txt
+          retention-days: 30
+
+      - name: Upload Integration Coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-integration
+          path: tests/reports/coverage-html.integration
+          retention-days: 30
 
   feature-tests:
     name: Feature Tests
@@ -232,7 +357,120 @@ jobs:
       - name: Run Feature Tests Only
         run: |
           php artisan config:clear
-          ./vendor/bin/pest --parallel --testsuite=Feature
+          ./vendor/bin/pest --parallel --testsuite=Feature --coverage --coverage-clover=tests/reports/coverage.feature.xml --coverage-html=tests/reports/coverage-html.feature --coverage-text=tests/reports/coverage.feature.txt
+
+      - name: Upload Feature Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-feature
+          path: |
+            tests/reports/coverage.feature.xml
+            tests/reports/coverage.feature.txt
+          retention-days: 30
+
+      - name: Upload Feature Coverage HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-feature
+          path: tests/reports/coverage-html.feature
+          retention-days: 30
+
+  full-tests-pgsql:
+    name: Full Tests (PostgreSQL)
+    runs-on:
+      - ubuntu-latest
+      - docker
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=3
+
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+        options: --health-cmd="redis-cli ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, curl, mbstring, zip, pcntl, pdo, pdo_pgsql
+          tools: composer:v2
+          coverage: xdebug
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Setup Environment
+        run: |
+          cp .env.example .env
+          sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/' .env
+          sed -i 's/DB_DATABASE=database\/database.sqlite/DB_DATABASE=test_db/' .env
+          sed -i 's/DB_USERNAME=root/DB_USERNAME=postgres/' .env
+          sed -i 's/DB_PASSWORD=/DB_PASSWORD=password/' .env
+          sed -i 's/DB_HOST=127.0.0.1/DB_HOST=localhost/' .env
+          sed -i 's/DB_PORT=3306/DB_PORT=5432/' .env
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready!"
+
+      - name: Generate Application Key
+        run: php artisan key:generate
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+
+      - name: Run Tenant Migrations
+        run: php artisan tenants:migrate --force
+
+      - name: Run Full Test Suite (PostgreSQL)
+        run: |
+          php artisan config:clear
+          ./vendor/bin/pest --parallel --configuration=phpunit.pgsql.xml --coverage --coverage-clover=tests/reports/coverage.full.pgsql.xml --coverage-html=tests/reports/coverage-html.full.pgsql --coverage-text=tests/reports/coverage.full.pgsql.txt
+
+      - name: Upload Full Test Reports (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-full-pgsql
+          path: |
+            tests/reports/coverage.full.pgsql.xml
+            tests/reports/coverage.full.pgsql.txt
+          retention-days: 30
+
+      - name: Upload Full Coverage HTML (PostgreSQL)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html-full-pgsql
+          path: tests/reports/coverage-html.full.pgsql
+          retention-days: 30
 
   frontend-tests:
     name: Frontend Tests & Build
