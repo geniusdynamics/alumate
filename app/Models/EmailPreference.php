@@ -1,9 +1,12 @@
 <?php
+// ABOUTME: EmailPreference model for managing email preferences with schema-based tenant isolation
+// ABOUTME: Uses schema-based tenancy where each tenant has their own database schema for complete data isolation
 
 declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,7 +29,7 @@ class EmailPreference extends Model
      */
     protected $fillable = [
         'user_id',
-        'tenant_id',
+        // 'tenant_id', // Commented out for schema-based tenancy - tenant isolation handled at schema level
         'email',
         'preferences',
         'frequency_settings',
@@ -39,6 +42,14 @@ class EmailPreference extends Model
         'can_spam_compliant',
         'audit_trail',
     ];
+
+    /**
+     * Get current tenant from context service
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
 
     /**
      * The attributes that should be cast.
@@ -69,7 +80,9 @@ class EmailPreference extends Model
      */
     public function tenant(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class);
+        // Schema-based tenancy: Return current tenant from context instead of database relationship
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
     /**

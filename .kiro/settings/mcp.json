@@ -22,6 +22,29 @@
         "last_error",
         "database-query"
       ]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--executablePath",
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+      ],
+      "disabled": false,
+      "autoApprove": [
+        "take_snapshot",
+        "list_console_messages",
+        "click",
+        "evaluate_script",
+        "navigate_page_history",
+        "navigate_page",
+        "wait_for",
+        "list_pages",
+        "take_screenshot",
+        "list_network_requests",
+        "new_page"
+      ]
     }
   }
 }

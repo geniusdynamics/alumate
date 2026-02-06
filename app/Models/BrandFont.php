@@ -1,4 +1,6 @@
 <?php
+// ABOUTME: This model manages brand fonts for multi-tenant applications using schema-based tenancy
+// ABOUTME: Handles font configurations, loading, and CSS generation for brand consistency
 
 namespace App\Models;
 
@@ -6,13 +8,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Services\TenantContextService;
 
 class BrandFont extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'brand_config_id',
         'name',
         'family_name',
@@ -136,28 +138,20 @@ class BrandFont extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
+        // Apply tenant context global scope for schema-based tenancy
+        static::addGlobalScope('tenantContext', function ($builder) {
+            TenantContextService::applyTenantScope($builder);
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
      */
     public function scopeForTenant($query, int $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // Legacy method for backward compatibility
+        // In schema-based tenancy, tenant context is handled automatically
+        return $query;
     }
 
     /**
@@ -201,11 +195,11 @@ class BrandFont extends Model
     }
 
     /**
-     * Get the tenant that owns this brand font
+     * Get current tenant information (schema-based tenancy)
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return TenantContextService::getCurrentTenant();
     }
 
     /**
@@ -380,7 +374,7 @@ class BrandFont extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // tenant_id removed for schema-based tenancy
             'brand_config_id' => 'nullable|exists:brand_configs,id',
             'name' => 'required|string|max:255',
             'family_name' => 'required|string|max:255',

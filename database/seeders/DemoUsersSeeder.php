@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Models\Tenant;
+use App\Services\TenantContextService;
 
 class DemoUsersSeeder extends Seeder
 {
@@ -117,26 +118,24 @@ class DemoUsersSeeder extends Seeder
         // Create graduate profile in tenant context
         $tenant = Tenant::find('tech-institute');
         if ($tenant) {
-            tenancy()->initialize($tenant);
+            $tenantContextService = app(TenantContextService::class);
+            $tenantContextService->setTenant('tech-institute');
 
             // First, ensure we have a course to reference
             $course = \App\Models\Course::firstOrCreate(
-                ['name' => 'Computer Science'],
+                ['course_code' => 'CS101'],
                 [
-                    'description' => 'Bachelor of Computer Science',
-                    'code' => 'CS-001',
-                    'level' => 'degree',
-                    'duration_months' => 48,
-                    'study_mode' => 'full_time',
-                    'institution_id' => 'tech-institute',
-                    'is_active' => true,
+                    'name' => 'Computer Science',
+                    'description' => 'Introduction to Computer Science',
+                    'credits' => 3,
+                    'department' => 'Computer Science',
+                    'status' => 'active'
                 ]
             );
 
             \App\Models\Graduate::firstOrCreate(
                 ['email' => 'john.smith@student.edu'],
                 [
-                    'tenant_id' => 'tech-institute',
                     'name' => 'John Smith',
                     'email' => 'john.smith@student.edu',
                     'phone' => '+1234567890',
@@ -145,7 +144,7 @@ class DemoUsersSeeder extends Seeder
                     'user_id' => $graduate->id,
                 ]
             );
-            tenancy()->end();
+            $tenantContextService->clearContext();
         }
 
         $this->command->info('Demo users created successfully!');

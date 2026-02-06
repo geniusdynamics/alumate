@@ -4,7 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AnalyticsService;
+use App\Models\AnalyticsEvent;
+use App\Services\TenantContextService;
 use App\Services\EmailAnalyticsService;
+use App\Services\HeatMapService;
+use App\Services\GamificationAnalyticsService;
+use App\Jobs\ProcessAnalyticsEvents;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
@@ -13,9 +22,180 @@ class AnalyticsController extends Controller
 {
     public function __construct(
         private AnalyticsService $analyticsService,
-        private EmailAnalyticsService $emailAnalyticsService
+        private EmailAnalyticsService $emailAnalyticsService,
+        private GamificationAnalyticsService $gamificationService
     ) {
         $this->middleware(['auth', 'role:admin|super_admin']);
+    }
+    /**
+     * Store analytics events in batch
+     *
+     * Accepts a batch of analytics events from client-side tracking.
+     * Validates input, processes events with tenant isolation, and stores them efficiently.
+     *
+     * @param Request $request The HTTP request containing events array
+     * @return JsonResponse JSON response with processing results
+     */
+    public function storeEvents(Request $request): JsonResponse
+    {
+        // Validate input
+        $validator = Validator::make($request->all(), [
+            'events' => 'required|array|max:100',
+            'events.*.tenant_id' => 'required|string|max:100',
+            'events.*.event_type' => 'required|string|max:100',
+            'events.*.properties' => 'required|array',
+            'events.*.session_id' => 'required|string|max:100',
+            'events.*.timestamp' => 'required|date',
+            'events.*.user_id' => 'nullable|string|max:100',
+            'events.*.consent_flags' => 'nullable|array',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        try {
+            $events = $request->input('events');
+            $processedEventIds = [];
+            $processed = 0;
+            $errors = [];
+
+            // Get tenant context service
+            $tenantService = app(TenantContextService::class);
+
+            foreach ($events as $index => $eventData) {
+                try {
+                    // Set tenant context
+                    $tenantService->setTenant($eventData['tenant_id']);
+
+                    // Check consent and anonymize if needed
+                    if (isset($eventData['consent_flags']) && !$this->hasRequiredConsent($eventData['consent_flags'])) {
+                        $eventData['user_id'] = null;
+                        $eventData['properties'] = $this->anonymizeProperties($eventData['properties']);
+                    }
+
+                    // Create analytics event
+                    $event = AnalyticsEvent::create([
+                        'tenant_id' => $eventData['tenant_id'],
+                        'event_type' => $eventData['event_type'],
+                        'event_name' => $eventData['event_type'], // Map to existing field
+                        'user_id' => $eventData['user_id'],
+                        'properties' => $eventData['properties'],
+                        'session_id' => $eventData['session_id'],
+                        'occurred_at' => $eventData['timestamp'],
+                        'is_compliant' => $this->isCompliant($eventData),
+                        'consent_given' => $this->hasRequiredConsent($eventData['consent_flags'] ?? []),
+                        'user_agent' => $request->header('User-Agent'),
+                        'ip_address' => $this->anonymizeIp($request->ip()),
+                        'page_url' => $request->header('Referer'),
+                    ]);
+                    $processedEventIds[] = $event->id;
+
+                    $processed++;
+                } catch (\Exception $e) {
+                    Log::error('Failed to process analytics event', [
+                        'event_index' => $index,
+                        'event_data' => $eventData,
+                        'error' => $e->getMessage(),
+                    ]);
+
+                    $errors[] = [
+                        'index' => $index,
+                        'event_type' => $eventData['event_type'] ?? 'unknown',
+                        'error' => $e->getMessage(),
+                    ];
+                }
+            // Dispatch async processing job if events were successfully created
+            if (!empty($processedEventIds)) {
+                $tenantId = $events[0]['tenant_id'] ?? null; // Use first event's tenant_id
+                if ($tenantId) {
+                    ProcessAnalyticsEvents::dispatch($processedEventIds, $tenantId)->onQueue('analytics');
+                }
+            }
+            }
+
+            return response()->json([
+                'success' => true,
+                'processed' => $processed,
+                'errors' => $errors,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to store analytics events', [
+                'error' => $e->getMessage(),
+                'events_count' => count($request->input('events', [])),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to process events',
+            ], 500);
+        }
+    }
+
+    /**
+     * Check if user has given required consent for data collection
+     */
+    private function hasRequiredConsent(array $consentFlags): bool
+    {
+        // Check for analytics consent
+        return in_array('analytics', $consentFlags) || in_array('all', $consentFlags);
+    }
+
+    /**
+     * Anonymize sensitive properties
+     */
+    private function anonymizeProperties(array $properties): array
+    {
+        $sensitiveKeys = ['email', 'name', 'phone', 'address', 'personal_info'];
+
+        foreach ($sensitiveKeys as $key) {
+            if (isset($properties[$key])) {
+                $properties[$key] = 'anonymized';
+            }
+        }
+
+        return $properties;
+    }
+
+    /**
+     * Check if event data is compliant with privacy regulations
+     */
+    private function isCompliant(array $eventData): bool
+    {
+        // Basic compliance check - can be extended for GDPR/CCPA
+        return isset($eventData['consent_flags']) && $this->hasRequiredConsent($eventData['consent_flags']);
+    }
+
+    /**
+     * Anonymize IP address for privacy compliance
+     */
+    private function anonymizeIp(?string $ip): ?string
+    {
+        if (!$ip) {
+            return null;
+        }
+
+        // IPv4: Remove last octet
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+            $parts = explode('.', $ip);
+            $parts[3] = '0';
+            return implode('.', $parts);
+        }
+
+        // IPv6: Remove last 64 bits
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+            $parts = explode(':', $ip);
+            for ($i = 4; $i < 8; $i++) {
+                $parts[$i] = '0';
+            }
+            return implode(':', $parts);
+        }
+
+        return null;
     }
 
     /**
@@ -661,6 +841,229 @@ class AnalyticsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve email analytics dashboard data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get heat map data for a specific page URL
+     *
+     * @param Request $request
+     * @param string $pageUrl
+     * @return JsonResponse
+     */
+    public function getHeatMapData(Request $request, string $pageUrl): JsonResponse
+    {
+        $validated = $request->validate([
+            'date_from' => 'nullable|date',
+            'date_to' => 'nullable|date|after_or_equal:date_from',
+        ]);
+
+        try {
+            $tenantService = app(TenantContextService::class);
+            $currentTenant = $tenantService->getCurrentTenant();
+
+            $dateRange = [
+                'start' => $validated['date_from'] ?? now()->subDays(30)->toDateString(),
+                'end' => $validated['date_to'] ?? now()->toDateString(),
+            ];
+
+            // Try to get from cache first
+            $cacheKey = "heatmap:{$currentTenant->id}:{$pageUrl}:" . md5(serialize($dateRange));
+            $cachedData = Cache::get($cacheKey);
+
+            if ($cachedData) {
+                return response()->json([
+                    'success' => true,
+                    'data' => $cachedData,
+                ]);
+            }
+
+            // Get heat map data from service
+            $heatMapService = app(HeatMapService::class);
+            $heatMapData = $heatMapService->collectHeatMapData($pageUrl, $dateRange);
+
+            $responseData = [
+                'heatMapData' => $heatMapData,
+                'pageUrl' => $pageUrl,
+                'dateRange' => $dateRange,
+                'totalClicks' => array_sum(array_column($heatMapData, 'intensity')),
+            ];
+
+            // Cache the result for 1 hour
+            Cache::put($cacheKey, $responseData, 3600);
+
+            return response()->json([
+                'success' => true,
+                'data' => $responseData,
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve heat map data', [
+                'pageUrl' => $pageUrl,
+                'dateRange' => $dateRange ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve heat map data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Generate heat map data for a specific page URL
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function generateHeatMapData(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'page_url' => 'required|string|max:500',
+            'date_from' => 'nullable|date',
+            'date_to' => 'nullable|date|after_or_equal:date_from',
+        ]);
+
+        try {
+            $tenantService = app(TenantContextService::class);
+            $currentTenant = $tenantService->getCurrentTenant();
+
+            $dateRange = [
+                'start' => $validated['date_from'] ?? now()->subDays(30)->toDateString(),
+                'end' => $validated['date_to'] ?? now()->toDateString(),
+            ];
+
+            // Force regeneration of heat map data
+            $heatMapService = app(HeatMapService::class);
+            $heatMapData = $heatMapService->collectHeatMapData($validated['page_url'], $dateRange, true);
+
+            $responseData = [
+                'heatMapData' => $heatMapData,
+                'pageUrl' => $validated['page_url'],
+                'dateRange' => $dateRange,
+                'totalClicks' => array_sum(array_column($heatMapData, 'intensity')),
+            ];
+
+            // Update cache
+            $cacheKey = "heatmap:{$currentTenant->id}:{$validated['page_url']}:" . md5(serialize($dateRange));
+            Cache::put($cacheKey, $responseData, 3600);
+
+            return response()->json([
+                'success' => true,
+                'data' => $responseData,
+                'message' => 'Heat map data generated successfully',
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to generate heat map data', [
+                'pageUrl' => $validated['page_url'] ?? null,
+                'dateRange' => $dateRange ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to generate heat map data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    /**
+     * Get gamification metrics
+     */
+    public function getGamificationMetrics(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+        ]);
+
+        try {
+            $dateRange = [];
+            if (isset($validated['start_date'])) {
+                $dateRange[] = $validated['start_date'];
+            }
+            if (isset($validated['end_date'])) {
+                $dateRange[] = $validated['end_date'];
+            }
+
+            $metrics = $this->gamificationService->getGamificationMetrics($dateRange);
+
+            return response()->json([
+                'success' => true,
+                'data' => $metrics,
+                'message' => 'Gamification metrics retrieved successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve gamification metrics',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Track gamification event
+     */
+    public function trackGamificationEvent(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|string',
+            'gamification_type' => 'required|string|max:100',
+            'points_earned' => 'nullable|integer|min:0',
+            'badge_earned' => 'nullable|string|max:100',
+            'additional_data' => 'nullable|array',
+        ]);
+
+        try {
+            $result = $this->gamificationService->trackGamificationEvent(
+                $validated['user_id'],
+                $validated['gamification_type'],
+                $validated['points_earned'] ?? null,
+                $validated['badge_earned'] ?? null,
+                $validated['additional_data'] ?? []
+            );
+
+            return response()->json([
+                'success' => $result,
+                'message' => $result ? 'Gamification event tracked successfully' : 'Failed to track gamification event',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to track gamification event',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Get leaderboard
+     */
+    public function getLeaderboard(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'limit' => 'nullable|integer|min:1|max:100',
+        ]);
+
+        try {
+            $limit = $validated['limit'] ?? 10;
+            $leaderboard = $this->gamificationService->getLeaderboard($limit);
+
+            return response()->json([
+                'success' => true,
+                'data' => $leaderboard,
+                'message' => 'Leaderboard retrieved successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve leaderboard',
                 'error' => $e->getMessage(),
             ], 500);
         }

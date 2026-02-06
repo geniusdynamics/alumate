@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: TemplatePerformanceDashboard model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages performance dashboard configurations and cached metrics within tenant-specific schemas
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +14,7 @@ class TemplatePerformanceDashboard extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'name',
         'description',
         'configuration',
@@ -46,28 +49,22 @@ class TemplatePerformanceDashboard extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
+        // Apply tenant context for schema-based multi-tenancy
         static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
+            // Schema-based tenancy: data isolation handled at database schema level
+            // No additional filtering needed as each tenant has separate schema
+            app(TenantContextService::class)->applyTenantContext($builder);
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
      */
     public function scopeForTenant($query, int $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // Legacy method for backward compatibility
+        // In schema-based tenancy, tenant context is handled at schema level
+        return $query;
     }
 
     /**
@@ -87,11 +84,11 @@ class TemplatePerformanceDashboard extends Model
     }
 
     /**
-     * Get the tenant that owns the dashboard
+     * Get current tenant context
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**
@@ -188,7 +185,7 @@ class TemplatePerformanceDashboard extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // 'tenant_id' => 'required|exists:tenants,id', // Removed for schema-based tenancy
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
             'configuration' => 'nullable|array',

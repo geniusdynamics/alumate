@@ -66,6 +66,27 @@ class PerformanceBenchmarkRunner extends TestCase
         $this->assertPerformanceRequirements();
     }
 
+    public function test_run_analytics_regression_benchmarks(): void
+    {
+        echo "\n=== Running Analytics Regression Benchmarks ===\n";
+
+        // Load baseline metrics if available
+        $baselineFile = storage_path('logs/performance-baseline.json');
+        $baselineMetrics = $this->loadBaselineMetrics($baselineFile);
+
+        // Run analytics-specific regression tests
+        $this->runEventThroughputRegressionBenchmark($baselineMetrics);
+        $this->runAPILatencyRegressionBenchmark($baselineMetrics);
+        $this->runMemoryUsageRegressionBenchmark($baselineMetrics);
+        $this->runConcurrentTenantRegressionBenchmark($baselineMetrics);
+
+        // Generate regression report
+        $this->generateRegressionReport();
+
+        // Assert regression requirements (20% degradation threshold)
+        $this->assertRegressionRequirements();
+    }
+
     private function runHomepageLoadBenchmark(): void
     {
         echo "Running homepage load benchmark...\n";
@@ -627,6 +648,385 @@ class PerformanceBenchmarkRunner extends TestCase
             'total_jobs' => 1000,
             'total_employers' => 200,
         ], 3600);
+    }
+
+    private function loadBaselineMetrics(string $baselineFile): array
+    {
+        if (File::exists($baselineFile)) {
+            $baselineData = json_decode(File::get($baselineFile), true);
+            return $baselineData['benchmarks'] ?? [];
+        }
+
+        // Return default baseline metrics if file doesn't exist
+        return [
+            'event_throughput' => ['avg_events_per_second' => 1000, 'avg_processing_time' => 50],
+            'api_latency' => ['avg_response_time' => 200, 'p95_response_time' => 400],
+            'memory_usage' => ['avg_memory_mb' => 64, 'peak_memory_mb' => 128],
+            'concurrent_tenants' => ['avg_response_time' => 300, 'throughput_per_tenant' => 50],
+        ];
+    }
+
+    private function runEventThroughputRegressionBenchmark(array $baselineMetrics): void
+    {
+        echo "Running event throughput regression benchmark...\n";
+
+        $eventsToProcess = 5000;
+        $processingTimes = [];
+        $eventsProcessed = 0;
+
+        $startTime = microtime(true);
+
+        // Simulate event processing throughput
+        for ($i = 0; $i < $eventsToProcess; $i++) {
+            $eventStartTime = microtime(true);
+
+            // Simulate event processing (database insert, cache update, etc.)
+            $this->simulateEventProcessing();
+
+            $processingTimes[] = (microtime(true) - $eventStartTime) * 1000;
+            $eventsProcessed++;
+        }
+
+        $totalTime = microtime(true) - $startTime;
+        $avgProcessingTime = array_sum($processingTimes) / count($processingTimes);
+        $eventsPerSecond = $eventsToProcess / $totalTime;
+
+        // Compare with baseline
+        $baselineThroughput = $baselineMetrics['event_throughput']['avg_events_per_second'] ?? 1000;
+        $baselineProcessingTime = $baselineMetrics['event_throughput']['avg_processing_time'] ?? 50;
+
+        $throughputDegradation = (($baselineThroughput - $eventsPerSecond) / $baselineThroughput) * 100;
+        $latencyDegradation = (($avgProcessingTime - $baselineProcessingTime) / $baselineProcessingTime) * 100;
+
+        $this->benchmarkResults['regression']['event_throughput'] = [
+            'events_processed' => $eventsProcessed,
+            'total_time' => $totalTime,
+            'avg_processing_time' => $avgProcessingTime,
+            'events_per_second' => $eventsPerSecond,
+            'baseline_throughput' => $baselineThroughput,
+            'baseline_processing_time' => $baselineProcessingTime,
+            'throughput_degradation_percent' => $throughputDegradation,
+            'latency_degradation_percent' => $latencyDegradation,
+            'threshold_met' => abs($throughputDegradation) < 20 && abs($latencyDegradation) < 20,
+        ];
+
+        echo "Event throughput regression benchmark completed\n";
+    }
+
+    private function runAPILatencyRegressionBenchmark(array $baselineMetrics): void
+    {
+        echo "Running API latency regression benchmark...\n";
+
+        $apiEndpoints = [
+            '/api/analytics/learning/index',
+            '/api/insights',
+            '/api/analytics/metrics',
+        ];
+
+        $latencyResults = [];
+
+        foreach ($apiEndpoints as $endpoint) {
+            $responseTimes = [];
+
+            for ($i = 0; $i < 50; $i++) {
+                $startTime = microtime(true);
+                $response = $this->get($endpoint);
+                $responseTime = (microtime(true) - $startTime) * 1000;
+
+                $responseTimes[] = $responseTime;
+            }
+
+            $avgResponseTime = array_sum($responseTimes) / count($responseTimes);
+            $p95ResponseTime = $this->calculatePercentile($responseTimes, 95);
+
+            $latencyResults[$endpoint] = [
+                'avg_response_time' => $avgResponseTime,
+                'p95_response_time' => $p95ResponseTime,
+                'baseline_avg' => $baselineMetrics['api_latency']['avg_response_time'] ?? 200,
+                'baseline_p95' => $baselineMetrics['api_latency']['p95_response_time'] ?? 400,
+            ];
+        }
+
+        // Calculate overall degradation
+        $avgDegradation = 0;
+        $p95Degradation = 0;
+        foreach ($latencyResults as $result) {
+            $avgDegradation += (($result['avg_response_time'] - $result['baseline_avg']) / $result['baseline_avg']) * 100;
+            $p95Degradation += (($result['p95_response_time'] - $result['baseline_p95']) / $result['baseline_p95']) * 100;
+        }
+        $avgDegradation /= count($latencyResults);
+        $p95Degradation /= count($latencyResults);
+
+        $this->benchmarkResults['regression']['api_latency'] = [
+            'endpoints' => $latencyResults,
+            'avg_degradation_percent' => $avgDegradation,
+            'p95_degradation_percent' => $p95Degradation,
+            'threshold_met' => abs($avgDegradation) < 20 && abs($p95Degradation) < 20,
+        ];
+
+        echo "API latency regression benchmark completed\n";
+    }
+
+    private function runMemoryUsageRegressionBenchmark(array $baselineMetrics): void
+    {
+        echo "Running memory usage regression benchmark...\n";
+
+        $initialMemory = memory_get_usage(true);
+        $memoryMeasurements = [];
+
+        // Simulate various operations that consume memory
+        $operations = [
+            'analytics_processing' => function() {
+                for ($i = 0; $i < 1000; $i++) {
+                    $this->simulateEventProcessing();
+                }
+            },
+            'cache_operations' => function() {
+                for ($i = 0; $i < 500; $i++) {
+                    Cache::put("regression_test_{$i}", str_repeat('x', 1000), 60);
+                }
+            },
+            'database_queries' => function() {
+                for ($i = 0; $i < 100; $i++) {
+                    $this->get('/api/analytics/metrics');
+                }
+            },
+        ];
+
+        foreach ($operations as $operationName => $operation) {
+            $beforeMemory = memory_get_usage(true);
+            $operation();
+            $afterMemory = memory_get_usage(true);
+
+            $memoryMeasurements[$operationName] = [
+                'memory_used' => $afterMemory - $beforeMemory,
+                'memory_used_mb' => round(($afterMemory - $beforeMemory) / 1024 / 1024, 2),
+            ];
+        }
+
+        $finalMemory = memory_get_usage(true);
+        $peakMemory = memory_get_peak_usage(true);
+        $totalMemoryUsed = $finalMemory - $initialMemory;
+
+        $avgMemoryMB = round($totalMemoryUsed / 1024 / 1024, 2);
+        $peakMemoryMB = round($peakMemory / 1024 / 1024, 2);
+
+        $baselineAvgMemory = $baselineMetrics['memory_usage']['avg_memory_mb'] ?? 64;
+        $baselinePeakMemory = $baselineMetrics['memory_usage']['peak_memory_mb'] ?? 128;
+
+        $avgMemoryDegradation = (($avgMemoryMB - $baselineAvgMemory) / $baselineAvgMemory) * 100;
+        $peakMemoryDegradation = (($peakMemoryMB - $baselinePeakMemory) / $baselinePeakMemory) * 100;
+
+        $this->benchmarkResults['regression']['memory_usage'] = [
+            'initial_memory' => $initialMemory,
+            'final_memory' => $finalMemory,
+            'peak_memory' => $peakMemory,
+            'total_memory_used' => $totalMemoryUsed,
+            'avg_memory_mb' => $avgMemoryMB,
+            'peak_memory_mb' => $peakMemoryMB,
+            'operations' => $memoryMeasurements,
+            'baseline_avg_memory' => $baselineAvgMemory,
+            'baseline_peak_memory' => $baselinePeakMemory,
+            'avg_memory_degradation_percent' => $avgMemoryDegradation,
+            'peak_memory_degradation_percent' => $peakMemoryDegradation,
+            'threshold_met' => abs($avgMemoryDegradation) < 20 && abs($peakMemoryDegradation) < 20,
+        ];
+
+        echo "Memory usage regression benchmark completed\n";
+    }
+
+    private function runConcurrentTenantRegressionBenchmark(array $baselineMetrics): void
+    {
+        echo "Running concurrent tenant regression benchmark...\n";
+
+        $tenantCount = 5;
+        $requestsPerTenant = 200;
+        $tenants = [];
+
+        // Create test tenants
+        for ($i = 0; $i < $tenantCount; $i++) {
+            $tenants[] = \App\Models\Tenant::factory()->create([
+                'name' => "Regression Tenant {$i}",
+                'domain' => "regression-tenant-{$i}.test",
+            ]);
+        }
+
+        $totalRequests = $tenantCount * $requestsPerTenant;
+        $responseTimes = [];
+        $startTime = microtime(true);
+
+        // Simulate concurrent requests across tenants
+        for ($tenantIndex = 0; $tenantIndex < $tenantCount; $tenantIndex++) {
+            $tenant = $tenants[$tenantIndex];
+
+            for ($requestIndex = 0; $requestIndex < $requestsPerTenant; $requestIndex++) {
+                $requestStartTime = microtime(true);
+
+                // Simulate tenant-specific request
+                session(['tenant_id' => $tenant->id]);
+                $response = $this->get('/api/analytics/learning/index');
+
+                $responseTimes[] = (microtime(true) - $requestStartTime) * 1000;
+            }
+        }
+
+        $totalTime = microtime(true) - $startTime;
+        $avgResponseTime = array_sum($responseTimes) / count($responseTimes);
+        $throughputPerTenant = $requestsPerTenant / ($totalTime / $tenantCount);
+
+        $baselineAvgResponseTime = $baselineMetrics['concurrent_tenants']['avg_response_time'] ?? 300;
+        $baselineThroughput = $baselineMetrics['concurrent_tenants']['throughput_per_tenant'] ?? 50;
+
+        $responseTimeDegradation = (($avgResponseTime - $baselineAvgResponseTime) / $baselineAvgResponseTime) * 100;
+        $throughputDegradation = (($baselineThroughput - $throughputPerTenant) / $baselineThroughput) * 100;
+
+        $this->benchmarkResults['regression']['concurrent_tenants'] = [
+            'tenant_count' => $tenantCount,
+            'requests_per_tenant' => $requestsPerTenant,
+            'total_requests' => $totalRequests,
+            'total_time' => $totalTime,
+            'avg_response_time' => $avgResponseTime,
+            'throughput_per_tenant' => $throughputPerTenant,
+            'baseline_avg_response_time' => $baselineAvgResponseTime,
+            'baseline_throughput' => $baselineThroughput,
+            'response_time_degradation_percent' => $responseTimeDegradation,
+            'throughput_degradation_percent' => $throughputDegradation,
+            'threshold_met' => abs($responseTimeDegradation) < 20 && abs($throughputDegradation) < 20,
+        ];
+
+        echo "Concurrent tenant regression benchmark completed\n";
+    }
+
+    private function generateRegressionReport(): void
+    {
+        echo "\n=== Regression Benchmark Report ===\n";
+
+        $reportPath = storage_path('logs/performance-baseline-regression_'.date('Y-m-d_H-i-s').'.json');
+        File::put($reportPath, json_encode($this->benchmarkResults, JSON_PRETTY_PRINT));
+
+        echo "Regression report saved to: {$reportPath}\n\n";
+
+        // Display regression summary
+        $this->displayRegressionSummary();
+    }
+
+    private function displayRegressionSummary(): void
+    {
+        echo "=== Regression Summary ===\n";
+
+        if (isset($this->benchmarkResults['regression'])) {
+            $regression = $this->benchmarkResults['regression'];
+
+            if (isset($regression['event_throughput'])) {
+                $et = $regression['event_throughput'];
+                echo 'Event Throughput: ' . number_format($et['events_per_second'], 1) . ' events/s ';
+                echo '(' . ($et['threshold_met'] ? 'PASS' : 'FAIL') . " - {$et['throughput_degradation_percent']}%) \n";
+            }
+
+            if (isset($regression['api_latency'])) {
+                $al = $regression['api_latency'];
+                echo 'API Latency: ' . number_format($al['avg_degradation_percent'], 1) . '% degradation ';
+                echo '(' . ($al['threshold_met'] ? 'PASS' : 'FAIL') . ")\n";
+            }
+
+            if (isset($regression['memory_usage'])) {
+                $mu = $regression['memory_usage'];
+                echo 'Memory Usage: ' . $mu['avg_memory_mb'] . 'MB avg ';
+                echo '(' . ($mu['threshold_met'] ? 'PASS' : 'FAIL') . " - {$mu['avg_memory_degradation_percent']}%) \n";
+            }
+
+            if (isset($regression['concurrent_tenants'])) {
+                $ct = $regression['concurrent_tenants'];
+                echo 'Concurrent Tenants: ' . number_format($ct['throughput_per_tenant'], 1) . ' req/s per tenant ';
+                echo '(' . ($ct['threshold_met'] ? 'PASS' : 'FAIL') . " - {$ct['throughput_degradation_percent']}%) \n";
+            }
+        }
+
+        echo "\n";
+    }
+
+    private function assertRegressionRequirements(): void
+    {
+        if (!isset($this->benchmarkResults['regression'])) {
+            $this->fail('No regression benchmark results found');
+        }
+
+        $regression = $this->benchmarkResults['regression'];
+
+        // Assert event throughput regression (20% threshold)
+        if (isset($regression['event_throughput'])) {
+            $et = $regression['event_throughput'];
+            $this->assertLessThan(
+                20,
+                abs($et['throughput_degradation_percent']),
+                "Event throughput degradation ({$et['throughput_degradation_percent']}%) exceeds 20% threshold"
+            );
+            $this->assertLessThan(
+                20,
+                abs($et['latency_degradation_percent']),
+                "Event processing latency degradation ({$et['latency_degradation_percent']}%) exceeds 20% threshold"
+            );
+        }
+
+        // Assert API latency regression
+        if (isset($regression['api_latency'])) {
+            $al = $regression['api_latency'];
+            $this->assertLessThan(
+                20,
+                abs($al['avg_degradation_percent']),
+                "API latency degradation ({$al['avg_degradation_percent']}%) exceeds 20% threshold"
+            );
+            $this->assertLessThan(
+                20,
+                abs($al['p95_degradation_percent']),
+                "API P95 latency degradation ({$al['p95_degradation_percent']}%) exceeds 20% threshold"
+            );
+        }
+
+        // Assert memory usage regression
+        if (isset($regression['memory_usage'])) {
+            $mu = $regression['memory_usage'];
+            $this->assertLessThan(
+                20,
+                abs($mu['avg_memory_degradation_percent']),
+                "Memory usage degradation ({$mu['avg_memory_degradation_percent']}%) exceeds 20% threshold"
+            );
+            $this->assertLessThan(
+                20,
+                abs($mu['peak_memory_degradation_percent']),
+                "Peak memory usage degradation ({$mu['peak_memory_degradation_percent']}%) exceeds 20% threshold"
+            );
+        }
+
+        // Assert concurrent tenant regression
+        if (isset($regression['concurrent_tenants'])) {
+            $ct = $regression['concurrent_tenants'];
+            $this->assertLessThan(
+                20,
+                abs($ct['response_time_degradation_percent']),
+                "Concurrent tenant response time degradation ({$ct['response_time_degradation_percent']}%) exceeds 20% threshold"
+            );
+            $this->assertLessThan(
+                20,
+                abs($ct['throughput_degradation_percent']),
+                "Concurrent tenant throughput degradation ({$ct['throughput_degradation_percent']}%) exceeds 20% threshold"
+            );
+        }
+    }
+
+    private function simulateEventProcessing(): void
+    {
+        // Simulate typical event processing operations
+        usleep(rand(1000, 5000)); // 1-5ms processing time
+
+        // Simulate database operation
+        Cache::put('event_simulation_' . rand(1, 1000), microtime(true), 60);
+
+        // Simulate some computation
+        $data = [];
+        for ($i = 0; $i < 100; $i++) {
+            $data[] = md5(uniqid());
+        }
     }
 
     protected function tearDown(): void

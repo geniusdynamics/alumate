@@ -16,7 +16,8 @@ class LogUserActivity
     {
         ActivityLog::create([
             'user_id' => $event->user->id,
-            'activity' => 'Logged in',
+            'action' => ActivityLog::ACTION_LOGIN,
+            'category' => ActivityLog::CATEGORY_AUTH,
             'description' => 'User logged into the system',
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
@@ -30,7 +31,8 @@ class LogUserActivity
     {
         ActivityLog::create([
             'user_id' => $event->user->id,
-            'activity' => 'Logged out',
+            'action' => ActivityLog::ACTION_LOGOUT,
+            'category' => ActivityLog::CATEGORY_AUTH,
             'description' => 'User logged out of the system',
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
@@ -44,8 +46,24 @@ class LogUserActivity
     {
         ActivityLog::create([
             'user_id' => $event->user->id,
-            'activity' => 'Registered',
+            'action' => 'registered',
+            'category' => ActivityLog::CATEGORY_AUTH,
             'description' => 'New user registered',
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+        ]);
+    }
+
+    /**
+     * Handle user profile updated events.
+     */
+    public function handleUserProfileUpdated(\App\Events\UserProfileUpdated $event)
+    {
+        ActivityLog::create([
+            'user_id' => $event->user->id,
+            'action' => 'profile_updated',
+            'category' => ActivityLog::CATEGORY_USER,
+            'description' => 'User profile was updated',
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
         ]);
@@ -71,6 +89,11 @@ class LogUserActivity
         $events->listen(
             Registered::class,
             [LogUserActivity::class, 'handleRegistration']
+        );
+
+        $events->listen(
+            \App\Events\UserProfileUpdated::class,
+            [LogUserActivity::class, 'handleUserProfileUpdated']
         );
     }
 }

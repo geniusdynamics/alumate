@@ -509,16 +509,16 @@ declare global {
 
 // Component Library Types
 export type {
-  ComponentCategory,
-  AudienceType,
-  BackgroundMediaType,
-  MediaAsset,
-  GradientConfig,
-  BackgroundMedia,
-  CTAButton,
-  StatisticCounter,
-  HeroComponentConfig,
-  ComponentInstance,
-  Component,
-  HeroSampleData
-} from './components'
+    AudienceType,
+    BackgroundMedia,
+    BackgroundMediaType,
+    CTAButton,
+    Component,
+    ComponentCategory,
+    ComponentInstance,
+    GradientConfig,
+    HeroComponentConfig,
+    HeroSampleData,
+    MediaAsset,
+    StatisticCounter,
+} from './Components';

@@ -1,4 +1,6 @@
 <?php
+// ABOUTME: This model manages component themes for multi-tenant applications using schema-based tenancy
+// ABOUTME: Handles theme configurations, CSS generation, and accessibility validation for components
 
 namespace App\Models;
 
@@ -9,13 +11,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Services\TenantContextService;
 
 class ComponentTheme extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'name',
         'slug',
         'config',
@@ -32,27 +34,27 @@ class ComponentTheme extends Model
      */
     protected static function booted(): void
     {
-        static::addGlobalScope('tenant', function (Builder $builder) {
-            if (auth()->check() && auth()->user()->tenant_id) {
-                $builder->where('tenant_id', auth()->user()->tenant_id);
-            }
+        static::addGlobalScope('tenantContext', function (Builder $builder) {
+            TenantContextService::applyTenantScope($builder);
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
      */
     public function scopeForTenant(Builder $query, string $tenantId): Builder
     {
-        return $query->where('tenant_id', $tenantId);
+        // Legacy method for backward compatibility
+        // In schema-based tenancy, tenant context is handled automatically
+        return $query;
     }
 
     /**
-     * Get the tenant that owns this theme
+     * Get current tenant information (schema-based tenancy)
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return TenantContextService::getCurrentTenant();
     }
 
     /**
@@ -112,9 +114,8 @@ class ComponentTheme extends Model
 
         if (! empty($componentIds)) {
             $query->whereIn('id', $componentIds);
-        } else {
-            $query->where('tenant_id', $this->tenant_id);
         }
+        // In schema-based tenancy, tenant context is automatically applied
 
         return $query->update(['theme_id' => $this->id]);
     }
@@ -128,8 +129,7 @@ class ComponentTheme extends Model
 
         // If this is not a default theme, inherit from default theme
         if (! $this->is_default) {
-            $defaultTheme = static::where('tenant_id', $this->tenant_id)
-                ->where('is_default', true)
+            $defaultTheme = static::where('is_default', true)
                 ->first();
 
             if ($defaultTheme && $defaultTheme->id !== $this->id) {
@@ -292,9 +292,9 @@ class ComponentTheme extends Model
     }
 
     /**
-     * Create a default theme for a tenant
+     * Create a default theme for current tenant context
      */
-    public static function createDefaultTheme($tenantId, string $name = 'Default Theme'): self
+    public static function createDefaultTheme(string $name = 'Default Theme'): self
     {
         $defaultConfig = [
             'colors' => [
@@ -330,7 +330,6 @@ class ComponentTheme extends Model
         ];
 
         return static::create([
-            'tenant_id' => $tenantId,
             'name' => $name,
             'slug' => str($name)->slug(),
             'config' => $defaultConfig,

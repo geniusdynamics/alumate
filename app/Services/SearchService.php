@@ -8,7 +8,7 @@ use App\Models\Job;
 use App\Models\SavedSearch;
 use Illuminate\Database\Eloquent\Builder;
 
-class SearchService
+class SearchService extends BaseService
 {
     public function searchJobs(array $criteria, int $perPage = 20)
     {

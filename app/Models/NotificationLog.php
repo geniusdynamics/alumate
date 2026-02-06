@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: NotificationLog model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Tracks notification delivery status and errors within tenant-specific schemas
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +14,7 @@ class NotificationLog extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'notification_id',
         'channel',
         'status',
@@ -30,26 +33,18 @@ class NotificationLog extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
+        // Apply tenant context for schema-based multi-tenancy
         static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
+            // Schema-based tenancy: data isolation handled at database schema level
+            // No additional filtering needed as each tenant has separate schema
+            app(TenantContextService::class)->applyTenantContext($builder);
         });
     }
 
     // Relationships
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     public function notification(): BelongsTo

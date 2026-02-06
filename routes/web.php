@@ -40,6 +40,13 @@ Route::middleware(['auth', 'role:super-admin'])->prefix('monitoring')->name('mon
     });
 });
 
+// Horizon Queue Monitoring Routes (Admin only)
+Route::middleware(['auth', 'role:super-admin'])->group(function () {
+    Route::get('/horizon', function () {
+        return redirect(config('horizon.path'));
+    })->name('horizon');
+});
+
 // Homepage Enhancement Routes
 Route::get('/homepage', [\App\Http\Controllers\HomepageController::class, 'index'])->name('homepage.index');
 Route::get('/homepage/institutional', [\App\Http\Controllers\HomepageController::class, 'institutional'])->name('homepage.institutional');
@@ -329,6 +336,14 @@ Route::get('/discussions', [\App\Http\Controllers\DiscussionController::class, '
 Route::get('/discussions/{discussion}', [\App\Http\Controllers\DiscussionController::class, 'show'])->name('discussions.show');
 
 // Public Alumni & Stories routes (accessible without authentication)
+// Analytics-enabled Alumni Directory Route
+Route::middleware(['auth'])->prefix('alumni')->name('alumni.')->group(function () {
+    Route::get('directory', [\App\Http\Controllers\AlumniController::class, 'directory'])->name('directory')
+        ->middleware('analytics.ab-test:alumni_directory_variant');
+    Route::get('recommendations', [\App\Http\Controllers\AlumniController::class, 'recommendations'])->name('recommendations');
+    Route::get('connections', [\App\Http\Controllers\AlumniController::class, 'connections'])->name('connections');
+    Route::get('map', [\App\Http\Controllers\AlumniController::class, 'map'])->name('map');
+});
 Route::get('/alumni', [\App\Http\Controllers\AlumniController::class, 'publicDirectory'])->name('alumni.public.directory');
 Route::get('/alumni/map', [\App\Http\Controllers\AlumniController::class, 'publicMap'])->name('alumni.public.map');
 Route::get('/stories', [\App\Http\Controllers\SuccessStoryController::class, 'publicIndex'])->name('stories.public.index');
@@ -359,6 +374,21 @@ Route::middleware(['auth'])->prefix('career')->name('career.')->group(function (
     Route::get('mentorship-hub', [\App\Http\Controllers\CareerController::class, 'mentorshipHub'])->name('mentorship-hub');
 });
 
+// Analytics-enabled Page Builder Routes
+Route::middleware(['auth'])->prefix('page-builder')->name('page-builder.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\PageBuilderController::class, 'index'])->name('index')
+        ->middleware('analytics.funnel:start');
+    Route::get('create', [\App\Http\Controllers\PageBuilderController::class, 'create'])->name('create')
+        ->middleware('analytics.funnel:step_create');
+    Route::post('/', [\App\Http\Controllers\PageBuilderController::class, 'store'])->name('store')
+        ->middleware('analytics.funnel:step_save');
+    Route::get('{page}/edit', [\App\Http\Controllers\PageBuilderController::class, 'edit'])->name('edit')
+        ->middleware('analytics.funnel:step_edit');
+    Route::put('{page}', [\App\Http\Controllers\PageBuilderController::class, 'update'])->name('update')
+        ->middleware('analytics.funnel:step_update');
+    Route::post('{page}/publish', [\App\Http\Controllers\PageBuilderController::class, 'publish'])->name('publish')
+        ->middleware('analytics.funnel:complete');
+});
 // Job Matching Routes
 Route::middleware(['auth'])->prefix('jobs')->name('jobs.')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\JobController::class, 'dashboard'])->name('dashboard');
@@ -739,7 +769,7 @@ Route::middleware(['auth', 'role:super-admin|institution-admin'])->prefix('admin
 
         // API endpoints for builder
         Route::get('/api/templates', [\App\Http\Controllers\Admin\LandingPageController::class, 'getTemplates'])->name('api.templates');
-        Route::get('/api/components', [\App\Http\Controllers\Admin\LandingPageController::class, 'getComponents'])->name('api.components');
+        Route::get('/api/landing-components', [\App\Http\Controllers\Admin\LandingPageController::class, 'getComponents'])->name('api.landing-components');
     });
 });
 
@@ -833,4 +863,66 @@ Route::middleware(['auth'])->prefix('component-library')->name('component-librar
     Route::get('forms', function () {
         return Inertia::render('ComponentLibrary/FormDemo');
     })->name('forms');
+});
+
+// Solution Pages Routes
+Route::group([], function () {
+    Route::get('/community-engagement-hub', function () {
+        return Inertia::render('Solutions/CommunityEngagementHub');
+    })->name('solutions.community-engagement-hub');
+    
+    Route::get('/career-services-hub', function () {
+        return Inertia::render('Solutions/CareerServicesHub');
+    })->name('solutions.career-services-hub');
+    
+    Route::get('/outcome-data-analytics', function () {
+        return Inertia::render('Solutions/OutcomeDataAnalytics');
+    })->name('solutions.outcome-data-analytics');
+    
+    Route::get('/employer-relations-management', function () {
+        return Inertia::render('Solutions/EmployerRelationsManagement');
+    })->name('solutions.employer-relations-management');
+    
+    Route::get('/talent-acquisition', function () {
+        return Inertia::render('Solutions/TalentAcquisition');
+    })->name('solutions.talent-acquisition');
+    
+    Route::get('/recruiting-intelligence', function () {
+        return Inertia::render('Solutions/RecruitingIntelligence');
+    })->name('solutions.recruiting-intelligence');
+    
+    Route::get('/alumni-and-advancement', function () {
+        return Inertia::render('Solutions/AlumniAndAdvancement');
+    })->name('solutions.alumni-and-advancement');
+});
+
+// Use Cases Routes
+Route::group([], function () {
+    Route::get('/alumni-engagement', function () {
+        return Inertia::render('UseCases/AlumniEngagement');
+    })->name('usecases.alumni-engagement');
+    
+    Route::get('/fundraising', function () {
+        return Inertia::render('UseCases/Fundraising');
+    })->name('usecases.fundraising');
+    
+    Route::get('/events', function () {
+        return Inertia::render('UseCases/Events');
+    })->name('usecases.events');
+    
+    Route::get('/communications', function () {
+        return Inertia::render('UseCases/Communications');
+    })->name('usecases.communications');
+    
+    Route::get('/networking', function () {
+        return Inertia::render('UseCases/Networking');
+    })->name('usecases.networking');
+    
+    Route::get('/partnerships', function () {
+        return Inertia::render('UseCases/Partnerships');
+    })->name('usecases.partnerships');
+    
+    Route::get('/recruitment', function () {
+        return Inertia::render('UseCases/Recruitment');
+    })->name('usecases.recruitment');
 });

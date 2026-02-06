@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: NotificationTemplate model for managing notification templates with schema-based tenant isolation
+// ABOUTME: Uses schema-based tenancy where each tenant has their own database schema for complete data isolation
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +14,7 @@ class NotificationTemplate extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Commented out for schema-based tenancy - tenant isolation handled at schema level
         'name',
         'type',
         'subject',
@@ -26,32 +29,30 @@ class NotificationTemplate extends Model
     ];
 
     /**
+     * Get current tenant from context service
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
+
+    /**
      * Boot the model
      */
     protected static function boot(): void
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
-        });
+        // Schema-based tenancy: No global scope needed as tenant isolation is handled at schema level
+        // Each tenant operates within their own database schema
     }
 
     // Relationships
     public function tenant(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class);
+        // Schema-based tenancy: Return current tenant from context instead of database relationship
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
     // Scopes
@@ -67,7 +68,9 @@ class NotificationTemplate extends Model
 
     public function scopeForTenant($query, int $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // Legacy compatibility: In schema-based tenancy, tenant isolation is handled at schema level
+        // This scope returns the query unchanged as all data is already tenant-isolated
+        return $query;
     }
 
     // Helper methods

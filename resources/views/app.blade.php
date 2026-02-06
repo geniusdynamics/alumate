@@ -30,15 +30,15 @@
             }
         </style>
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Alumate') }}</title>
 
         <!-- PWA Meta Tags -->
         <meta name="theme-color" content="#3b82f6">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="default">
-        <meta name="apple-mobile-web-app-title" content="Alumni Platform">
+        <meta name="apple-mobile-web-app-title" content="Alumate">
         <meta name="mobile-web-app-capable" content="yes">
-        <meta name="application-name" content="Alumni Platform">
+        <meta name="application-name" content="Alumate">
 
         <!-- PWA Manifest -->
         <link rel="manifest" href="/manifest.json">
@@ -52,7 +52,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
 
         @routes
-        @vite(['resources/js/app.ts', "resources/js/Pages/{$page['component']}.vue"])
+        @vite(['resources/css/app.css', 'resources/js/app.ts'])
         @inertiaHead
     </head>
     <body class="font-sans antialiased">

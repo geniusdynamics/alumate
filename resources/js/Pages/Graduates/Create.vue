@@ -1,5 +1,5 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import CreateGraduateForm from '@/Pages/Graduates/Partials/CreateGraduateForm.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -14,19 +14,16 @@ defineProps({
     <AppLayout>
         <template #header>
             <div class="flex items-center justify-between">
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Create New Graduate
-                </h2>
-                <Link :href="route('graduates.index')" 
-                      class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-2 px-4 rounded-md">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800">Create New Graduate</h2>
+                <Link :href="route('graduates.index')" class="rounded-md bg-gray-300 px-4 py-2 font-medium text-gray-700 hover:bg-gray-400">
                     Back to Graduates
                 </Link>
             </div>
         </template>
 
         <div class="py-12">
-            <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
+                <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6">
                         <CreateGraduateForm :courses="courses" />
                     </div>
@@ -35,3 +32,16 @@ defineProps({
         </div>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,10 +15,12 @@ use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\Message;
 use App\Models\NotificationLog;
+use App\Models\NotificationPreference;
 use App\Models\Post;
 use App\Models\SuccessStory;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\CrossTenantAggregationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +29,12 @@ use Inertia\Inertia;
 
 class SuperAdminDashboardController extends Controller
 {
+    protected CrossTenantAggregationService $aggregationService;
+
+    public function __construct(CrossTenantAggregationService $aggregationService)
+    {
+        $this->aggregationService = $aggregationService;
+    }
     public function index()
     {
         // System-wide analytics
@@ -92,7 +100,7 @@ class SuperAdminDashboardController extends Controller
                     'name' => $tenant->data['name'] ?? 'Unknown',
                     'domains' => $tenant->domains->pluck('domain'),
                     'users_count' => $tenant->users_count,
-                    'graduates_count' => 0, // TODO: Implement cross-tenant graduate counting
+                    'graduates_count' => $this->aggregationService->getTenantGraduateCount($tenant->id),
                     'courses_count' => $tenant->courses_count,
                     'created_at' => $tenant->created_at,
                     'status' => $tenant->data['status'] ?? 'active',
@@ -206,33 +214,13 @@ class SuperAdminDashboardController extends Controller
 
     private function getSystemStats()
     {
-        // Calculate total graduates across all tenants
-        $totalGraduates = 0;
-        $totalApplications = 0;
-
-        foreach (Tenant::all() as $tenant) {
-            try {
-                $tenant->run(function () use (&$totalGraduates, &$totalApplications) {
-                    if (Schema::hasTable('graduates')) {
-                        $totalGraduates += Graduate::count();
-                    }
-                    if (Schema::hasTable('job_applications')) {
-                        $totalApplications += JobApplication::count();
-                    }
-                });
-            } catch (\Exception $e) {
-                // Skip if tenant database is not accessible
-                continue;
-            }
-        }
-
         return [
             'total_institutions' => Tenant::count(),
             'total_users' => User::count(),
-            'total_graduates' => $totalGraduates,
+            'total_graduates' => $this->aggregationService->getTotalGraduateCount(),
             'total_employers' => Employer::count(),
             'total_jobs' => Job::count(),
-            'total_applications' => $totalApplications,
+            'total_applications' => $this->aggregationService->getTotalJobApplicationCount(),
             'active_jobs' => Job::where('status', 'active')->count(),
             'pending_verifications' => Employer::where('verification_status', 'pending')->count(),
         ];
@@ -434,14 +422,7 @@ class SuperAdminDashboardController extends Controller
 
     private function getEmploymentTrends($startDate)
     {
-        // For now, return mock data since graduates are in tenant databases
-        // TODO: Implement proper cross-tenant data aggregation
-        return collect([
-            ['employment_status' => 'employed', 'count' => 150],
-            ['employment_status' => 'unemployed', 'count' => 45],
-            ['employment_status' => 'self_employed', 'count' => 30],
-            ['employment_status' => 'studying', 'count' => 25],
-        ]);
+        return $this->aggregationService->getEmploymentTrends($startDate);
     }
 
     private function getJobMarketAnalysis($startDate)
@@ -572,16 +553,99 @@ class SuperAdminDashboardController extends Controller
     {
         $startDate = Carbon::now()->subDays($timeframe);
 
+        $employmentTrends = $this->aggregationService->getEmploymentTrends($startDate);
+        $employmentByStatus = $employmentTrends->groupBy('employment_status');
+
+        $totalGraduates = $this->aggregationService->getTotalGraduateCount();
+        $employedCount = $employmentTrends->firstWhere('employment_status', 'employed')['count'] ?? 0;
+        $selfEmployedCount = $employmentTrends->firstWhere('employment_status', 'self_employed')['count'] ?? 0;
+        $employedTotal = $employedCount + $selfEmployedCount;
+
         return [
-            'overall_employment_rate' => 0, // Temporarily disabled
-            'employment_by_status' => collect([ // Temporarily return empty data
-                ['employment_status' => 'employed', 'count' => 0],
-                ['employment_status' => 'seeking', 'count' => 0],
-            ])
-                ->groupBy('employment_status'),
-            'recent_employment_changes' => collect([]), // Temporarily return empty data
-            'top_employers' => collect([]), // Temporarily return empty data
+            'overall_employment_rate' => $this->aggregationService->getOverallEmploymentRate(),
+            'employment_by_status' => $employmentByStatus,
+            'total_graduates' => $totalGraduates,
+            'employed_graduates' => $employedTotal,
+            'recent_employment_changes' => $this->getRecentEmploymentChanges($startDate),
+            'top_employers' => $this->getTopEmployersByHires($startDate),
         ];
+    }
+
+    /**
+     * Get recent employment changes across all tenants.
+     */
+    private function getRecentEmploymentChanges($startDate): \Illuminate\Support\Collection
+    {
+        $changes = [];
+        $tenants = Tenant::all();
+
+        foreach ($tenants as $tenant) {
+            try {
+                $tenant->run(function () use (&$changes, $startDate) {
+                    if (!Schema::hasTable('graduates')) {
+                        return;
+                    }
+
+                    $recentChanges = Graduate::where('updated_at', '>=', $startDate)
+                        ->whereNotNull('previous_employment_status')
+                        ->get(['employment_status', 'previous_employment_status', 'updated_at']);
+
+                    foreach ($recentChanges as $change) {
+                        $changes[] = [
+                            'from' => $change->previous_employment_status,
+                            'to' => $change->employment_status,
+                            'date' => $change->updated_at,
+                        ];
+                    }
+                });
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        return collect($changes)->sortByDesc('date')->take(50)->values();
+    }
+
+    /**
+     * Get top employers by hires across all tenants.
+     */
+    private function getTopEmployersByHires($startDate): \Illuminate\Support\Collection
+    {
+        $hiresByEmployer = [];
+        $tenants = Tenant::all();
+
+        foreach ($tenants as $tenant) {
+            try {
+                $tenant->run(function () use (&$hiresByEmployer, $startDate) {
+                    if (!Schema::hasTable('graduates') || !Schema::hasTable('employers')) {
+                        return;
+                    }
+
+                    $recentHires = Graduate::where('updated_at', '>=', $startDate)
+                        ->whereNotNull('employer_id')
+                        ->get(['employer_id']);
+
+                    foreach ($recentHires as $hire) {
+                        $employerId = $hire->employer_id;
+                        if (!isset($hiresByEmployer[$employerId])) {
+                            $hiresByEmployer[$employerId] = 0;
+                        }
+                        $hiresByEmployer[$employerId]++;
+                    }
+                });
+            } catch (\Exception $e) {
+                continue;
+            }
+        }
+
+        arsort($hiresByEmployer);
+        return collect($hiresByEmployer)->take(10)->map(function ($count, $employerId) {
+            $employer = Employer::find($employerId);
+            return [
+                'company_name' => $employer ? $employer->company_name : 'Unknown',
+                'hires' => $count,
+            ];
+        })->values();
     }
 
     private function generateJobReport($timeframe)
@@ -622,10 +686,7 @@ class SuperAdminDashboardController extends Controller
 
     private function calculateOverallEmploymentRate()
     {
-        $totalGraduates = Graduate::count();
-        $employedGraduates = Graduate::whereIn('employment_status', ['employed', 'self_employed'])->count();
-
-        return $totalGraduates > 0 ? round(($employedGraduates / $totalGraduates) * 100, 1) : 0;
+        return $this->aggregationService->getOverallEmploymentRate();
     }
 
     private function calculateApplicationSuccessRate()

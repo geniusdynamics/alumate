@@ -142,6 +142,51 @@ return [
             'connection' => env('REDIS_CACHE_CONNECTION', 'cache'),
             'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
         ],
+        /*
+        |--------------------------------------------------------------------------
+        | Analytics Cache Stores
+        |--------------------------------------------------------------------------
+        |
+        | Dedicated cache stores for analytics performance optimization
+        | with tenant isolation and performance monitoring.
+        |
+        */
+
+        'analytics' => [
+            'driver' => env('ANALYTICS_CACHE_STORE', 'redis'),
+            'connection' => env('ANALYTICS_REDIS_CONNECTION', 'cache'),
+            'lock_connection' => env('ANALYTICS_CACHE_LOCK_CONNECTION', 'default'),
+            'ttl' => env('ANALYTICS_CACHE_TTL', 300), // 5 minutes default
+        ],
+
+        'analytics_metrics' => [
+            'driver' => env('ANALYTICS_METRICS_CACHE_STORE', 'redis'),
+            'connection' => env('ANALYTICS_METRICS_REDIS_CONNECTION', 'cache'),
+            'lock_connection' => env('ANALYTICS_METRICS_CACHE_LOCK_CONNECTION', 'default'),
+            'ttl' => env('ANALYTICS_METRICS_CACHE_TTL', 600), // 10 minutes
+        ],
+
+        /*
+        |--------------------------------------------------------------------------
+        | Redis Cluster Configuration
+        |--------------------------------------------------------------------------
+        |
+        | Redis cluster configuration for horizontal scaling and high availability.
+        | Supports multiple Redis nodes for distributed caching.
+        |
+        */
+
+        'redis_cluster' => [
+            'driver' => 'redis',
+            'connection' => 'cluster',
+            'lock_connection' => 'cluster',
+            'options' => [
+                'cluster' => env('REDIS_CLUSTER', 'redis'),
+                'parameters' => [
+                    'password' => env('REDIS_PASSWORD'),
+                ],
+            ],
+        ],
 
         'dynamodb' => [
             'driver' => 'dynamodb',

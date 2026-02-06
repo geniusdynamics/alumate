@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: EmailAnalytics model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Tracks email analytics and metrics with tenant isolation handled by database schema
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +17,7 @@ class EmailAnalytics extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'email_campaign_id',
         'email_template_id',
         'recipient_id',
@@ -107,34 +110,32 @@ class EmailAnalytics extends Model
     public const CONVERSION_CUSTOM = 'custom';
 
     /**
+     * Get the current tenant from context.
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
+
+    /**
      * Boot the model
      */
     protected static function boot(): void
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
-        });
+        // Schema-based tenancy: tenant isolation handled by database schema
+        // No global scope needed as each tenant has its own schema
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility - returns query unchanged in schema-based tenancy).
      */
     public function scopeForTenant($query, int $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, tenant filtering is handled by database schema
+        // This scope is maintained for legacy compatibility but returns query unchanged
+        return $query;
     }
 
     /**
@@ -202,11 +203,13 @@ class EmailAnalytics extends Model
     }
 
     /**
-     * Get the tenant that owns the email analytics
+     * Get the tenant that owns the email analytics (legacy compatibility for schema-based tenancy).
      */
     public function tenant(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class);
+        // In schema-based tenancy, return current tenant from context
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id);
     }
 
     /**
@@ -538,7 +541,7 @@ class EmailAnalytics extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // 'tenant_id' => 'required|exists:tenants,id', // Removed for schema-based tenancy
             'email_campaign_id' => 'nullable|exists:email_campaigns,id',
             'email_template_id' => 'nullable|exists:templates,id',
             'recipient_id' => 'nullable|exists:users,id',

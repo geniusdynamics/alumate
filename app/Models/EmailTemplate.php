@@ -1,7 +1,10 @@
 <?php
+// ABOUTME: Email template model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages email templates with automatic tenant context resolution
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,7 +25,6 @@ class EmailTemplate extends Model
         'is_default',
         'is_active',
         'created_by',
-        'tenant_id',
     ];
 
     protected function casts(): array
@@ -40,9 +42,26 @@ class EmailTemplate extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function tenant(): BelongsTo
+    /**
+     * Boot the model
+     */
+    protected static function boot(): void
     {
-        return $this->belongsTo(Tenant::class);
+        parent::boot();
+
+        // Apply tenant context for schema-based tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            app(TenantContextService::class)->applyTenantContext($builder);
+        });
+    }
+
+    /**
+     * Get the current tenant context
+     * Note: In schema-based tenancy, tenant relationship is contextual
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     public function campaigns(): HasMany

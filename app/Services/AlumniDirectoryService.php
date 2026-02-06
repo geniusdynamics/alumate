@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class AlumniDirectoryService
+class AlumniDirectoryService extends BaseService
 {
     /**
      * Get filtered alumni with pagination

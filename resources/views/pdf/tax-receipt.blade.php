@@ -178,7 +178,7 @@
     <div style="margin: 30px 0; padding: 15px; border: 1px solid #ddd; background-color: #fff3e0;">
         <h4>Important Tax Information</h4>
         <p><strong>This receipt is for income tax purposes.</strong></p>
-        <p>No goods or services were provided in exchange for this donation. The full amount is eligible for tax deduction as permitted by law.</p>
+        <p>No goods or Services were provided in exchange for this donation. The full amount is eligible for tax deduction as permitted by law.</p>
         <p>Please retain this receipt for your tax records.</p>
     </div>
 

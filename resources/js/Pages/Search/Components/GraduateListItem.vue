@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div class="rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md">
         <div class="flex items-center justify-between">
             <div class="flex-1">
                 <h4 class="text-base font-medium text-gray-900">{{ graduate.name }}</h4>
@@ -15,9 +15,7 @@
                 <div v-if="showMatchScore && graduate.match_score" class="text-sm font-medium text-green-600">
                     {{ Math.round(graduate.match_score) }}% match
                 </div>
-                <button class="text-indigo-600 hover:text-indigo-500 text-sm font-medium">
-                    View Profile
-                </button>
+                <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View Profile</button>
             </div>
         </div>
     </div>
@@ -27,32 +25,32 @@
 const props = defineProps({
     graduate: {
         type: Object,
-        required: true
+        required: true,
     },
     showMatchScore: {
         type: Boolean,
-        default: false
-    }
+        default: false,
+    },
 });
 
 const getEmploymentStatusClass = (status) => {
     const classes = {
-        'employed': 'text-green-600',
-        'self_employed': 'text-blue-600',
-        'seeking': 'text-yellow-600',
-        'not_seeking': 'text-gray-600',
-        'further_study': 'text-purple-600'
+        employed: 'text-green-600',
+        self_employed: 'text-blue-600',
+        seeking: 'text-yellow-600',
+        not_seeking: 'text-gray-600',
+        further_study: 'text-purple-600',
     };
     return classes[status] || 'text-gray-600';
 };
 
 const formatEmploymentStatus = (status) => {
     const labels = {
-        'employed': 'Employed',
-        'self_employed': 'Self Employed',
-        'seeking': 'Job Seeking',
-        'not_seeking': 'Not Seeking',
-        'further_study': 'Further Study'
+        employed: 'Employed',
+        self_employed: 'Self Employed',
+        seeking: 'Job Seeking',
+        not_seeking: 'Not Seeking',
+        further_study: 'Further Study',
     };
     return labels[status] || status;
 };

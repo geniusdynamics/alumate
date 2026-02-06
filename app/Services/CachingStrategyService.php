@@ -1,4 +1,6 @@
 <?php
+// ABOUTME: Service for implementing intelligent caching strategies with multi-layer cache support
+// ABOUTME: Updated for schema-based tenancy - provides tenant-aware cache warming and invalidation
 
 namespace App\Services;
 
@@ -7,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
-class CachingStrategyService
+class CachingStrategyService extends BaseService
 {
     private array $cacheHitRates = [];
 

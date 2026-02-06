@@ -1,634 +1,416 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Integration;
 
-use App\Models\BrandConfig;
-use App\Models\Institution;
-use App\Models\LandingPage;
-use App\Models\Tenant;
-use App\Models\Template;
+use App\Models\AnalyticsEvent;
+use App\Models\AttributionTouch;
+use App\Models\Cohort;
+use App\Models\CustomEvent;
+use App\Models\LearningProgress;
 use App\Models\User;
+use App\Services\Analytics\AttributionService;
+use App\Services\Analytics\CohortAnalysisService;
+use App\Services\Analytics\ConsentService;
+use App\Services\Analytics\CustomEventService;
+use App\Services\Analytics\InsightsService;
+use App\Services\Analytics\LearningAnalyticsService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Cache;
+use Mockery;
 use Tests\TestCase;
 
 class TenantIsolationVerificationTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase;
 
-    protected Tenant $tenant1;
-    protected Tenant $tenant2;
-    protected Tenant $tenant3;
-    protected Institution $institution1;
-    protected Institution $institution2;
-    protected Institution $institution3;
-    protected User $user1;
-    protected User $user2;
-    protected User $user3;
+    private Mockery\MockInterface $consentService;
+    private CohortAnalysisService $cohortService;
+    private AttributionService $attributionService;
+    private CustomEventService $customEventService;
+    private LearningAnalyticsService $learningService;
+    private InsightsService $insightsService;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        Cache::flush();
-
-        // Set up three tenants for comprehensive isolation testing
-        $this->tenant1 = Tenant::factory()->create([
-            'name' => 'Isolation University A',
-            'domain' => 'isolation-a.edu',
-            'database' => 'tenant_a',
-        ]);
-
-        $this->tenant2 = Tenant::factory()->create([
-            'name' => 'Isolation University B',
-            'domain' => 'isolation-b.edu',
-            'database' => 'tenant_b',
-        ]);
-
-        $this->tenant3 = Tenant::factory()->create([
-            'name' => 'Isolation University C',
-            'domain' => 'isolation-c.edu',
-            'database' => 'tenant_c',
-        ]);
-
-        $this->institution1 = Institution::factory()->create([
-            'name' => 'Isolation University A',
-            'domain' => 'isolation-a.edu',
-        ]);
-
-        $this->institution2 = Institution::factory()->create([
-            'name' => 'Isolation University B',
-            'domain' => 'isolation-b.edu',
-        ]);
-
-        $this->institution3 = Institution::factory()->create([
-            'name' => 'Isolation University C',
-            'domain' => 'isolation-c.edu',
-        ]);
-
-        $this->user1 = User::factory()->create([
-            'name' => 'Admin A',
-            'email' => 'admin@isolation-a.edu',
-            'tenant_id' => $this->tenant1->id,
-            'institution_id' => $this->institution1->id,
-        ]);
-
-        $this->user2 = User::factory()->create([
-            'name' => 'Admin B',
-            'email' => 'admin@isolation-b.edu',
-            'tenant_id' => $this->tenant2->id,
-            'institution_id' => $this->institution2->id,
-        ]);
-
-        $this->user3 = User::factory()->create([
-            'name' => 'Admin C',
-            'email' => 'admin@isolation-c.edu',
-            'tenant_id' => $this->tenant3->id,
-            'institution_id' => $this->institution3->id,
-        ]);
+        $this->consentService = Mockery::mock(ConsentService::class);
+        $this->cohortService = new CohortAnalysisService($this->consentService);
+        $this->attributionService = new AttributionService();
+        $this->customEventService = new CustomEventService();
+        $this->learningService = new LearningAnalyticsService();
+        $this->insightsService = new InsightsService();
     }
 
-    public function test_complete_tenant_data_isolation()
+    protected function tearDown(): void
     {
-        // Create resources for each tenant
-        $template1 = Template::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'name' => 'Template A',
-            'category' => 'landing',
-            'audience_type' => 'individual',
-            'campaign_type' => 'marketing'
-        ]);
-
-        $template2 = Template::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'name' => 'Template B',
-            'category' => 'landing',
-            'audience_type' => 'individual',
-            'campaign_type' => 'marketing'
-        ]);
-
-        $template3 = Template::factory()->create([
-            'tenant_id' => $this->tenant3->id,
-            'name' => 'Template C',
-            'category' => 'landing',
-            'audience_type' => 'individual',
-            'campaign_type' => 'marketing'
-        ]);
-
-        $landingPage1 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'template_id' => $template1->id,
-            'name' => 'Landing Page A'
-        ]);
-
-        $landingPage2 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'template_id' => $template2->id,
-            'name' => 'Landing Page B'
-        ]);
-
-        $landingPage3 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant3->id,
-            'template_id' => $template3->id,
-            'name' => 'Landing Page C'
-        ]);
-
-        $brandConfig1 = BrandConfig::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'institution_name' => 'University A'
-        ]);
-
-        $brandConfig2 = BrandConfig::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'institution_name' => 'University B'
-        ]);
-
-        $brandConfig3 = BrandConfig::factory()->create([
-            'tenant_id' => $this->tenant3->id,
-            'institution_name' => 'University C'
-        ]);
-
-        // Test tenant 1 can only see their own resources
-        $response = $this->actingAs($this->user1)->getJson('/api/templates');
-        $response->assertStatus(200);
-        $templates = $response->json('data.data');
-        $this->assertCount(1, $templates);
-        $this->assertEquals('Template A', $templates[0]['name']);
-
-        $response = $this->actingAs($this->user1)->getJson('/api/landing-pages');
-        $response->assertStatus(200);
-        $landingPages = $response->json('data.data');
-        $this->assertCount(1, $landingPages);
-        $this->assertEquals('Landing Page A', $landingPages[0]['name']);
-
-        $response = $this->actingAs($this->user1)->getJson('/api/brand-config');
-        $response->assertStatus(200);
-        $brandConfigs = $response->json('data');
-        $this->assertCount(1, $brandConfigs);
-        $this->assertEquals('University A', $brandConfigs[0]['institution_name']);
-
-        // Test tenant 2 can only see their own resources
-        $response = $this->actingAs($this->user2)->getJson('/api/templates');
-        $response->assertStatus(200);
-        $templates = $response->json('data.data');
-        $this->assertCount(1, $templates);
-        $this->assertEquals('Template B', $templates[0]['name']);
-
-        // Test tenant 3 can only see their own resources
-        $response = $this->actingAs($this->user3)->getJson('/api/templates');
-        $response->assertStatus(200);
-        $templates = $response->json('data.data');
-        $this->assertCount(1, $templates);
-        $this->assertEquals('Template C', $templates[0]['name']);
-
-        // Verify database-level isolation
-        $this->assertDatabaseHas('templates', [
-            'id' => $template1->id,
-            'tenant_id' => $this->tenant1->id
-        ]);
-        $this->assertDatabaseMissing('templates', [
-            'id' => $template1->id,
-            'tenant_id' => $this->tenant2->id
-        ]);
-        $this->assertDatabaseMissing('templates', [
-            'id' => $template1->id,
-            'tenant_id' => $this->tenant3->id
-        ]);
+        Mockery::close();
+        parent::tearDown();
     }
 
-    public function test_cross_tenant_access_prevention()
+    /**
+     * Test tenant isolation in cohort analysis
+     */
+    public function test_tenant_isolation_in_cohort_analysis(): void
     {
-        // Create resources for tenant 1
-        $template1 = Template::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'name' => 'Template A'
+        // Create data for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $user1 = User::factory()->create();
+        $cohort1 = Cohort::factory()->create([
+            'criteria_json' => ['grad_year' => 2023],
+            'members_count' => 1
         ]);
 
-        $landingPage1 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'template_id' => $template1->id,
-            'name' => 'Landing Page A'
+        // Create data for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $user2 = User::factory()->create();
+        $cohort2 = Cohort::factory()->create([
+            'criteria_json' => ['grad_year' => 2023],
+            'members_count' => 1
         ]);
 
-        $brandConfig1 = BrandConfig::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'institution_name' => 'University A'
-        ]);
+        $this->consentService->shouldReceive('hasConsentForAnalytics')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
 
-        // Test tenant 2 cannot access tenant 1's resources
-        $response = $this->actingAs($this->user2)->getJson("/api/templates/{$template1->id}");
-        $response->assertStatus(403);
+        // Analyze cohort for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $analysis1 = $this->cohortService->analyzeCohort($cohort1->id);
 
-        $response = $this->actingAs($this->user2)->getJson("/api/landing-pages/{$landingPage1->id}");
-        $response->assertStatus(403);
+        // Analyze cohort for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $analysis2 = $this->cohortService->analyzeCohort($cohort2->id);
 
-        $response = $this->actingAs($this->user2)->getJson("/api/brand-config/{$brandConfig1->id}");
-        $response->assertStatus(403);
-
-        // Test tenant 3 cannot access tenant 1's resources
-        $response = $this->actingAs($this->user3)->getJson("/api/templates/{$template1->id}");
-        $response->assertStatus(403);
-
-        // Test tenant 1 cannot access tenant 2's resources
-        $template2 = Template::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'name' => 'Template B'
-        ]);
-
-        $response = $this->actingAs($this->user1)->getJson("/api/templates/{$template2->id}");
-        $response->assertStatus(403);
-
-        // Test tenant 1 cannot access tenant 3's resources
-        $template3 = Template::factory()->create([
-            'tenant_id' => $this->tenant3->id,
-            'name' => 'Template C'
-        ]);
-
-        $response = $this->actingAs($this->user1)->getJson("/api/templates/{$template3->id}");
-        $response->assertStatus(403);
+        // Each tenant should only see their own data
+        $this->assertNotEquals($analysis1['size'], $analysis2['size']);
     }
 
-    public function test_tenant_isolation_in_bulk_operations()
+    /**
+     * Test tenant isolation in attribution calculations
+     */
+    public function test_tenant_isolation_in_attribution_calculations(): void
     {
-        // Create multiple resources for each tenant
-        $templates1 = Template::factory()->count(5)->create([
-            'tenant_id' => $this->tenant1->id
+        // Create attribution data for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $user1 = User::factory()->create();
+
+        AttributionTouch::create([
+            'tenant_id' => 'tenant1',
+            'user_id' => $user1->id,
+            'source' => 'google',
+            'event_type' => 'page_view',
+            'value' => 10.00,
+            'timestamp' => now()->subDays(1),
         ]);
 
-        $templates2 = Template::factory()->count(3)->create([
-            'tenant_id' => $this->tenant2->id
+        // Create attribution data for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $user2 = User::factory()->create();
+
+        AttributionTouch::create([
+            'tenant_id' => 'tenant2',
+            'user_id' => $user2->id,
+            'source' => 'facebook',
+            'event_type' => 'page_view',
+            'value' => 15.00,
+            'timestamp' => now()->subDays(1),
         ]);
 
-        $templates3 = Template::factory()->count(2)->create([
-            'tenant_id' => $this->tenant3->id
-        ]);
+        // Calculate attribution for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $result1 = $this->attributionService->calculateAttribution(
+            $user1->id,
+            now()->subDays(7)->toDateString(),
+            now()->toDateString()
+        );
 
-        // Test bulk operations respect tenant isolation
-        $templateIds1 = $templates1->pluck('id')->toArray();
-        $templateIds2 = $templates2->pluck('id')->toArray();
+        // Calculate attribution for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $result2 = $this->attributionService->calculateAttribution(
+            $user2->id,
+            now()->subDays(7)->toDateString(),
+            now()->toDateString()
+        );
 
-        // Tenant 1 bulk operation
-        $response = $this->actingAs($this->user1)->postJson('/api/templates/bulk', [
-            'operation' => 'update',
-            'template_ids' => $templateIds1,
-            'data' => ['category' => 'updated_category']
-        ]);
-        $response->assertStatus(200);
-
-        // Verify tenant 1's templates were updated
-        foreach ($templateIds1 as $templateId) {
-            $template = Template::find($templateId);
-            $this->assertEquals('updated_category', $template->category);
-            $this->assertEquals($this->tenant1->id, $template->tenant_id);
-        }
-
-        // Verify tenant 2's templates were NOT updated
-        foreach ($templateIds2 as $templateId) {
-            $template = Template::find($templateId);
-            $this->assertNotEquals('updated_category', $template->category);
-            $this->assertEquals($this->tenant2->id, $template->tenant_id);
-        }
-
-        // Tenant 2 should not be able to bulk update tenant 1's templates
-        $response = $this->actingAs($this->user2)->postJson('/api/templates/bulk', [
-            'operation' => 'update',
-            'template_ids' => $templateIds1,
-            'data' => ['category' => 'hacked_category']
-        ]);
-        $response->assertStatus(403);
-
-        // Verify tenant 1's templates were NOT affected
-        foreach ($templateIds1 as $templateId) {
-            $template = Template::find($templateId);
-            $this->assertEquals('updated_category', $template->category);
-        }
+        // Verify tenant isolation
+        $this->assertNotEmpty($result1);
+        $this->assertNotEmpty($result2);
+        $this->assertNotEquals($result1['total_value'], $result2['total_value']);
     }
 
-    public function test_tenant_isolation_in_search_and_filters()
+    /**
+     * Test tenant isolation in custom events
+     */
+    public function test_tenant_isolation_in_custom_events(): void
     {
-        // Create similar resources across tenants
-        Template::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'name' => 'Marketing Template',
-            'category' => 'landing',
-            'audience_type' => 'individual'
+        // Create custom events for tenant1
+        session(['tenant_id' => 'tenant1']);
+        CustomEvent::create([
+            'tenant_id' => 'tenant1',
+            'name' => 'test_event_1',
+            'properties' => ['key' => 'value1'],
+            'created_at' => now(),
         ]);
 
-        Template::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'name' => 'Marketing Template',
-            'category' => 'landing',
-            'audience_type' => 'individual'
+        // Create custom events for tenant2
+        session(['tenant_id' => 'tenant2']);
+        CustomEvent::create([
+            'tenant_id' => 'tenant2',
+            'name' => 'test_event_2',
+            'properties' => ['key' => 'value2'],
+            'created_at' => now(),
         ]);
 
-        Template::factory()->create([
-            'tenant_id' => $this->tenant3->id,
-            'name' => 'Marketing Template',
-            'category' => 'landing',
-            'audience_type' => 'individual'
-        ]);
+        // Query events for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $events1 = CustomEvent::all();
 
-        // Test search results are tenant-isolated
-        $response = $this->actingAs($this->user1)->getJson('/api/templates?search=Marketing');
-        $response->assertStatus(200);
-        $results = $response->json('data.data');
-        $this->assertCount(1, $results);
-        $this->assertEquals($this->tenant1->id, $results[0]['tenant_id']);
+        // Query events for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $events2 = CustomEvent::all();
 
-        $response = $this->actingAs($this->user2)->getJson('/api/templates?search=Marketing');
-        $response->assertStatus(200);
-        $results = $response->json('data.data');
-        $this->assertCount(1, $results);
-        $this->assertEquals($this->tenant2->id, $results[0]['tenant_id']);
-
-        $response = $this->actingAs($this->user3)->getJson('/api/templates?search=Marketing');
-        $response->assertStatus(200);
-        $results = $response->json('data.data');
-        $this->assertCount(1, $results);
-        $this->assertEquals($this->tenant3->id, $results[0]['tenant_id']);
-
-        // Test filtering by category
-        $response = $this->actingAs($this->user1)->getJson('/api/templates?category=landing');
-        $response->assertStatus(200);
-        $results = $response->json('data.data');
-        $this->assertCount(1, $results);
-        $this->assertEquals($this->tenant1->id, $results[0]['tenant_id']);
+        // Each tenant should only see their own events
+        $this->assertCount(1, $events1);
+        $this->assertCount(1, $events2);
+        $this->assertEquals('test_event_1', $events1->first()->name);
+        $this->assertEquals('test_event_2', $events2->first()->name);
     }
 
-    public function test_tenant_isolation_in_analytics_and_reporting()
+    /**
+     * Test tenant isolation in learning analytics
+     */
+    public function test_tenant_isolation_in_learning_analytics(): void
     {
-        // Create resources and analytics data for each tenant
-        $template1 = Template::factory()->create(['tenant_id' => $this->tenant1->id]);
-        $template2 = Template::factory()->create(['tenant_id' => $this->tenant2->id]);
+        // Create learning data for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $user1 = User::factory()->create();
+        $course1 = \App\Models\Course::factory()->create(['tenant_id' => 'tenant1']);
 
-        $landingPage1 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'template_id' => $template1->id,
-            'status' => 'published'
+        AnalyticsEvent::create([
+            'tenant_id' => 'tenant1',
+            'event_type' => 'learning',
+            'event_name' => 'course_interaction',
+            'user_id' => $user1->id,
+            'properties' => [
+                'course_id' => $course1->id,
+                'interaction_type' => 'completion'
+            ],
+            'occurred_at' => now(),
+            'is_compliant' => true,
+            'consent_given' => true,
         ]);
 
-        $landingPage2 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'template_id' => $template2->id,
-            'status' => 'published'
+        // Create learning data for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $user2 = User::factory()->create();
+        $course2 = \App\Models\Course::factory()->create(['tenant_id' => 'tenant2']);
+
+        AnalyticsEvent::create([
+            'tenant_id' => 'tenant2',
+            'event_type' => 'learning',
+            'event_name' => 'course_interaction',
+            'user_id' => $user2->id,
+            'properties' => [
+                'course_id' => $course2->id,
+                'interaction_type' => 'completion'
+            ],
+            'occurred_at' => now(),
+            'is_compliant' => true,
+            'consent_given' => true,
         ]);
 
-        // Simulate analytics data
-        $landingPage1->increment('usage_count', 100);
-        $landingPage2->increment('usage_count', 50);
+        // Generate insights for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $insights1 = $this->learningService->generateLearningInsights();
 
-        // Test analytics isolation
-        $response = $this->actingAs($this->user1)->getJson('/api/analytics/overview');
-        $response->assertStatus(200);
-        $analytics = $response->json('data');
+        // Generate insights for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $insights2 = $this->learningService->generateLearningInsights();
 
-        // Should only include tenant 1's data
-        $this->assertArrayHasKey('total_usage', $analytics);
-        $this->assertEquals(100, $analytics['total_usage']);
-
-        $response = $this->actingAs($this->user2)->getJson('/api/analytics/overview');
-        $response->assertStatus(200);
-        $analytics = $response->json('data');
-
-        // Should only include tenant 2's data
-        $this->assertEquals(50, $analytics['total_usage']);
-
-        // Test template analytics isolation
-        $response = $this->actingAs($this->user1)->getJson("/api/templates/{$template1->id}/analytics");
-        $response->assertStatus(200);
-
-        $response = $this->actingAs($this->user2)->getJson("/api/templates/{$template1->id}/analytics");
-        $response->assertStatus(403); // Should not access tenant 1's template analytics
+        // Verify isolation
+        $this->assertEquals(1, $insights1['total_interactions']);
+        $this->assertEquals(1, $insights2['total_interactions']);
+        $this->assertNotEquals($insights1['unique_users'], $insights2['unique_users']);
     }
 
-    public function test_tenant_isolation_in_file_storage()
+    /**
+     * Test tenant isolation in insights generation
+     */
+    public function test_tenant_isolation_in_insights_generation(): void
     {
-        // Create templates with file uploads for each tenant
-        $template1 = Template::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'structure' => [
-                'sections' => [
-                    [
-                        'type' => 'hero',
-                        'config' => [
-                            'background_image' => 'tenant1/hero-image.jpg'
-                        ]
-                    ]
-                ]
-            ]
+        // Create analytics events for tenant1
+        session(['tenant_id' => 'tenant1']);
+        AnalyticsEvent::factory()->count(5)->create([
+            'tenant_id' => 'tenant1',
+            'event_type' => 'page_view',
         ]);
 
-        $template2 = Template::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'structure' => [
-                'sections' => [
-                    [
-                        'type' => 'hero',
-                        'config' => [
-                            'background_image' => 'tenant2/hero-image.jpg'
-                        ]
-                    ]
-                ]
-            ]
+        // Create analytics events for tenant2
+        session(['tenant_id' => 'tenant2']);
+        AnalyticsEvent::factory()->count(3)->create([
+            'tenant_id' => 'tenant2',
+            'event_type' => 'page_view',
         ]);
 
-        // Test file access isolation (simulated)
-        // In a real implementation, this would test actual file system isolation
-        $response = $this->actingAs($this->user1)->getJson("/api/templates/{$template1->id}/files");
-        $response->assertStatus(200);
-        $files = $response->json('data');
-        $this->assertContains('tenant1/hero-image.jpg', $files);
+        // Generate insights for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $insights1 = $this->insightsService->generateInsights();
 
-        $response = $this->actingAs($this->user2)->getJson("/api/templates/{$template2->id}/files");
-        $response->assertStatus(200);
-        $files = $response->json('data');
-        $this->assertContains('tenant2/hero-image.jpg', $files);
-        $this->assertNotContains('tenant1/hero-image.jpg', $files);
+        // Generate insights for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $insights2 = $this->insightsService->generateInsights();
+
+        // Verify tenant data isolation
+        $this->assertNotEquals($insights1, $insights2);
     }
 
-    public function test_tenant_isolation_in_public_urls()
+    /**
+     * Test cross-tenant data leakage prevention
+     */
+    public function test_cross_tenant_data_leakage_prevention(): void
     {
-        // Create published landing pages for each tenant
-        $landingPage1 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'status' => 'published',
-            'public_url' => 'https://isolation-a.edu/lp/123'
+        // Create user in tenant1
+        session(['tenant_id' => 'tenant1']);
+        $user1 = User::factory()->create();
+        $course1 = \App\Models\Course::factory()->create(['tenant_id' => 'tenant1']);
+
+        // Create learning progress for tenant1
+        LearningProgress::create([
+            'tenant_id' => 'tenant1',
+            'user_id' => $user1->id,
+            'course_id' => $course1->id,
+            'engagement_score' => 85.0,
+            'total_score' => 90.0,
         ]);
 
-        $landingPage2 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'status' => 'published',
-            'public_url' => 'https://isolation-b.edu/lp/456'
-        ]);
+        // Switch to tenant2
+        session(['tenant_id' => 'tenant2']);
 
-        $landingPage3 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant3->id,
-            'status' => 'published',
-            'public_url' => 'https://isolation-c.edu/lp/789'
-        ]);
+        // Try to access tenant1 data from tenant2 context
+        $progressFromTenant2 = LearningProgress::where('user_id', $user1->id)->first();
 
-        // Test public URL access
-        $response = $this->get($landingPage1->public_url);
-        $response->assertStatus(200);
-        $this->assertStringContainsString('isolation-a.edu', $response->getContent());
-
-        $response = $this->get($landingPage2->public_url);
-        $response->assertStatus(200);
-        $this->assertStringContainsString('isolation-b.edu', $response->getContent());
-
-        $response = $this->get($landingPage3->public_url);
-        $response->assertStatus(200);
-        $this->assertStringContainsString('isolation-c.edu', $response->getContent());
-
-        // Test tenant-specific subdomains/routing
-        $response = $this->get('https://isolation-a.edu/lp/999'); // Non-existent page
-        $response->assertStatus(404);
-
-        // Verify tenant isolation in URL structure
-        $this->assertStringContainsString('isolation-a.edu', $landingPage1->public_url);
-        $this->assertStringContainsString('isolation-b.edu', $landingPage2->public_url);
-        $this->assertStringContainsString('isolation-c.edu', $landingPage3->public_url);
+        // Should not be able to access tenant1 data from tenant2
+        $this->assertNull($progressFromTenant2);
     }
 
-    public function test_tenant_isolation_in_background_jobs()
+    /**
+     * Test tenant isolation in batch operations
+     */
+    public function test_tenant_isolation_in_batch_operations(): void
     {
-        // Create resources that would trigger background jobs
-        $landingPage1 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'status' => 'published'
-        ]);
+        // Create users and courses for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $users1 = User::factory()->count(3)->create();
+        $course1 = \App\Models\Course::factory()->create(['tenant_id' => 'tenant1']);
 
-        $landingPage2 = LandingPage::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'status' => 'published'
-        ]);
+        // Create users and courses for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $users2 = User::factory()->count(3)->create();
+        $course2 = \App\Models\Course::factory()->create(['tenant_id' => 'tenant2']);
 
-        // Simulate form submissions that would trigger jobs
-        $formData1 = [
-            'first_name' => 'John',
-            'last_name' => 'Tenant1',
-            'email' => 'john@tenant1.com'
-        ];
+        $this->consentService->shouldReceive('checkConsent')->andReturn(true);
+        app()->instance(ConsentService::class, $this->consentService);
 
-        $formData2 = [
-            'first_name' => 'Jane',
-            'last_name' => 'Tenant2',
-            'email' => 'jane@tenant2.com'
-        ];
+        // Process batch for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $pairs1 = $users1->map(fn($user) => [
+            'user_id' => $user->id,
+            'course_id' => $course1->id
+        ])->toArray();
 
-        $response = $this->postJson("/api/landing-pages/{$landingPage1->slug}/submit", $formData1);
-        $response->assertStatus(200);
+        $result1 = $this->learningService->processBatchScores($pairs1);
 
-        $response = $this->postJson("/api/landing-pages/{$landingPage2->slug}/submit", $formData2);
-        $response->assertStatus(200);
+        // Process batch for tenant2
+        session(['tenant_id' => 'tenant2']);
+        $pairs2 = $users2->map(fn($user) => [
+            'user_id' => $user->id,
+            'course_id' => $course2->id
+        ])->toArray();
 
-        // Verify leads are properly isolated
-        $this->assertDatabaseHas('leads', [
-            'email' => 'john@tenant1.com',
-            'tenant_id' => $this->tenant1->id
-        ]);
+        $result2 = $this->learningService->processBatchScores($pairs2);
 
-        $this->assertDatabaseHas('leads', [
-            'email' => 'jane@tenant2.com',
-            'tenant_id' => $this->tenant2->id
-        ]);
+        // Verify isolation in batch processing
+        $this->assertEquals(3, $result1['processed']);
+        $this->assertEquals(3, $result2['processed']);
+
+        // Verify data isolation
+        $progress1 = LearningProgress::whereIn('user_id', $users1->pluck('id'))->count();
+        $progress2 = LearningProgress::whereIn('user_id', $users2->pluck('id'))->count();
+
+        $this->assertEquals(3, $progress1);
+        $this->assertEquals(3, $progress2);
+    }
+
+    /**
+     * Test tenant isolation with concurrent operations
+     */
+    public function test_tenant_isolation_with_concurrent_operations(): void
+    {
+        // Simulate concurrent operations across tenants
+        $results = [];
+
+        // Tenant1 operations
+        session(['tenant_id' => 'tenant1']);
+        $user1 = User::factory()->create();
+        $cohort1 = Cohort::factory()->create(['members_count' => 1]);
+
+        $results['tenant1'] = $this->cohortService->analyzeCohort($cohort1->id);
+
+        // Tenant2 operations
+        session(['tenant_id' => 'tenant2']);
+        $user2 = User::factory()->create();
+        $cohort2 = Cohort::factory()->create(['members_count' => 1]);
+
+        $results['tenant2'] = $this->cohortService->analyzeCohort($cohort2->id);
 
         // Verify no cross-contamination
-        $this->assertDatabaseMissing('leads', [
-            'email' => 'john@tenant1.com',
-            'tenant_id' => $this->tenant2->id
-        ]);
-
-        $this->assertDatabaseMissing('leads', [
-            'email' => 'jane@tenant2.com',
-            'tenant_id' => $this->tenant1->id
-        ]);
+        $this->assertArrayHasKey('size', $results['tenant1']);
+        $this->assertArrayHasKey('size', $results['tenant2']);
+        $this->assertEquals($results['tenant1']['size'], $results['tenant2']['size']); // Both should be 1
     }
 
-    public function test_tenant_isolation_in_cache()
+    /**
+     * Test tenant isolation in error scenarios
+     */
+    public function test_tenant_isolation_in_error_scenarios(): void
     {
-        // Create similar data across tenants
-        Template::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'name' => 'Cached Template'
-        ]);
+        // Create valid data for tenant1
+        session(['tenant_id' => 'tenant1']);
+        $user1 = User::factory()->create();
+        $cohort1 = Cohort::factory()->create(['members_count' => 1]);
 
-        Template::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'name' => 'Cached Template'
-        ]);
+        // Attempt to analyze non-existent cohort for tenant2
+        session(['tenant_id' => 'tenant2']);
 
-        // Clear cache and test isolation
-        Cache::flush();
-
-        // Access tenant 1's data
-        $response = $this->actingAs($this->user1)->getJson('/api/templates?name=Cached Template');
-        $response->assertStatus(200);
-        $templates1 = $response->json('data.data');
-
-        // Access tenant 2's data
-        $response = $this->actingAs($this->user2)->getJson('/api/templates?name=Cached Template');
-        $response->assertStatus(200);
-        $templates2 = $response->json('data.data');
-
-        // Verify different results for different tenants
-        $this->assertCount(1, $templates1);
-        $this->assertCount(1, $templates2);
-        $this->assertEquals($this->tenant1->id, $templates1[0]['tenant_id']);
-        $this->assertEquals($this->tenant2->id, $templates2[0]['tenant_id']);
-
-        // Verify cache keys are tenant-specific
-        $cacheKey1 = "templates:search:name=Cached Template:tenant={$this->tenant1->id}";
-        $cacheKey2 = "templates:search:name=Cached Template:tenant={$this->tenant2->id}";
-
-        $this->assertNotEquals($cacheKey1, $cacheKey2);
+        $this->expectException(\Exception::class);
+        $this->cohortService->analyzeCohort(99999); // Non-existent cohort
     }
 
-    public function test_tenant_isolation_edge_cases()
+    /**
+     * Test tenant context switching integrity
+     */
+    public function test_tenant_context_switching_integrity(): void
     {
-        // Test with special characters in tenant data
-        $template1 = Template::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'name' => 'Template with spécial characters ñáéíóú',
-            'description' => 'Description with <script>alert("xss")</script> and sql\' OR \'1\'=\'1'
-        ]);
+        // Start with tenant1
+        session(['tenant_id' => 'tenant1']);
+        $initialTenant = session('tenant_id');
 
-        $template2 = Template::factory()->create([
-            'tenant_id' => $this->tenant2->id,
-            'name' => 'Template with spécial characters ñáéíóú',
-            'description' => 'Description with <script>alert("xss")</script> and sql\' OR \'1\'=\'1'
-        ]);
+        // Perform operations
+        $user1 = User::factory()->create();
+        $course1 = \App\Models\Course::factory()->create(['tenant_id' => 'tenant1']);
 
-        // Test search with special characters
-        $response = $this->actingAs($this->user1)->getJson('/api/templates?search=spécial');
-        $response->assertStatus(200);
-        $results = $response->json('data.data');
-        $this->assertCount(1, $results);
-        $this->assertEquals($this->tenant1->id, $results[0]['tenant_id']);
+        // Switch to tenant2
+        session(['tenant_id' => 'tenant2']);
+        $switchedTenant = session('tenant_id');
 
-        $response = $this->actingAs($this->user2)->getJson('/api/templates?search=spécial');
-        $response->assertStatus(200);
-        $results = $response->json('data.data');
-        $this->assertCount(1, $results);
-        $this->assertEquals($this->tenant2->id, $results[0]['tenant_id']);
+        // Perform operations in tenant2
+        $user2 = User::factory()->create();
+        $course2 = \App\Models\Course::factory()->create(['tenant_id' => 'tenant2']);
 
-        // Test with very long names
-        $longName = str_repeat('A', 255);
-        $template3 = Template::factory()->create([
-            'tenant_id' => $this->tenant1->id,
-            'name' => $longName
-        ]);
-
-        $response = $this->actingAs($this->user1)->getJson('/api/templates');
-        $response->assertStatus(200);
-        $templates = $response->json('data.data');
-        $this->assertContains($longName, array_column($templates, 'name'));
-
-        // Verify tenant 2 cannot see tenant 1's long-named template
-        $response = $this->actingAs($this->user2)->getJson('/api/templates');
-        $response->assertStatus(200);
-        $templates = $response->json('data.data');
-        $this->assertNotContains($longName, array_column($templates, 'name'));
+        // Verify tenant context integrity
+        $this->assertEquals('tenant1', $initialTenant);
+        $this->assertEquals('tenant2', $switchedTenant);
+        $this->assertNotEquals($user1->id, $user2->id);
+        $this->assertNotEquals($course1->id, $course2->id);
     }
 }

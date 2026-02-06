@@ -1,250 +1,218 @@
-# ABOUTME: Fixed PowerShell script for starting Vite and Laravel development servers
-# ABOUTME: Includes proper error handling, execution policy check, and correct PHP paths
+#!/usr/bin/env pwsh
+# ABOUTME: Development startup script for Laravel + Vite project
+# ABOUTME: Automatically detects project directory and starts both frontend and backend servers
 
-# Check execution policy first
-$currentPolicy = Get-ExecutionPolicy -Scope CurrentUser
-if ($currentPolicy -eq \"Restricted\") {
-    Write-Host \"❌ PowerShell execution policy is Restricted\" -ForegroundColor Red
-    Write-Host \"\"
-    Write-Host \"To fix this, run as Administrator:\" -ForegroundColor Yellow
-    Write-Host \"Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser\" -ForegroundColor Cyan
-    Write-Host \"\"
-    Write-Host \"Alternatively, use start-dev.bat which doesn't have this restriction.\" -ForegroundColor Green
-    Write-Host \"\"
-    Read-Host \"Press Enter to exit\"
-    exit 1
-}
+param(
+    [switch]$SkipChecks,
+    [int]$VitePort = 5173,
+    [int]$LaravelPort = 8080
+)
 
-# Configuration
-$VitePort = 5100
-$LaravelPort = 8080
-$LogFile = \"dev-server.log\"
+# Color output functions
+function Write-Success { param($Message) Write-Host $Message -ForegroundColor Green }
+function Write-Info { param($Message) Write-Host $Message -ForegroundColor Cyan }
+function Write-Warning { param($Message) Write-Host $Message -ForegroundColor Yellow }
+function Write-Error { param($Message) Write-Host $Message -ForegroundColor Red }
 
-# Correct executable paths for this project
-$NodePath = \"node\"
-$PhpPath = \"D:\\DevCenter\\xampp\\php-8.3.23\\php.exe\"
-$PnpmPath = \"pnpm\"
+# Get the directory where this script is located
+$ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $ScriptDir
 
-# Color scheme
-$Colors = @{
-    Success = \"Green\"
-    Error = \"Red\"
-    Warning = \"Yellow\"
-    Info = \"Cyan\"
-    Highlight = \"Magenta\"
-    Muted = \"Gray\"
-}
+# PHP executable path
+$phpPath = "D:\DevCenter\xampp\php-8.3.23\php.exe"
 
-# Function to test if a port is in use
-function Test-PortInUse {
+# Function to test if a port is available
+function Test-Port {
     param([int]$Port)
     try {
-        $connection = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
-        return $connection -ne $null
+        $listener = [System.Net.Sockets.TcpListener]::new([System.Net.IPAddress]::Any, $Port)
+        $listener.Start()
+        $listener.Stop()
+        return $true
     }
     catch {
         return $false
     }
 }
 
-# Function to stop processes on a specific port
+# Function to kill processes on specific ports
 function Stop-ProcessOnPort {
     param([int]$Port)
     try {
-        $connections = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue
-        foreach ($conn in $connections) {
-            $process = Get-Process -Id $conn.OwningProcess -ErrorAction SilentlyContinue
-            if ($process) {
-                Write-Host \"Stopping process $($process.Name) (PID: $($process.Id)) on port $Port\" -ForegroundColor $Colors.Warning
-                Stop-Process -Id $process.Id -Force
+        $processes = Get-NetTCPConnection -LocalPort $Port -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess
+        foreach ($pid in $processes) {
+            if ($pid -and $pid -ne 0) {
+                Stop-Process -Id $pid -Force -ErrorAction SilentlyContinue
+                Write-Info "Stopped process $pid on port $Port"
             }
         }
     }
     catch {
-        Write-Host \"Error stopping processes on port $Port : $($_.Exception.Message)\" -ForegroundColor $Colors.Error
+        Write-Warning "Could not stop processes on port $Port"
     }
 }
 
-# Function to test Vite server health
-function Test-ViteHealth {
+# Function to check if a command exists
+function Test-Command {
+    param([string]$Command)
     try {
-        $response = Invoke-WebRequest -Uri \"http://127.0.0.1:$VitePort/@vite/client\" -UseBasicParsing -TimeoutSec 3 -ErrorAction SilentlyContinue
-        return $response.StatusCode -ge 200 -and $response.StatusCode -lt 500
+        Get-Command $Command -ErrorAction Stop | Out-Null
+        return $true
     }
     catch {
         return $false
     }
 }
 
-# Main script starts here
-Write-Host \"========================================\" -ForegroundColor $Colors.Success
-Write-Host \"   Graduate Tracking System - Dev Setup\" -ForegroundColor $Colors.Success
-Write-Host \"========================================\" -ForegroundColor $Colors.Success
-Write-Host \"\"
-
-# Cleanup existing processes
-Write-Host \"[0/5] Cleaning up existing processes...\" -ForegroundColor $Colors.Warning
 try {
-    taskkill /F /IM php.exe 2>$null | Out-Null
-    taskkill /F /IM node.exe 2>$null | Out-Null
-    Start-Sleep -Seconds 2
-    Write-Host \"✓ Cleanup complete\" -ForegroundColor $Colors.Success
-}
-catch {
-    Write-Host \"✓ No existing processes to clean up\" -ForegroundColor $Colors.Success
-}
-
-# Check PHP installation
-Write-Host \"[1/5] Checking PHP installation...\" -ForegroundColor $Colors.Warning
-if (-not (Test-Path $PhpPath)) {
-    Write-Host \"❌ PHP not found at $PhpPath\" -ForegroundColor $Colors.Error
-    Write-Host \"Please check your PHP installation path\" -ForegroundColor $Colors.Error
-    Read-Host \"Press Enter to exit\"
-    exit 1
-}
-Write-Host \"✓ PHP found\" -ForegroundColor $Colors.Success
-
-# Check Node.js installation
-Write-Host \"[2/5] Checking Node.js installation...\" -ForegroundColor $Colors.Warning
-try {
-    $nodeVersion = & $NodePath --version 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host \"✓ Node.js found: $nodeVersion\" -ForegroundColor $Colors.Success
-    } else {
-        throw \"Node.js not found\"
-    }
-}
-catch {
-    Write-Host \"❌ Node.js not found. Please install Node.js\" -ForegroundColor $Colors.Error
-    Read-Host \"Press Enter to exit\"
-    exit 1
-}
-
-# Check pnpm installation
-Write-Host \"[3/5] Checking pnpm installation...\" -ForegroundColor $Colors.Warning
-try {
-    $pnpmVersion = & $PnpmPath --version 2>$null
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host \"✓ pnpm found: $pnpmVersion\" -ForegroundColor $Colors.Success
-    } else {
-        throw \"pnpm not found\"
-    }
-}
-catch {
-    Write-Host \"❌ pnpm not found. Please install pnpm\" -ForegroundColor $Colors.Error
-    Read-Host \"Press Enter to exit\"
-    exit 1
-}
-
-# Clear Laravel caches
-Write-Host \"[4/5] Clearing Laravel caches...\" -ForegroundColor $Colors.Warning
-try {
-    & $PhpPath artisan config:clear 2>$null | Out-Null
-    & $PhpPath artisan route:clear 2>$null | Out-Null
-    & $PhpPath artisan view:clear 2>$null | Out-Null
-    & $PhpPath artisan cache:clear 2>$null | Out-Null
-    Write-Host \"✓ Laravel caches cleared\" -ForegroundColor $Colors.Success
-}
-catch {
-    Write-Host \"⚠️ Warning: Could not clear some caches\" -ForegroundColor $Colors.Warning
-}
-
-# Check for port conflicts
-Write-Host \"[5/5] Checking for port conflicts...\" -ForegroundColor $Colors.Warning
-if (Test-PortInUse -Port $VitePort) {
-    Write-Host \"⚠️ Port $VitePort is in use. Attempting to free it...\" -ForegroundColor $Colors.Warning
-    Stop-ProcessOnPort -Port $VitePort
-    Start-Sleep -Seconds 2
-}
-
-if (Test-PortInUse -Port $LaravelPort) {
-    Write-Host \"⚠️ Port $LaravelPort is in use. Attempting to free it...\" -ForegroundColor $Colors.Warning
-    Stop-ProcessOnPort -Port $LaravelPort
-    Start-Sleep -Seconds 2
-}
-Write-Host \"✓ Port check complete\" -ForegroundColor $Colors.Success
-
-Write-Host \"\"
-Write-Host \"========================================\" -ForegroundColor $Colors.Info
-Write-Host \"   STARTING DEVELOPMENT SERVERS\" -ForegroundColor $Colors.Info
-Write-Host \"========================================\" -ForegroundColor $Colors.Info
-Write-Host \"\"
-
-# Start Vite development server
-Write-Host \"Starting Vite development server...\" -ForegroundColor $Colors.Info
-Start-Process -FilePath \"cmd.exe\" -ArgumentList \"/k\", \"title Vite Dev Server - Alumni Platform & echo Starting Vite Dev Server... & pnpm run dev\" -WindowStyle Normal
-Write-Host \"✓ Vite server starting in separate window...\" -ForegroundColor $Colors.Success
-
-# Wait for Vite to initialize
-Write-Host \"Waiting for Vite to initialize on http://127.0.0.1:$VitePort ...\" -ForegroundColor $Colors.Info
-$waited = 0
-$timeout = 60
-$viteReady = $false
-
-do {
-    if (Test-ViteHealth) {
-        Write-Host \"✓ Vite is ready after $waited seconds\" -ForegroundColor $Colors.Success
-        $viteReady = $true
-        break
+    Write-Info "=== Laravel + Vite Development Server Startup ==="
+    Write-Info "Project Directory: $ScriptDir"
+    Write-Info "PHP Path: $phpPath"
+    
+    # Verify we're in a Laravel project
+    if (-not (Test-Path "artisan")) {
+        Write-Error "Laravel artisan file not found. Please run this script from your Laravel project root."
+        exit 1
     }
     
-    if ($waited -ge $timeout) {
-        Write-Host \"⚠ Vite did not become ready within $timeout seconds\" -ForegroundColor $Colors.Warning
-        Write-Host \"⚠ Check the Vite window for errors\" -ForegroundColor $Colors.Warning
-        Write-Host \"⚠ Continuing with Laravel anyway...\" -ForegroundColor $Colors.Warning
-        break
+    if (-not $SkipChecks) {
+        # Check PHP
+        if (-not (Test-Path $phpPath)) {
+            Write-Error "PHP not found at: $phpPath"
+            Write-Error "Please update the script with the correct PHP path."
+            exit 1
+        }
+        
+        # Check Node.js
+        if (-not (Test-Command "node")) {
+            Write-Error "Node.js not found. Please install Node.js."
+            exit 1
+        }
+        
+        # Check npm
+        if (-not (Test-Command "npm")) {
+            Write-Error "npm not found. Please install npm."
+            exit 1
+        }
+        
+        Write-Success "All dependencies found!"
     }
-
-    $waited += 3
-    Write-Host \"   ... waiting ($waited / $timeout seconds)\" -ForegroundColor $Colors.Muted
+    
+    # Handle port conflicts
+    if (-not (Test-Port $VitePort)) {
+        Write-Warning "Port $VitePort is in use. Attempting to free it..."
+        Stop-ProcessOnPort $VitePort
+        Start-Sleep -Seconds 2
+    }
+    
+    if (-not (Test-Port $LaravelPort)) {
+        Write-Warning "Port $LaravelPort is in use. Attempting to free it..."
+        Stop-ProcessOnPort $LaravelPort
+        Start-Sleep -Seconds 2
+    }
+    
+    # Install/update dependencies
+    Write-Info "Installing/updating dependencies..."
+    if (Test-Path "package.json") {
+        npm install
+        if ($LASTEXITCODE -ne 0) {
+            Write-Error "npm install failed"
+            exit 1
+        }
+    }
+    
+    if (Test-Path "composer.json") {
+        if (Test-Command "composer") {
+            composer install --no-dev --optimize-autoloader 2>$null
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Composer install had issues, continuing..."
+            }
+        }
+    }
+    
+    # Clear Laravel caches
+    Write-Info "Clearing Laravel caches..."
+    & $phpPath artisan config:clear 2>$null
+    & $phpPath artisan route:clear 2>$null
+    & $phpPath artisan view:clear 2>$null
+    & $phpPath artisan cache:clear 2>$null
+    
+    Write-Success "Caches cleared!"
+    
+    # Start Vite development server
+    Write-Info "Starting Vite development server on port $VitePort..."
+    $viteJob = Start-Job -ScriptBlock {
+        param($ScriptDir, $VitePort)
+        Set-Location $ScriptDir
+        npm run dev -- --port $VitePort --host 0.0.0.0
+    } -ArgumentList $ScriptDir, $VitePort
+    
     Start-Sleep -Seconds 3
-} while ($true)
-
-# Start Laravel server
-Write-Host \"\"
-Write-Host \"Starting Laravel development server...\" -ForegroundColor $Colors.Info
-Start-Process -FilePath \"cmd.exe\" -ArgumentList \"/k\", \"title Laravel Server - Alumni Platform & echo Starting Laravel Server... & $PhpPath artisan serve --host=127.0.0.1 --port=$LaravelPort\" -WindowStyle Normal
-Write-Host \"✓ Laravel server starting in separate window...\" -ForegroundColor $Colors.Success
-
-# Show final status
-Write-Host \"\"
-Write-Host \"========================================\" -ForegroundColor $Colors.Success
-Write-Host \"   DEVELOPMENT SERVERS RUNNING\" -ForegroundColor $Colors.Success
-Write-Host \"========================================\" -ForegroundColor $Colors.Success
-Write-Host \"\"
-Write-Host \"✅ Vite Dev Server: http://127.0.0.1:$VitePort\" -ForegroundColor $Colors.Success
-Write-Host \"✅ Laravel Server: http://127.0.0.1:$LaravelPort\" -ForegroundColor $Colors.Success
-Write-Host \"\"
-Write-Host \"Both servers are running in separate windows.\" -ForegroundColor $Colors.Info
-Write-Host \"\"
-Write-Host \"🔍 MONITORING:\" -ForegroundColor $Colors.Highlight
-Write-Host \"- Check Vite window for frontend compilation\" -ForegroundColor $Colors.Info
-Write-Host \"- Check Laravel window for backend logs\" -ForegroundColor $Colors.Info
-Write-Host \"- Both servers will auto-reload on file changes\" -ForegroundColor $Colors.Info
-Write-Host \"\"
-Write-Host \"🛑 TO STOP:\" -ForegroundColor $Colors.Highlight
-Write-Host \"- Close individual server windows, OR\" -ForegroundColor $Colors.Info
-Write-Host \"- Press Ctrl+C in this window to stop monitoring\" -ForegroundColor $Colors.Info
-Write-Host \"\"
-
-# Ask user if they want to open URLs
-$openUrls = Read-Host \"Open both URLs in browser? (Y/n)\"
-if ($openUrls -ne \"n\" -and $openUrls -ne \"N\") {
-    Write-Host \"Opening URLs in browser...\" -ForegroundColor $Colors.Info
-    Start-Process \"http://127.0.0.1:$LaravelPort\"
-    Start-Sleep -Seconds 1
-    Start-Process \"http://127.0.0.1:$VitePort\"
-    Write-Host \"✓ URLs opened in browser\" -ForegroundColor $Colors.Success
+    
+    # Start Laravel development server
+    Write-Info "Starting Laravel development server on port $LaravelPort..."
+    $laravelJob = Start-Job -ScriptBlock {
+        param($ScriptDir, $phpPath, $LaravelPort)
+        Set-Location $ScriptDir
+        & $phpPath artisan serve --host=127.0.0.1 --port=$LaravelPort
+    } -ArgumentList $ScriptDir, $phpPath, $LaravelPort
+    
+    Start-Sleep -Seconds 3
+    
+    # Check if servers started successfully
+    $viteRunning = $viteJob.State -eq "Running"
+    $laravelRunning = $laravelJob.State -eq "Running"
+    
+    if ($viteRunning -and $laravelRunning) {
+        Write-Success "=== Development servers started successfully! ==="
+        Write-Success "Frontend (Vite): http://localhost:$VitePort"
+        Write-Success "Backend (Laravel): http://127.0.0.1:$LaravelPort"
+        Write-Info "Press Ctrl+C to stop both servers"
+        
+        # Monitor jobs and wait for user interruption
+        try {
+            while ($true) {
+                if ($viteJob.State -ne "Running" -or $laravelJob.State -ne "Running") {
+                    Write-Warning "One or more servers stopped unexpectedly"
+                    break
+                }
+                Start-Sleep -Seconds 5
+            }
+        }
+        catch {
+            Write-Info "Shutting down servers..."
+        }
+    } else {
+        Write-Error "Failed to start one or more servers"
+        if (-not $viteRunning) {
+            Write-Error "Vite server failed to start"
+            Receive-Job $viteJob
+        }
+        if (-not $laravelRunning) {
+            Write-Error "Laravel server failed to start"
+            Receive-Job $laravelJob
+        }
+    }
 }
-
-Write-Host \"\"
-Write-Host \"This monitoring window will stay open.\" -ForegroundColor $Colors.Info
-Write-Host \"Close it when you're done developing.\" -ForegroundColor $Colors.Info
-Write-Host \"\"
-
-# Keep the script running for monitoring
-do {
-    $timestamp = Get-Date -Format \"HH:mm:ss\"
-    Write-Host \"[$timestamp] Monitoring servers... (Press Ctrl+C to stop)\" -ForegroundColor $Colors.Muted
-    Start-Sleep -Seconds 30
-} while ($true)
+finally {
+    # Cleanup: Stop all background jobs
+    Write-Info "Cleaning up background processes..."
+    
+    if ($viteJob) {
+        Stop-Job $viteJob -ErrorAction SilentlyContinue
+        Remove-Job $viteJob -ErrorAction SilentlyContinue
+        Write-Info "Vite server stopped"
+    }
+    
+    if ($laravelJob) {
+        Stop-Job $laravelJob -ErrorAction SilentlyContinue
+        Remove-Job $laravelJob -ErrorAction SilentlyContinue
+        Write-Info "Laravel server stopped"
+    }
+    
+    # Additional cleanup for any remaining processes
+    Stop-ProcessOnPort $VitePort
+    Stop-ProcessOnPort $LaravelPort
+    
+    Write-Success "Cleanup completed!"
+}

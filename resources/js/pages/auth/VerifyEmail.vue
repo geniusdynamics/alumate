@@ -1,19 +1,20 @@
 <template>
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
+    <div class="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0">
         <div>
             <Link href="/" class="text-2xl font-bold text-gray-900">
-                {{ $page.props.app?.name || 'Laravel' }}
+                {{ $page.props.app?.name || 'Alumate' }}
             </Link>
         </div>
 
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+        <div class="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
             <Head title="Email Verification" />
 
             <div class="mb-4 text-sm text-gray-600">
-                Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn't receive the email, we will gladly send you another.
+                Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If
+                you didn't receive the email, we will gladly send you another.
             </div>
 
-            <div v-if="verificationLinkSent" class="mb-4 font-medium text-sm text-green-600">
+            <div v-if="verificationLinkSent" class="mb-4 text-sm font-medium text-green-600">
                 A new verification link has been sent to the email address you provided during registration.
             </div>
 
@@ -22,7 +23,7 @@
                     <button
                         :class="{ 'opacity-25': form.processing }"
                         :disabled="form.processing"
-                        class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                        class="inline-flex items-center rounded-md border border-transparent bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900"
                     >
                         Resend Verification Email
                     </button>
@@ -31,7 +32,7 @@
                         :href="route('logout')"
                         method="post"
                         as="button"
-                        class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
                         Log Out
                     </Link>

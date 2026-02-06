@@ -1,7 +1,7 @@
 <script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch, computed } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     job: Object,
@@ -24,52 +24,57 @@ const selectedApplications = ref([]);
 const showFilters = ref(false);
 
 // Watch for filter changes
-watch([search, status, priority, flagged, course_id, gpa_min, sort_by, sort_order], 
+watch(
+    [search, status, priority, flagged, course_id, gpa_min, sort_by, sort_order],
     ([searchVal, statusVal, priorityVal, flaggedVal, courseVal, gpaVal, sortByVal, sortOrderVal]) => {
-        router.get(route('jobs.applications.index', props.job.id), {
-            search: searchVal,
-            status: statusVal,
-            priority: priorityVal,
-            flagged: flaggedVal,
-            course_id: courseVal,
-            gpa_min: gpaVal,
-            sort_by: sortByVal,
-            sort_order: sortOrderVal,
-        }, { 
-            preserveState: true, 
-            replace: true 
-        });
-    }
+        router.get(
+            route('jobs.applications.index', props.job.id),
+            {
+                search: searchVal,
+                status: statusVal,
+                priority: priorityVal,
+                flagged: flaggedVal,
+                course_id: courseVal,
+                gpa_min: gpaVal,
+                sort_by: sortByVal,
+                sort_order: sortOrderVal,
+            },
+            {
+                preserveState: true,
+                replace: true,
+            },
+        );
+    },
 );
 
 const getStatusColor = (status) => {
     const colors = {
-        'pending': 'bg-yellow-100 text-yellow-800',
-        'reviewed': 'bg-blue-100 text-blue-800',
-        'shortlisted': 'bg-purple-100 text-purple-800',
-        'interview_scheduled': 'bg-indigo-100 text-indigo-800',
-        'interviewed': 'bg-indigo-100 text-indigo-800',
-        'offer_made': 'bg-orange-100 text-orange-800',
-        'offer_accepted': 'bg-green-100 text-green-800',
-        'hired': 'bg-green-100 text-green-800',
-        'rejected': 'bg-red-100 text-red-800',
-        'withdrawn': 'bg-gray-100 text-gray-800',
+        pending: 'bg-yellow-100 text-yellow-800',
+        reviewed: 'bg-blue-100 text-blue-800',
+        shortlisted: 'bg-purple-100 text-purple-800',
+        interview_scheduled: 'bg-indigo-100 text-indigo-800',
+        interviewed: 'bg-indigo-100 text-indigo-800',
+        offer_made: 'bg-orange-100 text-orange-800',
+        offer_accepted: 'bg-green-100 text-green-800',
+        hired: 'bg-green-100 text-green-800',
+        rejected: 'bg-red-100 text-red-800',
+        withdrawn: 'bg-gray-100 text-gray-800',
     };
     return colors[status] || 'bg-gray-100 text-gray-800';
 };
 
 const getStatusText = (status) => {
     const texts = {
-        'pending': 'Pending Review',
-        'reviewed': 'Reviewed',
-        'shortlisted': 'Shortlisted',
-        'interview_scheduled': 'Interview Scheduled',
-        'interviewed': 'Interviewed',
-        'offer_made': 'Offer Made',
-        'offer_accepted': 'Offer Accepted',
-        'hired': 'Hired',
-        'rejected': 'Rejected',
-        'withdrawn': 'Withdrawn',
+        pending: 'Pending Review',
+        reviewed: 'Reviewed',
+        shortlisted: 'Shortlisted',
+        interview_scheduled: 'Interview Scheduled',
+        interviewed: 'Interviewed',
+        offer_made: 'Offer Made',
+        offer_accepted: 'Offer Accepted',
+        hired: 'Hired',
+        rejected: 'Rejected',
+        withdrawn: 'Withdrawn',
     };
     return texts[status] || status;
 };
@@ -97,21 +102,21 @@ const selectAllApplications = () => {
     if (selectedApplications.value.length === props.applications.data.length) {
         selectedApplications.value = [];
     } else {
-        selectedApplications.value = props.applications.data.map(app => app.id);
+        selectedApplications.value = props.applications.data.map((app) => app.id);
     }
 };
 
 const bulkAction = (action) => {
     if (selectedApplications.value.length === 0) return;
-    
+
     let reason = '';
     if (action === 'reject' || action === 'flag') {
         reason = prompt(`Please provide a reason for ${action}:`);
         if (!reason) return;
     }
-    
+
     const confirmMessage = `Are you sure you want to ${action} ${selectedApplications.value.length} applications?`;
-    
+
     if (confirm(confirmMessage)) {
         router.post(route('applications.bulk', props.job.id), {
             action: action,
@@ -144,25 +149,21 @@ const quickStatusUpdate = (application, newStatus) => {
 
     <AppLayout>
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        Applications for "{{ job.title }}"
-                    </h2>
-                    <p class="text-sm text-gray-600 mt-1">
-                        {{ job.employer.company_name }} • {{ stats.total }} applications
-                    </p>
+                    <h2 class="text-xl font-semibold leading-tight text-gray-800">Applications for "{{ job.title }}"</h2>
+                    <p class="mt-1 text-sm text-gray-600">{{ job.employer.company_name }} • {{ stats.total }} applications</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <Link
                         :href="route('jobs.applications.analytics', job.id)"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
                     >
                         View Analytics
                     </Link>
                     <Link
                         :href="route('jobs.show', job.id)"
-                        class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                        class="rounded-md bg-gray-600 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700"
                     >
                         Back to Job
                     </Link>
@@ -171,10 +172,10 @@ const quickStatusUpdate = (application, newStatus) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <!-- Statistics Cards -->
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-8">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-gray-500">Total</dt>
@@ -182,7 +183,7 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-yellow-600">Pending</dt>
@@ -190,7 +191,7 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-blue-600">Reviewed</dt>
@@ -198,7 +199,7 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-purple-600">Shortlisted</dt>
@@ -206,7 +207,7 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-indigo-600">Interviewed</dt>
@@ -214,7 +215,7 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-green-600">Hired</dt>
@@ -222,7 +223,7 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-red-600">Rejected</dt>
@@ -230,7 +231,7 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
                     </div>
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-4">
                             <div class="text-center">
                                 <dt class="text-sm font-medium text-orange-600">Flagged</dt>
@@ -241,33 +242,25 @@ const quickStatusUpdate = (application, newStatus) => {
                 </div>
 
                 <!-- Filters and Search -->
-                <div class="bg-white shadow rounded-lg">
+                <div class="rounded-lg bg-white shadow">
                     <div class="p-6">
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="mb-4 flex items-center justify-between">
                             <h3 class="text-lg font-medium text-gray-900">Filters & Search</h3>
                             <div class="flex items-center space-x-3">
-                                <button
-                                    @click="showFilters = !showFilters"
-                                    class="text-sm text-indigo-600 hover:text-indigo-800"
-                                >
+                                <button @click="showFilters = !showFilters" class="text-sm text-indigo-600 hover:text-indigo-800">
                                     {{ showFilters ? 'Hide' : 'Show' }} Advanced Filters
                                 </button>
-                                <button
-                                    @click="clearFilters"
-                                    class="text-sm text-gray-600 hover:text-gray-800"
-                                >
-                                    Clear All
-                                </button>
+                                <button @click="clearFilters" class="text-sm text-gray-600 hover:text-gray-800">Clear All</button>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Search</label>
                                 <input
                                     v-model="search"
                                     type="text"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     placeholder="Search by name or email..."
                                 />
                             </div>
@@ -275,7 +268,7 @@ const quickStatusUpdate = (application, newStatus) => {
                                 <label class="block text-sm font-medium text-gray-700">Status</label>
                                 <select
                                     v-model="status"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 >
                                     <option value="">All Statuses</option>
                                     <option value="pending">Pending</option>
@@ -292,7 +285,7 @@ const quickStatusUpdate = (application, newStatus) => {
                                 <label class="block text-sm font-medium text-gray-700">Sort By</label>
                                 <select
                                     v-model="sort_by"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 >
                                     <option value="created_at">Application Date</option>
                                     <option value="match_score">Match Score</option>
@@ -304,19 +297,19 @@ const quickStatusUpdate = (application, newStatus) => {
                                 <div class="flex space-x-2">
                                     <button
                                         @click="bulkAction('review')"
-                                        class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                                        class="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
                                     >
                                         Review ({{ selectedApplications.length }})
                                     </button>
                                     <button
                                         @click="bulkAction('shortlist')"
-                                        class="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                                        class="rounded-md bg-purple-600 px-3 py-2 text-sm font-medium text-white hover:bg-purple-700"
                                     >
                                         Shortlist ({{ selectedApplications.length }})
                                     </button>
                                     <button
                                         @click="bulkAction('reject')"
-                                        class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-md text-sm font-medium"
+                                        class="rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
                                     >
                                         Reject ({{ selectedApplications.length }})
                                     </button>
@@ -324,12 +317,12 @@ const quickStatusUpdate = (application, newStatus) => {
                             </div>
                         </div>
 
-                        <div v-show="showFilters" class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-gray-200">
+                        <div v-show="showFilters" class="grid grid-cols-1 gap-4 border-t border-gray-200 pt-4 md:grid-cols-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Course</label>
                                 <select
                                     v-model="course_id"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 >
                                     <option value="">All Courses</option>
                                     <option v-for="course in courses" :key="course.id" :value="course.id">
@@ -345,7 +338,7 @@ const quickStatusUpdate = (application, newStatus) => {
                                     step="0.1"
                                     min="0"
                                     max="4"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                     placeholder="e.g., 3.0"
                                 />
                             </div>
@@ -353,7 +346,7 @@ const quickStatusUpdate = (application, newStatus) => {
                                 <label class="block text-sm font-medium text-gray-700">Priority</label>
                                 <select
                                     v-model="priority"
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                 >
                                     <option value="">All Priorities</option>
                                     <option value="high">High</option>
@@ -365,7 +358,7 @@ const quickStatusUpdate = (application, newStatus) => {
                                 <input
                                     v-model="flagged"
                                     type="checkbox"
-                                    class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                 />
                                 <label class="ml-2 block text-sm text-gray-900">Show only flagged applications</label>
                             </div>
@@ -374,15 +367,15 @@ const quickStatusUpdate = (application, newStatus) => {
                 </div>
 
                 <!-- Applications List -->
-                <div class="bg-white shadow overflow-hidden sm:rounded-md">
+                <div class="overflow-hidden bg-white shadow sm:rounded-md">
                     <!-- Bulk Selection Header -->
-                    <div v-if="applications.data.length > 0" class="px-6 py-3 bg-gray-50 border-b border-gray-200">
+                    <div v-if="applications.data.length > 0" class="border-b border-gray-200 bg-gray-50 px-6 py-3">
                         <div class="flex items-center">
                             <input
                                 type="checkbox"
                                 :checked="selectedApplications.length === applications.data.length && applications.data.length > 0"
                                 @change="selectAllApplications"
-                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                             />
                             <span class="ml-3 text-sm font-medium text-gray-700">
                                 {{ selectedApplications.length > 0 ? `${selectedApplications.length} selected` : 'Select All' }}
@@ -397,22 +390,32 @@ const quickStatusUpdate = (application, newStatus) => {
                                     type="checkbox"
                                     :checked="selectedApplications.includes(application.id)"
                                     @change="toggleApplicationSelection(application.id)"
-                                    class="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    class="mt-1 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                 />
-                                <div class="flex-1 min-w-0">
+                                <div class="min-w-0 flex-1">
                                     <div class="flex items-center justify-between">
                                         <div class="flex-1">
                                             <div class="flex items-center space-x-3">
                                                 <h3 class="text-lg font-medium text-gray-900">
                                                     {{ application.graduate.first_name }} {{ application.graduate.last_name }}
                                                 </h3>
-                                                <span :class="getStatusColor(application.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                                                <span
+                                                    :class="getStatusColor(application.status)"
+                                                    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                                                >
                                                     {{ getStatusText(application.status) }}
                                                 </span>
-                                                <span v-if="application.is_flagged" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                <span
+                                                    v-if="application.is_flagged"
+                                                    class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800"
+                                                >
                                                     Flagged
                                                 </span>
-                                                <span v-if="application.match_score" :class="getMatchScoreColor(application.match_score)" class="text-sm font-medium">
+                                                <span
+                                                    v-if="application.match_score"
+                                                    :class="getMatchScoreColor(application.match_score)"
+                                                    class="text-sm font-medium"
+                                                >
                                                     {{ Math.round(application.match_score) }}% match
                                                 </span>
                                             </div>
@@ -422,7 +425,7 @@ const quickStatusUpdate = (application, newStatus) => {
                                                 <span v-if="application.graduate.gpa">GPA: {{ application.graduate.gpa }}</span>
                                                 <span>Applied {{ formatDate(application.created_at) }}</span>
                                             </div>
-                                            <div v-if="application.cover_letter" class="mt-2 text-sm text-gray-700 line-clamp-2">
+                                            <div v-if="application.cover_letter" class="mt-2 line-clamp-2 text-sm text-gray-700">
                                                 {{ application.cover_letter }}
                                             </div>
                                         </div>
@@ -431,7 +434,7 @@ const quickStatusUpdate = (application, newStatus) => {
                                 <div class="flex items-center space-x-2">
                                     <Link
                                         :href="route('applications.show', application.id)"
-                                        class="text-indigo-600 hover:text-indigo-900 text-sm font-medium"
+                                        class="text-sm font-medium text-indigo-600 hover:text-indigo-900"
                                     >
                                         View Details
                                     </Link>
@@ -441,42 +444,52 @@ const quickStatusUpdate = (application, newStatus) => {
                                             class="text-gray-400 hover:text-gray-600"
                                             @click="$event.target.nextElementSibling.classList.toggle('hidden')"
                                         >
-                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"></path>
+                                            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
+                                                ></path>
                                             </svg>
                                         </button>
-                                        <div class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10">
+                                        <div
+                                            class="absolute right-0 z-10 mt-2 hidden w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+                                        >
                                             <div class="py-1">
                                                 <button
                                                     v-if="application.status === 'pending'"
                                                     @click="quickStatusUpdate(application, 'reviewed')"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                    class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                                 >
                                                     Mark as Reviewed
                                                 </button>
                                                 <button
                                                     v-if="['pending', 'reviewed'].includes(application.status)"
                                                     @click="quickStatusUpdate(application, 'shortlisted')"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                    class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                                 >
                                                     Shortlist
                                                 </button>
                                                 <button
                                                     v-if="application.resume_file_path"
                                                     @click="window.open(route('applications.resume.download', application.id))"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                    class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                                 >
                                                     Download Resume
                                                 </button>
                                                 <button
-                                                    @click="$inertia.post(route('applications.flag', application.id), { reason: prompt('Flag reason:') })"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                                    @click="
+                                                        $inertia.post(route('applications.flag', application.id), { reason: prompt('Flag reason:') })
+                                                    "
+                                                    class="block w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
                                                 >
                                                     Flag Application
                                                 </button>
                                                 <button
-                                                    @click="$inertia.post(route('applications.reject', application.id), { reason: prompt('Rejection reason:') })"
-                                                    class="block w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50"
+                                                    @click="
+                                                        $inertia.post(route('applications.reject', application.id), {
+                                                            reason: prompt('Rejection reason:'),
+                                                        })
+                                                    "
+                                                    class="block w-full px-4 py-2 text-left text-sm text-red-700 hover:bg-red-50"
                                                 >
                                                     Reject
                                                 </button>
@@ -489,42 +502,42 @@ const quickStatusUpdate = (application, newStatus) => {
                     </ul>
 
                     <!-- Pagination -->
-                    <div v-if="applications.links" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                    <div v-if="applications.links" class="border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
                         <div class="flex items-center justify-between">
-                            <div class="flex-1 flex justify-between sm:hidden">
+                            <div class="flex flex-1 justify-between sm:hidden">
                                 <Link
                                     v-if="applications.prev_page_url"
                                     :href="applications.prev_page_url"
-                                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                    class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                     Previous
                                 </Link>
                                 <Link
                                     v-if="applications.next_page_url"
                                     :href="applications.next_page_url"
-                                    class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                    class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
                                 >
                                     Next
                                 </Link>
                             </div>
-                            <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                                 <div>
                                     <p class="text-sm text-gray-700">
                                         Showing {{ applications.from }} to {{ applications.to }} of {{ applications.total }} results
                                     </p>
                                 </div>
                                 <div>
-                                    <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                                    <nav class="relative z-0 inline-flex -space-x-px rounded-md shadow-sm">
                                         <Link
                                             v-for="link in applications.links"
                                             :key="link.label"
                                             :href="link.url"
                                             v-html="link.label"
                                             :class="[
-                                                'relative inline-flex items-center px-2 py-2 border text-sm font-medium',
+                                                'relative inline-flex items-center border px-2 py-2 text-sm font-medium',
                                                 link.active
-                                                    ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                                                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                                    ? 'z-10 border-indigo-500 bg-indigo-50 text-indigo-600'
+                                                    : 'border-gray-300 bg-white text-gray-500 hover:bg-gray-50',
                                             ]"
                                         />
                                     </nav>
@@ -535,16 +548,21 @@ const quickStatusUpdate = (application, newStatus) => {
                 </div>
 
                 <!-- Empty State -->
-                <div v-if="applications.data.length === 0" class="text-center py-12">
+                <div v-if="applications.data.length === 0" class="py-12 text-center">
                     <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
                     </svg>
                     <h3 class="mt-2 text-sm font-medium text-gray-900">No applications found</h3>
                     <p class="mt-1 text-sm text-gray-500">No applications match your current filters.</p>
                     <div class="mt-6">
                         <button
                             @click="clearFilters"
-                            class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                            class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700"
                         >
                             Clear Filters
                         </button>
@@ -563,3 +581,16 @@ const quickStatusUpdate = (application, newStatus) => {
     overflow: hidden;
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+

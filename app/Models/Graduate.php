@@ -1,19 +1,49 @@
 <?php
+// ABOUTME: Graduate model for managing graduate records with schema-based tenant isolation
+// ABOUTME: Uses schema-based tenancy where each tenant has their own database schema for complete data isolation
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use App\Traits\HasGraduateAuditLog;
 use App\Traits\HasPreviousInstitution;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Exception;
 
 class Graduate extends Model
 {
     use HasFactory, HasGraduateAuditLog, HasPreviousInstitution;
 
+    /**
+     * Boot the model
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Optional tenant context - only apply if tenant is available
+        static::addGlobalScope('tenant_context', function (Builder $builder) {
+            $tenantService = app(TenantContextService::class);
+            $currentTenantId = $tenantService->getCurrentTenantId();
+            
+            // Only apply tenant filtering if we have a valid tenant context
+            // This allows the model to work without tenant context for authentication scenarios
+            if ($currentTenantId) {
+                // Tenant context is available, we can safely apply tenant-specific filtering if needed
+                // For schema-based tenancy, the schema isolation handles this automatically
+                \Log::debug('Graduate model accessed with tenant context: ' . $currentTenantId);
+            } else {
+                // No tenant context - this is acceptable for authentication and profile access
+                \Log::debug('Graduate model accessed without tenant context - allowing for authentication scenarios');
+            }
+        });
+    }
+
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Commented out for schema-based tenancy - tenant isolation handled at schema level
         'student_id',
         'name',
         'email',
@@ -40,6 +70,14 @@ class Graduate extends Model
         'profile_visibility',
         'user_id',
     ];
+
+    /**
+     * Get current tenant from context service
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
 
     protected $casts = [
         'graduation_year' => 'integer',
@@ -70,12 +108,16 @@ class Graduate extends Model
 
     public function tenant()
     {
-        return $this->belongsTo(Tenant::class);
+        // Schema-based tenancy: Return current tenant from context instead of database relationship
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
     public function institution()
     {
-        return $this->belongsTo(Tenant::class, 'tenant_id');
+        // Schema-based tenancy: Return current tenant from context instead of database relationship
+        $tenant = $this->getCurrentTenant();
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
     public function applications()

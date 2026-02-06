@@ -4,75 +4,77 @@
 
         <!-- Mobile Hamburger Menu -->
         <MobileHamburgerMenu class="lg:hidden" />
-        
+
         <!-- Pull to Refresh -->
-        <PullToRefresh @refresh="refreshDashboard" class="min-h-screen theme-bg-secondary">
+        <PullToRefresh @refresh="refreshDashboard" class="theme-bg-secondary min-h-screen">
             <!-- Mobile Header -->
-            <div class="lg:hidden bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 safe-area-top">
+            <div class="safe-area-top border-b border-gray-200 bg-white shadow-sm lg:hidden dark:border-gray-700 dark:bg-gray-800">
                 <div class="flex items-center justify-between p-4">
                     <h1 class="text-lg font-semibold text-gray-900 dark:text-white">Job Dashboard</h1>
                     <div class="flex items-center space-x-2">
                         <ThemeToggle variant="simple" />
-                        <button class="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 touch-target">
+                        <button class="touch-target p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
                             <MagnifyingGlassIcon class="h-5 w-5" />
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="mobile-container lg:max-w-7xl lg:mx-auto lg:py-6 lg:px-4 lg:sm:px-6 lg:lg:px-8">
+            <div class="mobile-container lg:sm:px-6 lg:mx-auto lg:max-w-7xl lg:lg:px-8 lg:px-4 lg:py-6">
                 <!-- Desktop Header -->
-                <div class="hidden lg:block mb-8">
+                <div class="mb-8 hidden lg:block">
                     <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Job Dashboard</h1>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">Your personalized job matching and application center</p>
                 </div>
 
                 <!-- Application Statistics -->
-                <div class="mobile-grid sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8">
-                    <div class="card-mobile lg:bg-white lg:dark:bg-gray-800 lg:rounded-lg lg:shadow lg:p-6">
+                <div class="mobile-grid mb-6 gap-4 sm:grid-cols-2 lg:mb-8 lg:grid-cols-4 lg:gap-6">
+                    <div class="card-mobile lg:rounded-lg lg:bg-white lg:p-6 lg:shadow lg:dark:bg-gray-800">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <BriefcaseIcon class="h-6 w-6 lg:h-8 lg:w-8 text-blue-600" />
+                                <BriefcaseIcon class="h-6 w-6 text-blue-600 lg:h-8 lg:w-8" />
                             </div>
                             <div class="ml-3 lg:ml-4">
-                                <p class="text-xs lg:text-sm font-medium text-gray-500 dark:text-gray-400">Total Applications</p>
-                                <p class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">{{ applicationStats.total_applications }}</p>
+                                <p class="text-xs font-medium text-gray-500 lg:text-sm dark:text-gray-400">Total Applications</p>
+                                <p class="text-lg font-bold text-gray-900 lg:text-2xl dark:text-white">{{ applicationStats.total_applications }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-mobile lg:bg-white lg:dark:bg-gray-800 lg:rounded-lg lg:shadow lg:p-6">
+                    <div class="card-mobile lg:rounded-lg lg:bg-white lg:p-6 lg:shadow lg:dark:bg-gray-800">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <ClockIcon class="h-6 w-6 lg:h-8 lg:w-8 text-yellow-600" />
+                                <ClockIcon class="h-6 w-6 text-yellow-600 lg:h-8 lg:w-8" />
                             </div>
                             <div class="ml-3 lg:ml-4">
-                                <p class="text-xs lg:text-sm font-medium text-gray-500 dark:text-gray-400">Pending</p>
-                                <p class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">{{ applicationStats.pending_applications }}</p>
+                                <p class="text-xs font-medium text-gray-500 lg:text-sm dark:text-gray-400">Pending</p>
+                                <p class="text-lg font-bold text-gray-900 lg:text-2xl dark:text-white">{{ applicationStats.pending_applications }}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-mobile lg:bg-white lg:dark:bg-gray-800 lg:rounded-lg lg:shadow lg:p-6">
+                    <div class="card-mobile lg:rounded-lg lg:bg-white lg:p-6 lg:shadow lg:dark:bg-gray-800">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <ChatBubbleLeftRightIcon class="h-6 w-6 lg:h-8 lg:w-8 text-green-600" />
+                                <ChatBubbleLeftRightIcon class="h-6 w-6 text-green-600 lg:h-8 lg:w-8" />
                             </div>
                             <div class="ml-3 lg:ml-4">
-                                <p class="text-xs lg:text-sm font-medium text-gray-500 dark:text-gray-400">Interviews</p>
-                                <p class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">{{ applicationStats.interview_invitations }}</p>
+                                <p class="text-xs font-medium text-gray-500 lg:text-sm dark:text-gray-400">Interviews</p>
+                                <p class="text-lg font-bold text-gray-900 lg:text-2xl dark:text-white">
+                                    {{ applicationStats.interview_invitations }}
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="card-mobile lg:bg-white lg:dark:bg-gray-800 lg:rounded-lg lg:shadow lg:p-6">
+                    <div class="card-mobile lg:rounded-lg lg:bg-white lg:p-6 lg:shadow lg:dark:bg-gray-800">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
-                                <CheckCircleIcon class="h-6 w-6 lg:h-8 lg:w-8 text-purple-600" />
+                                <CheckCircleIcon class="h-6 w-6 text-purple-600 lg:h-8 lg:w-8" />
                             </div>
                             <div class="ml-3 lg:ml-4">
-                                <p class="text-xs lg:text-sm font-medium text-gray-500 dark:text-gray-400">Offers</p>
-                                <p class="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">{{ applicationStats.job_offers }}</p>
+                                <p class="text-xs font-medium text-gray-500 lg:text-sm dark:text-gray-400">Offers</p>
+                                <p class="text-lg font-bold text-gray-900 lg:text-2xl dark:text-white">{{ applicationStats.job_offers }}</p>
                             </div>
                         </div>
                     </div>
@@ -81,21 +83,16 @@
                 <!-- Main Content -->
                 <div class="space-y-6 lg:space-y-8">
                     <!-- Job Recommendations -->
-                    <div class="card-mobile lg:bg-white lg:dark:bg-gray-800 lg:rounded-lg lg:shadow">
-                        <div class="card-mobile-header lg:px-6 lg:py-4 lg:border-b lg:border-gray-200 lg:dark:border-gray-700">
+                    <div class="card-mobile lg:rounded-lg lg:bg-white lg:shadow lg:dark:bg-gray-800">
+                        <div class="card-mobile-header lg:border-b lg:border-gray-200 lg:px-6 lg:py-4 lg:dark:border-gray-700">
                             <div class="flex items-center justify-between">
                                 <h2 class="card-mobile-title lg:text-lg lg:font-medium">Recommended Jobs</h2>
-                                <Link 
-                                    :href="route('jobs.recommendations')"
-                                    class="text-sm text-blue-600 hover:text-blue-500"
-                                >
-                                    View All
-                                </Link>
+                                <Link :href="route('jobs.recommendations')" class="text-sm text-blue-600 hover:text-blue-500"> View All </Link>
                             </div>
                         </div>
                         <div class="lg:p-6">
                             <!-- Loading State -->
-                            <SmartLoader 
+                            <SmartLoader
                                 v-if="recommendationsLoading.isLoading.value"
                                 :loading="true"
                                 context="jobs"
@@ -107,22 +104,26 @@
                                 :show-secondary="true"
                                 :show-tertiary="false"
                             />
-                            
+
                             <!-- Empty State -->
-                            <div v-else-if="recommendations.length === 0" class="text-center py-8">
-                                <BriefcaseIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No recommendations yet</h3>
+                            <div v-else-if="recommendations.length === 0" class="py-8 text-center">
+                                <BriefcaseIcon class="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                                <h3 class="mb-2 text-lg font-medium text-gray-900 dark:text-white">No recommendations yet</h3>
                                 <p class="text-gray-500 dark:text-gray-400">Complete your profile to get personalized job recommendations</p>
                             </div>
-                            
+
                             <!-- Job Recommendations -->
                             <div v-else class="space-y-4">
-                                <div v-for="job in jobRecommendations" :key="job.id" class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                <div
+                                    v-for="job in jobRecommendations"
+                                    :key="job.id"
+                                    class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                                >
                                     <h3 class="font-medium text-gray-900 dark:text-white">{{ job.title }}</h3>
                                     <p class="text-sm text-gray-600 dark:text-gray-400">{{ job.company }}</p>
                                     <div class="mt-2 flex space-x-2">
-                                        <button 
-                                            @click="startApplication(job)" 
+                                        <button
+                                            @click="startApplication(job)"
                                             class="btn-mobile-primary text-sm"
                                             :disabled="applicationLoading.isLoading.value"
                                         >
@@ -139,15 +140,12 @@
 
             <!-- User Flow Integration -->
             <UserFlowIntegration />
-            
+
             <!-- Real-time Updates -->
-            <RealTimeUpdates 
-                :show-job-updates="true"
-                :show-activity-feed="true"
-            />
-            
+            <RealTimeUpdates :show-job-updates="true" :show-activity-feed="true" />
+
             <!-- Cross-feature Connections -->
-            <CrossFeatureConnections 
+            <CrossFeatureConnections
                 context="job-dashboard"
                 :context-data="{ recommendations: jobRecommendations, applications: userApplications }"
             />
@@ -156,32 +154,21 @@
 </template>
 
 <script setup>
-import { Head, Link, router } from '@inertiajs/vue3'
-import { ref, reactive, onMounted } from 'vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import MobileHamburgerMenu from '@/components/MobileHamburgerMenu.vue'
-import PullToRefresh from '@/components/PullToRefresh.vue'
-import ThemeToggle from '@/components/ThemeToggle.vue'
-import UserFlowIntegration from '@/components/UserFlowIntegration.vue'
-import RealTimeUpdates from '@/components/RealTimeUpdates.vue'
-import CrossFeatureConnections from '@/components/CrossFeatureConnections.vue'
-import SmartLoader from '@/components/ui/SmartLoader.vue'
-import SkeletonCard from '@/components/ui/SkeletonCard.vue'
-import { useRealTimeUpdates } from '@/composables/useRealTimeUpdates'
-import { useSpecificLoading, LoadingPresets } from '@/composables/useLoadingStates'
-import userFlowIntegration from '@/services/UserFlowIntegration'
-import { formatDistanceToNow } from 'date-fns'
-import {
-    BriefcaseIcon,
-    ClockIcon,
-    ChatBubbleLeftRightIcon,
-    CheckCircleIcon,
-    DocumentTextIcon,
-    BookmarkIcon,
-    MagnifyingGlassIcon,
-    ChartBarIcon,
-    UserGroupIcon
-} from '@heroicons/vue/24/outline'
+import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
+import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
+import PullToRefresh from '@/Components/PullToRefresh.vue';
+import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
+import SmartLoader from '@/Components/ui/SmartLoader.vue';
+import UserFlowIntegration from '@/Components/UserFlowIntegration.vue';
+import { LoadingPresets, useSpecificLoading } from '@/Composables/useLoadingStates';
+import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import userFlowIntegration from '@/Services/UserFlowIntegration';
+import { BriefcaseIcon, ChatBubbleLeftRightIcon, CheckCircleIcon, ClockIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
+import { Head, Link } from '@inertiajs/vue3';
+import { formatDistanceToNow } from 'date-fns';
+import { onMounted, reactive, ref } from 'vue';
 
 const props = defineProps({
     recommendations: Array,
@@ -189,58 +176,58 @@ const props = defineProps({
     savedJobs: Array,
     insights: Array,
     applicationStats: Object,
-})
+});
 
-const showJobModal = ref(false)
-const showApplicationModal = ref(false)
-const showIntroductionModal = ref(false)
-const selectedJob = ref(null)
-const jobRecommendations = reactive([...props.recommendations])
-const userApplications = reactive([...props.applications])
-const userSavedJobs = reactive([...props.savedJobs])
+const showJobModal = ref(false);
+const showApplicationModal = ref(false);
+const showIntroductionModal = ref(false);
+const selectedJob = ref(null);
+const jobRecommendations = reactive([...props.recommendations]);
+const userApplications = reactive([...props.applications]);
+const userSavedJobs = reactive([...props.savedJobs]);
 
 // Loading states
-const dashboardLoading = useSpecificLoading('dashboard', 'fetchingJobs')
-const recommendationsLoading = useSpecificLoading('recommendations', 'fetchingJobs')
-const applicationLoading = useSpecificLoading('application')
+const dashboardLoading = useSpecificLoading('dashboard', 'fetchingJobs');
+const recommendationsLoading = useSpecificLoading('recommendations', 'fetchingJobs');
+const applicationLoading = useSpecificLoading('application');
 
 // Real-time updates
-const realTimeUpdates = useRealTimeUpdates()
+const realTimeUpdates = useRealTimeUpdates();
 
 // Refresh dashboard data
 const refreshDashboard = async () => {
     await dashboardLoading.withLoading(async () => {
         // Simulate refresh delay
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
         // In a real app, you would reload data here
-        window.location.reload()
-    }, LoadingPresets.fetchingJobs)
-}
+        window.location.reload();
+    }, LoadingPresets.fetchingJobs);
+};
 
 onMounted(() => {
     // Set up user flow integration callbacks
     userFlowIntegration.on('jobSaved', (jobId) => {
         // Update saved jobs list
-        const job = jobRecommendations.find(j => j.id === jobId)
-        if (job && !userSavedJobs.find(sj => sj.id === jobId)) {
-            userSavedJobs.unshift(job)
+        const job = jobRecommendations.find((j) => j.id === jobId);
+        if (job && !userSavedJobs.find((sj) => sj.id === jobId)) {
+            userSavedJobs.unshift(job);
         }
-    })
-    
+    });
+
     userFlowIntegration.on('jobApplicationSubmitted', (application) => {
         // Add to applications list
-        userApplications.unshift(application)
-        
+        userApplications.unshift(application);
+
         // Update application stats
-        props.applicationStats.total_applications++
-        props.applicationStats.pending_applications++
-    })
-})
+        props.applicationStats.total_applications++;
+        props.applicationStats.pending_applications++;
+    });
+});
 
 const formatTimeAgo = (timestamp) => {
-    return formatDistanceToNow(new Date(timestamp), { addSuffix: true })
-}
+    return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+};
 
 const getStatusColor = (status) => {
     const colors = {
@@ -248,9 +235,9 @@ const getStatusColor = (status) => {
         interview: 'bg-blue-100 text-blue-800',
         offer: 'bg-green-100 text-green-800',
         rejected: 'bg-red-100 text-red-800',
-    }
-    return colors[status] || 'bg-gray-100 text-gray-800'
-}
+    };
+    return colors[status] || 'bg-gray-100 text-gray-800';
+};
 
 const formatStatus = (status) => {
     const statuses = {
@@ -258,39 +245,42 @@ const formatStatus = (status) => {
         interview: 'Interview',
         offer: 'Offer',
         rejected: 'Rejected',
-    }
-    return statuses[status] || status
-}
+    };
+    return statuses[status] || status;
+};
 
 const handleJobClicked = (job) => {
-    selectedJob.value = job
-    showJobModal.value = true
-}
+    selectedJob.value = job;
+    showJobModal.value = true;
+};
 
 const handleJobApplied = async (job, applicationData) => {
-    await applicationLoading.withLoading(async () => {
-        await userFlowIntegration.applyToJobAndTrack(job.id, applicationData)
-        showApplicationModal.value = false
-        selectedJob.value = null
-    }, {
-        type: 'contextual',
-        context: 'submitting',
-        message: 'Submitting your job application...'
-    })
-}
+    await applicationLoading.withLoading(
+        async () => {
+            await userFlowIntegration.applyToJobAndTrack(job.id, applicationData);
+            showApplicationModal.value = false;
+            selectedJob.value = null;
+        },
+        {
+            type: 'contextual',
+            context: 'submitting',
+            message: 'Submitting your job application...',
+        },
+    );
+};
 
 const handleJobSaved = async (jobId) => {
     try {
-        await userFlowIntegration.saveJobAndUpdate(jobId)
+        await userFlowIntegration.saveJobAndUpdate(jobId);
     } catch (error) {
-        console.error('Failed to save job:', error)
+        console.error('Failed to save job:', error);
     }
-}
+};
 
 const handleIntroductionRequest = (job) => {
-    selectedJob.value = job
-    showIntroductionModal.value = true
-}
+    selectedJob.value = job;
+    showIntroductionModal.value = true;
+};
 
 const sendIntroductionRequest = async (connectionId, message) => {
     try {
@@ -303,33 +293,50 @@ const sendIntroductionRequest = async (connectionId, message) => {
             body: JSON.stringify({
                 connection_id: connectionId,
                 job_id: selectedJob.value.id,
-                message: message
-            })
-        })
-        
-        const result = await response.json()
-        
+                message: message,
+            }),
+        });
+
+        const result = await response.json();
+
         if (result.success) {
-            userFlowIntegration.showNotification('Introduction request sent!', 'success')
-            showIntroductionModal.value = false
-            selectedJob.value = null
+            userFlowIntegration.showNotification('Introduction request sent!', 'success');
+            showIntroductionModal.value = false;
+            selectedJob.value = null;
         } else {
-            throw new Error(result.message || 'Failed to send introduction request')
+            throw new Error(result.message || 'Failed to send introduction request');
         }
     } catch (error) {
-        userFlowIntegration.showNotification('Failed to send introduction request: ' + error.message, 'error')
+        userFlowIntegration.showNotification('Failed to send introduction request: ' + error.message, 'error');
     }
-}
+};
 
 const startApplication = (job) => {
-    selectedJob.value = job
-    showApplicationModal.value = true
-}
+    selectedJob.value = job;
+    showApplicationModal.value = true;
+};
 
 const closeModals = () => {
-    showJobModal.value = false
-    showApplicationModal.value = false
-    showIntroductionModal.value = false
-    selectedJob.value = null
-}
+    showJobModal.value = false;
+    showApplicationModal.value = false;
+    showIntroductionModal.value = false;
+    selectedJob.value = null;
+};
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
