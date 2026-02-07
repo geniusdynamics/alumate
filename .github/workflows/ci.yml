@@ -58,8 +58,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run PHP Linting (Pint)
-        run: vendor/bin/pint
-        timeout-minutes: 5
+        run: vendor/bin/pint --test
+        timeout-minutes: 10
 
       - name: Run JS Linting (ESLint)
         run: pnpm run lint -- --max-warnings=50
