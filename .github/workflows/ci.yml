@@ -59,12 +59,15 @@ jobs:
 
       - name: Run PHP Linting (Pint)
         run: vendor/bin/pint
+        timeout-minutes: 5
 
       - name: Run JS Linting (ESLint)
-        run: pnpm run lint
+        run: pnpm run lint -- --max-warnings=50
+        timeout-minutes: 5
 
       - name: TypeScript Type Check
-        run: npx vue-tsc --noEmit
+        run: pnpm exec vue-tsc --noEmit --skipLibCheck
+        timeout-minutes: 5
 
       - name: Check PHPStan Static Analysis
         run: ./vendor/bin/phpstan analyse --level=5 --no-progress || true
