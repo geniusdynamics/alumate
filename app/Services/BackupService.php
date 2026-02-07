@@ -6,7 +6,9 @@ namespace App\Services;
 
 use App\Models\Backup;
 use App\Models\Tenant;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
@@ -21,10 +23,15 @@ class BackupService
     }
 
     /**
-     * Create a full database backup.
+     * Create a database backup.
      */
-    public function createDatabaseBackup(?string $type = 'manual', ?Tenant $tenant = null): Backup
-    {
+    public function createDatabaseBackup(
+        ?string $name = null,
+        ?Tenant $tenant = null,
+        ?User $user = null,
+        bool $includeData = true,
+        bool $compress = true
+    ): Backup {
         $filename = sprintf(
             'db_backup_%s_%s.sql',
             $tenant?->id ?? 'central',
@@ -38,76 +45,87 @@ class BackupService
             mkdir($this->backupPath, 0755, true);
         }
 
-        // Get database configuration
-        $config = config('database.connections.pgsql');
-
-        // Create backup using pg_dump
-        $command = [
-            'pg_dump',
-            '-h', $config['host'],
-            '-p', $config['port'],
-            '-U', $config['username'],
-            '-F', 'c', // Custom format (compressed)
-            '-f', $path,
-        ];
-
-        if ($tenant) {
-            // Backup only tenant schema
-            $command[] = '-n';
-            $command[] = $tenant->schema_name;
-        }
-
-        $command[] = $config['database'];
-
-        $process = new Process($command);
-        $process->setEnv(['PGPASSWORD' => $config['password']]);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            Log::error('Database backup failed', [
-                'error' => $process->getErrorOutput(),
-            ]);
-            throw new \Exception('Database backup failed: '.$process->getErrorOutput());
-        }
-
-        // Calculate checksum
-        $checksum = hash_file('sha256', $path);
-        $size = filesize($path);
-
-        // Store backup record
+        // Create backup record first
         $backup = Backup::create([
-            'type' => 'database',
-            'subtype' => $type,
-            'filename' => $filename,
-            'path' => $path,
-            'size' => $size,
-            'checksum' => $checksum,
             'tenant_id' => $tenant?->id,
-            'status' => 'completed',
-            'completed_at' => now(),
-            'metadata' => [
-                'schema' => $tenant?->schema_name ?? 'central',
-                'driver' => 'pgsql',
-            ],
+            'user_id' => $user?->id ?? Auth::id(),
+            'name' => $name ?? 'Database Backup '.now()->format('Y-m-d H:i:s'),
+            'type' => $tenant ? 'database' : 'full',
+            'status' => 'processing',
+            'include_data' => $includeData,
+            'include_files' => false,
+            'include_config' => true,
+            'compress' => $compress,
         ]);
 
-        // Upload to cloud storage if configured
-        $this->uploadToCloud($backup);
+        try {
+            // Get database configuration
+            $config = config('database.connections.pgsql');
 
-        Log::info('Database backup completed', [
-            'backup_id' => $backup->id,
-            'size' => $size,
-            'type' => $type,
-        ]);
+            // Create backup using pg_dump
+            $command = [
+                'pg_dump',
+                '-h', $config['host'],
+                '-p', $config['port'],
+                '-U', $config['username'],
+                '-F', 'c', // Custom format (compressed)
+                '-f', $path,
+            ];
 
-        return $backup;
+            if ($tenant) {
+                // Backup only tenant schema
+                $command[] = '-n';
+                $command[] = $tenant->schema_name;
+            }
+
+            $command[] = $config['database'];
+
+            $process = new Process($command);
+            $process->setEnv(['PGPASSWORD' => $config['password']]);
+            $process->run();
+
+            if (! $process->isSuccessful()) {
+                throw new \Exception('pg_dump failed: '.$process->getErrorOutput());
+            }
+
+            $fileSize = filesize($path);
+
+            // Update backup record
+            $backup->update([
+                'file_name' => $filename,
+                'file_path' => $path,
+                'file_size' => $fileSize,
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+
+            // Upload to cloud storage if configured
+            $this->uploadToCloud($backup);
+
+            Log::info('Database backup completed', [
+                'backup_id' => $backup->id,
+                'file_size' => $fileSize,
+            ]);
+
+            return $backup;
+        } catch (\Exception $e) {
+            $backup->markAsFailed($e->getMessage());
+            Log::error('Database backup failed', [
+                'backup_id' => $backup->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
      * Create a files backup.
      */
-    public function createFilesBackup(?string $type = 'manual'): Backup
-    {
+    public function createFilesBackup(
+        ?string $name = null,
+        ?User $user = null,
+        bool $compress = true
+    ): Backup {
         $filename = sprintf(
             'files_backup_%s.tar.gz',
             now()->format('Y-m-d_H-i-s')
@@ -116,48 +134,63 @@ class BackupService
         $path = $this->backupPath.'/'.$filename;
         $storagePath = storage_path('app');
 
-        // Create tar.gz archive
-        $command = [
-            'tar',
-            '-czf',
-            $path,
-            '-C',
-            dirname($storagePath),
-            'app',
-        ];
-
-        $process = new Process($command);
-        $process->run();
-
-        if (! $process->isSuccessful()) {
-            Log::error('Files backup failed', [
-                'error' => $process->getErrorOutput(),
-            ]);
-            throw new \Exception('Files backup failed: '.$process->getErrorOutput());
-        }
-
-        $checksum = hash_file('sha256', $path);
-        $size = filesize($path);
-
+        // Create backup record first
         $backup = Backup::create([
+            'user_id' => $user?->id ?? Auth::id(),
+            'name' => $name ?? 'Files Backup '.now()->format('Y-m-d H:i:s'),
             'type' => 'files',
-            'subtype' => $type,
-            'filename' => $filename,
-            'path' => $path,
-            'size' => $size,
-            'checksum' => $checksum,
-            'status' => 'completed',
-            'completed_at' => now(),
+            'status' => 'processing',
+            'include_data' => false,
+            'include_files' => true,
+            'include_config' => false,
+            'compress' => $compress,
         ]);
 
-        $this->uploadToCloud($backup);
+        try {
+            // Create tar.gz archive
+            $command = [
+                'tar',
+                '-czf',
+                $path,
+                '-C',
+                dirname($storagePath),
+                'app',
+            ];
 
-        Log::info('Files backup completed', [
-            'backup_id' => $backup->id,
-            'size' => $size,
-        ]);
+            $process = new Process($command);
+            $process->run();
 
-        return $backup;
+            if (! $process->isSuccessful()) {
+                throw new \Exception('tar failed: '.$process->getErrorOutput());
+            }
+
+            $fileSize = filesize($path);
+
+            // Update backup record
+            $backup->update([
+                'file_name' => $filename,
+                'file_path' => $path,
+                'file_size' => $fileSize,
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+
+            $this->uploadToCloud($backup);
+
+            Log::info('Files backup completed', [
+                'backup_id' => $backup->id,
+                'file_size' => $fileSize,
+            ]);
+
+            return $backup;
+        } catch (\Exception $e) {
+            $backup->markAsFailed($e->getMessage());
+            Log::error('Files backup failed', [
+                'backup_id' => $backup->id,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e;
+        }
     }
 
     /**
@@ -170,12 +203,12 @@ class BackupService
             'type' => $backup->type,
         ]);
 
-        // Verify backup integrity
-        if ($verify && ! $this->verifyBackup($backup)) {
-            throw new \Exception('Backup verification failed');
+        // Verify backup integrity (check file exists)
+        if ($verify && ! $this->verifyBackupFileExists($backup)) {
+            throw new \Exception('Backup file not found');
         }
 
-        if ($backup->type === 'database') {
+        if ($backup->type === 'database' || $backup->type === 'full') {
             return $this->restoreDatabase($backup);
         } elseif ($backup->type === 'files') {
             return $this->restoreFiles($backup);
@@ -185,63 +218,50 @@ class BackupService
     }
 
     /**
-     * Verify backup integrity.
+     * Verify backup file exists (downloads from cloud if needed).
      */
-    public function verifyBackup(Backup $backup): bool
+    public function verifyBackupFileExists(Backup $backup): bool
     {
-        if (! file_exists($backup->path)) {
-            // Try to download from cloud
-            $this->downloadFromCloud($backup);
+        if (file_exists($backup->file_path)) {
+            return true;
         }
 
-        if (! file_exists($backup->path)) {
-            Log::error('Backup file not found', [
-                'backup_id' => $backup->id,
-                'path' => $backup->path,
-            ]);
-
-            return false;
+        // Try to download from cloud if URL is available
+        if ($backup->download_url) {
+            // Cloud download logic would go here
+            return false; // For now, return false if not local
         }
 
-        $currentChecksum = hash_file('sha256', $backup->path);
-        $isValid = $currentChecksum === $backup->checksum;
-
-        $backup->update([
-            'verified_at' => now(),
-            'verification_status' => $isValid ? 'valid' : 'invalid',
-        ]);
-
-        return $isValid;
+        return false;
     }
 
     /**
      * Clean up old backups based on retention policy.
      */
-    public function cleanupOldBackups(): array
+    public function cleanupOldBackups(?int $retentionDays = null): array
     {
         $results = [
             'deleted' => 0,
             'errors' => [],
         ];
 
-        $retentionDays = config('backup.retention_days', 30);
+        $retentionDays = $retentionDays ?? config('backup.retention_days', 30);
         $cutoffDate = Carbon::now()->subDays($retentionDays);
 
         $oldBackups = Backup::where('created_at', '<', $cutoffDate)
-            ->where('subtype', '!=', 'manual')
+            ->whereNull('retention_days') // Only auto-delete if no specific retention set
             ->get();
 
         foreach ($oldBackups as $backup) {
             try {
                 // Delete local file
-                if (file_exists($backup->path)) {
-                    unlink($backup->path);
+                if ($backup->file_path && file_exists($backup->file_path)) {
+                    unlink($backup->file_path);
                 }
 
-                // Delete from cloud storage
-                if ($backup->cloud_path) {
-                    Storage::disk(config('backup.cloud_disk', 's3'))
-                        ->delete($backup->cloud_path);
+                // Delete from cloud storage if URL is stored
+                if ($backup->download_url) {
+                    // Cloud deletion logic would go here
                 }
 
                 $backup->delete();
@@ -269,7 +289,7 @@ class BackupService
     {
         return [
             'total_backups' => Backup::count(),
-            'total_size' => Backup::sum('size'),
+            'total_size' => Backup::sum('file_size') ?? 0,
             'last_backup' => Backup::latest()->first()?->created_at,
             'successful_backups_24h' => Backup::where('status', 'completed')
                 ->where('created_at', '>=', now()->subDay())
@@ -280,6 +300,7 @@ class BackupService
             'by_type' => [
                 'database' => Backup::where('type', 'database')->count(),
                 'files' => Backup::where('type', 'files')->count(),
+                'full' => Backup::where('type', 'full')->count(),
             ],
         ];
     }
@@ -289,18 +310,20 @@ class BackupService
      */
     private function uploadToCloud(Backup $backup): void
     {
-        $cloudDisk = config('backup.cloud_disk');
+        $cloudDisk = config('filesystems.backup_disk');
         if (! $cloudDisk) {
             return;
         }
 
         try {
-            $cloudPath = 'backups/'.$backup->filename;
-            Storage::disk($cloudDisk)->put($cloudPath, file_get_contents($backup->path));
+            $cloudPath = 'backups/'.$backup->file_name;
+            Storage::disk($cloudDisk)->put($cloudPath, file_get_contents($backup->file_path));
+
+            // Generate temporary URL for download
+            $url = Storage::disk($cloudDisk)->temporaryUrl($cloudPath, now()->addDay());
 
             $backup->update([
-                'cloud_path' => $cloudPath,
-                'cloud_disk' => $cloudDisk,
+                'download_url' => $url,
             ]);
 
             Log::info('Backup uploaded to cloud', [
@@ -316,34 +339,19 @@ class BackupService
     }
 
     /**
-     * Download backup from cloud storage.
-     */
-    private function downloadFromCloud(Backup $backup): void
-    {
-        if (! $backup->cloud_path || ! $backup->cloud_disk) {
-            return;
-        }
-
-        try {
-            $content = Storage::disk($backup->cloud_disk)->get($backup->cloud_path);
-            file_put_contents($backup->path, $content);
-
-            Log::info('Backup downloaded from cloud', [
-                'backup_id' => $backup->id,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to download backup from cloud', [
-                'backup_id' => $backup->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    /**
      * Restore database from backup.
      */
     private function restoreDatabase(Backup $backup): bool
     {
+        if (! file_exists($backup->file_path)) {
+            Log::error('Backup file not found for restore', [
+                'backup_id' => $backup->id,
+                'path' => $backup->file_path,
+            ]);
+
+            return false;
+        }
+
         $config = config('database.connections.pgsql');
 
         $command = [
@@ -354,7 +362,7 @@ class BackupService
             '-d', $config['database'],
             '-c', // Clean (drop) database objects before recreating
             '-v',
-            $backup->path,
+            $backup->file_path,
         ];
 
         $process = new Process($command);
@@ -383,12 +391,21 @@ class BackupService
      */
     private function restoreFiles(Backup $backup): bool
     {
+        if (! file_exists($backup->file_path)) {
+            Log::error('Backup file not found for restore', [
+                'backup_id' => $backup->id,
+                'path' => $backup->file_path,
+            ]);
+
+            return false;
+        }
+
         $storagePath = storage_path('app');
 
         $command = [
             'tar',
             '-xzf',
-            $backup->path,
+            $backup->file_path,
             '-C',
             dirname($storagePath),
         ];

@@ -13,28 +13,37 @@ class Backup extends Model
     use HasFactory;
 
     protected $fillable = [
-        'type',
-        'subtype',
-        'filename',
-        'path',
-        'cloud_path',
-        'cloud_disk',
-        'size',
-        'checksum',
         'tenant_id',
+        'user_id',
+        'name',
+        'description',
+        'type',
         'status',
-        'completed_at',
-        'verified_at',
-        'verification_status',
-        'metadata',
+        'file_name',
+        'file_size',
+        'file_path',
+        'download_url',
+        'include_data',
+        'include_files',
+        'include_config',
+        'compress',
+        'encryption',
+        'schedule',
+        'retention_days',
         'error_message',
+        'completed_at',
     ];
 
     protected $casts = [
-        'size' => 'integer',
+        'file_size' => 'integer',
+        'include_data' => 'boolean',
+        'include_files' => 'boolean',
+        'include_config' => 'boolean',
+        'compress' => 'boolean',
+        'encryption' => 'array',
+        'schedule' => 'array',
+        'retention_days' => 'integer',
         'completed_at' => 'datetime',
-        'verified_at' => 'datetime',
-        'metadata' => 'array',
     ];
 
     /**
@@ -46,18 +55,48 @@ class Backup extends Model
     }
 
     /**
-     * Format size for display.
+     * Get the user who created this backup.
      */
-    public function getFormattedSize(): string
+    public function user(): BelongsTo
     {
-        $bytes = $this->size;
-        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        return $this->belongsTo(User::class);
+    }
 
-        for ($i = 0; $bytes > 1024; $i++) {
-            $bytes /= 1024;
+    /**
+     * Format file size for display.
+     */
+    public function getFormattedSizeAttribute(): string
+    {
+        if (! $this->file_size) {
+            return 'N/A';
         }
 
-        return round($bytes, 2).' '.$units[$i];
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $size = $this->file_size;
+        $unitIndex = 0;
+
+        while ($size >= 1024 && $unitIndex < count($units) - 1) {
+            $size /= 1024;
+            $unitIndex++;
+        }
+
+        return round($size, 2).' '.$units[$unitIndex];
+    }
+
+    /**
+     * Check if backup is pending.
+     */
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    /**
+     * Check if backup is processing.
+     */
+    public function isProcessing(): bool
+    {
+        return $this->status === 'processing';
     }
 
     /**
@@ -69,24 +108,32 @@ class Backup extends Model
     }
 
     /**
-     * Check if backup is verified.
+     * Check if backup has failed.
      */
-    public function isVerified(): bool
+    public function isFailed(): bool
     {
-        return $this->verification_status === 'valid';
+        return $this->status === 'failed';
     }
 
     /**
-     * Get status color for UI.
+     * Mark backup as completed.
      */
-    public function getStatusColor(): string
+    public function markAsCompleted(): void
     {
-        return match ($this->status) {
-            'completed' => 'green',
-            'pending' => 'yellow',
-            'failed' => 'red',
-            'running' => 'blue',
-            default => 'gray',
-        };
+        $this->update([
+            'status' => 'completed',
+            'completed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark backup as failed.
+     */
+    public function markAsFailed(string $errorMessage): void
+    {
+        $this->update([
+            'status' => 'failed',
+            'error_message' => $errorMessage,
+        ]);
     }
 }
