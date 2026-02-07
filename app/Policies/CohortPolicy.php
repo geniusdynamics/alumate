@@ -61,13 +61,13 @@ class CohortPolicy
         }
 
         // Check if user has analytics permission
-        if (!$this->canViewCohorts($user)) {
+        if (! $this->canViewCohorts($user)) {
             return false;
         }
 
         // Check if cohort belongs to user's current tenant
         $currentTenant = app(\App\Services\TenantContextService::class)->getCurrentTenant();
-        if (!$currentTenant) {
+        if (! $currentTenant) {
             return false;
         }
 
@@ -99,13 +99,13 @@ class CohortPolicy
         }
 
         // Check if user has analytics permission
-        if (!$this->canViewCohorts($user)) {
+        if (! $this->canViewCohorts($user)) {
             return false;
         }
 
         // Check if cohort belongs to user's current tenant
         $currentTenant = app(\App\Services\TenantContextService::class)->getCurrentTenant();
-        if (!$currentTenant) {
+        if (! $currentTenant) {
             return false;
         }
 
@@ -139,13 +139,13 @@ class CohortPolicy
         }
 
         // Check if user has analytics permission
-        if (!$this->canViewCohorts($user)) {
+        if (! $this->canViewCohorts($user)) {
             return false;
         }
 
         // Check if cohort belongs to user's current tenant
         $currentTenant = app(\App\Services\TenantContextService::class)->getCurrentTenant();
-        if (!$currentTenant) {
+        if (! $currentTenant) {
             return false;
         }
 
@@ -173,9 +173,6 @@ class CohortPolicy
 
     /**
      * Core logic for comparing cohorts.
-     *
-     * @param User $user
-     * @return bool
      */
     protected function canCompareCohorts(User $user): bool
     {
@@ -193,9 +190,6 @@ class CohortPolicy
 
     /**
      * Core logic for viewing cohorts.
-     *
-     * @param User $user
-     * @return bool
      */
     protected function canViewCohorts(User $user): bool
     {
@@ -216,13 +210,13 @@ class CohortPolicy
         }
 
         // Check if user has analytics permission
-        if (!$this->canViewCohorts($user)) {
+        if (! $this->canViewCohorts($user)) {
             return false;
         }
 
         // Check if cohort belongs to user's current tenant
         $currentTenant = app(\App\Services\TenantContextService::class)->getCurrentTenant();
-        if (!$currentTenant) {
+        if (! $currentTenant) {
             return false;
         }
 

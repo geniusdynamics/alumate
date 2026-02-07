@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\LandingPage;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Cache;
 
 class PagePreviewController extends Controller
@@ -18,31 +16,31 @@ class PagePreviewController extends Controller
     {
         try {
             $page = LandingPage::findOrFail($pageId);
-            
+
             // Get device mode for responsive preview
             $device = $request->get('device', 'desktop');
             $interactionMode = $request->boolean('interaction_mode', false);
-            
+
             // Get the latest page content (might be unsaved changes)
             $html = $request->get('html', $page->content);
             $css = $request->get('css', $page->styles);
-            
+
             // Generate preview HTML
             $previewHtml = $this->generatePreviewHtml($html, $css, $device, $interactionMode);
-            
+
             return response($previewHtml)
                 ->header('Content-Type', 'text/html')
                 ->header('X-Frame-Options', 'SAMEORIGIN')
                 ->header('Cache-Control', 'no-cache, no-store, must-revalidate');
-                
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to generate preview',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
-    
+
     /**
      * Update preview with real-time changes
      */
@@ -51,13 +49,13 @@ class PagePreviewController extends Controller
         $request->validate([
             'html' => 'required|string',
             'css' => 'required|string',
-            'device' => 'string|in:desktop,tablet,mobile'
+            'device' => 'string|in:desktop,tablet,mobile',
         ]);
-        
+
         try {
             $device = $request->get('device', 'desktop');
             $interactionMode = $request->boolean('interaction_mode', false);
-            
+
             // Generate updated preview
             $previewHtml = $this->generatePreviewHtml(
                 $request->get('html'),
@@ -65,24 +63,24 @@ class PagePreviewController extends Controller
                 $device,
                 $interactionMode
             );
-            
+
             // Cache the preview for quick access
-            $cacheKey = "page_preview_{$pageId}_{$device}_" . md5($request->get('html') . $request->get('css'));
+            $cacheKey = "page_preview_{$pageId}_{$device}_".md5($request->get('html').$request->get('css'));
             Cache::put($cacheKey, $previewHtml, 300); // Cache for 5 minutes
-            
+
             return response()->json([
                 'success' => true,
-                'preview_url' => route('api.pages.preview', ['page' => $pageId]) . "?cache_key={$cacheKey}"
+                'preview_url' => route('api.pages.preview', ['page' => $pageId])."?cache_key={$cacheKey}",
             ]);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'error' => 'Failed to update preview',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], 500);
         }
     }
-    
+
     /**
      * Generate the complete preview HTML
      */
@@ -90,17 +88,17 @@ class PagePreviewController extends Controller
     {
         $deviceClasses = $this->getDeviceClasses($device);
         $interactionScript = $interactionMode ? $this->getInteractionTrackingScript() : '';
-        
+
         return view('page-builder.preview', [
             'html' => $html,
             'css' => $css,
             'device' => $device,
             'deviceClasses' => $deviceClasses,
             'interactionScript' => $interactionScript,
-            'performanceScript' => $this->getPerformanceTrackingScript()
+            'performanceScript' => $this->getPerformanceTrackingScript(),
         ])->render();
     }
-    
+
     /**
      * Get device-specific CSS classes
      */
@@ -109,12 +107,12 @@ class PagePreviewController extends Controller
         $classes = [
             'desktop' => 'min-w-full',
             'tablet' => 'max-w-3xl mx-auto',
-            'mobile' => 'max-w-sm mx-auto'
+            'mobile' => 'max-w-sm mx-auto',
         ];
-        
+
         return $classes[$device] ?? $classes['desktop'];
     }
-    
+
     /**
      * Get interaction tracking script for preview
      */
@@ -157,7 +155,7 @@ class PagePreviewController extends Controller
         </script>
         ";
     }
-    
+
     /**
      * Get performance tracking script
      */

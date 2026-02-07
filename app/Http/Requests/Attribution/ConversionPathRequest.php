@@ -54,10 +54,10 @@ class ConversionPathRequest extends FormRequest
             'start_date' => 'nullable|date|before_or_equal:end_date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'include_attribution' => 'nullable|boolean',
-            'models' => 'nullable|array|max:' . self::MAX_MODELS,
-            'models.*' => 'string|in:' . implode(',', self::VALID_MODELS),
-            'min_touches' => 'nullable|integer|min:1|max:' . self::MAX_PATH_LENGTH,
-            'max_touches' => 'nullable|integer|min:1|max:' . self::MAX_PATH_LENGTH,
+            'models' => 'nullable|array|max:'.self::MAX_MODELS,
+            'models.*' => 'string|in:'.implode(',', self::VALID_MODELS),
+            'min_touches' => 'nullable|integer|min:1|max:'.self::MAX_PATH_LENGTH,
+            'max_touches' => 'nullable|integer|min:1|max:'.self::MAX_PATH_LENGTH,
         ];
     }
 
@@ -75,14 +75,14 @@ class ConversionPathRequest extends FormRequest
             'end_date.after_or_equal' => 'End date must be after or equal to start date',
             'include_attribution.boolean' => 'include_attribution must be a boolean',
             'models.array' => 'Models must be an array',
-            'models.max' => 'Maximum of ' . self::MAX_MODELS . ' models can be specified',
-            'models.*.in' => 'Invalid model selected. Valid options are: ' . implode(', ', self::VALID_MODELS),
+            'models.max' => 'Maximum of '.self::MAX_MODELS.' models can be specified',
+            'models.*.in' => 'Invalid model selected. Valid options are: '.implode(', ', self::VALID_MODELS),
             'min_touches.integer' => 'Minimum touches must be an integer',
             'min_touches.min' => 'Minimum touches must be at least 1',
-            'min_touches.max' => 'Minimum touches cannot exceed ' . self::MAX_PATH_LENGTH,
+            'min_touches.max' => 'Minimum touches cannot exceed '.self::MAX_PATH_LENGTH,
             'max_touches.integer' => 'Maximum touches must be an integer',
             'max_touches.min' => 'Maximum touches must be at least 1',
-            'max_touches.max' => 'Maximum touches cannot exceed ' . self::MAX_PATH_LENGTH,
+            'max_touches.max' => 'Maximum touches cannot exceed '.self::MAX_PATH_LENGTH,
         ];
     }
 
@@ -123,11 +123,11 @@ class ConversionPathRequest extends FormRequest
         $hasStartDate = $this->has('start_date');
         $hasEndDate = $this->has('end_date');
 
-        if ($hasStartDate && !$hasEndDate) {
+        if ($hasStartDate && ! $hasEndDate) {
             $validator->errors()->add('end_date', 'Both start_date and end_date must be provided together.');
         }
 
-        if (!$hasStartDate && $hasEndDate) {
+        if (! $hasStartDate && $hasEndDate) {
             $validator->errors()->add('start_date', 'Both start_date and end_date must be provided together.');
         }
     }
@@ -151,16 +151,16 @@ class ConversionPathRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default date range if not provided (last 30 days)
-        if (!$this->has('start_date')) {
+        if (! $this->has('start_date')) {
             $this->merge(['start_date' => now()->subDays(30)->toDateString()]);
         }
 
-        if (!$this->has('end_date')) {
+        if (! $this->has('end_date')) {
             $this->merge(['end_date' => now()->toDateString()]);
         }
 
         // Set default include_attribution
-        if (!$this->has('include_attribution')) {
+        if (! $this->has('include_attribution')) {
             $this->merge(['include_attribution' => false]);
         }
     }

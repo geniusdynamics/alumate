@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: LandingPageAnalytics model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Manages landing page analytics data with automatic tenant context resolution
 
@@ -11,28 +12,28 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LandingPageAnalytics extends Model
 {
     protected $fillable = [
-          'landing_page_id',
-          'template_id',
-          'event_type',
-          'event_name',
-          'event_data',
-          'session_id',
-          'visitor_id',
-          'ip_address',
-          'user_agent',
-          'referrer',
-          'utm_data',
-          'device_type',
-          'browser',
-          'os',
-          'country',
-          'city',
-          'event_time',
-          'is_compliant',
-          'consent_given',
-          'data_retention_until',
-          'analytics_version',
-      ];
+        'landing_page_id',
+        'template_id',
+        'event_type',
+        'event_name',
+        'event_data',
+        'session_id',
+        'visitor_id',
+        'ip_address',
+        'user_agent',
+        'referrer',
+        'utm_data',
+        'device_type',
+        'browser',
+        'os',
+        'country',
+        'city',
+        'event_time',
+        'is_compliant',
+        'consent_given',
+        'data_retention_until',
+        'analytics_version',
+    ];
 
     protected $casts = [
         'event_data' => 'array',
@@ -112,7 +113,7 @@ class LandingPageAnalytics extends Model
      */
     public function canRetainData(): bool
     {
-        return !$this->data_retention_until || now()->lessThan($this->data_retention_until);
+        return ! $this->data_retention_until || now()->lessThan($this->data_retention_until);
     }
 
     /**

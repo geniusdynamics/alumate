@@ -30,7 +30,7 @@ class UpdateAbTestRequest extends FormRequest
             'variants' => 'sometimes|required|array|min:2',
             'variants.*.name' => 'required|string|max:100',
             'variants.*.weight' => 'required|numeric|min:0|max:100',
-            'status' => 'sometimes|required|in:active,inactive'
+            'status' => 'sometimes|required|in:active,inactive',
         ];
     }
 
@@ -45,7 +45,7 @@ class UpdateAbTestRequest extends FormRequest
             'variants.min' => 'At least 2 variants are required',
             'variants.*.name.required' => 'Variant name is required',
             'variants.*.weight.required' => 'Variant weight is required',
-            'status.in' => 'Invalid status value'
+            'status.in' => 'Invalid status value',
         ];
     }
 }

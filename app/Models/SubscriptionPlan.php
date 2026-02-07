@@ -90,8 +90,8 @@ class SubscriptionPlan extends Model
     public function hasFeature(string $featureKey): bool
     {
         $feature = $this->planFeatures()->where('feature_key', $featureKey)->first();
-        
-        if (!$feature) {
+
+        if (! $feature) {
             return false;
         }
 
@@ -106,7 +106,7 @@ class SubscriptionPlan extends Model
     public function getFeatureValue(string $featureKey, mixed $default = null): mixed
     {
         $feature = $this->planFeatures()->where('feature_key', $featureKey)->first();
-        
+
         return $feature ? $feature->getTypedValue() : $default;
     }
 
@@ -116,6 +116,7 @@ class SubscriptionPlan extends Model
     public function isUnlimited(string $featureKey): bool
     {
         $value = $this->getFeatureValue($featureKey);
+
         return $value === 'unlimited' || $value === -1;
     }
 
@@ -125,7 +126,8 @@ class SubscriptionPlan extends Model
     public function getFormattedPrice(string $interval = 'monthly'): string
     {
         $price = $this->getPrice($interval);
-        return '$' . number_format($price, 2) . '/' . ($interval === 'yearly' ? 'year' : 'mo');
+
+        return '$'.number_format($price, 2).'/'.($interval === 'yearly' ? 'year' : 'mo');
     }
 
     /**
@@ -133,7 +135,7 @@ class SubscriptionPlan extends Model
      */
     public function getYearlySavingsPercentage(): ?int
     {
-        if (!$this->price_yearly || $this->price_monthly <= 0) {
+        if (! $this->price_yearly || $this->price_monthly <= 0) {
             return null;
         }
 

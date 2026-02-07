@@ -92,6 +92,7 @@ class SubscriptionUsage extends Model
     public function getFormattedUsage(): string
     {
         $limit = $this->limit === -1 ? '∞' : $this->limit;
+
         return "{$this->usage} / {$limit}";
     }
 }

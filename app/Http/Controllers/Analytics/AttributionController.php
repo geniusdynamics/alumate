@@ -25,8 +25,6 @@ class AttributionController extends Controller
 
     /**
      * Retrieve paginated list of attribution touches with optional filtering
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -98,9 +96,6 @@ class AttributionController extends Controller
 
     /**
      * Track a new attribution touch
-     *
-     * @param TrackTouchRequest $request
-     * @return JsonResponse
      */
     public function store(TrackTouchRequest $request): JsonResponse
     {
@@ -108,7 +103,7 @@ class AttributionController extends Controller
             $validated = $request->validated();
 
             // Add user_id from authenticated user if not provided
-            if (!isset($validated['user_id'])) {
+            if (! isset($validated['user_id'])) {
                 $validated['user_id'] = auth()->id();
             }
 
@@ -137,9 +132,6 @@ class AttributionController extends Controller
 
     /**
      * Get attribution report for a specific user
-     *
-     * @param int|null $userId
-     * @return JsonResponse
      */
     public function show(?int $userId = null): JsonResponse
     {
@@ -152,7 +144,7 @@ class AttributionController extends Controller
             // Use authenticated user if no user_id provided
             $targetUserId = $userId ?: auth()->id();
 
-            if (!$targetUserId) {
+            if (! $targetUserId) {
                 return response()->json([
                     'success' => false,
                     'error' => 'User ID is required',
@@ -196,8 +188,6 @@ class AttributionController extends Controller
 
     /**
      * Get attribution summary for multiple users
-     *
-     * @return JsonResponse
      */
     public function summary(): JsonResponse
     {
@@ -242,8 +232,6 @@ class AttributionController extends Controller
 
     /**
      * Get channel performance metrics with ROI analysis
-     *
-     * @return JsonResponse
      */
     public function channelPerformance(): JsonResponse
     {
@@ -261,7 +249,7 @@ class AttributionController extends Controller
                     $endDate
                 );
 
-                if (!empty($contribution)) {
+                if (! empty($contribution)) {
                     $roiData = $this->attributionService->calculateChannelROI($channel, $startDate, $endDate, 0);
                     $performance[$channel] = array_merge($contribution, [
                         'roi' => round($roiData['roi'], 2),
@@ -295,8 +283,6 @@ class AttributionController extends Controller
 
     /**
      * Get budget allocation recommendations based on performance
-     *
-     * @return JsonResponse
      */
     public function budgetRecommendations(): JsonResponse
     {
@@ -335,9 +321,6 @@ class AttributionController extends Controller
 
     /**
      * Categorize ROI values
-     *
-     * @param float $roi
-     * @return string
      */
     private function categorizeROI(float $roi): string
     {
@@ -356,9 +339,6 @@ class AttributionController extends Controller
 
     /**
      * Calculate performance summary statistics
-     *
-     * @param array $performance
-     * @return array
      */
     private function calculatePerformanceSummary(array $performance): array
     {
@@ -389,9 +369,6 @@ class AttributionController extends Controller
 
     /**
      * Find best performing channel based on ROI
-     *
-     * @param array $performance
-     * @return string|null
      */
     private function findBestChannel(array $performance): ?string
     {
@@ -410,15 +387,12 @@ class AttributionController extends Controller
 
     /**
      * Generate insights from budget recommendations
-     *
-     * @param array $recommendations
-     * @return array
      */
     private function generateBudgetInsights(array $recommendations): array
     {
         $insights = [];
 
-        if (!isset($recommendations['recommendations'])) {
+        if (! isset($recommendations['recommendations'])) {
             return $insights;
         }
 
@@ -429,7 +403,7 @@ class AttributionController extends Controller
             if ($changePercentage > 15) {
                 $insights[] = "Consider increasing {$channel} budget by {$changePercentage}% due to strong ROI performance.";
             } elseif ($changePercentage < -10) {
-                $insights[] = "Consider reducing {$channel} budget by " . abs($changePercentage) . "% due to low ROI performance.";
+                $insights[] = "Consider reducing {$channel} budget by ".abs($changePercentage).'% due to low ROI performance.';
             }
         }
 

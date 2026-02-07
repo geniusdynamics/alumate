@@ -1,17 +1,17 @@
 <?php
+
 // ABOUTME: Brand guidelines model for managing brand standards and approval workflows
 // ABOUTME: Updated for schema-based multi-tenancy without tenant_id column
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
-use Auth as AuthFacade;
 use Illuminate\Support\Str;
-use App\Services\TenantContextService;
 
 class BrandGuidelines extends Model
 {
@@ -105,7 +105,7 @@ class BrandGuidelines extends Model
     /**
      * Scope query to specific tenant (legacy compatibility)
      */
-    public function scopeForTenant($query, int $tenantId = null)
+    public function scopeForTenant($query, ?int $tenantId = null)
     {
         // For schema-based tenancy, this is handled by global scope
         return $query;
@@ -234,7 +234,7 @@ class BrandGuidelines extends Model
             ? $this->effective_date->isPast() || $this->effective_date->isToday()
             : true;
 
-        return $this->is_active && $isAfterEffectiveDate && (!$this->requires_approval || $this->isApproved());
+        return $this->is_active && $isAfterEffectiveDate && (! $this->requires_approval || $this->isApproved());
     }
 
     /**
@@ -298,7 +298,7 @@ class BrandGuidelines extends Model
     {
         return static::create([
             'brand_config_id' => $this->brand_config_id,
-            'name' => $this->name . ' (Version ' . ($this->version + 1) . ')',
+            'name' => $this->name.' (Version '.($this->version + 1).')',
             'description' => $this->description,
             'usage_rules' => $this->usage_rules,
             'color_guidelines' => $this->color_guidelines,
@@ -331,7 +331,7 @@ class BrandGuidelines extends Model
         $counter = 1;
 
         while ($this->slugExists($slug)) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -409,7 +409,7 @@ class BrandGuidelines extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_guidelines,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_guidelines,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_guidelines,slug';
         }

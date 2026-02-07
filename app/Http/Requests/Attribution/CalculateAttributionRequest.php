@@ -41,7 +41,7 @@ class CalculateAttributionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'model' => 'nullable|string|in:' . implode(',', self::VALID_MODELS),
+            'model' => 'nullable|string|in:'.implode(',', self::VALID_MODELS),
             'start_date' => 'nullable|date|before_or_equal:end_date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
         ];
@@ -55,7 +55,7 @@ class CalculateAttributionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'model.in' => 'Invalid attribution model. Valid models are: ' . implode(', ', self::VALID_MODELS),
+            'model.in' => 'Invalid attribution model. Valid models are: '.implode(', ', self::VALID_MODELS),
             'start_date.date' => 'Start date must be a valid date',
             'start_date.before_or_equal' => 'Start date must be before or equal to end date',
             'end_date.date' => 'End date must be a valid date',
@@ -83,16 +83,16 @@ class CalculateAttributionRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default model if not provided
-        if (!$this->has('model')) {
+        if (! $this->has('model')) {
             $this->merge(['model' => 'last_click']);
         }
 
         // Set default date range if not provided (last 30 days)
-        if (!$this->has('start_date')) {
+        if (! $this->has('start_date')) {
             $this->merge(['start_date' => now()->subDays(30)->toDateString()]);
         }
 
-        if (!$this->has('end_date')) {
+        if (! $this->has('end_date')) {
             $this->merge(['end_date' => now()->toDateString()]);
         }
     }

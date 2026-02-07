@@ -50,9 +50,10 @@ class BackupRestoreCommand extends Command
         $this->info("Starting restore for {$type} backup from: {$path}");
 
         // Confirm if not forced
-        if (!$force) {
-            if (!$this->confirm("Are you sure you want to restore this backup? Current data will be overwritten.")) {
+        if (! $force) {
+            if (! $this->confirm('Are you sure you want to restore this backup? Current data will be overwritten.')) {
                 $this->info('Restore cancelled.');
+
                 return Command::SUCCESS;
             }
         }
@@ -65,7 +66,7 @@ class BackupRestoreCommand extends Command
             };
 
             if ($result['status'] === 'completed') {
-                $this->info("✅ Restore completed successfully!");
+                $this->info('✅ Restore completed successfully!');
                 $this->info("Message: {$result['message']}");
 
                 Log::info('Backup restore completed', [
@@ -76,7 +77,7 @@ class BackupRestoreCommand extends Command
 
                 return Command::SUCCESS;
             } else {
-                $this->error("❌ Restore failed!");
+                $this->error('❌ Restore failed!');
                 $this->error("Error: {$result['error']}");
 
                 Log::error('Backup restore failed', [

@@ -88,7 +88,7 @@ class DeleteDataRequest extends FormRequest
             // In a real implementation, this would verify against a stored token
             // For now, we'll accept any valid UUID format as specified in the regex
             // The actual verification would happen in the controller/service layer
-            if (!preg_match('/^[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$/', $token)) {
+            if (! preg_match('/^[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}$/', $token)) {
                 $validator->errors()->add('confirmation_token', 'Invalid confirmation token format.');
             }
         }

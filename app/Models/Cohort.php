@@ -83,7 +83,6 @@ class Cohort extends Model
         return $query->where('tenant_id', $tenantId);
     }
 
-
     /**
      * Scope a query to only include cohorts created by a specific user.
      */
@@ -100,22 +99,21 @@ class Cohort extends Model
         return $query->orderBy('created_at', 'desc');
     }
 
-
     /**
      * Get the cohort criteria as a formatted string.
      */
     public function getCriteriaSummaryAttribute(): string
     {
-        if (!$this->criteria_json) {
+        if (! $this->criteria_json) {
             return 'No criteria defined';
         }
 
         $summary = [];
         foreach ($this->criteria_json as $key => $value) {
             if (is_array($value)) {
-                $summary[] = ucfirst($key) . ': ' . json_encode($value);
+                $summary[] = ucfirst($key).': '.json_encode($value);
             } else {
-                $summary[] = ucfirst($key) . ': ' . $value;
+                $summary[] = ucfirst($key).': '.$value;
             }
         }
 

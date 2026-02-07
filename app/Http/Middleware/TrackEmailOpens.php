@@ -33,10 +33,6 @@ class TrackEmailOpens
 
     /**
      * Handle an incoming request for email open tracking
-     *
-     * @param  Request  $request
-     * @param  Closure  $next
-     * @return Response
      */
     public function handle(Request $request, Closure $next): Response
     {

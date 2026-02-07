@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Component;
 use App\Models\ComponentVersion;
-use App\Services\ComponentVersionService;
-use App\Services\ComponentExportImportService;
-use App\Services\ComponentPerformanceAnalysisService;
 use App\Services\ComponentBackupRecoveryService;
+use App\Services\ComponentExportImportService;
 use App\Services\ComponentMigrationService;
-use Illuminate\Http\Request;
+use App\Services\ComponentPerformanceAnalysisService;
+use App\Services\ComponentVersionService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class ComponentVersionController extends Controller
@@ -91,7 +91,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create version: ' . $e->getMessage(),
+                'message' => 'Failed to create version: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -156,7 +156,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to restore version: ' . $e->getMessage(),
+                'message' => 'Failed to restore version: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -184,13 +184,13 @@ class ComponentVersionController extends Controller
             $fromVersion = $component->versions()
                 ->where('version_number', $request->input('from_version'))
                 ->firstOrFail();
-            
+
             $toVersion = $component->versions()
                 ->where('version_number', $request->input('to_version'))
                 ->firstOrFail();
 
             $format = $request->input('format', 'standard');
-            
+
             if ($format === 'grapejs') {
                 $diff = $this->versionService->generateGrapeJSDiff($fromVersion, $toVersion);
             } else {
@@ -207,7 +207,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to generate diff: ' . $e->getMessage(),
+                'message' => 'Failed to generate diff: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -240,17 +240,17 @@ class ComponentVersionController extends Controller
             ];
 
             $fileFormat = $request->input('file_format', 'json');
-            
+
             if ($fileFormat === 'json') {
                 $exportData = $this->exportImportService->exportComponent($component, $options);
-                
+
                 return response()->json([
                     'success' => true,
                     'data' => $exportData,
                 ]);
             } else {
                 $filePath = $this->exportImportService->exportToFile($component, $fileFormat);
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Component exported to file',
@@ -263,7 +263,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to export component: ' . $e->getMessage(),
+                'message' => 'Failed to export component: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -314,7 +314,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to import component: ' . $e->getMessage(),
+                'message' => 'Failed to import component: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -363,7 +363,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create template: ' . $e->getMessage(),
+                'message' => 'Failed to create template: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -383,7 +383,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to analyze performance: ' . $e->getMessage(),
+                'message' => 'Failed to analyze performance: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -419,7 +419,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to get performance trends: ' . $e->getMessage(),
+                'message' => 'Failed to get performance trends: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -446,7 +446,7 @@ class ComponentVersionController extends Controller
             $version1 = $component->versions()
                 ->where('version_number', $request->input('version1'))
                 ->firstOrFail();
-            
+
             $version2 = $component->versions()
                 ->where('version_number', $request->input('version2'))
                 ->firstOrFail();
@@ -460,7 +460,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to compare performance: ' . $e->getMessage(),
+                'message' => 'Failed to compare performance: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -506,7 +506,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create backup: ' . $e->getMessage(),
+                'message' => 'Failed to create backup: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -529,7 +529,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to list backups: ' . $e->getMessage(),
+                'message' => 'Failed to list backups: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -580,7 +580,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to restore from backup: ' . $e->getMessage(),
+                'message' => 'Failed to restore from backup: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -607,7 +607,7 @@ class ComponentVersionController extends Controller
 
         try {
             $migrationType = $request->input('migration_type', 'grapejs_format');
-            
+
             switch ($migrationType) {
                 case 'grapejs_format':
                     $migratedComponent = $this->migrationService->migrateToGrapeJSFormat(
@@ -615,21 +615,21 @@ class ComponentVersionController extends Controller
                         $request->input('target_version')
                     );
                     break;
-                
+
                 case 'config_schema':
                     $migratedComponent = $this->migrationService->migrateConfigurationSchema(
                         $component,
                         $request->input('schema_changes', [])
                     );
                     break;
-                
+
                 case 'feature_update':
                     $migratedComponent = $this->migrationService->updateForNewGrapeJSFeatures(
                         $component,
                         $request->input('new_features', [])
                     );
                     break;
-                
+
                 default:
                     throw new \Exception("Unknown migration type: {$migrationType}");
             }
@@ -649,7 +649,7 @@ class ComponentVersionController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to migrate component: ' . $e->getMessage(),
+                'message' => 'Failed to migrate component: '.$e->getMessage(),
             ], 500);
         }
     }

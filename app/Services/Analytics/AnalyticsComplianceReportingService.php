@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\Analytics;
 
-use App\Models\Tenant;
 use App\Services\TenantContextService;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Analytics Compliance Reporting Service
@@ -29,24 +28,33 @@ class AnalyticsComplianceReportingService
      * Compliance status constants
      */
     public const STATUS_COMPLIANT = 'compliant';
+
     public const STATUS_NON_COMPLIANT = 'non_compliant';
+
     public const STATUS_ATTENTION_REQUIRED = 'attention_required';
+
     public const STATUS_PENDING_REVIEW = 'pending_review';
 
     /**
      * Report types
      */
     public const REPORT_TYPE_GDPR = 'gdpr';
+
     public const REPORT_TYPE_CCPA = 'ccpa';
+
     public const REPORT_TYPE_DATA_RETENTION = 'data_retention';
+
     public const REPORT_TYPE_CONSENT = 'consent';
+
     public const REPORT_TYPE_COMPREHENSIVE = 'comprehensive';
 
     /**
      * Export formats
      */
     public const FORMAT_JSON = 'json';
+
     public const FORMAT_CSV = 'csv';
+
     public const FORMAT_PDF = 'pdf';
 
     /**
@@ -93,8 +101,8 @@ class AnalyticsComplianceReportingService
     /**
      * Generate a compliance report
      *
-     * @param string $reportType Type of report to generate
-     * @param array $dateRange Date range with 'from' and 'to' keys
+     * @param  string  $reportType  Type of report to generate
+     * @param  array  $dateRange  Date range with 'from' and 'to' keys
      * @return array Compliance report data
      */
     public function generateComplianceReport(string $reportType, array $dateRange): array
@@ -431,7 +439,7 @@ class AnalyticsComplianceReportingService
     /**
      * Get compliance metrics for a date range
      *
-     * @param array $dateRange Date range with 'from' and 'to' keys
+     * @param  array  $dateRange  Date range with 'from' and 'to' keys
      * @return array Compliance metrics
      */
     public function getComplianceMetrics(array $dateRange): array
@@ -458,8 +466,8 @@ class AnalyticsComplianceReportingService
     /**
      * Export a compliance report
      *
-     * @param string $reportId Report ID to export
-     * @param string $format Export format (json, csv, pdf)
+     * @param  string  $reportId  Report ID to export
+     * @param  string  $format  Export format (json, csv, pdf)
      * @return string Exported report data
      */
     public function exportComplianceReport(string $reportId, string $format = self::FORMAT_JSON): string
@@ -469,7 +477,7 @@ class AnalyticsComplianceReportingService
         // Retrieve the report from cache or storage
         $report = Cache::get("compliance_report_{$tenantId}_{$reportId}");
 
-        if (!$report) {
+        if (! $report) {
             // Generate a new report if not found
             $report = $this->generateComplianceReport(self::REPORT_TYPE_COMPREHENSIVE, [
                 'from' => now()->subMonth(),
@@ -494,7 +502,7 @@ class AnalyticsComplianceReportingService
     /**
      * Schedule a compliance report
      *
-     * @param array $schedule Schedule configuration
+     * @param  array  $schedule  Schedule configuration
      * @return array Schedule confirmation
      */
     public function scheduleComplianceReport(array $schedule): array
@@ -598,6 +606,7 @@ class AnalyticsComplianceReportingService
         // Sort by severity
         usort($alerts, function ($a, $b) {
             $severityOrder = ['critical' => 0, 'warning' => 1, 'info' => 2];
+
             return ($severityOrder[$a['severity']] ?? 2) - ($severityOrder[$b['severity']] ?? 2);
         });
 

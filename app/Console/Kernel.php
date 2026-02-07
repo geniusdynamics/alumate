@@ -7,7 +7,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 /**
  * Console Kernel - Defines scheduled commands for the application
- * 
+ *
  * This kernel includes backup scheduling for automated disaster recovery
  */
 class Kernel extends ConsoleKernel
@@ -79,6 +79,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__ . '/Commands');
+        $this->load(__DIR__.'/Commands');
     }
 }

@@ -23,26 +23,26 @@ class ComponentInstanceResource extends JsonResource
             // Computed properties
             'merged_config' => $this->when(
                 $request->query('include_merged_config'),
-                fn() => $this->getMergedConfig()
+                fn () => $this->getMergedConfig()
             ),
 
             // Preview data
             'preview_data' => $this->when(
                 $request->query('include_preview'),
-                fn() => $this->generatePreview()
+                fn () => $this->generatePreview()
             ),
 
             // Render data
             'render_data' => $this->when(
                 $request->query('include_render'),
-                fn() => $this->render()
+                fn () => $this->render()
             ),
 
             // Validation status
             'is_valid' => $this->validateCustomConfig(),
             'validation_errors' => $this->when(
-                !$this->validateCustomConfig(),
-                fn() => ['Custom configuration validation failed']
+                ! $this->validateCustomConfig(),
+                fn () => ['Custom configuration validation failed']
             ),
 
             // Relationships
@@ -55,14 +55,14 @@ class ComponentInstanceResource extends JsonResource
 
             // Additional metadata
             'meta' => [
-                'has_custom_config' => !empty($this->custom_config),
+                'has_custom_config' => ! empty($this->custom_config),
                 'config_keys' => array_keys($this->custom_config ?? []),
                 'page_context' => "{$this->page_type}:{$this->page_id}",
                 'can_move_up' => $this->position > 0,
                 'can_move_down' => $this->canMoveDown(),
                 'is_first' => $this->position === 0,
                 'is_last' => $this->isLastPosition(),
-            ]
+            ],
         ];
     }
 

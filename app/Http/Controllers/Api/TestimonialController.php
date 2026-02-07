@@ -30,13 +30,13 @@ class TestimonialController extends Controller
 
         $filters = $request->only([
             'audience_type',
-            'industry', 
+            'industry',
             'graduation_year',
             'graduation_year_range',
             'status',
             'featured',
             'has_video',
-            'sort_by'
+            'sort_by',
         ]);
 
         $perPage = min($request->get('per_page', 15), 100);
@@ -53,7 +53,7 @@ class TestimonialController extends Controller
         $filters = $request->only([
             'audience_type',
             'industry',
-            'graduation_year_range'
+            'graduation_year_range',
         ]);
 
         $limit = min($request->get('limit', 10), 50);
@@ -155,7 +155,7 @@ class TestimonialController extends Controller
         Gate::authorize('moderate', $testimonial);
 
         $request->validate([
-            'featured' => 'required|boolean'
+            'featured' => 'required|boolean',
         ]);
 
         $this->testimonialService->setFeatured($testimonial, $request->boolean('featured'));
@@ -184,7 +184,7 @@ class TestimonialController extends Controller
         $filters = $request->only([
             'audience_type',
             'industry',
-            'date_range'
+            'date_range',
         ]);
 
         $analytics = $this->testimonialService->getPerformanceAnalytics($filters);
@@ -217,7 +217,7 @@ class TestimonialController extends Controller
             'graduation_year_range',
             'status',
             'featured',
-            'has_video'
+            'has_video',
         ]);
 
         $testimonials = $this->testimonialService->exportTestimonials($filters);

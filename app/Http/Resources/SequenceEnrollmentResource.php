@@ -15,7 +15,6 @@ class SequenceEnrollmentResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  Request  $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -65,8 +64,6 @@ class SequenceEnrollmentResource extends JsonResource
 
     /**
      * Get enrollment statistics.
-     *
-     * @return array
      */
     protected function getEnrollmentStats(): array
     {
@@ -85,8 +82,6 @@ class SequenceEnrollmentResource extends JsonResource
 
     /**
      * Get progress information for the enrollment.
-     *
-     * @return array
      */
     protected function getProgressInfo(): array
     {

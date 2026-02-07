@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\TemplateAbTest;
 use App\Models\Template;
+use App\Models\TemplateAbTest;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * A/B Testing Service
@@ -21,6 +21,7 @@ class AbTestService extends BaseService
      * Cache keys and durations
      */
     private const CACHE_PREFIX = 'ab_tests_';
+
     private const CACHE_DURATION = 300; // 5 minutes
 
     /**
@@ -31,7 +32,7 @@ class AbTestService extends BaseService
         // Validate template exists and is active
         $template = Template::findOrFail($data['template_id']);
 
-        if (!$template->is_active) {
+        if (! $template->is_active) {
             throw new \InvalidArgumentException('Cannot create A/B test for inactive template');
         }
 
@@ -46,7 +47,7 @@ class AbTestService extends BaseService
         Log::info('A/B test created', [
             'ab_test_id' => $abTest->id,
             'template_id' => $template->id,
-            'variant_count' => count($data['variants'])
+            'variant_count' => count($data['variants']),
         ]);
 
         return $abTest;
@@ -65,7 +66,7 @@ class AbTestService extends BaseService
      */
     public function getAbTestsForTemplate(int $templateId): Collection
     {
-        $cacheKey = self::CACHE_PREFIX . "template_{$templateId}";
+        $cacheKey = self::CACHE_PREFIX."template_{$templateId}";
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($templateId) {
             return TemplateAbTest::where('template_id', $templateId)
@@ -80,7 +81,7 @@ class AbTestService extends BaseService
      */
     public function getActiveAbTests(): Collection
     {
-        $cacheKey = self::CACHE_PREFIX . 'active';
+        $cacheKey = self::CACHE_PREFIX.'active';
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () {
             return TemplateAbTest::active()
@@ -99,6 +100,7 @@ class AbTestService extends BaseService
         if ($abTest->start()) {
             $this->clearTemplateCache($abTest->template_id);
             Log::info('A/B test started', ['ab_test_id' => $abTestId]);
+
             return true;
         }
 
@@ -115,6 +117,7 @@ class AbTestService extends BaseService
         if ($abTest->stop()) {
             $this->clearTemplateCache($abTest->template_id);
             Log::info('A/B test stopped', ['ab_test_id' => $abTestId]);
+
             return true;
         }
 
@@ -129,7 +132,7 @@ class AbTestService extends BaseService
         // Check if there's an active A/B test for this template
         $activeTest = $this->getActiveTestForTemplate($templateId);
 
-        if (!$activeTest) {
+        if (! $activeTest) {
             return null; // No active test, use original template
         }
 
@@ -149,7 +152,7 @@ class AbTestService extends BaseService
     {
         $activeTest = $this->getActiveTestForTemplate($templateId);
 
-        if (!$activeTest) {
+        if (! $activeTest) {
             return false; // No active test
         }
 
@@ -160,7 +163,7 @@ class AbTestService extends BaseService
             'ab_test_id' => $activeTest->id,
             'variant_id' => $variantId,
             'event_type' => $eventType,
-            'session_id' => $sessionId
+            'session_id' => $sessionId,
         ]);
 
         return true;
@@ -184,7 +187,7 @@ class AbTestService extends BaseService
             'ab_test' => $abTest->toArray(),
             'is_running' => $abTest->isRunning(),
             'has_significance' => $abTest->hasStatisticalSignificance(),
-            'winning_variant' => $abTest->getWinningVariant()
+            'winning_variant' => $abTest->getWinningVariant(),
         ]);
     }
 
@@ -193,7 +196,7 @@ class AbTestService extends BaseService
      */
     private function getActiveTestForTemplate(int $templateId): ?TemplateAbTest
     {
-        $cacheKey = self::CACHE_PREFIX . "active_template_{$templateId}";
+        $cacheKey = self::CACHE_PREFIX."active_template_{$templateId}";
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($templateId) {
             return TemplateAbTest::where('template_id', $templateId)
@@ -217,7 +220,7 @@ class AbTestService extends BaseService
 
         $variantIds = [];
         foreach ($variants as $variant) {
-            if (!isset($variant['id'], $variant['name'])) {
+            if (! isset($variant['id'], $variant['name'])) {
                 throw new \InvalidArgumentException('Each variant must have id and name');
             }
 
@@ -234,9 +237,9 @@ class AbTestService extends BaseService
      */
     private function clearTemplateCache(int $templateId): void
     {
-        Cache::forget(self::CACHE_PREFIX . "template_{$templateId}");
-        Cache::forget(self::CACHE_PREFIX . "active_template_{$templateId}");
-        Cache::forget(self::CACHE_PREFIX . 'active');
+        Cache::forget(self::CACHE_PREFIX."template_{$templateId}");
+        Cache::forget(self::CACHE_PREFIX."active_template_{$templateId}");
+        Cache::forget(self::CACHE_PREFIX.'active');
     }
 
     /**
@@ -244,7 +247,7 @@ class AbTestService extends BaseService
      */
     public function getAbTestStatistics(): array
     {
-        $cacheKey = self::CACHE_PREFIX . 'statistics';
+        $cacheKey = self::CACHE_PREFIX.'statistics';
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () {
             $totalTests = TemplateAbTest::count();
@@ -256,7 +259,7 @@ class AbTestService extends BaseService
                 ->get()
                 ->map(function ($test) {
                     $results = $test->results;
-                    if (!$results || !isset($results['variants'])) {
+                    if (! $results || ! isset($results['variants'])) {
                         return 0;
                     }
 
@@ -275,7 +278,7 @@ class AbTestService extends BaseService
                 'avg_conversion_improvement' => round($avgConversionImprovement, 2),
                 'total_conversions_recorded' => DB::table('ab_test_events')
                     ->where('event_type', 'conversion')
-                    ->count()
+                    ->count(),
             ];
         });
     }
@@ -290,7 +293,7 @@ class AbTestService extends BaseService
         $oldTests = TemplateAbTest::where('ended_at', '<', $cutoffDate)
             ->orWhere(function ($query) use ($cutoffDate) {
                 $query->where('status', 'draft')
-                      ->where('created_at', '<', $cutoffDate);
+                    ->where('created_at', '<', $cutoffDate);
             })
             ->get();
 

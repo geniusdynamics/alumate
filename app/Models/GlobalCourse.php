@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Eloquent model for global_courses table in hybrid tenancy architecture
 // ABOUTME: Manages the global course catalog that can be shared across multiple tenants
 
@@ -10,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 
 class GlobalCourse extends Model
 {
@@ -169,6 +169,7 @@ class GlobalCourse extends Model
         if ($this->typical_duration_weeks && $this->typical_workload_hours_per_week) {
             return $this->typical_duration_weeks * $this->typical_workload_hours_per_week;
         }
+
         return null;
     }
 
@@ -177,7 +178,7 @@ class GlobalCourse extends Model
      */
     public function hasPrerequisites(): bool
     {
-        return !empty($this->prerequisites);
+        return ! empty($this->prerequisites);
     }
 
     /**
@@ -185,13 +186,13 @@ class GlobalCourse extends Model
      */
     public function getPrerequisiteCourses()
     {
-        if (!$this->hasPrerequisites()) {
+        if (! $this->hasPrerequisites()) {
             return collect();
         }
 
         return self::whereIn('global_course_code', $this->prerequisites)
-                   ->where('is_active', true)
-                   ->get();
+            ->where('is_active', true)
+            ->get();
     }
 
     /**
@@ -200,8 +201,8 @@ class GlobalCourse extends Model
     public function getDependentCourses()
     {
         return self::where('is_active', true)
-                   ->whereJsonContains('prerequisites', $this->global_course_code)
-                   ->get();
+            ->whereJsonContains('prerequisites', $this->global_course_code)
+            ->get();
     }
 
     /**
@@ -209,7 +210,7 @@ class GlobalCourse extends Model
      */
     public function userMeetsPrerequisites(string $globalUserId, string $tenantId): bool
     {
-        if (!$this->hasPrerequisites()) {
+        if (! $this->hasPrerequisites()) {
             return true;
         }
 
@@ -277,7 +278,7 @@ class GlobalCourse extends Model
     /**
      * Scope to filter by credit hours range.
      */
-    public function scopeCreditHours($query, int $min = null, int $max = null)
+    public function scopeCreditHours($query, ?int $min = null, ?int $max = null)
     {
         if ($min !== null) {
             $query->where('credit_hours', '>=', $min);
@@ -285,6 +286,7 @@ class GlobalCourse extends Model
         if ($max !== null) {
             $query->where('credit_hours', '<=', $max);
         }
+
         return $query;
     }
 
@@ -295,10 +297,10 @@ class GlobalCourse extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('title', 'ILIKE', "%{$search}%")
-              ->orWhere('description', 'ILIKE', "%{$search}%")
-              ->orWhere('global_course_code', 'ILIKE', "%{$search}%")
-              ->orWhere('subject_area', 'ILIKE', "%{$search}%")
-              ->orWhereJsonContains('tags', $search);
+                ->orWhere('description', 'ILIKE', "%{$search}%")
+                ->orWhere('global_course_code', 'ILIKE', "%{$search}%")
+                ->orWhere('subject_area', 'ILIKE', "%{$search}%")
+                ->orWhereJsonContains('tags', $search);
         });
     }
 
@@ -326,8 +328,8 @@ class GlobalCourse extends Model
     public function scopePopular($query, int $limit = 10)
     {
         return $query->withCount('activeOfferings')
-                     ->orderBy('active_offerings_count', 'desc')
-                     ->limit($limit);
+            ->orderBy('active_offerings_count', 'desc')
+            ->limit($limit);
     }
 
     /**
@@ -336,7 +338,7 @@ class GlobalCourse extends Model
     public function scopeRecent($query, int $days = 30)
     {
         return $query->where('created_at', '>=', now()->subDays($days))
-                     ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc');
     }
 
     /**
@@ -345,12 +347,13 @@ class GlobalCourse extends Model
     public function addTag(string $tag): bool
     {
         $tags = $this->tags ?? [];
-        
-        if (!in_array($tag, $tags)) {
+
+        if (! in_array($tag, $tags)) {
             $tags[] = $tag;
+
             return $this->update(['tags' => $tags]);
         }
-        
+
         return true;
     }
 
@@ -360,8 +363,8 @@ class GlobalCourse extends Model
     public function removeTag(string $tag): bool
     {
         $tags = $this->tags ?? [];
-        $tags = array_filter($tags, fn($t) => $t !== $tag);
-        
+        $tags = array_filter($tags, fn ($t) => $t !== $tag);
+
         return $this->update(['tags' => array_values($tags)]);
     }
 
@@ -371,7 +374,7 @@ class GlobalCourse extends Model
     public function getStatistics(): array
     {
         $offerings = $this->activeOfferings;
-        
+
         return [
             'total_offerings' => $offerings->count(),
             'unique_tenants' => $offerings->unique('tenant_id')->count(),
@@ -379,8 +382,8 @@ class GlobalCourse extends Model
             'average_enrollment' => $offerings->avg('current_enrollment'),
             'max_enrollment' => $offerings->max('current_enrollment'),
             'total_capacity' => $offerings->sum('max_enrollment'),
-            'utilization_rate' => $offerings->sum('max_enrollment') > 0 
-                ? ($offerings->sum('current_enrollment') / $offerings->sum('max_enrollment')) * 100 
+            'utilization_rate' => $offerings->sum('max_enrollment') > 0
+                ? ($offerings->sum('current_enrollment') / $offerings->sum('max_enrollment')) * 100
                 : 0,
             'average_tuition' => $offerings->whereNotNull('tuition_cost')->avg('tuition_cost'),
             'delivery_methods' => $offerings->groupBy('delivery_method')->map->count()->toArray(),
@@ -413,19 +416,19 @@ class GlobalCourse extends Model
     public function getRecommendedCourses(int $limit = 5)
     {
         return self::active()
-                   ->where('id', '!=', $this->id)
-                   ->where(function ($query) {
-                       $query->where('subject_area', $this->subject_area)
-                             ->orWhere('level', $this->level)
-                             ->orWhere('difficulty_level', $this->difficulty_level);
-                   })
-                   ->when($this->tags, function ($query) {
-                       foreach ($this->tags as $tag) {
-                           $query->orWhereJsonContains('tags', $tag);
-                       }
-                   })
-                   ->limit($limit)
-                   ->get();
+            ->where('id', '!=', $this->id)
+            ->where(function ($query) {
+                $query->where('subject_area', $this->subject_area)
+                    ->orWhere('level', $this->level)
+                    ->orWhere('difficulty_level', $this->difficulty_level);
+            })
+            ->when($this->tags, function ($query) {
+                foreach ($this->tags as $tag) {
+                    $query->orWhereJsonContains('tags', $tag);
+                }
+            })
+            ->limit($limit)
+            ->get();
     }
 
     /**

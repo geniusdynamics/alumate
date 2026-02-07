@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: File upload request validation with support for file type, size,
 // ABOUTME: and collection validation
 
@@ -31,7 +32,7 @@ class FileUploadRequest extends FormRequest
             'file' => [
                 'required',
                 'file',
-                'max:' . $maxSize,
+                'max:'.$maxSize,
                 $this->getMimeTypeRule(),
             ],
             'collection' => [
@@ -65,7 +66,7 @@ class FileUploadRequest extends FormRequest
         return [
             'file.required' => 'A file is required for upload.',
             'file.file' => 'The uploaded item must be a valid file.',
-            'file.max' => 'The file size exceeds the maximum allowed size of ' . $this->getMaxFileSizeInReadable() . '.',
+            'file.max' => 'The file size exceeds the maximum allowed size of '.$this->getMaxFileSizeInReadable().'.',
             'file.mimetypes' => 'The file type is not allowed. Allowed types: images (JPEG, PNG, GIF, WebP), videos (MP4, WebM), documents (PDF, DOC, XLS).',
             'collection.in' => 'The specified collection is not valid.',
             'visibility.in' => 'Visibility must be either "public" or "private".',
@@ -92,12 +93,12 @@ class FileUploadRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default visibility if not provided
-        if (!$this->has('visibility')) {
+        if (! $this->has('visibility')) {
             $this->merge(['visibility' => StoredFile::VISIBILITY_PRIVATE]);
         }
 
         // Set default process_image if not provided
-        if (!$this->has('process_image')) {
+        if (! $this->has('process_image')) {
             $this->merge(['process_image' => true]);
         }
     }
@@ -109,6 +110,7 @@ class FileUploadRequest extends FormRequest
     {
         // Get from user quota or config (in KB for validation rule)
         $maxBytes = config('filesystems.upload_max_size', 100 * 1024 * 1024); // Default 100MB
+
         return (int) ($maxBytes / 1024);
     }
 
@@ -120,13 +122,14 @@ class FileUploadRequest extends FormRequest
         $maxBytes = config('filesystems.upload_max_size', 100 * 1024 * 1024);
 
         if ($maxBytes >= 1073741824) {
-            return number_format($maxBytes / 1073741824, 2) . ' GB';
+            return number_format($maxBytes / 1073741824, 2).' GB';
         } elseif ($maxBytes >= 1048576) {
-            return number_format($maxBytes / 1048576, 2) . ' MB';
+            return number_format($maxBytes / 1048576, 2).' MB';
         } elseif ($maxBytes >= 1024) {
-            return number_format($maxBytes / 1024, 2) . ' KB';
+            return number_format($maxBytes / 1024, 2).' KB';
         }
-        return $maxBytes . ' B';
+
+        return $maxBytes.' B';
     }
 
     /**
@@ -165,7 +168,7 @@ class FileUploadRequest extends FormRequest
             'application/zip',
         ];
 
-        return 'mimetypes:' . implode(',', $allowedTypes);
+        return 'mimetypes:'.implode(',', $allowedTypes);
     }
 
     /**

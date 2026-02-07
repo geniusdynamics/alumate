@@ -7,15 +7,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 class TenantOnboarding extends Model
 {
     use HasFactory;
 
     public const STATUS_IN_PROGRESS = 'in_progress';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_ABANDONED = 'abandoned';
+
     public const STATUS_PAUSED = 'paused';
 
     protected $fillable = [
@@ -108,6 +110,7 @@ class TenantOnboarding extends Model
         }
 
         $completed = count($this->completed_steps ?? []);
+
         return min(100, (int) (($completed / $this->total_steps) * 100));
     }
 
@@ -117,8 +120,8 @@ class TenantOnboarding extends Model
     public function completeStep(int $step, array $data = []): void
     {
         $completedSteps = $this->completed_steps ?? [];
-        
-        if (!in_array($step, $completedSteps)) {
+
+        if (! in_array($step, $completedSteps)) {
             $completedSteps[] = $step;
         }
 
@@ -174,11 +177,12 @@ class TenantOnboarding extends Model
      */
     public function getTimeSpent(): int
     {
-        if (!$this->started_at) {
+        if (! $this->started_at) {
             return 0;
         }
 
         $endTime = $this->completed_at ?? now();
+
         return (int) $this->started_at->diffInMinutes($endTime);
     }
 
@@ -204,6 +208,6 @@ class TenantOnboarding extends Model
     public function scopeExpired($query)
     {
         return $query->where('expires_at', '<', now())
-                     ->where('status', self::STATUS_IN_PROGRESS);
+            ->where('status', self::STATUS_IN_PROGRESS);
     }
 }

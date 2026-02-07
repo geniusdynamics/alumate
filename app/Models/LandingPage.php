@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: LandingPage model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Manages landing pages with automatic tenant context resolution
 
@@ -300,7 +301,7 @@ class LandingPage extends Model
      */
     public function getFullPublicUrl(): string
     {
-        if (!$this->isPublished() || empty($this->public_url)) {
+        if (! $this->isPublished() || empty($this->public_url)) {
             return '';
         }
 
@@ -308,6 +309,7 @@ class LandingPage extends Model
         if (config('database.multi_tenant')) {
             try {
                 $tenantDomain = tenant()->domain;
+
                 return "https://{$this->slug}.{$tenantDomain}";
             } catch (\Exception $e) {
                 // Fallback to path-based URL
@@ -327,7 +329,7 @@ class LandingPage extends Model
         }
 
         // Include draft hash for cache busting
-        return $this->preview_url . '?draft=' . $this->draft_hash;
+        return $this->preview_url.'?draft='.$this->draft_hash;
     }
 
     /**
@@ -340,7 +342,7 @@ class LandingPage extends Model
         $counter = 1;
 
         while ($this->slugExists($slug)) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -429,13 +431,13 @@ class LandingPage extends Model
             'description' => 'nullable|string|max:1000',
             'config' => 'nullable|array',
             'brand_config' => 'nullable|array',
-            'audience_type' => 'required|in:' . implode(',', ['individual', 'institution', 'employer']),
-            'campaign_type' => 'required|in:' . implode(',', [
+            'audience_type' => 'required|in:'.implode(',', ['individual', 'institution', 'employer']),
+            'campaign_type' => 'required|in:'.implode(',', [
                 'onboarding', 'event_promotion', 'networking', 'career_services',
-                'recruiting', 'donation', 'leadership', 'marketing'
+                'recruiting', 'donation', 'leadership', 'marketing',
             ]),
-            'category' => 'required|in:' . implode(',', self::CATEGORIES),
-            'status' => 'required|in:' . implode(',', self::STATUSES),
+            'category' => 'required|in:'.implode(',', self::CATEGORIES),
+            'status' => 'required|in:'.implode(',', self::STATUSES),
             'published_at' => 'nullable|date',
             'version' => 'integer|min:1',
             'usage_count' => 'integer|min:0',
@@ -463,7 +465,7 @@ class LandingPage extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:landing_pages,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:landing_pages,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:landing_pages,slug';
         }

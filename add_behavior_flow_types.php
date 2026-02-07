@@ -1,8 +1,8 @@
 <?php
+
 /**
  * Add behavior flow and funnel analysis types to analytics.ts
  */
-
 $typesFile = 'resources/js/Types/analytics.ts';
 $typesContent = file_get_contents($typesFile);
 

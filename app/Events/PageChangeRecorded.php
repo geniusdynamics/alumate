@@ -20,7 +20,7 @@ class PageChangeRecorded implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('page.' . $this->change->page_id),
+            new PrivateChannel('page.'.$this->change->page_id),
         ];
     }
 

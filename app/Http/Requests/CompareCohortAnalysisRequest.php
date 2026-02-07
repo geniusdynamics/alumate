@@ -34,7 +34,7 @@ class CompareCohortAnalysisRequest extends FormRequest
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -54,7 +54,7 @@ class CompareCohortAnalysisRequest extends FormRequest
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return Response::deny('You must be logged in to compare cohorts.');
         }
 
@@ -62,10 +62,10 @@ class CompareCohortAnalysisRequest extends FormRequest
             return Response::allow();
         }
 
-        if (!$user->can('cohort.compare')) {
+        if (! $user->can('cohort.compare')) {
             return Response::deny(
-                'You do not have permission to compare cohorts. ' .
-                'Required permission: view analytics for cohorts. ' .
+                'You do not have permission to compare cohorts. '.
+                'Required permission: view analytics for cohorts. '.
                 'Contact your administrator if you believe this is an error.'
             );
         }
@@ -148,8 +148,9 @@ class CompareCohortAnalysisRequest extends FormRequest
         // Get current tenant ID for non-super admin users
         $currentTenantId = $this->tenantContextService->getCurrentTenantId();
 
-        if (!$currentTenantId) {
+        if (! $currentTenantId) {
             $validator->errors()->add('cohort_ids', 'Tenant context is required for cohort comparison.');
+
             return;
         }
 
@@ -158,6 +159,7 @@ class CompareCohortAnalysisRequest extends FormRequest
 
         if ($cohorts->count() !== count($cohortIds)) {
             $validator->errors()->add('cohort_ids', 'One or more selected cohorts do not exist.');
+
             return;
         }
 
@@ -170,7 +172,7 @@ class CompareCohortAnalysisRequest extends FormRequest
             $inaccessibleNames = $inaccessibleCohorts->pluck('name')->implode(', ');
             $validator->errors()->add(
                 'cohort_ids',
-                "You do not have access to the following cohorts: {$inaccessibleNames}. " .
+                "You do not have access to the following cohorts: {$inaccessibleNames}. ".
                 'All cohorts must belong to your current tenant.'
             );
         }
@@ -182,7 +184,7 @@ class CompareCohortAnalysisRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default metrics if not provided
-        if (!$this->has('metrics') || empty($this->input('metrics'))) {
+        if (! $this->has('metrics') || empty($this->input('metrics'))) {
             $this->merge([
                 'metrics' => ['retention', 'engagement'],
             ]);

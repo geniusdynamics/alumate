@@ -36,8 +36,8 @@ class AlumniRecommendationService extends BaseService
                 'circles:id,name,type',
                 'connections' => function ($query) {
                     $query->where('status', 'accepted')
-                          ->select('id', 'user_id', 'connected_user_id', 'status');
-                }
+                        ->select('id', 'user_id', 'connected_user_id', 'status');
+                },
             ]);
 
             $candidates = $this->getCandidateUsers($user);
@@ -179,8 +179,8 @@ class AlumniRecommendationService extends BaseService
                 'workExperiences:id,user_id,industry,skills',
                 'connections' => function ($query) {
                     $query->where('status', 'accepted')
-                          ->select('id', 'user_id', 'connected_user_id', 'status');
-                }
+                        ->select('id', 'user_id', 'connected_user_id', 'status');
+                },
             ])
             ->limit(500) // Reasonable limit for processing
             ->get();

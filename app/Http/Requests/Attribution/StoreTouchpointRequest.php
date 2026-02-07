@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Attribution;
 
-use App\Services\Analytics\AttributionTrackingService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -50,7 +49,7 @@ class StoreTouchpointRequest extends FormRequest
             'user_id' => 'sometimes|required|integer|exists:users,id',
             'source' => 'required|string|max:255',
             'session_id' => 'nullable|string|max:255',
-            'event_type' => 'sometimes|string|in:' . implode(',', self::EVENT_TYPES),
+            'event_type' => 'sometimes|string|in:'.implode(',', self::EVENT_TYPES),
             'medium' => 'nullable|string|max:255',
             'campaign' => 'nullable|string|max:255',
             'value' => 'sometimes|numeric|min:0',
@@ -70,7 +69,7 @@ class StoreTouchpointRequest extends FormRequest
             'user_id.exists' => 'The specified user does not exist',
             'source.required' => 'Source (channel) is required',
             'source.max' => 'Source cannot exceed 255 characters',
-            'event_type.in' => 'Event type must be one of: ' . implode(', ', self::EVENT_TYPES),
+            'event_type.in' => 'Event type must be one of: '.implode(', ', self::EVENT_TYPES),
             'value.numeric' => 'Value must be a number',
             'value.min' => 'Value cannot be negative',
             'timestamp.date' => 'Timestamp must be a valid date',
@@ -102,12 +101,12 @@ class StoreTouchpointRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default event type if not provided
-        if (!$this->has('event_type')) {
+        if (! $this->has('event_type')) {
             $this->merge(['event_type' => 'page_view']);
         }
 
         // Set default value if not provided
-        if (!$this->has('value')) {
+        if (! $this->has('value')) {
             $this->merge(['value' => 0]);
         }
     }

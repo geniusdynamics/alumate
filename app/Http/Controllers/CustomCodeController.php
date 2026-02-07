@@ -3,11 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\CustomCode;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class CustomCodeController extends Controller
 {
@@ -30,13 +29,13 @@ class CustomCodeController extends Controller
             'limit' => 'nullable|integer|min:1|max:100',
             'offset' => 'nullable|integer|min:0',
             'sort_by' => 'nullable|in:created_at,updated_at,name,version',
-            'sort_order' => 'nullable|in:asc,desc'
+            'sort_order' => 'nullable|in:asc,desc',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -68,7 +67,7 @@ class CustomCodeController extends Controller
         }
 
         // Include inactive codes if requested
-        if (!$request->boolean('include_inactive')) {
+        if (! $request->boolean('include_inactive')) {
             $query->active();
         }
 
@@ -80,7 +79,7 @@ class CustomCodeController extends Controller
         // Pagination
         $limit = $request->get('limit', 20);
         $offset = $request->get('offset', 0);
-        
+
         $total = $query->count();
         $customCodes = $query->skip($offset)->take($limit)->get();
 
@@ -94,8 +93,8 @@ class CustomCodeController extends Controller
                 'total' => $total,
                 'limit' => $limit,
                 'offset' => $offset,
-                'has_more' => ($offset + $limit) < $total
-            ]
+                'has_more' => ($offset + $limit) < $total,
+            ],
         ]);
     }
 
@@ -115,13 +114,13 @@ class CustomCodeController extends Controller
             'is_draft' => 'boolean',
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
-            'metadata' => 'nullable|array'
+            'metadata' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -139,7 +138,7 @@ class CustomCodeController extends Controller
         if ($existingQuery->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => 'A custom code with this name already exists for this scope.'
+                'message' => 'A custom code with this name already exists for this scope.',
             ], 409);
         }
 
@@ -164,7 +163,7 @@ class CustomCodeController extends Controller
         return response()->json([
             'success' => true,
             'data' => $customCode,
-            'message' => 'Custom code created successfully.'
+            'message' => 'Custom code created successfully.',
         ], 201);
     }
 
@@ -177,7 +176,7 @@ class CustomCodeController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $customCode
+            'data' => $customCode,
         ]);
     }
 
@@ -194,13 +193,13 @@ class CustomCodeController extends Controller
             'is_draft' => 'boolean',
             'tags' => 'nullable|array',
             'tags.*' => 'string|max:50',
-            'metadata' => 'nullable|array'
+            'metadata' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -220,14 +219,14 @@ class CustomCodeController extends Controller
             if ($existingQuery->exists()) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'A custom code with this name already exists for this scope.'
+                    'message' => 'A custom code with this name already exists for this scope.',
                 ], 409);
             }
         }
 
         // Create version snapshot if code is being updated
         $shouldCreateVersion = $request->filled('code') && $request->code !== $customCode->code;
-        
+
         if ($shouldCreateVersion) {
             $this->createVersionSnapshot($customCode);
         }
@@ -247,7 +246,7 @@ class CustomCodeController extends Controller
         return response()->json([
             'success' => true,
             'data' => $customCode,
-            'message' => 'Custom code updated successfully.'
+            'message' => 'Custom code updated successfully.',
         ]);
     }
 
@@ -260,7 +259,7 @@ class CustomCodeController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Custom code deleted successfully.'
+            'message' => 'Custom code deleted successfully.',
         ]);
     }
 
@@ -280,13 +279,13 @@ class CustomCodeController extends Controller
             'limit' => 'nullable|integer|min:1|max:100',
             'offset' => 'nullable|integer|min:0',
             'sort_by' => 'nullable|in:created_at,updated_at,name',
-            'sort_order' => 'nullable|in:asc,desc'
+            'sort_order' => 'nullable|in:asc,desc',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -321,7 +320,7 @@ class CustomCodeController extends Controller
         // Pagination
         $limit = $request->get('limit', 20);
         $offset = $request->get('offset', 0);
-        
+
         $total = $query->count();
         $customCodes = $query->skip($offset)->take($limit)->get();
 
@@ -332,8 +331,8 @@ class CustomCodeController extends Controller
                 'total' => $total,
                 'limit' => $limit,
                 'offset' => $offset,
-                'has_more' => ($offset + $limit) < $total
-            ]
+                'has_more' => ($offset + $limit) < $total,
+            ],
         ]);
     }
 
@@ -343,13 +342,13 @@ class CustomCodeController extends Controller
     public function stats(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'tenant_id' => 'required|string'
+            'tenant_id' => 'required|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -370,7 +369,7 @@ class CustomCodeController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $stats
+            'data' => $stats,
         ]);
     }
 
@@ -381,13 +380,13 @@ class CustomCodeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:1000000',
-            'type' => 'required|in:html,css,javascript'
+            'type' => 'required|in:html,css,javascript',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -398,7 +397,7 @@ class CustomCodeController extends Controller
             'errors' => [],
             'warnings' => [],
             'security_issues' => [],
-            'performance_issues' => []
+            'performance_issues' => [],
         ];
 
         // Basic validation checks
@@ -411,7 +410,7 @@ class CustomCodeController extends Controller
                 $validationResult['security_issues'][] = [
                     'severity' => 'high',
                     'message' => 'Script tags detected in HTML code',
-                    'remediation' => 'Remove script tags or use JavaScript code type instead'
+                    'remediation' => 'Remove script tags or use JavaScript code type instead',
                 ];
             }
         }
@@ -422,7 +421,7 @@ class CustomCodeController extends Controller
                 $validationResult['security_issues'][] = [
                     'severity' => 'high',
                     'message' => 'Use of eval() detected',
-                    'remediation' => 'Avoid using eval() as it can execute malicious code'
+                    'remediation' => 'Avoid using eval() as it can execute malicious code',
                 ];
             }
         }
@@ -431,7 +430,7 @@ class CustomCodeController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $validationResult
+            'data' => $validationResult,
         ]);
     }
 

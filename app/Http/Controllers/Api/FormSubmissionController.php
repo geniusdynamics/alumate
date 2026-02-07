@@ -21,10 +21,10 @@ class FormSubmissionController extends Controller
     public function index(Request $request, FormBuilder $form): JsonResponse
     {
         $submissions = $form->submissions()
-            ->when($request->status, fn($query) => $query->where('status', $request->status))
-            ->when($request->crm_sync_status, fn($query) => $query->where('crm_sync_status', $request->crm_sync_status))
-            ->when($request->date_from, fn($query) => $query->whereDate('created_at', '>=', $request->date_from))
-            ->when($request->date_to, fn($query) => $query->whereDate('created_at', '<=', $request->date_to))
+            ->when($request->status, fn ($query) => $query->where('status', $request->status))
+            ->when($request->crm_sync_status, fn ($query) => $query->where('crm_sync_status', $request->crm_sync_status))
+            ->when($request->date_from, fn ($query) => $query->whereDate('created_at', '>=', $request->date_from))
+            ->when($request->date_to, fn ($query) => $query->whereDate('created_at', '<=', $request->date_to))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
@@ -100,11 +100,11 @@ class FormSubmissionController extends Controller
                 'success_rate' => $totalSubmissions > 0 ? round(($successfulSubmissions / $totalSubmissions) * 100, 2) : 0,
                 'crm_synced' => $crmSyncedSubmissions,
                 'crm_sync_rate' => $totalSubmissions > 0 ? round(($crmSyncedSubmissions / $totalSubmissions) * 100, 2) : 0,
-                'failed_crm_sync' => $failedCrmSync
+                'failed_crm_sync' => $failedCrmSync,
             ],
             'daily_submissions' => $dailySubmissions,
             'top_referrers' => $topReferrers,
-            'utm_sources' => $utmSources
+            'utm_sources' => $utmSources,
         ]);
     }
 
@@ -115,13 +115,13 @@ class FormSubmissionController extends Controller
     {
         if ($submission->form_id !== $form->id) {
             return response()->json([
-                'message' => 'Submission does not belong to this form'
+                'message' => 'Submission does not belong to this form',
             ], 422);
         }
 
         if ($submission->crm_sync_status === 'synced') {
             return response()->json([
-                'message' => 'Submission is already synced to CRM'
+                'message' => 'Submission is already synced to CRM',
             ], 422);
         }
 
@@ -130,12 +130,12 @@ class FormSubmissionController extends Controller
         if ($success) {
             return response()->json([
                 'message' => 'CRM sync retry successful',
-                'submission' => $submission->fresh()
+                'submission' => $submission->fresh(),
             ]);
         } else {
             return response()->json([
                 'message' => 'CRM sync retry failed',
-                'submission' => $submission->fresh()
+                'submission' => $submission->fresh(),
             ], 422);
         }
     }

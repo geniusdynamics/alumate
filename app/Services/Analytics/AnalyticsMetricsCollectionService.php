@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Collection;
-use Throwable;
 use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Analytics Metrics Collection Service
@@ -22,52 +21,71 @@ use Exception;
 class AnalyticsMetricsCollectionService
 {
     private const METRICS_CACHE_KEY = 'analytics_metrics';
+
     private const METRICS_CACHE_TTL = 3600; // 1 hour
+
     private const MAX_METRICS_HISTORY = 5000;
+
     private const METRICS_RETENTION_DAYS = 90;
 
     private TenantContextService $tenantContextService;
+
     private array $metricsConfig;
+
     private array $metricsStorage = [];
 
     /**
      * Aggregation types
      */
     public const AGGREGATION_SUM = 'sum';
+
     public const AGGREGATION_AVG = 'avg';
+
     public const AGGREGATION_MIN = 'min';
+
     public const AGGREGATION_MAX = 'max';
+
     public const AGGREGATION_COUNT = 'count';
+
     public const AGGREGATION_PERCENTILE = 'percentile';
 
     /**
      * Time grain options for trends
      */
     public const TIME_GRAIN_HOUR = 'hour';
+
     public const TIME_GRAIN_DAY = 'day';
+
     public const TIME_GRAIN_WEEK = 'week';
+
     public const TIME_GRAIN_MONTH = 'month';
+
     public const TIME_GRAIN_YEAR = 'year';
 
     /**
      * Export formats
      */
     public const FORMAT_JSON = 'json';
+
     public const FORMAT_CSV = 'csv';
+
     public const FORMAT_ARRAY = 'array';
+
     public const FORMAT_EXCEL = 'excel';
 
     /**
      * Metric types
      */
     public const TYPE_COUNTER = 'counter';
+
     public const TYPE_GAUGE = 'gauge';
+
     public const TYPE_HISTOGRAM = 'histogram';
+
     public const TYPE_SUMMARY = 'summary';
 
     /**
-     * @param TenantContextService $tenantContextService
-     * @param array $metricsConfig Metrics configuration
+     * @param  array  $metricsConfig  Metrics configuration
      */
     public function __construct(
         TenantContextService $tenantContextService,
@@ -80,7 +98,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Collect a single analytics metric
      *
-     * @param array $metric Metric data containing name, value, dimensions, etc.
+     * @param  array  $metric  Metric data containing name, value, dimensions, etc.
      * @return array Collected metric record
      */
     public function collectMetric(array $metric): array
@@ -118,7 +136,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Collect multiple metrics in batch
      *
-     * @param array $metrics Array of metric data to collect
+     * @param  array  $metrics  Array of metric data to collect
      * @return array Collection result with success count and records
      */
     public function collectBatchMetrics(array $metrics): array
@@ -151,7 +169,7 @@ class AnalyticsMetricsCollectionService
             }
         }
 
-        Log::info("Batch metrics collection completed", [
+        Log::info('Batch metrics collection completed', [
             'tenant_id' => $tenantId,
             'total' => $result['total'],
             'collected' => $result['collected'],
@@ -164,9 +182,9 @@ class AnalyticsMetricsCollectionService
     /**
      * Aggregate metrics based on specified aggregation type
      *
-     * @param array $metrics Array of metrics to aggregate
-     * @param string $aggregation Aggregation type (sum, avg, min, max, count, percentile)
-     * @param string|null $percentileValue Percentile value for percentile aggregation
+     * @param  array  $metrics  Array of metrics to aggregate
+     * @param  string  $aggregation  Aggregation type (sum, avg, min, max, count, percentile)
+     * @param  string|null  $percentileValue  Percentile value for percentile aggregation
      * @return array Aggregated metric result
      */
     public function aggregateMetrics(
@@ -238,11 +256,11 @@ class AnalyticsMetricsCollectionService
     /**
      * Get metrics with filters
      *
-     * @param array $filters Filters to apply (name, dimensions, date range, etc.)
-     * @param int $limit Maximum number of metrics to return
-     * @param int $offset Offset for pagination
-     * @param string|null $orderBy Field to order by
-     * @param string $orderDir Order direction (asc/desc)
+     * @param  array  $filters  Filters to apply (name, dimensions, date range, etc.)
+     * @param  int  $limit  Maximum number of metrics to return
+     * @param  int  $offset  Offset for pagination
+     * @param  string|null  $orderBy  Field to order by
+     * @param  string  $orderDir  Order direction (asc/desc)
      * @return array Filtered metrics with pagination info
      */
     public function getMetrics(
@@ -283,6 +301,7 @@ class AnalyticsMetricsCollectionService
             $since = strtotime($filters['since']);
             $metrics = array_filter($metrics, function ($metric) use ($since) {
                 $timestamp = strtotime($metric['timestamp'] ?? 0);
+
                 return $timestamp >= $since;
             });
         }
@@ -291,6 +310,7 @@ class AnalyticsMetricsCollectionService
             $until = strtotime($filters['until']);
             $metrics = array_filter($metrics, function ($metric) use ($until) {
                 $timestamp = strtotime($metric['timestamp'] ?? 0);
+
                 return $timestamp <= $until;
             });
         }
@@ -302,6 +322,7 @@ class AnalyticsMetricsCollectionService
                         return false;
                     }
                 }
+
                 return true;
             });
         }
@@ -309,10 +330,11 @@ class AnalyticsMetricsCollectionService
         if (isset($filters['tags']) && is_array($filters['tags'])) {
             $metrics = array_filter($metrics, function ($metric) use ($filters) {
                 foreach ($filters['tags'] as $tag) {
-                    if (!in_array($tag, $metric['tags'] ?? [])) {
+                    if (! in_array($tag, $metric['tags'] ?? [])) {
                         return false;
                     }
                 }
+
                 return true;
             });
         }
@@ -325,6 +347,7 @@ class AnalyticsMetricsCollectionService
             if ($orderDir === 'asc') {
                 return $valueA <=> $valueB;
             }
+
             return $valueB <=> $valueA;
         });
 
@@ -344,7 +367,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Get a metric by ID
      *
-     * @param string $metricId Metric ID to retrieve
+     * @param  string  $metricId  Metric ID to retrieve
      * @return array|null Metric record or null if not found
      */
     public function getMetricById(string $metricId): ?array
@@ -364,9 +387,9 @@ class AnalyticsMetricsCollectionService
     /**
      * Get metric trends over a date range
      *
-     * @param string $metricName Name of the metric to analyze
-     * @param array $dateRange Date range with 'start' and 'end' keys
-     * @param string $timeGrain Time grain for grouping (hour, day, week, month, year)
+     * @param  string  $metricName  Name of the metric to analyze
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
+     * @param  string  $timeGrain  Time grain for grouping (hour, day, week, month, year)
      * @return array Trend data with time series
      */
     public function getMetricTrends(
@@ -394,7 +417,7 @@ class AnalyticsMetricsCollectionService
             $timestamp = strtotime($metric['timestamp'] ?? 0);
             $groupKey = $this->getTimeGroupKey($timestamp, $timeGrain);
 
-            if (!isset($groupedMetrics[$groupKey])) {
+            if (! isset($groupedMetrics[$groupKey])) {
                 $groupedMetrics[$groupKey] = [
                     'period' => $groupKey,
                     'start_time' => $this->getPeriodStart($timestamp, $timeGrain),
@@ -444,8 +467,8 @@ class AnalyticsMetricsCollectionService
     /**
      * Calculate a metric based on parameters
      *
-     * @param string $metricName Name of the metric to calculate
-     * @param array $parameters Parameters for calculation
+     * @param  string  $metricName  Name of the metric to calculate
+     * @param  array  $parameters  Parameters for calculation
      * @return array Calculated metric result
      */
     public function calculateMetric(string $metricName, array $parameters = []): array
@@ -491,9 +514,9 @@ class AnalyticsMetricsCollectionService
     /**
      * Export metrics with filters
      *
-     * @param array $filters Filters to apply
-     * @param string $format Export format (json, csv, array, excel)
-     * @param int $limit Maximum records to export
+     * @param  array  $filters  Filters to apply
+     * @param  string  $format  Export format (json, csv, array, excel)
+     * @param  int  $limit  Maximum records to export
      * @return array Exported metrics
      */
     public function exportMetrics(array $filters = [], string $format = self::FORMAT_JSON, int $limit = 10000): array
@@ -531,8 +554,8 @@ class AnalyticsMetricsCollectionService
     /**
      * Get metrics summary for a date range
      *
-     * @param array $dateRange Date range with 'start' and 'end' keys
-     * @param array|null $metricNames Optional list of metric names to include
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
+     * @param  array|null  $metricNames  Optional list of metric names to include
      * @return array Metrics summary
      */
     public function getMetricsSummary(array $dateRange, ?array $metricNames = null): array
@@ -583,7 +606,7 @@ class AnalyticsMetricsCollectionService
 
             // By name
             $name = $metric['name'] ?? 'unknown';
-            if (!isset($summary['by_name'][$name])) {
+            if (! isset($summary['by_name'][$name])) {
                 $summary['by_name'][$name] = [
                     'name' => $name,
                     'count' => 0,
@@ -619,7 +642,7 @@ class AnalyticsMetricsCollectionService
         }
 
         // Sort top metrics by count
-        usort($summary['top_metrics'], fn($a, $b) => $b['count'] <=> $a['count']);
+        usort($summary['top_metrics'], fn ($a, $b) => $b['count'] <=> $a['count']);
         $summary['top_metrics'] = array_slice($summary['top_metrics'], 0, 10);
 
         // Sort by name, type, and source
@@ -633,7 +656,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Configure metrics collection settings
      *
-     * @param array $config Configuration options
+     * @param  array  $config  Configuration options
      * @return array Updated configuration
      */
     public function configureMetrics(array $config): array
@@ -671,7 +694,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Apply configuration changes
      *
-     * @param array $config Configuration to apply
+     * @param  array  $config  Configuration to apply
      */
     private function applyConfiguration(array $config): void
     {
@@ -691,7 +714,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Store a metric entry
      *
-     * @param array $metric Metric entry to store
+     * @param  array  $metric  Metric entry to store
      */
     private function storeMetric(array $metric): void
     {
@@ -731,8 +754,8 @@ class AnalyticsMetricsCollectionService
     /**
      * Get time group key for grouping metrics
      *
-     * @param int $timestamp Timestamp
-     * @param string $timeGrain Time grain
+     * @param  int  $timestamp  Timestamp
+     * @param  string  $timeGrain  Time grain
      * @return string Group key
      */
     private function getTimeGroupKey(int $timestamp, string $timeGrain): string
@@ -752,8 +775,8 @@ class AnalyticsMetricsCollectionService
     /**
      * Get period start time
      *
-     * @param int $timestamp Timestamp
-     * @param string $timeGrain Time grain
+     * @param  int  $timestamp  Timestamp
+     * @param  string  $timeGrain  Time grain
      * @return string Period start ISO8601 string
      */
     private function getPeriodStart(int $timestamp, string $timeGrain): string
@@ -771,8 +794,8 @@ class AnalyticsMetricsCollectionService
     /**
      * Get period end time
      *
-     * @param int $timestamp Timestamp
-     * @param string $timeGrain Time grain
+     * @param  int  $timestamp  Timestamp
+     * @param  string  $timeGrain  Time grain
      * @return string Period end ISO8601 string
      */
     private function getPeriodEnd(int $timestamp, string $timeGrain): string
@@ -790,7 +813,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Convert metrics to CSV format
      *
-     * @param array $metrics Metrics to convert
+     * @param  array  $metrics  Metrics to convert
      * @return string CSV formatted metrics
      */
     private function convertToCsv(array $metrics): string
@@ -800,7 +823,7 @@ class AnalyticsMetricsCollectionService
         }
 
         $headers = ['id', 'tenant_id', 'name', 'value', 'type', 'unit', 'source', 'timestamp'];
-        $csv = implode(',', $headers) . "\n";
+        $csv = implode(',', $headers)."\n";
 
         foreach ($metrics as $metric) {
             $row = [
@@ -817,12 +840,13 @@ class AnalyticsMetricsCollectionService
             // Escape values
             $row = array_map(function ($value) {
                 if (is_string($value)) {
-                    return '"' . str_replace('"', '""', $value) . '"';
+                    return '"'.str_replace('"', '""', $value).'"';
                 }
+
                 return $value;
             }, $row);
 
-            $csv .= implode(',', $row) . "\n";
+            $csv .= implode(',', $row)."\n";
         }
 
         return $csv;
@@ -831,7 +855,7 @@ class AnalyticsMetricsCollectionService
     /**
      * Convert metrics to Excel format (returns array for simplicity, can be extended)
      *
-     * @param array $metrics Metrics to convert
+     * @param  array  $metrics  Metrics to convert
      * @return array Excel-ready data structure
      */
     private function convertToExcel(array $metrics): array

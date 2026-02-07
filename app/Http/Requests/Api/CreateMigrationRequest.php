@@ -8,8 +8,6 @@ class CreateMigrationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -83,16 +81,14 @@ class CreateMigrationRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
         // Set default values
-        if (!$this->has('rollback_enabled')) {
+        if (! $this->has('rollback_enabled')) {
             $this->merge(['rollback_enabled' => true]);
         }
-        if (!$this->has('dry_run')) {
+        if (! $this->has('dry_run')) {
             $this->merge(['dry_run' => false]);
         }
     }
@@ -101,17 +97,16 @@ class CreateMigrationRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate version format
-            if ($this->has('source_version') && !preg_match('/^\d+\.\d+\.\d+$/', $this->source_version)) {
+            if ($this->has('source_version') && ! preg_match('/^\d+\.\d+\.\d+$/', $this->source_version)) {
                 $validator->errors()->add('source_version', 'Source version must be in semantic versioning format (e.g., 1.0.0)');
             }
 
-            if ($this->has('target_version') && !preg_match('/^\d+\.\d+\.\d+$/', $this->target_version)) {
+            if ($this->has('target_version') && ! preg_match('/^\d+\.\d+\.\d+$/', $this->target_version)) {
                 $validator->errors()->add('target_version', 'Target version must be in semantic versioning format (e.g., 1.0.0)');
             }
 

@@ -13,8 +13,11 @@ class ABTestCompletedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $template;
+
     protected $results;
+
     protected $user;
+
     protected $additionalData;
 
     public function __construct($template, $user = null, $additionalData = [])
@@ -79,13 +82,13 @@ class ABTestCompletedNotification extends Notification implements ShouldQueue
             ->subject("🧪 A/B Test Results: '{$this->template->name}'")
             ->greeting("Hi {$notifiable->name}!")
             ->line("Your A/B test for the template '{$this->template->name}' has completed!")
-            ->line("**Test Results:**")
+            ->line('**Test Results:**')
             ->line("🏆 **Winner:** {$winnerVariant}")
-            ->line("📊 {:.2f}", $this->results['winner']['conversion_rate'] ?? 0 . '% conversion rate')
+            ->line('📊 {:.2f}', $this->results['winner']['conversion_rate'] ?? 0 .'% conversion rate')
             ->when($significance, function ($mail) {
                 return $mail->line('✅ Results are statistically significant');
             })
-            ->when(!$significance, function ($mail) {
+            ->when(! $significance, function ($mail) {
                 return $mail->line('⚠️ Results may not be statistically significant');
             })
             ->line($this->formatVariantsComparison())
@@ -104,7 +107,7 @@ class ABTestCompletedNotification extends Notification implements ShouldQueue
 
         foreach ($variants as $variant) {
             $diff = ($variant['conversion_rate'] ?? 0) - ($this->results['control_conversion'] ?? 0);
-            $diffText = $diff > 0 ? '+' . $diff . '%' : $diff . '%';
+            $diffText = $diff > 0 ? '+'.$diff.'%' : $diff.'%';
             $text .= "• {$variant['variant']}: {$variant['conversion_rate']}% ({$diffText})\n";
         }
 

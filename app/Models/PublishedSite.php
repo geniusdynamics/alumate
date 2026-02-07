@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: PublishedSite model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Represents published landing page sites with deployment tracking and performance monitoring
 
@@ -211,7 +212,7 @@ class PublishedSite extends Model
      */
     public function getFullPublicUrl(): string
     {
-        if (!$this->isPublished()) {
+        if (! $this->isPublished()) {
             return '';
         }
 
@@ -224,6 +225,7 @@ class PublishedSite extends Model
         if ($this->subdomain && config('database.multi_tenant')) {
             try {
                 $tenantDomain = tenant()->domain;
+
                 return "https://{$this->subdomain}.{$tenantDomain}";
             } catch (\Exception $e) {
                 // Fallback to static URL
@@ -311,7 +313,7 @@ class PublishedSite extends Model
         $counter = 1;
 
         while ($this->slugExists($slug)) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -362,8 +364,8 @@ class PublishedSite extends Model
             'domain' => 'nullable|string|max:255',
             'subdomain' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
             'custom_domains' => 'nullable|array',
-            'status' => 'required|in:' . implode(',', self::STATUSES),
-            'deployment_status' => 'required|in:' . implode(',', self::DEPLOYMENT_STATUSES),
+            'status' => 'required|in:'.implode(',', self::STATUSES),
+            'deployment_status' => 'required|in:'.implode(',', self::DEPLOYMENT_STATUSES),
             'build_hash' => 'nullable|string|max:255',
             'cdn_url' => 'nullable|string|url|max:255',
             'static_url' => 'nullable|string|url|max:255',
@@ -390,7 +392,7 @@ class PublishedSite extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:published_sites,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:published_sites,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:published_sites,slug';
         }

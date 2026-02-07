@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: EmailSequence model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Manages email sequences with tenant isolation handled by database schema
 
@@ -9,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class EmailSequence extends Model
@@ -115,6 +115,7 @@ class EmailSequence extends Model
     {
         // In schema-based tenancy, return current tenant from context
         $tenant = $this->getCurrentTenant();
+
         return $this->belongsTo(Tenant::class)->where('id', $tenant->id);
     }
 
@@ -172,7 +173,7 @@ class EmailSequence extends Model
 
         // In schema-based tenancy, uniqueness is enforced within the tenant's schema
         if ($ignoreId) {
-            $rules['name'] = 'required|string|max:255|unique:email_sequences,name,' . $ignoreId . ',id';
+            $rules['name'] = 'required|string|max:255|unique:email_sequences,name,'.$ignoreId.',id';
         } else {
             $rules['name'] = 'required|string|max:255|unique:email_sequences,name';
         }

@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Image processing service for resizing, generating thumbnails, WebP conversion,
 // ABOUTME: and optimization with support for multiple storage disks
 
@@ -6,9 +7,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use Exception;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
-use Exception;
 
 class ImageProcessingService extends BaseService
 {
@@ -53,6 +54,7 @@ class ImageProcessingService extends BaseService
     protected function makeImage(string $path, string $disk): \Intervention\Image\Image
     {
         $fullPath = Storage::disk($disk)->path($path);
+
         return Image::read($fullPath);
     }
 
@@ -95,6 +97,7 @@ class ImageProcessingService extends BaseService
             return true;
         } catch (Exception $e) {
             report($e);
+
             return false;
         }
     }
@@ -117,7 +120,7 @@ class ImageProcessingService extends BaseService
         $directory = dirname($sourcePath);
 
         foreach ($sizes as $size) {
-            if (!isset($this->sizes[$size])) {
+            if (! isset($this->sizes[$size])) {
                 continue;
             }
 
@@ -166,6 +169,7 @@ class ImageProcessingService extends BaseService
             return true;
         } catch (Exception $e) {
             report($e);
+
             return false;
         }
     }
@@ -208,6 +212,7 @@ class ImageProcessingService extends BaseService
             return true;
         } catch (Exception $e) {
             report($e);
+
             return false;
         }
     }
@@ -237,6 +242,7 @@ class ImageProcessingService extends BaseService
             return true;
         } catch (Exception $e) {
             report($e);
+
             return false;
         }
     }
@@ -287,6 +293,7 @@ class ImageProcessingService extends BaseService
             return true;
         } catch (Exception $e) {
             report($e);
+
             return false;
         }
     }
@@ -343,6 +350,7 @@ class ImageProcessingService extends BaseService
     public function getFileSize(string $path, ?string $disk = null): int
     {
         $disk = $disk ?? config('filesystems.default');
+
         return Storage::disk($disk)->size($path);
     }
 

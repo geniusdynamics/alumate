@@ -35,15 +35,12 @@ class InsightsController extends Controller
 
     /**
      * Display a paginated list of insights with filtering
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('view-insights')) {
+            if (! Gate::allows('view-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to view insights.',
@@ -100,15 +97,12 @@ class InsightsController extends Controller
 
     /**
      * Display a specific insight
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function show(int $id): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('view-insights')) {
+            if (! Gate::allows('view-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to view insights.',
@@ -146,15 +140,12 @@ class InsightsController extends Controller
 
     /**
      * Store a new insight
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function store(Request $request): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('create-insights')) {
+            if (! Gate::allows('create-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to create insights.',
@@ -205,16 +196,12 @@ class InsightsController extends Controller
 
     /**
      * Update an insight
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function update(Request $request, int $id): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('edit-insights')) {
+            if (! Gate::allows('edit-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to update insights.',
@@ -262,15 +249,12 @@ class InsightsController extends Controller
 
     /**
      * Delete an insight
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('delete-insights')) {
+            if (! Gate::allows('delete-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to delete insights.',
@@ -309,15 +293,12 @@ class InsightsController extends Controller
 
     /**
      * Generate insights for a date range
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function generate(Request $request): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('generate-insights')) {
+            if (! Gate::allows('generate-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to generate insights.',
@@ -404,15 +385,12 @@ class InsightsController extends Controller
 
     /**
      * Export insights to CSV or JSON
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function export(Request $request): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('export-insights')) {
+            if (! Gate::allows('export-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to export insights.',
@@ -476,15 +454,12 @@ class InsightsController extends Controller
 
     /**
      * Dismiss an insight
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function dismiss(int $id): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('dismiss-insights')) {
+            if (! Gate::allows('dismiss-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to dismiss insights.',
@@ -525,16 +500,12 @@ class InsightsController extends Controller
 
     /**
      * Track effectiveness feedback for an insight
-     *
-     * @param Request $request
-     * @param string $insightId
-     * @return JsonResponse
      */
     public function trackFeedback(Request $request, string $insightId): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('track-insights')) {
+            if (! Gate::allows('track-insights')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to track insight feedback.',
@@ -586,9 +557,6 @@ class InsightsController extends Controller
 
     /**
      * Get summary statistics for insights
-     *
-     * @param string $tenantId
-     * @return array
      */
     private function getInsightsSummary(string $tenantId): array
     {
@@ -609,8 +577,7 @@ class InsightsController extends Controller
     /**
      * Export insights to CSV format
      *
-     * @param \Illuminate\Support\Collection $insights
-     * @return JsonResponse
+     * @param  \Illuminate\Support\Collection  $insights
      */
     private function exportToCsv($insights): JsonResponse
     {
@@ -628,9 +595,9 @@ class InsightsController extends Controller
             ];
         }
 
-        $csv = implode(',', $headers) . "\n";
+        $csv = implode(',', $headers)."\n";
         foreach ($rows as $row) {
-            $csv .= implode(',', array_map(fn($cell) => '"' . str_replace('"', '""', $cell) . '"', $row)) . "\n";
+            $csv .= implode(',', array_map(fn ($cell) => '"'.str_replace('"', '""', $cell).'"', $row))."\n";
         }
 
         return response()->json([
@@ -644,8 +611,6 @@ class InsightsController extends Controller
 
     /**
      * Get current tenant ID with fallback
-     *
-     * @return string
      */
     private function getCurrentTenantId(): string
     {

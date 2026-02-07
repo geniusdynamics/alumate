@@ -54,16 +54,18 @@ class RealtimeService
      */
     public function broadcast(string $channel, string $event, array $data): bool
     {
-        if (!$this->pusher) {
+        if (! $this->pusher) {
             Log::warning('Realtime service not available, event not broadcasted', [
                 'channel' => $channel,
                 'event' => $event,
             ]);
+
             return false;
         }
 
         try {
             $this->pusher->trigger($channel, $event, $data);
+
             return true;
         } catch (\Exception $e) {
             Log::error('Failed to broadcast event', [
@@ -71,6 +73,7 @@ class RealtimeService
                 'event' => $event,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -80,7 +83,8 @@ class RealtimeService
      */
     public function broadcastToTenant(Tenant $tenant, string $event, array $data): bool
     {
-        $channel = 'tenant.' . $tenant->id;
+        $channel = 'tenant.'.$tenant->id;
+
         return $this->broadcast($channel, $event, $data);
     }
 
@@ -89,7 +93,8 @@ class RealtimeService
      */
     public function broadcastToUser(User $user, string $event, array $data): bool
     {
-        $channel = 'user.' . $user->id;
+        $channel = 'user.'.$user->id;
+
         return $this->broadcast($channel, $event, $data);
     }
 
@@ -109,7 +114,8 @@ class RealtimeService
      */
     public function broadcastMessage(int $conversationId, array $message): bool
     {
-        $channel = 'conversation.' . $conversationId;
+        $channel = 'conversation.'.$conversationId;
+
         return $this->broadcast($channel, 'message.new', [
             'message' => $message,
             'timestamp' => now()->toISOString(),
@@ -121,7 +127,8 @@ class RealtimeService
      */
     public function broadcastTyping(int $conversationId, User $user, bool $isTyping): bool
     {
-        $channel = 'conversation.' . $conversationId;
+        $channel = 'conversation.'.$conversationId;
+
         return $this->broadcast($channel, 'typing', [
             'user_id' => $user->id,
             'user_name' => $user->name,
@@ -135,11 +142,12 @@ class RealtimeService
      */
     public function broadcastPresence(User $user, string $status): bool
     {
-        if (!$user->currentTenant) {
+        if (! $user->currentTenant) {
             return false;
         }
 
-        $channel = 'presence.tenant.' . $user->currentTenant->id;
+        $channel = 'presence.tenant.'.$user->currentTenant->id;
+
         return $this->broadcast($channel, 'presence.update', [
             'user_id' => $user->id,
             'user_name' => $user->name,
@@ -153,7 +161,7 @@ class RealtimeService
      */
     public function broadcastPost(Tenant $tenant, string $action, array $post): bool
     {
-        return $this->broadcastToTenant($tenant, 'post.' . $action, [
+        return $this->broadcastToTenant($tenant, 'post.'.$action, [
             'post' => $post,
             'timestamp' => now()->toISOString(),
         ]);
@@ -164,7 +172,8 @@ class RealtimeService
      */
     public function broadcastComment(int $postId, array $comment): bool
     {
-        $channel = 'post.' . $postId;
+        $channel = 'post.'.$postId;
+
         return $this->broadcast($channel, 'comment.new', [
             'comment' => $comment,
             'timestamp' => now()->toISOString(),
@@ -176,7 +185,8 @@ class RealtimeService
      */
     public function broadcastReaction(int $postId, User $user, string $reactionType): bool
     {
-        $channel = 'post.' . $postId;
+        $channel = 'post.'.$postId;
+
         return $this->broadcast($channel, 'reaction.new', [
             'user_id' => $user->id,
             'user_name' => $user->name,
@@ -190,7 +200,7 @@ class RealtimeService
      */
     public function broadcastEvent(Tenant $tenant, string $action, array $event): bool
     {
-        return $this->broadcastToTenant($tenant, 'event.' . $action, [
+        return $this->broadcastToTenant($tenant, 'event.'.$action, [
             'event' => $event,
             'timestamp' => now()->toISOString(),
         ]);
@@ -201,7 +211,7 @@ class RealtimeService
      */
     public function broadcastJob(Tenant $tenant, string $action, array $job): bool
     {
-        return $this->broadcastToTenant($tenant, 'job.' . $action, [
+        return $this->broadcastToTenant($tenant, 'job.'.$action, [
             'job' => $job,
             'timestamp' => now()->toISOString(),
         ]);
@@ -223,7 +233,7 @@ class RealtimeService
      */
     public function auth(string $channel, string $socketId): ?string
     {
-        if (!$this->pusher) {
+        if (! $this->pusher) {
             return null;
         }
 
@@ -234,6 +244,7 @@ class RealtimeService
                 'channel' => $channel,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -243,7 +254,7 @@ class RealtimeService
      */
     public function presenceAuth(string $channel, string $socketId, User $user): ?string
     {
-        if (!$this->pusher) {
+        if (! $this->pusher) {
             return null;
         }
 
@@ -262,6 +273,7 @@ class RealtimeService
                 'channel' => $channel,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }

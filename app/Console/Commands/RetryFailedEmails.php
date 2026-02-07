@@ -68,7 +68,7 @@ class RetryFailedEmails extends Command
         // Validate provider if specified
         if ($provider && ! in_array($provider, EmailDeliveryService::PROVIDERS)) {
             $this->error("Invalid provider: {$provider}");
-            $this->info('Valid providers: ' . implode(', ', EmailDeliveryService::PROVIDERS));
+            $this->info('Valid providers: '.implode(', ', EmailDeliveryService::PROVIDERS));
 
             return self::FAILURE;
         }
@@ -231,9 +231,9 @@ class RetryFailedEmails extends Command
         $this->table(
             ['Status', 'Count', 'Percentage'],
             [
-                ['Successful', $results['successful'], $total > 0 ? round(($results['successful'] / $total) * 100, 1) . '%' : '0%'],
-                ['Failed', $results['failed'], $total > 0 ? round(($results['failed'] / $total) * 100, 1) . '%' : '0%'],
-                ['Skipped', $results['skipped'], $total > 0 ? round(($results['skipped'] / $total) * 100, 1) . '%' : '0%'],
+                ['Successful', $results['successful'], $total > 0 ? round(($results['successful'] / $total) * 100, 1).'%' : '0%'],
+                ['Failed', $results['failed'], $total > 0 ? round(($results['failed'] / $total) * 100, 1).'%' : '0%'],
+                ['Skipped', $results['skipped'], $total > 0 ? round(($results['skipped'] / $total) * 100, 1).'%' : '0%'],
             ]
         );
 

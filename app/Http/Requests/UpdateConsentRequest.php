@@ -75,8 +75,8 @@ class UpdateConsentRequest extends FormRequest
         $validCategories = ['analytics', 'marketing', 'tracking', 'profiling'];
 
         foreach (array_keys($preferences) as $category) {
-            if (!in_array($category, $validCategories)) {
-                $validator->errors()->add('preferences', "Invalid consent category: {$category}. Valid categories are: " . implode(', ', $validCategories));
+            if (! in_array($category, $validCategories)) {
+                $validator->errors()->add('preferences', "Invalid consent category: {$category}. Valid categories are: ".implode(', ', $validCategories));
             }
         }
     }

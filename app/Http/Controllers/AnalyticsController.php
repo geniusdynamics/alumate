@@ -2,6 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CompareCohortsRequest;
+use App\Http\Requests\CreateCohortRequest;
+use App\Http\Requests\CustomTrackRequest;
+use App\Http\Requests\DefineEventRequest;
+use App\Http\Requests\MatomoTrackRequest;
+use App\Http\Requests\SyncGoalsRequest;
+use App\Http\Requests\SyncRunRequest;
+use App\Http\Requests\TrackTouchRequest;
+use App\Models\Cohort;
+use App\Services\Analytics\AttributionService;
+use App\Services\Analytics\CohortAnalysisService;
+use App\Services\Analytics\CustomEventService;
+use App\Services\Analytics\MatomoService;
+use App\Services\Analytics\SyncService;
+use App\Services\TenantContextService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -9,21 +24,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use App\Services\Analytics\CohortAnalysisService;
-use App\Services\Analytics\AttributionService;
-use App\Models\Cohort;
-use App\Http\Requests\CreateCohortRequest;
-use App\Http\Requests\CompareCohortsRequest;
-use App\Http\Requests\TrackTouchRequest;
-use App\Http\Requests\DefineEventRequest;
-use App\Http\Requests\CustomTrackRequest;
-use App\Http\Requests\MatomoTrackRequest;
-use App\Http\Requests\SyncGoalsRequest;
-use App\Http\Requests\SyncRunRequest;
-use App\Services\Analytics\CustomEventService;
-use App\Services\Analytics\MatomoService;
-use App\Services\Analytics\SyncService;
-use App\Services\TenantContextService;
 
 class AnalyticsController extends Controller
 {
@@ -33,6 +33,7 @@ class AnalyticsController extends Controller
     {
         $this->tenantContextService = $tenantContextService;
     }
+
     /**
      * Store analytics events in batch
      */
@@ -40,11 +41,12 @@ class AnalyticsController extends Controller
     {
         // Check analytics consent
         $consentService = app(\App\Services\Analytics\ConsentService::class);
-        if (!$consentService->hasConsent()) {
+        if (! $consentService->hasConsent()) {
             \Illuminate\Support\Facades\Log::info('Analytics events access denied - no consent', [
                 'ip' => $request->ip(),
                 'session_id' => $request->input('sessionId'),
             ]);
+
             return response()->json([
                 'success' => false,
                 'error' => 'Analytics consent required',
@@ -237,14 +239,15 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         // Check analytics consent
         $consentService = app(\App\Services\Analytics\ConsentService::class);
-        if (!$consentService->hasConsent()) {
+        if (! $consentService->hasConsent()) {
             \Illuminate\Support\Facades\Log::info('Analytics metrics access denied - no consent', [
                 'ip' => $request->ip(),
                 'audience' => $request->input('audience'),
             ]);
+
             return response()->json([
                 'success' => false,
                 'error' => 'Analytics consent required',
@@ -300,7 +303,7 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         $validator = Validator::make($request->all(), [
             'audience' => 'required|in:individual,institutional',
             'timeRange.start' => 'nullable|date',
@@ -349,7 +352,7 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         $validator = Validator::make($request->all(), [
             'format' => 'required|in:json,csv',
             'audience' => 'required|in:individual,institutional',
@@ -397,7 +400,7 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         $validator = Validator::make($request->all(), [
             'audience' => 'required|in:individual,institutional',
             'timeRange.start' => 'nullable|date',
@@ -525,7 +528,7 @@ class AnalyticsController extends Controller
     {
         // Ensure tenant context is applied
         $this->ensureTenantContext();
-        
+
         // Page views
         $pageViews = DB::table('analytics_events')
             ->where('audience', $audience)
@@ -630,7 +633,7 @@ class AnalyticsController extends Controller
     {
         // Ensure tenant context is applied
         $this->ensureTenantContext();
-        
+
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -683,7 +686,7 @@ class AnalyticsController extends Controller
     {
         // Ensure tenant context is applied
         $this->ensureTenantContext();
-        
+
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -726,7 +729,7 @@ class AnalyticsController extends Controller
     {
         // Ensure tenant context is applied
         $this->ensureTenantContext();
-        
+
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -772,7 +775,7 @@ class AnalyticsController extends Controller
     {
         // Ensure tenant context is applied
         $this->ensureTenantContext();
-        
+
         $startDate = $timeRange['start'] ?? Carbon::now()->subDays(30);
         $endDate = $timeRange['end'] ?? Carbon::now();
 
@@ -824,7 +827,7 @@ class AnalyticsController extends Controller
     {
         // Ensure tenant context is applied
         $this->ensureTenantContext();
-        
+
         $query = DB::table('analytics_events')
             ->where('audience', $audience);
 
@@ -889,7 +892,7 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $cohortAnalysisService = app(CohortAnalysisService::class);
 
@@ -945,13 +948,13 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $cohort = Cohort::byTenant($this->getCurrentTenantId())
                 ->where('id', $cohortId)
                 ->first();
 
-            if (!$cohort) {
+            if (! $cohort) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Cohort not found',
@@ -1012,7 +1015,7 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $cohortIds = $request->input('cohort_ids');
             $metrics = $request->input('metrics', ['retention', 'engagement']);
@@ -1058,7 +1061,7 @@ class AnalyticsController extends Controller
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $query = Cohort::byTenant($this->getCurrentTenantId())
                 ->with('creator:id,name,email');
@@ -1121,41 +1124,42 @@ class AnalyticsController extends Controller
 
     /**
      * Get current tenant ID
-     * 
+     *
      * @return string|null Returns the current tenant ID or null if not set
+     *
      * @throws \Exception If tenant context is not available
      */
     private function getCurrentTenantId(): ?string
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
-        if (!$tenantId) {
+
+        if (! $tenantId) {
             Log::warning('Tenant context not available in AnalyticsController', [
                 'method' => debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['function'] ?? 'unknown',
                 'user_id' => auth()->id(),
             ]);
             throw new \Exception('Tenant context not available. Please ensure you are accessing the application through a valid tenant context.');
         }
-        
+
         return $tenantId;
     }
 
     /**
      * Ensure tenant context is applied to database queries
      * This method ensures that all queries are executed in the correct tenant schema
-     * 
+     *
      * @throws \Exception If tenant context is not available
      */
     private function ensureTenantContext(): void
     {
         $tenantId = $this->getCurrentTenantId();
         $schema = $this->tenantContextService->getCurrentSchema();
-        
+
         if ($schema) {
             // Switch to tenant schema for all queries
             $this->tenantContextService->switchToTenantSchema($schema);
         }
-        
+
         Log::debug('Tenant context applied for analytics queries', [
             'tenant_id' => $tenantId,
             'schema' => $schema,
@@ -1165,19 +1169,19 @@ class AnalyticsController extends Controller
     /**
      * Validate tenant isolation for cross-tenant access prevention
      * This method should be called at the start of any method that retrieves tenant-specific data
-     * 
+     *
      * @throws \Exception If tenant context is not valid or user doesn't have access
      */
     private function validateTenantIsolation(): void
     {
         $tenantId = $this->getCurrentTenantId();
-        
-        if (!$tenantId) {
+
+        if (! $tenantId) {
             throw new \Exception('Tenant context is required for this operation');
         }
-        
+
         // Validate that the current user has access to this tenant
-        if (!$this->tenantContextService->validateTenantAccess($tenantId)) {
+        if (! $this->tenantContextService->validateTenantAccess($tenantId)) {
             Log::warning('Tenant access validation failed', [
                 'tenant_id' => $tenantId,
                 'user_id' => auth()->id(),
@@ -1189,7 +1193,7 @@ class AnalyticsController extends Controller
 
     /**
      * Get the current tenant ID for insert operations
-     * 
+     *
      * @return string The current tenant ID
      */
     private function getTenantIdForInsert(): string
@@ -1203,15 +1207,12 @@ class AnalyticsController extends Controller
 
     /**
      * Track a touchpoint in a user's attribution journey
-     *
-     * @param TrackTouchRequest $request
-     * @return JsonResponse
      */
     public function trackTouchpoint(TrackTouchRequest $request): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $attributionService = app(AttributionService::class);
 
@@ -1254,15 +1255,12 @@ class AnalyticsController extends Controller
 
     /**
      * Get user attribution journey with model comparisons
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function getUserAttribution(int $userId): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $attributionService = app(AttributionService::class);
 
@@ -1296,14 +1294,12 @@ class AnalyticsController extends Controller
 
     /**
      * Get channel performance metrics with ROI analysis
-     *
-     * @return JsonResponse
      */
     public function getChannelPerformance(): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $attributionService = app(AttributionService::class);
 
@@ -1321,7 +1317,7 @@ class AnalyticsController extends Controller
                     $endDate
                 );
 
-                if (!empty($contribution)) {
+                if (! empty($contribution)) {
                     $roi = $attributionService->calculateChannelROI($channel);
                     $performance[$channel] = array_merge($contribution, [
                         'roi' => round($roi, 2),
@@ -1354,14 +1350,12 @@ class AnalyticsController extends Controller
 
     /**
      * Get budget allocation recommendations based on performance
-     *
-     * @return JsonResponse
      */
     public function getBudgetRecommendations(): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $attributionService = app(AttributionService::class);
             $recommendations = $attributionService->generateBudgetRecommendations();
@@ -1393,9 +1387,6 @@ class AnalyticsController extends Controller
 
     /**
      * Compare attribution models and identify differences
-     *
-     * @param array $attributions
-     * @return array
      */
     private function compareAttributionModels(array $attributions): array
     {
@@ -1426,7 +1417,7 @@ class AnalyticsController extends Controller
                     $diff[$channel] = round($modelWeight - $linearWeight, 3);
                 }
 
-                $differences[$model . '_vs_linear'] = $diff;
+                $differences[$model.'_vs_linear'] = $diff;
             }
         }
 
@@ -1438,9 +1429,6 @@ class AnalyticsController extends Controller
 
     /**
      * Categorize ROI values
-     *
-     * @param float $roi
-     * @return string
      */
     private function categorizeROI(float $roi): string
     {
@@ -1459,9 +1447,6 @@ class AnalyticsController extends Controller
 
     /**
      * Calculate performance summary statistics
-     *
-     * @param array $performance
-     * @return array
      */
     private function calculatePerformanceSummary(array $performance): array
     {
@@ -1482,9 +1467,6 @@ class AnalyticsController extends Controller
 
     /**
      * Find the best performing channel based on ROI
-     *
-     * @param array $performance
-     * @return string|null
      */
     private function findBestChannel(array $performance): ?string
     {
@@ -1503,9 +1485,6 @@ class AnalyticsController extends Controller
 
     /**
      * Generate insights from budget recommendations
-     *
-     * @param array $recommendations
-     * @return array
      */
     private function generateBudgetInsights(array $recommendations): array
     {
@@ -1515,7 +1494,7 @@ class AnalyticsController extends Controller
             if ($data['change_percentage'] > 15) {
                 $insights[] = "Consider increasing {$channel} budget by {$data['change_percentage']}% due to strong ROI performance.";
             } elseif ($data['change_percentage'] < -10) {
-                $insights[] = "Consider decreasing {$channel} budget by " . abs($data['change_percentage']) . "% due to poor ROI performance.";
+                $insights[] = "Consider decreasing {$channel} budget by ".abs($data['change_percentage']).'% due to poor ROI performance.';
             }
         }
 
@@ -1532,15 +1511,12 @@ class AnalyticsController extends Controller
 
     /**
      * Define a new custom event with JSON schema validation.
-     *
-     * @param DefineEventRequest $request
-     * @return JsonResponse
      */
     public function defineCustomEvent(DefineEventRequest $request): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $customEventService = app(CustomEventService::class);
 
@@ -1583,15 +1559,12 @@ class AnalyticsController extends Controller
 
     /**
      * Track a custom event instance with validation.
-     *
-     * @param CustomTrackRequest $request
-     * @return JsonResponse
      */
     public function trackCustomEvent(CustomTrackRequest $request): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $customEventService = app(CustomEventService::class);
 
@@ -1607,7 +1580,7 @@ class AnalyticsController extends Controller
                 $context
             );
 
-            if (!$success) {
+            if (! $success) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Failed to track custom event',
@@ -1634,15 +1607,12 @@ class AnalyticsController extends Controller
 
     /**
      * Get custom event analysis and insights.
-     *
-     * @param string $eventName
-     * @return JsonResponse
      */
     public function getEventAnalysis(string $eventName): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $customEventService = app(CustomEventService::class);
 
@@ -1686,14 +1656,12 @@ class AnalyticsController extends Controller
 
     /**
      * List all custom events with filtering and pagination.
-     *
-     * @return JsonResponse
      */
     public function listCustomEvents(Request $request): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $query = \App\Models\CustomEventDefinition::byTenant($this->getCurrentTenantId());
 
@@ -1706,7 +1674,7 @@ class AnalyticsController extends Controller
                 $search = $request->input('search');
                 $query->where(function ($q) use ($search) {
                     $q->where('event_name', 'like', "%{$search}%")
-                      ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%");
                 });
             }
 
@@ -1867,15 +1835,12 @@ class AnalyticsController extends Controller
 
     /**
      * Run data synchronization
-     *
-     * @param SyncRunRequest $request
-     * @return JsonResponse
      */
     public function runSync(SyncRunRequest $request): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         try {
             $syncService = app(SyncService::class);
             $tenantId = $this->getCurrentTenantId();
@@ -1906,15 +1871,12 @@ class AnalyticsController extends Controller
 
     /**
      * Get synchronization status
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getSyncStatus(Request $request): JsonResponse
     {
         // Validate tenant isolation first
         $this->validateTenantIsolation();
-        
+
         $validator = Validator::make($request->all(), [
             'date_range.start' => 'nullable|date',
             'date_range.end' => 'nullable|date',

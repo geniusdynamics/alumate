@@ -1,14 +1,15 @@
 <?php
+
 // ABOUTME: Brand color model for managing brand color palettes and accessibility
 // ABOUTME: Updated for schema-based multi-tenancy without tenant_id column
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Services\TenantContextService;
 
 class BrandColor extends Model
 {
@@ -79,7 +80,7 @@ class BrandColor extends Model
     /**
      * Scope query to specific tenant (legacy compatibility)
      */
-    public function scopeForTenant($query, int $tenantId = null)
+    public function scopeForTenant($query, ?int $tenantId = null)
     {
         // For schema-based tenancy, this is handled by global scope
         return $query;
@@ -173,6 +174,7 @@ class BrandColor extends Model
         }
 
         $rgb = $this->getRgbArray();
+
         return implode(', ', $rgb);
     }
 
@@ -271,7 +273,7 @@ class BrandColor extends Model
             'rgb_value' => 'nullable|string|max:255',
             'hsl_value' => 'nullable|string|max:255',
             'cmyk_value' => 'nullable|string|max:255',
-            'usage_context' => 'required|in:' . implode(',', self::USAGE_CONTEXTS),
+            'usage_context' => 'required|in:'.implode(',', self::USAGE_CONTEXTS),
             'accessibility_rating' => 'nullable|integer|min:1|max:5',
             'contrast_ratios' => 'nullable|array',
             'is_accessible' => 'boolean',

@@ -6,20 +6,19 @@ namespace App\Jobs;
 
 use App\Models\AnalyticsEvent;
 use App\Models\ComponentAnalytic;
-use App\Services\ABTestingService;
 use App\Services\Analytics\GoogleAnalyticsService;
 use App\Services\Analytics\MatomoService;
 use App\Services\Analytics\SyncService;
 use App\Services\AnalyticsService;
 use App\Services\HeatMapService;
 use App\Services\TenantContextService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 /**
  * Process analytics events asynchronously
@@ -66,8 +65,9 @@ class ProcessAnalyticsEvents implements ShouldQueue
                 try {
                     $event = AnalyticsEvent::find($eventId);
 
-                    if (!$event) {
+                    if (! $event) {
                         Log::warning('Analytics event not found', ['event_id' => $eventId]);
+
                         continue;
                     }
 
@@ -108,7 +108,7 @@ class ProcessAnalyticsEvents implements ShouldQueue
                 'tenant_id' => $this->tenantId,
             ]);
 
-            if (!empty($errors)) {
+            if (! empty($errors)) {
                 Log::warning('ProcessAnalyticsEvents job completed with errors', [
                     'error_count' => count($errors),
                     'errors' => $errors,
@@ -159,7 +159,7 @@ class ProcessAnalyticsEvents implements ShouldQueue
         $complianceFlags = $event->compliance_flags ?? [];
 
         // Check for GDPR/CCPA compliance
-        if (!$this->hasRequiredConsent($complianceFlags)) {
+        if (! $this->hasRequiredConsent($complianceFlags)) {
             Log::info('Event lacks required consent, marking as non-compliant', [
                 'event_id' => $event->id,
                 'event_type' => $event->event_type,
@@ -399,7 +399,7 @@ class ProcessAnalyticsEvents implements ShouldQueue
         return [
             'analytics',
             'event-processing',
-            'tenant:' . $this->tenantId,
+            'tenant:'.$this->tenantId,
         ];
     }
 

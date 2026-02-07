@@ -184,7 +184,7 @@ class HomepageController extends Controller
                 'image' => '/images/success-story-1.jpg',
                 'author' => 'Sarah Johnson',
                 'role' => 'Software Engineer',
-                'company' => 'Tech Corp'
+                'company' => 'Tech Corp',
             ],
             [
                 'id' => 2,
@@ -193,7 +193,7 @@ class HomepageController extends Controller
                 'image' => '/images/success-story-2.jpg',
                 'author' => 'Michael Chen',
                 'role' => 'Product Manager',
-                'company' => 'Innovation Inc'
+                'company' => 'Innovation Inc',
             ],
             [
                 'id' => 3,
@@ -202,14 +202,14 @@ class HomepageController extends Controller
                 'image' => '/images/success-story-3.jpg',
                 'author' => 'Emily Rodriguez',
                 'role' => 'Marketing Director',
-                'company' => 'Growth Solutions'
-            ]
+                'company' => 'Growth Solutions',
+            ],
         ];
 
         return response()->json([
             'status' => 'success',
             'data' => $stories,
-            'audience' => $audience
+            'audience' => $audience,
         ]);
     }
 

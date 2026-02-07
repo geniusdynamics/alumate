@@ -22,7 +22,7 @@ class BroadcastingController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -40,7 +40,7 @@ class BroadcastingController extends Controller
         if (str_starts_with($channel, 'private-tenant.')) {
             $tenantId = (int) str_replace('private-tenant.', '', $channel);
             $hasAccess = $user->tenants()->where('tenants.id', $tenantId)->exists();
-            if (!$hasAccess) {
+            if (! $hasAccess) {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
         }
@@ -48,7 +48,7 @@ class BroadcastingController extends Controller
         if (str_starts_with($channel, 'private-conversation.')) {
             $conversationId = (int) str_replace('private-conversation.', '', $channel);
             $hasAccess = $user->conversations()->where('conversations.id', $conversationId)->exists();
-            if (!$hasAccess) {
+            if (! $hasAccess) {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
         }
@@ -59,7 +59,7 @@ class BroadcastingController extends Controller
             $auth = $this->realtimeService->auth($channel, $socketId);
         }
 
-        if (!$auth) {
+        if (! $auth) {
             return response()->json(['error' => 'Authentication failed'], 500);
         }
 

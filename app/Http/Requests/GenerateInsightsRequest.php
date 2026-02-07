@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 /**
  * Request class for validating insights generation requests
- * 
+ *
  * This request validates the parameters needed for generating analytics insights,
  * including period, metrics filter, and other options.
  */

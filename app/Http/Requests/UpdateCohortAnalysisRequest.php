@@ -96,16 +96,17 @@ class UpdateCohortAnalysisRequest extends FormRequest
 
         if (empty($criteria)) {
             $validator->errors()->add('criteria', 'Criteria cannot be empty when provided.');
+
             return;
         }
 
         $allowedKeys = ['grad_year', 'degree', 'major', 'acquisition_date', 'acquisition_source', 'metadata'];
 
         foreach ($criteria as $key => $value) {
-            if (!in_array($key, $allowedKeys)) {
+            if (! in_array($key, $allowedKeys)) {
                 $validator->errors()->add(
                     'criteria',
-                    "Invalid criteria key: {$key}. Allowed keys: " . implode(', ', $allowedKeys)
+                    "Invalid criteria key: {$key}. Allowed keys: ".implode(', ', $allowedKeys)
                 );
             }
         }

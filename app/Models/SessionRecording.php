@@ -101,6 +101,7 @@ class SessionRecording extends Model
         if ($this->isCompressed()) {
             // Implement decompression logic here
             $compressedData = substr($this->recording_data, 11); // Remove 'compressed:' prefix
+
             return json_decode(gzuncompress(base64_decode($compressedData)), true) ?? [];
         }
 
@@ -123,13 +124,13 @@ class SessionRecording extends Model
         ];
 
         // Analyze events for patterns
-        $clickEvents = array_filter($data, fn($event) => ($event['type'] ?? '') === 'click');
+        $clickEvents = array_filter($data, fn ($event) => ($event['type'] ?? '') === 'click');
         $rageClickThreshold = 3; // clicks within 1 second
         $confusionThreshold = 5; // rapid interactions
 
         foreach ($clickEvents as $index => $event) {
             $timestamp = $event['timestamp'] ?? 0;
-            $nearbyClicks = array_filter($clickEvents, function($otherEvent) use ($timestamp, $index) {
+            $nearbyClicks = array_filter($clickEvents, function ($otherEvent) use ($timestamp) {
                 return abs(($otherEvent['timestamp'] ?? 0) - $timestamp) < 1000;
             });
 

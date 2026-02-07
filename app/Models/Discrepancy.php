@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Discrepancy Model
- * 
+ *
  * Tracks data discrepancies between different analytics sources
  */
 class Discrepancy extends Model

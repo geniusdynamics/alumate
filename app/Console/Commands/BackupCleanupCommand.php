@@ -21,7 +21,7 @@ class BackupCleanupCommand extends Command
 
         $this->info("Deleted {$results['deleted']} old backups");
 
-        if (!empty($results['errors'])) {
+        if (! empty($results['errors'])) {
             $this->warn('Errors encountered:');
             foreach ($results['errors'] as $error) {
                 $this->error("  Backup {$error['backup_id']}: {$error['error']}");

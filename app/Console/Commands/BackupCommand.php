@@ -40,9 +40,11 @@ class BackupCommand extends Command
             }
 
             $this->info('Backup completed successfully!');
+
             return self::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('Backup failed: ' . $e->getMessage());
+            $this->error('Backup failed: '.$e->getMessage());
+
             return self::FAILURE;
         }
     }

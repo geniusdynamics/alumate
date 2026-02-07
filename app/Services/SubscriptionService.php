@@ -52,7 +52,7 @@ class SubscriptionService
                 ? $this->getYearlyPriceId($plan)
                 : $plan->stripe_price_id;
 
-            if (!$stripePriceId) {
+            if (! $stripePriceId) {
                 throw new Exception('No Stripe price ID configured for this plan');
             }
 
@@ -105,7 +105,7 @@ class SubscriptionService
                 ? $this->getYearlyPriceId($newPlan)
                 : $newPlan->stripe_price_id;
 
-            if (!$stripePriceId) {
+            if (! $stripePriceId) {
                 throw new Exception('No Stripe price ID configured for this plan');
             }
 
@@ -301,12 +301,12 @@ class SubscriptionService
     private function handlePaymentSucceeded(array $invoice): void
     {
         $subscriptionId = $invoice['subscription'] ?? null;
-        if (!$subscriptionId) {
+        if (! $subscriptionId) {
             return;
         }
 
         $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return;
         }
 
@@ -328,12 +328,12 @@ class SubscriptionService
     private function handlePaymentFailed(array $invoice): void
     {
         $subscriptionId = $invoice['subscription'] ?? null;
-        if (!$subscriptionId) {
+        if (! $subscriptionId) {
             return;
         }
 
         $subscription = Subscription::where('stripe_subscription_id', $subscriptionId)->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return;
         }
 
@@ -351,7 +351,7 @@ class SubscriptionService
     private function handleSubscriptionUpdated(array $stripeSubscription): void
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return;
         }
 
@@ -375,7 +375,7 @@ class SubscriptionService
     private function handleSubscriptionDeleted(array $stripeSubscription): void
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return;
         }
 
@@ -395,7 +395,7 @@ class SubscriptionService
     private function handleTrialEnding(array $stripeSubscription): void
     {
         $subscription = Subscription::where('stripe_subscription_id', $stripeSubscription['id'])->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return;
         }
 
@@ -421,6 +421,7 @@ class SubscriptionService
             ]);
 
             $plan->update(['stripe_price_id' => $price->id]);
+
             return $price->id;
         }
 
@@ -434,7 +435,7 @@ class SubscriptionService
     {
         try {
             $stripePriceId = $newPlan->stripe_price_id;
-            if (!$stripePriceId) {
+            if (! $stripePriceId) {
                 throw new Exception('No Stripe price ID for new plan');
             }
 

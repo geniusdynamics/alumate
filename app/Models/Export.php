@@ -64,7 +64,7 @@ class Export extends Model
      */
     public function isExpired(): bool
     {
-        if (!$this->completed_at) {
+        if (! $this->completed_at) {
             return false;
         }
 

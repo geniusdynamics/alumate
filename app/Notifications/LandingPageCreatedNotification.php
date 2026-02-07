@@ -13,8 +13,11 @@ class LandingPageCreatedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $template;
+
     protected $landingPage;
+
     protected $user;
+
     protected $additionalData;
 
     public function __construct($template, $user = null, $additionalData = [])
@@ -78,14 +81,14 @@ class LandingPageCreatedNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("🎨 Landing Page Created: '{$pageTitle}'")
             ->greeting("Hi {$notifiable->name}!")
-            ->line("Your new landing page has been successfully created!")
-            ->line("**Landing Page Details:**")
+            ->line('Your new landing page has been successfully created!')
+            ->line('**Landing Page Details:**')
             ->line("📄 Title: {$pageTitle}")
             ->line("🎯 Campaign: {$campaignType}")
             ->line("🏷️ Template: {$this->template->name}")
-            ->line("👥 Audience: " . ucfirst($this->template->audience_type))
-            ->action('View Landing Page', url('/landing-pages/' . ($this->landingPage->id ?? '') . '/edit'))
-            ->action('Preview Page', url('/landing-pages/' . ($this->landingPage->id ?? '') . '/preview'))
+            ->line('👥 Audience: '.ucfirst($this->template->audience_type))
+            ->action('View Landing Page', url('/landing-pages/'.($this->landingPage->id ?? '').'/edit'))
+            ->action('Preview Page', url('/landing-pages/'.($this->landingPage->id ?? '').'/preview'))
             ->line('Your landing page is ready for customization and publishing!');
     }
 }

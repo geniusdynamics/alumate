@@ -6,7 +6,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 /**
  * Request validation for storing session recording events
@@ -266,7 +265,7 @@ class StoreSessionRequest extends FormRequest
         // Only allow sensitive data for specific safe event types
         $allowedTypes = ['input_change', 'form_submit'];
 
-        if (!in_array($eventType, $allowedTypes)) {
+        if (! in_array($eventType, $allowedTypes)) {
             // Check for potential sensitive patterns
             $sensitivePatterns = [
                 '/\b\d{3}-\d{2}-\d{4}\b/', // SSN

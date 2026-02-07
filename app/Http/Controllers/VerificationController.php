@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Models\AlumniVerification;
 use App\Services\VerificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -24,7 +23,7 @@ class VerificationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'institution_id' => 'required|exists:institutions,id',
-            'graduation_year' => 'required|integer|min:1900|max:' . (date('Y') + 1),
+            'graduation_year' => 'required|integer|min:1900|max:'.(date('Y') + 1),
             'student_id' => 'nullable|string|max:255',
             'degree' => 'nullable|string|max:255',
             'major' => 'nullable|string|max:255',
@@ -43,7 +42,7 @@ class VerificationController extends Controller
         $user = Auth::user();
         $tenant = $user->currentTenant;
 
-        if (!$tenant) {
+        if (! $tenant) {
             return response()->json([
                 'message' => 'No tenant associated with user',
             ], 400);
@@ -84,7 +83,7 @@ class VerificationController extends Controller
 
         $verification = $this->verificationService->getVerificationStatus($user, $tenant);
 
-        if (!$verification) {
+        if (! $verification) {
             return response()->json([
                 'is_verified' => false,
                 'status' => 'unverified',
@@ -134,7 +133,7 @@ class VerificationController extends Controller
         $file = $request->file('document');
 
         // Store file temporarily
-        $path = $file->store('verifications/temp/' . $user->id, 'private');
+        $path = $file->store('verifications/temp/'.$user->id, 'private');
 
         return response()->json([
             'message' => 'Document uploaded successfully',

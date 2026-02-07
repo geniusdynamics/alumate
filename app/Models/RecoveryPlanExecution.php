@@ -18,10 +18,15 @@ class RecoveryPlanExecution extends Model
     use HasFactory;
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_RUNNING = 'running';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_ROLLED_BACK = 'rolled_back';
+
     public const STATUS_CANCELLED = 'cancelled';
 
     protected $fillable = [

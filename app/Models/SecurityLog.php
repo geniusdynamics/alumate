@@ -1,13 +1,14 @@
 <?php
+
 // ABOUTME: SecurityLog model for tracking security events with schema-based tenant isolation
 // ABOUTME: Handles security logging, threat detection, and audit trails within tenant context
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Services\TenantContextService;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * SecurityLog Model
@@ -70,42 +71,64 @@ class SecurityLog extends Model
      * Event type constants
      */
     const EVENT_TYPE_TEMPLATE_VIOLATION = 'template_violation';
+
     const EVENT_TYPE_SCRIPT_INJECTION = 'script_injection';
+
     const EVENT_TYPE_XSS_ATTEMPT = 'xss_attempt';
+
     const EVENT_TYPE_MALICIOUS_INPUT = 'malicious_input';
+
     const EVENT_TYPE_TENANT_ISOLATION_BREACH = 'tenant_isolation_breach';
+
     const EVENT_TYPE_RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded';
+
     const EVENT_TYPE_FILE_UPLOAD_THREAT = 'file_upload_threat';
+
     const EVENT_TYPE_UNAUTHORIZED_ACCESS = 'unauthorized_access';
+
     const EVENT_TYPE_SUSPICIOUS_ACTIVITY = 'suspicious_activity';
+
     const EVENT_TYPE_TEMPLATE_MODIFICATION = 'template_modification';
 
     /**
      * Event category constants
      */
     const CATEGORY_INPUT_VALIDATION = 'input_validation';
+
     const CATEGORY_XSS_PREVENTION = 'xss_prevention';
+
     const CATEGORY_ACCESS_CONTROL = 'access_control';
+
     const CATEGORY_FILE_SECURITY = 'file_security';
+
     const CATEGORY_TENANT_SECURITY = 'tenant_security';
+
     const CATEGORY_RATE_LIMITING = 'rate_limiting';
+
     const CATEGORY_THREAT_DETECTION = 'threat_detection';
 
     /**
      * Severity constants
      */
     const SEVERITY_LOW = 'low';
+
     const SEVERITY_MEDIUM = 'medium';
+
     const SEVERITY_HIGH = 'high';
+
     const SEVERITY_CRITICAL = 'critical';
 
     /**
      * Resolution status constants
      */
     const STATUS_OPEN = 'open';
+
     const STATUS_UNDER_REVIEW = 'under_review';
+
     const STATUS_RESOLVED = 'resolved';
+
     const STATUS_FALSE_POSITIVE = 'false_positive';
+
     const STATUS_IGNORED = 'ignored';
 
     /**
@@ -209,7 +232,6 @@ class SecurityLog extends Model
     /**
      * Create a security log entry
      *
-     * @param array $attributes
      * @return static
      */
     public static function log(array $attributes): self
@@ -223,10 +245,6 @@ class SecurityLog extends Model
     /**
      * Log template security violation
      *
-     * @param int|null $userId
-     * @param int|null $templateId
-     * @param array $violations
-     * @param array $additionalData
      * @return static
      */
     public static function logTemplateViolation(
@@ -252,9 +270,6 @@ class SecurityLog extends Model
     /**
      * Log XSS attempt
      *
-     * @param int|null $userId
-     * @param int|null $templateId
-     * @param array $threatDetails
      * @return static
      */
     public static function logXssAttempt(
@@ -279,9 +294,6 @@ class SecurityLog extends Model
     /**
      * Log tenant isolation breach
      *
-     * @param int|null $userId
-     * @param string $attemptedSchema
-     * @param array $additionalData
      * @return static
      */
     public static function logTenantIsolationBreach(
@@ -297,7 +309,7 @@ class SecurityLog extends Model
             'description' => "Tenant isolation breach attempted: tried to access schema {$attemptedSchema}",
             'metadata' => array_merge($additionalData, [
                 'attempted_schema' => $attemptedSchema,
-                'breach_type' => 'cross_schema_access'
+                'breach_type' => 'cross_schema_access',
             ]),
             'occurred_at' => now(),
             'resolution_status' => self::STATUS_OPEN,
@@ -307,10 +319,7 @@ class SecurityLog extends Model
     /**
      * Log unauthorized access attempt
      *
-     * @param int|null $userId
-     * @param string $resourceType
-     * @param int|string $resourceId
-     * @param array $additionalData
+     * @param  int|string  $resourceId
      * @return static
      */
     public static function logUnauthorizedAccess(
@@ -336,9 +345,6 @@ class SecurityLog extends Model
     /**
      * Log rate limit exceeded
      *
-     * @param int|null $userId
-     * @param string $operationType
-     * @param array $additionalData
      * @return static
      */
     public static function logRateLimitExceeded(
@@ -353,7 +359,7 @@ class SecurityLog extends Model
             'severity' => self::SEVERITY_MEDIUM,
             'description' => "Rate limit exceeded for operation: {$operationType}",
             'metadata' => array_merge($additionalData, [
-                'operation_type' => $operationType
+                'operation_type' => $operationType,
             ]),
             'occurred_at' => now(),
             'resolution_status' => self::STATUS_UNDER_REVIEW,
@@ -362,9 +368,6 @@ class SecurityLog extends Model
 
     /**
      * Mark event as resolved
-     *
-     * @param string|null $notes
-     * @return bool
      */
     public function markResolved(?string $notes = null): bool
     {
@@ -379,9 +382,6 @@ class SecurityLog extends Model
 
     /**
      * Mark event as false positive
-     *
-     * @param string|null $notes
-     * @return bool
      */
     public function markFalsePositive(?string $notes = null): bool
     {
@@ -396,9 +396,6 @@ class SecurityLog extends Model
 
     /**
      * Get severity level from violations array
-     *
-     * @param array $violations
-     * @return string
      */
     protected static function getSeverityFromViolations(array $violations): string
     {
@@ -426,8 +423,6 @@ class SecurityLog extends Model
 
     /**
      * Get security statistics for current tenant
-     *
-     * @return array
      */
     public static function getSecurityStats(): array
     {
@@ -446,9 +441,6 @@ class SecurityLog extends Model
 
     /**
      * Get most common event types for current tenant
-     *
-     * @param int $limit
-     * @return array
      */
     protected static function getMostCommonEventTypes(int $limit = 10): array
     {
@@ -463,8 +455,6 @@ class SecurityLog extends Model
 
     /**
      * Get events grouped by category for current tenant
-     *
-     * @return array
      */
     protected static function getEventsByCategory(): array
     {
@@ -477,10 +467,6 @@ class SecurityLog extends Model
 
     /**
      * Get threat patterns for current tenant within date range
-     *
-     * @param string $startDate
-     * @param string $endDate
-     * @return array
      */
     public static function getThreatPatterns(string $startDate, string $endDate): array
     {
@@ -501,9 +487,6 @@ class SecurityLog extends Model
 
     /**
      * Clean up old resolved events
-     *
-     * @param int $daysOld
-     * @return int
      */
     public static function cleanupOldEvents(int $daysOld = 90): int
     {
@@ -514,9 +497,6 @@ class SecurityLog extends Model
 
     /**
      * Generate security report for current tenant
-     *
-     * @param int $days
-     * @return array
      */
     public static function generateSecurityReport(int $days = 30): array
     {

@@ -26,7 +26,7 @@ class FormSubmissionRequest extends FormRequest
         return [
             'utm_source' => 'nullable|string|max:255',
             'utm_medium' => 'nullable|string|max:255',
-            'utm_campaign' => 'nullable|string|max:255'
+            'utm_campaign' => 'nullable|string|max:255',
         ];
     }
 
@@ -39,7 +39,7 @@ class FormSubmissionRequest extends FormRequest
         $this->merge([
             'utm_source' => $this->utm_source ?? $this->query('utm_source'),
             'utm_medium' => $this->utm_medium ?? $this->query('utm_medium'),
-            'utm_campaign' => $this->utm_campaign ?? $this->query('utm_campaign')
+            'utm_campaign' => $this->utm_campaign ?? $this->query('utm_campaign'),
         ]);
     }
 }

@@ -6,8 +6,8 @@ namespace App\Http\Middleware;
 
 use App\Services\Analytics\ConsentService;
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
@@ -30,9 +30,7 @@ class ConsentMiddleware
     /**
      * Handle an incoming request and enforce consent requirements
      *
-     * @param Request $request
-     * @param Closure $next
-     * @param string $type Consent type to check (default: 'analytics')
+     * @param  string  $type  Consent type to check (default: 'analytics')
      * @return mixed
      */
     public function handle(Request $request, Closure $next, string $type = 'analytics')
@@ -53,6 +51,7 @@ class ConsentMiddleware
                         'user_id' => $userId,
                         'ip' => $request->ip(),
                     ]);
+
                     return $this->denyAccess('Data export requests are limited to once per day');
                 }
 
@@ -60,7 +59,7 @@ class ConsentMiddleware
             }
 
             // Check if user has given consent for analytics tracking
-            if (!$this->consentService->hasConsent(type: $type)) {
+            if (! $this->consentService->hasConsent(type: $type)) {
                 Log::info('Analytics access denied - no consent', [
                     'user_id' => Auth::id(),
                     'type' => $type,

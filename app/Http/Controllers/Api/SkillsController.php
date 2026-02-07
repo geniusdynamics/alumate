@@ -136,7 +136,7 @@ class SkillsController extends Controller
                 'skill_name' => $skill->name,
                 'skill_id' => $skill->id,
             ],
-            actionUrl: "/skills/endorsements",
+            actionUrl: '/skills/endorsements',
             actionText: 'View Request'
         );
 

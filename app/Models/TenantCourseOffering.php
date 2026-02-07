@@ -1,17 +1,16 @@
 <?php
+
 // ABOUTME: Eloquent model for tenant_course_offerings table in hybrid tenancy architecture
 // ABOUTME: Manages tenant-specific course offerings that reference global courses with local customizations
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
 
 class TenantCourseOffering extends Model
 {
@@ -229,6 +228,7 @@ class TenantCourseOffering extends Model
     public function getDeliveryMethodDisplayNameAttribute(): string
     {
         $method = $this->effective_delivery_method;
+
         return self::DELIVERY_METHODS[$method] ?? ucfirst(str_replace('_', ' ', $method));
     }
 
@@ -237,7 +237,7 @@ class TenantCourseOffering extends Model
      */
     public function getFullCourseCodeAttribute(): string
     {
-        return $this->local_course_code . ' - ' . $this->semester_display_name . ' ' . $this->year;
+        return $this->local_course_code.' - '.$this->semester_display_name.' '.$this->year;
     }
 
     /**
@@ -248,6 +248,7 @@ class TenantCourseOffering extends Model
         if ($this->max_enrollment <= 0) {
             return 0;
         }
+
         return ($this->current_enrollment / $this->max_enrollment) * 100;
     }
 
@@ -259,6 +260,7 @@ class TenantCourseOffering extends Model
         if ($this->waitlist_capacity <= 0) {
             return 0;
         }
+
         return ($this->current_waitlist / $this->waitlist_capacity) * 100;
     }
 
@@ -278,6 +280,7 @@ class TenantCourseOffering extends Model
         if ($this->start_date && $this->end_date) {
             return $this->start_date->diffInWeeks($this->end_date);
         }
+
         return null;
     }
 
@@ -287,7 +290,7 @@ class TenantCourseOffering extends Model
     public function isEnrollmentOpen(): bool
     {
         $now = now();
-        
+
         return $this->status === 'enrollment_open' &&
                ($this->enrollment_start_date === null || $now >= $this->enrollment_start_date) &&
                ($this->enrollment_end_date === null || $now <= $this->enrollment_end_date) &&
@@ -299,7 +302,7 @@ class TenantCourseOffering extends Model
      */
     public function isWaitlistAvailable(): bool
     {
-        return $this->waitlist_capacity > 0 && 
+        return $this->waitlist_capacity > 0 &&
                $this->current_waitlist < $this->waitlist_capacity &&
                $this->current_enrollment >= $this->max_enrollment;
     }
@@ -310,7 +313,7 @@ class TenantCourseOffering extends Model
     public function isInSession(): bool
     {
         $now = now()->toDateString();
-        
+
         return $this->status === 'in_progress' &&
                ($this->start_date === null || $now >= $this->start_date->toDateString()) &&
                ($this->end_date === null || $now <= $this->end_date->toDateString());
@@ -321,7 +324,7 @@ class TenantCourseOffering extends Model
      */
     public function isCompleted(): bool
     {
-        return $this->status === 'completed' || 
+        return $this->status === 'completed' ||
                ($this->end_date && now() > $this->end_date);
     }
 
@@ -395,17 +398,17 @@ class TenantCourseOffering extends Model
     public function scopeEnrollmentOpen($query)
     {
         $now = now();
-        
+
         return $query->where('status', 'enrollment_open')
-                     ->where(function ($q) use ($now) {
-                         $q->whereNull('enrollment_start_date')
-                           ->orWhere('enrollment_start_date', '<=', $now);
-                     })
-                     ->where(function ($q) use ($now) {
-                         $q->whereNull('enrollment_end_date')
-                           ->orWhere('enrollment_end_date', '>=', $now);
-                     })
-                     ->whereRaw('current_enrollment < max_enrollment');
+            ->where(function ($q) use ($now) {
+                $q->whereNull('enrollment_start_date')
+                    ->orWhere('enrollment_start_date', '<=', $now);
+            })
+            ->where(function ($q) use ($now) {
+                $q->whereNull('enrollment_end_date')
+                    ->orWhere('enrollment_end_date', '>=', $now);
+            })
+            ->whereRaw('current_enrollment < max_enrollment');
     }
 
     /**
@@ -414,8 +417,8 @@ class TenantCourseOffering extends Model
     public function scopeWaitlistAvailable($query)
     {
         return $query->where('waitlist_capacity', '>', 0)
-                     ->whereRaw('current_waitlist < waitlist_capacity')
-                     ->whereRaw('current_enrollment >= max_enrollment');
+            ->whereRaw('current_waitlist < waitlist_capacity')
+            ->whereRaw('current_enrollment >= max_enrollment');
     }
 
     /**
@@ -441,20 +444,20 @@ class TenantCourseOffering extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('local_course_code', 'ILIKE', "%{$search}%")
-              ->orWhere('local_title', 'ILIKE', "%{$search}%")
-              ->orWhere('local_description', 'ILIKE', "%{$search}%")
-              ->orWhereHas('globalCourse', function ($gq) use ($search) {
-                  $gq->where('title', 'ILIKE', "%{$search}%")
-                     ->orWhere('global_course_code', 'ILIKE', "%{$search}%")
-                     ->orWhere('description', 'ILIKE', "%{$search}%");
-              });
+                ->orWhere('local_title', 'ILIKE', "%{$search}%")
+                ->orWhere('local_description', 'ILIKE', "%{$search}%")
+                ->orWhereHas('globalCourse', function ($gq) use ($search) {
+                    $gq->where('title', 'ILIKE', "%{$search}%")
+                        ->orWhere('global_course_code', 'ILIKE', "%{$search}%")
+                        ->orWhere('description', 'ILIKE', "%{$search}%");
+                });
         });
     }
 
     /**
      * Scope to filter by date range.
      */
-    public function scopeDateRange($query, Carbon $startDate = null, Carbon $endDate = null)
+    public function scopeDateRange($query, ?Carbon $startDate = null, ?Carbon $endDate = null)
     {
         if ($startDate) {
             $query->where('start_date', '>=', $startDate);
@@ -462,6 +465,7 @@ class TenantCourseOffering extends Model
         if ($endDate) {
             $query->where('end_date', '<=', $endDate);
         }
+
         return $query;
     }
 
@@ -471,8 +475,8 @@ class TenantCourseOffering extends Model
     public function scopeUpcoming($query, int $days = 30)
     {
         return $query->where('start_date', '>=', now())
-                     ->where('start_date', '<=', now()->addDays($days))
-                     ->orderBy('start_date');
+            ->where('start_date', '<=', now()->addDays($days))
+            ->orderBy('start_date');
     }
 
     /**
@@ -481,10 +485,10 @@ class TenantCourseOffering extends Model
     public function scopeCurrent($query)
     {
         $now = now()->toDateString();
-        
+
         return $query->where('start_date', '<=', $now)
-                     ->where('end_date', '>=', $now)
-                     ->where('status', 'in_progress');
+            ->where('end_date', '>=', $now)
+            ->where('status', 'in_progress');
     }
 
     /**
@@ -495,6 +499,7 @@ class TenantCourseOffering extends Model
         if ($this->current_enrollment < $this->max_enrollment) {
             return $this->increment('current_enrollment');
         }
+
         return false;
     }
 
@@ -506,6 +511,7 @@ class TenantCourseOffering extends Model
         if ($this->current_enrollment > 0) {
             return $this->decrement('current_enrollment');
         }
+
         return false;
     }
 
@@ -517,6 +523,7 @@ class TenantCourseOffering extends Model
         if ($this->current_waitlist < $this->waitlist_capacity) {
             return $this->increment('current_waitlist');
         }
+
         return false;
     }
 
@@ -528,27 +535,28 @@ class TenantCourseOffering extends Model
         if ($this->current_waitlist > 0) {
             return $this->decrement('current_waitlist');
         }
+
         return false;
     }
 
     /**
      * Update the status with validation.
      */
-    public function updateStatus(string $newStatus, string $userId = null): bool
+    public function updateStatus(string $newStatus, ?string $userId = null): bool
     {
-        if (!array_key_exists($newStatus, self::STATUSES)) {
+        if (! array_key_exists($newStatus, self::STATUSES)) {
             return false;
         }
 
         $oldStatus = $this->status;
         $this->status = $newStatus;
-        
+
         if ($userId) {
             $this->last_modified_by = $userId;
         }
-        
+
         $result = $this->save();
-        
+
         if ($result) {
             // Log status change
             AuditTrail::create([
@@ -569,7 +577,7 @@ class TenantCourseOffering extends Model
                 ],
             ]);
         }
-        
+
         return $result;
     }
 
@@ -600,28 +608,28 @@ class TenantCourseOffering extends Model
     public function cloneToSemester(string $semester, int $year, array $overrides = []): self
     {
         $attributes = $this->getAttributes();
-        
+
         // Remove unique identifiers and timestamps
         unset($attributes['id'], $attributes['created_at'], $attributes['updated_at'], $attributes['deleted_at']);
-        
+
         // Update semester and year
         $attributes['semester'] = $semester;
         $attributes['year'] = $year;
-        
+
         // Reset enrollment data
         $attributes['current_enrollment'] = 0;
         $attributes['current_waitlist'] = 0;
         $attributes['status'] = 'draft';
-        
+
         // Clear dates that need to be reset
         $attributes['start_date'] = null;
         $attributes['end_date'] = null;
         $attributes['enrollment_start_date'] = null;
         $attributes['enrollment_end_date'] = null;
-        
+
         // Apply any overrides
         $attributes = array_merge($attributes, $overrides);
-        
+
         return self::create($attributes);
     }
 

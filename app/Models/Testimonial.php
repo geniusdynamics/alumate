@@ -1,15 +1,14 @@
 <?php
+
 // ABOUTME: Testimonial model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Manages customer testimonials with automatic tenant context resolution
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class Testimonial extends Model
@@ -175,7 +174,7 @@ class Testimonial extends Model
     public function scopeByPerformance(Builder $query): Builder
     {
         return $query->orderByDesc('conversion_rate')
-                    ->orderByDesc('view_count');
+            ->orderByDesc('view_count');
     }
 
     /**
@@ -216,7 +215,7 @@ class Testimonial extends Model
      */
     public function hasVideo(): bool
     {
-        return !empty($this->video_url);
+        return ! empty($this->video_url);
     }
 
     /**
@@ -225,7 +224,7 @@ class Testimonial extends Model
     public function getAuthorDisplayNameAttribute(): string
     {
         $name = $this->author_name;
-        
+
         if ($this->author_title && $this->author_company) {
             $name .= ", {$this->author_title} at {$this->author_company}";
         } elseif ($this->author_title) {
@@ -242,8 +241,8 @@ class Testimonial extends Model
      */
     public function getTruncatedContentAttribute(): string
     {
-        return strlen($this->content) > 150 
-            ? substr($this->content, 0, 147) . '...'
+        return strlen($this->content) > 150
+            ? substr($this->content, 0, 147).'...'
             : $this->content;
     }
 
@@ -280,6 +279,7 @@ class Testimonial extends Model
     public function approve(): bool
     {
         $this->status = 'approved';
+
         return $this->save();
     }
 
@@ -289,6 +289,7 @@ class Testimonial extends Model
     public function reject(): bool
     {
         $this->status = 'rejected';
+
         return $this->save();
     }
 
@@ -298,6 +299,7 @@ class Testimonial extends Model
     public function archive(): bool
     {
         $this->status = 'archived';
+
         return $this->save();
     }
 
@@ -307,6 +309,7 @@ class Testimonial extends Model
     public function setFeatured(bool $featured = true): bool
     {
         $this->featured = $featured;
+
         return $this->save();
     }
 
@@ -365,9 +368,10 @@ class Testimonial extends Model
      */
     public function validateVideoRequirements(): bool
     {
-        if ($this->video_url && !$this->video_thumbnail) {
+        if ($this->video_url && ! $this->video_thumbnail) {
             return false;
         }
+
         return true;
     }
 }

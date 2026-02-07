@@ -20,7 +20,7 @@ class SessionJoined implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('page.' . $this->session->page_id),
+            new PrivateChannel('page.'.$this->session->page_id),
         ];
     }
 

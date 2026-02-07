@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\EmailLog;
-use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Queue;
-use Illuminate\Support\Collection;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Queue;
 
 /**
  * Email Delivery Service
@@ -25,8 +23,11 @@ class EmailDeliveryService extends BaseService
      * Supported email providers
      */
     public const PROVIDER_SENDGRID = 'sendgrid';
+
     public const PROVIDER_MAILGUN = 'mailgun';
+
     public const PROVIDER_SES = 'ses';
+
     public const PROVIDER_INTERNAL = 'internal';
 
     public const PROVIDERS = [
@@ -189,6 +190,7 @@ class EmailDeliveryService extends BaseService
 
         if (! $emailLog) {
             Log::warning('Bounce notification received but email log not found', $bounceData);
+
             return null;
         }
 
@@ -220,6 +222,7 @@ class EmailDeliveryService extends BaseService
 
         if (! $emailLog) {
             Log::warning('Spam complaint received but email log not found', $complaintData);
+
             return null;
         }
 
@@ -267,7 +270,7 @@ class EmailDeliveryService extends BaseService
                 ->whereIn('status', [EmailLog::STATUS_QUEUED, EmailLog::STATUS_FAILED])
                 ->update([
                     'status' => EmailLog::STATUS_FAILED,
-                    'error_message' => 'Unsubscribed: ' . $reason,
+                    'error_message' => 'Unsubscribed: '.$reason,
                 ]);
 
             Log::info('Email unsubscribed', [
@@ -349,6 +352,7 @@ class EmailDeliveryService extends BaseService
                 // Check if max retries reached
                 if ($emailLog->retry_count >= 5) {
                     $results['skipped']++;
+
                     continue;
                 }
 
@@ -488,7 +492,7 @@ class EmailDeliveryService extends BaseService
             // Simulated success for now
             return [
                 'success' => true,
-                'provider_id' => 'sg_' . uniqid(),
+                'provider_id' => 'sg_'.uniqid(),
                 'message_id' => uniqid('sendgrid_'),
             ];
         } catch (Exception $e) {
@@ -514,7 +518,7 @@ class EmailDeliveryService extends BaseService
             // Simulated success for now
             return [
                 'success' => true,
-                'provider_id' => 'mg_' . uniqid(),
+                'provider_id' => 'mg_'.uniqid(),
                 'message_id' => uniqid('mailgun_'),
             ];
         } catch (Exception $e) {
@@ -546,7 +550,7 @@ class EmailDeliveryService extends BaseService
             // Simulated success for now
             return [
                 'success' => true,
-                'provider_id' => 'ses_' . uniqid(),
+                'provider_id' => 'ses_'.uniqid(),
                 'message_id' => uniqid('ses_'),
             ];
         } catch (Exception $e) {
@@ -592,7 +596,7 @@ class EmailDeliveryService extends BaseService
 
             return [
                 'success' => true,
-                'provider_id' => 'internal_' . uniqid(),
+                'provider_id' => 'internal_'.uniqid(),
                 'message_id' => uniqid('internal_'),
             ];
         } catch (Exception $e) {
@@ -653,7 +657,7 @@ class EmailDeliveryService extends BaseService
      */
     protected function generateTrackingId(): string
     {
-        return uniqid('eml_', true) . bin2hex(random_bytes(8));
+        return uniqid('eml_', true).bin2hex(random_bytes(8));
     }
 
     /**
@@ -662,7 +666,7 @@ class EmailDeliveryService extends BaseService
     protected function checkRateLimit(string $provider): bool
     {
         $limit = $this->rateLimits[$provider] ?? 60;
-        $key = "email_rate_limit:{$provider}:" . now()->format('Y-m-d-H-i');
+        $key = "email_rate_limit:{$provider}:".now()->format('Y-m-d-H-i');
         $current = Cache::get($key, 0);
 
         return $current < $limit;
@@ -673,7 +677,7 @@ class EmailDeliveryService extends BaseService
      */
     protected function incrementRateLimit(string $provider): void
     {
-        $key = "email_rate_limit:{$provider}:" . now()->format('Y-m-d-H-i');
+        $key = "email_rate_limit:{$provider}:".now()->format('Y-m-d-H-i');
         Cache::increment($key, 1, 60); // 1 minute TTL
     }
 
@@ -683,7 +687,7 @@ class EmailDeliveryService extends BaseService
     protected function getRemainingRateLimit(string $provider): int
     {
         $limit = $this->rateLimits[$provider] ?? 60;
-        $key = "email_rate_limit:{$provider}:" . now()->format('Y-m-d-H-i');
+        $key = "email_rate_limit:{$provider}:".now()->format('Y-m-d-H-i');
         $current = Cache::get($key, 0);
 
         return max(0, $limit - $current);

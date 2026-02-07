@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 /**
  * Analytics Data Archiving Service
@@ -22,38 +22,54 @@ class AnalyticsDataArchivingService
 {
     // Archive status constants
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_PROCESSING = 'processing';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_RESTORED = 'restored';
+
     public const STATUS_DELETED = 'deleted';
 
     // Archive types
     public const TYPE_DAILY = 'daily';
+
     public const TYPE_WEEKLY = 'weekly';
+
     public const TYPE_MONTHLY = 'monthly';
+
     public const TYPE_CUSTOM = 'custom';
 
     // Retention period constants (in days)
     public const RETENTION_SHORT = 90;
+
     public const RETENTION_MEDIUM = 365;
+
     public const RETENTION_LONG = 730;
+
     public const RETENTION_PERMANENT = -1;
 
     // Compression types
     public const COMPRESSION_GZIP = 'gzip';
+
     public const COMPRESSION_NONE = 'none';
 
     // Cache TTL constants
     private const CACHE_TTL_SHORT = 300;
+
     private const CACHE_TTL_MEDIUM = 1800;
+
     private const CACHE_TTL_LONG = 3600;
 
     // Storage configuration
     private const MAX_ARCHIVE_SIZE = 5 * 1024 * 1024 * 1024;
+
     private const ARCHIVE_PATH = 'archives/analytics';
 
     private TenantContextService $tenantContext;
+
     private array $config;
 
     public function __construct(TenantContextService $tenantContext)
@@ -230,7 +246,7 @@ class AnalyticsDataArchivingService
             $tenantId = $this->tenantContext->getCurrentTenantId();
             $archive = $this->getArchiveById($archiveId);
 
-            if (!$archive) {
+            if (! $archive) {
                 throw new \InvalidArgumentException('Archive not found');
             }
 
@@ -285,7 +301,7 @@ class AnalyticsDataArchivingService
             $tenantId = $this->tenantContext->getCurrentTenantId();
             $archive = $this->getArchiveById($archiveId);
 
-            if (!$archive) {
+            if (! $archive) {
                 throw new \InvalidArgumentException('Archive not found');
             }
 
@@ -391,9 +407,9 @@ class AnalyticsDataArchivingService
 
         return Cache::remember($cacheKey, self::CACHE_TTL_LONG, function () use ($tenantId) {
             $policies = $this->getStoredRetentionPolicies();
-            $tenantPolicies = array_filter($policies, fn($p) => ($p['tenant_id'] ?? null) === $tenantId);
+            $tenantPolicies = array_filter($policies, fn ($p) => ($p['tenant_id'] ?? null) === $tenantId);
 
-            if (!empty($tenantPolicies)) {
+            if (! empty($tenantPolicies)) {
                 return array_values($tenantPolicies);
             }
 
@@ -505,7 +521,7 @@ class AnalyticsDataArchivingService
             $tenantId = $this->tenantContext->getCurrentTenantId();
             $archives = $this->getStoredArchives(['limit' => PHP_INT_MAX]);
 
-            $tenantArchives = array_filter($archives, fn($a) => ($a['tenant_id'] ?? null) === $tenantId);
+            $tenantArchives = array_filter($archives, fn ($a) => ($a['tenant_id'] ?? null) === $tenantId);
 
             $totalSize = 0;
             $totalCompressedSize = 0;
@@ -523,7 +539,7 @@ class AnalyticsDataArchivingService
                 $totalRecords += $records;
 
                 $type = $archive['type'] ?? 'unknown';
-                if (!isset($byType[$type])) {
+                if (! isset($byType[$type])) {
                     $byType[$type] = ['count' => 0, 'size' => 0, 'compressed_size' => 0, 'records' => 0];
                 }
                 $byType[$type]['count']++;
@@ -532,7 +548,7 @@ class AnalyticsDataArchivingService
                 $byType[$type]['records'] += $records;
 
                 $status = $archive['status'] ?? 'unknown';
-                if (!isset($byStatus[$status])) {
+                if (! isset($byStatus[$status])) {
                     $byStatus[$status] = ['count' => 0, 'size' => 0];
                 }
                 $byStatus[$status]['count']++;
@@ -573,13 +589,13 @@ class AnalyticsDataArchivingService
     public function getArchiveById(string $archiveId): ?array
     {
         $archives = $this->getStoredArchives(['limit' => PHP_INT_MAX]);
-        
+
         foreach ($archives as $archive) {
             if ($archive['id'] === $archiveId) {
                 return $archive;
             }
         }
-        
+
         return null;
     }
 
@@ -588,7 +604,7 @@ class AnalyticsDataArchivingService
      */
     private function validateDateRange(array $dateRange): void
     {
-        if (!isset($dateRange['start_date']) || !isset($dateRange['end_date'])) {
+        if (! isset($dateRange['start_date']) || ! isset($dateRange['end_date'])) {
             throw new \InvalidArgumentException('Date range must include start_date and end_date');
         }
 
@@ -723,15 +739,15 @@ class AnalyticsDataArchivingService
             $content = gzencode($content);
         }
 
-        Storage::disk($this->config['storage_disk'])->put($filePath . '.gz', $content);
+        Storage::disk($this->config['storage_disk'])->put($filePath.'.gz', $content);
 
         $compressedSize = strlen($content);
         $checksum = hash('sha256', $content);
         $recordCount = $this->countArchiveRecords($data);
 
         return [
-            'file_path' => $filePath . '.gz',
-            'file_name' => $fileName . '.gz',
+            'file_path' => $filePath.'.gz',
+            'file_name' => $fileName.'.gz',
             'file_size' => $originalSize,
             'compressed_size' => $compressedSize,
             'compression_ratio' => $originalSize > 0 ? round((1 - $compressedSize / $originalSize) * 100, 2) : 0,
@@ -795,14 +811,14 @@ class AnalyticsDataArchivingService
         $archives = Cache::get($cacheKey, []);
 
         $tenantId = $this->tenantContext->getCurrentTenantId();
-        $archives = array_filter($archives, fn($a) => ($a['tenant_id'] ?? null) === $tenantId);
+        $archives = array_filter($archives, fn ($a) => ($a['tenant_id'] ?? null) === $tenantId);
 
-        if (!empty($options['status'])) {
-            $archives = array_filter($archives, fn($a) => ($a['status'] ?? null) === $options['status']);
+        if (! empty($options['status'])) {
+            $archives = array_filter($archives, fn ($a) => ($a['status'] ?? null) === $options['status']);
         }
 
-        if (!empty($options['type'])) {
-            $archives = array_filter($archives, fn($a) => ($a['type'] ?? null) === $options['type']);
+        if (! empty($options['type'])) {
+            $archives = array_filter($archives, fn ($a) => ($a['type'] ?? null) === $options['type']);
         }
 
         $offset = $options['offset'] ?? 0;
@@ -875,6 +891,7 @@ class AnalyticsDataArchivingService
         }
 
         $data = json_decode($content, true);
+
         return $data['data'] ?? [];
     }
 
@@ -894,6 +911,7 @@ class AnalyticsDataArchivingService
     private function getStoredRetentionPolicies(): array
     {
         $cacheKey = $this->buildCacheKey('retention_policies', 'list');
+
         return Cache::get($cacheKey, []);
     }
 
@@ -935,11 +953,11 @@ class AnalyticsDataArchivingService
      */
     private function validateRetentionPolicy(array $policy): void
     {
-        if (!isset($policy['retention_period'])) {
+        if (! isset($policy['retention_period'])) {
             throw new \InvalidArgumentException('Retention period is required');
         }
 
-        if (!is_int($policy['retention_period'])) {
+        if (! is_int($policy['retention_period'])) {
             throw new \InvalidArgumentException('Retention period must be an integer');
         }
 
@@ -971,7 +989,7 @@ class AnalyticsDataArchivingService
     {
         $archives = $this->getStoredArchives(['limit' => PHP_INT_MAX]);
         $tenantId = $this->tenantContext->getCurrentTenantId();
-        $tenantArchives = array_filter($archives, fn($a) => ($a['tenant_id'] ?? null) === $tenantId);
+        $tenantArchives = array_filter($archives, fn ($a) => ($a['tenant_id'] ?? null) === $tenantId);
 
         $expiredArchives = [];
 
@@ -1020,6 +1038,7 @@ class AnalyticsDataArchivingService
     private function buildCacheKey(string $type, string $suffix = ''): string
     {
         $tenantId = $this->tenantContext->getCurrentTenantId() ?? 'global';
+
         return "analytics:archiving:{$tenantId}:{$type}:{$suffix}";
     }
 

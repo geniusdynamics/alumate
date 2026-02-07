@@ -8,7 +8,6 @@ namespace App\Models;
 use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class TemplateCrmIntegration extends Model
@@ -203,7 +202,7 @@ class TemplateCrmIntegration extends Model
      */
     public function syncTemplate(Template $template): array
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return [
                 'success' => false,
                 'message' => 'Integration is not active',
@@ -335,11 +334,11 @@ class TemplateCrmIntegration extends Model
      */
     public function isSyncDue(): bool
     {
-        if (!$this->is_active) {
+        if (! $this->is_active) {
             return false;
         }
 
-        if (!$this->last_sync_at) {
+        if (! $this->last_sync_at) {
             return true;
         }
 
@@ -353,6 +352,7 @@ class TemplateCrmIntegration extends Model
     {
         try {
             $client = $this->getApiClient();
+
             return $client->getAvailableFields();
         } catch (\Exception $e) {
             return [];
@@ -369,7 +369,7 @@ class TemplateCrmIntegration extends Model
 
         $errors = [];
         foreach ($this->field_mappings as $templateField => $crmField) {
-            if (!in_array($crmField, $availableFieldNames)) {
+            if (! in_array($crmField, $availableFieldNames)) {
                 $errors[] = "CRM field '{$crmField}' is not available in {$this->provider}";
             }
         }

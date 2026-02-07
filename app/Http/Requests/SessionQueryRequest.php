@@ -138,7 +138,7 @@ class SessionQueryRequest extends FormRequest
         ];
 
         foreach ($defaults as $field => $default) {
-            if (!$this->has($field)) {
+            if (! $this->has($field)) {
                 $this->merge([$field => $default]);
             }
         }
@@ -179,7 +179,7 @@ class SessionQueryRequest extends FormRequest
     {
         $dateRange = $this->input('date_range', []);
 
-        if (!empty($dateRange['from']) && !empty($dateRange['to'])) {
+        if (! empty($dateRange['from']) && ! empty($dateRange['to'])) {
             $from = \Carbon\Carbon::parse($dateRange['from']);
             $to = \Carbon\Carbon::parse($dateRange['to']);
 
@@ -209,7 +209,7 @@ class SessionQueryRequest extends FormRequest
                      $this->has('device_type') ||
                      $this->has('privacy_masked');
 
-        if (!$hasFilters && $perPage > 100) {
+        if (! $hasFilters && $perPage > 100) {
             $this->addFailure('per_page', 'Per page limit is 100 when no filters are applied.');
         }
 

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class EmailSend extends Model
@@ -145,7 +144,7 @@ class EmailSend extends Model
      */
     public function isOpened(): bool
     {
-        return !is_null($this->opened_at);
+        return ! is_null($this->opened_at);
     }
 
     /**
@@ -153,7 +152,7 @@ class EmailSend extends Model
      */
     public function isClicked(): bool
     {
-        return !is_null($this->clicked_at);
+        return ! is_null($this->clicked_at);
     }
 
     /**
@@ -161,7 +160,7 @@ class EmailSend extends Model
      */
     public function isUnsubscribed(): bool
     {
-        return !is_null($this->unsubscribed_at);
+        return ! is_null($this->unsubscribed_at);
     }
 
     /**
@@ -191,7 +190,7 @@ class EmailSend extends Model
      */
     public function markAsOpened(): void
     {
-        if (!$this->isOpened()) {
+        if (! $this->isOpened()) {
             $this->update(['opened_at' => now()]);
         }
     }
@@ -201,7 +200,7 @@ class EmailSend extends Model
      */
     public function markAsClicked(): void
     {
-        if (!$this->isClicked()) {
+        if (! $this->isClicked()) {
             $this->update(['clicked_at' => now()]);
         }
     }
@@ -211,7 +210,7 @@ class EmailSend extends Model
      */
     public function markAsUnsubscribed(): void
     {
-        if (!$this->isUnsubscribed()) {
+        if (! $this->isUnsubscribed()) {
             $this->update(['unsubscribed_at' => now()]);
         }
     }
@@ -237,7 +236,7 @@ class EmailSend extends Model
      */
     public function getTimeToOpen(): ?int
     {
-        if (!$this->sent_at || !$this->opened_at) {
+        if (! $this->sent_at || ! $this->opened_at) {
             return null;
         }
 
@@ -249,7 +248,7 @@ class EmailSend extends Model
      */
     public function getTimeToClick(): ?int
     {
-        if (!$this->sent_at || !$this->clicked_at) {
+        if (! $this->sent_at || ! $this->clicked_at) {
             return null;
         }
 

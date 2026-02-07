@@ -8,10 +8,9 @@ use App\Models\ABTest;
 use App\Models\ABTestAssignment;
 use App\Models\ABTestConversion;
 use App\Models\AnalyticsEvent;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
 
 /**
  * A/B Testing Service for managing experiments and tracking results
@@ -24,13 +23,13 @@ class ABTestingService extends BaseService
     /**
      * Create a new A/B test
      *
-     * @param array{name: string, description?: string, variants: array, audience_criteria?: array, goal_event: string} $data
+     * @param  array{name: string, description?: string, variants: array, audience_criteria?: array, goal_event: string}  $data
      * @return string Test ID
      */
     public function createTest(array $data): string
     {
         $tenantId = $this->tenantContext->getCurrentTenantId();
-        if (!$tenantId) {
+        if (! $tenantId) {
             throw new \RuntimeException('No tenant context available');
         }
 
@@ -60,7 +59,7 @@ class ABTestingService extends BaseService
     public function getTest(int $id): ?ABTest
     {
         $tenantId = $this->tenantContext->getCurrentTenantId();
-        if (!$tenantId) {
+        if (! $tenantId) {
             return null;
         }
 
@@ -73,7 +72,7 @@ class ABTestingService extends BaseService
     public function updateTest(int $id, array $data): bool
     {
         $test = $this->getTest($id);
-        if (!$test) {
+        if (! $test) {
             return false;
         }
 
@@ -101,7 +100,7 @@ class ABTestingService extends BaseService
     public function deleteTest(int $id): bool
     {
         $test = $this->getTest($id);
-        if (!$test) {
+        if (! $test) {
             return false;
         }
 
@@ -111,14 +110,14 @@ class ABTestingService extends BaseService
     /**
      * Assign variant to user/session
      *
-     * @param string $userIdOrSessionId User ID or session ID
-     * @param int $testId Test ID
+     * @param  string  $userIdOrSessionId  User ID or session ID
+     * @param  int  $testId  Test ID
      * @return string Variant name
      */
     public function assignVariant(string $userIdOrSessionId, int $testId): string
     {
         $test = $this->getTest($testId);
-        if (!$test || $test->status !== 'active') {
+        if (! $test || $test->status !== 'active') {
             return 'control';
         }
 
@@ -130,7 +129,7 @@ class ABTestingService extends BaseService
         }
 
         // Generate hash for deterministic assignment
-        $hash = crc32($userIdOrSessionId . $testId) & 0x7FFFFFFF;
+        $hash = crc32($userIdOrSessionId.$testId) & 0x7FFFFFFF;
         $variant = $this->selectVariantByHash($hash, $test->variants, $test->distribution);
 
         // Cache assignment for performance
@@ -151,14 +150,14 @@ class ABTestingService extends BaseService
     /**
      * Get test results with metrics and statistical significance
      *
-     * @param int $testId Test ID
-     * @param array{start_date?: string, end_date?: string} $dateRange
+     * @param  int  $testId  Test ID
+     * @param  array{start_date?: string, end_date?: string}  $dateRange
      * @return array{test: ABTest, variants: array, overall_significance: bool}
      */
     public function getResults(int $testId, array $dateRange = []): array
     {
         $test = $this->getTest($testId);
-        if (!$test) {
+        if (! $test) {
             return ['test' => null, 'variants' => [], 'overall_significance' => false];
         }
 
@@ -202,19 +201,19 @@ class ABTestingService extends BaseService
     public function recordExposure(int $eventId): void
     {
         $event = AnalyticsEvent::find($eventId);
-        if (!$event || !isset($event->properties['ab_variant'])) {
+        if (! $event || ! isset($event->properties['ab_variant'])) {
             return;
         }
 
         $variant = $event->properties['ab_variant'];
         $testId = $event->properties['ab_test_id'] ?? null;
 
-        if (!$testId) {
+        if (! $testId) {
             return;
         }
 
         // Update cache for quick access
-        $cacheKey = "ab_impressions_{$testId}_{$variant}_" . now()->format('Y-m-d');
+        $cacheKey = "ab_impressions_{$testId}_{$variant}_".now()->format('Y-m-d');
         $impressions = Cache::get($cacheKey, 0);
         Cache::put($cacheKey, $impressions + 1, 86400);
 
@@ -231,20 +230,20 @@ class ABTestingService extends BaseService
     public function recordConversion(int $eventId): void
     {
         $event = AnalyticsEvent::find($eventId);
-        if (!$event || !isset($event->properties['ab_variant'])) {
+        if (! $event || ! isset($event->properties['ab_variant'])) {
             return;
         }
 
         $variant = $event->properties['ab_variant'];
         $testId = $event->properties['ab_test_id'] ?? null;
 
-        if (!$testId) {
+        if (! $testId) {
             return;
         }
 
         // Check if this matches the goal event
         $test = $this->getTest($testId);
-        if (!$test || $event->event_type !== $test->goal_metric) {
+        if (! $test || $event->event_type !== $test->goal_metric) {
             return;
         }
 
@@ -259,7 +258,7 @@ class ABTestingService extends BaseService
         ]);
 
         // Update cache
-        $cacheKey = "ab_conversions_{$testId}_{$variant}_" . now()->format('Y-m-d');
+        $cacheKey = "ab_conversions_{$testId}_{$variant}_".now()->format('Y-m-d');
         $conversions = Cache::get($cacheKey, 0);
         Cache::put($cacheKey, $conversions + 1, 86400);
 
@@ -311,7 +310,7 @@ class ABTestingService extends BaseService
     private function getImpressions(int $testId, string $variant, Carbon $startDate, Carbon $endDate): int
     {
         // Try cache first
-        $cacheKey = "ab_impressions_{$testId}_{$variant}_" . $startDate->format('Y-m-d');
+        $cacheKey = "ab_impressions_{$testId}_{$variant}_".$startDate->format('Y-m-d');
         $cached = Cache::get($cacheKey);
         if ($cached !== null) {
             return $cached;
@@ -325,6 +324,7 @@ class ABTestingService extends BaseService
             ->count();
 
         Cache::put($cacheKey, $count, 3600); // Cache for 1 hour
+
         return $count;
     }
 
@@ -334,7 +334,7 @@ class ABTestingService extends BaseService
     private function getConversions(int $testId, string $variant, Carbon $startDate, Carbon $endDate): int
     {
         // Try cache first
-        $cacheKey = "ab_conversions_{$testId}_{$variant}_" . $startDate->format('Y-m-d');
+        $cacheKey = "ab_conversions_{$testId}_{$variant}_".$startDate->format('Y-m-d');
         $cached = Cache::get($cacheKey);
         if ($cached !== null) {
             return $cached;
@@ -347,6 +347,7 @@ class ABTestingService extends BaseService
             ->count();
 
         Cache::put($cacheKey, $count, 3600); // Cache for 1 hour
+
         return $count;
     }
 

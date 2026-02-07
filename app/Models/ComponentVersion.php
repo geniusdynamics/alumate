@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ComponentVersion extends Model
 {
@@ -68,7 +68,7 @@ class ComponentVersion extends Model
      */
     public function getDisplayNameAttribute(): string
     {
-        return "v{$this->version_number}" . ($this->description ? " - {$this->description}" : '');
+        return "v{$this->version_number}".($this->description ? " - {$this->description}" : '');
     }
 
     /**
@@ -78,7 +78,7 @@ class ComponentVersion extends Model
     {
         $latestVersion = static::forComponent($this->component_id)
             ->max('version_number');
-        
+
         return $this->version_number === $latestVersion;
     }
 }

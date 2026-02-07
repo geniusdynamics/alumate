@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CreateFormBuilderRequest;
+use App\Http\Requests\FormSubmissionRequest;
+use App\Http\Requests\UpdateFormBuilderRequest;
 use App\Models\FormBuilder;
 use App\Services\FormBuilderService;
-use App\Http\Requests\CreateFormBuilderRequest;
-use App\Http\Requests\UpdateFormBuilderRequest;
-use App\Http\Requests\FormSubmissionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -23,8 +23,8 @@ class FormBuilderController extends Controller
     public function index(Request $request): JsonResponse
     {
         $forms = FormBuilder::with('fields')
-            ->when($request->page_id, fn($query) => $query->where('page_id', $request->page_id))
-            ->when($request->is_active !== null, fn($query) => $query->where('is_active', $request->boolean('is_active')))
+            ->when($request->page_id, fn ($query) => $query->where('page_id', $request->page_id))
+            ->when($request->is_active !== null, fn ($query) => $query->where('is_active', $request->boolean('is_active')))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
@@ -40,7 +40,7 @@ class FormBuilderController extends Controller
 
         return response()->json([
             'message' => 'Form created successfully',
-            'form' => $form
+            'form' => $form,
         ], 201);
     }
 
@@ -49,7 +49,7 @@ class FormBuilderController extends Controller
      */
     public function show(FormBuilder $form): JsonResponse
     {
-        $form->load(['fields', 'submissions' => function($query) {
+        $form->load(['fields', 'submissions' => function ($query) {
             $query->latest()->limit(10);
         }]);
 
@@ -65,7 +65,7 @@ class FormBuilderController extends Controller
 
         return response()->json([
             'message' => 'Form updated successfully',
-            'form' => $form
+            'form' => $form,
         ]);
     }
 
@@ -77,7 +77,7 @@ class FormBuilderController extends Controller
         $form->delete();
 
         return response()->json([
-            'message' => 'Form deleted successfully'
+            'message' => 'Form deleted successfully',
         ]);
     }
 
@@ -86,9 +86,9 @@ class FormBuilderController extends Controller
      */
     public function submit(FormSubmissionRequest $request, FormBuilder $form): JsonResponse
     {
-        if (!$form->is_active) {
+        if (! $form->is_active) {
             return response()->json([
-                'message' => 'Form is not active'
+                'message' => 'Form is not active',
             ], 422);
         }
 
@@ -102,20 +102,20 @@ class FormBuilderController extends Controller
                     'referrer_url' => $request->header('referer'),
                     'utm_source' => $request->utm_source,
                     'utm_medium' => $request->utm_medium,
-                    'utm_campaign' => $request->utm_campaign
+                    'utm_campaign' => $request->utm_campaign,
                 ]
             );
 
             return response()->json([
                 'message' => $form->success_message ?? 'Thank you for your submission!',
                 'submission_id' => $submission->id,
-                'redirect_url' => $form->redirect_url
+                'redirect_url' => $form->redirect_url,
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'message' => $form->error_message ?? 'Please correct the errors below.',
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         }
     }
@@ -129,7 +129,7 @@ class FormBuilderController extends Controller
         $visibleFields = $this->formBuilderService->evaluateConditionalLogic($form, $submissionData);
 
         return response()->json([
-            'visible_fields' => $visibleFields
+            'visible_fields' => $visibleFields,
         ]);
     }
 
@@ -142,66 +142,66 @@ class FormBuilderController extends Controller
             'text' => [
                 'label' => 'Text Input',
                 'icon' => 'text-fields',
-                'validation_options' => ['required', 'min', 'max', 'regex']
+                'validation_options' => ['required', 'min', 'max', 'regex'],
             ],
             'email' => [
                 'label' => 'Email Input',
                 'icon' => 'email',
-                'validation_options' => ['required', 'email']
+                'validation_options' => ['required', 'email'],
             ],
             'phone' => [
                 'label' => 'Phone Number',
                 'icon' => 'phone',
-                'validation_options' => ['required', 'regex']
+                'validation_options' => ['required', 'regex'],
             ],
             'textarea' => [
                 'label' => 'Text Area',
                 'icon' => 'text-area',
-                'validation_options' => ['required', 'min', 'max']
+                'validation_options' => ['required', 'min', 'max'],
             ],
             'select' => [
                 'label' => 'Dropdown Select',
                 'icon' => 'select',
                 'validation_options' => ['required', 'in'],
-                'requires_options' => true
+                'requires_options' => true,
             ],
             'radio' => [
                 'label' => 'Radio Buttons',
                 'icon' => 'radio-button',
                 'validation_options' => ['required', 'in'],
-                'requires_options' => true
+                'requires_options' => true,
             ],
             'checkbox' => [
                 'label' => 'Checkboxes',
                 'icon' => 'checkbox',
                 'validation_options' => ['required', 'array'],
-                'requires_options' => true
+                'requires_options' => true,
             ],
             'file' => [
                 'label' => 'File Upload',
                 'icon' => 'file-upload',
-                'validation_options' => ['required', 'file', 'mimes', 'max']
+                'validation_options' => ['required', 'file', 'mimes', 'max'],
             ],
             'date' => [
                 'label' => 'Date Picker',
                 'icon' => 'calendar',
-                'validation_options' => ['required', 'date', 'after', 'before']
+                'validation_options' => ['required', 'date', 'after', 'before'],
             ],
             'number' => [
                 'label' => 'Number Input',
                 'icon' => 'number',
-                'validation_options' => ['required', 'numeric', 'min', 'max']
+                'validation_options' => ['required', 'numeric', 'min', 'max'],
             ],
             'url' => [
                 'label' => 'URL Input',
                 'icon' => 'link',
-                'validation_options' => ['required', 'url']
+                'validation_options' => ['required', 'url'],
             ],
             'hidden' => [
                 'label' => 'Hidden Field',
                 'icon' => 'hidden',
-                'validation_options' => []
-            ]
+                'validation_options' => [],
+            ],
         ];
 
         return response()->json($fieldTypes);

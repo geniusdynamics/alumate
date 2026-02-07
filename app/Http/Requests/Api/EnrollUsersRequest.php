@@ -11,8 +11,6 @@ class EnrollUsersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -73,17 +71,15 @@ class EnrollUsersRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
         // Set default values
-        if (!$this->has('start_step')) {
+        if (! $this->has('start_step')) {
             $this->merge(['start_step' => 0]);
         }
 
-        if (!$this->has('enrollment_date')) {
+        if (! $this->has('enrollment_date')) {
             $this->merge(['enrollment_date' => now()->toDateString()]);
         }
     }
@@ -91,14 +87,13 @@ class EnrollUsersRequest extends FormRequest
     /**
      * Configure the validator instance.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate that users are not already enrolled in this sequence
-            if ($this->has('user_ids') && !empty($this->user_ids)) {
+            if ($this->has('user_ids') && ! empty($this->user_ids)) {
                 $this->validateExistingEnrollments($validator);
             }
 
@@ -108,7 +103,7 @@ class EnrollUsersRequest extends FormRequest
             }
 
             // Validate users belong to the same tenant
-            if ($this->has('user_ids') && !empty($this->user_ids)) {
+            if ($this->has('user_ids') && ! empty($this->user_ids)) {
                 $this->validateUserTenantAccess($validator);
             }
         });
@@ -117,7 +112,7 @@ class EnrollUsersRequest extends FormRequest
     /**
      * Validate that users are not already enrolled in this sequence.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateExistingEnrollments($validator): void
     {
@@ -128,7 +123,7 @@ class EnrollUsersRequest extends FormRequest
             ->pluck('lead_id')
             ->toArray();
 
-        if (!empty($existingEnrollments)) {
+        if (! empty($existingEnrollments)) {
             $existingUserIds = implode(', ', $existingEnrollments);
             $validator->errors()->add(
                 'user_ids',
@@ -140,7 +135,7 @@ class EnrollUsersRequest extends FormRequest
     /**
      * Validate start step is within sequence bounds.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateStartStep($validator): void
     {
@@ -158,7 +153,7 @@ class EnrollUsersRequest extends FormRequest
     /**
      * Validate that users belong to the same tenant as the sequence.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateUserTenantAccess($validator): void
     {
@@ -167,7 +162,7 @@ class EnrollUsersRequest extends FormRequest
             ->pluck('id')
             ->toArray();
 
-        if (!empty($users)) {
+        if (! empty($users)) {
             $invalidUserIds = implode(', ', $users);
             $validator->errors()->add(
                 'user_ids',

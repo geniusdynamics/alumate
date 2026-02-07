@@ -220,13 +220,13 @@ class StudentController extends Controller
             ->map(function ($alumni) use ($user) {
                 // Calculate mutual connections
                 $mutualConnectionsCount = $this->calculateMutualConnections($user, $alumni);
-                
+
                 // Calculate response rate based on connection acceptance history
                 $responseRate = $this->calculateResponseRate($alumni);
-                
+
                 // Check if connection already sent
                 $connectionSent = $this->checkConnectionExists($user, $alumni);
-                
+
                 return [
                     'id' => $alumni->id,
                     'name' => $alumni->name,
@@ -260,8 +260,8 @@ class StudentController extends Controller
             ->where('status', 'accepted')
             ->get()
             ->map(function ($connection) use ($user) {
-                return $connection->requester_id === $user->id 
-                    ? $connection->recipient_id 
+                return $connection->requester_id === $user->id
+                    ? $connection->recipient_id
                     : $connection->requester_id;
             });
 
@@ -274,8 +274,8 @@ class StudentController extends Controller
             ->where('status', 'accepted')
             ->get()
             ->map(function ($connection) use ($alumni) {
-                return $connection->requester_id === $alumni->id 
-                    ? $connection->recipient_id 
+                return $connection->requester_id === $alumni->id
+                    ? $connection->recipient_id
                     : $connection->requester_id;
             });
 
@@ -302,7 +302,7 @@ class StudentController extends Controller
             ->count();
 
         $responseRate = (int) round(($acceptedRequests / $totalRequests) * 100);
-        
+
         // Clamp between 50 and 100
         return max(50, min(100, $responseRate));
     }

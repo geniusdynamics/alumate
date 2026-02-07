@@ -165,7 +165,7 @@ class CrmSyncLog extends Model
     /**
      * Mark sync as successful
      */
-    public function markSuccessful(array $responseData = null): void
+    public function markSuccessful(?array $responseData = null): void
     {
         $this->update([
             'status' => 'success',

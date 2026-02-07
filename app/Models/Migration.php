@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Migration extends Model
 {
     use HasFactory;
+
     protected $table = 'data_migrations';
 
     protected $fillable = [
@@ -77,7 +78,7 @@ class Migration extends Model
      */
     public function canRollback(): bool
     {
-        return $this->status === 'completed' && $this->rollback_enabled && !$this->rolled_back_at;
+        return $this->status === 'completed' && $this->rollback_enabled && ! $this->rolled_back_at;
     }
 
     /**

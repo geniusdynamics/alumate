@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Testimonial;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class TestimonialPolicy
 {
@@ -16,7 +15,7 @@ class TestimonialPolicy
         return $user->hasAnyPermission([
             'testimonials.view',
             'testimonials.manage',
-            'testimonials.moderate'
+            'testimonials.moderate',
         ]);
     }
 
@@ -33,7 +32,7 @@ class TestimonialPolicy
         return $user->hasAnyPermission([
             'testimonials.view',
             'testimonials.manage',
-            'testimonials.moderate'
+            'testimonials.moderate',
         ]);
     }
 
@@ -44,7 +43,7 @@ class TestimonialPolicy
     {
         return $user->hasAnyPermission([
             'testimonials.create',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 
@@ -60,7 +59,7 @@ class TestimonialPolicy
 
         return $user->hasAnyPermission([
             'testimonials.update',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 
@@ -76,7 +75,7 @@ class TestimonialPolicy
 
         return $user->hasAnyPermission([
             'testimonials.delete',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 
@@ -92,7 +91,7 @@ class TestimonialPolicy
 
         return $user->hasAnyPermission([
             'testimonials.moderate',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 
@@ -104,7 +103,7 @@ class TestimonialPolicy
         return $user->hasAnyPermission([
             'testimonials.analytics',
             'testimonials.manage',
-            'analytics.view'
+            'analytics.view',
         ]);
     }
 
@@ -115,7 +114,7 @@ class TestimonialPolicy
     {
         return $user->hasAnyPermission([
             'testimonials.export',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 
@@ -126,7 +125,7 @@ class TestimonialPolicy
     {
         return $user->hasAnyPermission([
             'testimonials.import',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 
@@ -142,7 +141,7 @@ class TestimonialPolicy
 
         return $user->hasAnyPermission([
             'testimonials.restore',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 
@@ -158,7 +157,7 @@ class TestimonialPolicy
 
         return $user->hasAnyPermission([
             'testimonials.force-delete',
-            'testimonials.manage'
+            'testimonials.manage',
         ]);
     }
 }

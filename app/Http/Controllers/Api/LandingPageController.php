@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreLandingPageRequest;
 use App\Http\Requests\Api\UpdateLandingPageRequest;
 use App\Http\Resources\LandingPageResource;
-use App\Http\Resources\LandingPageAnalyticsResource;
 use App\Models\LandingPage;
 use App\Services\LandingPageService;
 use App\Services\PublishingWorkflowService;
@@ -23,9 +22,6 @@ class LandingPageController extends Controller
 
     /**
      * Display a listing of landing pages
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -51,7 +47,7 @@ class LandingPageController extends Controller
         if ($request->search) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
-                  ->orWhere('description', 'like', "%{$request->search}%");
+                    ->orWhere('description', 'like', "%{$request->search}%");
             });
         }
 
@@ -84,17 +80,14 @@ class LandingPageController extends Controller
                 'audience_types' => ['individual', 'institution', 'employer'],
                 'campaign_types' => [
                     'onboarding', 'event_promotion', 'networking', 'career_services',
-                    'recruiting', 'donation', 'leadership', 'marketing'
+                    'recruiting', 'donation', 'leadership', 'marketing',
                 ],
-            ]
+            ],
         ]);
     }
 
     /**
      * Display the specified landing page
-     *
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function show(LandingPage $landingPage): JsonResponse
     {
@@ -116,9 +109,6 @@ class LandingPageController extends Controller
 
     /**
      * Store a newly created landing page
-     *
-     * @param StoreLandingPageRequest $request
-     * @return JsonResponse
      */
     public function store(StoreLandingPageRequest $request): JsonResponse
     {
@@ -135,10 +125,6 @@ class LandingPageController extends Controller
 
     /**
      * Update the specified landing page
-     *
-     * @param UpdateLandingPageRequest $request
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function update(UpdateLandingPageRequest $request, LandingPage $landingPage): JsonResponse
     {
@@ -157,10 +143,6 @@ class LandingPageController extends Controller
 
     /**
      * Publish the landing page
-     *
-     * @param LandingPage $landingPage
-     * @param Request $request
-     * @return JsonResponse
      */
     public function publish(LandingPage $landingPage, Request $request): JsonResponse
     {
@@ -197,16 +179,13 @@ class LandingPageController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to publish landing page: ' . $e->getMessage(),
+                'message' => 'Failed to publish landing page: '.$e->getMessage(),
             ], 422);
         }
     }
 
     /**
      * Unpublish the landing page
-     *
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function unpublish(LandingPage $landingPage): JsonResponse
     {
@@ -222,9 +201,6 @@ class LandingPageController extends Controller
 
     /**
      * Remove the specified landing page
-     *
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function destroy(LandingPage $landingPage): JsonResponse
     {
@@ -246,10 +222,6 @@ class LandingPageController extends Controller
 
     /**
      * Duplicate the landing page
-     *
-     * @param LandingPage $landingPage
-     * @param Request $request
-     * @return JsonResponse
      */
     public function duplicate(LandingPage $landingPage, Request $request): JsonResponse
     {
@@ -271,9 +243,6 @@ class LandingPageController extends Controller
 
     /**
      * Archive the landing page
-     *
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function archive(LandingPage $landingPage): JsonResponse
     {
@@ -289,10 +258,6 @@ class LandingPageController extends Controller
 
     /**
      * Get landing page analytics
-     *
-     * @param LandingPage $landingPage
-     * @param Request $request
-     * @return JsonResponse
      */
     public function analytics(LandingPage $landingPage, Request $request): JsonResponse
     {
@@ -323,14 +288,10 @@ class LandingPageController extends Controller
 
     /**
      * Get pages by status
-     *
-     * @param string $status
-     * @param Request $request
-     * @return JsonResponse
      */
     public function byStatus(string $status, Request $request): JsonResponse
     {
-        if (!in_array($status, LandingPage::STATUSES)) {
+        if (! in_array($status, LandingPage::STATUSES)) {
             return response()->json([
                 'message' => 'Invalid status provided',
                 'valid_statuses' => LandingPage::STATUSES,
@@ -355,9 +316,6 @@ class LandingPageController extends Controller
 
     /**
      * Get draft pages
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function drafts(Request $request): JsonResponse
     {
@@ -378,9 +336,6 @@ class LandingPageController extends Controller
 
     /**
      * Get published pages
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function published(Request $request): JsonResponse
     {
@@ -401,9 +356,6 @@ class LandingPageController extends Controller
 
     /**
      * Create landing page from template
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function createFromTemplate(Request $request): JsonResponse
     {
@@ -429,16 +381,13 @@ class LandingPageController extends Controller
 
     /**
      * Bulk operations on landing pages
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function bulk(Request $request): JsonResponse
     {
         $request->validate([
             'action' => 'required|string|in:delete,publish,unpublish,archive',
             'landing_page_ids' => 'required|array|min:1',
-            'landing_page_ids.*' => 'exists:landing_pages,id'
+            'landing_page_ids.*' => 'exists:landing_pages,id',
         ]);
 
         $landingPages = LandingPage::whereIn('id', $request->landing_page_ids)->get();
@@ -450,7 +399,7 @@ class LandingPageController extends Controller
             try {
                 switch ($request->action) {
                     case 'delete':
-                        if (!$landingPage->submissions()->exists()) {
+                        if (! $landingPage->submissions()->exists()) {
                             $landingPage->delete();
                             $results[] = ['id' => $landingPage->id, 'status' => 'deleted'];
                             $successCount++;
@@ -487,17 +436,15 @@ class LandingPageController extends Controller
             'summary' => [
                 'success' => $successCount,
                 'errors' => $errorCount,
-                'total' => count($landingPages)
-            ]
+                'total' => count($landingPages),
+            ],
         ]);
     }
 
     /**
      * Get submission trends data
      *
-     * @param mixed $submissions
-     * @param string $timeframe
-     * @return array
+     * @param  mixed  $submissions
      */
     private function getSubmissionTrends($submissions, string $timeframe): array
     {
@@ -506,9 +453,9 @@ class LandingPageController extends Controller
 
         for ($i = $days; $i >= 0; $i--) {
             $date = now()->subDays($i)->format('Y-m-d');
-            $count = $submissions->where('created_at', '>=', $date . ' 00:00:00')
-                                ->where('created_at', '<', $date . ' 23:59:59')
-                                ->count();
+            $count = $submissions->where('created_at', '>=', $date.' 00:00:00')
+                ->where('created_at', '<', $date.' 23:59:59')
+                ->count();
             $trends[] = [
                 'date' => $date,
                 'count' => $count,
@@ -520,9 +467,6 @@ class LandingPageController extends Controller
 
     /**
      * Convert timeframe to days
-     *
-     * @param string $timeframe
-     * @return int
      */
     private function getDaysFromTimeframe(string $timeframe): int
     {
@@ -537,10 +481,6 @@ class LandingPageController extends Controller
 
     /**
      * Get performance metrics for a landing page
-     *
-     * @param LandingPage $landingPage
-     * @param Request $request
-     * @return JsonResponse
      */
     public function performance(LandingPage $landingPage, Request $request): JsonResponse
     {
@@ -563,9 +503,6 @@ class LandingPageController extends Controller
 
     /**
      * Get cached content for a landing page
-     *
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function cachedContent(LandingPage $landingPage): JsonResponse
     {
@@ -584,9 +521,6 @@ class LandingPageController extends Controller
 
     /**
      * Bulk publish landing pages
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function bulkPublish(Request $request): JsonResponse
     {
@@ -621,9 +555,6 @@ class LandingPageController extends Controller
 
     /**
      * Bulk unpublish landing pages
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function bulkUnpublish(Request $request): JsonResponse
     {
@@ -651,9 +582,6 @@ class LandingPageController extends Controller
 
     /**
      * Archive a landing page
-     *
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function archivePage(LandingPage $landingPage): JsonResponse
     {
@@ -675,16 +603,13 @@ class LandingPageController extends Controller
 
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to archive landing page: ' . $e->getMessage(),
+                'message' => 'Failed to archive landing page: '.$e->getMessage(),
             ], 422);
         }
     }
 
     /**
      * Get publishing workflow statistics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function publishingStats(Request $request): JsonResponse
     {
@@ -728,9 +653,6 @@ class LandingPageController extends Controller
 
     /**
      * Get published landing page URL suggestions
-     *
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function urlSuggestions(LandingPage $landingPage): JsonResponse
     {
@@ -742,24 +664,24 @@ class LandingPageController extends Controller
         $tenant = $landingPage->tenant;
 
         // If custom domain is available
-        if ($tenant && !empty($tenant->custom_domain)) {
+        if ($tenant && ! empty($tenant->custom_domain)) {
             $autoGeneratedUrls[] = "https://{$tenant->custom_domain}/{$landingPage->slug}";
         }
 
         // If subdomain isolation is enabled
-        if ($tenant && config('database.multi_tenant') && !empty($tenant->domain)) {
+        if ($tenant && config('database.multi_tenant') && ! empty($tenant->domain)) {
             $baseDomain = parse_url(config('app.url'), PHP_URL_HOST);
             $autoGeneratedUrls[] = "https://{$landingPage->slug}.{$baseDomain}";
         }
 
         // Path-based URL as fallback
-        $autoGeneratedUrls[] = config('app.url') . "/p/{$landingPage->slug}";
+        $autoGeneratedUrls[] = config('app.url')."/p/{$landingPage->slug}";
 
         $suggestions = [
             'current' => $landingPage->public_url,
             'auto_generated' => $autoGeneratedUrls,
             'custom_options' => [
-                'path_based' => config('app.url') . "/p/{$landingPage->slug}",
+                'path_based' => config('app.url')."/p/{$landingPage->slug}",
                 'multi_tenant_enabled' => config('database.multi_tenant'),
             ],
             'validation_rules' => [

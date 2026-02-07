@@ -95,11 +95,11 @@ class ChannelPerformanceRequest extends FormRequest
         $hasStartDate = $this->has('start_date');
         $hasEndDate = $this->has('end_date');
 
-        if ($hasStartDate && !$hasEndDate) {
+        if ($hasStartDate && ! $hasEndDate) {
             $validator->errors()->add('end_date', 'Both start_date and end_date must be provided together.');
         }
 
-        if (!$hasStartDate && $hasEndDate) {
+        if (! $hasStartDate && $hasEndDate) {
             $validator->errors()->add('start_date', 'Both start_date and end_date must be provided together.');
         }
     }
@@ -111,12 +111,12 @@ class ChannelPerformanceRequest extends FormRequest
     {
         $channelCosts = $this->input('channel_costs');
 
-        if (!$channelCosts || !is_array($channelCosts)) {
+        if (! $channelCosts || ! is_array($channelCosts)) {
             return;
         }
 
         // If channel costs are provided, channels should also be specified
-        if (!$this->has('channels')) {
+        if (! $this->has('channels')) {
             $validator->errors()->add('channels', 'Channels must be specified when providing channel costs.');
         }
     }
@@ -127,11 +127,11 @@ class ChannelPerformanceRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default date range if not provided (last 90 days)
-        if (!$this->has('start_date')) {
+        if (! $this->has('start_date')) {
             $this->merge(['start_date' => now()->subDays(90)->toDateString()]);
         }
 
-        if (!$this->has('end_date')) {
+        if (! $this->has('end_date')) {
             $this->merge(['end_date' => now()->toDateString()]);
         }
     }

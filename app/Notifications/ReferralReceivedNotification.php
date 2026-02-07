@@ -12,7 +12,9 @@ class ReferralReceivedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $referrerName;
+
     protected $referrerId;
+
     protected $message;
 
     /**

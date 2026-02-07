@@ -24,7 +24,7 @@ class ComponentAnalyticsController extends Controller
             'component_id' => 'nullable|exists:components,id',
             'category' => 'nullable|in:hero,forms,testimonials,statistics,ctas,media',
             'period' => 'nullable|in:day,week,month,year,all',
-            'limit' => 'nullable|integer|min:1|max:100'
+            'limit' => 'nullable|integer|min:1|max:100',
         ]);
 
         try {
@@ -33,7 +33,7 @@ class ComponentAnalyticsController extends Controller
             $category = $request->category;
             $period = $request->period ?? 'month';
             $limit = $request->limit ?? 20;
-            
+
             if ($componentId) {
                 // Get stats for specific component
                 $component = Component::forTenant($tenantId)->findOrFail($componentId);
@@ -42,15 +42,15 @@ class ComponentAnalyticsController extends Controller
                 // Get stats for all components or by category
                 $stats = $this->analyticsService->getComponentsStats($tenantId, $category, $period, $limit);
             }
-            
+
             return response()->json([
                 'stats' => $stats,
-                'period' => $period
+                'period' => $period,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve usage statistics',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -64,7 +64,7 @@ class ComponentAnalyticsController extends Controller
             'component_id' => 'required|exists:components,id',
             'context' => 'nullable|string|in:grapejs,preview,page_builder,frontend',
             'page_id' => 'nullable|exists:pages,id',
-            'user_id' => 'nullable|exists:users,id'
+            'user_id' => 'nullable|exists:users,id',
         ]);
 
         try {
@@ -72,24 +72,24 @@ class ComponentAnalyticsController extends Controller
             $context = $request->context ?? 'frontend';
             $pageId = $request->page_id;
             $userId = $request->user_id ?? Auth::id();
-            
+
             // Track usage in analytics service
             $this->analyticsService->trackComponentUsage($componentId, $context, $pageId, $userId);
-            
+
             // Update component usage count
             $component = Component::find($componentId);
             if ($component) {
                 $component->increment('usage_count');
                 $component->update(['last_used_at' => now()]);
             }
-            
+
             return response()->json([
-                'message' => 'Usage tracked successfully'
+                'message' => 'Usage tracked successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to track usage',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -104,7 +104,7 @@ class ComponentAnalyticsController extends Controller
             'category' => 'nullable|in:hero,forms,testimonials,statistics,ctas,media',
             'metric' => 'nullable|in:load_time,render_time,memory_usage,dom_nodes',
             'period' => 'nullable|in:day,week,month,year',
-            'limit' => 'nullable|integer|min:1|max:50'
+            'limit' => 'nullable|integer|min:1|max:50',
         ]);
 
         try {
@@ -114,7 +114,7 @@ class ComponentAnalyticsController extends Controller
             $metric = $request->metric ?? 'load_time';
             $period = $request->period ?? 'month';
             $limit = $request->limit ?? 10;
-            
+
             if ($componentId) {
                 // Get performance metrics for specific component
                 $metrics = $this->analyticsService->getComponentPerformanceMetrics($componentId, $metric, $period);
@@ -122,16 +122,16 @@ class ComponentAnalyticsController extends Controller
                 // Get performance metrics for components by category
                 $metrics = $this->analyticsService->getComponentsPerformanceMetrics($tenantId, $category, $metric, $period, $limit);
             }
-            
+
             return response()->json([
                 'metrics' => $metrics,
                 'metric_type' => $metric,
-                'period' => $period
+                'period' => $period,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve performance metrics',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -144,7 +144,7 @@ class ComponentAnalyticsController extends Controller
         $request->validate([
             'component_id' => 'nullable|exists:components,id',
             'category' => 'nullable|in:hero,forms,testimonials,statistics,ctas,media',
-            'period' => 'nullable|in:day,week,month,year,all'
+            'period' => 'nullable|in:day,week,month,year,all',
         ]);
 
         try {
@@ -152,7 +152,7 @@ class ComponentAnalyticsController extends Controller
             $componentId = $request->component_id;
             $category = $request->category;
             $period = $request->period ?? 'all';
-            
+
             if ($componentId) {
                 // Get ratings for specific component
                 $ratings = $this->analyticsService->getComponentRatings($componentId, $period);
@@ -160,15 +160,15 @@ class ComponentAnalyticsController extends Controller
                 // Get ratings for components by category
                 $ratings = $this->analyticsService->getComponentsRatings($tenantId, $category, $period);
             }
-            
+
             return response()->json([
                 'ratings' => $ratings,
-                'period' => $period
+                'period' => $period,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve ratings',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -181,7 +181,7 @@ class ComponentAnalyticsController extends Controller
         $request->validate([
             'component_id' => 'required|exists:components,id',
             'rating' => 'required|numeric|min:1|max:5',
-            'comment' => 'nullable|string|max:500'
+            'comment' => 'nullable|string|max:500',
         ]);
 
         try {
@@ -189,17 +189,17 @@ class ComponentAnalyticsController extends Controller
             $rating = $request->rating;
             $comment = $request->comment;
             $userId = Auth::id();
-            
+
             // Track rating in analytics service
             $this->analyticsService->trackComponentRating($componentId, $rating, $comment, $userId);
-            
+
             return response()->json([
-                'message' => 'Rating tracked successfully'
+                'message' => 'Rating tracked successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to track rating',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -214,7 +214,7 @@ class ComponentAnalyticsController extends Controller
             'category' => 'nullable|in:hero,forms,testimonials,statistics,ctas,media',
             'metric' => 'nullable|in:clicks,submissions,views,interactions',
             'period' => 'nullable|in:day,week,month,year',
-            'limit' => 'nullable|integer|min:1|max:50'
+            'limit' => 'nullable|integer|min:1|max:50',
         ]);
 
         try {
@@ -224,7 +224,7 @@ class ComponentAnalyticsController extends Controller
             $metric = $request->metric ?? 'views';
             $period = $request->period ?? 'month';
             $limit = $request->limit ?? 10;
-            
+
             if ($componentId) {
                 // Get engagement metrics for specific component
                 $engagement = $this->analyticsService->getComponentEngagement($componentId, $metric, $period);
@@ -232,16 +232,16 @@ class ComponentAnalyticsController extends Controller
                 // Get engagement metrics for components by category
                 $engagement = $this->analyticsService->getComponentsEngagement($tenantId, $category, $metric, $period, $limit);
             }
-            
+
             return response()->json([
                 'engagement' => $engagement,
                 'metric_type' => $metric,
-                'period' => $period
+                'period' => $period,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve engagement metrics',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -254,7 +254,7 @@ class ComponentAnalyticsController extends Controller
         $request->validate([
             'category' => 'nullable|in:hero,forms,testimonials,statistics,ctas,media',
             'period' => 'nullable|in:day,week,month',
-            'limit' => 'nullable|integer|min:1|max:50'
+            'limit' => 'nullable|integer|min:1|max:50',
         ]);
 
         try {
@@ -262,18 +262,18 @@ class ComponentAnalyticsController extends Controller
             $category = $request->category;
             $period = $request->period ?? 'week';
             $limit = $request->limit ?? 10;
-            
+
             $trending = $this->analyticsService->getTrendingComponents($tenantId, $category, $period, $limit);
-            
+
             return response()->json([
                 'trending' => $trending,
                 'period' => $period,
-                'limit' => $limit
+                'limit' => $limit,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve trending components',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -288,25 +288,25 @@ class ComponentAnalyticsController extends Controller
             'component_ids.*' => 'exists:components,id',
             'metrics' => 'nullable|array',
             'metrics.*' => 'in:usage,rating,performance,engagement',
-            'period' => 'nullable|in:day,week,month,year'
+            'period' => 'nullable|in:day,week,month,year',
         ]);
 
         try {
             $componentIds = $request->component_ids;
             $metrics = $request->metrics ?? ['usage', 'rating'];
             $period = $request->period ?? 'month';
-            
+
             $comparison = $this->analyticsService->compareComponents($componentIds, $metrics, $period);
-            
+
             return response()->json([
                 'comparison' => $comparison,
                 'metrics' => $metrics,
-                'period' => $period
+                'period' => $period,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to compare components',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -318,24 +318,24 @@ class ComponentAnalyticsController extends Controller
     {
         $request->validate([
             'category' => 'nullable|in:hero,forms,testimonials,statistics,ctas,media',
-            'period' => 'nullable|in:day,week,month,year,all'
+            'period' => 'nullable|in:day,week,month,year,all',
         ]);
 
         try {
             $tenantId = Auth::user()->tenant_id;
             $category = $request->category;
             $period = $request->period ?? 'month';
-            
+
             $summary = $this->analyticsService->getAnalyticsSummary($tenantId, $category, $period);
-            
+
             return response()->json([
                 'summary' => $summary,
-                'period' => $period
+                'period' => $period,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve analytics summary',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -349,7 +349,7 @@ class ComponentAnalyticsController extends Controller
             'format' => 'required|in:json,csv,excel',
             'type' => 'required|in:usage,performance,ratings,engagement,summary',
             'period' => 'nullable|in:day,week,month,year,all',
-            'component_id' => 'nullable|exists:components,id'
+            'component_id' => 'nullable|exists:components,id',
         ]);
 
         try {
@@ -358,22 +358,22 @@ class ComponentAnalyticsController extends Controller
             $type = $request->get('type', 'usage');
             $period = $request->get('period', 'month');
             $componentId = $request->get('component_id');
-            
+
             $exportData = $this->analyticsService->exportAnalyticsData($tenantId, $type, $period, $componentId);
-            
+
             // In a real implementation, this would generate and return an actual file
             // For now, we'll return the data in the requested format
-            
+
             return response()->json([
                 'data' => $exportData,
                 'format' => $format,
                 'type' => $type,
-                'exported_at' => now()->toISOString()
+                'exported_at' => now()->toISOString(),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to export analytics data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

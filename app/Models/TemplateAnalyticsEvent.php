@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 class TemplateAnalyticsEvent extends Model
 {
@@ -156,7 +156,7 @@ class TemplateAnalyticsEvent extends Model
     {
         return $query->whereBetween('timestamp', [
             Carbon::parse($startDate)->startOfDay(),
-            Carbon::parse($endDate)->endOfDay()
+            Carbon::parse($endDate)->endOfDay(),
         ]);
     }
 
@@ -246,11 +246,11 @@ class TemplateAnalyticsEvent extends Model
         $mobileKeywords = ['mobile', 'android', 'iphone', 'ipad', 'ipod', 'blackberry', 'opera mini'];
         $tabletKeywords = ['tablet', 'ipad', 'android.*tablet'];
 
-        if (preg_match('/(' . implode('|', $tabletKeywords) . ')/i', $userAgent)) {
+        if (preg_match('/('.implode('|', $tabletKeywords).')/i', $userAgent)) {
             return 'tablet';
         }
 
-        if (preg_match('/(' . implode('|', $mobileKeywords) . ')/i', $userAgent)) {
+        if (preg_match('/('.implode('|', $mobileKeywords).')/i', $userAgent)) {
             return 'mobile';
         }
 
@@ -272,7 +272,7 @@ class TemplateAnalyticsEvent extends Model
         ];
 
         foreach ($browsers as $browser => $keywords) {
-            if (preg_match('/(' . implode('|', $keywords) . ')/i', $userAgent)) {
+            if (preg_match('/('.implode('|', $keywords).')/i', $userAgent)) {
                 return $browser;
             }
         }
@@ -290,7 +290,7 @@ class TemplateAnalyticsEvent extends Model
         // Add computed fields
         $data['parsed_user_agent'] = $this->parseUserAgent();
         $data['is_conversion_event'] = $this->event_type === 'conversion';
-        $data['has_conversion_value'] = !empty($this->conversion_value);
+        $data['has_conversion_value'] = ! empty($this->conversion_value);
 
         return $data;
     }
@@ -321,6 +321,7 @@ class TemplateAnalyticsEvent extends Model
         }
 
         $data = $this->event_data ?? [];
+
         return $data['duration_seconds'] ?? 0;
     }
 
@@ -334,6 +335,7 @@ class TemplateAnalyticsEvent extends Model
         }
 
         $data = $this->event_data ?? [];
+
         return $data['depth_percent'] ?? 0;
     }
 
@@ -346,7 +348,7 @@ class TemplateAnalyticsEvent extends Model
             'tenant_id' => 'required|exists:tenants,id',
             'template_id' => 'required|exists:templates,id',
             'landing_page_id' => 'nullable|exists:landing_pages,id',
-            'event_type' => 'required|string|in:' . implode(',', self::EVENT_TYPES),
+            'event_type' => 'required|string|in:'.implode(',', self::EVENT_TYPES),
             'event_data' => 'nullable|array',
             'user_identifier' => 'nullable|string|max:255',
             'user_agent' => 'nullable|string|max:1000',
@@ -381,7 +383,7 @@ class TemplateAnalyticsEvent extends Model
      */
     public function canRetainData(): bool
     {
-        return !$this->data_retention_until || now()->lessThan($this->data_retention_until);
+        return ! $this->data_retention_until || now()->lessThan($this->data_retention_until);
     }
 
     /**
@@ -413,7 +415,7 @@ class TemplateAnalyticsEvent extends Model
     {
         return $query->where(function ($q) {
             $q->whereNull('data_retention_until')
-              ->orWhere('data_retention_until', '>', now());
+                ->orWhere('data_retention_until', '>', now());
         });
     }
 

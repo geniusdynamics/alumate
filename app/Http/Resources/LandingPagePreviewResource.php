@@ -16,7 +16,6 @@ class LandingPagePreviewResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param Request $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -79,8 +78,8 @@ class LandingPagePreviewResource extends JsonResource
                 'version' => $this->resource['metadata']['version'] ?? 1,
                 'cache_used' => $this->resource['cache_used'] ?? true,
                 'is_responsive' => $this->isResponsive(),
-                'has_custom_css' => !empty($this->resource['custom_css']),
-                'has_custom_js' => !empty($this->resource['custom_js']),
+                'has_custom_css' => ! empty($this->resource['custom_css']),
+                'has_custom_js' => ! empty($this->resource['custom_js']),
                 'is_published' => ($this->resource['metadata']['status'] ?? 'draft') === 'published',
             ];
         }
@@ -118,22 +117,22 @@ class LandingPagePreviewResource extends JsonResource
             'mobile' => [
                 'max_width' => 576,
                 'description' => 'Mobile devices',
-                'active' => $this->resource['device_mode'] === 'mobile'
+                'active' => $this->resource['device_mode'] === 'mobile',
             ],
             'tablet' => [
                 'max_width' => 768,
                 'description' => 'Tablet devices',
-                'active' => $this->resource['device_mode'] === 'tablet'
+                'active' => $this->resource['device_mode'] === 'tablet',
             ],
             'desktop' => [
                 'min_width' => 992,
                 'description' => 'Desktop devices',
-                'active' => $this->resource['device_mode'] === 'desktop'
+                'active' => $this->resource['device_mode'] === 'desktop',
             ],
             'large' => [
                 'min_width' => 1200,
                 'description' => 'Large desktop screens',
-                'active' => false
+                'active' => false,
             ],
         ];
     }

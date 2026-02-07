@@ -15,7 +15,6 @@ class SequenceEmailResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  Request  $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -66,8 +65,6 @@ class SequenceEmailResource extends JsonResource
 
     /**
      * Get email statistics.
-     *
-     * @return array
      */
     protected function getEmailStats(): array
     {
@@ -86,12 +83,11 @@ class SequenceEmailResource extends JsonResource
 
     /**
      * Get open rate percentage.
-     *
-     * @return float
      */
     protected function getOpenRate(): float
     {
         $stats = $this->getEmailStats();
+
         return $stats['delivered_count'] > 0
             ? round(($stats['opened_count'] / $stats['delivered_count']) * 100, 2)
             : 0.0;
@@ -99,12 +95,11 @@ class SequenceEmailResource extends JsonResource
 
     /**
      * Get click rate percentage.
-     *
-     * @return float
      */
     protected function getClickRate(): float
     {
         $stats = $this->getEmailStats();
+
         return $stats['delivered_count'] > 0
             ? round(($stats['clicked_count'] / $stats['delivered_count']) * 100, 2)
             : 0.0;

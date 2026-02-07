@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Collection;
-use Throwable;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Analytics Logging Service
@@ -22,42 +20,56 @@ use Exception;
 class AnalyticsLoggingService
 {
     private const LOG_CACHE_KEY = 'analytics_logs';
+
     private const LOG_CACHE_TTL = 3600; // 1 hour
+
     private const MAX_LOG_HISTORY = 10000;
+
     private const LOG_RETENTION_DAYS = 90;
 
     private TenantContextService $tenantContextService;
+
     private array $logConfig;
+
     private array $logStorage = [];
 
     /**
      * Log types
      */
     public const TYPE_EVENT = 'event';
+
     public const TYPE_QUERY = 'query';
+
     public const TYPE_METRIC = 'metric';
+
     public const TYPE_PERFORMANCE = 'performance';
+
     public const TYPE_ERROR = 'error';
 
     /**
      * Log severity levels
      */
     public const SEVERITY_DEBUG = 'debug';
+
     public const SEVERITY_INFO = 'info';
+
     public const SEVERITY_WARNING = 'warning';
+
     public const SEVERITY_ERROR = 'error';
+
     public const SEVERITY_CRITICAL = 'critical';
 
     /**
      * Export formats
      */
     public const FORMAT_JSON = 'json';
+
     public const FORMAT_CSV = 'csv';
+
     public const FORMAT_ARRAY = 'array';
 
     /**
-     * @param TenantContextService $tenantContextService
-     * @param array $logConfig Logging configuration
+     * @param  array  $logConfig  Logging configuration
      */
     public function __construct(
         TenantContextService $tenantContextService,
@@ -70,7 +82,7 @@ class AnalyticsLoggingService
     /**
      * Log an analytics event
      *
-     * @param array $event Event data containing type, name, metadata, etc.
+     * @param  array  $event  Event data containing type, name, metadata, etc.
      * @return array Logged event record
      */
     public function logEvent(array $event): array
@@ -106,7 +118,7 @@ class AnalyticsLoggingService
     /**
      * Log an analytics query
      *
-     * @param array $query Query data containing query string, parameters, execution time, etc.
+     * @param  array  $query  Query data containing query string, parameters, execution time, etc.
      * @return array Logged query record
      */
     public function logQuery(array $query): array
@@ -152,7 +164,7 @@ class AnalyticsLoggingService
     /**
      * Log an analytics metric
      *
-     * @param array $metric Metric data containing name, value, dimensions, etc.
+     * @param  array  $metric  Metric data containing name, value, dimensions, etc.
      * @return array Logged metric record
      */
     public function logMetric(array $metric): array
@@ -190,7 +202,7 @@ class AnalyticsLoggingService
     /**
      * Log performance data
      *
-     * @param array $performance Performance data containing operation, duration, memory usage, etc.
+     * @param  array  $performance  Performance data containing operation, duration, memory usage, etc.
      * @return array Logged performance record
      */
     public function logPerformance(array $performance): array
@@ -238,7 +250,7 @@ class AnalyticsLoggingService
     /**
      * Log an analytics error
      *
-     * @param array $error Error data containing message, code, stack trace, etc.
+     * @param  array  $error  Error data containing message, code, stack trace, etc.
      * @return array Logged error record
      */
     public function logError(array $error): array
@@ -277,9 +289,9 @@ class AnalyticsLoggingService
     /**
      * Get logs with filters
      *
-     * @param array $filters Filters to apply (type, severity, date range, etc.)
-     * @param int $limit Maximum number of logs to return
-     * @param int $offset Offset for pagination
+     * @param  array  $filters  Filters to apply (type, severity, date range, etc.)
+     * @param  int  $limit  Maximum number of logs to return
+     * @param  int  $offset  Offset for pagination
      * @return array Filtered logs
      */
     public function getLogs(array $filters = [], int $limit = 100, int $offset = 0): array
@@ -322,6 +334,7 @@ class AnalyticsLoggingService
             $since = strtotime($filters['since']);
             $logs = array_filter($logs, function ($log) use ($since) {
                 $timestamp = strtotime($log['timestamp'] ?? 0);
+
                 return $timestamp >= $since;
             });
         }
@@ -330,6 +343,7 @@ class AnalyticsLoggingService
             $until = strtotime($filters['until']);
             $logs = array_filter($logs, function ($log) use ($until) {
                 $timestamp = strtotime($log['timestamp'] ?? 0);
+
                 return $timestamp <= $until;
             });
         }
@@ -344,6 +358,7 @@ class AnalyticsLoggingService
         usort($logs, function ($a, $b) {
             $timeA = strtotime($a['timestamp'] ?? 0);
             $timeB = strtotime($b['timestamp'] ?? 0);
+
             return $timeB <=> $timeA;
         });
 
@@ -363,7 +378,7 @@ class AnalyticsLoggingService
     /**
      * Get a log by ID
      *
-     * @param string $logId Log ID to retrieve
+     * @param  string  $logId  Log ID to retrieve
      * @return array|null Log record or null if not found
      */
     public function getLogById(string $logId): ?array
@@ -383,8 +398,8 @@ class AnalyticsLoggingService
     /**
      * Export logs
      *
-     * @param array $filters Filters to apply
-     * @param string $format Export format (json, csv, array)
+     * @param  array  $filters  Filters to apply
+     * @param  string  $format  Export format (json, csv, array)
      * @return array Exported logs
      */
     public function exportLogs(array $filters = [], string $format = self::FORMAT_JSON): array
@@ -416,7 +431,7 @@ class AnalyticsLoggingService
     /**
      * Get log summary for a date range
      *
-     * @param array $dateRange Date range with 'start' and 'end' keys
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
      * @return array Log summary
      */
     public function getLogSummary(array $dateRange): array
@@ -471,7 +486,7 @@ class AnalyticsLoggingService
             // Track top events
             if ($type === self::TYPE_EVENT) {
                 $name = $log['name'] ?? 'unknown';
-                if (!isset($summary['top_events'][$name])) {
+                if (! isset($summary['top_events'][$name])) {
                     $summary['top_events'][$name] = [
                         'name' => $name,
                         'count' => 0,
@@ -483,7 +498,7 @@ class AnalyticsLoggingService
             // Track errors
             if ($type === self::TYPE_ERROR) {
                 $message = $log['message'] ?? 'Unknown error';
-                if (!isset($summary['top_errors'][$message])) {
+                if (! isset($summary['top_errors'][$message])) {
                     $summary['top_errors'][$message] = [
                         'message' => $message,
                         'count' => 0,
@@ -511,19 +526,19 @@ class AnalyticsLoggingService
         arsort($summary['by_severity']);
         arsort($summary['by_category']);
 
-        uasort($summary['top_events'], fn($a, $b) => $b['count'] <=> $a['count']);
+        uasort($summary['top_events'], fn ($a, $b) => $b['count'] <=> $a['count']);
         $summary['top_events'] = array_slice(array_values($summary['top_events']), 0, 10);
 
-        uasort($summary['top_errors'], fn($a, $b) => $b['count'] <=> $a['count']);
+        uasort($summary['top_errors'], fn ($a, $b) => $b['count'] <=> $a['count']);
         $summary['top_errors'] = array_slice(array_values($summary['top_errors']), 0, 10);
 
         // Calculate averages
-        if (!empty($summary['performance_stats'])) {
+        if (! empty($summary['performance_stats'])) {
             $summary['avg_performance_ms'] = round(array_sum($summary['performance_stats']) / count($summary['performance_stats']), 2);
             $summary['max_performance_ms'] = max($summary['performance_stats']);
         }
 
-        if (!empty($summary['query_stats'])) {
+        if (! empty($summary['query_stats'])) {
             $summary['avg_query_time_ms'] = round(array_sum($summary['query_stats']) / count($summary['query_stats']), 2);
             $summary['max_query_time_ms'] = max($summary['query_stats']);
         }
@@ -534,10 +549,10 @@ class AnalyticsLoggingService
     /**
      * Search logs with query string
      *
-     * @param string $query Search query
-     * @param array $filters Additional filters
-     * @param int $limit Maximum results
-     * @param int $offset Offset for pagination
+     * @param  string  $query  Search query
+     * @param  array  $filters  Additional filters
+     * @param  int  $limit  Maximum results
+     * @param  int  $offset  Offset for pagination
      * @return array Search results
      */
     public function searchLogs(string $query, array $filters = [], int $limit = 50, int $offset = 0): array
@@ -559,11 +574,12 @@ class AnalyticsLoggingService
                     return true;
                 }
             }
+
             return false;
         });
 
         // Apply additional filters
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             $logs = $this->applyFilters($logs, $filters);
         }
 
@@ -571,6 +587,7 @@ class AnalyticsLoggingService
         usort($logs, function ($a, $b) {
             $timeA = strtotime($a['timestamp'] ?? 0);
             $timeB = strtotime($b['timestamp'] ?? 0);
+
             return $timeB <=> $timeA;
         });
 
@@ -590,7 +607,7 @@ class AnalyticsLoggingService
     /**
      * Clear logs based on filters
      *
-     * @param array $filters Filters to determine which logs to clear
+     * @param  array  $filters  Filters to determine which logs to clear
      * @return array Result of clearing operation
      */
     public function clearLogs(array $filters = []): array
@@ -651,7 +668,7 @@ class AnalyticsLoggingService
             ]);
 
         } catch (Exception $e) {
-            $result['message'] = 'Failed to clear logs: ' . $e->getMessage();
+            $result['message'] = 'Failed to clear logs: '.$e->getMessage();
             Log::error('Failed to clear analytics logs', [
                 'filters' => $filters,
                 'error' => $e->getMessage(),
@@ -664,7 +681,7 @@ class AnalyticsLoggingService
     /**
      * Configure logging settings
      *
-     * @param array $config Configuration options
+     * @param  array  $config  Configuration options
      * @return array Updated configuration
      */
     public function configureLogging(array $config): array
@@ -703,7 +720,7 @@ class AnalyticsLoggingService
     /**
      * Apply configuration changes
      *
-     * @param array $config Configuration to apply
+     * @param  array  $config  Configuration to apply
      */
     private function applyConfiguration(array $config): void
     {
@@ -723,7 +740,7 @@ class AnalyticsLoggingService
     /**
      * Store a log entry
      *
-     * @param array $log Log entry to store
+     * @param  array  $log  Log entry to store
      */
     private function storeLog(array $log): void
     {
@@ -763,8 +780,8 @@ class AnalyticsLoggingService
     /**
      * Apply filters to logs
      *
-     * @param array $logs Logs to filter
-     * @param array $filters Filters to apply
+     * @param  array  $logs  Logs to filter
+     * @param  array  $filters  Filters to apply
      * @return array Filtered logs
      */
     private function applyFilters(array $logs, array $filters): array
@@ -793,7 +810,7 @@ class AnalyticsLoggingService
     /**
      * Sanitize trace for logging
      *
-     * @param string $trace Trace to sanitize
+     * @param  string  $trace  Trace to sanitize
      * @return string Sanitized trace
      */
     private function sanitizeTrace(string $trace): string
@@ -809,7 +826,7 @@ class AnalyticsLoggingService
     /**
      * Convert logs to CSV format
      *
-     * @param array $logs Logs to convert
+     * @param  array  $logs  Logs to convert
      * @return string CSV formatted logs
      */
     private function convertToCsv(array $logs): string
@@ -819,7 +836,7 @@ class AnalyticsLoggingService
         }
 
         $headers = ['id', 'tenant_id', 'type', 'name', 'message', 'severity', 'category', 'timestamp'];
-        $csv = implode(',', $headers) . "\n";
+        $csv = implode(',', $headers)."\n";
 
         foreach ($logs as $log) {
             $row = [
@@ -836,12 +853,13 @@ class AnalyticsLoggingService
             // Escape values
             $row = array_map(function ($value) {
                 if (is_string($value)) {
-                    return '"' . str_replace('"', '""', $value) . '"';
+                    return '"'.str_replace('"', '""', $value).'"';
                 }
+
                 return $value;
             }, $row);
 
-            $csv .= implode(',', $row) . "\n";
+            $csv .= implode(',', $row)."\n";
         }
 
         return $csv;

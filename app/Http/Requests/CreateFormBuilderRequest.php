@@ -47,7 +47,7 @@ class CreateFormBuilderRequest extends FormRequest
             'fields.*.order_index' => 'nullable|integer|min:0',
             'fields.*.is_required' => 'boolean',
             'fields.*.is_visible' => 'boolean',
-            'fields.*.crm_field_mapping' => 'nullable|array'
+            'fields.*.crm_field_mapping' => 'nullable|array',
         ];
     }
 
@@ -58,7 +58,7 @@ class CreateFormBuilderRequest extends FormRequest
             'crm_integration_config.provider.required_if' => 'CRM provider is required when CRM integration is enabled',
             'fields.*.field_type.in' => 'Invalid field type selected',
             'fields.*.field_name.required' => 'Field name is required',
-            'fields.*.field_label.required' => 'Field label is required'
+            'fields.*.field_label.required' => 'Field label is required',
         ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: TemplatePerformanceDashboard model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Manages performance dashboard configurations and cached metrics within tenant-specific schemas
 
@@ -7,7 +8,6 @@ namespace App\Models;
 use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TemplatePerformanceDashboard extends Model
 {
@@ -160,7 +160,7 @@ class TemplatePerformanceDashboard extends Model
      */
     public function hasFreshMetrics(int $maxAgeSeconds = 300): bool
     {
-        if (!$this->last_updated_at) {
+        if (! $this->last_updated_at) {
             return false;
         }
 

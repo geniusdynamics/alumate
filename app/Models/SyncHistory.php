@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Sync History Model
- * 
+ *
  * Tracks synchronization operations between analytics data sources
  */
 class SyncHistory extends Model
@@ -83,9 +83,10 @@ class SyncHistory extends Model
      */
     public function getDurationSecondsAttribute(): ?int
     {
-        if (!$this->completed_at) {
+        if (! $this->completed_at) {
             return null;
         }
+
         return $this->started_at->diffInSeconds($this->completed_at);
     }
 }

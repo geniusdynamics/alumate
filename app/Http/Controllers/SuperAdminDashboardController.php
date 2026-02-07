@@ -35,6 +35,7 @@ class SuperAdminDashboardController extends Controller
     {
         $this->aggregationService = $aggregationService;
     }
+
     public function index()
     {
         // System-wide analytics
@@ -582,7 +583,7 @@ class SuperAdminDashboardController extends Controller
         foreach ($tenants as $tenant) {
             try {
                 $tenant->run(function () use (&$changes, $startDate) {
-                    if (!Schema::hasTable('graduates')) {
+                    if (! Schema::hasTable('graduates')) {
                         return;
                     }
 
@@ -617,7 +618,7 @@ class SuperAdminDashboardController extends Controller
         foreach ($tenants as $tenant) {
             try {
                 $tenant->run(function () use (&$hiresByEmployer, $startDate) {
-                    if (!Schema::hasTable('graduates') || !Schema::hasTable('employers')) {
+                    if (! Schema::hasTable('graduates') || ! Schema::hasTable('employers')) {
                         return;
                     }
 
@@ -627,7 +628,7 @@ class SuperAdminDashboardController extends Controller
 
                     foreach ($recentHires as $hire) {
                         $employerId = $hire->employer_id;
-                        if (!isset($hiresByEmployer[$employerId])) {
+                        if (! isset($hiresByEmployer[$employerId])) {
                             $hiresByEmployer[$employerId] = 0;
                         }
                         $hiresByEmployer[$employerId]++;
@@ -639,8 +640,10 @@ class SuperAdminDashboardController extends Controller
         }
 
         arsort($hiresByEmployer);
+
         return collect($hiresByEmployer)->take(10)->map(function ($count, $employerId) {
             $employer = Employer::find($employerId);
+
             return [
                 'company_name' => $employer ? $employer->company_name : 'Unknown',
                 'hires' => $count,

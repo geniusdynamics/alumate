@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class SanitizeInput
@@ -29,14 +28,14 @@ class SanitizeInput
     {
         // Sanitize query parameters
         $queryParams = $request->query();
-        if (!empty($queryParams)) {
+        if (! empty($queryParams)) {
             $sanitizedQuery = $this->sanitizeArray($queryParams);
             $request->query->replace($sanitizedQuery);
         }
 
         // Sanitize POST data
         $postData = $request->post();
-        if (!empty($postData)) {
+        if (! empty($postData)) {
             $sanitizedPost = $this->sanitizeArray($postData);
             $request->request->replace($sanitizedPost);
         }
@@ -44,7 +43,7 @@ class SanitizeInput
         // Sanitize JSON data if present
         if ($request->isJson()) {
             $jsonData = $request->json()->all();
-            if (!empty($jsonData)) {
+            if (! empty($jsonData)) {
                 $sanitizedJson = $this->sanitizeArray($jsonData);
                 $request->json()->replace($sanitizedJson);
             }
@@ -52,7 +51,7 @@ class SanitizeInput
 
         // Sanitize route parameters
         $routeParams = $request->route() ? $request->route()->parameters() : [];
-        if (!empty($routeParams)) {
+        if (! empty($routeParams)) {
             $sanitizedRoute = $this->sanitizeArray($routeParams);
             foreach ($sanitizedRoute as $key => $value) {
                 $request->route()->setParameter($key, $value);
@@ -101,11 +100,11 @@ class SanitizeInput
         $sqlKeywords = [
             'SELECT', 'INSERT', 'UPDATE', 'DELETE', 'DROP', 'CREATE', 'ALTER',
             'EXEC', 'EXECUTE', 'UNION', 'JOIN', 'WHERE', 'FROM', 'INTO',
-            'SCRIPT', 'JAVASCRIPT', 'VBSCRIPT', 'ONLOAD', 'ONERROR'
+            'SCRIPT', 'JAVASCRIPT', 'VBSCRIPT', 'ONLOAD', 'ONERROR',
         ];
 
         foreach ($sqlKeywords as $keyword) {
-            $value = preg_replace('/\b' . preg_quote($keyword, '/') . '\b/i', '', $value);
+            $value = preg_replace('/\b'.preg_quote($keyword, '/').'\b/i', '', $value);
         }
 
         // Remove script tags

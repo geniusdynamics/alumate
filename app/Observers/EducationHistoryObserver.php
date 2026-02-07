@@ -3,10 +3,8 @@
 namespace App\Observers;
 
 use App\Jobs\UpdateUserCirclesJob;
-use App\Models\EducationHistory;
-use App\Services\CachingStrategyService;
-use App\Services\ComponentCachingService;
 use App\Models\AnalyticsEvent;
+use App\Models\EducationHistory;
 use Illuminate\Support\Facades\Log;
 
 class EducationHistoryObserver

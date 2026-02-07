@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Analytics;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreSessionRequest;
 use App\Http\Requests\SessionQueryRequest;
+use App\Http\Requests\StoreSessionRequest;
 use App\Services\Analytics\SessionRecordingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 
 /**
  * Session Recording API Controller
@@ -30,9 +29,6 @@ class SessionRecordingController extends Controller
 
     /**
      * Track session events with privacy validation
-     *
-     * @param StoreSessionRequest $request
-     * @return JsonResponse
      */
     public function track(StoreSessionRequest $request): JsonResponse
     {
@@ -79,16 +75,13 @@ class SessionRecordingController extends Controller
 
     /**
      * Retrieve session with playback data
-     *
-     * @param string $sessionId
-     * @return JsonResponse
      */
     public function show(string $sessionId): JsonResponse
     {
         try {
             $session = $this->sessionRecordingService->getSessionRecording($sessionId);
 
-            if (!$session) {
+            if (! $session) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Session not found',
@@ -115,9 +108,6 @@ class SessionRecordingController extends Controller
 
     /**
      * List sessions with filtering and pagination
-     *
-     * @param SessionQueryRequest $request
-     * @return JsonResponse
      */
     public function index(SessionQueryRequest $request): JsonResponse
     {
@@ -187,9 +177,6 @@ class SessionRecordingController extends Controller
 
     /**
      * Opt-out session deletion
-     *
-     * @param string $sessionId
-     * @return JsonResponse
      */
     public function destroy(string $sessionId): JsonResponse
     {
@@ -197,7 +184,7 @@ class SessionRecordingController extends Controller
             // Check if session exists
             $session = $this->sessionRecordingService->getSessionRecording($sessionId);
 
-            if (!$session) {
+            if (! $session) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Session not found',
@@ -238,9 +225,6 @@ class SessionRecordingController extends Controller
 
     /**
      * Get session analytics summary
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function analytics(Request $request): JsonResponse
     {

@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: NotificationTemplate model for managing notification templates with schema-based tenant isolation
 // ABOUTME: Uses schema-based tenancy where each tenant has their own database schema for complete data isolation
 
@@ -52,6 +53,7 @@ class NotificationTemplate extends Model
     {
         // Schema-based tenancy: Return current tenant from context instead of database relationship
         $tenant = $this->getCurrentTenant();
+
         return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 

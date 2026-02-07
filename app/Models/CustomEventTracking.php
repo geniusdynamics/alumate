@@ -135,7 +135,7 @@ class CustomEventTracking extends Model
      */
     public function canRetainData(): bool
     {
-        return !$this->data_retention_until || now()->lessThan($this->data_retention_until);
+        return ! $this->data_retention_until || now()->lessThan($this->data_retention_until);
     }
 
     /**

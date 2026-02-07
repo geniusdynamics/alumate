@@ -19,22 +19,35 @@ class RecoveryPlan extends Model
     use HasFactory;
 
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_TESTING = 'testing';
+
     public const STATUS_EXECUTING = 'executing';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_ARCHIVED = 'archived';
 
     public const PRIORITY_CRITICAL = 'critical';
+
     public const PRIORITY_HIGH = 'high';
+
     public const PRIORITY_MEDIUM = 'medium';
+
     public const PRIORITY_LOW = 'low';
 
     public const TYPE_FULL_RECOVERY = 'full_recovery';
+
     public const TYPE_PARTIAL_RECOVERY = 'partial_recovery';
+
     public const TYPE_POINT_IN_TIME = 'point_in_time';
+
     public const TYPE_FAILOVER = 'failover';
+
     public const TYPE_FAILBACK = 'failback';
 
     protected $fillable = [

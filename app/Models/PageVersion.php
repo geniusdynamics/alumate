@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PageVersion extends Model
 {
@@ -54,7 +54,7 @@ class PageVersion extends Model
     public function scopeLatestVersion($query, int $pageId)
     {
         return $query->where('page_id', $pageId)
-                    ->orderBy('version_number', 'desc')
-                    ->first();
+            ->orderBy('version_number', 'desc')
+            ->first();
     }
 }

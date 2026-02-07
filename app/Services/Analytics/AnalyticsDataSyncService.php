@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Analytics;
 
-use App\Models\Analytics\SyncHistory;
 use App\Models\Analytics\Discrepancy;
+use App\Models\Analytics\SyncHistory;
 use App\Services\CacheService;
 use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Analytics Data Sync Service for unified data view and discrepancy detection
- * 
+ *
  * This service provides comprehensive data synchronization between internal
  * analytics and external platforms (Google Analytics, Matomo), including
  * discrepancy detection, resolution, and monitoring capabilities.
@@ -25,35 +24,48 @@ class AnalyticsDataSyncService
      * Available data sources
      */
     public const SOURCE_INTERNAL = 'internal';
+
     public const SOURCE_GOOGLE_ANALYTICS = 'google_analytics';
+
     public const SOURCE_MATOMO = 'matomo';
 
     /**
      * Sync status constants
      */
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_IN_PROGRESS = 'in_progress';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
 
     /**
      * Resolution strategies
      */
     public const RESOLUTION_AVERAGE = 'average';
+
     public const RESOLUTION_MAX = 'max';
+
     public const RESOLUTION_MIN = 'min';
+
     public const RESOLUTION_SOURCE = 'source';
 
     /**
      * Cache TTL constants
      */
     private const CACHE_TTL_STATUS = 300; // 5 minutes
+
     private const CACHE_TTL_UNIFIED_VIEW = 180; // 3 minutes
+
     private const CACHE_TTL_DISCREPANCIES = 600; // 10 minutes
 
     private GoogleAnalyticsService $googleAnalyticsService;
+
     private MatomoService $matomoService;
+
     private CacheService $cacheService;
+
     private ?TenantContextService $tenantContextService;
 
     public function __construct(
@@ -76,6 +88,7 @@ class AnalyticsDataSyncService
         if ($this->tenantContextService !== null) {
             return $this->tenantContextService->getCurrentTenantId();
         }
+
         return request()->header('X-Tenant');
     }
 
@@ -85,21 +98,22 @@ class AnalyticsDataSyncService
     protected function getCacheKey(string $key): string
     {
         $tenantId = $this->getCurrentTenantId();
-        return 'analytics:sync:' . ($tenantId ? "{$tenantId}:" : '') . $key;
+
+        return 'analytics:sync:'.($tenantId ? "{$tenantId}:" : '').$key;
     }
 
     /**
      * Synchronize data between sources
-     * 
-     * @param string $source Source data source
-     * @param string $target Target data source
-     * @param array $dateRange Date range ['start' => 'Y-m-d', 'end' => 'Y-m-d']
+     *
+     * @param  string  $source  Source data source
+     * @param  string  $target  Target data source
+     * @param  array  $dateRange  Date range ['start' => 'Y-m-d', 'end' => 'Y-m-d']
      * @return array Sync results
      */
     public function syncData(string $source, string $target, array $dateRange): array
     {
         $tenantId = $this->getCurrentTenantId();
-        
+
         Log::info('Starting data synchronization', [
             'source' => $source,
             'target' => $target,
@@ -112,9 +126,10 @@ class AnalyticsDataSyncService
         try {
             // Get data from source
             $sourceData = $this->fetchDataFromSource($source, $dateRange);
-            
+
             if ($sourceData === null) {
                 $this->updateSyncRecord($syncHistory, self::STATUS_FAILED, 'Failed to fetch data from source');
+
                 return ['success' => false, 'error' => 'Failed to fetch data from source'];
             }
 
@@ -124,17 +139,17 @@ class AnalyticsDataSyncService
 
             if ($pushResult['success']) {
                 $this->updateSyncRecord($syncHistory, self::STATUS_COMPLETED, null, $pushResult);
-                
+
                 // Invalidate relevant caches
                 $this->invalidateRelatedCaches();
-                
+
                 Log::info('Data synchronization completed successfully', [
                     'source' => $source,
                     'target' => $target,
                     'records_synced' => $pushResult['records'] ?? 0,
                     'tenant_id' => $tenantId,
                 ]);
-                
+
                 return [
                     'success' => true,
                     'records_synced' => $pushResult['records'] ?? 0,
@@ -142,12 +157,13 @@ class AnalyticsDataSyncService
                 ];
             } else {
                 $this->updateSyncRecord($syncHistory, self::STATUS_FAILED, $pushResult['error'] ?? 'Unknown error');
+
                 return ['success' => false, 'error' => $pushResult['error'] ?? 'Unknown error'];
             }
         } catch (\Exception $e) {
             $this->updateSyncRecord($syncHistory, self::STATUS_FAILED, $e->getMessage());
             $this->handleSyncError($e);
-            
+
             return [
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -158,16 +174,16 @@ class AnalyticsDataSyncService
 
     /**
      * Detect discrepancies between two data sources
-     * 
-     * @param string $source1 First data source
-     * @param string $source2 Second data source
-     * @param array $dateRange Date range ['start' => 'Y-m-d', 'end' => 'Y-m-d']
+     *
+     * @param  string  $source1  First data source
+     * @param  string  $source2  Second data source
+     * @param  array  $dateRange  Date range ['start' => 'Y-m-d', 'end' => 'Y-m-d']
      * @return array Detected discrepancies
      */
     public function detectDiscrepancies(string $source1, string $source2, array $dateRange): array
     {
-        $cacheKey = $this->getCacheKey('discrepancies:' . md5($source1 . $source2 . serialize($dateRange)));
-        
+        $cacheKey = $this->getCacheKey('discrepancies:'.md5($source1.$source2.serialize($dateRange)));
+
         // Try cache first
         $cachedDiscrepancies = $this->cacheService->get($cacheKey);
         if ($cachedDiscrepancies !== null) {
@@ -208,7 +224,7 @@ class AnalyticsDataSyncService
 
             if ($discrepancy !== null) {
                 $discrepancies[] = $discrepancy;
-                
+
                 // Store discrepancy in database
                 $this->storeDiscrepancy($discrepancy, $dateRange);
             }
@@ -232,7 +248,7 @@ class AnalyticsDataSyncService
         float $threshold
     ): ?array {
         $average = ($value1 + $value2) / 2;
-        
+
         if ($average === 0) {
             return null;
         }
@@ -304,9 +320,9 @@ class AnalyticsDataSyncService
 
     /**
      * Resolve a discrepancy
-     * 
-     * @param string $discrepancyId Discrepancy ID to resolve
-     * @param string $resolution Resolution strategy
+     *
+     * @param  string  $discrepancyId  Discrepancy ID to resolve
+     * @param  string  $resolution  Resolution strategy
      * @return array Resolution result
      */
     public function resolveDiscrepancy(string $discrepancyId, string $resolution = self::RESOLUTION_AVERAGE): array
@@ -324,7 +340,7 @@ class AnalyticsDataSyncService
             ->where('tenant_id', $tenantId)
             ->first();
 
-        if (!$dbDiscrepancy) {
+        if (! $dbDiscrepancy) {
             return [
                 'success' => false,
                 'error' => 'Discrepancy not found',
@@ -370,7 +386,7 @@ class AnalyticsDataSyncService
 
     /**
      * Get current synchronization status
-     * 
+     *
      * @return array Sync status
      */
     public function getSyncStatus(): array
@@ -386,13 +402,13 @@ class AnalyticsDataSyncService
         $status = [
             'last_sync' => $this->getLastSyncTime(),
             'google_analytics' => [
-                'enabled' => !empty(config('services.google.analytics.measurement_id')),
+                'enabled' => ! empty(config('services.google.analytics.measurement_id')),
                 'last_sync' => $this->getLastSyncTimeForSource(self::SOURCE_GOOGLE_ANALYTICS),
                 'status' => $this->getSourceStatus(self::SOURCE_GOOGLE_ANALYTICS),
                 'health' => $this->checkSourceHealth(self::SOURCE_GOOGLE_ANALYTICS),
             ],
             'matomo' => [
-                'enabled' => !empty(config('services.matomo.url')),
+                'enabled' => ! empty(config('services.matomo.url')),
                 'last_sync' => $this->getLastSyncTimeForSource(self::SOURCE_MATOMO),
                 'status' => $this->getSourceStatus(self::SOURCE_MATOMO),
                 'health' => $this->checkSourceHealth(self::SOURCE_MATOMO),
@@ -415,8 +431,8 @@ class AnalyticsDataSyncService
 
     /**
      * Get synchronization history
-     * 
-     * @param int $limit Maximum number of records to return
+     *
+     * @param  int  $limit  Maximum number of records to return
      * @return array Sync history
      */
     public function getSyncHistory(int $limit = 50): array
@@ -437,8 +453,8 @@ class AnalyticsDataSyncService
                 'error_message' => $record->error_message,
                 'started_at' => $record->started_at->toIso8601String(),
                 'completed_at' => $record->completed_at?->toIso8601String(),
-                'duration_seconds' => $record->completed_at 
-                    ? $record->started_at->diffInSeconds($record->completed_at) 
+                'duration_seconds' => $record->completed_at
+                    ? $record->started_at->diffInSeconds($record->completed_at)
                     : null,
             ];
         })->toArray();
@@ -446,14 +462,14 @@ class AnalyticsDataSyncService
 
     /**
      * Get unified data view combining all sources
-     * 
-     * @param array $dateRange Date range ['start' => 'Y-m-d', 'end' => 'Y-m-d']
-     * @param array $metrics Metrics to include
+     *
+     * @param  array  $dateRange  Date range ['start' => 'Y-m-d', 'end' => 'Y-m-d']
+     * @param  array  $metrics  Metrics to include
      * @return array Unified data view
      */
     public function getUnifiedView(array $dateRange, array $metrics = []): array
     {
-        $cacheKey = $this->getCacheKey('unified:' . md5(serialize($dateRange) . serialize($metrics)));
+        $cacheKey = $this->getCacheKey('unified:'.md5(serialize($dateRange).serialize($metrics)));
 
         // Try cache first
         $cachedView = $this->cacheService->get($cacheKey);
@@ -462,7 +478,7 @@ class AnalyticsDataSyncService
         }
 
         $defaultMetrics = ['sessions', 'users', 'pageviews', 'events', 'bounce_rate', 'avg_session_duration'];
-        $metrics = !empty($metrics) ? $metrics : $defaultMetrics;
+        $metrics = ! empty($metrics) ? $metrics : $defaultMetrics;
 
         $unifiedData = [
             'date_range' => $dateRange,
@@ -478,7 +494,7 @@ class AnalyticsDataSyncService
 
         foreach ($sources as $source) {
             $sourceData = $this->fetchDataFromSource($source, $dateRange);
-            
+
             if ($sourceData !== null) {
                 $unifiedData['sources'][$source] = [
                     'available' => true,
@@ -488,7 +504,7 @@ class AnalyticsDataSyncService
 
                 // Extract requested metrics
                 foreach ($metrics as $metric) {
-                    if (!isset($unifiedData['metrics'][$metric])) {
+                    if (! isset($unifiedData['metrics'][$metric])) {
                         $unifiedData['metrics'][$metric] = [
                             'values' => [],
                             'average' => null,
@@ -496,7 +512,7 @@ class AnalyticsDataSyncService
                             'max' => null,
                         ];
                     }
-                    
+
                     $unifiedData['metrics'][$metric]['values'][$source] = $sourceData[$metric] ?? 0;
                 }
             } else {
@@ -510,9 +526,9 @@ class AnalyticsDataSyncService
         // Calculate metric summaries
         foreach ($unifiedData['metrics'] as $metric => &$metricData) {
             $values = array_values($metricData['values']);
-            $metricData['average'] = !empty($values) ? round(array_sum($values) / count($values), 2) : 0;
-            $metricData['min'] = !empty($values) ? min($values) : 0;
-            $metricData['max'] = !empty($values) ? max($values) : 0;
+            $metricData['average'] = ! empty($values) ? round(array_sum($values) / count($values), 2) : 0;
+            $metricData['min'] = ! empty($values) ? min($values) : 0;
+            $metricData['max'] = ! empty($values) ? max($values) : 0;
         }
 
         // Detect discrepancies across all sources
@@ -540,7 +556,7 @@ class AnalyticsDataSyncService
     {
         $summary = [
             'total_sources' => count($unifiedData['sources']),
-            'active_sources' => count(array_filter($unifiedData['sources'], fn($s) => $s['available'] ?? false)),
+            'active_sources' => count(array_filter($unifiedData['sources'], fn ($s) => $s['available'] ?? false)),
             'discrepancy_count' => count($unifiedData['discrepancies']),
             'high_severity_count' => 0,
             'medium_severity_count' => 0,
@@ -549,7 +565,7 @@ class AnalyticsDataSyncService
 
         foreach ($unifiedData['discrepancies'] as $discrepancy) {
             $severity = $discrepancy['severity'] ?? 'low';
-            $summary[$severity . '_severity_count']++;
+            $summary[$severity.'_severity_count']++;
         }
 
         return $summary;
@@ -557,7 +573,7 @@ class AnalyticsDataSyncService
 
     /**
      * Monitor synchronization health
-     * 
+     *
      * @return array Health monitoring data
      */
     public function monitorSync(): array
@@ -576,8 +592,8 @@ class AnalyticsDataSyncService
         // Check Google Analytics health
         $gaHealth = $this->checkSourceHealth(self::SOURCE_GOOGLE_ANALYTICS);
         $health['checks']['google_analytics'] = $gaHealth;
-        
-        if (!$gaHealth['healthy']) {
+
+        if (! $gaHealth['healthy']) {
             $health['status'] = 'degraded';
             $health['alerts'][] = [
                 'source' => 'google_analytics',
@@ -589,8 +605,8 @@ class AnalyticsDataSyncService
         // Check Matomo health
         $matomoHealth = $this->checkSourceHealth(self::SOURCE_MATOMO);
         $health['checks']['matomo'] = $matomoHealth;
-        
-        if (!$matomoHealth['healthy']) {
+
+        if (! $matomoHealth['healthy']) {
             $health['status'] = 'degraded';
             $health['alerts'][] = [
                 'source' => 'matomo',
@@ -632,9 +648,9 @@ class AnalyticsDataSyncService
 
     /**
      * Handle synchronization errors
-     * 
-     * @param \Exception|\Throwable $error The error to handle
-     * @param array $context Additional context
+     *
+     * @param  \Exception|\Throwable  $error  The error to handle
+     * @param  array  $context  Additional context
      * @return array Error handling result
      */
     public function handleSyncError(\Throwable $error, array $context = []): array
@@ -705,13 +721,13 @@ class AnalyticsDataSyncService
     {
         $cacheKey = $this->getCacheKey('status');
         $currentStatus = $this->cacheService->get($cacheKey) ?? [];
-        
+
         $currentStatus['last_error'] = [
             'status' => $status,
             'severity' => $severity,
             'timestamp' => now()->toIso8601String(),
         ];
-        
+
         $this->cacheService->put($cacheKey, $currentStatus, self::CACHE_TTL_STATUS);
     }
 
@@ -743,8 +759,8 @@ class AnalyticsDataSyncService
                 'date_ranges' => [
                     ['startDate' => $startDate, 'endDate' => $endDate],
                 ],
-                'metrics' => array_map(fn($m) => ['name' => $m], $metrics),
-                'dimensions' => array_map(fn($d) => ['name' => $d], $dimensions),
+                'metrics' => array_map(fn ($m) => ['name' => $m], $metrics),
+                'dimensions' => array_map(fn ($d) => ['name' => $d], $dimensions),
             ];
 
             $report = $this->googleAnalyticsService->getReport($reportRequest);
@@ -756,6 +772,7 @@ class AnalyticsDataSyncService
             return $this->parseGoogleAnalyticsReport($report);
         } catch (\Exception $e) {
             Log::warning('Failed to fetch Google Analytics data', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -769,7 +786,7 @@ class AnalyticsDataSyncService
             $method = 'API.get';
             $params = [
                 'period' => 'range',
-                'date' => $startDate . ',' . $endDate,
+                'date' => $startDate.','.$endDate,
             ];
 
             $report = $this->matomoService->getReport($method, $params);
@@ -781,6 +798,7 @@ class AnalyticsDataSyncService
             return $this->parseMatomoReport($report);
         } catch (\Exception $e) {
             Log::warning('Failed to fetch Matomo data', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -858,7 +876,7 @@ class AnalyticsDataSyncService
             'avg_session_duration' => 0,
         ];
 
-        if (!isset($report['rows'])) {
+        if (! isset($report['rows'])) {
             return $data;
         }
 
@@ -1062,7 +1080,7 @@ class AnalyticsDataSyncService
 
     /**
      * Validate sync configuration
-     * 
+     *
      * @return array Validation results
      */
     public function validateConfiguration(): array
@@ -1077,7 +1095,7 @@ class AnalyticsDataSyncService
         // Validate Google Analytics
         $gaValidation = $this->googleAnalyticsService->validateConfiguration();
         $results['platforms']['google_analytics'] = $gaValidation;
-        if (!$gaValidation['valid']) {
+        if (! $gaValidation['valid']) {
             $results['valid'] = false;
             $results['errors'] = array_merge($results['errors'], $gaValidation['errors']);
         }
@@ -1086,7 +1104,7 @@ class AnalyticsDataSyncService
         // Validate Matomo
         $matomoValidation = $this->matomoService->validateConfiguration();
         $results['platforms']['matomo'] = $matomoValidation;
-        if (!$matomoValidation['valid']) {
+        if (! $matomoValidation['valid']) {
             $results['valid'] = false;
             $results['errors'] = array_merge($results['errors'], $matomoValidation['errors']);
         }
@@ -1097,9 +1115,9 @@ class AnalyticsDataSyncService
 
     /**
      * Sync data to external platforms
-     * 
-     * @param array $events Events to sync
-     * @param array $options Sync options
+     *
+     * @param  array  $events  Events to sync
+     * @param  array  $options  Sync options
      * @return array Sync results
      */
     public function syncToExternal(array $events, array $options = []): array

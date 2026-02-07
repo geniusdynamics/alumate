@@ -14,17 +14,14 @@ class BackupController extends Controller
 {
     /**
      * Display a listing of backups
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
         $backups = Backup::where('tenant_id', tenant()->id)
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->type, fn($q) => $q->where('type', $request->type))
-            ->when($request->start_date, fn($q) => $q->whereDate('created_at', '>=', $request->start_date))
-            ->when($request->end_date, fn($q) => $q->whereDate('created_at', '<=', $request->end_date))
+            ->when($request->status, fn ($q) => $q->where('status', $request->status))
+            ->when($request->type, fn ($q) => $q->where('type', $request->type))
+            ->when($request->start_date, fn ($q) => $q->whereDate('created_at', '>=', $request->start_date))
+            ->when($request->end_date, fn ($q) => $q->whereDate('created_at', '<=', $request->end_date))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
@@ -40,15 +37,12 @@ class BackupController extends Controller
                 'total_count' => Backup::where('tenant_id', tenant()->id)->count(),
                 'statuses' => ['pending', 'processing', 'completed', 'failed'],
                 'types' => ['full', 'incremental', 'database', 'files'],
-            ]
+            ],
         ]);
     }
 
     /**
      * Store a newly created backup
-     *
-     * @param CreateBackupRequest $request
-     * @return JsonResponse
      */
     public function store(CreateBackupRequest $request): JsonResponse
     {
@@ -69,9 +63,6 @@ class BackupController extends Controller
 
     /**
      * Display the specified backup
-     *
-     * @param Backup $backup
-     * @return JsonResponse
      */
     public function show(Backup $backup): JsonResponse
     {
@@ -84,9 +75,6 @@ class BackupController extends Controller
 
     /**
      * Restore backup
-     *
-     * @param Backup $backup
-     * @return JsonResponse
      */
     public function restore(Backup $backup): JsonResponse
     {
@@ -109,9 +97,6 @@ class BackupController extends Controller
 
     /**
      * Remove the specified backup
-     *
-     * @param Backup $backup
-     * @return JsonResponse
      */
     public function destroy(Backup $backup): JsonResponse
     {

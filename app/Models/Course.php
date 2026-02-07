@@ -1,19 +1,19 @@
 <?php
+
 // ABOUTME: Course model for schema-based multi-tenancy supporting both global and tenant-specific courses
 // ABOUTME: Handles course data within tenant schemas with relationships, validation, and global course integration
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class Course extends Model
 {
@@ -38,7 +38,7 @@ class Course extends Model
         'global_course_id',
         'is_custom',
         'syllabus_url',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
@@ -47,11 +47,11 @@ class Course extends Model
         'metadata' => 'array',
         'start_date' => 'date',
         'end_date' => 'date',
-        'is_custom' => 'boolean'
+        'is_custom' => 'boolean',
     ];
 
     protected $dates = [
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $appends = [
@@ -59,7 +59,7 @@ class Course extends Model
         'available_spots',
         'is_full',
         'current_tenant',
-        'is_global_course'
+        'is_global_course',
     ];
 
     /**
@@ -72,7 +72,7 @@ class Course extends Model
         // Ensure we're in a tenant context
         static::addGlobalScope('tenant_context', function (Builder $builder) {
             $tenantService = app(TenantContextService::class);
-            if (!$tenantService->getCurrentTenantId()) {
+            if (! $tenantService->getCurrentTenantId()) {
                 throw new Exception('Course model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });
@@ -145,7 +145,7 @@ class Course extends Model
      */
     public function globalCourse()
     {
-        if (!$this->global_course_id) {
+        if (! $this->global_course_id) {
             return null;
         }
 
@@ -169,10 +169,10 @@ class Course extends Model
      */
     public function getAvailableSpotsAttribute(): int
     {
-        if (!$this->max_enrollment) {
+        if (! $this->max_enrollment) {
             return PHP_INT_MAX;
         }
-        
+
         return max(0, $this->max_enrollment - $this->enrollment_count);
     }
 
@@ -190,10 +190,11 @@ class Course extends Model
     public function getCurrentTenantAttribute(): ?array
     {
         $tenant = TenantContextService::getCurrentTenant();
+
         return $tenant ? [
             'id' => $tenant->id,
             'name' => $tenant->name,
-            'schema' => $tenant->schema_name
+            'schema' => $tenant->schema_name,
         ] : null;
     }
 
@@ -202,25 +203,25 @@ class Course extends Model
      */
     public function getIsGlobalCourseAttribute(): bool
     {
-        return !is_null($this->global_course_id) && !$this->is_custom;
+        return ! is_null($this->global_course_id) && ! $this->is_custom;
     }
 
     /**
      * Generate unique course code
      */
-    public static function generateCourseCode(string $department = null, string $level = null): string
+    public static function generateCourseCode(?string $department = null, ?string $level = null): string
     {
         $department = $department ?: 'GEN';
         $level = $level ?: '100';
-        
+
         $prefix = strtoupper(substr($department, 0, 3));
         $levelNum = preg_replace('/[^0-9]/', '', $level) ?: '100';
-        
+
         do {
             $suffix = str_pad(random_int(1, 99), 2, '0', STR_PAD_LEFT);
-            $courseCode = $prefix . $levelNum . $suffix;
+            $courseCode = $prefix.$levelNum.$suffix;
         } while (static::where('course_code', $courseCode)->exists());
-        
+
         return $courseCode;
     }
 
@@ -235,7 +236,7 @@ class Course extends Model
             ->where('id', $globalCourseId)
             ->first();
 
-        if (!$globalCourse) {
+        if (! $globalCourse) {
             throw new Exception("Global course with ID {$globalCourseId} not found");
         }
 
@@ -250,7 +251,7 @@ class Course extends Model
             'prerequisites' => json_decode($globalCourse->prerequisites, true),
             'global_course_id' => $globalCourse->id,
             'is_custom' => false,
-            'status' => 'active'
+            'status' => 'active',
         ], $overrides);
 
         return static::create($courseData);
@@ -261,12 +262,12 @@ class Course extends Model
      */
     public function syncWithGlobalCourse(): bool
     {
-        if (!$this->global_course_id || $this->is_custom) {
+        if (! $this->global_course_id || $this->is_custom) {
             return false;
         }
 
         $globalCourse = $this->globalCourse();
-        if (!$globalCourse) {
+        if (! $globalCourse) {
             return false;
         }
 
@@ -276,7 +277,7 @@ class Course extends Model
             'description' => $globalCourse->description,
             'credits' => $globalCourse->credits,
             'level' => $globalCourse->level,
-            'prerequisites' => json_decode($globalCourse->prerequisites, true)
+            'prerequisites' => json_decode($globalCourse->prerequisites, true),
         ];
 
         $this->update($syncFields);
@@ -292,10 +293,10 @@ class Course extends Model
     {
         return static::where(function ($q) use ($query) {
             $q->where('course_code', 'ILIKE', "%{$query}%")
-              ->orWhere('title', 'ILIKE', "%{$query}%")
-              ->orWhere('description', 'ILIKE', "%{$query}%")
-              ->orWhere('department', 'ILIKE', "%{$query}%")
-              ->orWhere('instructor_name', 'ILIKE', "%{$query}%");
+                ->orWhere('title', 'ILIKE', "%{$query}%")
+                ->orWhere('description', 'ILIKE', "%{$query}%")
+                ->orWhere('department', 'ILIKE', "%{$query}%")
+                ->orWhere('instructor_name', 'ILIKE', "%{$query}%");
         });
     }
 
@@ -331,7 +332,7 @@ class Course extends Model
         return static::where('status', 'active')
             ->where(function ($query) {
                 $query->whereNull('max_enrollment')
-                      ->orWhereRaw('(
+                    ->orWhereRaw('(
                           SELECT COUNT(*) 
                           FROM enrollments 
                           WHERE course_id = courses.id 
@@ -354,12 +355,12 @@ class Course extends Model
         return static::available()
             ->where(function ($query) use ($completedCourses) {
                 $query->whereNull('prerequisites')
-                      ->orWhere('prerequisites', '[]')
-                      ->orWhere(function ($q) use ($completedCourses) {
-                          foreach ($completedCourses as $courseCode) {
-                              $q->orWhereJsonContains('prerequisites', $courseCode);
-                          }
-                      });
+                    ->orWhere('prerequisites', '[]')
+                    ->orWhere(function ($q) use ($completedCourses) {
+                        foreach ($completedCourses as $courseCode) {
+                            $q->orWhereJsonContains('prerequisites', $courseCode);
+                        }
+                    });
             });
     }
 
@@ -379,7 +380,7 @@ class Course extends Model
             ->toArray();
 
         foreach ($this->prerequisites as $prerequisite) {
-            if (!in_array($prerequisite, $completedCourses)) {
+            if (! in_array($prerequisite, $completedCourses)) {
                 return false;
             }
         }
@@ -398,7 +399,7 @@ class Course extends Model
         }
 
         // Check prerequisites
-        if (!$this->studentMeetsPrerequisites($student)) {
+        if (! $this->studentMeetsPrerequisites($student)) {
             throw new Exception('Student does not meet prerequisites');
         }
 
@@ -416,12 +417,12 @@ class Course extends Model
         $enrollment = $this->enrollments()->create(array_merge([
             'student_id' => $student->id,
             'enrollment_date' => now(),
-            'status' => 'active'
+            'status' => 'active',
         ], $enrollmentData));
 
         $this->logActivity('student_enrolled', "Student {$student->full_name} enrolled", [
             'student_id' => $student->id,
-            'enrollment_id' => $enrollment->id
+            'enrollment_id' => $enrollment->id,
         ]);
 
         return $enrollment;
@@ -442,7 +443,7 @@ class Course extends Model
             'dropped_enrollments' => $enrollments->where('status', 'dropped')->count(),
             'average_grade' => $grades->avg('grade_points') ?: 0,
             'pass_rate' => $grades->where('grade_points', '>=', 2.0)->count() / max($grades->count(), 1) * 100,
-            'enrollment_capacity' => $this->max_enrollment ? ($this->enrollment_count / $this->max_enrollment * 100) : null
+            'enrollment_capacity' => $this->max_enrollment ? ($this->enrollment_count / $this->max_enrollment * 100) : null,
         ];
     }
 
@@ -471,23 +472,23 @@ class Course extends Model
     public static function importGlobalCourses(array $globalCourseIds, array $defaultOverrides = []): array
     {
         $results = [];
-        
+
         foreach ($globalCourseIds as $globalCourseId) {
             try {
                 $course = static::createFromGlobalCourse($globalCourseId, $defaultOverrides);
                 $results['success'][] = [
                     'global_course_id' => $globalCourseId,
                     'course_id' => $course->id,
-                    'course_code' => $course->course_code
+                    'course_code' => $course->course_code,
                 ];
             } catch (Exception $e) {
                 $results['errors'][] = [
                     'global_course_id' => $globalCourseId,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ];
             }
         }
-        
+
         return $results;
     }
 
@@ -506,14 +507,14 @@ class Course extends Model
                 'user_agent' => request()->userAgent(),
                 'metadata' => array_merge($metadata, [
                     'course_code' => $this->course_code,
-                    'course_title' => $this->title
-                ])
+                    'course_title' => $this->title,
+                ]),
             ]);
         } catch (Exception $e) {
             \Log::error('Failed to log course activity', [
                 'course_id' => $this->id,
                 'action' => $action,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -539,7 +540,7 @@ class Course extends Model
                 ->pluck('count', 'level')
                 ->toArray(),
             'average_enrollment' => static::withCount('activeEnrollments')
-                ->avg('active_enrollments_count') ?: 0
+                ->avg('active_enrollments_count') ?: 0,
         ];
     }
 
@@ -555,8 +556,8 @@ class Course extends Model
             ->where('course_id', $this->id)
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
-                      ->from('students')
-                      ->whereColumn('students.id', 'enrollments.student_id');
+                    ->from('students')
+                    ->whereColumn('students.id', 'enrollments.student_id');
             })
             ->count();
 
@@ -565,7 +566,7 @@ class Course extends Model
         }
 
         // Check global course reference
-        if ($this->global_course_id && !$this->globalCourse()) {
+        if ($this->global_course_id && ! $this->globalCourse()) {
             $errors[] = "Course references non-existent global course ID: {$this->global_course_id}";
         }
 
@@ -576,7 +577,7 @@ class Course extends Model
 
         // Check date consistency
         if ($this->start_date && $this->end_date && $this->start_date > $this->end_date) {
-            $errors[] = "Course start date is after end date";
+            $errors[] = 'Course start date is after end date';
         }
 
         return $errors;

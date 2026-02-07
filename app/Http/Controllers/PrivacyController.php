@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UpdateConsentRequest;
-use App\Http\Requests\DeleteDataRequest;
 use App\Http\Requests\ComplianceReportRequest;
+use App\Http\Requests\DeleteDataRequest;
+use App\Http\Requests\UpdateConsentRequest;
 use App\Services\Analytics\ConsentService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Exception;
 
 /**
  * Privacy Controller
@@ -31,9 +31,6 @@ class PrivacyController extends Controller
 
     /**
      * Update consent preferences for the authenticated user.
-     *
-     * @param UpdateConsentRequest $request
-     * @return JsonResponse
      */
     public function updateConsent(UpdateConsentRequest $request): JsonResponse
     {
@@ -43,7 +40,7 @@ class PrivacyController extends Controller
 
             $success = $this->consentService->updateConsentPreferences($userId, $preferences);
 
-            if (!$success) {
+            if (! $success) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Failed to update consent preferences',
@@ -76,9 +73,6 @@ class PrivacyController extends Controller
 
     /**
      * Delete user data with GDPR right to erasure compliance.
-     *
-     * @param DeleteDataRequest $request
-     * @return JsonResponse
      */
     public function deleteUserData(DeleteDataRequest $request): JsonResponse
     {
@@ -89,7 +83,7 @@ class PrivacyController extends Controller
             $confirmationToken = $request->input('confirmation_token');
 
             // Verify confirmation token (in production, this would be more sophisticated)
-            if (!$this->verifyConfirmationToken($confirmationToken)) {
+            if (! $this->verifyConfirmationToken($confirmationToken)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Invalid confirmation token',
@@ -127,9 +121,6 @@ class PrivacyController extends Controller
 
     /**
      * Generate compliance audit report for the authenticated user.
-     *
-     * @param ComplianceReportRequest $request
-     * @return JsonResponse
      */
     public function getComplianceReport(ComplianceReportRequest $request): JsonResponse
     {
@@ -166,8 +157,6 @@ class PrivacyController extends Controller
 
     /**
      * Retrieve current consent preferences for the authenticated user.
-     *
-     * @return JsonResponse
      */
     public function getConsentPreferences(): JsonResponse
     {
@@ -195,8 +184,6 @@ class PrivacyController extends Controller
 
     /**
      * Export user data in machine-readable format (GDPR Article 20).
-     *
-     * @return JsonResponse
      */
     public function exportUserData(): JsonResponse
     {
@@ -205,7 +192,7 @@ class PrivacyController extends Controller
             $exportData = $this->prepareDataExport($userId);
 
             // Generate filename with timestamp
-            $filename = "user-data-export-{$userId}-" . now()->format('Y-m-d-H-i-s') . '.json';
+            $filename = "user-data-export-{$userId}-".now()->format('Y-m-d-H-i-s').'.json';
 
             // Store export file temporarily
             Storage::put("exports/{$filename}", json_encode($exportData, JSON_PRETTY_PRINT));
@@ -237,9 +224,6 @@ class PrivacyController extends Controller
 
     /**
      * Verify confirmation token for sensitive operations.
-     *
-     * @param string $token
-     * @return bool
      */
     private function verifyConfirmationToken(string $token): bool
     {
@@ -250,11 +234,6 @@ class PrivacyController extends Controller
 
     /**
      * Process data deletion for specified categories.
-     *
-     * @param int $userId
-     * @param array $categories
-     * @param string|null $reason
-     * @return array
      */
     private function processDataDeletion(int $userId, array $categories, ?string $reason): array
     {
@@ -283,7 +262,7 @@ class PrivacyController extends Controller
                     $result['data_deleted'][] = "Data deleted for category: {$category}";
                 }
             } catch (Exception $e) {
-                $result['errors'][] = "Failed to delete data for category {$category}: " . $e->getMessage();
+                $result['errors'][] = "Failed to delete data for category {$category}: ".$e->getMessage();
             }
         }
 
@@ -292,11 +271,6 @@ class PrivacyController extends Controller
 
     /**
      * Generate compliance audit report.
-     *
-     * @param int $userId
-     * @param array|null $dateRange
-     * @param bool $includeDeleted
-     * @return array
      */
     private function generateComplianceReport(int $userId, ?array $dateRange, bool $includeDeleted): array
     {
@@ -319,9 +293,6 @@ class PrivacyController extends Controller
 
     /**
      * Prepare data export in machine-readable format.
-     *
-     * @param int $userId
-     * @return array
      */
     private function prepareDataExport(int $userId): array
     {
@@ -344,11 +315,6 @@ class PrivacyController extends Controller
 
     /**
      * Get summary of data processing activities.
-     *
-     * @param int $userId
-     * @param string $startDate
-     * @param string $endDate
-     * @return array
      */
     private function getDataProcessingSummary(int $userId, string $startDate, string $endDate): array
     {

@@ -27,20 +27,18 @@ class LearningController extends Controller
 
     /**
      * Retrieve learning progress for authenticated user
-     *
-     * @param LearningIndexRequest $request
-     * @return JsonResponse
      */
     public function index(LearningIndexRequest $request): JsonResponse
     {
         try {
             // Check analytics consent
             $consentService = app(\App\Services\Analytics\ConsentService::class);
-            if (!$consentService->hasConsent()) {
+            if (! $consentService->hasConsent()) {
                 \Illuminate\Support\Facades\Log::info('Learning analytics access denied - no consent', [
                     'user_id' => auth()->id(),
                     'ip' => $request->ip(),
                 ]);
+
                 return response()->json([
                     'success' => false,
                     'error' => 'Analytics consent required',
@@ -73,6 +71,7 @@ class LearningController extends Controller
                 );
 
                 $item->engagement_score = $engagementScore;
+
                 return $item;
             });
 
@@ -108,10 +107,6 @@ class LearningController extends Controller
 
     /**
      * Get specific user-course progress details
-     *
-     * @param int $userId
-     * @param int $courseId
-     * @return JsonResponse
      */
     public function show(int $userId, int $courseId): JsonResponse
     {
@@ -119,7 +114,7 @@ class LearningController extends Controller
             $tenantId = session('tenant_id', 'default');
 
             // Check if user can access this progress (own progress or super admin)
-            if ($userId !== auth()->id() && !auth()->user()->hasRole('super-admin')) {
+            if ($userId !== auth()->id() && ! auth()->user()->hasRole('super-admin')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to access this learning progress',
@@ -131,7 +126,7 @@ class LearningController extends Controller
                 ->byCourse($courseId)
                 ->first();
 
-            if (!$progress) {
+            if (! $progress) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Learning progress not found',
@@ -141,7 +136,7 @@ class LearningController extends Controller
             // Get engagement score and certification status
             $engagementScore = $this->learningService->calculateEngagementScore($userId, $courseId);
             $certification = $this->learningService->verifyCertification($userId, [
-                'course_id' => $courseId
+                'course_id' => $courseId,
             ]);
 
             return response()->json([
@@ -170,9 +165,6 @@ class LearningController extends Controller
 
     /**
      * Track learning interaction
-     *
-     * @param StoreLearningInteractionRequest $request
-     * @return JsonResponse
      */
     public function storeInteraction(StoreLearningInteractionRequest $request): JsonResponse
     {
@@ -193,7 +185,7 @@ class LearningController extends Controller
             // Track interaction using service
             $success = $this->learningService->trackCourseInteraction($userId, $courseId, $interactionData);
 
-            if (!$success) {
+            if (! $success) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Failed to track learning interaction',
@@ -232,10 +224,6 @@ class LearningController extends Controller
 
     /**
      * Update learning progress with manual overrides
-     *
-     * @param UpdateLearningProgressRequest $request
-     * @param int $userId
-     * @return JsonResponse
      */
     public function updateProgress(UpdateLearningProgressRequest $request, int $userId): JsonResponse
     {
@@ -243,7 +231,7 @@ class LearningController extends Controller
             $tenantId = session('tenant_id', 'default');
 
             // Check permissions (own progress or super admin)
-            if ($userId !== auth()->id() && !auth()->user()->hasRole('super-admin')) {
+            if ($userId !== auth()->id() && ! auth()->user()->hasRole('super-admin')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to update this learning progress',

@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -15,10 +14,10 @@ class UserController extends Controller
     public function profile(Request $request): JsonResponse
     {
         $user = $request->user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return response()->json([
-                'message' => 'Unauthenticated'
+                'message' => 'Unauthenticated',
             ], 401);
         }
 
@@ -28,7 +27,7 @@ class UserController extends Controller
             'permissions',
             'studentProfile',
             'graduateProfile',
-            'institutionProfile'
+            'institutionProfile',
         ]);
 
         return response()->json([
@@ -44,7 +43,7 @@ class UserController extends Controller
                 'student_profile' => $user->studentProfile,
                 'graduate_profile' => $user->graduateProfile,
                 'institution_profile' => $user->institutionProfile,
-            ]
+            ],
         ]);
     }
 
@@ -54,16 +53,16 @@ class UserController extends Controller
     public function updateProfile(Request $request): JsonResponse
     {
         $user = $request->user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return response()->json([
-                'message' => 'Unauthenticated'
+                'message' => 'Unauthenticated',
             ], 401);
         }
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:users,email,' . $user->id,
+            'email' => 'sometimes|email|unique:users,email,'.$user->id,
         ]);
 
         $user->update($validated);
@@ -77,7 +76,7 @@ class UserController extends Controller
                 'email_verified_at' => $user->email_verified_at,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at,
-            ]
+            ],
         ]);
     }
 }

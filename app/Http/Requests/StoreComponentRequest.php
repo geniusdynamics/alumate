@@ -28,14 +28,14 @@ class StoreComponentRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                'unique:components,name,NULL,id,tenant_id,' . Auth::user()->tenant_id
+                'unique:components,name,NULL,id,tenant_id,'.Auth::user()->tenant_id,
             ],
             'slug' => [
                 'nullable',
                 'string',
                 'max:255',
                 'regex:/^[a-z0-9-]+$/',
-                'unique:components,slug,NULL,id,tenant_id,' . Auth::user()->tenant_id
+                'unique:components,slug,NULL,id,tenant_id,'.Auth::user()->tenant_id,
             ],
             'category' => ['required', Rule::in(['hero', 'forms', 'testimonials', 'statistics', 'ctas', 'media'])],
             'type' => 'required|string|max:100',
@@ -44,7 +44,7 @@ class StoreComponentRequest extends FormRequest
             'metadata' => 'nullable|array',
             'version' => 'nullable|string|max:20',
             'is_active' => 'boolean',
-            
+
             // Category-specific validation rules
             'config.headline' => 'required_if:category,hero|string|max:255',
             'config.subheading' => 'nullable|string|max:500',
@@ -52,7 +52,7 @@ class StoreComponentRequest extends FormRequest
             'config.cta_url' => 'required_if:category,hero|string|url|max:255',
             'config.background_type' => 'required_if:category,hero|in:image,video,gradient',
             'config.show_statistics' => 'boolean',
-            
+
             'config.fields' => 'required_if:category,forms|array',
             'config.fields.*.type' => 'required|in:text,email,phone,select,checkbox,textarea',
             'config.fields.*.label' => 'required|string|max:255',
@@ -60,26 +60,26 @@ class StoreComponentRequest extends FormRequest
             'config.submit_text' => 'string|max:50',
             'config.success_message' => 'string|max:500',
             'config.crm_integration' => 'boolean',
-            
+
             'config.testimonials' => 'required_if:category,testimonials|array',
             'config.testimonials.*.quote' => 'required|string|max:500',
             'config.testimonials.*.author' => 'required|string|max:100',
             'config.testimonials.*.title' => 'nullable|string|max:100',
             'config.testimonials.*.company' => 'nullable|string|max:100',
             'config.testimonials.*.photo' => 'nullable|string|url',
-            
+
             'config.metrics' => 'required_if:category,statistics|array',
             'config.metrics.*.label' => 'required|string|max:100',
             'config.metrics.*.value' => 'required|numeric',
             'config.metrics.*.suffix' => 'nullable|string|max:10',
             'config.animation_type' => 'in:counter,progress,chart',
             'config.trigger_on_scroll' => 'boolean',
-            
+
             'config.buttons' => 'required_if:category,ctas|array',
             'config.buttons.*.text' => 'required|string|max:50',
             'config.buttons.*.url' => 'required|string|url|max:255',
             'config.buttons.*.style' => 'in:primary,secondary,outline,text',
-            
+
             'config.sources' => 'required_if:category,media|array',
             'config.sources.*.url' => 'required|string|url',
             'config.sources.*.type' => 'in:image,video',
@@ -136,27 +136,27 @@ class StoreComponentRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set tenant_id if not provided
-        if (!$this->has('tenant_id')) {
+        if (! $this->has('tenant_id')) {
             $this->merge(['tenant_id' => Auth::user()->tenant_id]);
         }
 
         // Generate slug if not provided
-        if (!$this->has('slug') && $this->has('name')) {
+        if (! $this->has('slug') && $this->has('name')) {
             $this->merge(['slug' => str($this->name)->slug()]);
         }
 
         // Set default version if not provided
-        if (!$this->has('version')) {
+        if (! $this->has('version')) {
             $this->merge(['version' => '1.0.0']);
         }
 
         // Ensure config structure exists
-        if (!$this->has('config')) {
+        if (! $this->has('config')) {
             $this->merge(['config' => []]);
         }
 
         // Set default active status
-        if (!$this->has('is_active')) {
+        if (! $this->has('is_active')) {
             $this->merge(['is_active' => true]);
         }
     }
@@ -181,19 +181,19 @@ class StoreComponentRequest extends FormRequest
         $config = $this->config ?? [];
 
         // Check for required accessibility attributes
-        if (!isset($config['accessibility'])) {
+        if (! isset($config['accessibility'])) {
             $config['accessibility'] = [];
         }
 
         $accessibility = $config['accessibility'];
 
         // Ensure semantic HTML usage
-        if (!isset($accessibility['semanticTag'])) {
+        if (! isset($accessibility['semanticTag'])) {
             $accessibility['semanticTag'] = 'div';
         }
 
         // Ensure keyboard navigation support
-        if (!isset($accessibility['keyboardNavigation'])) {
+        if (! isset($accessibility['keyboardNavigation'])) {
             $accessibility['keyboardNavigation'] = ['focusable' => false];
         }
 
@@ -209,11 +209,11 @@ class StoreComponentRequest extends FormRequest
         $config = $this->config ?? [];
 
         // Check for responsive configuration
-        if (!isset($config['responsive'])) {
+        if (! isset($config['responsive'])) {
             $config['responsive'] = [
                 'desktop' => [],
                 'tablet' => [],
-                'mobile' => []
+                'mobile' => [],
             ];
         }
 
@@ -221,7 +221,7 @@ class StoreComponentRequest extends FormRequest
 
         // Ensure all breakpoints have configuration
         foreach (['desktop', 'tablet', 'mobile'] as $breakpoint) {
-            if (!isset($responsive[$breakpoint])) {
+            if (! isset($responsive[$breakpoint])) {
                 $responsive[$breakpoint] = [];
             }
         }

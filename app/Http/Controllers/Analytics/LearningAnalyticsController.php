@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Analytics;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LearningAnalyticsRequest;
-use App\Http\Requests\TrackProgressRequest;
 use App\Http\Requests\ComparePerformanceRequest;
+use App\Http\Requests\TrackProgressRequest;
 use App\Models\LearningProgress;
 use App\Services\Analytics\LearningAnalyticsService;
 use App\Services\TenantContextService;
@@ -32,9 +31,6 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Get all learning analytics data for the authenticated user
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -96,15 +92,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Get learning analytics for a specific user
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function show(int $userId): JsonResponse
     {
         try {
             // Check authorization - user can view own data or admin
-            if ($userId !== auth()->id() && !Gate::allows('view-learning-analytics')) {
+            if ($userId !== auth()->id() && ! Gate::allows('view-learning-analytics')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to access this learning analytics data',
@@ -118,7 +111,7 @@ class LearningAnalyticsController extends Controller
                 ->where('user_id', $userId)
                 ->first();
 
-            if (!$progress && !auth()->user()->hasRole('super-admin')) {
+            if (! $progress && ! auth()->user()->hasRole('super-admin')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'User learning data not found',
@@ -159,9 +152,6 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Track learning progress for a user
-     *
-     * @param TrackProgressRequest $request
-     * @return JsonResponse
      */
     public function trackProgress(TrackProgressRequest $request): JsonResponse
     {
@@ -216,16 +206,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Get learning progress for a specific user and course
-     *
-     * @param int $userId
-     * @param int $courseId
-     * @return JsonResponse
      */
     public function getProgress(int $userId, int $courseId): JsonResponse
     {
         try {
             // Check authorization
-            if ($userId !== auth()->id() && !Gate::allows('view-learning-analytics')) {
+            if ($userId !== auth()->id() && ! Gate::allows('view-learning-analytics')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to access this learning progress',
@@ -234,7 +220,7 @@ class LearningAnalyticsController extends Controller
 
             $progress = $this->learningAnalyticsService->getLearningProgress($userId, $courseId);
 
-            if (!$progress) {
+            if (! $progress) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Learning progress not found',
@@ -272,15 +258,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Analyze learning outcomes for a user
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function analyzeOutcomes(int $userId): JsonResponse
     {
         try {
             // Check authorization
-            if ($userId !== auth()->id() && !Gate::allows('view-learning-analytics')) {
+            if ($userId !== auth()->id() && ! Gate::allows('view-learning-analytics')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to access learning outcomes',
@@ -310,16 +293,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Get learning metrics for a user
-     *
-     * @param Request $request
-     * @param int $userId
-     * @return JsonResponse
      */
     public function getMetrics(Request $request, int $userId): JsonResponse
     {
         try {
             // Check authorization
-            if ($userId !== auth()->id() && !Gate::allows('view-learning-analytics')) {
+            if ($userId !== auth()->id() && ! Gate::allows('view-learning-analytics')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to access learning metrics',
@@ -354,15 +333,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Compare learning performance across multiple users
-     *
-     * @param ComparePerformanceRequest $request
-     * @return JsonResponse
      */
     public function comparePerformance(ComparePerformanceRequest $request): JsonResponse
     {
         try {
             // Authorization check
-            if (!Gate::allows('compare-learning-performance')) {
+            if (! Gate::allows('compare-learning-performance')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to compare learning performance.',
@@ -402,16 +378,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Predict learning completion for a user in a course
-     *
-     * @param int $userId
-     * @param int $courseId
-     * @return JsonResponse
      */
     public function predictCompletion(int $userId, int $courseId): JsonResponse
     {
         try {
             // Check authorization
-            if ($userId !== auth()->id() && !Gate::allows('view-learning-analytics')) {
+            if ($userId !== auth()->id() && ! Gate::allows('view-learning-analytics')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to access completion prediction',
@@ -442,15 +414,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Get learning recommendations for a user
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function getRecommendations(int $userId): JsonResponse
     {
         try {
             // Check authorization
-            if ($userId !== auth()->id() && !Gate::allows('view-learning-analytics')) {
+            if ($userId !== auth()->id() && ! Gate::allows('view-learning-analytics')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to access learning recommendations',
@@ -480,9 +449,6 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Track learning activity (general activity tracking)
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function trackActivity(Request $request): JsonResponse
     {
@@ -532,16 +498,12 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Verify certification eligibility
-     *
-     * @param int $userId
-     * @param int $courseId
-     * @return JsonResponse
      */
     public function verifyCertification(int $userId, int $courseId): JsonResponse
     {
         try {
             // Check authorization
-            if ($userId !== auth()->id() && !Gate::allows('verify-certifications')) {
+            if ($userId !== auth()->id() && ! Gate::allows('verify-certifications')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Unauthorized to verify certification',
@@ -574,8 +536,6 @@ class LearningAnalyticsController extends Controller
 
     /**
      * Get current tenant ID with fallback
-     *
-     * @return int
      */
     private function getCurrentTenantId(): int
     {

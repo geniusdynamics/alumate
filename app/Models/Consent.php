@@ -84,7 +84,7 @@ class Consent extends Model
     public function scopeExpired($query)
     {
         return $query->whereNotNull('revoked_at')
-                    ->where('revoked_at', '<', now()->subDays(30));
+            ->where('revoked_at', '<', now()->subDays(30));
     }
 
     /**
@@ -108,7 +108,7 @@ class Consent extends Model
      */
     public function isActive(): bool
     {
-        return !is_null($this->granted_at) && is_null($this->revoked_at);
+        return ! is_null($this->granted_at) && is_null($this->revoked_at);
     }
 
     /**

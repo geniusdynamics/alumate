@@ -39,7 +39,7 @@ class CompareCohortsRequest extends FormRequest
         $user = Auth::user();
 
         // Unauthenticated users are not authorized
-        if (!$user) {
+        if (! $user) {
             return false;
         }
 
@@ -61,8 +61,8 @@ class CompareCohortsRequest extends FormRequest
     public function failedAuthorization(): Response
     {
         $user = Auth::user();
-        
-        if (!$user) {
+
+        if (! $user) {
             return Response::deny('You must be logged in to compare cohorts.');
         }
 
@@ -71,10 +71,10 @@ class CompareCohortsRequest extends FormRequest
         }
 
         // Check if user has the required permission
-        if (!$user->can('cohort.compare')) {
+        if (! $user->can('cohort.compare')) {
             return Response::deny(
-                'You do not have permission to compare cohorts. ' .
-                'Required permission: view analytics for cohorts. ' .
+                'You do not have permission to compare cohorts. '.
+                'Required permission: view analytics for cohorts. '.
                 'Contact your administrator if you believe this is an error.'
             );
         }
@@ -187,7 +187,7 @@ class CompareCohortsRequest extends FormRequest
             $validator->errors()->add('time_range', 'Cannot specify both days and date range. Choose either days or start_date/end_date.');
         }
 
-        if (($hasStartDate && !$hasEndDate) || (!$hasStartDate && $hasEndDate)) {
+        if (($hasStartDate && ! $hasEndDate) || (! $hasStartDate && $hasEndDate)) {
             $validator->errors()->add('time_range', 'Both start_date and end_date must be provided together.');
         }
     }
@@ -216,22 +216,25 @@ class CompareCohortsRequest extends FormRequest
         }
 
         // Verify user has required permission for cohort comparison
-        if (!$user || !$user->can('cohort.compare')) {
+        if (! $user || ! $user->can('cohort.compare')) {
             $validator->errors()->add('cohort_ids', 'You do not have permission to compare cohorts.');
+
             return;
         }
 
         // Get current tenant ID for non-super admin users
         $currentTenantId = $this->tenantContextService->getCurrentTenantId();
 
-        if (!$currentTenantId) {
+        if (! $currentTenantId) {
             $validator->errors()->add('cohort_ids', 'Tenant context is required for cohort comparison.');
+
             return;
         }
 
         // Verify user has access to the current tenant
-        if (!$user->hasAccessToTenant($currentTenantId)) {
+        if (! $user->hasAccessToTenant($currentTenantId)) {
             $validator->errors()->add('cohort_ids', 'You do not have access to the current tenant.');
+
             return;
         }
 
@@ -240,6 +243,7 @@ class CompareCohortsRequest extends FormRequest
 
         if ($cohorts->count() !== count($cohortIds)) {
             $validator->errors()->add('cohort_ids', 'One or more selected cohorts do not exist.');
+
             return;
         }
 
@@ -252,7 +256,7 @@ class CompareCohortsRequest extends FormRequest
             $inaccessibleNames = $inaccessibleCohorts->pluck('name')->implode(', ');
             $validator->errors()->add(
                 'cohort_ids',
-                "You do not have access to the following cohorts: {$inaccessibleNames}. " .
+                "You do not have access to the following cohorts: {$inaccessibleNames}. ".
                 'All cohorts must belong to your current tenant.'
             );
         }
@@ -264,14 +268,14 @@ class CompareCohortsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default metrics if not provided
-        if (!$this->has('metrics') || empty($this->input('metrics'))) {
+        if (! $this->has('metrics') || empty($this->input('metrics'))) {
             $this->merge([
                 'metrics' => ['retention', 'engagement'],
             ]);
         }
 
         // Set default statistical significance flag
-        if (!$this->has('include_statistical_significance')) {
+        if (! $this->has('include_statistical_significance')) {
             $this->merge([
                 'include_statistical_significance' => true,
             ]);
@@ -286,7 +290,7 @@ class CompareCohortsRequest extends FormRequest
         $validated = $this->validated();
 
         // Apply default time range if not specified
-        if (!isset($validated['time_range']) || empty($validated['time_range'])) {
+        if (! isset($validated['time_range']) || empty($validated['time_range'])) {
             $validated['time_range'] = [
                 'days' => 30, // Default to 30 days
             ];

@@ -1,17 +1,17 @@
 <?php
+
 // ABOUTME: Grade model for schema-based multi-tenancy managing individual assessment grades
 // ABOUTME: Handles grade records within tenant schemas with assessment tracking, calculations, and validation
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
-use Exception;
 
 class Grade extends Model
 {
@@ -38,7 +38,7 @@ class Grade extends Model
         'grader_id',
         'is_final',
         'is_published',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
@@ -54,31 +54,41 @@ class Grade extends Model
         'submitted_date' => 'datetime',
         'is_final' => 'boolean',
         'is_published' => 'boolean',
-        'metadata' => 'array'
+        'metadata' => 'array',
     ];
 
     protected $dates = [
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $appends = [
         'is_late',
         'is_passing',
         'adjusted_points',
-        'current_tenant'
+        'current_tenant',
     ];
 
     // Assessment type constants
     const TYPE_EXAM = 'exam';
+
     const TYPE_QUIZ = 'quiz';
+
     const TYPE_ASSIGNMENT = 'assignment';
+
     const TYPE_PROJECT = 'project';
+
     const TYPE_PARTICIPATION = 'participation';
+
     const TYPE_HOMEWORK = 'homework';
+
     const TYPE_LAB = 'lab';
+
     const TYPE_PRESENTATION = 'presentation';
+
     const TYPE_FINAL = 'final';
+
     const TYPE_MIDTERM = 'midterm';
+
     const TYPE_OTHER = 'other';
 
     /**
@@ -90,7 +100,7 @@ class Grade extends Model
 
         // Ensure we're in a tenant context
         static::addGlobalScope('tenant_context', function (Builder $builder) {
-            if (!TenantContextService::hasTenant()) {
+            if (! TenantContextService::hasTenant()) {
                 throw new Exception('Grade model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });
@@ -188,7 +198,7 @@ class Grade extends Model
         $points = $this->points_earned ?? 0;
         $points -= $this->late_penalty ?? 0;
         $points += $this->extra_credit ?? 0;
-        
+
         return max(0, min($points, $this->points_possible ?? $points));
     }
 
@@ -198,10 +208,11 @@ class Grade extends Model
     public function getCurrentTenantAttribute(): ?array
     {
         $tenant = TenantContextService::getCurrentTenant();
+
         return $tenant ? [
             'id' => $tenant->id,
             'name' => $tenant->name,
-            'schema' => $tenant->schema_name
+            'schema' => $tenant->schema_name,
         ] : null;
     }
 
@@ -210,18 +221,40 @@ class Grade extends Model
      */
     public static function calculateLetterGrade(float $percentage): string
     {
-        if ($percentage >= 97) return 'A+';
-        if ($percentage >= 93) return 'A';
-        if ($percentage >= 90) return 'A-';
-        if ($percentage >= 87) return 'B+';
-        if ($percentage >= 83) return 'B';
-        if ($percentage >= 80) return 'B-';
-        if ($percentage >= 77) return 'C+';
-        if ($percentage >= 73) return 'C';
-        if ($percentage >= 70) return 'C-';
-        if ($percentage >= 67) return 'D+';
-        if ($percentage >= 60) return 'D';
-        
+        if ($percentage >= 97) {
+            return 'A+';
+        }
+        if ($percentage >= 93) {
+            return 'A';
+        }
+        if ($percentage >= 90) {
+            return 'A-';
+        }
+        if ($percentage >= 87) {
+            return 'B+';
+        }
+        if ($percentage >= 83) {
+            return 'B';
+        }
+        if ($percentage >= 80) {
+            return 'B-';
+        }
+        if ($percentage >= 77) {
+            return 'C+';
+        }
+        if ($percentage >= 73) {
+            return 'C';
+        }
+        if ($percentage >= 70) {
+            return 'C-';
+        }
+        if ($percentage >= 67) {
+            return 'D+';
+        }
+        if ($percentage >= 60) {
+            return 'D';
+        }
+
         return 'F';
     }
 
@@ -235,7 +268,7 @@ class Grade extends Model
             'B+' => 3.3, 'B' => 3.0, 'B-' => 2.7,
             'C+' => 2.3, 'C' => 2.0, 'C-' => 1.7,
             'D+' => 1.3, 'D' => 1.0,
-            'F' => 0.0, 'I' => 0.0, 'W' => 0.0
+            'F' => 0.0, 'I' => 0.0, 'W' => 0.0,
         ];
 
         return $gradePoints[$letterGrade] ?? 0.0;
@@ -257,7 +290,7 @@ class Grade extends Model
             self::TYPE_PRESENTATION => 'Presentation',
             self::TYPE_FINAL => 'Final Exam',
             self::TYPE_MIDTERM => 'Midterm Exam',
-            self::TYPE_OTHER => 'Other'
+            self::TYPE_OTHER => 'Other',
         ];
     }
 
@@ -307,8 +340,8 @@ class Grade extends Model
     public function scopeLate(Builder $query): Builder
     {
         return $query->whereNotNull('submitted_date')
-                    ->whereNotNull('due_date')
-                    ->whereColumn('submitted_date', '>', 'due_date');
+            ->whereNotNull('due_date')
+            ->whereColumn('submitted_date', '>', 'due_date');
     }
 
     /**
@@ -354,7 +387,7 @@ class Grade extends Model
                 'grade_points' => null,
                 'total_points_earned' => 0,
                 'total_points_possible' => 0,
-                'grade_breakdown' => []
+                'grade_breakdown' => [],
             ];
         }
 
@@ -367,15 +400,15 @@ class Grade extends Model
         foreach ($gradesByType as $type => $typeGrades) {
             $typeAverage = $typeGrades->avg('percentage');
             $typeWeight = $typeGrades->first()->weight ?? 1;
-            
+
             $breakdown[$type] = [
                 'average' => round($typeAverage, 2),
                 'weight' => $typeWeight,
                 'count' => $typeGrades->count(),
                 'total_points_earned' => $typeGrades->sum('points_earned'),
-                'total_points_possible' => $typeGrades->sum('points_possible')
+                'total_points_possible' => $typeGrades->sum('points_possible'),
             ];
-            
+
             $totalWeightedScore += $typeAverage * $typeWeight;
             $totalWeight += $typeWeight;
         }
@@ -390,7 +423,7 @@ class Grade extends Model
             'grade_points' => $gradePoints,
             'total_points_earned' => $grades->sum('points_earned'),
             'total_points_possible' => $grades->sum('points_possible'),
-            'grade_breakdown' => $breakdown
+            'grade_breakdown' => $breakdown,
         ];
     }
 
@@ -410,7 +443,7 @@ class Grade extends Model
                 'median_percentage' => 0,
                 'pass_rate' => 0,
                 'grade_distribution' => [],
-                'assessment_breakdown' => []
+                'assessment_breakdown' => [],
             ];
         }
 
@@ -427,7 +460,7 @@ class Grade extends Model
                     'count' => $group->count(),
                     'average' => round($group->avg('percentage'), 2),
                     'total_points_possible' => $group->sum('points_possible'),
-                    'total_points_earned' => $group->sum('points_earned')
+                    'total_points_earned' => $group->sum('points_earned'),
                 ];
             })
             ->toArray();
@@ -435,12 +468,12 @@ class Grade extends Model
         return [
             'total_grades' => $grades->count(),
             'average_percentage' => round($percentages->avg(), 2),
-            'median_percentage' => $percentages->count() > 0 
-                ? $percentages->median() 
+            'median_percentage' => $percentages->count() > 0
+                ? $percentages->median()
                 : 0,
             'pass_rate' => $grades->where('percentage', '>=', 60)->count() / $grades->count() * 100,
             'grade_distribution' => $gradeDistribution,
-            'assessment_breakdown' => $assessmentBreakdown
+            'assessment_breakdown' => $assessmentBreakdown,
         ];
     }
 
@@ -460,7 +493,7 @@ class Grade extends Model
                 'average_percentage' => 0,
                 'total_credits_attempted' => 0,
                 'total_credits_earned' => 0,
-                'course_breakdown' => []
+                'course_breakdown' => [],
             ];
         }
 
@@ -468,15 +501,15 @@ class Grade extends Model
             ->map(function ($courseGrades, $courseId) {
                 $course = Course::find($courseId);
                 $courseGrade = static::calculateCourseGrade(
-                    $courseGrades->first()->student, 
+                    $courseGrades->first()->student,
                     $course
                 );
-                
+
                 return [
                     'course_code' => $course->course_code,
                     'course_title' => $course->title,
                     'credits' => $course->credits,
-                    'final_grade' => $courseGrade
+                    'final_grade' => $courseGrade,
                 ];
             })
             ->toArray();
@@ -488,9 +521,9 @@ class Grade extends Model
         $weightedGradePoints = $completedCourses->sum(function ($course) {
             return $course['credits'] * $course['final_grade']['grade_points'];
         });
-        
-        $overallGpa = $totalCreditsAttempted > 0 
-            ? $weightedGradePoints / $totalCreditsAttempted 
+
+        $overallGpa = $totalCreditsAttempted > 0
+            ? $weightedGradePoints / $totalCreditsAttempted
             : 0;
 
         return [
@@ -501,7 +534,7 @@ class Grade extends Model
             'total_credits_earned' => $completedCourses
                 ->where('final_grade.grade_points', '>=', 2.0)
                 ->sum('credits'),
-            'course_breakdown' => $courseBreakdown
+            'course_breakdown' => $courseBreakdown,
         ];
     }
 
@@ -511,7 +544,7 @@ class Grade extends Model
     public static function bulkUpdate(array $gradeData): array
     {
         $results = ['success' => [], 'errors' => []];
-        
+
         foreach ($gradeData as $data) {
             try {
                 $grade = static::find($data['id']);
@@ -522,10 +555,10 @@ class Grade extends Model
                     $results['errors'][] = "Grade with ID {$data['id']} not found";
                 }
             } catch (Exception $e) {
-                $results['errors'][] = "Error updating grade {$data['id']}: " . $e->getMessage();
+                $results['errors'][] = "Error updating grade {$data['id']}: ".$e->getMessage();
             }
         }
-        
+
         return $results;
     }
 
@@ -545,18 +578,18 @@ class Grade extends Model
      */
     public function applyLatePenalty(float $penaltyAmount): bool
     {
-        if (!$this->is_late) {
+        if (! $this->is_late) {
             return false;
         }
 
         $this->late_penalty = $penaltyAmount;
         $saved = $this->save();
-        
+
         if ($saved) {
             $this->logActivity('late_penalty_applied', "Late penalty of {$penaltyAmount} points applied", [
                 'penalty_amount' => $penaltyAmount,
                 'original_points' => $this->points_earned,
-                'adjusted_points' => $this->adjusted_points
+                'adjusted_points' => $this->adjusted_points,
             ]);
         }
 
@@ -566,17 +599,17 @@ class Grade extends Model
     /**
      * Add extra credit to grade
      */
-    public function addExtraCredit(float $creditAmount, string $reason = null): bool
+    public function addExtraCredit(float $creditAmount, ?string $reason = null): bool
     {
         $this->extra_credit = ($this->extra_credit ?? 0) + $creditAmount;
         $saved = $this->save();
-        
+
         if ($saved) {
             $this->logActivity('extra_credit_added', "Extra credit of {$creditAmount} points added", [
                 'credit_amount' => $creditAmount,
                 'reason' => $reason,
                 'total_extra_credit' => $this->extra_credit,
-                'adjusted_points' => $this->adjusted_points
+                'adjusted_points' => $this->adjusted_points,
             ]);
         }
 
@@ -602,14 +635,14 @@ class Grade extends Model
                     'assessment_type' => $this->assessment_type,
                     'assessment_name' => $this->assessment_name,
                     'points_earned' => $this->points_earned,
-                    'points_possible' => $this->points_possible
-                ])
+                    'points_possible' => $this->points_possible,
+                ]),
             ]);
         } catch (Exception $e) {
             \Log::error('Failed to log grade activity', [
                 'grade_id' => $this->id,
                 'action' => $action,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -622,17 +655,17 @@ class Grade extends Model
         $errors = [];
 
         // Check if student exists
-        if (!$this->student) {
+        if (! $this->student) {
             $errors[] = "Grade references non-existent student ID: {$this->student_id}";
         }
 
         // Check if course exists
-        if (!$this->course) {
+        if (! $this->course) {
             $errors[] = "Grade references non-existent course ID: {$this->course_id}";
         }
 
         // Check if enrollment exists
-        if ($this->enrollment_id && !$this->enrollment) {
+        if ($this->enrollment_id && ! $this->enrollment) {
             $errors[] = "Grade references non-existent enrollment ID: {$this->enrollment_id}";
         }
 
@@ -659,7 +692,7 @@ class Grade extends Model
 
         // Check date consistency
         if ($this->submitted_date && $this->graded_date && $this->submitted_date > $this->graded_date) {
-            $errors[] = "Submitted date is after graded date";
+            $errors[] = 'Submitted date is after graded date';
         }
 
         return $errors;

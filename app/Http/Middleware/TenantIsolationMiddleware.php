@@ -15,14 +15,14 @@ class TenantIsolationMiddleware
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 401);
         }
 
         // Check if user has access to requested tenant
-        $requestedTenantId = $request->header('X-Tenant-ID') 
+        $requestedTenantId = $request->header('X-Tenant-ID')
             ?? $request->input('tenant_id')
             ?? $request->route('tenant_id');
 
@@ -31,7 +31,7 @@ class TenantIsolationMiddleware
                 ->where('tenants.id', $requestedTenantId)
                 ->exists();
 
-            if (!$hasAccess) {
+            if (! $hasAccess) {
                 return response()->json([
                     'message' => 'You do not have access to this tenant',
                 ], 403);

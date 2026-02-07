@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Background job for scanning uploaded files for viruses using ClamAV
 // ABOUTME: or other configured antivirus scanners
 
@@ -7,7 +8,9 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Models\StoredFile;
+use App\Notifications\VirusDetectedNotification;
 use App\Services\FileStorageService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,8 +18,6 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\VirusDetectedNotification;
-use Exception;
 
 class ScanFileForVirus implements ShouldQueue
 {
@@ -39,8 +40,7 @@ class ScanFileForVirus implements ShouldQueue
 
     public function __construct(
         protected StoredFile $storedFile
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.
@@ -55,12 +55,13 @@ class ScanFileForVirus implements ShouldQueue
             ]);
 
             // Check if virus scanning is enabled
-            if (!config('filesystems.virus_scanning.enabled', true)) {
+            if (! config('filesystems.virus_scanning.enabled', true)) {
                 Log::info('Virus scanning disabled, marking as clean', [
                     'file_id' => $this->storedFile->id,
                 ]);
 
                 $this->storedFile->markAsScanned(StoredFile::SCAN_CLEAN);
+
                 return;
             }
 

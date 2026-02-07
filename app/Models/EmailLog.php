@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 
 /**
  * Email Log Model
@@ -23,9 +23,13 @@ class EmailLog extends Model
      * Email status constants
      */
     public const STATUS_QUEUED = 'queued';
+
     public const STATUS_SENT = 'sent';
+
     public const STATUS_DELIVERED = 'delivered';
+
     public const STATUS_BOUNCED = 'bounced';
+
     public const STATUS_FAILED = 'failed';
 
     public const STATUSES = [
@@ -40,7 +44,9 @@ class EmailLog extends Model
      * Bounce type constants
      */
     public const BOUNCE_TYPE_HARD = 'hard';
+
     public const BOUNCE_TYPE_SOFT = 'soft';
+
     public const BOUNCE_TYPE_TRANSIENT = 'transient';
 
     protected $fillable = [
@@ -391,10 +397,10 @@ class EmailLog extends Model
             'sender_email' => 'required|email|max:255',
             'subject' => 'required|string|max:255',
             'template' => 'nullable|string|max:255',
-            'status' => 'required|in:' . implode(',', self::STATUSES),
+            'status' => 'required|in:'.implode(',', self::STATUSES),
             'provider' => 'required|string|max:50',
             'provider_id' => 'nullable|string|max:255',
-            'bounce_type' => 'nullable|in:' . implode(',', [self::BOUNCE_TYPE_HARD, self::BOUNCE_TYPE_SOFT, self::BOUNCE_TYPE_TRANSIENT]),
+            'bounce_type' => 'nullable|in:'.implode(',', [self::BOUNCE_TYPE_HARD, self::BOUNCE_TYPE_SOFT, self::BOUNCE_TYPE_TRANSIENT]),
             'bounce_reason' => 'nullable|string',
             'metadata' => 'nullable|array',
             'tracking_id' => 'nullable|string|unique:email_logs,tracking_id',

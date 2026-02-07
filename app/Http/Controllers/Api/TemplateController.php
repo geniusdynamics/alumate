@@ -5,21 +5,18 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\StoreTemplateRequest;
 use App\Http\Requests\Api\UpdateTemplateRequest;
-use App\Http\Requests\Api\ExportTemplateRequest;
-use App\Http\Requests\Api\ImportTemplateRequest;
 use App\Http\Resources\TemplateResource;
 use App\Models\Template;
-use App\Services\TemplateService;
-use App\Services\TemplatePreviewService;
+use App\Services\ResponsiveTemplateRenderer;
 use App\Services\TemplateAnalyticsService;
 use App\Services\TemplateImportExportService;
+use App\Services\TemplatePreviewService;
+use App\Services\TemplateService;
 use App\Services\VariantService;
-use App\Services\ResponsiveTemplateRenderer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\Rule;
 
 class TemplateController extends Controller
@@ -35,9 +32,6 @@ class TemplateController extends Controller
 
     /**
      * Display a listing of templates
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -70,15 +64,12 @@ class TemplateController extends Controller
                 'categories' => Template::CATEGORIES,
                 'audience_types' => Template::AUDIENCE_TYPES,
                 'campaign_types' => Template::CAMPAIGN_TYPES,
-            ]
+            ],
         ]);
     }
 
     /**
      * Display the specified template
-     *
-     * @param Template $template
-     * @return JsonResponse
      */
     public function show(Template $template): JsonResponse
     {
@@ -96,9 +87,6 @@ class TemplateController extends Controller
 
     /**
      * Store a newly created template
-     *
-     * @param StoreTemplateRequest $request
-     * @return JsonResponse
      */
     public function store(StoreTemplateRequest $request): JsonResponse
     {
@@ -122,10 +110,6 @@ class TemplateController extends Controller
 
     /**
      * Update the specified template
-     *
-     * @param UpdateTemplateRequest $request
-     * @param Template $template
-     * @return JsonResponse
      */
     public function update(UpdateTemplateRequest $request, Template $template): JsonResponse
     {
@@ -150,9 +134,6 @@ class TemplateController extends Controller
 
     /**
      * Remove the specified template
-     *
-     * @param Template $template
-     * @return JsonResponse
      */
     public function destroy(Template $template): JsonResponse
     {
@@ -174,18 +155,15 @@ class TemplateController extends Controller
 
     /**
      * Search templates with keyword filtering
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function search(Request $request): JsonResponse
     {
         $request->validate([
             'q' => 'required|string|min:2|max:255',
             'limit' => 'integer|min:1|max:50',
-            'category' => 'nullable|string|in:' . implode(',', Template::CATEGORIES),
-            'audience_type' => 'nullable|string|in:' . implode(',', Template::AUDIENCE_TYPES),
-            'campaign_type' => 'nullable|string|in:' . implode(',', Template::CAMPAIGN_TYPES),
+            'category' => 'nullable|string|in:'.implode(',', Template::CATEGORIES),
+            'audience_type' => 'nullable|string|in:'.implode(',', Template::AUDIENCE_TYPES),
+            'campaign_type' => 'nullable|string|in:'.implode(',', Template::CAMPAIGN_TYPES),
         ]);
 
         $templates = $this->templateService->searchTemplates(
@@ -208,9 +186,7 @@ class TemplateController extends Controller
     /**
      * Get templates by category
      *
-     * @param string $category
-     * @param Request $request
-     * @return JsonResponse
+     * @param  string  $category
      */
     public function categories(Request $request): JsonResponse
     {
@@ -230,9 +206,6 @@ class TemplateController extends Controller
 
     /**
      * Get templates grouped by audience
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function byAudience(Request $request): JsonResponse
     {
@@ -256,9 +229,6 @@ class TemplateController extends Controller
 
     /**
      * Get popular templates
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function popular(Request $request): JsonResponse
     {
@@ -273,9 +243,6 @@ class TemplateController extends Controller
 
     /**
      * Get recently used templates
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function recent(Request $request): JsonResponse
     {
@@ -290,9 +257,6 @@ class TemplateController extends Controller
 
     /**
      * Get premium templates only
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function premium(Request $request): JsonResponse
     {
@@ -327,7 +291,7 @@ class TemplateController extends Controller
         try {
             // Check if we're forcing refresh and template has changed recently
             if ($forceRefresh && $template->updated_at->diffInMinutes() < 5) {
-                Cache::forget("template_preview_template_{$template->id}_" . tenant()?->id . "_*");
+                Cache::forget("template_preview_template_{$template->id}_".tenant()?->id.'_*');
             }
 
             $preview = $this->previewService->generateTemplatePreview(
@@ -343,7 +307,7 @@ class TemplateController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Preview generation failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -355,9 +319,9 @@ class TemplateController extends Controller
     {
         $this->authorize('view', $template);
 
-        if (!in_array($viewport, ['desktop', 'tablet', 'mobile'])) {
+        if (! in_array($viewport, ['desktop', 'tablet', 'mobile'])) {
             return response()->json([
-                'message' => 'Invalid viewport. Must be one of: desktop, tablet, mobile'
+                'message' => 'Invalid viewport. Must be one of: desktop, tablet, mobile',
             ], 422);
         }
 
@@ -381,7 +345,7 @@ class TemplateController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Template rendering failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -411,7 +375,7 @@ class TemplateController extends Controller
                     'css' => $deviceData['preview']['compiled_css'],
                     'breakpoints' => $deviceData['breakpoints'],
                     'media_queries' => $deviceData['media_queries'],
-                    'config' => $deviceData['preview']['config']
+                    'config' => $deviceData['preview']['config'],
                 ];
             }
 
@@ -425,7 +389,7 @@ class TemplateController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Responsive preview generation failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -449,9 +413,9 @@ class TemplateController extends Controller
 
             // Get brand information
             $brandConfig = $customConfig['brand_config'] ?? [];
-            $hasColors = !empty($brandConfig['colors']);
-            $hasFonts = !empty($brandConfig['fonts']);
-            $hasLogos = !empty($brandConfig['logos']);
+            $hasColors = ! empty($brandConfig['colors']);
+            $hasFonts = ! empty($brandConfig['fonts']);
+            $hasLogos = ! empty($brandConfig['logos']);
 
             $assets = [
                 'styles' => [
@@ -474,7 +438,7 @@ class TemplateController extends Controller
                     'fonts_count' => count($brandConfig['fonts'] ?? []),
                     'logos_count' => count($brandConfig['logos'] ?? []),
                     'viewport_options' => $this->previewService->getPreviewOptions()['device_modes'],
-                ]
+                ],
             ];
 
             return response()->json([
@@ -486,7 +450,7 @@ class TemplateController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Assets compilation failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -501,16 +465,16 @@ class TemplateController extends Controller
         $request->validate([
             'custom_config' => 'nullable|array',
             'brand_overrides' => 'nullable|array',
-            'force_refresh' => 'boolean'
+            'force_refresh' => 'boolean',
         ]);
 
         $customConfig = $request->custom_config ?? [];
         $brandOverrides = $request->brand_overrides ?? [];
 
         // Merge brand overrides into config
-        if (!empty($brandOverrides)) {
+        if (! empty($brandOverrides)) {
             $customConfig = array_merge($customConfig, [
-                'brand_config' => array_merge($customConfig['brand_config'] ?? [], $brandOverrides)
+                'brand_config' => array_merge($customConfig['brand_config'] ?? [], $brandOverrides),
             ]);
         }
 
@@ -524,13 +488,13 @@ class TemplateController extends Controller
             return response()->json([
                 'template_id' => $template->id,
                 'branded_structure' => $preview['compiled_html'],
-                'overwrites_applied' => !empty($brandOverrides),
+                'overwrites_applied' => ! empty($brandOverrides),
                 'applied_at' => now()->toISOString(),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Brand application failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -554,7 +518,7 @@ class TemplateController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Cache clearing failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -601,7 +565,7 @@ class TemplateController extends Controller
                 'javascript',
                 'fonts',
                 'images',
-            ]
+            ],
         ];
 
         return response()->json($options);
@@ -609,10 +573,6 @@ class TemplateController extends Controller
 
     /**
      * Duplicate an existing template
-     *
-     * @param Template $template
-     * @param Request $request
-     * @return JsonResponse
      */
     public function duplicate(Template $template, Request $request): JsonResponse
     {
@@ -646,9 +606,6 @@ class TemplateController extends Controller
 
     /**
      * Activate a template
-     *
-     * @param Template $template
-     * @return JsonResponse
      */
     public function activate(Template $template): JsonResponse
     {
@@ -667,9 +624,6 @@ class TemplateController extends Controller
 
     /**
      * Deactivate a template
-     *
-     * @param Template $template
-     * @return JsonResponse
      */
     public function deactivate(Template $template): JsonResponse
     {
@@ -694,9 +648,6 @@ class TemplateController extends Controller
 
     /**
      * Get template usage statistics
-     *
-     * @param Template $template
-     * @return JsonResponse
      */
     public function stats(Template $template): JsonResponse
     {
@@ -719,18 +670,18 @@ class TemplateController extends Controller
     {
         $css = '';
 
-        if (!empty($brandConfig['colors'])) {
+        if (! empty($brandConfig['colors'])) {
             foreach ($brandConfig['colors'] as $color) {
-                if (!empty($color['name']) && !empty($color['value'])) {
-                    $cssVar = '--brand-' . strtolower(str_replace(' ', '-', $color['name']));
+                if (! empty($color['name']) && ! empty($color['value'])) {
+                    $cssVar = '--brand-'.strtolower(str_replace(' ', '-', $color['name']));
                     $css .= "{$cssVar}: {$color['value']};";
                 }
             }
         }
 
-        if (!empty($brandConfig['fonts'])) {
+        if (! empty($brandConfig['fonts'])) {
             foreach ($brandConfig['fonts'] as $font) {
-                if (!empty($font['family'])) {
+                if (! empty($font['family'])) {
                     $css .= "font-family: {$font['family']};";
                 }
             }
@@ -772,10 +723,10 @@ class TemplateController extends Controller
 
         if (isset($structure['sections'])) {
             foreach ($structure['sections'] as $section) {
-                if (!empty($section['config']['image'])) {
+                if (! empty($section['config']['image'])) {
                     $images[] = $section['config']['image'];
                 }
-                if (!empty($section['config']['background_image'])) {
+                if (! empty($section['config']['background_image'])) {
                     $images[] = $section['config']['background_image'];
                 }
             }
@@ -791,9 +742,9 @@ class TemplateController extends Controller
     {
         $images = [];
 
-        if (!empty($brandConfig['logos'])) {
+        if (! empty($brandConfig['logos'])) {
             foreach ($brandConfig['logos'] as $logo) {
-                if (!empty($logo['url'])) {
+                if (! empty($logo['url'])) {
                     $images[] = $logo['url'];
                 }
             }
@@ -817,14 +768,11 @@ class TemplateController extends Controller
 
     /**
      * Track analytics events
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function trackEvent(Request $request): JsonResponse
     {
         $request->validate([
-            'event_type' => 'required|string|in:' . implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
+            'event_type' => 'required|string|in:'.implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
             'template_id' => 'required|exists:templates,id',
             'landing_page_id' => 'nullable|exists:landing_pages,id',
             'event_data' => 'nullable|array',
@@ -837,14 +785,14 @@ class TemplateController extends Controller
 
         $eventData = array_merge($request->only([
             'event_type', 'template_id', 'landing_page_id', 'event_data',
-            'session_id', 'conversion_value', 'referrer_url', 'user_agent', 'timestamp'
+            'session_id', 'conversion_value', 'referrer_url', 'user_agent', 'timestamp',
         ]), [
             'ip_address' => $request->ip(),
         ]);
 
         $event = $this->analyticsService->trackEvent($eventData);
 
-        if (!$event) {
+        if (! $event) {
             return response()->json([
                 'message' => 'Failed to track analytics event',
             ], 500);
@@ -865,15 +813,12 @@ class TemplateController extends Controller
 
     /**
      * Track multiple analytics events in batch
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function trackEvents(Request $request): JsonResponse
     {
         $request->validate([
             'events' => 'required|array',
-            'events.*.event_type' => 'required|string|in:' . implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
+            'events.*.event_type' => 'required|string|in:'.implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
             'events.*.template_id' => 'required|exists:templates,id',
             'events.*.landing_page_id' => 'nullable|exists:landing_pages,id',
             'events.*.event_data' => 'nullable|array',
@@ -896,17 +841,13 @@ class TemplateController extends Controller
         return response()->json([
             'results' => $results,
             'total_events' => count($results),
-            'successful_events' => count(array_filter($results, fn($result) => $result['success'])),
+            'successful_events' => count(array_filter($results, fn ($result) => $result['success'])),
             'message' => 'Batch analytics events processed',
         ]);
     }
 
     /**
      * Get template analytics statistics
-     *
-     * @param Template $template
-     * @param Request $request
-     * @return JsonResponse
      */
     public function analytics(Template $template, Request $request): JsonResponse
     {
@@ -916,7 +857,7 @@ class TemplateController extends Controller
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date',
             'event_types' => 'nullable|array',
-            'event_types.*' => 'string|in:' . implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
+            'event_types.*' => 'string|in:'.implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
             'metrics' => 'nullable|array',
             'metrics.*' => 'string|in:basic,conversion,engagement,device',
         ]);
@@ -943,9 +884,6 @@ class TemplateController extends Controller
 
     /**
      * Get comprehensive analytics report
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function analyticsReport(Request $request): JsonResponse
     {
@@ -957,7 +895,7 @@ class TemplateController extends Controller
             'date_from' => 'nullable|date',
             'date_to' => 'nullable|date',
             'event_types' => 'nullable|array',
-            'event_types.*' => 'string|in:' . implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
+            'event_types.*' => 'string|in:'.implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
         ]);
 
         $options = array_filter([
@@ -975,10 +913,6 @@ class TemplateController extends Controller
 
     /**
      * Get analytics tracking code for template
-     *
-     * @param Template $template
-     * @param Request $request
-     * @return JsonResponse
      */
     public function trackingCode(Template $template, Request $request): JsonResponse
     {
@@ -1003,9 +937,6 @@ class TemplateController extends Controller
 
     /**
      * Clear analytics cache for template
-     *
-     * @param Template $template
-     * @return JsonResponse
      */
     public function clearAnalyticsCache(Template $template): JsonResponse
     {
@@ -1022,15 +953,13 @@ class TemplateController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Analytics cache clearing failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Get analytics configuration and options
-     *
-     * @return JsonResponse
      */
     public static function analyticsOptions(): JsonResponse
     {
@@ -1085,10 +1014,6 @@ class TemplateController extends Controller
 
     /**
      * Get variants for a template
-     *
-     * @param Template $template
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getVariants(Template $template, Request $request): JsonResponse
     {
@@ -1115,10 +1040,6 @@ class TemplateController extends Controller
 
     /**
      * Create a new A/B test for a template
-     *
-     * @param Template $template
-     * @param Request $request
-     * @return JsonResponse
      */
     public function createAbTest(Template $template, Request $request): JsonResponse
     {
@@ -1139,7 +1060,7 @@ class TemplateController extends Controller
         $testData = array_merge($request->only([
             'name', 'description', 'goals', 'traffic_allocation',
             'distribution_method', 'confidence_threshold', 'minimum_sample_size',
-            'start_date', 'end_date'
+            'start_date', 'end_date',
         ]), [
             'created_by' => \Illuminate\Support\Facades\Auth::id(),
             'updated_by' => \Illuminate\Support\Facades\Auth::id(),
@@ -1155,11 +1076,6 @@ class TemplateController extends Controller
 
     /**
      * Add a variant to an A/B test
-     *
-     * @param Template $template
-     * @param \App\Models\TemplateAbTest $test
-     * @param Request $request
-     * @return JsonResponse
      */
     public function addVariant(Template $template, \App\Models\TemplateAbTest $test, Request $request): JsonResponse
     {
@@ -1189,13 +1105,10 @@ class TemplateController extends Controller
 
     /**
      * Start an A/B test
-     *
-     * @param \App\Models\TemplateAbTest $test
-     * @return JsonResponse
      */
     public function startAbTest(\App\Models\TemplateAbTest $test): JsonResponse
     {
-        if (!$test->variants->where('template_id', $test->template->id)->isNotEmpty()) {
+        if (! $test->variants->where('template_id', $test->template->id)->isNotEmpty()) {
             return response()->json([
                 'message' => 'Cannot start test without variants',
             ], 422);
@@ -1203,7 +1116,7 @@ class TemplateController extends Controller
 
         $success = $test->start();
 
-        if (!$success) {
+        if (! $success) {
             return response()->json([
                 'message' => 'Failed to start A/B test',
             ], 500);
@@ -1217,9 +1130,6 @@ class TemplateController extends Controller
 
     /**
      * Stop an A/B test
-     *
-     * @param \App\Models\TemplateAbTest $test
-     * @return JsonResponse
      */
     public function stopAbTest(\App\Models\TemplateAbTest $test): JsonResponse
     {
@@ -1227,7 +1137,7 @@ class TemplateController extends Controller
 
         $success = $test->complete();
 
-        if (!$success) {
+        if (! $success) {
             return response()->json([
                 'message' => 'Failed to complete A/B test',
             ], 500);
@@ -1242,9 +1152,6 @@ class TemplateController extends Controller
 
     /**
      * Get A/B test results
-     *
-     * @param \App\Models\TemplateAbTest $test
-     * @return JsonResponse
      */
     public function getAbTestResults(\App\Models\TemplateAbTest $test): JsonResponse
     {
@@ -1259,9 +1166,6 @@ class TemplateController extends Controller
 
     /**
      * Record a conversion event
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function recordConversion(Request $request): JsonResponse
     {
@@ -1275,7 +1179,7 @@ class TemplateController extends Controller
             ['conversion_value' => $request->conversion_value]
         );
 
-        if (!$success) {
+        if (! $success) {
             return response()->json([
                 'message' => 'Failed to record conversion',
             ], 500);
@@ -1289,10 +1193,6 @@ class TemplateController extends Controller
 
     /**
      * Get split for user (determine which variant to show)
-     *
-     * @param Template $template
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getVariantForUser(Template $template, Request $request): JsonResponse
     {
@@ -1304,7 +1204,7 @@ class TemplateController extends Controller
 
         $activeTest = $this->variantService->getActiveTestForTemplate($template->id);
 
-        if (!$activeTest) {
+        if (! $activeTest) {
             // Return the original template if no active A/B test
             return response()->json([
                 'variant_type' => 'original',
@@ -1315,7 +1215,7 @@ class TemplateController extends Controller
 
         $selectedVariant = $this->variantService->splitTraffic($activeTest, $request->user_identifier);
 
-        if (!$selectedVariant) {
+        if (! $selectedVariant) {
             return response()->json([
                 'variant_type' => 'original',
                 'template' => new TemplateResource($template),

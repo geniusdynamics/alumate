@@ -13,8 +13,6 @@ class UpdateEmailSequenceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -35,8 +33,8 @@ class UpdateEmailSequenceRequest extends FormRequest
 
         // Make all fields optional for updates
         foreach ($rules as $field => $rule) {
-            if (!str_contains($rule, 'required')) {
-                $rules[$field] = 'sometimes|' . $rule;
+            if (! str_contains($rule, 'required')) {
+                $rules[$field] = 'sometimes|'.$rule;
             }
         }
 
@@ -48,12 +46,12 @@ class UpdateEmailSequenceRequest extends FormRequest
                 'max:255',
                 Rule::unique('email_sequences', 'name')
                     ->ignore($this->route('sequence')->id)
-                    ->where('tenant_id', tenant()->id)
+                    ->where('tenant_id', tenant()->id),
             ];
         }
 
         // Add custom validation for trigger conditions
-        if ($this->has('trigger_conditions') && !empty($this->trigger_conditions)) {
+        if ($this->has('trigger_conditions') && ! empty($this->trigger_conditions)) {
             $rules['trigger_conditions.*.event'] = 'required|string|max:255';
             $rules['trigger_conditions.*.conditions'] = 'nullable|array';
         }
@@ -101,25 +99,24 @@ class UpdateEmailSequenceRequest extends FormRequest
     /**
      * Configure the validator instance.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate trigger conditions structure if provided
-            if ($this->has('trigger_conditions') && !empty($this->trigger_conditions)) {
+            if ($this->has('trigger_conditions') && ! empty($this->trigger_conditions)) {
                 $this->validateTriggerConditions($validator);
             }
 
             // Validate audience type compatibility with trigger type if both are provided
             if ($this->has('audience_type') && $this->has('trigger_type')) {
                 $this->validateAudienceTriggerCompatibility($validator);
-            } elseif ($this->has('audience_type') && !$this->has('trigger_type')) {
+            } elseif ($this->has('audience_type') && ! $this->has('trigger_type')) {
                 // If only audience_type is provided, check compatibility with existing trigger_type
                 $existingTriggerType = $this->route('sequence')->trigger_type;
                 $this->validateAudienceTriggerCompatibility($validator, $existingTriggerType);
-            } elseif (!$this->has('audience_type') && $this->has('trigger_type')) {
+            } elseif (! $this->has('audience_type') && $this->has('trigger_type')) {
                 // If only trigger_type is provided, check compatibility with existing audience_type
                 $existingAudienceType = $this->route('sequence')->audience_type;
                 $this->validateAudienceTriggerCompatibility($validator, null, $existingAudienceType);
@@ -130,7 +127,7 @@ class UpdateEmailSequenceRequest extends FormRequest
     /**
      * Validate trigger conditions structure.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateTriggerConditions($validator): void
     {
@@ -138,18 +135,19 @@ class UpdateEmailSequenceRequest extends FormRequest
         $triggerType = $this->trigger_type ?? $this->route('sequence')->trigger_type;
 
         foreach ($triggerConditions as $index => $condition) {
-            if (!isset($condition['event'])) {
+            if (! isset($condition['event'])) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     'Trigger condition must have an event.'
                 );
+
                 continue;
             }
 
             // Validate event type based on trigger_type
             $validEvents = $this->getValidEventsForTriggerType($triggerType);
 
-            if (!in_array($condition['event'], $validEvents)) {
+            if (! in_array($condition['event'], $validEvents)) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     "Event '{$condition['event']}' is not valid for trigger type '{$triggerType}'."
@@ -161,9 +159,7 @@ class UpdateEmailSequenceRequest extends FormRequest
     /**
      * Validate audience type compatibility with trigger type.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @param string|null $triggerTypeOverride
-     * @param string|null $audienceTypeOverride
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateAudienceTriggerCompatibility($validator, ?string $triggerTypeOverride = null, ?string $audienceTypeOverride = null): void
     {
@@ -178,7 +174,7 @@ class UpdateEmailSequenceRequest extends FormRequest
         ];
 
         if (isset($compatibilityRules[$audienceType]) &&
-            !in_array($triggerType, $compatibilityRules[$audienceType])) {
+            ! in_array($triggerType, $compatibilityRules[$audienceType])) {
             $validator->errors()->add(
                 'trigger_type',
                 "Trigger type '{$triggerType}' is not compatible with audience type '{$audienceType}'."
@@ -188,9 +184,6 @@ class UpdateEmailSequenceRequest extends FormRequest
 
     /**
      * Get valid events for a given trigger type.
-     *
-     * @param string $triggerType
-     * @return array
      */
     private function getValidEventsForTriggerType(string $triggerType): array
     {

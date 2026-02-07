@@ -37,7 +37,7 @@ class BudgetRecommendationsRequest extends FormRequest
         return [
             'start_date' => 'nullable|date|before_or_equal:end_date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
-            'total_budget' => 'nullable|numeric|min:0|max:' . self::MAX_BUDGET,
+            'total_budget' => 'nullable|numeric|min:0|max:'.self::MAX_BUDGET,
         ];
     }
 
@@ -55,7 +55,7 @@ class BudgetRecommendationsRequest extends FormRequest
             'end_date.after_or_equal' => 'End date must be after or equal to start date',
             'total_budget.numeric' => 'Total budget must be a number',
             'total_budget.min' => 'Total budget cannot be negative',
-            'total_budget.max' => 'Total budget cannot exceed ' . number_format(self::MAX_BUDGET),
+            'total_budget.max' => 'Total budget cannot exceed '.number_format(self::MAX_BUDGET),
         ];
     }
 
@@ -91,11 +91,11 @@ class BudgetRecommendationsRequest extends FormRequest
         $hasStartDate = $this->has('start_date');
         $hasEndDate = $this->has('end_date');
 
-        if ($hasStartDate && !$hasEndDate) {
+        if ($hasStartDate && ! $hasEndDate) {
             $validator->errors()->add('end_date', 'Both start_date and end_date must be provided together.');
         }
 
-        if (!$hasStartDate && $hasEndDate) {
+        if (! $hasStartDate && $hasEndDate) {
             $validator->errors()->add('start_date', 'Both start_date and end_date must be provided together.');
         }
     }
@@ -106,11 +106,11 @@ class BudgetRecommendationsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default date range if not provided (last 90 days)
-        if (!$this->has('start_date')) {
+        if (! $this->has('start_date')) {
             $this->merge(['start_date' => now()->subDays(90)->toDateString()]);
         }
 
-        if (!$this->has('end_date')) {
+        if (! $this->has('end_date')) {
             $this->merge(['end_date' => now()->toDateString()]);
         }
 

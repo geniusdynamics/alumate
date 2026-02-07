@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\TemplateErrorHandler;
 use App\Exceptions\TemplateException;
+use App\Services\TemplateErrorHandler;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -42,8 +42,6 @@ class ErrorHandlingMiddleware
     /**
      * Handle an incoming request and process any template errors
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
@@ -87,12 +85,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Handle template-specific exceptions
-     *
-     * @param TemplateException $exception
-     * @param Request $request
-     * @param string|null $tenantId
-     * @param float $startTime
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function handleTemplateError(
         TemplateException $exception,
@@ -101,7 +93,7 @@ class ErrorHandlingMiddleware
         float $startTime
     ): \Illuminate\Http\JsonResponse {
         // Set tenant ID if not already set
-        if (!$exception->getTenantId() && $tenantId) {
+        if (! $exception->getTenantId() && $tenantId) {
             $exception->setTenantId($tenantId);
         }
 
@@ -117,12 +109,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Handle potentially template-related errors
-     *
-     * @param Throwable $exception
-     * @param Request $request
-     * @param string|null $tenantId
-     * @param float $startTime
-     * @return \Illuminate\Http\JsonResponse
      */
     protected function handleNonTemplateError(
         Throwable $exception,
@@ -145,9 +131,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Determine if this is a template-related route
-     *
-     * @param Request $request
-     * @return bool
      */
     protected function isTemplateRoute(Request $request): bool
     {
@@ -176,9 +159,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Extract tenant ID from request
-     *
-     * @param Request $request
-     * @return string|null
      */
     protected function getTenantId(Request $request): ?string
     {
@@ -192,22 +172,15 @@ class ErrorHandlingMiddleware
 
     /**
      * Generate or extract request ID for tracking
-     *
-     * @param Request $request
-     * @return string
      */
     protected function getRequestId(Request $request): string
     {
         return $request->header('X-Request-ID') ??
-               'req_' . substr(uniqid(true), 0, 8);
+               'req_'.substr(uniqid(true), 0, 8);
     }
 
     /**
      * Determine if error might be template-related
-     *
-     * @param Throwable $exception
-     * @param Request $request
-     * @return bool
      */
     protected function mightBeTemplateError(Throwable $exception, Request $request): bool
     {
@@ -223,7 +196,7 @@ class ErrorHandlingMiddleware
             'brand',
             'structure',
             'validation',
-            'security'
+            'security',
         ];
 
         foreach ($templateIndicators as $indicator) {
@@ -242,11 +215,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Build context for error handling
-     *
-     * @param Request $request
-     * @param string|null $tenantId
-     * @param float $startTime
-     * @return array
      */
     protected function buildErrorContext(Request $request, ?string $tenantId, float $startTime): array
     {
@@ -274,9 +242,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Sanitize request parameters for logging/privacy
-     *
-     * @param Request $request
-     * @return array
      */
     protected function sanitizeRequestParams(Request $request): array
     {
@@ -303,7 +268,7 @@ class ErrorHandlingMiddleware
                 $sanitized[$key] = $this->sanitizeArrayParam($value);
             } elseif (is_string($value) && strlen($value) > 255) {
                 // Truncate long strings
-                $sanitized[$key] = substr($value, 0, 252) . '...';
+                $sanitized[$key] = substr($value, 0, 252).'...';
             } else {
                 $sanitized[$key] = $value;
             }
@@ -314,9 +279,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Sanitize array parameters recursively
-     *
-     * @param array $array
-     * @return array
      */
     protected function sanitizeArrayParam(array $array): array
     {
@@ -333,7 +295,7 @@ class ErrorHandlingMiddleware
             if (is_array($value)) {
                 $result[$key] = $this->sanitizeArrayParam($value);
             } elseif (is_string($value) && strlen($value) > 100) {
-                $result[$key] = substr($value, 0, 97) . '...';
+                $result[$key] = substr($value, 0, 97).'...';
             } else {
                 $result[$key] = $value;
             }
@@ -344,9 +306,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Determine HTTP status code from error response
-     *
-     * @param array $errorResponse
-     * @return int
      */
     protected function determineStatusCode(array $errorResponse): int
     {
@@ -355,10 +314,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Log performance if the operation was slow
-     *
-     * @param Request $request
-     * @param float $startTime
-     * @param string|null $tenantId
      */
     protected function logPerformanceIfNeeded(Request $request, float $startTime, ?string $tenantId): void
     {
@@ -382,8 +337,7 @@ class ErrorHandlingMiddleware
     /**
      * Handle middleware termination (summary logging)
      *
-     * @param Request $request
-     * @param Response $response
+     * @param  Response  $response
      */
     public function terminate(Request $request, $response): void
     {
@@ -397,8 +351,7 @@ class ErrorHandlingMiddleware
     /**
      * Log access patterns for monitoring
      *
-     * @param Request $request
-     * @param mixed $response
+     * @param  mixed  $response
      */
     protected function logAccessPattern(Request $request, $response): void
     {
@@ -428,8 +381,6 @@ class ErrorHandlingMiddleware
 
     /**
      * Log warnings for slow-running requests
-     *
-     * @param Request $request
      */
     protected function logSlowRequestWarnings(Request $request): void
     {

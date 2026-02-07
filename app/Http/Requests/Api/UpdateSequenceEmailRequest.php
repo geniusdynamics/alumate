@@ -13,8 +13,6 @@ class UpdateSequenceEmailRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -35,8 +33,8 @@ class UpdateSequenceEmailRequest extends FormRequest
 
         // Make all fields optional for updates
         foreach ($rules as $field => $rule) {
-            if (!str_contains($rule, 'required')) {
-                $rules[$field] = 'sometimes|' . $rule;
+            if (! str_contains($rule, 'required')) {
+                $rules[$field] = 'sometimes|'.$rule;
             }
         }
 
@@ -48,7 +46,7 @@ class UpdateSequenceEmailRequest extends FormRequest
                 'min:0',
                 Rule::unique('sequence_emails', 'send_order')
                     ->ignore($this->route('email')->id)
-                    ->where('sequence_id', $this->route('sequence')->id)
+                    ->where('sequence_id', $this->route('sequence')->id),
             ];
         }
 
@@ -58,7 +56,7 @@ class UpdateSequenceEmailRequest extends FormRequest
                 'sometimes',
                 'exists:templates,id',
                 Rule::exists('templates', 'id')
-                    ->where('tenant_id', tenant()->id)
+                    ->where('tenant_id', tenant()->id),
             ];
         }
 
@@ -103,8 +101,7 @@ class UpdateSequenceEmailRequest extends FormRequest
     /**
      * Configure the validator instance.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     public function withValidator($validator): void
     {
@@ -120,7 +117,7 @@ class UpdateSequenceEmailRequest extends FormRequest
             }
 
             // Validate trigger conditions if provided
-            if ($this->has('trigger_conditions') && !empty($this->trigger_conditions)) {
+            if ($this->has('trigger_conditions') && ! empty($this->trigger_conditions)) {
                 $this->validateTriggerConditions($validator);
             }
         });
@@ -129,7 +126,7 @@ class UpdateSequenceEmailRequest extends FormRequest
     /**
      * Validate that the template is accessible to the current tenant.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateTemplateAccessibility($validator): void
     {
@@ -137,14 +134,14 @@ class UpdateSequenceEmailRequest extends FormRequest
             ->where('tenant_id', tenant()->id)
             ->first();
 
-        if (!$template) {
+        if (! $template) {
             $validator->errors()->add(
                 'template_id',
                 'The selected template is not accessible to your organization.'
             );
         }
 
-        if ($template && !$template->is_active) {
+        if ($template && ! $template->is_active) {
             $validator->errors()->add(
                 'template_id',
                 'The selected template is not active.'
@@ -155,7 +152,7 @@ class UpdateSequenceEmailRequest extends FormRequest
     /**
      * Validate send order doesn't create large gaps in sequence.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateSendOrderSequence($validator): void
     {
@@ -170,13 +167,13 @@ class UpdateSequenceEmailRequest extends FormRequest
         $requestedOrder = $this->send_order;
 
         // Check if this creates a gap larger than 1
-        if (!empty($existingOrders)) {
+        if (! empty($existingOrders)) {
             $maxExisting = max($existingOrders);
 
             if ($requestedOrder > $maxExisting + 1) {
                 $validator->errors()->add(
                     'send_order',
-                    'Send order cannot create gaps larger than 1. Next available order is ' . ($maxExisting + 1) . '.'
+                    'Send order cannot create gaps larger than 1. Next available order is '.($maxExisting + 1).'.'
                 );
             }
         }
@@ -185,18 +182,19 @@ class UpdateSequenceEmailRequest extends FormRequest
     /**
      * Validate trigger conditions structure.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateTriggerConditions($validator): void
     {
         $triggerConditions = $this->trigger_conditions;
 
         foreach ($triggerConditions as $index => $condition) {
-            if (!isset($condition['event'])) {
+            if (! isset($condition['event'])) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     'Trigger condition must have an event.'
                 );
+
                 continue;
             }
 
@@ -209,7 +207,7 @@ class UpdateSequenceEmailRequest extends FormRequest
                 'behavior_event',
             ];
 
-            if (!in_array($condition['event'], $validEvents)) {
+            if (! in_array($condition['event'], $validEvents)) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.event",
                     "Event '{$condition['event']}' is not valid."
@@ -226,10 +224,7 @@ class UpdateSequenceEmailRequest extends FormRequest
     /**
      * Validate condition parameters based on event type.
      *
-     * @param string $event
-     * @param array $conditions
-     * @param int $index
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateConditionParameters(string $event, array $conditions, int $index, $validator): void
     {
@@ -243,7 +238,7 @@ class UpdateSequenceEmailRequest extends FormRequest
         };
 
         foreach ($requiredParams as $param) {
-            if (!isset($conditions[$param])) {
+            if (! isset($conditions[$param])) {
                 $validator->errors()->add(
                     "trigger_conditions.{$index}.conditions.{$param}",
                     "Parameter '{$param}' is required for event '{$event}'."
@@ -252,14 +247,14 @@ class UpdateSequenceEmailRequest extends FormRequest
         }
 
         // Validate specific parameter formats
-        if (isset($conditions['delay_minutes']) && (!is_int($conditions['delay_minutes']) || $conditions['delay_minutes'] < 0)) {
+        if (isset($conditions['delay_minutes']) && (! is_int($conditions['delay_minutes']) || $conditions['delay_minutes'] < 0)) {
             $validator->errors()->add(
                 "trigger_conditions.{$index}.conditions.delay_minutes",
                 'Delay minutes must be a positive integer.'
             );
         }
 
-        if (isset($conditions['link_url']) && !filter_var($conditions['link_url'], FILTER_VALIDATE_URL)) {
+        if (isset($conditions['link_url']) && ! filter_var($conditions['link_url'], FILTER_VALIDATE_URL)) {
             $validator->errors()->add(
                 "trigger_conditions.{$index}.conditions.link_url",
                 'Link URL must be a valid URL.'

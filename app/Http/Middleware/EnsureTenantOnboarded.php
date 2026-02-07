@@ -57,7 +57,7 @@ class EnsureTenantOnboarded
                 // Check if onboarding has expired
                 if ($activeOnboarding->hasExpired()) {
                     $activeOnboarding->markAsAbandoned();
-                    
+
                     Log::warning('Onboarding expired for tenant', [
                         'tenant_id' => $tenant->id,
                         'onboarding_id' => $activeOnboarding->id,

@@ -26,8 +26,9 @@ class WebhookController extends Controller
         $sigHeader = $request->header('Stripe-Signature');
         $secret = config('services.stripe.webhook_secret');
 
-        if (!$secret) {
+        if (! $secret) {
             Log::error('Stripe webhook secret not configured');
+
             return response('Webhook secret not configured', 500);
         }
 
@@ -42,23 +43,27 @@ class WebhookController extends Controller
             Log::error('Stripe webhook signature verification failed', [
                 'error' => $e->getMessage(),
             ]);
+
             return response('Invalid signature', 400);
         } catch (\Exception $e) {
             Log::error('Stripe webhook error', [
                 'error' => $e->getMessage(),
             ]);
+
             return response('Webhook error', 400);
         }
 
         // Process the webhook
         try {
             $this->subscriptionService->handleWebhook($event->type, $event->data->toArray());
+
             return response('Webhook processed', 200);
         } catch (\Exception $e) {
             Log::error('Failed to process Stripe webhook', [
                 'event_type' => $event->type,
                 'error' => $e->getMessage(),
             ]);
+
             return response('Webhook processing failed', 500);
         }
     }

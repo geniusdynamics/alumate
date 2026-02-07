@@ -42,8 +42,8 @@ class AbTestController extends Controller
                 'total' => 0,
                 'per_page' => $perPage,
                 'current_page' => 1,
-                'last_page' => 1
-            ]
+                'last_page' => 1,
+            ],
         ]);
     }
 
@@ -65,9 +65,9 @@ class AbTestController extends Controller
                 'description' => $validated['description'] ?? '',
                 'variants' => $validated['variants'],
                 'goal_event' => $validated['goal_event'],
-                'status' => 'active'
+                'status' => 'active',
             ],
-            'message' => 'A/B test created successfully'
+            'message' => 'A/B test created successfully',
         ], 201);
     }
 
@@ -80,9 +80,9 @@ class AbTestController extends Controller
 
         $test = $this->abTestingService->getTest($id);
 
-        if (!$test) {
+        if (! $test) {
             return response()->json([
-                'message' => 'A/B test not found'
+                'message' => 'A/B test not found',
             ], 404);
         }
 
@@ -96,8 +96,8 @@ class AbTestController extends Controller
                 'goal_event' => $test->goal_metric,
                 'started_at' => $test->started_at,
                 'created_at' => $test->created_at,
-                'updated_at' => $test->updated_at
-            ]
+                'updated_at' => $test->updated_at,
+            ],
         ]);
     }
 
@@ -110,9 +110,9 @@ class AbTestController extends Controller
 
         $test = $this->abTestingService->getTest($id);
 
-        if (!$test) {
+        if (! $test) {
             return response()->json([
-                'message' => 'A/B test not found'
+                'message' => 'A/B test not found',
             ], 404);
         }
 
@@ -120,9 +120,9 @@ class AbTestController extends Controller
 
         $success = $this->abTestingService->updateTest($id, $validated);
 
-        if (!$success) {
+        if (! $success) {
             return response()->json([
-                'message' => 'Failed to update A/B test'
+                'message' => 'Failed to update A/B test',
             ], 422);
         }
 
@@ -132,9 +132,9 @@ class AbTestController extends Controller
                 'name' => $validated['name'] ?? $test->name,
                 'description' => $validated['description'] ?? $test->description,
                 'variants' => $validated['variants'] ?? $test->variants,
-                'status' => $validated['status'] ?? $test->status
+                'status' => $validated['status'] ?? $test->status,
             ],
-            'message' => 'A/B test updated successfully'
+            'message' => 'A/B test updated successfully',
         ]);
     }
 
@@ -147,22 +147,22 @@ class AbTestController extends Controller
 
         $test = $this->abTestingService->getTest($id);
 
-        if (!$test) {
+        if (! $test) {
             return response()->json([
-                'message' => 'A/B test not found'
+                'message' => 'A/B test not found',
             ], 404);
         }
 
         $success = $this->abTestingService->deleteTest($id);
 
-        if (!$success) {
+        if (! $success) {
             return response()->json([
-                'message' => 'Failed to delete A/B test'
+                'message' => 'Failed to delete A/B test',
             ], 422);
         }
 
         return response()->json([
-            'message' => 'A/B test deleted successfully'
+            'message' => 'A/B test deleted successfully',
         ]);
     }
 
@@ -183,9 +183,9 @@ class AbTestController extends Controller
 
         $results = $this->abTestingService->getResults($id, $dateRange);
 
-        if (!$results['test']) {
+        if (! $results['test']) {
             return response()->json([
-                'message' => 'A/B test not found'
+                'message' => 'A/B test not found',
             ], 404);
         }
 
@@ -194,11 +194,11 @@ class AbTestController extends Controller
                 'test' => [
                     'id' => $results['test']->id,
                     'name' => $results['test']->name,
-                    'goal_event' => $results['test']->goal_metric
+                    'goal_event' => $results['test']->goal_metric,
                 ],
                 'variants' => $results['variants'],
-                'significance' => $results['overall_significance']
-            ]
+                'significance' => $results['overall_significance'],
+            ],
         ]);
     }
 
@@ -210,13 +210,13 @@ class AbTestController extends Controller
         $user = auth()->user();
 
         // Check if user has admin/owner role for the current tenant
-        if (!$user || !$user->hasRole(['admin', 'super-admin', 'tenant-owner'])) {
+        if (! $user || ! $user->hasRole(['admin', 'super-admin', 'tenant-owner'])) {
             abort(403, 'Unauthorized access to A/B testing');
         }
 
         // Ensure tenant context is set
         $tenantId = $this->tenantContext->getCurrentTenantId();
-        if (!$tenantId) {
+        if (! $tenantId) {
             abort(400, 'No tenant context available');
         }
     }

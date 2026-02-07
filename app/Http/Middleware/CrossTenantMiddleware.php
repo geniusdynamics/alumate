@@ -1,22 +1,23 @@
 <?php
+
 // ABOUTME: Middleware for handling cross-tenant operations and schema switching in hybrid tenancy architecture
 // ABOUTME: Manages tenant context, schema switching, and cross-tenant access permissions with audit logging
 
 namespace App\Http\Middleware;
 
+use App\Models\AuditTrail;
+use App\Models\GlobalUser;
+use App\Models\Tenant;
+use App\Models\UserTenantMembership;
+use App\Services\CrossTenantSyncService;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\Tenant;
-use App\Models\GlobalUser;
-use App\Models\UserTenantMembership;
-use App\Models\AuditTrail;
-use App\Services\CrossTenantSyncService;
 use Symfony\Component\HttpFoundation\Response;
-use Exception;
 
 class CrossTenantMiddleware
 {
@@ -50,30 +51,29 @@ class CrossTenantMiddleware
     {
         // Extract tenant context from request
         $tenantContext = $this->extractTenantContext($request);
-        
+
         // Validate cross-tenant access permissions
         $this->validateCrossTenantAccess($request, $tenantContext);
-        
+
         // Set up tenant schema context
         $this->setupTenantContext($tenantContext);
-        
+
         // Log cross-tenant operation
         $this->logCrossTenantOperation($request, $tenantContext);
-        
+
         try {
             // Process the request
             $response = $next($request);
-            
+
             // Handle post-request synchronization if needed
             $this->handlePostRequestSync($request, $tenantContext);
-            
+
             return $response;
-            
+
         } catch (Exception $e) {
             // Log error and reset schema context
             $this->handleCrossTenantError($e, $request, $tenantContext);
             throw $e;
-            
         } finally {
             // Always reset to default schema
             $this->resetSchemaContext();
@@ -101,7 +101,7 @@ class CrossTenantMiddleware
 
         // Check for cross-tenant operation indicators
         $targetTenantIds = $this->getTargetTenantIds($request);
-        if (!empty($targetTenantIds)) {
+        if (! empty($targetTenantIds)) {
             $context['target_tenant_ids'] = $targetTenantIds;
             $context['cross_tenant_operation'] = true;
             $context['operation_type'] = 'cross_tenant';
@@ -148,8 +148,9 @@ class CrossTenantMiddleware
             $tenant = Cache::remember(
                 "tenant_by_subdomain:{$subdomain}",
                 self::TENANT_CACHE_TTL,
-                fn() => Tenant::where('domain', $subdomain)->first()
+                fn () => Tenant::where('domain', $subdomain)->first()
             );
+
             return $tenant?->id;
         }
 
@@ -190,11 +191,11 @@ class CrossTenantMiddleware
 
         // Remove duplicates and validate
         $tenantIds = array_unique($tenantIds);
-        
+
         // Limit the number of cross-tenant operations
         if (count($tenantIds) > self::MAX_CROSS_TENANT_OPS) {
             throw new Exception(
-                "Too many cross-tenant operations requested. Maximum allowed: " . self::MAX_CROSS_TENANT_OPS
+                'Too many cross-tenant operations requested. Maximum allowed: '.self::MAX_CROSS_TENANT_OPS
             );
         }
 
@@ -215,7 +216,7 @@ class CrossTenantMiddleware
         ];
 
         $routeName = $request->route()?->getName();
-        if (!$routeName) {
+        if (! $routeName) {
             return false;
         }
 
@@ -226,7 +227,7 @@ class CrossTenantMiddleware
         }
 
         // Check for global operation indicators in request
-        return $request->has('global_operation') || 
+        return $request->has('global_operation') ||
                $request->has('super_admin_analytics') ||
                str_contains($request->path(), '/admin/global/');
     }
@@ -244,7 +245,7 @@ class CrossTenantMiddleware
         ];
 
         $routeName = $request->route()?->getName();
-        if (!$routeName) {
+        if (! $routeName) {
             return false;
         }
 
@@ -265,21 +266,23 @@ class CrossTenantMiddleware
      */
     private function validateCrossTenantAccess(Request $request, array $context): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             throw new Exception('Authentication required for cross-tenant operations');
         }
 
         $user = Auth::user();
-        
+
         // For global operations, check super admin permissions
         if ($context['requires_global_access']) {
             $this->validateGlobalAccess($user, $request);
+
             return;
         }
 
         // For cross-tenant operations, validate access to all target tenants
         if ($context['cross_tenant_operation']) {
             $this->validateCrossTenantPermissions($user, $context, $request);
+
             return;
         }
 
@@ -294,11 +297,11 @@ class CrossTenantMiddleware
      */
     private function validateGlobalAccess($user, Request $request): void
     {
-        if (!($user instanceof GlobalUser)) {
+        if (! ($user instanceof GlobalUser)) {
             throw new Exception('Global operations require global user account');
         }
 
-        if (!$user->isSuperAdmin()) {
+        if (! $user->isSuperAdmin()) {
             throw new Exception('Super admin privileges required for global operations');
         }
 
@@ -324,7 +327,7 @@ class CrossTenantMiddleware
      */
     private function validateCrossTenantPermissions($user, array $context, Request $request): void
     {
-        if (!($user instanceof GlobalUser)) {
+        if (! ($user instanceof GlobalUser)) {
             throw new Exception('Cross-tenant operations require global user account');
         }
 
@@ -336,17 +339,17 @@ class CrossTenantMiddleware
 
         foreach ($allTenantIds as $tenantId) {
             $membership = UserTenantMembership::where('global_user_id', $user->id)
-                                            ->where('tenant_id', $tenantId)
-                                            ->where('status', 'active')
-                                            ->first();
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
+                ->first();
 
-            if (!$membership) {
+            if (! $membership) {
                 throw new Exception("Access denied to tenant: {$tenantId}");
             }
 
             // Check if user has sufficient permissions for the operation
             $requiredPermission = $this->getRequiredPermission($request);
-            if ($requiredPermission && !$membership->hasPermission($requiredPermission)) {
+            if ($requiredPermission && ! $membership->hasPermission($requiredPermission)) {
                 throw new Exception(
                     "Insufficient permissions for tenant {$tenantId}. Required: {$requiredPermission}"
                 );
@@ -377,16 +380,16 @@ class CrossTenantMiddleware
     {
         if ($user instanceof GlobalUser) {
             $membership = UserTenantMembership::where('global_user_id', $user->id)
-                                            ->where('tenant_id', $tenantId)
-                                            ->where('status', 'active')
-                                            ->first();
+                ->where('tenant_id', $tenantId)
+                ->where('status', 'active')
+                ->first();
 
-            if (!$membership) {
+            if (! $membership) {
                 throw new Exception("Access denied to tenant: {$tenantId}");
             }
 
             $requiredPermission = $this->getRequiredPermission($request);
-            if ($requiredPermission && !$membership->hasPermission($requiredPermission)) {
+            if ($requiredPermission && ! $membership->hasPermission($requiredPermission)) {
                 throw new Exception(
                     "Insufficient permissions for tenant {$tenantId}. Required: {$requiredPermission}"
                 );
@@ -403,7 +406,7 @@ class CrossTenantMiddleware
         request()->merge(['_tenant_context' => $context]);
 
         // Set primary tenant schema if specified
-        if ($context['primary_tenant_id'] && !$context['requires_global_access']) {
+        if ($context['primary_tenant_id'] && ! $context['requires_global_access']) {
             $this->switchToTenantSchema($context['primary_tenant_id']);
         }
 
@@ -418,7 +421,7 @@ class CrossTenantMiddleware
      */
     private function logCrossTenantOperation(Request $request, array $context): void
     {
-        if (!$context['cross_tenant_operation'] && !$context['requires_global_access']) {
+        if (! $context['cross_tenant_operation'] && ! $context['requires_global_access']) {
             return;
         }
 
@@ -449,19 +452,19 @@ class CrossTenantMiddleware
     private function handlePostRequestSync(Request $request, array $context): void
     {
         // Check if synchronization is needed based on the operation
-        if (!$this->requiresPostRequestSync($request, $context)) {
+        if (! $this->requiresPostRequestSync($request, $context)) {
             return;
         }
 
         try {
             // Determine sync type based on the request
             $syncType = $this->determineSyncType($request);
-            
+
             if ($syncType && $context['cross_tenant_operation']) {
                 // Perform cross-tenant synchronization
                 $this->performPostRequestSync($context, $syncType, $request);
             }
-            
+
         } catch (Exception $e) {
             // Log sync error but don't fail the request
             Log::error('Post-request sync failed', [
@@ -510,10 +513,10 @@ class CrossTenantMiddleware
         $tenant = Cache::remember(
             "tenant:{$tenantId}",
             self::TENANT_CACHE_TTL,
-            fn() => Tenant::find($tenantId)
+            fn () => Tenant::find($tenantId)
         );
 
-        if (!$tenant) {
+        if (! $tenant) {
             throw new Exception("Tenant not found: {$tenantId}");
         }
 
@@ -535,12 +538,12 @@ class CrossTenantMiddleware
     {
         $host = $request->getHost();
         $parts = explode('.', $host);
-        
+
         // Return subdomain if it exists and is not 'www'
         if (count($parts) > 2 && $parts[0] !== 'www') {
             return $parts[0];
         }
-        
+
         return null;
     }
 
@@ -554,9 +557,9 @@ class CrossTenantMiddleware
             self::TENANT_CACHE_TTL,
             function () use ($userId) {
                 return UserTenantMembership::where('global_user_id', $userId)
-                                         ->where('status', 'active')
-                                         ->pluck('tenant_id')
-                                         ->toArray();
+                    ->where('status', 'active')
+                    ->pluck('tenant_id')
+                    ->toArray();
             }
         );
     }
@@ -568,7 +571,7 @@ class CrossTenantMiddleware
     {
         $method = $request->method();
         $path = $request->path();
-        
+
         // Define permission mapping based on routes and methods
         $permissionMap = [
             'GET' => 'read',
@@ -577,27 +580,27 @@ class CrossTenantMiddleware
             'PATCH' => 'update',
             'DELETE' => 'delete',
         ];
-        
+
         $basePermission = $permissionMap[$method] ?? 'read';
-        
+
         // Check for admin routes
         if (str_contains($path, '/admin/')) {
             return 'admin';
         }
-        
+
         // Check for specific resource permissions
         if (str_contains($path, '/users/')) {
             return "users.{$basePermission}";
         }
-        
+
         if (str_contains($path, '/courses/')) {
             return "courses.{$basePermission}";
         }
-        
+
         if (str_contains($path, '/enrollments/')) {
             return "enrollments.{$basePermission}";
         }
-        
+
         return $basePermission;
     }
 
@@ -607,7 +610,7 @@ class CrossTenantMiddleware
     private function requiresPostRequestSync(Request $request, array $context): bool
     {
         // Only sync for write operations
-        if (!in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+        if (! in_array($request->method(), ['POST', 'PUT', 'PATCH', 'DELETE'])) {
             return false;
         }
 
@@ -622,7 +625,7 @@ class CrossTenantMiddleware
         ];
 
         $routeName = $request->route()?->getName();
-        if (!$routeName) {
+        if (! $routeName) {
             return false;
         }
 
@@ -641,19 +644,19 @@ class CrossTenantMiddleware
     private function determineSyncType(Request $request): ?string
     {
         $path = $request->path();
-        
+
         if (str_contains($path, '/users/')) {
             return 'user_sync';
         }
-        
+
         if (str_contains($path, '/courses/')) {
             return 'course_sync';
         }
-        
+
         if (str_contains($path, '/enrollments/')) {
             return 'enrollment_sync';
         }
-        
+
         return null;
     }
 

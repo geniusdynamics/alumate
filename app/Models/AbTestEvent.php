@@ -21,12 +21,12 @@ class AbTestEvent extends Model
         'event_type',
         'session_id',
         'event_data',
-        'occurred_at'
+        'occurred_at',
     ];
 
     protected $casts = [
         'event_data' => 'array',
-        'occurred_at' => 'datetime'
+        'occurred_at' => 'datetime',
     ];
 
     /**

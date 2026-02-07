@@ -1,14 +1,15 @@
 <?php
+
 // ABOUTME: This model manages brand fonts for multi-tenant applications using schema-based tenancy
 // ABOUTME: Handles font configurations, loading, and CSS generation for brand consistency
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Services\TenantContextService;
 
 class BrandFont extends Model
 {
@@ -252,7 +253,7 @@ class BrandFont extends Model
             $fonts = array_merge($fonts, $genericFallbacks);
         }
 
-        return implode(', ', array_map(fn($font) => '"' . $font . '"', $fonts));
+        return implode(', ', array_map(fn ($font) => '"'.$font.'"', $fonts));
     }
 
     /**
@@ -265,19 +266,19 @@ class BrandFont extends Model
         // Google Fonts
         if ($this->is_google_font && $this->google_font_family) {
             $weights = $this->supported_weights ? implode(',', array_keys($this->supported_weights)) : '400';
-            $css .= "@import url('https://fonts.googleapis.com/css2?family=" .
-                   urlencode($this->google_font_family) . ":wght@" . $weights . "&display=swap');\n";
+            $css .= "@import url('https://fonts.googleapis.com/css2?family=".
+                   urlencode($this->google_font_family).':wght@'.$weights."&display=swap');\n";
         }
 
         // Adobe Fonts
         if ($this->is_adobe_font && $this->adobe_font_family) {
-            $css .= "/* Adobe Font: " . $this->adobe_font_family . " */\n";
+            $css .= '/* Adobe Font: '.$this->adobe_font_family." */\n";
             $css .= "/* Include Adobe Fonts script in your HTML head */\n";
         }
 
         // Custom font
         if ($this->is_custom_font && $this->custom_font_css) {
-            $css .= $this->custom_font_css . "\n";
+            $css .= $this->custom_font_css."\n";
         }
 
         return $css;
@@ -288,28 +289,28 @@ class BrandFont extends Model
      */
     public function getFontFaceCss(): string
     {
-        if (!$this->is_custom_font || empty($this->font_file_path)) {
+        if (! $this->is_custom_font || empty($this->font_file_path)) {
             return '';
         }
 
         $formats = $this->font_formats ?? ['woff2', 'woff'];
 
         $css = "@font-face {\n";
-        $css .= "    font-family: '" . $this->name . "';\n";
-        $css .= "    src: ";
+        $css .= "    font-family: '".$this->name."';\n";
+        $css .= '    src: ';
 
         $srcParts = [];
         foreach ($formats as $format) {
-            $srcParts[] = "url('" . $this->font_file_path . "." . $format . "') format('" . $format . "')";
+            $srcParts[] = "url('".$this->font_file_path.'.'.$format."') format('".$format."')";
         }
-        $css .= implode(", ", $srcParts) . ";\n";
+        $css .= implode(', ', $srcParts).";\n";
 
         if ($this->font_weight) {
-            $css .= "    font-weight: " . $this->font_weight . ";\n";
+            $css .= '    font-weight: '.$this->font_weight.";\n";
         }
 
         if ($this->font_style) {
-            $css .= "    font-style: " . $this->font_style . ";\n";
+            $css .= '    font-style: '.$this->font_style.";\n";
         }
 
         $css .= "}\n";
@@ -351,6 +352,7 @@ class BrandFont extends Model
     public function supportsWeight(int $weight): bool
     {
         $weights = $this->getSupportedWeightsArray();
+
         return isset($weights[$weight]);
     }
 
@@ -381,7 +383,7 @@ class BrandFont extends Model
             'font_family_css' => 'nullable|string|max:500',
             'font_weight' => 'nullable|integer|min:100|max:900',
             'font_style' => 'nullable|in:normal,italic,oblique',
-            'font_source' => 'required|in:' . implode(',', self::FONT_SOURCES),
+            'font_source' => 'required|in:'.implode(',', self::FONT_SOURCES),
             'font_url' => 'nullable|url|max:500',
             'font_file_path' => 'nullable|string|max:500',
             'google_font_family' => 'nullable|string|max:255',
@@ -390,7 +392,7 @@ class BrandFont extends Model
             'font_formats' => 'nullable|array',
             'supported_weights' => 'nullable|array',
             'fallback_fonts' => 'nullable|array',
-            'usage_context' => 'required|in:' . implode(',', self::USAGE_CONTEXTS),
+            'usage_context' => 'required|in:'.implode(',', self::USAGE_CONTEXTS),
             'is_system_font' => 'boolean',
             'is_google_font' => 'boolean',
             'is_adobe_font' => 'boolean',

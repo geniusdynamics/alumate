@@ -1,18 +1,19 @@
 <?php
+
 // ABOUTME: Student model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Handles student data within tenant schemas with relationships and validation
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Exception;
 
 class Student extends Model
 {
@@ -36,7 +37,7 @@ class Student extends Model
         'emergency_contact_name',
         'emergency_contact_phone',
         'profile_photo_url',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
@@ -44,18 +45,18 @@ class Student extends Model
         'enrollment_date' => 'date',
         'graduation_date' => 'date',
         'metadata' => 'array',
-        'email_verified_at' => 'datetime'
+        'email_verified_at' => 'datetime',
     ];
 
     protected $dates = [
         'deleted_at',
-        'email_verified_at'
+        'email_verified_at',
     ];
 
     protected $appends = [
         'full_name',
         'is_graduated',
-        'current_tenant'
+        'current_tenant',
     ];
 
     /**
@@ -67,7 +68,7 @@ class Student extends Model
 
         // Ensure we're in a tenant context
         static::addGlobalScope('tenant_context', function (Builder $builder) {
-            if (!TenantContextService::hasTenant()) {
+            if (! TenantContextService::hasTenant()) {
                 throw new Exception('Student model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });
@@ -148,7 +149,7 @@ class Student extends Model
      */
     public function getFullNameAttribute(): string
     {
-        return trim($this->first_name . ' ' . $this->last_name);
+        return trim($this->first_name.' '.$this->last_name);
     }
 
     /**
@@ -156,7 +157,7 @@ class Student extends Model
      */
     public function getIsGraduatedAttribute(): bool
     {
-        return $this->status === 'graduated' && !is_null($this->graduation_date);
+        return $this->status === 'graduated' && ! is_null($this->graduation_date);
     }
 
     /**
@@ -165,10 +166,11 @@ class Student extends Model
     public function getCurrentTenantAttribute(): ?array
     {
         $tenant = TenantContextService::getCurrentTenant();
+
         return $tenant ? [
             'id' => $tenant->id,
             'name' => $tenant->name,
-            'schema' => $tenant->schema_name
+            'schema' => $tenant->schema_name,
         ] : null;
     }
 
@@ -178,7 +180,7 @@ class Student extends Model
     public function calculateGPA(): float
     {
         $grades = $this->grades()->whereNotNull('grade_points')->get();
-        
+
         if ($grades->isEmpty()) {
             return 0.0;
         }
@@ -186,9 +188,9 @@ class Student extends Model
         $totalPoints = $grades->sum(function ($grade) {
             return $grade->grade_points * $grade->credits;
         });
-        
+
         $totalCredits = $grades->sum('credits');
-        
+
         return $totalCredits > 0 ? round($totalPoints / $totalCredits, 2) : 0.0;
     }
 
@@ -208,7 +210,7 @@ class Student extends Model
      */
     public function canGraduate(int $requiredCredits = 120): bool
     {
-        return $this->getTotalCreditsEarned() >= $requiredCredits && 
+        return $this->getTotalCreditsEarned() >= $requiredCredits &&
                $this->calculateGPA() >= 2.0;
     }
 
@@ -217,13 +219,13 @@ class Student extends Model
      */
     public function graduate(): bool
     {
-        if (!$this->canGraduate()) {
+        if (! $this->canGraduate()) {
             return false;
         }
 
         $this->update([
             'status' => 'graduated',
-            'graduation_date' => now()
+            'graduation_date' => now(),
         ]);
 
         // Create graduate record
@@ -232,7 +234,7 @@ class Student extends Model
             'graduation_date' => $this->graduation_date,
             'gpa' => $this->calculateGPA(),
             'total_credits' => $this->getTotalCreditsEarned(),
-            'honors' => $this->determineHonors()
+            'honors' => $this->determineHonors(),
         ]);
 
         $this->logActivity('graduated', 'Student graduated');
@@ -246,7 +248,7 @@ class Student extends Model
     private function determineHonors(): ?string
     {
         $gpa = $this->calculateGPA();
-        
+
         if ($gpa >= 3.9) {
             return 'summa_cum_laude';
         } elseif ($gpa >= 3.7) {
@@ -254,7 +256,7 @@ class Student extends Model
         } elseif ($gpa >= 3.5) {
             return 'cum_laude';
         }
-        
+
         return null;
     }
 
@@ -266,12 +268,12 @@ class Student extends Model
         $tenant = TenantContextService::getCurrentTenant();
         $prefix = $tenant ? strtoupper(substr($tenant->slug, 0, 3)) : 'STU';
         $year = date('Y');
-        
+
         do {
             $number = str_pad(random_int(1, 9999), 4, '0', STR_PAD_LEFT);
-            $studentId = $prefix . $year . $number;
+            $studentId = $prefix.$year.$number;
         } while (static::where('student_id', $studentId)->exists());
-        
+
         return $studentId;
     }
 
@@ -282,10 +284,10 @@ class Student extends Model
     {
         return static::where(function ($q) use ($query) {
             $q->where('first_name', 'ILIKE', "%{$query}%")
-              ->orWhere('last_name', 'ILIKE', "%{$query}%")
-              ->orWhere('email', 'ILIKE', "%{$query}%")
-              ->orWhere('student_id', 'ILIKE', "%{$query}%")
-              ->orWhereRaw("CONCAT(first_name, ' ', last_name) ILIKE ?", ["%{$query}%"]);
+                ->orWhere('last_name', 'ILIKE', "%{$query}%")
+                ->orWhere('email', 'ILIKE', "%{$query}%")
+                ->orWhere('student_id', 'ILIKE', "%{$query}%")
+                ->orWhereRaw("CONCAT(first_name, ' ', last_name) ILIKE ?", ["%{$query}%"]);
         });
     }
 
@@ -304,7 +306,7 @@ class Student extends Model
     {
         return static::whereHas('enrollments', function ($query) use ($courseId) {
             $query->where('course_id', $courseId)
-                  ->where('status', 'active');
+                ->where('status', 'active');
         });
     }
 
@@ -324,7 +326,7 @@ class Student extends Model
         return static::where('status', 'active')
             ->whereHas('enrollments', function ($query) use ($requiredCredits) {
                 $query->where('status', 'completed')
-                      ->havingRaw('SUM(credits_earned) >= ?', [$requiredCredits]);
+                    ->havingRaw('SUM(credits_earned) >= ?', [$requiredCredits]);
             });
     }
 
@@ -343,14 +345,14 @@ class Student extends Model
                 'user_agent' => request()->userAgent(),
                 'metadata' => array_merge($metadata, [
                     'student_name' => $this->full_name,
-                    'student_id' => $this->student_id
-                ])
+                    'student_id' => $this->student_id,
+                ]),
             ]);
         } catch (Exception $e) {
             \Log::error('Failed to log student activity', [
                 'student_id' => $this->id,
                 'action' => $action,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -375,18 +377,18 @@ class Student extends Model
                 ->groupBy('year')
                 ->orderBy('year', 'desc')
                 ->pluck('count', 'year')
-                ->toArray()
+                ->toArray(),
         ];
     }
 
     /**
      * Export student data for current tenant
      */
-    public static function exportData(array $fields = null): array
+    public static function exportData(?array $fields = null): array
     {
         $fields = $fields ?: [
-            'student_id', 'first_name', 'last_name', 'email', 
-            'status', 'enrollment_date', 'graduation_date'
+            'student_id', 'first_name', 'last_name', 'email',
+            'status', 'enrollment_date', 'graduation_date',
         ];
 
         return static::select($fields)
@@ -396,6 +398,7 @@ class Student extends Model
                 $data = $student->toArray();
                 $data['gpa'] = $student->calculateGPA();
                 $data['total_credits'] = $student->getTotalCreditsEarned();
+
                 return $data;
             })
             ->toArray();
@@ -413,8 +416,8 @@ class Student extends Model
             ->where('student_id', $this->id)
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
-                      ->from('courses')
-                      ->whereColumn('courses.id', 'enrollments.course_id');
+                    ->from('courses')
+                    ->whereColumn('courses.id', 'enrollments.course_id');
             })
             ->count();
 
@@ -426,7 +429,7 @@ class Student extends Model
         $invalidGrades = $this->grades()
             ->where(function ($query) {
                 $query->where('grade_points', '<', 0)
-                      ->orWhere('grade_points', '>', 4.0);
+                    ->orWhere('grade_points', '>', 4.0);
             })
             ->count();
 
@@ -436,10 +439,10 @@ class Student extends Model
 
         // Check graduation status consistency
         if ($this->status === 'graduated' && is_null($this->graduation_date)) {
-            $errors[] = "Student marked as graduated but has no graduation date";
+            $errors[] = 'Student marked as graduated but has no graduation date';
         }
 
-        if (!is_null($this->graduation_date) && $this->status !== 'graduated') {
+        if (! is_null($this->graduation_date) && $this->status !== 'graduated') {
             $errors[] = "Student has graduation date but status is not 'graduated'";
         }
 

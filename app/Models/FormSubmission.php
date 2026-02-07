@@ -25,13 +25,13 @@ class FormSubmission extends Model
         'crm_sync_error',
         'validation_errors',
         'status',
-        'tenant_id'
+        'tenant_id',
     ];
 
     protected $casts = [
         'submission_data' => 'array',
         'validation_errors' => 'array',
-        'crm_sync_error' => 'array'
+        'crm_sync_error' => 'array',
     ];
 
     public function form(): BelongsTo
@@ -50,7 +50,7 @@ class FormSubmission extends Model
             'pending' => 'Pending',
             'processed' => 'Processed',
             'failed' => 'Failed',
-            'synced' => 'Synced to CRM'
+            'synced' => 'Synced to CRM',
         ];
     }
 

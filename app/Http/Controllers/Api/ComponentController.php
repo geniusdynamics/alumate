@@ -44,7 +44,7 @@ class ComponentController extends Controller
                 'last_page' => $components->lastPage(),
                 'per_page' => $components->perPage(),
                 'total' => $components->total(),
-            ]
+            ],
         ]);
     }
 
@@ -57,7 +57,7 @@ class ComponentController extends Controller
 
         return response()->json([
             'component' => new ComponentResource($component),
-            'message' => 'Component created successfully'
+            'message' => 'Component created successfully',
         ], 201);
     }
 
@@ -69,7 +69,7 @@ class ComponentController extends Controller
         $this->authorize('view', $component);
 
         return response()->json([
-            'component' => new ComponentResource($component)
+            'component' => new ComponentResource($component),
         ]);
     }
 
@@ -88,7 +88,7 @@ class ComponentController extends Controller
 
         return response()->json([
             'component' => new ComponentResource($component),
-            'message' => 'Component updated successfully'
+            'message' => 'Component updated successfully',
         ]);
     }
 
@@ -102,7 +102,7 @@ class ComponentController extends Controller
         // Check if component can be deleted
         if ($component->instances()->exists()) {
             return response()->json([
-                'message' => 'Cannot delete component with existing instances. Delete instances first.'
+                'message' => 'Cannot delete component with existing instances. Delete instances first.',
             ], 422);
         }
 
@@ -127,7 +127,7 @@ class ComponentController extends Controller
 
         return response()->json([
             'component' => new ComponentResource($duplicatedComponent),
-            'message' => 'Component duplicated successfully'
+            'message' => 'Component duplicated successfully',
         ], 201);
     }
 
@@ -140,18 +140,18 @@ class ComponentController extends Controller
 
         $request->validate([
             'version' => 'required|string|regex:/^\d+\.\d+\.\d+$/',
-            'changes' => 'nullable|array'
+            'changes' => 'nullable|array',
         ]);
 
         $newComponent = $this->componentService->createVersion(
-            $component, 
-            $request->version, 
+            $component,
+            $request->version,
             $request->changes ?? []
         );
 
         return response()->json([
             'component' => new ComponentResource($newComponent),
-            'message' => 'Component version created successfully'
+            'message' => 'Component version created successfully',
         ], 201);
     }
 
@@ -166,7 +166,7 @@ class ComponentController extends Controller
 
         return response()->json([
             'component' => new ComponentResource($component),
-            'message' => 'Component activated successfully'
+            'message' => 'Component activated successfully',
         ]);
     }
 
@@ -181,7 +181,7 @@ class ComponentController extends Controller
 
         return response()->json([
             'component' => new ComponentResource($component),
-            'message' => 'Component deactivated successfully'
+            'message' => 'Component deactivated successfully',
         ]);
     }
 
@@ -192,18 +192,18 @@ class ComponentController extends Controller
     {
         $filters = [
             'is_active' => $request->is_active,
-            'type' => $request->type
+            'type' => $request->type,
         ];
 
         $components = $this->componentService->getByCategory(
-            $category, 
-            Auth::user()->tenant_id, 
+            $category,
+            Auth::user()->tenant_id,
             $filters
         );
 
         return response()->json([
             'components' => ComponentResource::collection($components),
-            'category' => $category
+            'category' => $category,
         ]);
     }
 
@@ -218,9 +218,9 @@ class ComponentController extends Controller
         $previewData = $this->componentService->generatePreview($component, $customConfig);
 
         // Cache the preview for performance
-        $cacheKey = "component_preview_{$component->id}_" . md5(serialize($customConfig));
+        $cacheKey = "component_preview_{$component->id}_".md5(serialize($customConfig));
         $cachedPreview = Cache::get($cacheKey);
-        
+
         if ($cachedPreview) {
             return response()->json($cachedPreview);
         }
@@ -238,7 +238,7 @@ class ComponentController extends Controller
         $this->authorize('view', $component);
 
         $request->validate([
-            'config' => 'required|array'
+            'config' => 'required|array',
         ]);
 
         try {
@@ -249,20 +249,20 @@ class ComponentController extends Controller
             if ($tempComponent->validateConfig()) {
                 return response()->json([
                     'valid' => true,
-                    'message' => 'Configuration is valid'
+                    'message' => 'Configuration is valid',
                 ]);
             } else {
                 return response()->json([
                     'valid' => false,
                     'message' => 'Configuration is invalid',
-                    'errors' => ['Configuration validation failed']
+                    'errors' => ['Configuration validation failed'],
                 ], 422);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'valid' => false,
                 'message' => 'Configuration validation failed',
-                'errors' => [$e->getMessage()]
+                'errors' => [$e->getMessage()],
             ], 422);
         }
     }
@@ -279,7 +279,7 @@ class ComponentController extends Controller
 
         return response()->json([
             'stats' => $stats,
-            'analytics' => $analytics
+            'analytics' => $analytics,
         ]);
     }
 
@@ -291,7 +291,7 @@ class ComponentController extends Controller
         $request->validate([
             'action' => 'required|string|in:delete,activate,deactivate,duplicate',
             'component_ids' => 'required|array|min:1',
-            'component_ids.*' => 'exists:components,id'
+            'component_ids.*' => 'exists:components,id',
         ]);
 
         $components = Component::forTenant(Auth::user()->tenant_id)
@@ -306,7 +306,7 @@ class ComponentController extends Controller
             try {
                 switch ($request->action) {
                     case 'delete':
-                        if (!$component->instances()->exists()) {
+                        if (! $component->instances()->exists()) {
                             $this->componentService->delete($component);
                             $results[] = ['id' => $component->id, 'status' => 'deleted'];
                             $successCount++;
@@ -343,8 +343,8 @@ class ComponentController extends Controller
             'summary' => [
                 'success' => $successCount,
                 'errors' => $errorCount,
-                'total' => count($components)
-            ]
+                'total' => count($components),
+            ],
         ]);
     }
 
@@ -356,13 +356,13 @@ class ComponentController extends Controller
         $request->validate([
             'component_ids' => 'nullable|array',
             'component_ids.*' => 'exists:components,id',
-            'format' => 'string|in:json,grapejs,tailwind'
+            'format' => 'string|in:json,grapejs,tailwind',
         ]);
 
         $format = $request->get('format', 'json');
         $componentIds = $request->get('component_ids', []);
 
-        if (!empty($componentIds)) {
+        if (! empty($componentIds)) {
             $components = Component::forTenant(Auth::user()->tenant_id)
                 ->whereIn('id', $componentIds)
                 ->get();
@@ -385,9 +385,9 @@ class ComponentController extends Controller
                             'content' => "<div data-component-id='{$component->id}'></div>",
                             'attributes' => [
                                 'data-component-id' => $component->id,
-                                'data-component-category' => $component->category
-                            ]
-                        ]
+                                'data-component-category' => $component->category,
+                            ],
+                        ],
                     ];
                 });
                 break;
@@ -398,7 +398,7 @@ class ComponentController extends Controller
                         'name' => $component->name,
                         'category' => $component->category,
                         'tailwind_mappings' => $component->getTailwindMappings(),
-                        'config' => $component->config
+                        'config' => $component->config,
                     ];
                 });
                 break;
@@ -410,7 +410,7 @@ class ComponentController extends Controller
             'components' => $data,
             'format' => $format,
             'exported_at' => now()->toISOString(),
-            'count' => $components->count()
+            'count' => $components->count(),
         ]);
     }
 
@@ -422,14 +422,14 @@ class ComponentController extends Controller
         $this->authorize('view', $component);
 
         $cacheKey = "component_{$component->id}";
-        
+
         $data = Cache::remember($cacheKey, now()->addHours(24), function () use ($component) {
             return [
                 'component' => new ComponentResource($component),
                 'preview_html' => $this->componentService->generatePreview($component)['preview_html'] ?? '',
                 'responsive_variants' => $component->generateResponsiveVariants(),
                 'accessibility_metadata' => $component->getAccessibilityMetadata(),
-                'cached_at' => now()->toISOString()
+                'cached_at' => now()->toISOString(),
             ];
         });
 

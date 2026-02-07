@@ -84,7 +84,7 @@ class StoreLearningInteractionRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Set default interaction type if not provided
-        if (!$this->has('interaction_type') || !$this->interaction_type) {
+        if (! $this->has('interaction_type') || ! $this->interaction_type) {
             $this->merge([
                 'interaction_type' => 'view',
             ]);
