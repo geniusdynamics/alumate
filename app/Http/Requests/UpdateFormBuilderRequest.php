@@ -46,7 +46,7 @@ class UpdateFormBuilderRequest extends FormRequest
             'fields.*.order_index' => 'nullable|integer|min:0',
             'fields.*.is_required' => 'boolean',
             'fields.*.is_visible' => 'boolean',
-            'fields.*.crm_field_mapping' => 'nullable|array'
+            'fields.*.crm_field_mapping' => 'nullable|array',
         ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Production file storage service with multi-tenant support, S3/Spaces integration,
 // ABOUTME: image optimization, virus scanning, and quota enforcement
 
@@ -10,10 +11,10 @@ use App\Jobs\ProcessImageUpload;
 use App\Jobs\ScanFileForVirus;
 use App\Models\StoredFile;
 use App\Models\User;
+use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Exception;
 
 class FileStorageService extends BaseService
 {
@@ -90,12 +91,12 @@ class FileStorageService extends BaseService
 
         // Validate file
         $validation = $this->validateFile($file);
-        if (!$validation['valid']) {
+        if (! $validation['valid']) {
             throw new Exception($validation['error']);
         }
 
         // Check quota
-        if (!$this->checkQuota($user, $file->getSize())) {
+        if (! $this->checkQuota($user, $file->getSize())) {
             throw new Exception('Storage quota exceeded. Please upgrade your plan or delete some files.');
         }
 
@@ -112,7 +113,7 @@ class FileStorageService extends BaseService
             $visibility === StoredFile::VISIBILITY_PUBLIC ? 'public' : 'private'
         );
 
-        if (!$stored) {
+        if (! $stored) {
             throw new Exception('Failed to store file');
         }
 
@@ -222,7 +223,7 @@ class FileStorageService extends BaseService
         $this->ensureTenantContext();
 
         // Check permissions
-        if (!$this->canDeleteFile($storedFile)) {
+        if (! $this->canDeleteFile($storedFile)) {
             throw new Exception('Unauthorized to delete this file');
         }
 
@@ -240,6 +241,7 @@ class FileStorageService extends BaseService
             return true;
         } catch (Exception $e) {
             $this->handleServiceError($e, 'delete_file', ['file_id' => $storedFile->id]);
+
             return false;
         }
     }
@@ -279,7 +281,7 @@ class FileStorageService extends BaseService
      */
     public function generateThumbnails(StoredFile $storedFile): array
     {
-        if (!$storedFile->isImage()) {
+        if (! $storedFile->isImage()) {
             return [];
         }
 
@@ -307,7 +309,7 @@ class FileStorageService extends BaseService
      */
     public function optimizeImage(StoredFile $storedFile): void
     {
-        if (!$storedFile->isImage()) {
+        if (! $storedFile->isImage()) {
             return;
         }
 
@@ -332,8 +334,9 @@ class FileStorageService extends BaseService
      */
     public function scanForVirus(StoredFile $storedFile): array
     {
-        if (!config('filesystems.virus_scanning.enabled', true)) {
+        if (! config('filesystems.virus_scanning.enabled', true)) {
             $storedFile->markAsScanned(StoredFile::SCAN_CLEAN);
+
             return ['status' => 'clean', 'message' => 'Virus scanning disabled'];
         }
 
@@ -411,7 +414,7 @@ class FileStorageService extends BaseService
     public function getTenantQuota(): ?int
     {
         $tenantId = $this->getCurrentTenantId();
-        if (!$tenantId) {
+        if (! $tenantId) {
             return null;
         }
 
@@ -486,7 +489,7 @@ class FileStorageService extends BaseService
     {
         $this->ensureTenantContext();
 
-        if (!$this->canDeleteFile($storedFile)) {
+        if (! $this->canDeleteFile($storedFile)) {
             throw new Exception('Unauthorized to move this file');
         }
 
@@ -519,10 +522,10 @@ class FileStorageService extends BaseService
         $fileType = $this->getFileType($mimeType);
 
         // Check MIME type
-        if (!$this->isAllowedMimeType($mimeType)) {
+        if (! $this->isAllowedMimeType($mimeType)) {
             return [
                 'valid' => false,
-                'error' => 'File type not allowed. Allowed types: ' . $this->getAllowedTypesList(),
+                'error' => 'File type not allowed. Allowed types: '.$this->getAllowedTypesList(),
             ];
         }
 
@@ -531,7 +534,7 @@ class FileStorageService extends BaseService
         if ($size > $maxSize) {
             return [
                 'valid' => false,
-                'error' => "File too large. Maximum size for {$fileType} is " . $this->formatBytes($maxSize),
+                'error' => "File too large. Maximum size for {$fileType} is ".$this->formatBytes($maxSize),
             ];
         }
 
@@ -580,7 +583,8 @@ class FileStorageService extends BaseService
     protected function generateUniqueFilename(UploadedFile $file): string
     {
         $extension = $file->getClientOriginalExtension();
-        return Str::uuid() . '.' . strtolower($extension);
+
+        return Str::uuid().'.'.strtolower($extension);
     }
 
     /**
@@ -610,11 +614,11 @@ class FileStorageService extends BaseService
     {
         $cdnBase = config("filesystems.disks.{$disk}.cdn_url");
 
-        if (!$cdnBase) {
+        if (! $cdnBase) {
             return Storage::disk($disk)->url($path);
         }
 
-        return rtrim($cdnBase, '/') . '/' . ltrim($path, '/');
+        return rtrim($cdnBase, '/').'/'.ltrim($path, '/');
     }
 
     /**
@@ -652,12 +656,12 @@ class FileStorageService extends BaseService
         $mergedPath = storage_path("app/temp/{$uploadId}_merged");
 
         // Ensure temp directory exists
-        if (!is_dir(dirname($mergedPath))) {
+        if (! is_dir(dirname($mergedPath))) {
             mkdir(dirname($mergedPath), 0755, true);
         }
 
         $out = fopen($mergedPath, 'wb');
-        if (!$out) {
+        if (! $out) {
             throw new Exception('Failed to create merged file');
         }
 
@@ -681,7 +685,7 @@ class FileStorageService extends BaseService
     {
         $currentUser = auth()->user();
 
-        if (!$currentUser) {
+        if (! $currentUser) {
             return false;
         }
 
@@ -730,12 +734,12 @@ class FileStorageService extends BaseService
     {
         $socket = config('filesystems.virus_scanning.clamav_socket', '/var/run/clamav/clamd.ctl');
 
-        if (!file_exists($socket)) {
+        if (! file_exists($socket)) {
             throw new Exception('ClamAV socket not found');
         }
 
         $clamd = stream_socket_client("unix://{$socket}", $errno, $errstr, 30);
-        if (!$clamd) {
+        if (! $clamd) {
             throw new Exception("ClamAV connection failed: {$errstr}");
         }
 
@@ -763,12 +767,13 @@ class FileStorageService extends BaseService
     protected function formatBytes(int $bytes): string
     {
         if ($bytes >= 1073741824) {
-            return number_format($bytes / 1073741824, 2) . ' GB';
+            return number_format($bytes / 1073741824, 2).' GB';
         } elseif ($bytes >= 1048576) {
-            return number_format($bytes / 1048576, 2) . ' MB';
+            return number_format($bytes / 1048576, 2).' MB';
         } elseif ($bytes >= 1024) {
-            return number_format($bytes / 1024, 2) . ' KB';
+            return number_format($bytes / 1024, 2).' KB';
         }
-        return $bytes . ' B';
+
+        return $bytes.' B';
     }
 }

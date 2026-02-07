@@ -8,8 +8,6 @@ class CreateBackupRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -86,25 +84,23 @@ class CreateBackupRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
         // Set default values
-        if (!$this->has('include_data')) {
+        if (! $this->has('include_data')) {
             $this->merge(['include_data' => true]);
         }
-        if (!$this->has('include_files')) {
+        if (! $this->has('include_files')) {
             $this->merge(['include_files' => true]);
         }
-        if (!$this->has('include_config')) {
+        if (! $this->has('include_config')) {
             $this->merge(['include_config' => true]);
         }
-        if (!$this->has('compress')) {
+        if (! $this->has('compress')) {
             $this->merge(['compress' => true]);
         }
-        if ($this->has('encryption') && !$this->input('encryption.enabled')) {
+        if ($this->has('encryption') && ! $this->input('encryption.enabled')) {
             $this->merge(['encryption' => null]);
         }
     }

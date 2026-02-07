@@ -97,5 +97,4 @@ class CustomEvent extends Model
     {
         return $query->whereBetween('timestamp', [$startDate, $endDate]);
     }
-
 }

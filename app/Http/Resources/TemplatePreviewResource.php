@@ -16,7 +16,6 @@ class TemplatePreviewResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param Request $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -66,8 +65,8 @@ class TemplatePreviewResource extends JsonResource
                 'is_active' => $this->resource['metadata']['is_active'] ?? false,
                 'cache_used' => $request->boolean('cache_used', true),
                 'is_responsive' => $this->isResponsive(),
-                'has_custom_css' => !empty($this->resource['responsive_styles']),
-                'has_custom_js' => !empty($this->resource['compiled_js']),
+                'has_custom_css' => ! empty($this->resource['responsive_styles']),
+                'has_custom_js' => ! empty($this->resource['compiled_js']),
             ];
         }
 
@@ -85,6 +84,7 @@ class TemplatePreviewResource extends JsonResource
     protected function isResponsive(): bool
     {
         $css = $this->resource['responsive_styles'] ?? '';
+
         return str_contains($css, '@media') || str_contains($css, 'flex') || str_contains($css, 'grid');
     }
 
@@ -97,22 +97,22 @@ class TemplatePreviewResource extends JsonResource
             'mobile' => [
                 'max_width' => 576,
                 'description' => 'Mobile devices',
-                'active' => $this->resource['device_mode'] === 'mobile'
+                'active' => $this->resource['device_mode'] === 'mobile',
             ],
             'tablet' => [
                 'max_width' => 768,
                 'description' => 'Tablet devices',
-                'active' => $this->resource['device_mode'] === 'tablet'
+                'active' => $this->resource['device_mode'] === 'tablet',
             ],
             'desktop' => [
                 'min_width' => 992,
                 'description' => 'Desktop devices',
-                'active' => $this->resource['device_mode'] === 'desktop'
+                'active' => $this->resource['device_mode'] === 'desktop',
             ],
             'large' => [
                 'min_width' => 1200,
                 'description' => 'Large desktop screens',
-                'active' => false
+                'active' => false,
             ],
         ];
     }

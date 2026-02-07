@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Collection;
-use Throwable;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Analytics Dashboard Integration Service
@@ -21,60 +20,85 @@ use Exception;
 class AnalyticsDashboardIntegrationService
 {
     private const DASHBOARD_CACHE_KEY = 'analytics_dashboards';
+
     private const DASHBOARD_CACHE_TTL = 3600; // 1 hour
+
     private const MAX_DASHBOARDS = 100;
+
     private const MAX_WIDGETS_PER_DASHBOARD = 50;
 
     private TenantContextService $tenantContextService;
+
     private AnalyticsMetricsCollectionService $metricsCollectionService;
+
     private array $dashboardsStorage = [];
+
     private array $dashboardConfig;
 
     /**
      * Widget types
      */
     public const WIDGET_TYPE_METRIC_CARD = 'metric_card';
+
     public const WIDGET_TYPE_CHART = 'chart';
+
     public const WIDGET_TYPE_TABLE = 'table';
+
     public const WIDGET_TYPE_GAUGE = 'gauge';
+
     public const WIDGET_TYPE_MAP = 'map';
+
     public const WIDGET_TYPE_LIST = 'list';
 
     /**
      * Chart types
      */
     public const CHART_TYPE_LINE = 'line';
+
     public const CHART_TYPE_BAR = 'bar';
+
     public const CHART_TYPE_PIE = 'pie';
+
     public const CHART_TYPE_AREA = 'area';
+
     public const CHART_TYPE_SCATTER = 'scatter';
 
     /**
      * Date range presets
      */
     public const DATE_RANGE_TODAY = 'today';
+
     public const DATE_RANGE_YESTERDAY = 'yesterday';
+
     public const DATE_RANGE_LAST_7_DAYS = 'last_7_days';
+
     public const DATE_RANGE_LAST_30_DAYS = 'last_30_days';
+
     public const DATE_RANGE_LAST_90_DAYS = 'last_90_days';
+
     public const DATE_RANGE_THIS_MONTH = 'this_month';
+
     public const DATE_RANGE_LAST_MONTH = 'last_month';
+
     public const DATE_RANGE_THIS_YEAR = 'this_year';
+
     public const DATE_RANGE_CUSTOM = 'custom';
 
     /**
      * Aggregation types
      */
     public const AGGREGATION_SUM = 'sum';
+
     public const AGGREGATION_AVG = 'avg';
+
     public const AGGREGATION_MIN = 'min';
+
     public const AGGREGATION_MAX = 'max';
+
     public const AGGREGATION_COUNT = 'count';
 
     /**
-     * @param TenantContextService $tenantContextService
-     * @param AnalyticsMetricsCollectionService $metricsCollectionService
-     * @param array $dashboardConfig Dashboard configuration
+     * @param  array  $dashboardConfig  Dashboard configuration
      */
     public function __construct(
         TenantContextService $tenantContextService,
@@ -91,22 +115,22 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get dashboard data for a specific dashboard and date range
      *
-     * @param string $dashboardId Dashboard ID
-     * @param array $dateRange Date range with 'start' and 'end' keys
+     * @param  string  $dashboardId  Dashboard ID
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
      * @return array Dashboard data with widgets
      */
     public function getDashboardData(string $dashboardId, array $dateRange = []): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $dashboard = $this->getDashboardById($dashboardId);
-        
-        if (!$dashboard) {
+
+        if (! $dashboard) {
             throw new Exception("Dashboard not found: {$dashboardId}");
         }
 
         $dateRange = $this->resolveDateRange($dateRange);
-        
+
         $dashboardData = [
             'id' => $dashboard['id'],
             'name' => $dashboard['name'],
@@ -123,7 +147,7 @@ class AnalyticsDashboardIntegrationService
             $dashboardData['widgets'][] = $widgetData;
         }
 
-        Log::info("Dashboard data retrieved", [
+        Log::info('Dashboard data retrieved', [
             'dashboard_id' => $dashboardId,
             'tenant_id' => $tenantId,
             'widget_count' => count($dashboardData['widgets']),
@@ -136,25 +160,25 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get widget data for a specific widget
      *
-     * @param string $widgetId Widget ID
-     * @param array $dateRange Date range with 'start' and 'end' keys
+     * @param  string  $widgetId  Widget ID
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
      * @return array Widget data
      */
     public function getWidgetData(string $widgetId, array $dateRange = []): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         // Find widget across all dashboards
         $widget = $this->findWidgetById($widgetId);
-        
-        if (!$widget) {
+
+        if (! $widget) {
             throw new Exception("Widget not found: {$widgetId}");
         }
 
         $dateRange = $this->resolveDateRange($dateRange);
         $widgetData = $this->getWidgetDataInternal($widget, $dateRange);
 
-        Log::info("Widget data retrieved", [
+        Log::info('Widget data retrieved', [
             'widget_id' => $widgetId,
             'tenant_id' => $tenantId,
             'widget_type' => $widget['type'],
@@ -167,9 +191,9 @@ class AnalyticsDashboardIntegrationService
     /**
      * Aggregate dashboard data across multiple dimensions
      *
-     * @param string $dashboardId Dashboard ID
-     * @param array $dateRange Date range with 'start' and 'end' keys
-     * @param string $aggregation Aggregation type (sum, avg, min, max, count)
+     * @param  string  $dashboardId  Dashboard ID
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
+     * @param  string  $aggregation  Aggregation type (sum, avg, min, max, count)
      * @return array Aggregated dashboard data
      */
     public function aggregateDashboardData(
@@ -178,15 +202,15 @@ class AnalyticsDashboardIntegrationService
         string $aggregation = self::AGGREGATION_SUM
     ): array {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $dashboard = $this->getDashboardById($dashboardId);
-        
-        if (!$dashboard) {
+
+        if (! $dashboard) {
             throw new Exception("Dashboard not found: {$dashboardId}");
         }
 
         $dateRange = $this->resolveDateRange($dateRange);
-        
+
         $aggregatedData = [
             'dashboard_id' => $dashboardId,
             'dashboard_name' => $dashboard['name'],
@@ -200,7 +224,7 @@ class AnalyticsDashboardIntegrationService
         foreach ($dashboard['widgets'] ?? [] as $widget) {
             $widgetData = $this->getWidgetDataInternal($widget, $dateRange);
             $value = $widgetData['value'] ?? 0;
-            
+
             $aggregatedData['metrics'][] = [
                 'widget_id' => $widget['id'],
                 'widget_title' => $widget['title'],
@@ -216,7 +240,7 @@ class AnalyticsDashboardIntegrationService
         $aggregatedData['total_widgets'] = count($aggregatedData['metrics']);
         $aggregatedData['statistics'] = $this->calculateStatistics($values);
 
-        Log::info("Dashboard data aggregated", [
+        Log::info('Dashboard data aggregated', [
             'dashboard_id' => $dashboardId,
             'tenant_id' => $tenantId,
             'aggregation' => $aggregation,
@@ -229,16 +253,16 @@ class AnalyticsDashboardIntegrationService
     /**
      * Refresh dashboard data (clear cache and recalculate)
      *
-     * @param string $dashboardId Dashboard ID
+     * @param  string  $dashboardId  Dashboard ID
      * @return array Refreshed dashboard data
      */
     public function refreshDashboard(string $dashboardId): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $dashboard = $this->getDashboardById($dashboardId);
-        
-        if (!$dashboard) {
+
+        if (! $dashboard) {
             throw new Exception("Dashboard not found: {$dashboardId}");
         }
 
@@ -256,7 +280,7 @@ class AnalyticsDashboardIntegrationService
         $dashboardData = $this->getDashboardData($dashboardId, $dateRange);
         $dashboardData['refreshed_at'] = now()->toIso8601String();
 
-        Log::info("Dashboard refreshed", [
+        Log::info('Dashboard refreshed', [
             'dashboard_id' => $dashboardId,
             'tenant_id' => $tenantId,
         ]);
@@ -267,13 +291,13 @@ class AnalyticsDashboardIntegrationService
     /**
      * Create a new dashboard
      *
-     * @param array $dashboard Dashboard data (name, description, configuration, widgets)
+     * @param  array  $dashboard  Dashboard data (name, description, configuration, widgets)
      * @return array Created dashboard
      */
     public function createDashboard(array $dashboard): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         // Validate dashboard name
         if (empty($dashboard['name'])) {
             throw new Exception('Dashboard name is required');
@@ -306,7 +330,7 @@ class AnalyticsDashboardIntegrationService
         $this->dashboardsStorage[] = $newDashboard;
         $this->updateDashboardsStorage();
 
-        Log::info("Dashboard created", [
+        Log::info('Dashboard created', [
             'dashboard_id' => $newDashboard['id'],
             'tenant_id' => $tenantId,
             'name' => $newDashboard['name'],
@@ -319,16 +343,16 @@ class AnalyticsDashboardIntegrationService
     /**
      * Update an existing dashboard
      *
-     * @param string $dashboardId Dashboard ID
-     * @param array $updates Dashboard updates
+     * @param  string  $dashboardId  Dashboard ID
+     * @param  array  $updates  Dashboard updates
      * @return array Updated dashboard
      */
     public function updateDashboard(string $dashboardId, array $updates): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $dashboardIndex = $this->findDashboardIndexById($dashboardId);
-        
+
         if ($dashboardIndex === null) {
             throw new Exception("Dashboard not found: {$dashboardId}");
         }
@@ -349,7 +373,7 @@ class AnalyticsDashboardIntegrationService
             $dashboard['widgets'] = $this->processWidgets($updates['widgets']);
         }
         if (array_key_exists('is_default', $updates)) {
-            if ($updates['is_default'] && !$dashboard['is_default']) {
+            if ($updates['is_default'] && ! $dashboard['is_default']) {
                 $this->unsetDefaultDashboards();
             }
             $dashboard['is_default'] = $updates['is_default'];
@@ -366,7 +390,7 @@ class AnalyticsDashboardIntegrationService
 
         $this->updateDashboardsStorage();
 
-        Log::info("Dashboard updated", [
+        Log::info('Dashboard updated', [
             'dashboard_id' => $dashboardId,
             'tenant_id' => $tenantId,
             'updates' => array_keys($updates),
@@ -378,21 +402,21 @@ class AnalyticsDashboardIntegrationService
     /**
      * Delete a dashboard
      *
-     * @param string $dashboardId Dashboard ID
+     * @param  string  $dashboardId  Dashboard ID
      * @return bool Success status
      */
     public function deleteDashboard(string $dashboardId): bool
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $dashboardIndex = $this->findDashboardIndexById($dashboardId);
-        
+
         if ($dashboardIndex === null) {
             throw new Exception("Dashboard not found: {$dashboardId}");
         }
 
         $dashboard = $this->dashboardsStorage[$dashboardIndex];
-        
+
         // Clear widget caches
         foreach ($dashboard['widgets'] ?? [] as $widget) {
             $this->clearWidgetCache($widget);
@@ -406,7 +430,7 @@ class AnalyticsDashboardIntegrationService
         array_splice($this->dashboardsStorage, $dashboardIndex, 1);
         $this->updateDashboardsStorage();
 
-        Log::info("Dashboard deleted", [
+        Log::info('Dashboard deleted', [
             'dashboard_id' => $dashboardId,
             'tenant_id' => $tenantId,
         ]);
@@ -419,16 +443,16 @@ class AnalyticsDashboardIntegrationService
     /**
      * Add a widget to a dashboard
      *
-     * @param string $dashboardId Dashboard ID
-     * @param array $widget Widget data (type, title, metric, configuration)
+     * @param  string  $dashboardId  Dashboard ID
+     * @param  array  $widget  Widget data (type, title, metric, configuration)
      * @return array Added widget
      */
     public function addWidget(string $dashboardId, array $widget): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $dashboardIndex = $this->findDashboardIndexById($dashboardId);
-        
+
         if ($dashboardIndex === null) {
             throw new Exception("Dashboard not found: {$dashboardId}");
         }
@@ -450,8 +474,8 @@ class AnalyticsDashboardIntegrationService
             self::WIDGET_TYPE_LIST,
         ];
 
-        if (!in_array($widget['type'] ?? '', $validTypes)) {
-            throw new Exception('Invalid widget type: ' . ($widget['type'] ?? 'unknown'));
+        if (! in_array($widget['type'] ?? '', $validTypes)) {
+            throw new Exception('Invalid widget type: '.($widget['type'] ?? 'unknown'));
         }
 
         $newWidget = [
@@ -472,7 +496,7 @@ class AnalyticsDashboardIntegrationService
 
         $this->updateDashboardsStorage();
 
-        Log::info("Widget added to dashboard", [
+        Log::info('Widget added to dashboard', [
             'dashboard_id' => $dashboardId,
             'widget_id' => $newWidget['id'],
             'tenant_id' => $tenantId,
@@ -485,16 +509,16 @@ class AnalyticsDashboardIntegrationService
     /**
      * Remove a widget from a dashboard
      *
-     * @param string $dashboardId Dashboard ID
-     * @param string $widgetId Widget ID
+     * @param  string  $dashboardId  Dashboard ID
+     * @param  string  $widgetId  Widget ID
      * @return bool Success status
      */
     public function removeWidget(string $dashboardId, string $widgetId): bool
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $dashboardIndex = $this->findDashboardIndexById($dashboardId);
-        
+
         if ($dashboardIndex === null) {
             throw new Exception("Dashboard not found: {$dashboardId}");
         }
@@ -502,13 +526,13 @@ class AnalyticsDashboardIntegrationService
         $dashboard = &$this->dashboardsStorage[$dashboardIndex];
 
         $widgetIndex = $this->findWidgetIndexById($dashboard, $widgetId);
-        
+
         if ($widgetIndex === null) {
             throw new Exception("Widget not found: {$widgetId}");
         }
 
         $widget = $dashboard['widgets'][$widgetIndex];
-        
+
         // Clear widget cache
         $this->clearWidgetCache($widget);
 
@@ -518,7 +542,7 @@ class AnalyticsDashboardIntegrationService
 
         $this->updateDashboardsStorage();
 
-        Log::info("Widget removed from dashboard", [
+        Log::info('Widget removed from dashboard', [
             'dashboard_id' => $dashboardId,
             'widget_id' => $widgetId,
             'tenant_id' => $tenantId,
@@ -697,7 +721,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get all dashboards for the current tenant
      *
-     * @param bool $activeOnly Only return active dashboards
+     * @param  bool  $activeOnly  Only return active dashboards
      * @return array List of dashboards
      */
     public function getAllDashboards(bool $activeOnly = false): array
@@ -724,7 +748,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get a dashboard by ID
      *
-     * @param string $dashboardId Dashboard ID
+     * @param  string  $dashboardId  Dashboard ID
      * @return array|null Dashboard data or null if not found
      */
     public function getDashboardById(string $dashboardId): ?array
@@ -793,7 +817,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Resolve date range from input
      *
-     * @param array $dateRange Input date range
+     * @param  array  $dateRange  Input date range
      * @return array Resolved date range
      */
     private function resolveDateRange(array $dateRange): array
@@ -817,13 +841,13 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get date range from preset
      *
-     * @param string $preset Preset name
+     * @param  string  $preset  Preset name
      * @return array Date range
      */
     private function getDateRangeFromPreset(string $preset): array
     {
         $now = now();
-        
+
         return match ($preset) {
             self::DATE_RANGE_TODAY => [
                 'start' => $now->startOfDay()->toIso8601String(),
@@ -872,18 +896,19 @@ class AnalyticsDashboardIntegrationService
     /**
      * Process widgets and add IDs if missing
      *
-     * @param array $widgets Widgets to process
+     * @param  array  $widgets  Widgets to process
      * @return array Processed widgets
      */
     private function processWidgets(array $widgets): array
     {
         return array_map(function ($widget) {
-            if (!isset($widget['id'])) {
+            if (! isset($widget['id'])) {
                 $widget['id'] = uniqid('widget_', true);
             }
-            if (!isset($widget['created_at'])) {
+            if (! isset($widget['created_at'])) {
                 $widget['created_at'] = now()->toIso8601String();
             }
+
             return $widget;
         }, $widgets);
     }
@@ -891,14 +916,14 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get widget data internally
      *
-     * @param array $widget Widget configuration
-     * @param array $dateRange Date range
+     * @param  array  $widget  Widget configuration
+     * @param  array  $dateRange  Date range
      * @return array Widget data
      */
     private function getWidgetDataInternal(array $widget, array $dateRange): array
     {
         $cacheKey = $this->getWidgetCacheKey($widget['id'] ?? uniqid());
-        
+
         // Try to get from cache
         $cachedData = Cache::get($cacheKey);
         if ($cachedData && isset($cachedData['cached_at'])) {
@@ -920,7 +945,7 @@ class AnalyticsDashboardIntegrationService
         ];
 
         // Get metric data if metric is specified
-        if (!empty($widget['metric'])) {
+        if (! empty($widget['metric'])) {
             try {
                 $metricData = $this->metricsCollectionService->calculateMetric(
                     $widget['metric'],
@@ -941,7 +966,7 @@ class AnalyticsDashboardIntegrationService
         }
 
         // Add chart data if applicable
-        if ($widget['type'] === self::WIDGET_TYPE_CHART && !empty($widget['metric'])) {
+        if ($widget['type'] === self::WIDGET_TYPE_CHART && ! empty($widget['metric'])) {
             try {
                 $trends = $this->metricsCollectionService->getMetricTrends(
                     $widget['metric'],
@@ -964,7 +989,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get default value for widget type
      *
-     * @param string $widgetType Widget type
+     * @param  string  $widgetType  Widget type
      * @return mixed Default value
      */
     private function getDefaultValueForWidgetType(string $widgetType): mixed
@@ -982,7 +1007,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Find widget by ID across all dashboards
      *
-     * @param string $widgetId Widget ID
+     * @param  string  $widgetId  Widget ID
      * @return array|null Widget configuration or null
      */
     private function findWidgetById(string $widgetId): ?array
@@ -1003,8 +1028,8 @@ class AnalyticsDashboardIntegrationService
     /**
      * Find widget index in dashboard
      *
-     * @param array $dashboard Dashboard
-     * @param string $widgetId Widget ID
+     * @param  array  $dashboard  Dashboard
+     * @param  string  $widgetId  Widget ID
      * @return int|null Widget index or null
      */
     private function findWidgetIndexById(array &$dashboard, string $widgetId): ?int
@@ -1021,7 +1046,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Find dashboard index by ID
      *
-     * @param string $dashboardId Dashboard ID
+     * @param  string  $dashboardId  Dashboard ID
      * @return int|null Dashboard index or null
      */
     private function findDashboardIndexById(string $dashboardId): ?int
@@ -1048,29 +1073,29 @@ class AnalyticsDashboardIntegrationService
     /**
      * Get dashboard cache key
      *
-     * @param string $dashboardId Dashboard ID
+     * @param  string  $dashboardId  Dashboard ID
      * @return string Cache key
      */
     private function getDashboardCacheKey(string $dashboardId): string
     {
-        return 'dashboard_' . $dashboardId;
+        return 'dashboard_'.$dashboardId;
     }
 
     /**
      * Get widget cache key
      *
-     * @param string $widgetId Widget ID
+     * @param  string  $widgetId  Widget ID
      * @return string Cache key
      */
     private function getWidgetCacheKey(string $widgetId): string
     {
-        return 'widget_' . $widgetId;
+        return 'widget_'.$widgetId;
     }
 
     /**
      * Refresh widget cache
      *
-     * @param array $widget Widget
+     * @param  array  $widget  Widget
      */
     private function refreshWidgetCache(array $widget): void
     {
@@ -1081,7 +1106,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Clear widget cache
      *
-     * @param array $widget Widget
+     * @param  array  $widget  Widget
      */
     private function clearWidgetCache(array $widget): void
     {
@@ -1114,8 +1139,8 @@ class AnalyticsDashboardIntegrationService
     /**
      * Aggregate values using specified aggregation
      *
-     * @param array $values Values to aggregate
-     * @param string $aggregation Aggregation type
+     * @param  array  $values  Values to aggregate
+     * @param  string  $aggregation  Aggregation type
      * @return mixed Aggregated value
      */
     private function aggregateValues(array $values, string $aggregation): mixed
@@ -1137,7 +1162,7 @@ class AnalyticsDashboardIntegrationService
     /**
      * Calculate statistics for values
      *
-     * @param array $values Values
+     * @param  array  $values  Values
      * @return array Statistics
      */
     private function calculateStatistics(array $values): array

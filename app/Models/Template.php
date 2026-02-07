@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Template model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Manages landing page templates with automatic tenant context resolution
 
@@ -10,8 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class Template extends Model
 {
@@ -219,6 +220,7 @@ class Template extends Model
     public function getConversionRate(): float
     {
         $metrics = $this->performance_metrics ?? [];
+
         return $metrics['conversion_rate'] ?? 0.0;
     }
 
@@ -228,6 +230,7 @@ class Template extends Model
     public function getLoadTime(): float
     {
         $metrics = $this->performance_metrics ?? [];
+
         return $metrics['avg_load_time'] ?? 0.0;
     }
 
@@ -253,7 +256,7 @@ class Template extends Model
         $counter = 1;
 
         while ($this->slugExists($slug)) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -310,7 +313,7 @@ class Template extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:templates,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:templates,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:templates,slug';
         }
@@ -381,16 +384,16 @@ class Template extends Model
                         'subtitle' => '',
                         'cta_text' => 'Get Started',
                         'background_type' => 'image',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'form',
                     'config' => [
                         'fields' => [],
                         'submit_text' => 'Submit',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -407,19 +410,19 @@ class Template extends Model
                         'title' => '',
                         'subtitle' => '',
                         'cta_text' => 'Learn More',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'statistics',
                     'config' => [
-                        'items' => []
-                    ]
+                        'items' => [],
+                    ],
                 ],
                 [
                     'type' => 'testimonials',
-                    'config' => []
-                ]
-            ]
+                    'config' => [],
+                ],
+            ],
         ];
     }
 
@@ -437,9 +440,9 @@ class Template extends Model
                         'description' => '',
                         'fields' => [],
                         'submit_text' => 'Submit',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -455,7 +458,7 @@ class Template extends Model
                     'config' => [
                         'logo' => '',
                         'title' => '',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'content',
@@ -463,16 +466,16 @@ class Template extends Model
                         'body' => '',
                         'cta_text' => '',
                         'cta_url' => '',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'footer',
                     'config' => [
                         'copyright' => '',
                         'unsubscribe_link' => '',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -489,7 +492,7 @@ class Template extends Model
                         'url' => '',
                         'alt' => '',
                         'caption' => '',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'text',
@@ -497,9 +500,9 @@ class Template extends Model
                         'headline' => '',
                         'body' => '',
                         'hashtag' => '',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 

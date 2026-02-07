@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\TemplateResource;
-use App\Models\Template;
 use App\Models\LandingPage;
+use App\Models\Template;
 use App\Services\TemplatePreviewService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,10 +27,6 @@ class TemplatePreviewController extends Controller
      * Generate template preview with brand application
      *
      * POST /api/templates/{id}/preview
-     *
-     * @param Request $request
-     * @param Template $template
-     * @return JsonResponse
      */
     public function preview(Request $request, Template $template): JsonResponse
     {
@@ -76,7 +71,7 @@ class TemplatePreviewController extends Controller
                 'preview' => $preview,
                 'device_mode' => $deviceMode,
                 'generated_at' => now()->toISOString(),
-                'cache_used' => !$forceRefresh,
+                'cache_used' => ! $forceRefresh,
             ];
 
             return response()->json($response);
@@ -94,16 +89,11 @@ class TemplatePreviewController extends Controller
      * Render template HTML for specific device mode
      *
      * GET /api/templates/{id}/render/{device_mode}
-     *
-     * @param Request $request
-     * @param Template $template
-     * @param string $deviceMode
-     * @return JsonResponse
      */
     public function render(Request $request, Template $template, string $deviceMode): JsonResponse
     {
         // Validate device mode parameter
-        if (!in_array($deviceMode, ['desktop', 'tablet', 'mobile'])) {
+        if (! in_array($deviceMode, ['desktop', 'tablet', 'mobile'])) {
             return response()->json([
                 'message' => 'Invalid device mode. Must be one of: desktop, tablet, mobile',
             ], 422);
@@ -113,7 +103,7 @@ class TemplatePreviewController extends Controller
 
         try {
             $preview = $this->previewService->generateTemplatePreview($template->id, $config, [
-                'device_mode' => $deviceMode
+                'device_mode' => $deviceMode,
             ]);
 
             return response()->json([
@@ -139,10 +129,6 @@ class TemplatePreviewController extends Controller
      * Get responsive preview for all device modes
      *
      * GET /api/templates/{id}/responsive-preview
-     *
-     * @param Request $request
-     * @param Template $template
-     * @return JsonResponse
      */
     public function responsivePreview(Request $request, Template $template): JsonResponse
     {
@@ -172,9 +158,6 @@ class TemplatePreviewController extends Controller
      * Get preview configuration options
      *
      * GET /api/templates/preview-options
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function previewOptions(Request $request): JsonResponse
     {
@@ -198,10 +181,6 @@ class TemplatePreviewController extends Controller
      * Generate landing page preview
      *
      * POST /api/landing-pages/{id}/preview
-     *
-     * @param Request $request
-     * @param LandingPage $landingPage
-     * @return JsonResponse
      */
     public function landingPagePreview(Request $request, LandingPage $landingPage): JsonResponse
     {
@@ -244,7 +223,7 @@ class TemplatePreviewController extends Controller
                 'preview' => $preview,
                 'device_mode' => $deviceMode,
                 'generated_at' => now()->toISOString(),
-                'cache_used' => !$forceRefresh,
+                'cache_used' => ! $forceRefresh,
             ];
 
             return response()->json($response);
@@ -262,9 +241,6 @@ class TemplatePreviewController extends Controller
      * Clear preview cache for specific template
      *
      * POST /api/templates/{id}/clear-cache
-     *
-     * @param Template $template
-     * @return JsonResponse
      */
     public function clearCache(Template $template): JsonResponse
     {

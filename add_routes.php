@@ -13,4 +13,4 @@ $content = str_replace($search, $replace, $content);
 
 file_put_contents('routes/api.php', $content);
 
-echo "Routes added successfully!";
+echo 'Routes added successfully!';

@@ -13,9 +13,13 @@ class Invoice extends Model
     use HasFactory;
 
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_OPEN = 'open';
+
     public const STATUS_PAID = 'paid';
+
     public const STATUS_UNCOLLECTIBLE = 'uncollectible';
+
     public const STATUS_VOID = 'void';
 
     protected $fillable = [
@@ -104,7 +108,7 @@ class Invoice extends Model
      */
     public function getFormattedAmount(): string
     {
-        return '$' . number_format($this->amount_due, 2);
+        return '$'.number_format($this->amount_due, 2);
     }
 
     /**

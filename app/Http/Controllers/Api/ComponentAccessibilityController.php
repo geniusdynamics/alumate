@@ -31,14 +31,14 @@ class ComponentAccessibilityController extends Controller
                 'component' => [
                     'id' => $component->id,
                     'name' => $component->name,
-                    'category' => $component->category
-                ]
+                    'category' => $component->category,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Accessibility assessment failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -59,14 +59,14 @@ class ComponentAccessibilityController extends Controller
                 'component' => [
                     'id' => $component->id,
                     'name' => $component->name,
-                    'category' => $component->category
-                ]
+                    'category' => $component->category,
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate recommendations',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -78,7 +78,7 @@ class ComponentAccessibilityController extends Controller
     {
         $request->validate([
             'component_ids' => 'required|array|min:1|max:50',
-            'component_ids.*' => 'exists:components,id'
+            'component_ids.*' => 'exists:components,id',
         ]);
 
         try {
@@ -87,13 +87,13 @@ class ComponentAccessibilityController extends Controller
 
             return response()->json([
                 'success' => true,
-                'summary' => $summary
+                'summary' => $summary,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate accessibility summary',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -107,7 +107,7 @@ class ComponentAccessibilityController extends Controller
 
         $request->validate([
             'config' => 'required|array',
-            'accessibility_only' => 'boolean'
+            'accessibility_only' => 'boolean',
         ]);
 
         try {
@@ -128,7 +128,7 @@ class ComponentAccessibilityController extends Controller
                     'compliance_level' => $assessment['compliance_level'],
                     'score' => $assessment['overall_score'],
                     'grade' => $assessment['grade'],
-                    'critical_issues' => array_filter($assessment['issues'], fn($issue) => ($issue['severity'] ?? 'low') === 'high')
+                    'critical_issues' => array_filter($assessment['issues'], fn ($issue) => ($issue['severity'] ?? 'low') === 'high'),
                 ];
             } else {
                 $result = $assessment;
@@ -136,13 +136,13 @@ class ComponentAccessibilityController extends Controller
 
             return response()->json([
                 'success' => true,
-                'validation' => $result
+                'validation' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -155,7 +155,7 @@ class ComponentAccessibilityController extends Controller
         $request->validate([
             'category' => 'nullable|in:hero,forms,testimonials,statistics,ctas,media',
             'compliance_level' => 'nullable|in:A,A_AAA,full_compliance',
-            'include_components' => 'boolean'
+            'include_components' => 'boolean',
         ]);
 
         try {
@@ -180,12 +180,12 @@ class ComponentAccessibilityController extends Controller
                 'compliance_metrics' => [
                     'wcag_aa_compliance_rate' => $this->calculateComplianceRate($summary, 'A'),
                     'wcag_aaa_compliance_rate' => $this->calculateComplianceRate($summary, 'A_AAA'),
-                    'full_compliance_rate' => $this->calculateComplianceRate($summary, 'full_compliance')
+                    'full_compliance_rate' => $this->calculateComplianceRate($summary, 'full_compliance'),
                 ],
                 'issue_breakdown' => $this->getIssueBreakdown($summary),
                 'category_performance' => $this->getCategoryPerformance($components),
                 'recommendations' => $this->getGlobalRecommendations($summary),
-                'generated_at' => now()->toISOString()
+                'generated_at' => now()->toISOString(),
             ];
 
             if ($request->boolean('include_components', false)) {
@@ -194,13 +194,13 @@ class ComponentAccessibilityController extends Controller
 
             return response()->json([
                 'success' => true,
-                'report' => $report
+                'report' => $report,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to generate compliance report',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -224,7 +224,7 @@ class ComponentAccessibilityController extends Controller
                     'remediation_steps' => $this->getRemediationSteps($issue),
                     'priority_score' => $this->calculatePriorityScore($issue),
                     'estimated_effort' => $this->estimateEffort($issue),
-                    'impact_assessment' => $this->assessImpact($issue)
+                    'impact_assessment' => $this->assessImpact($issue),
                 ];
             }
 
@@ -233,21 +233,21 @@ class ComponentAccessibilityController extends Controller
                 'component' => [
                     'id' => $component->id,
                     'name' => $component->name,
-                    'category' => $component->category
+                    'category' => $component->category,
                 ],
                 'issues' => $enrichedIssues,
                 'summary' => [
                     'total_issues' => count($issues),
-                    'critical_issues' => count(array_filter($issues, fn($issue) => ($issue['severity'] ?? 'low') === 'high')),
-                    'warnings' => count(array_filter($issues, fn($issue) => ($issue['severity'] ?? 'low') === 'medium')),
-                    'suggestions' => count(array_filter($issues, fn($issue) => ($issue['severity'] ?? 'low') === 'low'))
-                ]
+                    'critical_issues' => count(array_filter($issues, fn ($issue) => ($issue['severity'] ?? 'low') === 'high')),
+                    'warnings' => count(array_filter($issues, fn ($issue) => ($issue['severity'] ?? 'low') === 'medium')),
+                    'suggestions' => count(array_filter($issues, fn ($issue) => ($issue['severity'] ?? 'low') === 'low')),
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve accessibility issues',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -262,14 +262,14 @@ class ComponentAccessibilityController extends Controller
         $request->validate([
             'issue_ids' => 'nullable|array',
             'issue_ids.*' => 'string',
-            'auto_fix_only' => 'boolean'
+            'auto_fix_only' => 'boolean',
         ]);
 
         try {
             $assessment = $this->accessibilityService->assessComponent($component);
             $issues = $assessment['issues'];
             $targetIssues = $request->issue_ids ?
-                array_filter($issues, fn($issue) => in_array($issue['rule_id'] ?? '', $request->issue_ids)) :
+                array_filter($issues, fn ($issue) => in_array($issue['rule_id'] ?? '', $request->issue_ids)) :
                 $issues;
 
             $fixes = [];
@@ -284,7 +284,7 @@ class ComponentAccessibilityController extends Controller
             }
 
             // Apply fixes if any were found
-            if (!empty($configChanges)) {
+            if (! empty($configChanges)) {
                 $currentConfig = $component->config ?? [];
                 $updatedConfig = array_merge_recursive($currentConfig, $configChanges);
                 $component->update(['config' => $updatedConfig]);
@@ -295,13 +295,13 @@ class ComponentAccessibilityController extends Controller
                 'fixes_applied' => count($fixes),
                 'total_issues_found' => count($targetIssues),
                 'fixes' => $fixes,
-                'config_updated' => !empty($configChanges)
+                'config_updated' => ! empty($configChanges),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Auto-fix failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -309,7 +309,7 @@ class ComponentAccessibilityController extends Controller
     /**
      * Clear accessibility cache
      */
-    public function clearCache(Component $component = null): JsonResponse
+    public function clearCache(?Component $component = null): JsonResponse
     {
         $this->authorize('update', $component ?? Auth::user());
 
@@ -318,13 +318,13 @@ class ComponentAccessibilityController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => $component ? 'Component accessibility cache cleared' : 'All accessibility cache cleared'
+                'message' => $component ? 'Component accessibility cache cleared' : 'All accessibility cache cleared',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to clear cache',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -357,6 +357,7 @@ class ComponentAccessibilityController extends Controller
         }
 
         $totalComponents = count($summary['component_assessments']);
+
         return $totalComponents > 0 ? round(($compliantCount / $totalComponents) * 100, 2) : 0;
     }
 
@@ -370,8 +371,8 @@ class ComponentAccessibilityController extends Controller
             'by_severity' => [
                 'high' => 0,
                 'medium' => 0,
-                'low' => 0
-            ]
+                'low' => 0,
+            ],
         ];
 
         // This would need component assessments to calculate severity breakdown
@@ -394,7 +395,7 @@ class ComponentAccessibilityController extends Controller
             $compliantCount = 0;
             $componentIds = $categoryComponents->pluck('id')->toArray();
 
-            if (!empty($componentIds)) {
+            if (! empty($componentIds)) {
                 $assessments = $this->accessibilityService->getAccessibilitySummary($componentIds, Auth::user()->tenant_id);
                 $totalScore = $assessments['average_score'];
                 $compliantCount = $assessments['compliance_levels']['compliant'];
@@ -405,7 +406,7 @@ class ComponentAccessibilityController extends Controller
                 'average_score' => round($totalScore, 1),
                 'compliant_count' => $compliantCount,
                 'compliance_rate' => $categoryComponents->count() > 0 ?
-                    round(($compliantCount / $categoryComponents->count()) * 100, 1) : 0
+                    round(($compliantCount / $categoryComponents->count()) * 100, 1) : 0,
             ];
         }
 
@@ -430,8 +431,8 @@ class ComponentAccessibilityController extends Controller
                 'actions' => [
                     'Implement color contrast improvements across all components',
                     'Add semantic HTML structure to existing components',
-                    'Set up automated accessibility testing'
-                ]
+                    'Set up automated accessibility testing',
+                ],
             ];
         }
 
@@ -447,8 +448,8 @@ class ComponentAccessibilityController extends Controller
                 'actions' => [
                     'Conduct accessibility awareness sessions',
                     'Create component accessibility guidelines',
-                    'Implement peer code reviews focused on accessibility'
-                ]
+                    'Implement peer code reviews focused on accessibility',
+                ],
             ];
         }
 
@@ -468,28 +469,28 @@ class ComponentAccessibilityController extends Controller
                     'Step 1: Use contrast ratio tool to measure current colors',
                     'Step 2: Adjust foreground and background colors to meet 4.5:1 ratio',
                     'Step 3: Test both normal and large text sizes',
-                    'Step 4: Validate changes with automated tools'
+                    'Step 4: Validate changes with automated tools',
                 ];
             case '1.3.1':
                 return [
                     'Step 1: Replace generic div/span elements with semantic elements',
                     'Step 2: Use heading elements (h1-h6) for content hierarchy',
                     'Step 3: Implement proper list structures (ul, ol)',
-                    'Step 4: Test with screen readers to ensure proper navigation'
+                    'Step 4: Test with screen readers to ensure proper navigation',
                 ];
             case '2.1.1':
                 return [
                     'Step 1: Ensure all interactive elements are focusable',
                     'Step 2: Implement logical tab order',
                     'Step 3: Add keyboard event handlers for custom components',
-                    'Step 4: Test navigation with keyboard-only usage'
+                    'Step 4: Test navigation with keyboard-only usage',
                 ];
             default:
                 return [
                     'Review WCAG guidelines for this success criterion',
                     'Implement appropriate technical solutions',
                     'Test with users and automated tools',
-                    'Document exceptions if necessary'
+                    'Document exceptions if necessary',
                 ];
         }
     }
@@ -499,7 +500,7 @@ class ComponentAccessibilityController extends Controller
      */
     private function calculatePriorityScore(array $issue): int
     {
-        $severityScore = match($issue['severity'] ?? 'low') {
+        $severityScore = match ($issue['severity'] ?? 'low') {
             'high' => 10,
             'medium' => 5,
             'low' => 2,
@@ -507,7 +508,7 @@ class ComponentAccessibilityController extends Controller
         };
 
         // Rules directly impacting core functionality get higher priority
-        $rulePriority = match($issue['rule_id'] ?? '') {
+        $rulePriority = match ($issue['rule_id'] ?? '') {
             '1.4.3', '2.1.1', '4.1.2' => 3, // High visibility issues
             '1.3.1', '2.4.6' => 2, // Navigation/screen reader issues
             default => 1
@@ -541,13 +542,13 @@ class ComponentAccessibilityController extends Controller
         $severity = $issue['severity'] ?? 'low';
         $ruleId = $issue['rule_id'] ?? '';
 
-        $impact = match($severity) {
+        $impact = match ($severity) {
             'high' => 'Severe impact on accessibility - blocks users from completing tasks',
             'medium' => 'Moderate impact on accessibility - affects user experience',
             'low' => 'Minor impact on accessibility - improves user experience'
         };
 
-        $affectedUsers = match(substr($ruleId, 0, 2)) {
+        $affectedUsers = match (substr($ruleId, 0, 2)) {
             '1.' => 'Users with visual impairments',
             '2.' => 'Users with motor impairments',
             '3.' => 'Users who need understandable content',
@@ -559,7 +560,7 @@ class ComponentAccessibilityController extends Controller
             'severity_level' => $severity,
             'user_impact' => $impact,
             'affected_users' => $affectedUsers,
-            'business_impact' => $this->calculateBusinessImpact($issue)
+            'business_impact' => $this->calculateBusinessImpact($issue),
         ];
     }
 
@@ -575,11 +576,11 @@ class ComponentAccessibilityController extends Controller
                 // Auto-fix semantic HTML by adding proper tags
                 $config = $component->config ?? [];
 
-                if (!isset($config['accessibility'])) {
+                if (! isset($config['accessibility'])) {
                     $config['accessibility'] = [];
                 }
 
-                $config['accessibility']['semantic_tag'] = match($component->category) {
+                $config['accessibility']['semantic_tag'] = match ($component->category) {
                     'hero' => 'header',
                     'forms' => 'form',
                     'testimonials' => 'section',
@@ -591,27 +592,27 @@ class ComponentAccessibilityController extends Controller
                 return [
                     'issue_id' => $ruleId,
                     'description' => 'Added semantic HTML element',
-                    'config_changes' => $config
+                    'config_changes' => $config,
                 ];
 
             case '2.4.7':
                 // Auto-fix focus indicators
                 $config = $component->config ?? [];
 
-                if (!isset($config['accessibility'])) {
+                if (! isset($config['accessibility'])) {
                     $config['accessibility'] = [];
                 }
 
                 $config['accessibility']['focus_indicators'] = [
                     'outline' => '2px solid #007bff',
                     'outline_offset' => '2px',
-                    'border_radius' => '4px'
+                    'border_radius' => '4px',
                 ];
 
                 return [
                     'issue_id' => $ruleId,
                     'description' => 'Added focus indicator styles',
-                    'config_changes' => $config
+                    'config_changes' => $config,
                 ];
 
             default:
@@ -626,7 +627,7 @@ class ComponentAccessibilityController extends Controller
     {
         $severity = $issue['severity'] ?? 'low';
 
-        return match($severity) {
+        return match ($severity) {
             'high' => 'Legal compliance risk and exclusion of ~20% of potential users',
             'medium' => 'Reduced user satisfaction and potential loss of business',
             'low' => 'Minor impact but contributes to overall accessibility goals'

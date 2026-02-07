@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: NotificationLog model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Tracks notification delivery status and errors within tenant-specific schemas
 

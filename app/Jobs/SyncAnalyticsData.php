@@ -7,13 +7,13 @@ namespace App\Jobs;
 use App\Events\LearningUpdated;
 use App\Services\Analytics\SyncService;
 use App\Services\TenantContextService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 /**
  * Sync Analytics Data Job
@@ -55,10 +55,11 @@ class SyncAnalyticsData implements ShouldQueue
             $tenantContextService->setTenant($this->tenantId);
 
             // Check if sync is needed (unless forced)
-            if (!$this->force && !$this->shouldRunSync()) {
+            if (! $this->force && ! $this->shouldRunSync()) {
                 Log::info('Sync skipped - recent sync exists and not forced', [
                     'tenant_id' => $this->tenantId,
                 ]);
+
                 return;
             }
 
@@ -76,7 +77,7 @@ class SyncAnalyticsData implements ShouldQueue
                 'events_count' => $result['events_count'] ?? 0,
                 'sessions' => $result['sessions'] ?? 0,
                 'discrepancies_found' => count($discrepancies['discrepancies'] ?? []),
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ]))->toOthers();
 
             Log::info('SyncAnalyticsData job completed successfully', [
@@ -126,8 +127,8 @@ class SyncAnalyticsData implements ShouldQueue
         return [
             'analytics',
             'sync',
-            'tenant:' . $this->tenantId,
-            'sources:' . implode(',', $this->sources),
+            'tenant:'.$this->tenantId,
+            'sources:'.implode(',', $this->sources),
         ];
     }
 

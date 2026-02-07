@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: StoredFile model for production file storage infrastructure with multi-tenancy support
 // ABOUTME: Manages file metadata, URLs, thumbnails, and relationships for uploaded files
 
@@ -53,16 +54,21 @@ class StoredFile extends Model
 
     // Virus scan status constants
     const SCAN_PENDING = 'pending';
+
     const SCAN_CLEAN = 'clean';
+
     const SCAN_INFECTED = 'infected';
 
     // Visibility constants
     const VISIBILITY_PUBLIC = 'public';
+
     const VISIBILITY_PRIVATE = 'private';
 
     // Storage disk constants
     const DISK_S3 = 's3';
+
     const DISK_SPACES = 'spaces';
+
     const DISK_LOCAL = 'local';
 
     // Image MIME types
@@ -133,6 +139,7 @@ class StoredFile extends Model
             if ($variant && isset($this->thumbnails[$variant])) {
                 return $this->thumbnails[$variant];
             }
+
             return $this->cdn_url;
         }
 
@@ -167,13 +174,13 @@ class StoredFile extends Model
         $bytes = $this->size;
 
         if ($bytes >= 1073741824) {
-            return number_format($bytes / 1073741824, 2) . ' GB';
+            return number_format($bytes / 1073741824, 2).' GB';
         } elseif ($bytes >= 1048576) {
-            return number_format($bytes / 1048576, 2) . ' MB';
+            return number_format($bytes / 1048576, 2).' MB';
         } elseif ($bytes >= 1024) {
-            return number_format($bytes / 1024, 2) . ' KB';
+            return number_format($bytes / 1024, 2).' KB';
         } else {
-            return $bytes . ' B';
+            return $bytes.' B';
         }
     }
 
@@ -230,7 +237,7 @@ class StoredFile extends Model
      */
     public function getThumbnail(string $size = 'medium'): ?string
     {
-        if (!$this->isImage()) {
+        if (! $this->isImage()) {
             return null;
         }
 
@@ -264,6 +271,7 @@ class StoredFile extends Model
             return true;
         } catch (\Exception $e) {
             report($e);
+
             return false;
         }
     }
@@ -430,7 +438,7 @@ class StoredFile extends Model
     private function extractPathFromUrl(string $url): ?string
     {
         $parsedUrl = parse_url($url);
-        if (!isset($parsedUrl['path'])) {
+        if (! isset($parsedUrl['path'])) {
             return null;
         }
 

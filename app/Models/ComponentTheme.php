@@ -1,17 +1,17 @@
 <?php
+
 // ABOUTME: This model manages component themes for multi-tenant applications using schema-based tenancy
 // ABOUTME: Handles theme configurations, CSS generation, and accessibility validation for components
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use App\Services\TenantContextService;
 
 class ComponentTheme extends Model
 {

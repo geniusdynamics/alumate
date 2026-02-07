@@ -82,8 +82,9 @@ class UpdateCohortRequest extends FormRequest
         $allowedKeys = ['grad_year', 'degree'];
 
         foreach ($criteria as $key => $value) {
-            if (!in_array($key, $allowedKeys)) {
-                $validator->errors()->add('criteria', "Invalid criteria key: {$key}. Allowed keys: " . implode(', ', $allowedKeys));
+            if (! in_array($key, $allowedKeys)) {
+                $validator->errors()->add('criteria', "Invalid criteria key: {$key}. Allowed keys: ".implode(', ', $allowedKeys));
+
                 continue;
             }
 
@@ -92,13 +93,13 @@ class UpdateCohortRequest extends FormRequest
             }
 
             // Validate grad_year format
-            if ($key === 'grad_year' && !is_numeric($value)) {
-                $validator->errors()->add('criteria', "Graduation year must be numeric.");
+            if ($key === 'grad_year' && ! is_numeric($value)) {
+                $validator->errors()->add('criteria', 'Graduation year must be numeric.');
             }
 
             // Validate degree format
-            if ($key === 'degree' && !is_string($value)) {
-                $validator->errors()->add('criteria', "Degree must be a string.");
+            if ($key === 'degree' && ! is_string($value)) {
+                $validator->errors()->add('criteria', 'Degree must be a string.');
             }
         }
     }

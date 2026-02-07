@@ -54,7 +54,7 @@ class BackupVerifyCommand extends Command
                 $backups = $this->backupService->listBackups();
                 $allValid = true;
 
-                $this->info("Found " . count($backups) . " backups to verify");
+                $this->info('Found '.count($backups).' backups to verify');
 
                 $progressBar = $this->output->createProgressBar(count($backups));
                 $progressBar->start();
@@ -62,7 +62,7 @@ class BackupVerifyCommand extends Command
                 foreach ($backups as $backup) {
                     $result = $this->backupService->verifyBackup($backup['path']);
 
-                    if (!$result['is_valid']) {
+                    if (! $result['is_valid']) {
                         $allValid = false;
                         $this->newLine();
                         $this->error("❌ Invalid backup: {$backup['path']}");
@@ -78,9 +78,9 @@ class BackupVerifyCommand extends Command
                 $this->newLine();
 
                 if ($allValid) {
-                    $this->info("✅ All backups verified successfully!");
+                    $this->info('✅ All backups verified successfully!');
                 } else {
-                    $this->warn("⚠️ Some backups failed verification");
+                    $this->warn('⚠️ Some backups failed verification');
                 }
 
                 Log::info('Backup verification completed', ['all_valid' => $allValid, 'total_backups' => count($backups)]);
@@ -104,16 +104,16 @@ class BackupVerifyCommand extends Command
         $this->info("Verifying: {$path}");
 
         if ($result['is_valid']) {
-            $this->info("✅ Backup is valid");
+            $this->info('✅ Backup is valid');
         } else {
-            $this->error("❌ Backup verification failed");
+            $this->error('❌ Backup verification failed');
             foreach ($result['issues'] as $issue) {
                 $this->error("  - {$issue}");
             }
         }
 
-        if (!empty($result['warnings'])) {
-            $this->warn("Warnings:");
+        if (! empty($result['warnings'])) {
+            $this->warn('Warnings:');
             foreach ($result['warnings'] as $warning) {
                 $this->warn("  - {$warning}");
             }

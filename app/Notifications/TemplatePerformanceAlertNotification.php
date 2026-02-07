@@ -13,8 +13,11 @@ class TemplatePerformanceAlertNotification extends Notification implements Shoul
     use Queueable;
 
     protected $template;
+
     protected $metrics;
+
     protected $user;
+
     protected $additionalData;
 
     public function __construct($template, $user = null, $additionalData = [])
@@ -131,8 +134,8 @@ class TemplatePerformanceAlertNotification extends Notification implements Shoul
         $avgLoadTime = $this->metrics['avg_load_time'] ?? 0;
         $usageCount = $this->template->usage_count ?? 0;
 
-        return "• **Conversion Rate:** {$conversionRate}%\n" .
-               "• **Average Load Time:** {$avgLoadTime}s\n" .
+        return "• **Conversion Rate:** {$conversionRate}%\n".
+               "• **Average Load Time:** {$avgLoadTime}s\n".
                "• **Total Usage:** {$usageCount} times\n";
     }
 

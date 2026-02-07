@@ -20,10 +20,8 @@ use App\Services\TenantContextService;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use ZipArchive;
 
 /**
@@ -35,23 +33,35 @@ use ZipArchive;
 class AnalyticsBackupRecoveryService
 {
     public const BACKUP_TYPE_FULL = 'full';
+
     public const BACKUP_TYPE_INCREMENTAL = 'incremental';
+
     public const BACKUP_TYPE_SNAPSHOT = 'snapshot';
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_IN_PROGRESS = 'in_progress';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_VERIFIED = 'verified';
+
     public const STATUS_RESTORED = 'restored';
 
     private const CHUNK_SIZE = 1000;
 
     private TenantContextService $tenantContextService;
+
     private string $storageDisk;
+
     private string $backupPath;
+
     private bool $compressionEnabled;
+
     private bool $encryptionEnabled;
+
     private int $retentionDays;
 
     public function __construct(TenantContextService $tenantContextService)
@@ -67,7 +77,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Create an analytics data backup
      *
-     * @param array $options Backup options including type, date range, compression, etc.
+     * @param  array  $options  Backup options including type, date range, compression, etc.
      * @return Backup The created backup record
      */
     public function createBackup(array $options = []): Backup
@@ -155,7 +165,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Schedule automated backups
      *
-     * @param array $schedule Schedule configuration including frequency, time, retention, etc.
+     * @param  array  $schedule  Schedule configuration including frequency, time, retention, etc.
      * @return array Schedule configuration
      */
     public function scheduleBackup(array $schedule): array
@@ -181,7 +191,7 @@ class AnalyticsBackupRecoveryService
             'created_at' => now(),
             'updated_at' => now(),
         ];
-        
+
         $scheduleConfig['next_run_at'] = $this->calculateNextRunTime($scheduleConfig);
 
         Log::info('Backup scheduled', [
@@ -195,8 +205,8 @@ class AnalyticsBackupRecoveryService
     /**
      * Restore analytics data from a backup
      *
-     * @param int $backupId Backup ID to restore
-     * @param array $options Restore options
+     * @param  int  $backupId  Backup ID to restore
+     * @param  array  $options  Restore options
      * @return Backup The restored backup record
      */
     public function restoreBackup(int $backupId, array $options = []): Backup
@@ -205,7 +215,7 @@ class AnalyticsBackupRecoveryService
         $backup = Backup::where('tenant_id', $tenantId)->findOrFail($backupId);
 
         if ($backup->status !== self::STATUS_COMPLETED && $backup->status !== self::STATUS_VERIFIED) {
-            throw new Exception("Backup must be completed or verified before restoration");
+            throw new Exception('Backup must be completed or verified before restoration');
         }
 
         $backup->update(['status' => self::STATUS_IN_PROGRESS]);
@@ -258,7 +268,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Verify backup integrity
      *
-     * @param int $backupId Backup ID to verify
+     * @param  int  $backupId  Backup ID to verify
      * @return array Verification result
      */
     public function verifyBackup(int $backupId): array
@@ -277,7 +287,7 @@ class AnalyticsBackupRecoveryService
 
         try {
             // Check file exists
-            if (!Storage::disk($this->storageDisk)->exists($backup->file_path)) {
+            if (! Storage::disk($this->storageDisk)->exists($backup->file_path)) {
                 throw new Exception('Backup file does not exist');
             }
 
@@ -337,7 +347,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Delete a backup
      *
-     * @param int $backupId Backup ID to delete
+     * @param  int  $backupId  Backup ID to delete
      * @return bool Success status
      */
     public function deleteBackup(int $backupId): bool
@@ -377,7 +387,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Get backup history
      *
-     * @param array $filters Filters for backup history
+     * @param  array  $filters  Filters for backup history
      * @return Collection Backup history
      */
     public function getBackupHistory(array $filters = []): Collection
@@ -403,14 +413,14 @@ class AnalyticsBackupRecoveryService
         }
 
         return $query->orderBy('created_at', 'desc')
-            ->when(isset($filters['limit']), fn($q) => $q->limit($filters['limit']))
+            ->when(isset($filters['limit']), fn ($q) => $q->limit($filters['limit']))
             ->get();
     }
 
     /**
      * Get backup status
      *
-     * @param int $backupId Backup ID
+     * @param  int  $backupId  Backup ID
      * @return array Backup status information
      */
     public function getBackupStatus(int $backupId): array
@@ -438,7 +448,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Estimate backup size
      *
-     * @param array $options Options for estimation
+     * @param  array  $options  Options for estimation
      * @return array Estimated size and record counts
      */
     public function estimateBackupSize(array $options = []): array
@@ -481,7 +491,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Compress a backup
      *
-     * @param int $backupId Backup ID to compress
+     * @param  int  $backupId  Backup ID to compress
      * @return Backup Updated backup record
      */
     public function compressBackup(int $backupId): Backup
@@ -535,7 +545,7 @@ class AnalyticsBackupRecoveryService
     /**
      * Decompress a backup
      *
-     * @param int $backupId Backup ID to decompress
+     * @param  int  $backupId  Backup ID to decompress
      * @return Backup Updated backup record
      */
     public function decompressBackup(int $backupId): Backup
@@ -543,7 +553,7 @@ class AnalyticsBackupRecoveryService
         $tenantId = $this->getCurrentTenantId();
         $backup = Backup::where('tenant_id', $tenantId)->findOrFail($backupId);
 
-        if (!$backup->compress) {
+        if (! $backup->compress) {
             throw new Exception('Backup is not compressed');
         }
 
@@ -802,7 +812,7 @@ class AnalyticsBackupRecoveryService
 
         if ($compress) {
             $tempFile = tempnam(sys_get_temp_dir(), 'backup_');
-            $zip = new ZipArchive();
+            $zip = new ZipArchive;
             $zip->open($tempFile, ZipArchive::CREATE | ZipArchive::OVERWRITE);
             $zip->addFromString('backup.json', $jsonData);
             $zip->close();
@@ -827,7 +837,7 @@ class AnalyticsBackupRecoveryService
             $tempFile = tempnam(sys_get_temp_dir(), 'backup_');
             file_put_contents($tempFile, $fileContent);
 
-            $zip = new ZipArchive();
+            $zip = new ZipArchive;
             $zip->open($tempFile);
             $jsonData = $zip->getFromName('backup.json');
             $zip->close();
@@ -922,6 +932,7 @@ class AnalyticsBackupRecoveryService
         foreach (array_chunk($events, self::CHUNK_SIZE) as $chunk) {
             $records = array_map(function ($event) use ($tenantId) {
                 unset($event['id'], $event['created_at'], $event['updated_at']);
+
                 return array_merge($event, ['tenant_id' => $tenantId]);
             }, $chunk);
             AnalyticsEvent::insert($records);
@@ -936,6 +947,7 @@ class AnalyticsBackupRecoveryService
         foreach (array_chunk($snapshots, self::CHUNK_SIZE) as $chunk) {
             $records = array_map(function ($snapshot) {
                 unset($snapshot['id'], $snapshot['created_at'], $snapshot['updated_at']);
+
                 return $snapshot;
             }, $chunk);
             AnalyticsSnapshot::insert($records);
@@ -950,6 +962,7 @@ class AnalyticsBackupRecoveryService
         foreach (array_chunk($attributions, self::CHUNK_SIZE) as $chunk) {
             $records = array_map(function ($attribution) use ($tenantId) {
                 unset($attribution['id'], $attribution['created_at'], $attribution['updated_at']);
+
                 return array_merge($attribution, ['tenant_id' => $tenantId]);
             }, $chunk);
             AttributionTouch::insert($records);
@@ -988,6 +1001,7 @@ class AnalyticsBackupRecoveryService
         foreach (array_chunk($events, self::CHUNK_SIZE) as $chunk) {
             $records = array_map(function ($event) use ($tenantId) {
                 unset($event['id'], $event['created_at'], $event['updated_at']);
+
                 return array_merge($event, ['tenant_id' => $tenantId]);
             }, $chunk);
             CustomEvent::insert($records);
@@ -1032,15 +1046,15 @@ class AnalyticsBackupRecoveryService
     {
         $errors = [];
 
-        if (!isset($data['metadata'])) {
+        if (! isset($data['metadata'])) {
             $errors[] = 'Missing metadata in backup';
         }
 
-        if (!isset($data['metadata']['tenant_id'])) {
+        if (! isset($data['metadata']['tenant_id'])) {
             $errors[] = 'Missing tenant_id in backup metadata';
         }
 
-        if (!isset($data['metadata']['created_at'])) {
+        if (! isset($data['metadata']['created_at'])) {
             $errors[] = 'Missing created_at in backup metadata';
         }
 
@@ -1054,6 +1068,7 @@ class AnalyticsBackupRecoveryService
     {
         $date = now()->format('Y-m-d');
         $time = now()->format('His');
+
         return "analytics_{$type}_{$date}_{$time}";
     }
 
@@ -1063,6 +1078,7 @@ class AnalyticsBackupRecoveryService
     private function generateBackupFileName(int $backupId, bool $compress): string
     {
         $extension = $compress ? 'zip' : 'json';
+
         return "backup_{$backupId}.{$extension}";
     }
 
@@ -1112,6 +1128,7 @@ class AnalyticsBackupRecoveryService
             $bytes /= 1024;
             $i++;
         }
-        return round($bytes, 2) . ' ' . $units[$i];
+
+        return round($bytes, 2).' '.$units[$i];
     }
 }

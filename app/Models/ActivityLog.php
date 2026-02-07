@@ -1,17 +1,17 @@
 <?php
+
 // ABOUTME: ActivityLog model for schema-based multi-tenancy tracking all system activities and changes
 // ABOUTME: Provides comprehensive audit trail functionality with tenant isolation and activity monitoring
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
-use Exception;
 
 class ActivityLog extends Model
 {
@@ -36,54 +36,79 @@ class ActivityLog extends Model
         'metadata',
         'old_values',
         'new_values',
-        'performed_at'
+        'performed_at',
     ];
 
     protected $casts = [
         'metadata' => 'array',
         'old_values' => 'array',
         'new_values' => 'array',
-        'performed_at' => 'datetime'
+        'performed_at' => 'datetime',
     ];
 
     protected $appends = [
         'current_tenant',
         'changes_summary',
-        'is_sensitive'
+        'is_sensitive',
     ];
 
     // Severity levels
     const SEVERITY_LOW = 'low';
+
     const SEVERITY_MEDIUM = 'medium';
+
     const SEVERITY_HIGH = 'high';
+
     const SEVERITY_CRITICAL = 'critical';
 
     // Activity categories
     const CATEGORY_AUTH = 'authentication';
+
     const CATEGORY_STUDENT = 'student';
+
     const CATEGORY_COURSE = 'course';
+
     const CATEGORY_ENROLLMENT = 'enrollment';
+
     const CATEGORY_GRADE = 'grade';
+
     const CATEGORY_SYSTEM = 'system';
+
     const CATEGORY_ADMIN = 'admin';
+
     const CATEGORY_SECURITY = 'security';
+
     const CATEGORY_DATA = 'data';
+
     const CATEGORY_API = 'api';
 
     // Common actions
     const ACTION_CREATED = 'created';
+
     const ACTION_UPDATED = 'updated';
+
     const ACTION_DELETED = 'deleted';
+
     const ACTION_VIEWED = 'viewed';
+
     const ACTION_LOGIN = 'login';
+
     const ACTION_LOGOUT = 'logout';
+
     const ACTION_FAILED_LOGIN = 'failed_login';
+
     const ACTION_ENROLLED = 'enrolled';
+
     const ACTION_UNENROLLED = 'unenrolled';
+
     const ACTION_GRADED = 'graded';
+
     const ACTION_EXPORTED = 'exported';
+
     const ACTION_IMPORTED = 'imported';
+
     const ACTION_BACKUP = 'backup';
+
     const ACTION_RESTORE = 'restore';
 
     /**
@@ -95,7 +120,7 @@ class ActivityLog extends Model
 
         // Ensure we're in a tenant context for non-system logs
         static::addGlobalScope('tenant_context', function (Builder $builder) {
-            if (!TenantContextService::hasTenant() && !static::isSystemLog()) {
+            if (! TenantContextService::hasTenant() && ! static::isSystemLog()) {
                 throw new Exception('ActivityLog model requires tenant context for non-system logs. Use TenantContextService::setTenant() first.');
             }
         });
@@ -116,7 +141,7 @@ class ActivityLog extends Model
             }
 
             // Auto-detect severity if not set
-            if (empty($log->severity) && !empty($log->action)) {
+            if (empty($log->severity) && ! empty($log->action)) {
                 $log->severity = static::detectSeverity($log->action, $log->category);
             } elseif (empty($log->severity)) {
                 $log->severity = self::SEVERITY_LOW; // Default severity when action is null
@@ -178,10 +203,11 @@ class ActivityLog extends Model
     public function getCurrentTenantAttribute(): ?array
     {
         $tenant = TenantContextService::getCurrentTenant();
+
         return $tenant ? [
             'id' => $tenant->id,
             'name' => $tenant->name,
-            'schema' => $tenant->schema_name
+            'schema' => $tenant->schema_name,
         ] : null;
     }
 
@@ -216,15 +242,15 @@ class ActivityLog extends Model
             self::ACTION_DELETED,
             'password_changed',
             'permission_changed',
-            'role_changed'
+            'role_changed',
         ];
 
         $sensitiveCategories = [
             self::CATEGORY_SECURITY,
-            self::CATEGORY_ADMIN
+            self::CATEGORY_ADMIN,
         ];
 
-        return in_array($this->action, $sensitiveActions) || 
+        return in_array($this->action, $sensitiveActions) ||
                in_array($this->category, $sensitiveCategories) ||
                $this->severity === self::SEVERITY_CRITICAL;
     }
@@ -289,13 +315,13 @@ class ActivityLog extends Model
                 self::ACTION_DELETED,
                 'password_changed',
                 'permission_changed',
-                'role_changed'
+                'role_changed',
             ])
-            ->orWhereIn('category', [
-                self::CATEGORY_SECURITY,
-                self::CATEGORY_ADMIN
-            ])
-            ->orWhere('severity', self::SEVERITY_CRITICAL);
+                ->orWhereIn('category', [
+                    self::CATEGORY_SECURITY,
+                    self::CATEGORY_ADMIN,
+                ])
+                ->orWhere('severity', self::SEVERITY_CRITICAL);
         });
     }
 
@@ -334,7 +360,7 @@ class ActivityLog extends Model
             'ip_address' => request()->ip(),
             'user_agent' => request()->userAgent(),
             'session_id' => session()->getId(),
-            'performed_at' => now()
+            'performed_at' => now(),
         ], $data);
 
         return static::create($data);
@@ -349,16 +375,16 @@ class ActivityLog extends Model
             'user_id' => $userId ?? auth()->id(),
             'action' => $action,
             'category' => self::CATEGORY_AUTH,
-            'description' => ucfirst($action) . ' activity',
+            'description' => ucfirst($action).' activity',
             'metadata' => $metadata,
-            'severity' => $action === self::ACTION_FAILED_LOGIN ? self::SEVERITY_HIGH : self::SEVERITY_MEDIUM
+            'severity' => $action === self::ACTION_FAILED_LOGIN ? self::SEVERITY_HIGH : self::SEVERITY_MEDIUM,
         ]);
     }
 
     /**
      * Log student activity
      */
-    public static function logStudent(string $action, Student $student, string $description = null, array $metadata = []): self
+    public static function logStudent(string $action, Student $student, ?string $description = null, array $metadata = []): self
     {
         return static::logActivity([
             'student_id' => $student->id,
@@ -367,15 +393,15 @@ class ActivityLog extends Model
             'description' => $description ?? "{$action} student: {$student->full_name}",
             'metadata' => array_merge($metadata, [
                 'student_name' => $student->full_name,
-                'student_email' => $student->email
-            ])
+                'student_email' => $student->email,
+            ]),
         ]);
     }
 
     /**
      * Log course activity
      */
-    public static function logCourse(string $action, Course $course, string $description = null, array $metadata = []): self
+    public static function logCourse(string $action, Course $course, ?string $description = null, array $metadata = []): self
     {
         return static::logActivity([
             'course_id' => $course->id,
@@ -384,15 +410,15 @@ class ActivityLog extends Model
             'description' => $description ?? "{$action} course: {$course->course_code}",
             'metadata' => array_merge($metadata, [
                 'course_code' => $course->course_code,
-                'course_title' => $course->title
-            ])
+                'course_title' => $course->title,
+            ]),
         ]);
     }
 
     /**
      * Log enrollment activity
      */
-    public static function logEnrollment(string $action, Enrollment $enrollment, string $description = null, array $metadata = []): self
+    public static function logEnrollment(string $action, Enrollment $enrollment, ?string $description = null, array $metadata = []): self
     {
         return static::logActivity([
             'student_id' => $enrollment->student_id,
@@ -403,15 +429,15 @@ class ActivityLog extends Model
             'description' => $description ?? "{$action} enrollment",
             'metadata' => array_merge($metadata, [
                 'enrollment_status' => $enrollment->status,
-                'enrollment_date' => $enrollment->enrolled_date
-            ])
+                'enrollment_date' => $enrollment->enrolled_date,
+            ]),
         ]);
     }
 
     /**
      * Log grade activity
      */
-    public static function logGrade(string $action, Grade $grade, string $description = null, array $metadata = []): self
+    public static function logGrade(string $action, Grade $grade, ?string $description = null, array $metadata = []): self
     {
         return static::logActivity([
             'student_id' => $grade->student_id,
@@ -424,8 +450,8 @@ class ActivityLog extends Model
                 'assessment_type' => $grade->assessment_type,
                 'assessment_name' => $grade->assessment_name,
                 'points_earned' => $grade->points_earned,
-                'points_possible' => $grade->points_possible
-            ])
+                'points_possible' => $grade->points_possible,
+            ]),
         ]);
     }
 
@@ -439,7 +465,7 @@ class ActivityLog extends Model
             'category' => self::CATEGORY_SYSTEM,
             'description' => $description,
             'metadata' => $metadata,
-            'severity' => $severity
+            'severity' => $severity,
         ]);
     }
 
@@ -453,7 +479,7 @@ class ActivityLog extends Model
             'category' => self::CATEGORY_SECURITY,
             'description' => $description,
             'metadata' => $metadata,
-            'severity' => $severity
+            'severity' => $severity,
         ]);
     }
 
@@ -463,7 +489,7 @@ class ActivityLog extends Model
     public static function logModelChanges(Model $model, string $action, array $oldValues = [], array $newValues = []): self
     {
         $modelName = class_basename($model);
-        
+
         return static::logActivity([
             'loggable_type' => get_class($model),
             'loggable_id' => $model->id,
@@ -474,8 +500,8 @@ class ActivityLog extends Model
             'new_values' => $newValues,
             'metadata' => [
                 'model_type' => $modelName,
-                'model_id' => $model->id
-            ]
+                'model_id' => $model->id,
+            ],
         ]);
     }
 
@@ -504,7 +530,7 @@ class ActivityLog extends Model
         }
 
         $total = $query->count();
-        
+
         return [
             'total_activities' => $total,
             'by_category' => $query->groupBy('category')
@@ -536,7 +562,7 @@ class ActivityLog extends Model
                 ->orderByDesc('performed_at')
                 ->limit(5)
                 ->get(['action', 'description', 'performed_at'])
-                ->toArray()
+                ->toArray(),
         ];
     }
 
@@ -559,7 +585,7 @@ class ActivityLog extends Model
                 ->first(),
             'categories_used' => $activities->pluck('category')->unique()->values()->toArray(),
             'last_activity' => $activities->sortByDesc('performed_at')->first()?->performed_at,
-            'sensitive_activities' => $activities->filter->is_sensitive->count()
+            'sensitive_activities' => $activities->filter->is_sensitive->count(),
         ];
     }
 
@@ -569,7 +595,7 @@ class ActivityLog extends Model
     public static function cleanOldLogs(int $daysToKeep = 365): int
     {
         $cutoffDate = now()->subDays($daysToKeep);
-        
+
         return static::where('performed_at', '<', $cutoffDate)
             ->where('severity', '!=', self::SEVERITY_CRITICAL) // Keep critical logs longer
             ->delete();
@@ -584,7 +610,7 @@ class ActivityLog extends Model
 
         // Apply filters
         foreach ($filters as $field => $value) {
-            if (!empty($value)) {
+            if (! empty($value)) {
                 $query->where($field, $value);
             }
         }
@@ -594,7 +620,7 @@ class ActivityLog extends Model
             ->get();
 
         $csv = "Date,User,Student,Course,Action,Category,Severity,Description,IP Address\n";
-        
+
         foreach ($activities as $activity) {
             $csv .= implode(',', [
                 $activity->performed_at->format('Y-m-d H:i:s'),
@@ -604,9 +630,9 @@ class ActivityLog extends Model
                 $activity->action,
                 $activity->category,
                 $activity->severity,
-                '"' . str_replace('"', '""', $activity->description) . '"',
-                $activity->ip_address ?? ''
-            ]) . "\n";
+                '"'.str_replace('"', '""', $activity->description).'"',
+                $activity->ip_address ?? '',
+            ])."\n";
         }
 
         return $csv;
@@ -642,7 +668,7 @@ class ActivityLog extends Model
     protected static function isSystemLog(): bool
     {
         // Check if we're logging system-level activities
-        return request()->has('system_log') || 
+        return request()->has('system_log') ||
                in_array(request()->route()?->getName(), ['system.logs', 'admin.system']);
     }
 }

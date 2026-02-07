@@ -2,11 +2,11 @@
 
 namespace App\Http\Requests\Forms;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Rules\SpamProtection;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\RateLimiter;
-use App\Rules\SpamProtection;
 
 abstract class BaseFormRequest extends FormRequest
 {
@@ -17,18 +17,18 @@ abstract class BaseFormRequest extends FormRequest
     {
         // Apply rate limiting for form submissions
         $key = $this->getRateLimitKey();
-        
+
         if (RateLimiter::tooManyAttempts($key, $this->maxAttempts())) {
             $seconds = RateLimiter::availableIn($key);
             throw new HttpResponseException(response()->json([
                 'success' => false,
                 'message' => "Too many form submissions. Please try again in {$seconds} seconds.",
-                'errors' => ['rate_limit' => ['Rate limit exceeded']]
+                'errors' => ['rate_limit' => ['Rate limit exceeded']],
             ], 429));
         }
-        
+
         RateLimiter::hit($key, $this->decayMinutes() * 60);
-        
+
         return true;
     }
 
@@ -117,7 +117,7 @@ abstract class BaseFormRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         $errors = $validator->errors()->toArray();
-        
+
         // Log validation failures for monitoring
         logger()->warning('Form validation failed', [
             'form_type' => static::class,
@@ -140,13 +140,13 @@ abstract class BaseFormRequest extends FormRequest
     protected function getRateLimitKey(): string
     {
         $identifier = $this->ip();
-        
+
         // Use user ID if authenticated
         if (auth()->check()) {
-            $identifier = 'user:' . auth()->id();
+            $identifier = 'user:'.auth()->id();
         }
-        
-        return 'form_submission:' . static::class . ':' . $identifier;
+
+        return 'form_submission:'.static::class.':'.$identifier;
     }
 
     /**
@@ -173,7 +173,7 @@ abstract class BaseFormRequest extends FormRequest
         return [
             'honeypot' => 'nullable|max:0', // Honeypot field should be empty
             'submit_time' => ['nullable', 'integer', 'min:3'], // Minimum time to fill form
-            'user_agent' => ['required', new SpamProtection()],
+            'user_agent' => ['required', new SpamProtection],
         ];
     }
 
@@ -186,7 +186,7 @@ abstract class BaseFormRequest extends FormRequest
             'first_name' => 'required|string|min:2|max:50|regex:/^[a-zA-Z\s\-\'\.]+$/',
             'last_name' => 'required|string|min:2|max:50|regex:/^[a-zA-Z\s\-\'\.]+$/',
             'email' => 'required|email:rfc,dns|max:255',
-            'phone' => ['nullable', new \App\Rules\PhoneNumber()],
+            'phone' => ['nullable', new \App\Rules\PhoneNumber],
         ];
     }
 
@@ -199,7 +199,7 @@ abstract class BaseFormRequest extends FormRequest
             'institution_name' => 'required|string|min:2|max:255',
             'institution_type' => 'required|in:public_university,private_university,community_college,liberal_arts,technical,graduate,professional,other',
             'institution_size' => 'required|in:<1000,1000-5000,5000-15000,15000-30000,>30000',
-            'email' => ['required', 'email:rfc,dns', 'max:255', new \App\Rules\InstitutionalDomain()],
+            'email' => ['required', 'email:rfc,dns', 'max:255', new \App\Rules\InstitutionalDomain],
         ];
     }
 
@@ -210,27 +210,27 @@ abstract class BaseFormRequest extends FormRequest
     {
         // Sanitize and normalize input data
         $input = $this->all();
-        
+
         // Trim whitespace from string fields
         foreach ($input as $key => $value) {
             if (is_string($value)) {
                 $input[$key] = trim($value);
             }
         }
-        
+
         // Normalize phone numbers
         if (isset($input['phone'])) {
             $input['phone'] = $this->normalizePhoneNumber($input['phone']);
         }
-        
+
         // Normalize email addresses
         if (isset($input['email'])) {
             $input['email'] = strtolower(trim($input['email']));
         }
-        
+
         // Add submission timestamp for spam protection
         $input['submit_time'] = $this->input('submit_time', 0);
-        
+
         $this->merge($input);
     }
 
@@ -241,12 +241,12 @@ abstract class BaseFormRequest extends FormRequest
     {
         // Remove all non-digit characters except +
         $normalized = preg_replace('/[^\d+]/', '', $phone);
-        
+
         // Ensure it starts with + for international format
-        if (!str_starts_with($normalized, '+') && strlen($normalized) > 10) {
-            $normalized = '+' . $normalized;
+        if (! str_starts_with($normalized, '+') && strlen($normalized) > 10) {
+            $normalized = '+'.$normalized;
         }
-        
+
         return $normalized;
     }
 
@@ -256,10 +256,10 @@ abstract class BaseFormRequest extends FormRequest
     public function validated($key = null, $default = null): array
     {
         $validated = parent::validated($key, $default);
-        
+
         // Remove spam protection fields from validated data
         unset($validated['honeypot'], $validated['submit_time'], $validated['user_agent']);
-        
+
         return $validated;
     }
 }

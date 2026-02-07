@@ -48,14 +48,14 @@ class WarmCacheJob implements ShouldQueue
             $duration = microtime(true) - $startTime;
             Log::info('WarmCacheJob completed successfully', [
                 'tenant_id' => $this->tenantId,
-                'duration' => $duration
+                'duration' => $duration,
             ]);
 
         } catch (\Exception $e) {
             Log::error('WarmCacheJob failed', [
                 'tenant_id' => $this->tenantId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e;
@@ -67,6 +67,6 @@ class WarmCacheJob implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['cache', 'warming', 'tenant:' . ($this->tenantId ?? 'global')];
+        return ['cache', 'warming', 'tenant:'.($this->tenantId ?? 'global')];
     }
 }

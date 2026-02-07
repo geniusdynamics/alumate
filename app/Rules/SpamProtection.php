@@ -38,7 +38,7 @@ class SpamProtection implements ValidationRule
         'chromedriver',
         'geckodriver',
         'webdriver',
-        
+
         // Suspicious patterns
         'test',
         'automated',
@@ -86,7 +86,7 @@ class SpamProtection implements ValidationRule
         'spyware',
         'adware',
         'ransomware',
-        
+
         // Additional spam indicators
         'spam',
         'scam',
@@ -157,6 +157,7 @@ class SpamProtection implements ValidationRule
     {
         if (empty($value)) {
             $fail('The request appears to be missing required browser information.');
+
             return;
         }
 
@@ -169,8 +170,9 @@ class SpamProtection implements ValidationRule
                 if ($this->hasLegitimateContext($userAgent)) {
                     continue;
                 }
-                
+
                 $fail('The request appears to be automated or suspicious. Please use a standard web browser.');
+
                 return;
             }
         }
@@ -178,12 +180,14 @@ class SpamProtection implements ValidationRule
         // Check if user agent is too short (likely fake)
         if (strlen($value) < 20) {
             $fail('The request appears to be from an invalid browser.');
+
             return;
         }
 
         // Check if user agent is too long (likely fake or malicious)
         if (strlen($value) > 1000) {
             $fail('The request contains invalid browser information.');
+
             return;
         }
 
@@ -196,20 +200,23 @@ class SpamProtection implements ValidationRule
             }
         }
 
-        if (!$hasLegitimatePattern) {
+        if (! $hasLegitimatePattern) {
             $fail('The request must be made from a standard web browser.');
+
             return;
         }
 
         // Check for common fake user agent patterns
         if ($this->isFakeUserAgent($userAgent)) {
             $fail('The request appears to be from an invalid or modified browser.');
+
             return;
         }
 
         // Additional checks for suspicious behavior
         if ($this->hasSuspiciousCharacters($value)) {
             $fail('The request contains invalid characters.');
+
             return;
         }
     }

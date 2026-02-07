@@ -157,6 +157,6 @@ class AttributionTouch extends Model
      */
     public function getFormattedValueAttribute(): string
     {
-        return '$' . number_format((float) $this->value, 2);
+        return '$'.number_format((float) $this->value, 2);
     }
 }

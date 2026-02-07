@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\TemplateCrmService;
 use App\Models\TemplateCrmIntegration;
-use Illuminate\Http\Request;
+use App\Services\TemplateCrmService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -34,13 +34,13 @@ class TemplateCrmController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $integrations
+                'data' => $integrations,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve CRM integrations',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -52,10 +52,10 @@ class TemplateCrmController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'provider' => 'required|string|in:' . implode(',', TemplateCrmIntegration::PROVIDERS),
+            'provider' => 'required|string|in:'.implode(',', TemplateCrmIntegration::PROVIDERS),
             'config' => 'required|array',
             'is_active' => 'boolean',
-            'sync_direction' => 'string|in:' . implode(',', TemplateCrmIntegration::SYNC_DIRECTIONS),
+            'sync_direction' => 'string|in:'.implode(',', TemplateCrmIntegration::SYNC_DIRECTIONS),
             'sync_interval' => 'integer|min:60|max:86400',
             'field_mappings' => 'array',
             'sync_filters' => 'array',
@@ -65,7 +65,7 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -79,13 +79,13 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'CRM integration created successfully',
-                'data' => $integration
+                'data' => $integration,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to create CRM integration',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -100,13 +100,13 @@ class TemplateCrmController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $integration
+                'data' => $integration,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'CRM integration not found',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 404);
         }
     }
@@ -120,7 +120,7 @@ class TemplateCrmController extends Controller
             'name' => 'string|max:255',
             'config' => 'array',
             'is_active' => 'boolean',
-            'sync_direction' => 'string|in:' . implode(',', TemplateCrmIntegration::SYNC_DIRECTIONS),
+            'sync_direction' => 'string|in:'.implode(',', TemplateCrmIntegration::SYNC_DIRECTIONS),
             'sync_interval' => 'integer|min:60|max:86400',
             'field_mappings' => 'array',
             'sync_filters' => 'array',
@@ -130,7 +130,7 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -140,13 +140,13 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'CRM integration updated successfully',
-                'data' => $integration
+                'data' => $integration,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update CRM integration',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -161,13 +161,13 @@ class TemplateCrmController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'CRM integration deleted successfully'
+                'message' => 'CRM integration deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete CRM integration',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -182,13 +182,13 @@ class TemplateCrmController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to test CRM connection',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -202,9 +202,9 @@ class TemplateCrmController extends Controller
             'template_ids' => 'array',
             'template_ids.*' => 'integer|exists:templates,id',
             'filters' => 'array',
-            'filters.category' => 'string|in:' . implode(',', \App\Models\Template::CATEGORIES),
-            'filters.audience_type' => 'string|in:' . implode(',', \App\Models\Template::AUDIENCE_TYPES),
-            'filters.campaign_type' => 'string|in:' . implode(',', \App\Models\Template::CAMPAIGN_TYPES),
+            'filters.category' => 'string|in:'.implode(',', \App\Models\Template::CATEGORIES),
+            'filters.audience_type' => 'string|in:'.implode(',', \App\Models\Template::AUDIENCE_TYPES),
+            'filters.campaign_type' => 'string|in:'.implode(',', \App\Models\Template::CAMPAIGN_TYPES),
             'filters.is_premium' => 'boolean',
             'filters.usage_threshold' => 'integer|min:0',
         ]);
@@ -213,7 +213,7 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -228,13 +228,13 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Template sync completed',
-                'data' => $result
+                'data' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to sync templates',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -246,7 +246,7 @@ class TemplateCrmController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'status' => 'string|in:success,failed,pending',
-            'provider' => 'string|in:' . implode(',', TemplateCrmIntegration::PROVIDERS),
+            'provider' => 'string|in:'.implode(',', TemplateCrmIntegration::PROVIDERS),
             'sync_type' => 'string|in:create,update,delete',
             'date_from' => 'date',
             'date_to' => 'date',
@@ -257,27 +257,27 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $tenantId = $request->user()->current_tenant_id ?? 1;
             $filters = array_filter($request->only([
-                'status', 'provider', 'sync_type', 'date_from', 'date_to'
+                'status', 'provider', 'sync_type', 'date_from', 'date_to',
             ]));
 
             $logs = $this->crmService->getSyncLogs($tenantId, $filters);
 
             return response()->json([
                 'success' => true,
-                'data' => $logs
+                'data' => $logs,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve sync logs',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -293,13 +293,13 @@ class TemplateCrmController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $stats
+                'data' => $stats,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve sync statistics',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -317,7 +317,7 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -329,13 +329,13 @@ class TemplateCrmController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $result
+                'data' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to validate field mappings',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -354,13 +354,13 @@ class TemplateCrmController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $fields
+                'data' => $fields,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to retrieve CRM fields',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -378,7 +378,7 @@ class TemplateCrmController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Webhook processing failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

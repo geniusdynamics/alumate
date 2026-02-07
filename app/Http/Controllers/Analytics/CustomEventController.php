@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Analytics;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DefineEventRequest;
-use App\Http\Requests\UpdateEventRequest;
 use App\Http\Requests\CustomTrackRequest;
+use App\Http\Requests\DefineEventRequest;
 use App\Http\Requests\FunnelRequest;
-use App\Models\CustomEventDefinition;
+use App\Http\Requests\UpdateEventRequest;
 use App\Models\CustomEvent;
+use App\Models\CustomEventDefinition;
+use App\Services\Analytics\BehaviorFlowService;
 use App\Services\Analytics\CustomEventService;
 use App\Services\Analytics\CustomEventTrackingService;
-use App\Services\Analytics\BehaviorFlowService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
@@ -35,8 +34,6 @@ class CustomEventController extends Controller
 
     /**
      * Retrieve paginated list of event definitions with aggregates
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -55,6 +52,7 @@ class CustomEventController extends Controller
             $paginatedDefinitions->transform(function ($definition) {
                 $aggregates = $this->customEventService->aggregateEvents($definition->id);
                 $definition->aggregates = $aggregates ?: [];
+
                 return $definition;
             });
 
@@ -84,9 +82,6 @@ class CustomEventController extends Controller
 
     /**
      * Define a new custom event
-     *
-     * @param DefineEventRequest $request
-     * @return JsonResponse
      */
     public function store(DefineEventRequest $request): JsonResponse
     {
@@ -95,9 +90,6 @@ class CustomEventController extends Controller
 
     /**
      * Define a new custom event (alias for store)
-     *
-     * @param DefineEventRequest $request
-     * @return JsonResponse
      */
     public function storeDefinition(DefineEventRequest $request): JsonResponse
     {
@@ -128,9 +120,6 @@ class CustomEventController extends Controller
 
     /**
      * Get a specific custom event definition
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function show(int $id): JsonResponse
     {
@@ -165,10 +154,6 @@ class CustomEventController extends Controller
 
     /**
      * Update a custom event definition
-     *
-     * @param UpdateEventRequest $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function update(UpdateEventRequest $request, int $id): JsonResponse
     {
@@ -212,9 +197,6 @@ class CustomEventController extends Controller
 
     /**
      * Delete a custom event definition
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
@@ -252,9 +234,6 @@ class CustomEventController extends Controller
 
     /**
      * Track a custom event
-     *
-     * @param CustomTrackRequest $request
-     * @return JsonResponse
      */
     public function track(CustomTrackRequest $request): JsonResponse
     {
@@ -285,9 +264,6 @@ class CustomEventController extends Controller
 
     /**
      * Get analytics report for a specific event definition
-     *
-     * @param int $definitionId
-     * @return JsonResponse
      */
     public function analyze(int $definitionId): JsonResponse
     {
@@ -296,9 +272,6 @@ class CustomEventController extends Controller
 
     /**
      * Get analytics report for a specific event definition (alias for analyze)
-     *
-     * @param int $definitionId
-     * @return JsonResponse
      */
     public function analytics(int $definitionId): JsonResponse
     {
@@ -328,9 +301,6 @@ class CustomEventController extends Controller
 
     /**
      * Get behavior flow analysis for a specific event definition
-     *
-     * @param int $definitionId
-     * @return JsonResponse
      */
     public function behaviorFlow(int $definitionId): JsonResponse
     {
@@ -360,9 +330,6 @@ class CustomEventController extends Controller
 
     /**
      * Analyze user behavior flow for a specific user
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function behaviorFlowByUser(int $userId): JsonResponse
     {
@@ -398,9 +365,6 @@ class CustomEventController extends Controller
 
     /**
      * Analyze funnel for a sequence of events
-     *
-     * @param FunnelRequest $request
-     * @return JsonResponse
      */
     public function funnel(FunnelRequest $request): JsonResponse
     {
@@ -433,9 +397,6 @@ class CustomEventController extends Controller
 
     /**
      * Get optimization suggestions based on event analysis
-     *
-     * @param int $definitionId
-     * @return JsonResponse
      */
     public function optimizationSuggestions(int $definitionId): JsonResponse
     {
@@ -469,8 +430,6 @@ class CustomEventController extends Controller
 
     /**
      * Get the current tenant ID
-     *
-     * @return int
      */
     private function getCurrentTenantId(): int
     {
@@ -479,8 +438,6 @@ class CustomEventController extends Controller
 
     /**
      * Clear event definition cache for a specific definition
-     *
-     * @param int $definitionId
      */
     private function clearEventDefinitionCache(int $definitionId): void
     {
@@ -492,9 +449,7 @@ class CustomEventController extends Controller
     /**
      * Generate optimization suggestions based on event data
      *
-     * @param \Illuminate\Support\Collection $events
-     * @param array $aggregates
-     * @return array
+     * @param  \Illuminate\Support\Collection  $events
      */
     private function generateOptimizationSuggestions($events, array $aggregates): array
     {
@@ -536,22 +491,22 @@ class CustomEventController extends Controller
 
         $peakHours = $hourlyDistribution->sortByDesc('count')->take(3)->keys()->toArray();
 
-        if (!empty($peakHours)) {
+        if (! empty($peakHours)) {
             $suggestions[] = [
                 'type' => 'insight',
                 'title' => 'Peak Activity Hours',
-                'description' => 'Most event activity occurs between ' . min($peakHours) . ':00 and ' . max($peakHours) . ':00. Consider scheduling campaigns or notifications during these hours.',
+                'description' => 'Most event activity occurs between '.min($peakHours).':00 and '.max($peakHours).':00. Consider scheduling campaigns or notifications during these hours.',
                 'priority' => 'medium',
                 'action' => 'Optimize campaign scheduling',
             ];
         }
 
         // Analyze parameter values if available
-        if (!empty($aggregates['aggregates'])) {
+        if (! empty($aggregates['aggregates'])) {
             foreach ($aggregates['aggregates'] as $paramName => $paramData) {
                 if (isset($paramData['type']) && $paramData['type'] === 'categorical') {
                     $topValues = $paramData['top_values'] ?? [];
-                    if (!empty($topValues)) {
+                    if (! empty($topValues)) {
                         $topValue = array_key_first($topValues);
                         $topCount = $topValues[$topValue];
 

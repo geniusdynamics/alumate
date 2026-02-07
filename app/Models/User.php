@@ -1,25 +1,26 @@
 <?php
+
 // ABOUTME: User model for schema-based multi-tenancy handling authentication and user management
 // ABOUTME: Manages users across tenants with role-based access control and tenant context awareness
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Exception;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Builder;
 // use Laravel\Sanctum\HasApiTokens; // Commented out - Sanctum not installed
+use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
-use Exception;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, Notifiable, SoftDeletes, HasRoles;
+    use HasFactory, HasRoles, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -48,7 +49,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $hidden = [
         'password',
         'remember_token',
-        'two_factor_secret'
+        'two_factor_secret',
     ];
 
     protected $casts = [
@@ -66,7 +67,7 @@ class User extends Authenticatable implements MustVerifyEmail
     ];
 
     protected $dates = [
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $appends = [
@@ -74,15 +75,20 @@ class User extends Authenticatable implements MustVerifyEmail
         'initials',
         'avatar_url',
         'accessible_tenants',
-        'current_tenant_role'
+        'current_tenant_role',
     ];
 
     // User roles
     const ROLE_SUPER_ADMIN = 'super_admin';
+
     const ROLE_TENANT_ADMIN = 'tenant_admin';
+
     const ROLE_INSTRUCTOR = 'instructor';
+
     const ROLE_STAFF = 'staff';
+
     const ROLE_STUDENT = 'student';
+
     const ROLE_VIEWER = 'viewer';
 
     /**
@@ -97,18 +103,18 @@ class User extends Authenticatable implements MustVerifyEmail
             ActivityLog::logSystem('user_created', "User created: {$user->email}", [
                 'user_id' => $user->id,
                 'user_email' => $user->email,
-                'user_name' => $user->name
+                'user_name' => $user->name,
             ]);
         });
 
         static::updated(function ($user) {
             $changes = $user->getChanges();
             unset($changes['updated_at'], $changes['password']); // Don't log password changes in detail
-            
-            if (!empty($changes)) {
+
+            if (! empty($changes)) {
                 ActivityLog::logSystem('user_updated', "User updated: {$user->email}", [
                     'user_id' => $user->id,
-                    'changes' => array_keys($changes)
+                    'changes' => array_keys($changes),
                 ]);
             }
         });
@@ -116,7 +122,7 @@ class User extends Authenticatable implements MustVerifyEmail
         static::deleted(function ($user) {
             ActivityLog::logSecurity('user_deleted', "User deleted: {$user->email}", [
                 'user_id' => $user->id,
-                'user_email' => $user->email
+                'user_email' => $user->email,
             ], ActivityLog::SEVERITY_CRITICAL);
         });
     }
@@ -129,7 +135,7 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($this->first_name && $this->last_name) {
             return "{$this->first_name} {$this->last_name}";
         }
-        
+
         return $this->name ?? $this->email;
     }
 
@@ -139,16 +145,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getInitialsAttribute(): string
     {
         if ($this->first_name && $this->last_name) {
-            return strtoupper(substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1));
+            return strtoupper(substr($this->first_name, 0, 1).substr($this->last_name, 0, 1));
         }
-        
+
         $name = $this->name ?? $this->email;
         $parts = explode(' ', $name);
-        
+
         if (count($parts) >= 2) {
-            return strtoupper(substr($parts[0], 0, 1) . substr($parts[1], 0, 1));
+            return strtoupper(substr($parts[0], 0, 1).substr($parts[1], 0, 1));
         }
-        
+
         return strtoupper(substr($name, 0, 2));
     }
 
@@ -158,11 +164,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getAvatarUrlAttribute(): string
     {
         if ($this->avatar) {
-            return asset('storage/avatars/' . $this->avatar);
+            return asset('storage/avatars/'.$this->avatar);
         }
-        
+
         // Generate Gravatar URL as fallback
         $hash = md5(strtolower(trim($this->email)));
+
         return "https://www.gravatar.com/avatar/{$hash}?d=identicon&s=200";
     }
 
@@ -177,7 +184,7 @@ class User extends Authenticatable implements MustVerifyEmail
                     'id' => $tenant->id,
                     'name' => $tenant->name,
                     'schema' => $tenant->schema_name,
-                    'role' => 'super_admin'
+                    'role' => 'super_admin',
                 ];
             })->toArray();
         }
@@ -188,7 +195,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 'name' => $tenantUser->tenant->name,
                 'schema' => $tenantUser->tenant->schema_name,
                 'role' => $tenantUser->role,
-                'is_active' => $tenantUser->is_active
+                'is_active' => $tenantUser->is_active,
             ];
         })->toArray();
     }
@@ -203,7 +210,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         $currentTenant = TenantContextService::getCurrentTenant();
-        if (!$currentTenant) {
+        if (! $currentTenant) {
             return null;
         }
 
@@ -328,15 +335,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeWithRole(Builder $query, string $role): Builder
     {
         $currentTenant = TenantContextService::getCurrentTenant();
-        
-        if (!$currentTenant) {
+
+        if (! $currentTenant) {
             return $query->where('is_super_admin', true)->where('1', '0'); // No results if no tenant context
         }
 
         return $query->whereHas('tenantUsers', function ($q) use ($role, $currentTenant) {
             $q->where('tenant_id', $currentTenant->id)
-              ->where('role', $role)
-              ->where('is_active', true);
+                ->where('role', $role)
+                ->where('is_active', true);
         });
     }
 
@@ -365,7 +372,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         $currentTenant = TenantContextService::getCurrentTenant();
-        if (!$currentTenant) {
+        if (! $currentTenant) {
             return false;
         }
 
@@ -429,9 +436,9 @@ class User extends Authenticatable implements MustVerifyEmail
             $existingTenantUser->update([
                 'role' => $role,
                 'is_active' => true,
-                'invited_by' => $invitedBy
+                'invited_by' => $invitedBy,
             ]);
-            
+
             return $existingTenantUser;
         }
 
@@ -441,14 +448,14 @@ class User extends Authenticatable implements MustVerifyEmail
             'role' => $role,
             'is_active' => true,
             'joined_at' => now(),
-            'invited_by' => $invitedBy
+            'invited_by' => $invitedBy,
         ]);
 
         ActivityLog::logSystem('user_added_to_tenant', "User {$this->email} added to tenant {$tenantId} with role {$role}", [
             'user_id' => $this->id,
             'tenant_id' => $tenantId,
             'role' => $role,
-            'invited_by' => $invitedBy
+            'invited_by' => $invitedBy,
         ]);
 
         return $tenantUser;
@@ -466,7 +473,7 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($removed) {
             ActivityLog::logSystem('user_removed_from_tenant', "User {$this->email} removed from tenant {$tenantId}", [
                 'user_id' => $this->id,
-                'tenant_id' => $tenantId
+                'tenant_id' => $tenantId,
             ]);
         }
 
@@ -482,7 +489,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('tenant_id', $tenantId)
             ->first();
 
-        if (!$tenantUser) {
+        if (! $tenantUser) {
             return false;
         }
 
@@ -494,7 +501,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 'user_id' => $this->id,
                 'tenant_id' => $tenantId,
                 'old_role' => $oldRole,
-                'new_role' => $newRole
+                'new_role' => $newRole,
             ]);
         }
 
@@ -510,7 +517,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('tenant_id', $tenantId)
             ->first();
 
-        if (!$tenantUser) {
+        if (! $tenantUser) {
             return false;
         }
 
@@ -521,7 +528,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ActivityLog::logSystem("user_{$status}_in_tenant", "User {$this->email} {$status} in tenant {$tenantId}", [
                 'user_id' => $this->id,
                 'tenant_id' => $tenantId,
-                'is_active' => $isActive
+                'is_active' => $isActive,
             ]);
         }
 
@@ -531,28 +538,28 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Record login activity
      */
-    public function recordLogin(string $ipAddress = null): void
+    public function recordLogin(?string $ipAddress = null): void
     {
         $this->update([
             'last_login_at' => now(),
-            'last_login_ip' => $ipAddress ?? request()->ip()
+            'last_login_ip' => $ipAddress ?? request()->ip(),
         ]);
 
         ActivityLog::logAuth(ActivityLog::ACTION_LOGIN, $this->id, [
             'ip_address' => $ipAddress ?? request()->ip(),
-            'user_agent' => request()->userAgent()
+            'user_agent' => request()->userAgent(),
         ]);
     }
 
     /**
      * Record failed login attempt
      */
-    public static function recordFailedLogin(string $email, string $ipAddress = null): void
+    public static function recordFailedLogin(string $email, ?string $ipAddress = null): void
     {
         ActivityLog::logAuth(ActivityLog::ACTION_FAILED_LOGIN, null, [
             'email' => $email,
             'ip_address' => $ipAddress ?? request()->ip(),
-            'user_agent' => request()->userAgent()
+            'user_agent' => request()->userAgent(),
         ]);
     }
 
@@ -563,12 +570,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $updated = $this->update([
             'two_factor_enabled' => true,
-            'two_factor_secret' => encrypt($secret)
+            'two_factor_secret' => encrypt($secret),
         ]);
 
         if ($updated) {
             ActivityLog::logSecurity('two_factor_enabled', "Two-factor authentication enabled for user {$this->email}", [
-                'user_id' => $this->id
+                'user_id' => $this->id,
             ]);
         }
 
@@ -582,12 +589,12 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $updated = $this->update([
             'two_factor_enabled' => false,
-            'two_factor_secret' => null
+            'two_factor_secret' => null,
         ]);
 
         if ($updated) {
             ActivityLog::logSecurity('two_factor_disabled', "Two-factor authentication disabled for user {$this->email}", [
-                'user_id' => $this->id
+                'user_id' => $this->id,
             ]);
         }
 
@@ -601,7 +608,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         $currentPreferences = $this->preferences ?? [];
         $newPreferences = array_merge($currentPreferences, $preferences);
-        
+
         return $this->update(['preferences' => $newPreferences]);
     }
 
@@ -625,8 +632,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'last_login' => $this->last_login_at,
             'account_age_days' => $this->created_at->diffInDays(now()),
             'tenants_count' => $this->tenants()->count(),
-            'is_verified' => !is_null($this->email_verified_at),
-            'has_two_factor' => $this->two_factor_enabled
+            'is_verified' => ! is_null($this->email_verified_at),
+            'has_two_factor' => $this->two_factor_enabled,
         ];
 
         // Add tenant-specific stats if in tenant context
@@ -637,7 +644,7 @@ class User extends Authenticatable implements MustVerifyEmail
                 'role' => $this->current_tenant_role,
                 'activities_count' => $this->activityLogs()
                     ->recent(30)
-                    ->count()
+                    ->count(),
             ];
 
             // Add role-specific stats
@@ -660,7 +667,7 @@ class User extends Authenticatable implements MustVerifyEmail
             self::ROLE_INSTRUCTOR => 'Instructor',
             self::ROLE_STAFF => 'Staff',
             self::ROLE_STUDENT => 'Student',
-            self::ROLE_VIEWER => 'Viewer'
+            self::ROLE_VIEWER => 'Viewer',
         ];
     }
 
@@ -671,9 +678,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return static::where(function ($q) use ($query) {
             $q->where('name', 'ILIKE', "%{$query}%")
-              ->orWhere('email', 'ILIKE', "%{$query}%")
-              ->orWhere('first_name', 'ILIKE', "%{$query}%")
-              ->orWhere('last_name', 'ILIKE', "%{$query}%");
+                ->orWhere('email', 'ILIKE', "%{$query}%")
+                ->orWhere('first_name', 'ILIKE', "%{$query}%")
+                ->orWhere('last_name', 'ILIKE', "%{$query}%");
         });
     }
 
@@ -683,29 +690,29 @@ class User extends Authenticatable implements MustVerifyEmail
     public static function bulkInviteToTenant(array $emails, int $tenantId, string $role, int $invitedBy): array
     {
         $results = ['success' => [], 'errors' => []];
-        
+
         foreach ($emails as $email) {
             try {
                 $user = static::where('email', $email)->first();
-                
-                if (!$user) {
+
+                if (! $user) {
                     // Create new user
                     $user = static::create([
                         'email' => $email,
                         'name' => explode('@', $email)[0], // Temporary name
                         'password' => bcrypt(str()->random(16)), // Temporary password
-                        'is_active' => false // Will be activated when they set password
+                        'is_active' => false, // Will be activated when they set password
                     ]);
                 }
-                
+
                 $user->addToTenant($tenantId, $role, $invitedBy);
                 $results['success'][] = $email;
-                
+
             } catch (Exception $e) {
-                $results['errors'][] = "Error inviting {$email}: " . $e->getMessage();
+                $results['errors'][] = "Error inviting {$email}: ".$e->getMessage();
             }
         }
-        
+
         return $results;
     }
 }

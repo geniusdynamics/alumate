@@ -10,7 +10,6 @@ class TemplateResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  Request  $request
      * @return array<string, mixed>
      */
     public function toArray(Request $request): array
@@ -71,8 +70,6 @@ class TemplateResource extends JsonResource
 
     /**
      * Get performance rating based on metrics.
-     *
-     * @return string
      */
     protected function getPerformanceRating(): string
     {
@@ -86,24 +83,44 @@ class TemplateResource extends JsonResource
         $score = 0;
 
         // Conversion rate (0-50%)
-        if ($conversionRate >= 5) $score += 30;
-        elseif ($conversionRate >= 2) $score += 20;
-        elseif ($conversionRate >= 1) $score += 10;
+        if ($conversionRate >= 5) {
+            $score += 30;
+        } elseif ($conversionRate >= 2) {
+            $score += 20;
+        } elseif ($conversionRate >= 1) {
+            $score += 10;
+        }
 
         // Load time (0-30%)
-        if ($loadTime <= 1.5) $score += 25;
-        elseif ($loadTime <= 2.5) $score += 15;
-        elseif ($loadTime <= 4) $score += 5;
+        if ($loadTime <= 1.5) {
+            $score += 25;
+        } elseif ($loadTime <= 2.5) {
+            $score += 15;
+        } elseif ($loadTime <= 4) {
+            $score += 5;
+        }
 
         // Usage popularity (0-20%)
-        if ($usageCount >= 1000) $score += 20;
-        elseif ($usageCount >= 500) $score += 15;
-        elseif ($usageCount >= 100) $score += 10;
-        elseif ($usageCount >= 25) $score += 5;
+        if ($usageCount >= 1000) {
+            $score += 20;
+        } elseif ($usageCount >= 500) {
+            $score += 15;
+        } elseif ($usageCount >= 100) {
+            $score += 10;
+        } elseif ($usageCount >= 25) {
+            $score += 5;
+        }
 
-        if ($score >= 45) return 'excellent';
-        if ($score >= 30) return 'good';
-        if ($score >= 15) return 'average';
+        if ($score >= 45) {
+            return 'excellent';
+        }
+        if ($score >= 30) {
+            return 'good';
+        }
+        if ($score >= 15) {
+            return 'average';
+        }
+
         return 'needs_improvement';
     }
 }

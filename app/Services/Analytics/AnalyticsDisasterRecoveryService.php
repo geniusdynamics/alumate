@@ -8,7 +8,6 @@ use App\Models\Backup;
 use App\Models\RecoveryPlan;
 use App\Models\RecoveryPlanExecution;
 use App\Services\TenantContextService;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -25,45 +24,71 @@ class AnalyticsDisasterRecoveryService
 {
     // Recovery Plan Status Constants
     public const STATUS_DRAFT = 'draft';
+
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_TESTING = 'testing';
+
     public const STATUS_EXECUTING = 'executing';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_ARCHIVED = 'archived';
 
     // Recovery Plan Type Constants
     public const TYPE_FULL_RECOVERY = 'full_recovery';
+
     public const TYPE_PARTIAL_RECOVERY = 'partial_recovery';
+
     public const TYPE_POINT_IN_TIME = 'point_in_time';
+
     public const TYPE_FAILOVER = 'failover';
+
     public const TYPE_FAILBACK = 'failback';
 
     // Priority Constants
     public const PRIORITY_CRITICAL = 'critical';
+
     public const PRIORITY_HIGH = 'high';
+
     public const PRIORITY_MEDIUM = 'medium';
+
     public const PRIORITY_LOW = 'low';
 
     // System Status Constants
     public const SYSTEM_STATUS_HEALTHY = 'healthy';
+
     public const SYSTEM_STATUS_DEGRADED = 'degraded';
+
     public const SYSTEM_STATUS_CRITICAL = 'critical';
+
     public const SYSTEM_STATUS_RECOVERING = 'recovering';
 
     // Execution Status Constants
     public const EXECUTION_STATUS_PENDING = 'pending';
+
     public const EXECUTION_STATUS_RUNNING = 'running';
+
     public const EXECUTION_STATUS_COMPLETED = 'completed';
+
     public const EXECUTION_STATUS_FAILED = 'failed';
+
     public const EXECUTION_STATUS_ROLLED_BACK = 'rolled_back';
+
     public const EXECUTION_STATUS_CANCELLED = 'cancelled';
 
     private TenantContextService $tenantContextService;
+
     private AnalyticsBackupRecoveryService $backupService;
+
     private string $storageDisk;
+
     private string $backupPath;
+
     private bool $autoFailoverEnabled;
+
     private int $maxRecoveryTimeMinutes;
 
     public function __construct(
@@ -81,7 +106,7 @@ class AnalyticsDisasterRecoveryService
     /**
      * Create a disaster recovery plan
      *
-     * @param array $plan Plan configuration
+     * @param  array  $plan  Plan configuration
      * @return RecoveryPlan The created recovery plan
      */
     public function createRecoveryPlan(array $plan): RecoveryPlan
@@ -91,7 +116,7 @@ class AnalyticsDisasterRecoveryService
         $recoveryPlan = RecoveryPlan::create([
             'tenant_id' => $tenantId,
             'user_id' => auth()->check() ? auth()->id() : null,
-            'name' => $plan['name'] ?? 'Recovery Plan ' . now()->format('Y-m-d H:i:s'),
+            'name' => $plan['name'] ?? 'Recovery Plan '.now()->format('Y-m-d H:i:s'),
             'description' => $plan['description'] ?? null,
             'type' => $plan['type'] ?? self::TYPE_FULL_RECOVERY,
             'status' => self::STATUS_DRAFT,
@@ -120,8 +145,8 @@ class AnalyticsDisasterRecoveryService
     /**
      * Execute a disaster recovery plan
      *
-     * @param int $planId Recovery plan ID
-     * @param array $options Execution options
+     * @param  int  $planId  Recovery plan ID
+     * @param  array  $options  Execution options
      * @return RecoveryPlanExecution The execution record
      */
     public function executeRecoveryPlan(int $planId, array $options = []): RecoveryPlanExecution
@@ -204,8 +229,8 @@ class AnalyticsDisasterRecoveryService
     /**
      * Test a disaster recovery plan
      *
-     * @param int $planId Recovery plan ID
-     * @param array $options Test options
+     * @param  int  $planId  Recovery plan ID
+     * @param  array  $options  Test options
      * @return array Test results
      */
     public function testRecoveryPlan(int $planId, array $options = []): array
@@ -246,7 +271,7 @@ class AnalyticsDisasterRecoveryService
                     'details' => $verification,
                 ];
 
-                if (!$verification['valid']) {
+                if (! $verification['valid']) {
                     $results['overall_success'] = false;
                     $results['errors'][] = 'Backup integrity verification failed';
                 }
@@ -349,7 +374,7 @@ class AnalyticsDisasterRecoveryService
     /**
      * Failover to backup system
      *
-     * @param array $options Failover options
+     * @param  array  $options  Failover options
      * @return RecoveryPlanExecution The failover execution
      */
     public function failoverToBackup(array $options = []): RecoveryPlanExecution
@@ -368,7 +393,7 @@ class AnalyticsDisasterRecoveryService
             ->latest('completed_at')
             ->first();
 
-        if (!$backup) {
+        if (! $backup) {
             throw new Exception('No suitable backup found for failover');
         }
 
@@ -392,7 +417,7 @@ class AnalyticsDisasterRecoveryService
     /**
      * Failback to primary system
      *
-     * @param array $options Failback options
+     * @param  array  $options  Failback options
      * @return RecoveryPlanExecution The failback execution
      */
     public function failbackToPrimary(array $options = []): RecoveryPlanExecution
@@ -454,7 +479,7 @@ class AnalyticsDisasterRecoveryService
         } catch (Exception $e) {
             $results['checks']['database_connectivity'] = [
                 'status' => 'critical',
-                'message' => 'Database connection failed: ' . $e->getMessage(),
+                'message' => 'Database connection failed: '.$e->getMessage(),
             ];
             $results['issues'][] = 'Database connectivity issue';
             $results['overall_status'] = self::SYSTEM_STATUS_CRITICAL;
@@ -462,7 +487,7 @@ class AnalyticsDisasterRecoveryService
 
         // Check 2: Storage accessibility
         try {
-            $testFile = $this->backupPath . '/.health_check_' . time();
+            $testFile = $this->backupPath.'/.health_check_'.time();
             Storage::disk($this->storageDisk)->put($testFile, 'health check');
             Storage::disk($this->storageDisk)->delete($testFile);
             $results['checks']['storage_accessibility'] = [
@@ -472,7 +497,7 @@ class AnalyticsDisasterRecoveryService
         } catch (Exception $e) {
             $results['checks']['storage_accessibility'] = [
                 'status' => 'critical',
-                'message' => 'Storage access failed: ' . $e->getMessage(),
+                'message' => 'Storage access failed: '.$e->getMessage(),
             ];
             $results['issues'][] = 'Storage accessibility issue';
             $results['overall_status'] = self::SYSTEM_STATUS_CRITICAL;
@@ -534,7 +559,7 @@ class AnalyticsDisasterRecoveryService
         } catch (Exception $e) {
             $results['checks']['tenant_schema'] = [
                 'status' => 'warning',
-                'message' => 'Could not verify tenant schema: ' . $e->getMessage(),
+                'message' => 'Could not verify tenant schema: '.$e->getMessage(),
             ];
         }
 
@@ -561,7 +586,7 @@ class AnalyticsDisasterRecoveryService
     /**
      * Get recovery metrics
      *
-     * @param array $options Options for filtering metrics
+     * @param  array  $options  Options for filtering metrics
      * @return array Recovery metrics
      */
     public function getRecoveryMetrics(array $options = []): array
@@ -631,8 +656,8 @@ class AnalyticsDisasterRecoveryService
     /**
      * Update a recovery plan
      *
-     * @param int $planId Recovery plan ID
-     * @param array $updates Fields to update
+     * @param  int  $planId  Recovery plan ID
+     * @param  array  $updates  Fields to update
      * @return RecoveryPlan Updated recovery plan
      */
     public function updateRecoveryPlan(int $planId, array $updates): RecoveryPlan
@@ -668,7 +693,7 @@ class AnalyticsDisasterRecoveryService
     /**
      * Get all recovery plans
      *
-     * @param array $filters Filters for recovery plans
+     * @param  array  $filters  Filters for recovery plans
      * @return Collection Recovery plans
      */
     public function getRecoveryPlans(array $filters = []): Collection
@@ -695,7 +720,7 @@ class AnalyticsDisasterRecoveryService
 
         return $query->orderBy('priority', 'desc')
             ->orderBy('created_at', 'desc')
-            ->when(isset($filters['limit']), fn($q) => $q->limit($filters['limit']))
+            ->when(isset($filters['limit']), fn ($q) => $q->limit($filters['limit']))
             ->get();
     }
 
@@ -931,7 +956,7 @@ class AnalyticsDisasterRecoveryService
     {
         $action = $step['action'] ?? null;
 
-        if (!$action) {
+        if (! $action) {
             return;
         }
 
@@ -959,7 +984,7 @@ class AnalyticsDisasterRecoveryService
         $integrity = $this->validateSystemIntegrity();
 
         if ($integrity['overall_status'] === self::SYSTEM_STATUS_CRITICAL) {
-            throw new Exception('System integrity check failed: ' . implode(', ', $integrity['issues']));
+            throw new Exception('System integrity check failed: '.implode(', ', $integrity['issues']));
         }
     }
 
@@ -980,14 +1005,14 @@ class AnalyticsDisasterRecoveryService
      */
     private function validateBackup(RecoveryPlan $plan, RecoveryPlanExecution $execution): void
     {
-        if (!$plan->backup_id) {
+        if (! $plan->backup_id) {
             throw new Exception('No backup specified for recovery');
         }
 
         $verification = $this->backupService->verifyBackup($plan->backup_id);
 
-        if (!$verification['valid']) {
-            throw new Exception('Backup validation failed: ' . implode(', ', $verification['errors']));
+        if (! $verification['valid']) {
+            throw new Exception('Backup validation failed: '.implode(', ', $verification['errors']));
         }
     }
 
@@ -996,13 +1021,13 @@ class AnalyticsDisasterRecoveryService
      */
     private function restoreData(RecoveryPlan $plan, RecoveryPlanExecution $execution, array $options): void
     {
-        if (!$plan->backup_id) {
+        if (! $plan->backup_id) {
             throw new Exception('No backup specified for restoration');
         }
 
         $backup = Backup::find($plan->backup_id);
 
-        if (!$backup) {
+        if (! $backup) {
             throw new Exception('Backup not found');
         }
 
@@ -1086,7 +1111,7 @@ class AnalyticsDisasterRecoveryService
     {
         $rollbackAction = $step['rollback_action'] ?? null;
 
-        if (!$rollbackAction) {
+        if (! $rollbackAction) {
             return;
         }
 
@@ -1125,7 +1150,7 @@ class AnalyticsDisasterRecoveryService
         ];
 
         foreach ($steps as $step) {
-            if (!empty($step['rollback_action'])) {
+            if (! empty($step['rollback_action'])) {
                 $validation['steps_with_rollback']++;
             }
 

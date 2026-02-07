@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\TemplatePerformanceDashboardService;
 use App\Models\TemplatePerformanceDashboard;
 use App\Models\TemplatePerformanceReport;
-use Illuminate\Http\Request;
+use App\Services\TemplatePerformanceDashboardService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -23,9 +23,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get dashboard overview
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getOverview(Request $request): JsonResponse
     {
@@ -55,9 +52,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get real-time metrics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getRealTimeMetrics(Request $request): JsonResponse
     {
@@ -85,9 +79,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get template comparison analytics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getTemplateComparison(Request $request): JsonResponse
     {
@@ -124,9 +115,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get performance bottleneck analysis
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getBottleneckAnalysis(Request $request): JsonResponse
     {
@@ -156,9 +144,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Generate performance report
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function generateReport(Request $request): JsonResponse
     {
@@ -201,10 +186,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get report status
-     *
-     * @param Request $request
-     * @param int $reportId
-     * @return JsonResponse
      */
     public function getReportStatus(Request $request, int $reportId): JsonResponse
     {
@@ -237,10 +218,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get report data
-     *
-     * @param Request $request
-     * @param int $reportId
-     * @return JsonResponse
      */
     public function getReportData(Request $request, int $reportId): JsonResponse
     {
@@ -248,7 +225,7 @@ class TemplatePerformanceDashboardController extends Controller
             $report = TemplatePerformanceReport::forTenant($this->getTenantId())
                 ->findOrFail($reportId);
 
-            if (!$report->isValid()) {
+            if (! $report->isValid()) {
                 return response()->json([
                     'status' => 'error',
                     'message' => 'Report is not available or has expired',
@@ -275,9 +252,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * List user reports
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function listReports(Request $request): JsonResponse
     {
@@ -322,9 +296,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Export dashboard data
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function exportDashboard(Request $request): JsonResponse
     {
@@ -365,9 +336,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Create custom dashboard
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function createDashboard(Request $request): JsonResponse
     {
@@ -410,10 +378,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Update dashboard configuration
-     *
-     * @param Request $request
-     * @param int $dashboardId
-     * @return JsonResponse
      */
     public function updateDashboard(Request $request, int $dashboardId): JsonResponse
     {
@@ -453,10 +417,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get dashboard configuration
-     *
-     * @param Request $request
-     * @param int $dashboardId
-     * @return JsonResponse
      */
     public function getDashboard(Request $request, int $dashboardId): JsonResponse
     {
@@ -484,9 +444,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * List user dashboards
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function listDashboards(Request $request): JsonResponse
     {
@@ -526,10 +483,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Delete dashboard
-     *
-     * @param Request $request
-     * @param int $dashboardId
-     * @return JsonResponse
      */
     public function deleteDashboard(Request $request, int $dashboardId): JsonResponse
     {
@@ -559,9 +512,6 @@ class TemplatePerformanceDashboardController extends Controller
 
     /**
      * Get dashboard widget data
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getWidgetData(Request $request): JsonResponse
     {

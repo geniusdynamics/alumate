@@ -38,7 +38,7 @@ class VerificationService
 
             // Process uploaded documents
             $documentPaths = [];
-            if (!empty($documents)) {
+            if (! empty($documents)) {
                 foreach ($documents as $document) {
                     if ($document instanceof UploadedFile) {
                         $path = $this->storeDocument($document, $user->id);
@@ -71,7 +71,7 @@ class VerificationService
             ]);
 
             // Try automatic verification by email domain
-            if (!empty($data['institution_id'])) {
+            if (! empty($data['institution_id'])) {
                 $this->attemptAutoVerification($verification);
             }
 
@@ -84,12 +84,12 @@ class VerificationService
      */
     public function attemptAutoVerification(AlumniVerification $verification): bool
     {
-        if (!$verification->institution_id) {
+        if (! $verification->institution_id) {
             return false;
         }
 
         $institution = Institution::find($verification->institution_id);
-        if (!$institution) {
+        if (! $institution) {
             return false;
         }
 
@@ -179,7 +179,7 @@ class VerificationService
                     // Find or create user
                     $user = User::where('email', $record['email'])->first();
 
-                    if (!$user) {
+                    if (! $user) {
                         // Create user if not exists
                         $user = User::create([
                             'name' => $record['name'],
@@ -289,7 +289,7 @@ class VerificationService
      */
     private function storeDocument(UploadedFile $file, int $userId): string
     {
-        $path = 'verifications/' . $userId . '/' . uniqid() . '_' . $file->getClientOriginalName();
+        $path = 'verifications/'.$userId.'/'.uniqid().'_'.$file->getClientOriginalName();
         Storage::disk('private')->putFileAs('', $file, $path);
 
         return $path;
@@ -301,6 +301,7 @@ class VerificationService
     private function extractEmailDomain(string $email): ?string
     {
         $parts = explode('@', $email);
+
         return count($parts) === 2 ? $parts[1] : null;
     }
 
@@ -342,11 +343,11 @@ class VerificationService
                 }
             }
 
-            if (!empty($record['email']) && !filter_var($record['email'], FILTER_VALIDATE_EMAIL)) {
+            if (! empty($record['email']) && ! filter_var($record['email'], FILTER_VALIDATE_EMAIL)) {
                 $errors[] = "Row {$row}: Invalid email address";
             }
 
-            if (!empty($record['graduation_year']) && !is_numeric($record['graduation_year'])) {
+            if (! empty($record['graduation_year']) && ! is_numeric($record['graduation_year'])) {
                 $errors[] = "Row {$row}: Graduation year must be numeric";
             }
         }

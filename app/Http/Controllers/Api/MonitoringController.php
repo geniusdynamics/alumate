@@ -37,13 +37,13 @@ class MonitoringController extends Controller
         } catch (\Exception $e) {
             \Log::error('Dashboard data retrieval failed', [
                 'error' => $e->getMessage(),
-                'timeframe' => $timeframe
+                'timeframe' => $timeframe,
             ]);
 
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to retrieve dashboard data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -64,13 +64,13 @@ class MonitoringController extends Controller
         } catch (\Exception $e) {
             \Log::error('Manual monitoring cycle failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'status' => 'error',
                 'message' => 'Monitoring cycle execution failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -100,7 +100,7 @@ class MonitoringController extends Controller
                 default:
                     return response()->json([
                         'status' => 'error',
-                        'message' => 'Invalid metric type requested'
+                        'message' => 'Invalid metric type requested',
                     ], 400);
             }
 
@@ -113,13 +113,13 @@ class MonitoringController extends Controller
         } catch (\Exception $e) {
             \Log::error("Metrics retrieval failed for type: {$type}", [
                 'error' => $e->getMessage(),
-                'metric' => $metric
+                'metric' => $metric,
             ]);
 
             return response()->json([
                 'status' => 'error',
                 'message' => "Failed to retrieve {$type} metrics",
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -137,13 +137,13 @@ class MonitoringController extends Controller
 
             // Filter by severity if specified
             if ($severity) {
-                $alerts = array_filter($alerts, fn($alert) => $alert['priority'] === $severity);
+                $alerts = array_filter($alerts, fn ($alert) => $alert['priority'] === $severity);
             }
 
             // Filter by resolved status
             if ($resolved !== null) {
                 $isResolved = filter_var($resolved, FILTER_VALIDATE_BOOLEAN);
-                $alerts = array_filter($alerts, fn($alert) => isset($alert['resolved']) && $alert['resolved'] === $isResolved);
+                $alerts = array_filter($alerts, fn ($alert) => isset($alert['resolved']) && $alert['resolved'] === $isResolved);
             }
 
             return response()->json([
@@ -156,13 +156,13 @@ class MonitoringController extends Controller
             \Log::error('Alerts retrieval failed', [
                 'error' => $e->getMessage(),
                 'severity' => $severity,
-                'resolved' => $resolved
+                'resolved' => $resolved,
             ]);
 
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to retrieve alerts',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -188,17 +188,17 @@ class MonitoringController extends Controller
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Report type not found'
+                'message' => 'Report type not found',
             ], 404);
         } catch (\Exception $e) {
             \Log::error("Report generation failed for type: {$type}", [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to generate report',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -223,13 +223,13 @@ class MonitoringController extends Controller
             ]);
         } catch (\Exception $e) {
             \Log::error('Real-time data retrieval failed', [
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to retrieve real-time data',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

@@ -12,7 +12,9 @@ class ConnectionRequestedNotification extends Notification implements ShouldQueu
     use Queueable;
 
     protected $connectorName;
+
     protected $connectorId;
+
     protected $message;
 
     /**

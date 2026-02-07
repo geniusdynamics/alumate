@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
  * Analytics Audit Logging Service
@@ -27,26 +26,42 @@ class AnalyticsAuditLoggingService
      * Audit event types
      */
     public const EVENT_DATA_ACCESS = 'data_access';
+
     public const EVENT_DATA_CREATE = 'data_create';
+
     public const EVENT_DATA_UPDATE = 'data_update';
+
     public const EVENT_DATA_DELETE = 'data_delete';
+
     public const EVENT_CONFIG_CHANGE = 'config_change';
+
     public const EVENT_USER_ACTION = 'user_action';
+
     public const EVENT_SYSTEM_ACTION = 'system_action';
+
     public const EVENT_EXPORT = 'export';
+
     public const EVENT_LOGIN = 'login';
+
     public const EVENT_LOGOUT = 'logout';
+
     public const EVENT_PERMISSION_CHANGE = 'permission_change';
 
     /**
      * Resource types for analytics
      */
     public const RESOURCE_DASHBOARD = 'dashboard';
+
     public const RESOURCE_REPORT = 'report';
+
     public const RESOURCE_ANALYTICS = 'analytics';
+
     public const RESOURCE_CONFIG = 'configuration';
+
     public const RESOURCE_USER = 'user';
+
     public const RESOURCE_EXPORT = 'export';
+
     public const RESOURCE_SETTINGS = 'settings';
 
     public function __construct(
@@ -56,7 +71,7 @@ class AnalyticsAuditLoggingService
     /**
      * Log a generic audit event
      *
-     * @param array $event Event details including type, description, metadata
+     * @param  array  $event  Event details including type, description, metadata
      * @return int The ID of the created audit log
      */
     public function logAuditEvent(array $event): int
@@ -93,10 +108,10 @@ class AnalyticsAuditLoggingService
     /**
      * Log data access event
      *
-     * @param int|null $userId User accessing the data
-     * @param string $resource Resource type being accessed
-     * @param string $action Action being performed (view, export, etc.)
-     * @param array $context Additional context information
+     * @param  int|null  $userId  User accessing the data
+     * @param  string  $resource  Resource type being accessed
+     * @param  string  $action  Action being performed (view, export, etc.)
+     * @param  array  $context  Additional context information
      * @return int The ID of the created audit log
      */
     public function logDataAccess(?int $userId, string $resource, string $action, array $context = []): int
@@ -133,9 +148,9 @@ class AnalyticsAuditLoggingService
     /**
      * Log data modification event
      *
-     * @param int|null $userId User modifying the data
-     * @param string $resource Resource type being modified
-     * @param array $changes Changes made (before/after)
+     * @param  int|null  $userId  User modifying the data
+     * @param  string  $resource  Resource type being modified
+     * @param  array  $changes  Changes made (before/after)
      * @return int The ID of the created audit log
      */
     public function logDataModification(?int $userId, string $resource, array $changes): int
@@ -176,9 +191,9 @@ class AnalyticsAuditLoggingService
     /**
      * Log configuration change event
      *
-     * @param int|null $userId User making the configuration change
-     * @param string $config Configuration key being changed
-     * @param array $changes Changes made to the configuration
+     * @param  int|null  $userId  User making the configuration change
+     * @param  string  $config  Configuration key being changed
+     * @param  array  $changes  Changes made to the configuration
      * @return int The ID of the created audit log
      */
     public function logConfigurationChange(?int $userId, string $config, array $changes): int
@@ -218,8 +233,8 @@ class AnalyticsAuditLoggingService
     /**
      * Get audit logs with filters
      *
-     * @param array $filters Filter parameters
-     * @param int $perPage Number of results per page
+     * @param  array  $filters  Filter parameters
+     * @param  int  $perPage  Number of results per page
      * @return LengthAwarePaginator Paginated audit logs
      */
     public function getAuditLogs(array $filters = [], int $perPage = 50): LengthAwarePaginator
@@ -250,16 +265,16 @@ class AnalyticsAuditLoggingService
             $query->where('resource_id', $filters['resource_id']);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->where('created_at', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->where('created_at', '<=', $filters['date_to']);
         }
 
-        if (!empty($filters['ip_address'])) {
-            $query->where('ip_address', 'like', '%' . $filters['ip_address'] . '%');
+        if (! empty($filters['ip_address'])) {
+            $query->where('ip_address', 'like', '%'.$filters['ip_address'].'%');
         }
 
         // Apply sorting
@@ -281,7 +296,7 @@ class AnalyticsAuditLoggingService
     /**
      * Get a single audit log by ID
      *
-     * @param int $logId The audit log ID
+     * @param  int  $logId  The audit log ID
      * @return object|null The audit log or null if not found
      */
     public function getAuditLogById(int $logId): ?object
@@ -303,8 +318,8 @@ class AnalyticsAuditLoggingService
     /**
      * Export audit logs
      *
-     * @param array $filters Filter parameters
-     * @param string $format Export format (json, csv)
+     * @param  array  $filters  Filter parameters
+     * @param  string  $format  Export format (json, csv)
      * @return string Exported data
      */
     public function exportAuditLogs(array $filters = [], string $format = 'json'): string
@@ -328,11 +343,11 @@ class AnalyticsAuditLoggingService
             $query->where('resource_type', $filters['resource_type']);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->where('created_at', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->where('created_at', '<=', $filters['date_to']);
         }
 
@@ -345,6 +360,7 @@ class AnalyticsAuditLoggingService
             if (isset($log->metadata)) {
                 $log->metadata = json_decode($log->metadata, true);
             }
+
             return $log;
         });
 
@@ -370,7 +386,7 @@ class AnalyticsAuditLoggingService
     /**
      * Get audit summary for a date range
      *
-     * @param array $dateRange Date range with 'from' and 'to' keys
+     * @param  array  $dateRange  Date range with 'from' and 'to' keys
      * @return array Audit summary statistics
      */
     public function getAuditSummary(array $dateRange): array
@@ -452,8 +468,8 @@ class AnalyticsAuditLoggingService
     /**
      * Get audit trail for a specific user
      *
-     * @param int $userId The user ID
-     * @param int $limit Maximum number of records
+     * @param  int  $userId  The user ID
+     * @param  int  $limit  Maximum number of records
      * @return Collection User's audit trail
      */
     public function getAuditTrail(int $userId, int $limit = 100): Collection
@@ -471,6 +487,7 @@ class AnalyticsAuditLoggingService
             if (isset($log->metadata)) {
                 $log->metadata = json_decode($log->metadata, true);
             }
+
             return $log;
         });
     }
@@ -478,15 +495,15 @@ class AnalyticsAuditLoggingService
     /**
      * Search audit logs by query
      *
-     * @param string $query Search query
-     * @param int $limit Maximum number of results
+     * @param  string  $query  Search query
+     * @param  int  $limit  Maximum number of results
      * @return Collection Matching audit logs
      */
     public function searchAuditLogs(string $query, int $limit = 50): Collection
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
 
-        $searchTerm = '%' . $query . '%';
+        $searchTerm = '%'.$query.'%';
 
         $logs = DB::table('audit_logs')
             ->where('tenant_id', $tenantId)
@@ -504,6 +521,7 @@ class AnalyticsAuditLoggingService
             if (isset($log->metadata)) {
                 $log->metadata = json_decode($log->metadata, true);
             }
+
             return $log;
         });
     }
@@ -511,7 +529,7 @@ class AnalyticsAuditLoggingService
     /**
      * Convert collection to CSV format
      *
-     * @param Collection $logs Audit logs collection
+     * @param  Collection  $logs  Audit logs collection
      * @return string CSV formatted string
      */
     protected function convertToCsv(Collection $logs): string
@@ -521,7 +539,7 @@ class AnalyticsAuditLoggingService
         }
 
         $headers = array_keys((array) $logs->first());
-        $csv = implode(',', $headers) . "\n";
+        $csv = implode(',', $headers)."\n";
 
         foreach ($logs as $log) {
             $row = [];
@@ -532,11 +550,11 @@ class AnalyticsAuditLoggingService
                 }
                 // Escape quotes and wrap in quotes if contains comma or quote
                 if (str_contains($value, ',') || str_contains($value, '"')) {
-                    $value = '"' . str_replace('"', '""', $value) . '"';
+                    $value = '"'.str_replace('"', '""', $value).'"';
                 }
                 $row[] = $value;
             }
-            $csv .= implode(',', $row) . "\n";
+            $csv .= implode(',', $row)."\n";
         }
 
         return $csv;
@@ -545,7 +563,7 @@ class AnalyticsAuditLoggingService
     /**
      * Clean up old audit logs based on retention policy
      *
-     * @param int $daysToKeep Number of days to retain logs
+     * @param  int  $daysToKeep  Number of days to retain logs
      * @return int Number of deleted records
      */
     public function cleanupOldLogs(int $daysToKeep = 365): int

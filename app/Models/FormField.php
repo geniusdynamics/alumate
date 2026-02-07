@@ -22,7 +22,7 @@ class FormField extends Model
         'order_index',
         'is_required',
         'is_visible',
-        'crm_field_mapping'
+        'crm_field_mapping',
     ];
 
     protected $casts = [
@@ -31,7 +31,7 @@ class FormField extends Model
         'conditional_logic' => 'array',
         'is_required' => 'boolean',
         'is_visible' => 'boolean',
-        'crm_field_mapping' => 'array'
+        'crm_field_mapping' => 'array',
     ];
 
     public function form(): BelongsTo
@@ -53,7 +53,7 @@ class FormField extends Model
             'date' => 'Date Picker',
             'number' => 'Number Input',
             'url' => 'URL Input',
-            'hidden' => 'Hidden Field'
+            'hidden' => 'Hidden Field',
         ];
     }
 }

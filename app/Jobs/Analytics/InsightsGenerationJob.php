@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Jobs\Analytics;
 
-use App\Services\Analytics\InsightsService;
 use App\Services\Analytics\ConsentService;
+use App\Services\Analytics\InsightsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Job to generate insights asynchronously
- * 
+ *
  * This job handles the heavy computation for generating analytics insights,
  * allowing the main application to respond quickly while analysis runs in the background.
  */
@@ -43,8 +43,9 @@ class InsightsGenerationJob implements ShouldQueue
             ]);
 
             // Check consent for data access
-            if (!$consentService->hasConsent()) {
+            if (! $consentService->hasConsent()) {
                 Log::warning('Insights generation attempted without data processing consent');
+
                 return;
             }
 
@@ -75,7 +76,7 @@ class InsightsGenerationJob implements ShouldQueue
         return [
             'analytics',
             'insights-generation',
-            'tenant:' . ($this->options['tenant_id'] ?? 'unknown'),
+            'tenant:'.($this->options['tenant_id'] ?? 'unknown'),
         ];
     }
 }

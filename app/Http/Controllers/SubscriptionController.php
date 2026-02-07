@@ -28,7 +28,7 @@ class SubscriptionController extends Controller
     public function index(): Response
     {
         $tenant = Auth::user()->currentTenant;
-        
+
         $subscription = Subscription::with('plan')
             ->where('tenant_id', $tenant->id)
             ->active()
@@ -96,7 +96,7 @@ class SubscriptionController extends Controller
     public function store(CreateSubscriptionRequest $request): JsonResponse
     {
         $tenant = Auth::user()->currentTenant;
-        
+
         // Check if tenant already has an active subscription
         $existingSubscription = Subscription::where('tenant_id', $tenant->id)->active()->first();
         if ($existingSubscription) {
@@ -133,12 +133,12 @@ class SubscriptionController extends Controller
     public function show(): JsonResponse
     {
         $tenant = Auth::user()->currentTenant;
-        
+
         $subscription = Subscription::with(['plan', 'usage'])
             ->where('tenant_id', $tenant->id)
             ->first();
 
-        if (!$subscription) {
+        if (! $subscription) {
             return response()->json(['subscription' => null]);
         }
 
@@ -185,9 +185,9 @@ class SubscriptionController extends Controller
         ]);
 
         $tenant = Auth::user()->currentTenant;
-        
+
         $subscription = Subscription::where('tenant_id', $tenant->id)->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return response()->json([
                 'message' => 'No active subscription found',
             ], 404);
@@ -224,19 +224,19 @@ class SubscriptionController extends Controller
         ]);
 
         $tenant = Auth::user()->currentTenant;
-        
+
         $subscription = Subscription::where('tenant_id', $tenant->id)->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return response()->json([
                 'message' => 'No active subscription found',
             ], 404);
         }
 
         try {
-            $atPeriodEnd = !$request->boolean('immediate', false);
+            $atPeriodEnd = ! $request->boolean('immediate', false);
             $subscription = $this->subscriptionService->cancelSubscription($subscription, $atPeriodEnd);
 
-            $message = $atPeriodEnd 
+            $message = $atPeriodEnd
                 ? 'Subscription will be cancelled at the end of the billing period'
                 : 'Subscription has been cancelled immediately';
 
@@ -258,9 +258,9 @@ class SubscriptionController extends Controller
     public function resume(): JsonResponse
     {
         $tenant = Auth::user()->currentTenant;
-        
+
         $subscription = Subscription::where('tenant_id', $tenant->id)->first();
-        if (!$subscription || !$subscription->isCancelled()) {
+        if (! $subscription || ! $subscription->isCancelled()) {
             return response()->json([
                 'message' => 'No cancelled subscription found',
             ], 404);
@@ -287,9 +287,9 @@ class SubscriptionController extends Controller
     public function updatePaymentMethod(UpdatePaymentMethodRequest $request): JsonResponse
     {
         $tenant = Auth::user()->currentTenant;
-        
+
         $subscription = Subscription::where('tenant_id', $tenant->id)->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return response()->json([
                 'message' => 'No active subscription found',
             ], 404);
@@ -323,9 +323,9 @@ class SubscriptionController extends Controller
         ]);
 
         $tenant = Auth::user()->currentTenant;
-        
+
         $subscription = Subscription::where('tenant_id', $tenant->id)->first();
-        if (!$subscription) {
+        if (! $subscription) {
             return response()->json([
                 'message' => 'No active subscription found',
             ], 404);
@@ -355,7 +355,7 @@ class SubscriptionController extends Controller
     public function invoices(): JsonResponse
     {
         $tenant = Auth::user()->currentTenant;
-        
+
         $invoices = Invoice::where('tenant_id', $tenant->id)
             ->orderBy('created_at', 'desc')
             ->paginate(12);
@@ -369,12 +369,12 @@ class SubscriptionController extends Controller
     public function downloadInvoice(string $invoiceId)
     {
         $tenant = Auth::user()->currentTenant;
-        
+
         $invoice = Invoice::where('tenant_id', $tenant->id)
             ->where('id', $invoiceId)
             ->firstOrFail();
 
-        if (!$invoice->pdf_url) {
+        if (! $invoice->pdf_url) {
             return response()->json([
                 'message' => 'Invoice PDF not available',
             ], 404);

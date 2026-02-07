@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\StylePreset;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class StylePresetController extends Controller
@@ -33,13 +33,13 @@ class StylePresetController extends Controller
             'description' => 'nullable|string|max:500',
             'category' => 'required|string|max:100',
             'styles' => 'required|array',
-            'tailwind_classes' => 'nullable|array'
+            'tailwind_classes' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -50,7 +50,7 @@ class StylePresetController extends Controller
             'styles' => $request->styles,
             'tailwind_classes' => $request->tailwind_classes ?? [],
             'tenant_id' => tenant('id'),
-            'created_by' => auth()->id()
+            'created_by' => auth()->id(),
         ]);
 
         return response()->json($preset, 201);
@@ -84,13 +84,13 @@ class StylePresetController extends Controller
             'description' => 'nullable|string|max:500',
             'category' => 'sometimes|required|string|max:100',
             'styles' => 'sometimes|required|array',
-            'tailwind_classes' => 'nullable|array'
+            'tailwind_classes' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -99,7 +99,7 @@ class StylePresetController extends Controller
             'description',
             'category',
             'styles',
-            'tailwind_classes'
+            'tailwind_classes',
         ]));
 
         return response()->json($stylePreset);
@@ -144,13 +144,13 @@ class StylePresetController extends Controller
         }
 
         $duplicatedPreset = StylePreset::create([
-            'name' => $stylePreset->name . ' (Copy)',
+            'name' => $stylePreset->name.' (Copy)',
             'description' => $stylePreset->description,
             'category' => $stylePreset->category,
             'styles' => $stylePreset->styles,
             'tailwind_classes' => $stylePreset->tailwind_classes,
             'tenant_id' => tenant('id'),
-            'created_by' => auth()->id()
+            'created_by' => auth()->id(),
         ]);
 
         return response()->json($duplicatedPreset, 201);
@@ -182,18 +182,18 @@ class StylePresetController extends Controller
             'presets.*.description' => 'nullable|string|max:500',
             'presets.*.category' => 'required|string|max:100',
             'presets.*.styles' => 'required|array',
-            'presets.*.tailwind_classes' => 'nullable|array'
+            'presets.*.tailwind_classes' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $createdPresets = [];
-        
+
         foreach ($request->presets as $presetData) {
             $preset = StylePreset::create([
                 'name' => $presetData['name'],
@@ -202,15 +202,15 @@ class StylePresetController extends Controller
                 'styles' => $presetData['styles'],
                 'tailwind_classes' => $presetData['tailwind_classes'] ?? [],
                 'tenant_id' => tenant('id'),
-                'created_by' => auth()->id()
+                'created_by' => auth()->id(),
             ]);
-            
+
             $createdPresets[] = $preset;
         }
 
         return response()->json([
             'message' => 'Style presets imported successfully',
-            'presets' => $createdPresets
+            'presets' => $createdPresets,
         ], 201);
     }
 
@@ -226,7 +226,7 @@ class StylePresetController extends Controller
         return response()->json([
             'presets' => $presets,
             'exported_at' => now()->toISOString(),
-            'tenant_id' => tenant('id')
+            'tenant_id' => tenant('id'),
         ]);
     }
 }

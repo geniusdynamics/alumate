@@ -69,30 +69,30 @@ class BackupFailedNotification extends Notification implements ShouldQueue
     {
         $backupType = $this->backupData['type'] ?? 'unknown';
         $errors = $this->backupData['errors'] ?? [];
-        $errorMessage = !empty($errors) ? implode("\n", array_map(fn($e) => "  - {$e}", $errors)) : 'Unknown error occurred';
+        $errorMessage = ! empty($errors) ? implode("\n", array_map(fn ($e) => "  - {$e}", $errors)) : 'Unknown error occurred';
 
         $mail = (new MailMessage)
             ->subject("🚨 Backup Failed - {$backupType} backup")
             ->greeting("Hi {$notifiable->name}!")
-            ->line("A backup operation has **failed** to complete successfully.")
+            ->line('A backup operation has **failed** to complete successfully.')
             ->line("**Backup Type:** {$backupType}")
-            ->line("**Started:** " . ($this->backupData['started_at'] ?? 'N/A'))
-            ->line("**Failed At:** " . ($this->backupData['completed_at'] ?? now()->toISOString()))
-            ->line("")
-            ->line("**Error Details:**")
+            ->line('**Started:** '.($this->backupData['started_at'] ?? 'N/A'))
+            ->line('**Failed At:** '.($this->backupData['completed_at'] ?? now()->toISOString()))
+            ->line('')
+            ->line('**Error Details:**')
             ->line($errorMessage)
-            ->line("")
-            ->line("⚠️ Please investigate the issue immediately. The backup may need to be retried.");
+            ->line('')
+            ->line('⚠️ Please investigate the issue immediately. The backup may need to be retried.');
 
         // Add troubleshooting steps
         return $mail
-            ->line("")
-            ->line("**Troubleshooting Steps:**")
-            ->line("1. Check server disk space")
-            ->line("2. Verify database connectivity")
-            ->line("3. Review application logs for errors")
-            ->line("4. Ensure backup storage is accessible")
-            ->line("")
+            ->line('')
+            ->line('**Troubleshooting Steps:**')
+            ->line('1. Check server disk space')
+            ->line('2. Verify database connectivity')
+            ->line('3. Review application logs for errors')
+            ->line('4. Ensure backup storage is accessible')
+            ->line('')
             ->action('View Backup Logs', url('/admin/logs?filter=backup'));
     }
 }

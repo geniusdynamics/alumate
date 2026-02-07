@@ -24,7 +24,9 @@ class LearningScoreJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $timeout = 300; // 5 minutes
+
     public int $backoff = 60; // 1 minute delay between retries
 
     /**
@@ -43,7 +45,7 @@ class LearningScoreJob implements ShouldQueue
     {
         Log::info('Starting LearningScoreJob', [
             'pairs_count' => count($this->userCoursePairs),
-            'tenant_id' => $this->tenantId
+            'tenant_id' => $this->tenantId,
         ]);
 
         $processed = 0;
@@ -77,7 +79,7 @@ class LearningScoreJob implements ShouldQueue
                         // Update the progress record
                         $progress->update([
                             'engagement_score' => $newScore,
-                            'updated_at' => now()
+                            'updated_at' => now(),
                         ]);
 
                         // Track significant changes (>10% difference)
@@ -87,7 +89,7 @@ class LearningScoreJob implements ShouldQueue
                                 'course_id' => $courseId,
                                 'old_score' => $oldScore,
                                 'new_score' => $newScore,
-                                'change' => $newScore - $oldScore
+                                'change' => $newScore - $oldScore,
                             ];
                         }
                     }
@@ -99,7 +101,7 @@ class LearningScoreJob implements ShouldQueue
                         'user_id' => $pair['user_id'] ?? null,
                         'course_id' => $pair['course_id'] ?? null,
                         'error' => $e->getMessage(),
-                        'tenant_id' => $this->tenantId
+                        'tenant_id' => $this->tenantId,
                     ]);
 
                     $errors++;
@@ -114,11 +116,11 @@ class LearningScoreJob implements ShouldQueue
             'processed' => $processed,
             'errors' => $errors,
             'significant_changes' => count($significantChanges),
-            'tenant_id' => $this->tenantId
+            'tenant_id' => $this->tenantId,
         ]);
 
         // Dispatch insights generation job if there were significant changes
-        if ($this->dispatchInsightsJob && !empty($significantChanges)) {
+        if ($this->dispatchInsightsJob && ! empty($significantChanges)) {
             try {
                 // Group changes by user for insights generation
                 $userChanges = collect($significantChanges)->groupBy('user_id');
@@ -130,20 +132,20 @@ class LearningScoreJob implements ShouldQueue
                         'type' => 'learning_engagement',
                         'data' => [
                             'changes' => $changes->toArray(),
-                            'total_impact' => $changes->sum('change')
-                        ]
+                            'total_impact' => $changes->sum('change'),
+                        ],
                     ], $this->tenantId);
                 }
 
                 Log::info('Dispatched insights jobs for significant learning changes', [
                     'users_affected' => $userChanges->count(),
-                    'tenant_id' => $this->tenantId
+                    'tenant_id' => $this->tenantId,
                 ]);
 
             } catch (\Exception $e) {
                 Log::error('Failed to dispatch insights generation job', [
                     'error' => $e->getMessage(),
-                    'tenant_id' => $this->tenantId
+                    'tenant_id' => $this->tenantId,
                 ]);
             }
         }
@@ -158,7 +160,7 @@ class LearningScoreJob implements ShouldQueue
             'error' => $exception->getMessage(),
             'pairs_count' => count($this->userCoursePairs),
             'tenant_id' => $this->tenantId,
-            'attempts' => $this->attempts()
+            'attempts' => $this->attempts(),
         ]);
     }
 
@@ -170,8 +172,8 @@ class LearningScoreJob implements ShouldQueue
         return [
             'learning-analytics',
             'engagement-scoring',
-            'tenant:' . $this->tenantId,
-            'batch-size:' . count($this->userCoursePairs)
+            'tenant:'.$this->tenantId,
+            'batch-size:'.count($this->userCoursePairs),
         ];
     }
 }

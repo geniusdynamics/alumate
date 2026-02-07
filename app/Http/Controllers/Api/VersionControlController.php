@@ -6,9 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\LandingPage;
 use App\Models\PageVersion;
 use App\Services\VersionControlService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Request;
 
 class VersionControlController extends Controller
 {
@@ -57,7 +56,7 @@ class VersionControlController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create version: ' . $e->getMessage(),
+                'message' => 'Failed to create version: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -107,7 +106,7 @@ class VersionControlController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to rollback: ' . $e->getMessage(),
+                'message' => 'Failed to rollback: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -135,7 +134,7 @@ class VersionControlController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to publish version: ' . $e->getMessage(),
+                'message' => 'Failed to publish version: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -165,7 +164,7 @@ class VersionControlController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to compare versions: ' . $e->getMessage(),
+                'message' => 'Failed to compare versions: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -194,7 +193,7 @@ class VersionControlController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Auto-save failed: ' . $e->getMessage(),
+                'message' => 'Auto-save failed: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -206,7 +205,7 @@ class VersionControlController extends Controller
     {
         $publishedVersion = $this->versionControlService->getPublishedVersion($page);
 
-        if (!$publishedVersion) {
+        if (! $publishedVersion) {
             return response()->json([
                 'success' => false,
                 'message' => 'No published version found',

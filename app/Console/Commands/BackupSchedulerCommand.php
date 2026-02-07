@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Command for running scheduled backup operations
- * 
+ *
  * This command should be called by Laravel's scheduler
  */
 class BackupSchedulerCommand extends Command
@@ -97,7 +97,7 @@ class BackupSchedulerCommand extends Command
             $this->info("✅ Config backup: {$result['config']['path']}");
         }
 
-        if (!empty($result['errors'])) {
+        if (! empty($result['errors'])) {
             $this->warn('Errors encountered:');
             foreach ($result['errors'] as $error) {
                 $this->error("  - {$error}");

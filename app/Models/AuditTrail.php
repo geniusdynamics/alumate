@@ -1,15 +1,15 @@
 <?php
+
 // ABOUTME: Eloquent model for audit_trail table in hybrid tenancy architecture
 // ABOUTME: Tracks all changes across the system for compliance, security, and monitoring purposes
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
 
 class AuditTrail extends Model
 {
@@ -208,17 +208,17 @@ class AuditTrail extends Model
         $user = $this->user ? $this->user->name : 'System';
         $operation = $this->operation_display_name;
         $table = str_replace('_', ' ', $this->table_name);
-        
+
         $description = "{$user} performed {$operation} on {$table}";
-        
+
         if ($this->record_id) {
             $description .= " (ID: {$this->record_id})";
         }
-        
+
         if ($this->tenant_id) {
             $description .= " in tenant {$this->tenant_id}";
         }
-        
+
         return $description;
     }
 
@@ -227,28 +227,28 @@ class AuditTrail extends Model
      */
     public function getChangesSummaryAttribute(): array
     {
-        if (!$this->changed_fields || empty($this->changed_fields)) {
+        if (! $this->changed_fields || empty($this->changed_fields)) {
             return [];
         }
-        
+
         $summary = [];
-        
+
         foreach ($this->changed_fields as $field) {
             $oldValue = $this->old_values[$field] ?? null;
             $newValue = $this->new_values[$field] ?? null;
-            
+
             // Mask sensitive fields
             if (in_array($field, self::SENSITIVE_FIELDS)) {
                 $oldValue = $oldValue ? '[MASKED]' : null;
                 $newValue = $newValue ? '[MASKED]' : null;
             }
-            
+
             $summary[$field] = [
                 'old' => $oldValue,
                 'new' => $newValue,
             ];
         }
-        
+
         return $summary;
     }
 
@@ -265,7 +265,7 @@ class AuditTrail extends Model
             'role_change',
             'security_event',
         ];
-        
+
         return in_array($this->operation, $securityOperations) ||
                $this->category === 'security' ||
                $this->severity_level === 'critical';
@@ -283,7 +283,7 @@ class AuditTrail extends Model
             'permission_change',
             'role_change',
         ];
-        
+
         return in_array($this->operation, $complianceOperations) ||
                $this->category === 'compliance' ||
                in_array($this->table_name, ['global_users', 'user_tenant_memberships']);
@@ -295,7 +295,7 @@ class AuditTrail extends Model
     public function getRiskScoreAttribute(): int
     {
         $score = 0;
-        
+
         // Base score by operation
         $operationScores = [
             'delete' => 8,
@@ -308,9 +308,9 @@ class AuditTrail extends Model
             'create' => 2,
             'login' => 1,
         ];
-        
+
         $score += $operationScores[$this->operation] ?? 1;
-        
+
         // Severity multiplier
         $severityMultipliers = [
             'critical' => 3,
@@ -318,15 +318,15 @@ class AuditTrail extends Model
             'medium' => 1.5,
             'low' => 1,
         ];
-        
+
         $score *= $severityMultipliers[$this->severity_level] ?? 1;
-        
+
         // Sensitive table bonus
         $sensitiveTables = ['global_users', 'user_tenant_memberships', 'payments'];
         if (in_array($this->table_name, $sensitiveTables)) {
             $score += 2;
         }
-        
+
         return min(10, round($score));
     }
 
@@ -381,7 +381,7 @@ class AuditTrail extends Model
     /**
      * Scope to filter by date range.
      */
-    public function scopeDateRange($query, Carbon $startDate = null, Carbon $endDate = null)
+    public function scopeDateRange($query, ?Carbon $startDate = null, ?Carbon $endDate = null)
     {
         if ($startDate) {
             $query->where('created_at', '>=', $startDate);
@@ -389,6 +389,7 @@ class AuditTrail extends Model
         if ($endDate) {
             $query->where('created_at', '<=', $endDate);
         }
+
         return $query;
     }
 
@@ -399,8 +400,8 @@ class AuditTrail extends Model
     {
         return $query->where(function ($q) {
             $q->whereIn('operation', ['login', 'logout', 'password_change', 'permission_change', 'role_change', 'security_event'])
-              ->orWhere('category', 'security')
-              ->orWhere('severity_level', 'critical');
+                ->orWhere('category', 'security')
+                ->orWhere('severity_level', 'critical');
         });
     }
 
@@ -411,8 +412,8 @@ class AuditTrail extends Model
     {
         return $query->where(function ($q) {
             $q->whereIn('operation', ['data_export', 'data_import', 'delete', 'permission_change', 'role_change'])
-              ->orWhere('category', 'compliance')
-              ->orWhereIn('table_name', ['global_users', 'user_tenant_memberships']);
+                ->orWhere('category', 'compliance')
+                ->orWhereIn('table_name', ['global_users', 'user_tenant_memberships']);
         });
     }
 
@@ -421,11 +422,11 @@ class AuditTrail extends Model
      */
     public function scopeHighRisk($query, int $minRiskScore = 7)
     {
-        return $query->where(function ($q) use ($minRiskScore) {
+        return $query->where(function ($q) {
             // This is a simplified version - in practice, you'd calculate risk score in the database
             $q->whereIn('operation', ['delete', 'permission_change', 'role_change', 'security_event'])
-              ->orWhere('severity_level', 'critical')
-              ->orWhere('severity_level', 'high');
+                ->orWhere('severity_level', 'critical')
+                ->orWhere('severity_level', 'high');
         });
     }
 
@@ -436,13 +437,13 @@ class AuditTrail extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('table_name', 'ILIKE', "%{$search}%")
-              ->orWhere('operation', 'ILIKE', "%{$search}%")
-              ->orWhere('record_id', 'ILIKE', "%{$search}%")
-              ->orWhere('ip_address', 'ILIKE', "%{$search}%")
-              ->orWhereHas('user', function ($uq) use ($search) {
-                  $uq->where('name', 'ILIKE', "%{$search}%")
-                     ->orWhere('email', 'ILIKE', "%{$search}%");
-              });
+                ->orWhere('operation', 'ILIKE', "%{$search}%")
+                ->orWhere('record_id', 'ILIKE', "%{$search}%")
+                ->orWhere('ip_address', 'ILIKE', "%{$search}%")
+                ->orWhereHas('user', function ($uq) use ($search) {
+                    $uq->where('name', 'ILIKE', "%{$search}%")
+                        ->orWhere('email', 'ILIKE', "%{$search}%");
+                });
         });
     }
 
@@ -452,7 +453,7 @@ class AuditTrail extends Model
     public function scopeRecent($query, int $hours = 24)
     {
         return $query->where('created_at', '>=', now()->subHours($hours))
-                     ->orderBy('created_at', 'desc');
+            ->orderBy('created_at', 'desc');
     }
 
     /**
@@ -461,20 +462,20 @@ class AuditTrail extends Model
     public static function logModelOperation(
         string $operation,
         Model $model,
-        string $globalUserId = null,
-        string $tenantId = null,
+        ?string $globalUserId = null,
+        ?string $tenantId = null,
         array $metadata = []
     ): self {
         $oldValues = $operation === 'update' ? $model->getOriginal() : null;
         $newValues = $model->getAttributes();
         $changedFields = $operation === 'update' ? array_keys($model->getDirty()) : null;
-        
+
         // Mask sensitive fields
         if ($oldValues) {
             $oldValues = self::maskSensitiveFields($oldValues);
         }
         $newValues = self::maskSensitiveFields($newValues);
-        
+
         return self::create([
             'global_user_id' => $globalUserId,
             'tenant_id' => $tenantId,
@@ -500,8 +501,8 @@ class AuditTrail extends Model
     public static function logSystemEvent(
         string $operation,
         string $description,
-        string $globalUserId = null,
-        string $tenantId = null,
+        ?string $globalUserId = null,
+        ?string $tenantId = null,
         array $metadata = [],
         string $severityLevel = 'medium'
     ): self {
@@ -531,7 +532,7 @@ class AuditTrail extends Model
                 $data[$field] = '[MASKED]';
             }
         }
-        
+
         return $data;
     }
 
@@ -544,17 +545,17 @@ class AuditTrail extends Model
         if (in_array($operation, ['delete', 'security_event'])) {
             return 'critical';
         }
-        
+
         // High severity operations
         if (in_array($operation, ['permission_change', 'role_change', 'data_export'])) {
             return 'high';
         }
-        
+
         // Sensitive tables
         if (in_array($tableName, ['global_users', 'user_tenant_memberships', 'payments'])) {
             return $operation === 'update' ? 'medium' : 'high';
         }
-        
+
         // Default
         return 'low';
     }
@@ -568,11 +569,11 @@ class AuditTrail extends Model
         if (in_array($operation, ['login', 'logout', 'password_change'])) {
             return 'authentication';
         }
-        
+
         if (in_array($operation, ['permission_change', 'role_change'])) {
             return 'authorization';
         }
-        
+
         // Table-based categories
         $tableCategories = [
             'global_users' => 'user_management',
@@ -584,39 +585,39 @@ class AuditTrail extends Model
             'grades' => 'data_modification',
             'transcripts' => 'data_modification',
         ];
-        
+
         if (isset($tableCategories[$tableName])) {
             return $tableCategories[$tableName];
         }
-        
+
         // Operation-based categories
         if (in_array($operation, ['create', 'update', 'delete'])) {
             return 'data_modification';
         }
-        
+
         return 'information';
     }
 
     /**
      * Get audit statistics for a date range.
      */
-    public static function getStatistics(Carbon $startDate = null, Carbon $endDate = null): array
+    public static function getStatistics(?Carbon $startDate = null, ?Carbon $endDate = null): array
     {
         $query = self::query();
-        
+
         if ($startDate) {
             $query->where('created_at', '>=', $startDate);
         }
         if ($endDate) {
             $query->where('created_at', '<=', $endDate);
         }
-        
+
         $total = $query->count();
         $byOperation = $query->groupBy('operation')->selectRaw('operation, count(*) as count')->pluck('count', 'operation');
         $bySeverity = $query->groupBy('severity_level')->selectRaw('severity_level, count(*) as count')->pluck('count', 'severity_level');
         $byCategory = $query->groupBy('category')->selectRaw('category, count(*) as count')->pluck('count', 'category');
         $byTable = $query->groupBy('table_name')->selectRaw('table_name, count(*) as count')->pluck('count', 'table_name');
-        
+
         return [
             'total_entries' => $total,
             'by_operation' => $byOperation->toArray(),
@@ -635,12 +636,12 @@ class AuditTrail extends Model
     protected static function boot()
     {
         parent::boot();
-        
+
         // Prevent modification of audit records
         static::updating(function ($model) {
             return false; // Audit records should be immutable
         });
-        
+
         static::deleting(function ($model) {
             return false; // Audit records should not be deleted
         });

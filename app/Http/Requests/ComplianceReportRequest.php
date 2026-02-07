@@ -87,7 +87,7 @@ class ComplianceReportRequest extends FormRequest
     {
         $dateRange = $this->input('date_range', []);
 
-        if (!empty($dateRange) && isset($dateRange['start']) && isset($dateRange['end'])) {
+        if (! empty($dateRange) && isset($dateRange['start']) && isset($dateRange['end'])) {
             $startDate = strtotime($dateRange['start']);
             $endDate = strtotime($dateRange['end']);
 
@@ -124,7 +124,7 @@ class ComplianceReportRequest extends FormRequest
         }
 
         // Set default for include_deleted
-        if (!$this->has('include_deleted')) {
+        if (! $this->has('include_deleted')) {
             $this->merge([
                 'include_deleted' => false,
             ]);

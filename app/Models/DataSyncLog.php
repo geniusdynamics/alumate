@@ -1,16 +1,15 @@
 <?php
+
 // ABOUTME: Eloquent model for data_sync_logs table in schema-based tenancy architecture
 // ABOUTME: Tracks synchronization operations within tenant schemas for consistency and monitoring
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
 
 class DataSyncLog extends Model
 {
@@ -205,11 +204,12 @@ class DataSyncLog extends Model
      */
     public function getDurationAttribute(): ?int
     {
-        if (!$this->started_at) {
+        if (! $this->started_at) {
             return null;
         }
 
         $endTime = $this->completed_at ?? $this->failed_at ?? now();
+
         return $this->started_at->diffInSeconds($endTime);
     }
 
@@ -219,20 +219,20 @@ class DataSyncLog extends Model
     public function getFormattedDurationAttribute(): string
     {
         $duration = $this->duration;
-        
+
         if (is_null($duration)) {
             return 'N/A';
         }
 
         if ($duration < 60) {
-            return $duration . 's';
+            return $duration.'s';
         }
 
         if ($duration < 3600) {
-            return round($duration / 60, 1) . 'm';
+            return round($duration / 60, 1).'m';
         }
 
-        return round($duration / 3600, 1) . 'h';
+        return round($duration / 3600, 1).'h';
     }
 
     /**
@@ -264,9 +264,9 @@ class DataSyncLog extends Model
      */
     public function canRetry(): bool
     {
-        return $this->isFailed() && 
+        return $this->isFailed() &&
                $this->retry_count < $this->max_retries &&
-               !in_array($this->status, ['cancelled']);
+               ! in_array($this->status, ['cancelled']);
     }
 
     /**
@@ -275,15 +275,15 @@ class DataSyncLog extends Model
     public function getSuccessRateAttribute(): float
     {
         $total = self::where('sync_type', $this->sync_type)
-                    ->count();
-        
+            ->count();
+
         if ($total === 0) {
             return 0;
         }
 
         $successful = self::where('sync_type', $this->sync_type)
-                         ->where('status', 'completed')
-                         ->count();
+            ->where('status', 'completed')
+            ->count();
 
         return ($successful / $total) * 100;
     }
@@ -294,10 +294,10 @@ class DataSyncLog extends Model
     public function getAverageDurationAttribute(): float
     {
         $completedSyncs = self::where('sync_type', $this->sync_type)
-                             ->where('status', 'completed')
-                             ->whereNotNull('started_at')
-                             ->whereNotNull('completed_at')
-                             ->get();
+            ->where('status', 'completed')
+            ->whereNotNull('started_at')
+            ->whereNotNull('completed_at')
+            ->get();
 
         if ($completedSyncs->isEmpty()) {
             return 0;
@@ -316,7 +316,7 @@ class DataSyncLog extends Model
     public function getSyncStatsAttribute(): array
     {
         $stats = $this->sync_data['stats'] ?? [];
-        
+
         return array_merge([
             'records_processed' => 0,
             'records_created' => 0,
@@ -372,7 +372,7 @@ class DataSyncLog extends Model
     /**
      * Scope to filter by tenant (legacy compatibility).
      */
-    public function scopeByTenant($query, string $tenantId = null)
+    public function scopeByTenant($query, ?string $tenantId = null)
     {
         // In schema-based tenancy, data is already isolated by schema
         return $query;
@@ -405,7 +405,7 @@ class DataSyncLog extends Model
     /**
      * Scope to filter by date range.
      */
-    public function scopeDateRange($query, Carbon $startDate = null, Carbon $endDate = null)
+    public function scopeDateRange($query, ?Carbon $startDate = null, ?Carbon $endDate = null)
     {
         if ($startDate) {
             $query->where('started_at', '>=', $startDate);
@@ -413,6 +413,7 @@ class DataSyncLog extends Model
         if ($endDate) {
             $query->where('started_at', '<=', $endDate);
         }
+
         return $query;
     }
 
@@ -446,7 +447,7 @@ class DataSyncLog extends Model
     public function scopeRetryable($query)
     {
         return $query->where('status', 'failed')
-                     ->whereRaw('retry_count < max_retries');
+            ->whereRaw('retry_count < max_retries');
     }
 
     /**
@@ -455,7 +456,7 @@ class DataSyncLog extends Model
     public function scopeRecent($query, int $hours = 24)
     {
         return $query->where('started_at', '>=', now()->subHours($hours))
-                     ->orderBy('started_at', 'desc');
+            ->orderBy('started_at', 'desc');
     }
 
     /**
@@ -481,11 +482,11 @@ class DataSyncLog extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('source_table', 'ILIKE', "%{$search}%")
-              ->orWhere('target_table', 'ILIKE', "%{$search}%")
-              ->orWhere('source_record_id', 'ILIKE', "%{$search}%")
-              ->orWhere('target_record_id', 'ILIKE', "%{$search}%")
-              ->orWhere('batch_id', 'ILIKE', "%{$search}%")
-              ->orWhere('error_message', 'ILIKE', "%{$search}%");
+                ->orWhere('target_table', 'ILIKE', "%{$search}%")
+                ->orWhere('source_record_id', 'ILIKE', "%{$search}%")
+                ->orWhere('target_record_id', 'ILIKE', "%{$search}%")
+                ->orWhere('batch_id', 'ILIKE', "%{$search}%")
+                ->orWhere('error_message', 'ILIKE', "%{$search}%");
         });
     }
 
@@ -540,7 +541,7 @@ class DataSyncLog extends Model
      */
     public function retry(): self
     {
-        if (!$this->canRetry()) {
+        if (! $this->canRetry()) {
             throw new \Exception('Sync cannot be retried');
         }
 
@@ -559,7 +560,7 @@ class DataSyncLog extends Model
     /**
      * Cancel the sync operation.
      */
-    public function cancel(string $reason = null): self
+    public function cancel(?string $reason = null): self
     {
         $metadata = $this->metadata ?? [];
         if ($reason) {
@@ -652,30 +653,30 @@ class DataSyncLog extends Model
     public static function getSyncStatistics(int $days = 30): array
     {
         $query = self::query();
-        
+
         $query->where('started_at', '>=', now()->subDays($days));
-        
+
         $total = $query->count();
         $completed = $query->where('status', 'completed')->count();
         $failed = $query->whereIn('status', ['failed', 'cancelled'])->count();
         $running = $query->whereIn('status', ['pending', 'in_progress', 'retrying'])->count();
-        
+
         $successRate = $total > 0 ? ($completed / $total) * 100 : 0;
-        
+
         $avgDuration = $query->where('status', 'completed')
-                            ->whereNotNull('started_at')
-                            ->whereNotNull('completed_at')
-                            ->get()
-                            ->avg(function ($sync) {
-                                return $sync->started_at->diffInSeconds($sync->completed_at);
-                            }) ?? 0;
-        
+            ->whereNotNull('started_at')
+            ->whereNotNull('completed_at')
+            ->get()
+            ->avg(function ($sync) {
+                return $sync->started_at->diffInSeconds($sync->completed_at);
+            }) ?? 0;
+
         $bySyncType = $query->groupBy('sync_type')
-                           ->selectRaw('sync_type, count(*) as count, 
+            ->selectRaw('sync_type, count(*) as count, 
                                        sum(case when status = "completed" then 1 else 0 end) as completed')
-                           ->get()
-                           ->keyBy('sync_type');
-        
+            ->get()
+            ->keyBy('sync_type');
+
         return [
             'total_syncs' => $total,
             'completed_syncs' => $completed,
@@ -693,10 +694,10 @@ class DataSyncLog extends Model
     public static function cleanup(int $daysToKeep = 90): int
     {
         $cutoffDate = now()->subDays($daysToKeep);
-        
+
         return self::where('started_at', '<', $cutoffDate)
-                  ->whereIn('status', ['completed', 'failed', 'cancelled'])
-                  ->delete();
+            ->whereIn('status', ['completed', 'failed', 'cancelled'])
+            ->delete();
     }
 
     /**
@@ -705,10 +706,10 @@ class DataSyncLog extends Model
     public static function getPendingSyncs(int $limit = 100): \Illuminate\Database\Eloquent\Collection
     {
         return self::where('status', 'pending')
-                  ->orderBy('priority', 'desc')
-                  ->orderBy('created_at', 'asc')
-                  ->limit($limit)
-                  ->get();
+            ->orderBy('priority', 'desc')
+            ->orderBy('created_at', 'asc')
+            ->limit($limit)
+            ->get();
     }
 
     /**
@@ -717,10 +718,10 @@ class DataSyncLog extends Model
     public static function getRetryableSyncs(int $limit = 50): \Illuminate\Database\Eloquent\Collection
     {
         return self::retryable()
-                  ->orderBy('priority', 'desc')
-                  ->orderBy('failed_at', 'asc')
-                  ->limit($limit)
-                  ->get();
+            ->orderBy('priority', 'desc')
+            ->orderBy('failed_at', 'asc')
+            ->limit($limit)
+            ->get();
     }
 
     /**
@@ -728,12 +729,12 @@ class DataSyncLog extends Model
      */
     public static function createBatch(
         array $syncs,
-        string $batchId = null
+        ?string $batchId = null
     ): \Illuminate\Database\Eloquent\Collection {
         $batchId = $batchId ?? \Illuminate\Support\Str::uuid()->toString();
-        
+
         $syncLogs = collect();
-        
+
         foreach ($syncs as $sync) {
             $sync['batch_id'] = $batchId;
             $syncLogs->push(self::createSync(
@@ -744,7 +745,7 @@ class DataSyncLog extends Model
                 $sync
             ));
         }
-        
+
         return $syncLogs;
     }
 
@@ -754,16 +755,16 @@ class DataSyncLog extends Model
     public static function getBatchStatus(string $batchId): array
     {
         $syncs = self::where('batch_id', $batchId)->get();
-        
+
         if ($syncs->isEmpty()) {
             return ['status' => 'not_found'];
         }
-        
+
         $total = $syncs->count();
         $completed = $syncs->where('status', 'completed')->count();
         $failed = $syncs->whereIn('status', ['failed', 'cancelled'])->count();
         $running = $syncs->whereIn('status', ['pending', 'in_progress', 'retrying'])->count();
-        
+
         $status = 'in_progress';
         if ($completed === $total) {
             $status = 'completed';
@@ -772,7 +773,7 @@ class DataSyncLog extends Model
         } elseif ($running === 0) {
             $status = 'partial';
         }
-        
+
         return [
             'status' => $status,
             'total' => $total,

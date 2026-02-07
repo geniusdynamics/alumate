@@ -41,7 +41,7 @@ class AppServiceProvider extends ServiceProvider
     protected function validateEnvironment(): void
     {
         // Check PHP version requirement
-        if (!version_compare(PHP_VERSION, '8.3.0', '>=')) {
+        if (! version_compare(PHP_VERSION, '8.3.0', '>=')) {
             throw new \RuntimeException(
                 sprintf(
                     'This application requires PHP 8.3.0 or higher. Current version: %s',

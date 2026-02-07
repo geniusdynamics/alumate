@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Notification sent when a virus is detected in an uploaded file
 // ABOUTME: Notifies users and admins about infected files
 
@@ -16,7 +17,9 @@ class VirusDetectedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected StoredFile $storedFile;
+
     protected bool $isAdminNotification;
+
     protected ?string $infectionDetails;
 
     public function __construct(
@@ -142,7 +145,7 @@ class VirusDetectedNotification extends Notification implements ShouldQueue
 
         $mail = (new MailMessage)
             ->subject($subject)
-            ->greeting("Hello Admin,")
+            ->greeting('Hello Admin,')
             ->line('A virus has been detected in a file uploaded by a user.')
             ->line('')
             ->line('**File Details:**')

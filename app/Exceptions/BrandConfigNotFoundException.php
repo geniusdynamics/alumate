@@ -6,7 +6,7 @@ use Exception;
 
 class BrandConfigNotFoundException extends Exception
 {
-    public function __construct(string $message = "Brand configuration not found")
+    public function __construct(string $message = 'Brand configuration not found')
     {
         parent::__construct($message);
     }

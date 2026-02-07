@@ -33,7 +33,7 @@ class SecurityHeadersMiddleware
         $csp .= "font-src 'self' https://fonts.gstatic.com; ";
         $csp .= "img-src 'self' data: https: blob:; ";
         $csp .= "connect-src 'self' https://api.stripe.com; ";
-        $csp .= "frame-src https://js.stripe.com; ";
+        $csp .= 'frame-src https://js.stripe.com; ';
         $csp .= "media-src 'self' https: blob:;";
         $response->headers->set('Content-Security-Policy', $csp);
 

@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Models\Backup;
 use App\Models\Tenant;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
@@ -32,10 +31,10 @@ class BackupService
             now()->format('Y-m-d_H-i-s')
         );
 
-        $path = $this->backupPath . '/' . $filename;
+        $path = $this->backupPath.'/'.$filename;
 
         // Ensure backup directory exists
-        if (!is_dir($this->backupPath)) {
+        if (! is_dir($this->backupPath)) {
             mkdir($this->backupPath, 0755, true);
         }
 
@@ -64,11 +63,11 @@ class BackupService
         $process->setEnv(['PGPASSWORD' => $config['password']]);
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             Log::error('Database backup failed', [
                 'error' => $process->getErrorOutput(),
             ]);
-            throw new \Exception('Database backup failed: ' . $process->getErrorOutput());
+            throw new \Exception('Database backup failed: '.$process->getErrorOutput());
         }
 
         // Calculate checksum
@@ -114,7 +113,7 @@ class BackupService
             now()->format('Y-m-d_H-i-s')
         );
 
-        $path = $this->backupPath . '/' . $filename;
+        $path = $this->backupPath.'/'.$filename;
         $storagePath = storage_path('app');
 
         // Create tar.gz archive
@@ -130,11 +129,11 @@ class BackupService
         $process = new Process($command);
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             Log::error('Files backup failed', [
                 'error' => $process->getErrorOutput(),
             ]);
-            throw new \Exception('Files backup failed: ' . $process->getErrorOutput());
+            throw new \Exception('Files backup failed: '.$process->getErrorOutput());
         }
 
         $checksum = hash_file('sha256', $path);
@@ -172,7 +171,7 @@ class BackupService
         ]);
 
         // Verify backup integrity
-        if ($verify && !$this->verifyBackup($backup)) {
+        if ($verify && ! $this->verifyBackup($backup)) {
             throw new \Exception('Backup verification failed');
         }
 
@@ -190,16 +189,17 @@ class BackupService
      */
     public function verifyBackup(Backup $backup): bool
     {
-        if (!file_exists($backup->path)) {
+        if (! file_exists($backup->path)) {
             // Try to download from cloud
             $this->downloadFromCloud($backup);
         }
 
-        if (!file_exists($backup->path)) {
+        if (! file_exists($backup->path)) {
             Log::error('Backup file not found', [
                 'backup_id' => $backup->id,
                 'path' => $backup->path,
             ]);
+
             return false;
         }
 
@@ -290,12 +290,12 @@ class BackupService
     private function uploadToCloud(Backup $backup): void
     {
         $cloudDisk = config('backup.cloud_disk');
-        if (!$cloudDisk) {
+        if (! $cloudDisk) {
             return;
         }
 
         try {
-            $cloudPath = 'backups/' . $backup->filename;
+            $cloudPath = 'backups/'.$backup->filename;
             Storage::disk($cloudDisk)->put($cloudPath, file_get_contents($backup->path));
 
             $backup->update([
@@ -320,7 +320,7 @@ class BackupService
      */
     private function downloadFromCloud(Backup $backup): void
     {
-        if (!$backup->cloud_path || !$backup->cloud_disk) {
+        if (! $backup->cloud_path || ! $backup->cloud_disk) {
             return;
         }
 
@@ -362,11 +362,12 @@ class BackupService
         $process->setTimeout(3600); // 1 hour timeout
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             Log::error('Database restore failed', [
                 'backup_id' => $backup->id,
                 'error' => $process->getErrorOutput(),
             ]);
+
             return false;
         }
 
@@ -395,11 +396,12 @@ class BackupService
         $process = new Process($command);
         $process->run();
 
-        if (!$process->isSuccessful()) {
+        if (! $process->isSuccessful()) {
             Log::error('Files restore failed', [
                 'backup_id' => $backup->id,
                 'error' => $process->getErrorOutput(),
             ]);
+
             return false;
         }
 

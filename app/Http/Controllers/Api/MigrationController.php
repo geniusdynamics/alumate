@@ -13,17 +13,14 @@ class MigrationController extends Controller
 {
     /**
      * Display a listing of migrations
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
         $migrations = Migration::where('tenant_id', tenant()->id)
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->type, fn($q) => $q->where('type', $request->type))
-            ->when($request->start_date, fn($q) => $q->whereDate('created_at', '>=', $request->start_date))
-            ->when($request->end_date, fn($q) => $q->whereDate('created_at', '<=', $request->end_date))
+            ->when($request->status, fn ($q) => $q->where('status', $request->status))
+            ->when($request->type, fn ($q) => $q->where('type', $request->type))
+            ->when($request->start_date, fn ($q) => $q->whereDate('created_at', '>=', $request->start_date))
+            ->when($request->end_date, fn ($q) => $q->whereDate('created_at', '<=', $request->end_date))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
@@ -39,15 +36,12 @@ class MigrationController extends Controller
                 'total_count' => Migration::where('tenant_id', tenant()->id)->count(),
                 'statuses' => ['pending', 'processing', 'completed', 'failed', 'rolled_back'],
                 'types' => ['data', 'schema', 'content', 'configuration'],
-            ]
+            ],
         ]);
     }
 
     /**
      * Store a newly created migration
-     *
-     * @param CreateMigrationRequest $request
-     * @return JsonResponse
      */
     public function store(CreateMigrationRequest $request): JsonResponse
     {
@@ -68,9 +62,6 @@ class MigrationController extends Controller
 
     /**
      * Display the specified migration
-     *
-     * @param Migration $migration
-     * @return JsonResponse
      */
     public function show(Migration $migration): JsonResponse
     {
@@ -83,9 +74,6 @@ class MigrationController extends Controller
 
     /**
      * Execute migration
-     *
-     * @param Migration $migration
-     * @return JsonResponse
      */
     public function execute(Migration $migration): JsonResponse
     {
@@ -108,9 +96,6 @@ class MigrationController extends Controller
 
     /**
      * Remove the specified migration
-     *
-     * @param Migration $migration
-     * @return JsonResponse
      */
     public function destroy(Migration $migration): JsonResponse
     {

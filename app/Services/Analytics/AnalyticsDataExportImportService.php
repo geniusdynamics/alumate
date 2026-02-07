@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
@@ -25,13 +24,18 @@ class AnalyticsDataExportImportService
 {
     // Export/Import format constants
     public const FORMAT_JSON = 'json';
+
     public const FORMAT_CSV = 'csv';
+
     public const FORMAT_EXCEL = 'excel';
 
     // Status constants
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_PROCESSING = 'processing';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
 
     // Validation rules
@@ -42,14 +46,18 @@ class AnalyticsDataExportImportService
     ];
 
     private const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+
     private const MAX_RECORDS_PER_BATCH = 10000;
 
     // Cache TTL constants
     private const CACHE_TTL_SHORT = 300;   // 5 minutes
+
     private const CACHE_TTL_MEDIUM = 1800; // 30 minutes
+
     private const CACHE_TTL_LONG = 3600;    // 1 hour
 
     private TenantContextService $tenantContext;
+
     private array $config;
 
     public function __construct(TenantContextService $tenantContext)
@@ -70,17 +78,17 @@ class AnalyticsDataExportImportService
     /**
      * Export analytics data based on request parameters
      *
-     * @param \Illuminate\Http\Request|array $request Request containing export parameters
+     * @param  \Illuminate\Http\Request|array  $request  Request containing export parameters
      * @return array Export result with file path and metadata
      */
     public function exportData($request): array
     {
         try {
             $tenantId = $this->tenantContext->getCurrentTenantId();
-            
+
             // Parse request parameters
             $options = $this->parseExportOptions($request);
-            
+
             // Validate export request
             $this->validateExportRequest($options);
 
@@ -144,8 +152,8 @@ class AnalyticsDataExportImportService
     /**
      * Export data to CSV format
      *
-     * @param array $data Data to export
-     * @param array $options Export options
+     * @param  array  $data  Data to export
+     * @param  array  $options  Export options
      * @return array Export result
      */
     public function exportToCSV(array $data, array $options = []): array
@@ -156,7 +164,7 @@ class AnalyticsDataExportImportService
 
         // Get flattened data
         $records = $this->flattenDataForExport($data);
-        
+
         // Get headers
         $headers = $this->getCSVHeaders($data);
 
@@ -180,13 +188,13 @@ class AnalyticsDataExportImportService
     private function arrayToCsv(array $headers, array $rows): string
     {
         $output = fopen('php://memory', 'r+');
-        
+
         // Add BOM for Excel compatibility
         fwrite($output, "\xEF\xBB\xBF");
-        
+
         // Write headers
         fputcsv($output, $headers);
-        
+
         // Write data rows
         foreach ($rows as $row) {
             $csvRow = [];
@@ -195,19 +203,19 @@ class AnalyticsDataExportImportService
             }
             fputcsv($output, $csvRow);
         }
-        
+
         rewind($output);
         $content = stream_get_contents($output);
         fclose($output);
-        
+
         return $content;
     }
 
     /**
      * Export data to JSON format
      *
-     * @param array $data Data to export
-     * @param array $options Export options
+     * @param  array  $data  Data to export
+     * @param  array  $options  Export options
      * @return array Export result
      */
     public function exportToJSON(array $data, array $options = []): array
@@ -230,7 +238,7 @@ class AnalyticsDataExportImportService
         ];
 
         // Add summary statistics
-        if (!empty($data)) {
+        if (! empty($data)) {
             $exportData['summary'] = $this->generateExportSummary($data);
         }
 
@@ -249,8 +257,8 @@ class AnalyticsDataExportImportService
     /**
      * Export data to Excel format
      *
-     * @param array $data Data to export
-     * @param array $options Export options
+     * @param  array  $data  Data to export
+     * @param  array  $options  Export options
      * @return array Export result
      */
     public function exportToExcel(array $data, array $options = []): array
@@ -262,7 +270,7 @@ class AnalyticsDataExportImportService
         // For now, create CSV with .xlsx extension as placeholder
         // In production, would use PhpSpreadsheet
         $csvResult = $this->exportToCSV($data, $options);
-        
+
         // Rename to xlsx
         $newPath = preg_replace('/\.csv$/', '.xlsx', $filePath);
         Storage::disk($this->config['storage_disk'])->copy($csvResult['file_path'], $newPath);
@@ -279,7 +287,7 @@ class AnalyticsDataExportImportService
     /**
      * Import analytics data from file
      *
-     * @param \Symfony\Component\HttpFoundation\File\UploadedFile|string $file File to import
+     * @param  \Symfony\Component\HttpFoundation\File\UploadedFile|string  $file  File to import
      * @return array Import result with statistics
      */
     public function importData($file): array
@@ -288,8 +296,8 @@ class AnalyticsDataExportImportService
             $tenantId = $this->tenantContext->getCurrentTenantId();
 
             // Handle UploadedFile or string path
-            $filePath = $file instanceof UploadedFile 
-                ? $this->storeUploadedFile($file) 
+            $filePath = $file instanceof UploadedFile
+                ? $this->storeUploadedFile($file)
                 : $file;
 
             // Determine format from file extension
@@ -308,9 +316,9 @@ class AnalyticsDataExportImportService
             // Validate imported data
             $validationResult = $this->validateImportData($importResult['data']);
 
-            if (!$validationResult['valid']) {
+            if (! $validationResult['valid']) {
                 throw new \InvalidArgumentException(
-                    'Invalid data format: ' . implode(', ', $validationResult['errors'])
+                    'Invalid data format: '.implode(', ', $validationResult['errors'])
                 );
             }
 
@@ -369,42 +377,42 @@ class AnalyticsDataExportImportService
     /**
      * Import data from CSV file
      *
-     * @param string $filePath Path to CSV file
+     * @param  string  $filePath  Path to CSV file
      * @return array Parsed data
      */
     public function importFromCSV(string $filePath): array
     {
         $content = Storage::disk($this->config['storage_disk'])->get($filePath);
-        
+
         // Parse CSV
         $records = [];
         $lines = str_getcsv($content, "\n");
-        
+
         // Skip BOM if present
-        if (!empty($lines) && str_starts_with($lines[0], "\xEF\xBB\xBF")) {
+        if (! empty($lines) && str_starts_with($lines[0], "\xEF\xBB\xBF")) {
             $lines[0] = substr($lines[0], 3);
         }
-        
+
         if (empty($lines)) {
             return ['data' => [], 'record_count' => 0];
         }
-        
+
         // Parse header row
         $headers = str_getcsv($lines[0]);
-        
+
         // Parse data rows
         for ($i = 1; $i < count($lines); $i++) {
             if (trim($lines[$i]) === '') {
                 continue;
             }
-            
+
             $row = str_getcsv($lines[$i]);
             $record = [];
-            
+
             foreach ($headers as $index => $header) {
                 $record[trim($header)] = $row[$index] ?? null;
             }
-            
+
             $records[] = $this->normalizeImportRecord($record);
         }
 
@@ -417,7 +425,7 @@ class AnalyticsDataExportImportService
     /**
      * Import data from JSON file
      *
-     * @param string $filePath Path to JSON file
+     * @param  string  $filePath  Path to JSON file
      * @return array Parsed data
      */
     public function importFromJSON(string $filePath): array
@@ -426,7 +434,7 @@ class AnalyticsDataExportImportService
         $data = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \InvalidArgumentException('Invalid JSON format: ' . json_last_error_msg());
+            throw new \InvalidArgumentException('Invalid JSON format: '.json_last_error_msg());
         }
 
         // Handle nested export structure
@@ -435,7 +443,7 @@ class AnalyticsDataExportImportService
         }
 
         // Ensure array
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             $data = [$data];
         }
 
@@ -453,7 +461,7 @@ class AnalyticsDataExportImportService
     /**
      * Validate imported data
      *
-     * @param array $data Data to validate
+     * @param  array  $data  Data to validate
      * @return array Validation result with 'valid' flag and 'errors' array
      */
     public function validateImportData(array $data): array
@@ -464,7 +472,7 @@ class AnalyticsDataExportImportService
         foreach ($data as $index => $record) {
             // Check required fields
             foreach (self::REQUIRED_FIELDS as $field) {
-                if (!isset($record[$field]) || $record[$field] === '') {
+                if (! isset($record[$field]) || $record[$field] === '') {
                     $errors[] = "Record {$index}: Missing required field '{$field}'";
                 }
             }
@@ -480,7 +488,7 @@ class AnalyticsDataExportImportService
 
             // Validate event type
             if (isset($record['event_type'])) {
-                if (!in_array($record['event_type'], $this->getValidEventTypes())) {
+                if (! in_array($record['event_type'], $this->getValidEventTypes())) {
                     $warnings[] = "Record {$index}: Unknown event_type '{$record['event_type']}'";
                 }
             }
@@ -499,7 +507,7 @@ class AnalyticsDataExportImportService
     /**
      * Get export history
      *
-     * @param array $options Query options
+     * @param  array  $options  Query options
      * @return array Export history with pagination
      */
     public function getExportHistory(array $options = []): array
@@ -568,7 +576,7 @@ class AnalyticsDataExportImportService
     /**
      * Get import history
      *
-     * @param array $options Query options
+     * @param  array  $options  Query options
      * @return array Import history with pagination
      */
     public function getImportHistory(array $options = []): array
@@ -637,7 +645,7 @@ class AnalyticsDataExportImportService
     /**
      * Preview export data without creating file
      *
-     * @param array $options Export options
+     * @param  array  $options  Export options
      * @return array Preview data
      */
     public function previewExport(array $options = []): array
@@ -661,14 +669,14 @@ class AnalyticsDataExportImportService
      */
     private function validateExportRequest(array $options): void
     {
-        if (!in_array($options['format'], $this->config['supported_formats'])) {
+        if (! in_array($options['format'], $this->config['supported_formats'])) {
             throw new \InvalidArgumentException(
-                "Unsupported export format: {$options['format']}. Supported formats: " .
+                "Unsupported export format: {$options['format']}. Supported formats: ".
                 implode(', ', $this->config['supported_formats'])
             );
         }
 
-        if (!empty($options['timeframe'])) {
+        if (! empty($options['timeframe'])) {
             $this->validateTimeframe($options['timeframe']);
         }
     }
@@ -678,8 +686,8 @@ class AnalyticsDataExportImportService
      */
     private function parseExportOptions($request): array
     {
-        $options = is_array($request) 
-            ? $request 
+        $options = is_array($request)
+            ? $request
             : $request->all();
 
         return [
@@ -704,11 +712,11 @@ class AnalyticsDataExportImportService
 
         // Determine date range
         $timeframe = $this->parseTimeframe($options['timeframe'] ?? '24h');
-        $startDate = $options['start_date'] 
-            ? Carbon::parse($options['start_date']) 
+        $startDate = $options['start_date']
+            ? Carbon::parse($options['start_date'])
             : now()->subMinutes($timeframe);
-        $endDate = $options['end_date'] 
-            ? Carbon::parse($options['end_date']) 
+        $endDate = $options['end_date']
+            ? Carbon::parse($options['end_date'])
             : now();
 
         // Collect data based on types
@@ -837,7 +845,7 @@ class AnalyticsDataExportImportService
                 foreach ($records as $record) {
                     if (is_array($record)) {
                         foreach ($record as $key => $value) {
-                            if (!in_array($key, $headers)) {
+                            if (! in_array($key, $headers)) {
                                 $headers[] = $key;
                             }
                         }
@@ -930,7 +938,7 @@ class AnalyticsDataExportImportService
     {
         // Normalize field names
         $normalized = [];
-        
+
         foreach ($record as $key => $value) {
             // Convert snake_case to camelCase
             $normalizedKey = Str::camel($key);
@@ -938,7 +946,7 @@ class AnalyticsDataExportImportService
         }
 
         // Ensure required fields exist
-        if (!isset($normalized['eventTimestamp']) && isset($record['event_timestamp'])) {
+        if (! isset($normalized['eventTimestamp']) && isset($record['event_timestamp'])) {
             $normalized['eventTimestamp'] = $record['event_timestamp'];
         }
 
@@ -960,6 +968,7 @@ class AnalyticsDataExportImportService
                 // Check if record should be skipped
                 if ($this->shouldSkipRecord($record)) {
                     $skippedCount++;
+
                     continue;
                 }
 
@@ -1004,7 +1013,7 @@ class AnalyticsDataExportImportService
     private function storeUploadedFile(UploadedFile $file): string
     {
         $tenantId = $this->tenantContext->getCurrentTenantId();
-        $fileName = uniqid() . '_' . $file->getClientOriginalName();
+        $fileName = uniqid().'_'.$file->getClientOriginalName();
         $filePath = "{$this->config['import_path']}/{$tenantId}/{$fileName}";
 
         Storage::disk($this->config['storage_disk'])->put(
@@ -1036,7 +1045,7 @@ class AnalyticsDataExportImportService
     private function validateImportFile(string $filePath, string $format): void
     {
         // Check file exists
-        if (!Storage::disk($this->config['storage_disk'])->exists($filePath)) {
+        if (! Storage::disk($this->config['storage_disk'])->exists($filePath)) {
             throw new \InvalidArgumentException("Import file not found: {$filePath}");
         }
 
@@ -1056,9 +1065,9 @@ class AnalyticsDataExportImportService
     {
         $validTimeframes = ['15m', '1h', '6h', '24h', '7d', '30d', '90d', 'custom'];
 
-        if (!in_array($timeframe, $validTimeframes)) {
+        if (! in_array($timeframe, $validTimeframes)) {
             throw new \InvalidArgumentException(
-                "Invalid timeframe: {$timeframe}. Valid options: " . implode(', ', $validTimeframes)
+                "Invalid timeframe: {$timeframe}. Valid options: ".implode(', ', $validTimeframes)
             );
         }
     }
@@ -1105,6 +1114,7 @@ class AnalyticsDataExportImportService
     {
         $timestamp = now()->format('Y-m-d-H-i-s');
         $uniqueId = Str::random(8);
+
         return "{$prefix}_{$timestamp}_{$uniqueId}.{$format}";
     }
 
@@ -1122,6 +1132,7 @@ class AnalyticsDataExportImportService
     private function buildCacheKey(string $type, string $suffix = ''): string
     {
         $tenantId = $this->tenantContext->getCurrentTenantId() ?? 'global';
+
         return "analytics:export_import:{$tenantId}:{$type}:{$suffix}";
     }
 
@@ -1150,7 +1161,7 @@ class AnalyticsDataExportImportService
                 ...$data,
                 'created_at' => now()->toISOString(),
             ];
-            
+
             // Keep only last 100 exports
             $exports = array_slice($exports, -100);
             Cache::put($cacheKey, $exports, self::CACHE_TTL_LONG);
@@ -1175,7 +1186,7 @@ class AnalyticsDataExportImportService
                 ...$data,
                 'created_at' => now()->toISOString(),
             ];
-            
+
             // Keep only last 100 imports
             $imports = array_slice($imports, -100);
             Cache::put($cacheKey, $imports, self::CACHE_TTL_LONG);
@@ -1196,22 +1207,20 @@ class AnalyticsDataExportImportService
         $exports = Cache::get($cacheKey, []);
 
         // Filter by format
-        if (!empty($options['format'])) {
-            $exports = array_filter($exports, fn($e) => ($e['format'] ?? '') === $options['format']);
+        if (! empty($options['format'])) {
+            $exports = array_filter($exports, fn ($e) => ($e['format'] ?? '') === $options['format']);
         }
 
         // Filter by date range
-        if (!empty($options['from_date'])) {
+        if (! empty($options['from_date'])) {
             $fromDate = strtotime($options['from_date']);
-            $exports = array_filter($exports, fn($e) => 
-                !isset($e['created_at']) || strtotime($e['created_at']) >= $fromDate
+            $exports = array_filter($exports, fn ($e) => ! isset($e['created_at']) || strtotime($e['created_at']) >= $fromDate
             );
         }
 
-        if (!empty($options['to_date'])) {
+        if (! empty($options['to_date'])) {
             $toDate = strtotime($options['to_date']);
-            $exports = array_filter($exports, fn($e) => 
-                !isset($e['created_at']) || strtotime($e['created_at']) <= $toDate
+            $exports = array_filter($exports, fn ($e) => ! isset($e['created_at']) || strtotime($e['created_at']) <= $toDate
             );
         }
 
@@ -1239,22 +1248,20 @@ class AnalyticsDataExportImportService
         $imports = Cache::get($cacheKey, []);
 
         // Filter by format
-        if (!empty($options['format'])) {
-            $imports = array_filter($imports, fn($i) => ($i['format'] ?? '') === $options['format']);
+        if (! empty($options['format'])) {
+            $imports = array_filter($imports, fn ($i) => ($i['format'] ?? '') === $options['format']);
         }
 
         // Filter by date range
-        if (!empty($options['from_date'])) {
+        if (! empty($options['from_date'])) {
             $fromDate = strtotime($options['from_date']);
-            $imports = array_filter($imports, fn($i) => 
-                !isset($i['created_at']) || strtotime($i['created_at']) >= $fromDate
+            $imports = array_filter($imports, fn ($i) => ! isset($i['created_at']) || strtotime($i['created_at']) >= $fromDate
             );
         }
 
-        if (!empty($options['to_date'])) {
+        if (! empty($options['to_date'])) {
             $toDate = strtotime($options['to_date']);
-            $imports = array_filter($imports, fn($i) => 
-                !isset($i['created_at']) || strtotime($i['created_at']) <= $toDate
+            $imports = array_filter($imports, fn ($i) => ! isset($i['created_at']) || strtotime($i['created_at']) <= $toDate
             );
         }
 

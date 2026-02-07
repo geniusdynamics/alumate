@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Email template model for schema-based multi-tenancy without tenant_id column
 // ABOUTME: Manages email templates with automatic tenant context resolution
 

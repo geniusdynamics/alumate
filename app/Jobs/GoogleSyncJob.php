@@ -20,15 +20,17 @@ class GoogleSyncJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected array $data;
+
     protected string $operation;
+
     protected ?string $tenantId;
 
     /**
      * Create a new job instance.
      *
-     * @param array $data Data to sync
-     * @param string $operation Operation type ('goals' or 'segments')
-     * @param string|null $tenantId Tenant identifier
+     * @param  array  $data  Data to sync
+     * @param  string  $operation  Operation type ('goals' or 'segments')
+     * @param  string|null  $tenantId  Tenant identifier
      */
     public function __construct(array $data, string $operation, ?string $tenantId = null)
     {

@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessFormSubmissionToCrm implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public int $tries = 3;
+
     public int $backoff = 60;
 
     /**
@@ -31,22 +32,22 @@ class ProcessFormSubmissionToCrm implements ShouldQueue
     {
         Log::info('Processing form submission to CRM', [
             'submission_id' => $this->submission->id,
-            'form_id' => $this->submission->form_id
+            'form_id' => $this->submission->form_id,
         ]);
 
         $success = $crmService->syncFormSubmissionToCrm($this->submission);
 
         if ($success) {
             Log::info('Form submission successfully synced to CRM', [
-                'submission_id' => $this->submission->id
+                'submission_id' => $this->submission->id,
             ]);
         } else {
             Log::warning('Form submission CRM sync failed', [
-                'submission_id' => $this->submission->id
+                'submission_id' => $this->submission->id,
             ]);
-            
+
             // Job will be retried automatically due to $tries setting
-            throw new \Exception('CRM sync failed for submission ' . $this->submission->id);
+            throw new \Exception('CRM sync failed for submission '.$this->submission->id);
         }
     }
 
@@ -57,7 +58,7 @@ class ProcessFormSubmissionToCrm implements ShouldQueue
     {
         Log::error('Form submission CRM sync job failed permanently', [
             'submission_id' => $this->submission->id,
-            'error' => $exception->getMessage()
+            'error' => $exception->getMessage(),
         ]);
 
         // Update submission status to indicate permanent failure
@@ -66,8 +67,8 @@ class ProcessFormSubmissionToCrm implements ShouldQueue
             'crm_sync_error' => [
                 'message' => $exception->getMessage(),
                 'failed_at' => now()->toISOString(),
-                'attempts' => $this->attempts()
-            ]
+                'attempts' => $this->attempts(),
+            ],
         ]);
     }
 }

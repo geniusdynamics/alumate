@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\LandingPage;
 use App\Models\PageChange;
 use App\Services\CollaborationService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CollaborationController extends Controller
 {
@@ -31,7 +31,7 @@ class CollaborationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to start session: ' . $e->getMessage(),
+                'message' => 'Failed to start session: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -55,7 +55,7 @@ class CollaborationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to end session: ' . $e->getMessage(),
+                'message' => 'Failed to end session: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -98,7 +98,7 @@ class CollaborationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update activity: ' . $e->getMessage(),
+                'message' => 'Failed to update activity: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -137,7 +137,7 @@ class CollaborationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to record change: ' . $e->getMessage(),
+                'message' => 'Failed to record change: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -163,7 +163,7 @@ class CollaborationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to apply changes: ' . $e->getMessage(),
+                'message' => 'Failed to apply changes: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -233,7 +233,7 @@ class CollaborationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to resolve conflict: ' . $e->getMessage(),
+                'message' => 'Failed to resolve conflict: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -267,7 +267,7 @@ class CollaborationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to cleanup sessions: ' . $e->getMessage(),
+                'message' => 'Failed to cleanup sessions: '.$e->getMessage(),
             ], 500);
         }
     }

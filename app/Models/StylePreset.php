@@ -18,7 +18,7 @@ class StylePreset extends Model
         'styles',
         'tailwind_classes',
         'tenant_id',
-        'created_by'
+        'created_by',
     ];
 
     protected $casts = [
@@ -26,7 +26,7 @@ class StylePreset extends Model
         'tailwind_classes' => 'array',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime'
+        'deleted_at' => 'datetime',
     ];
 
     /**
@@ -59,14 +59,14 @@ class StylePreset extends Model
     public function getFormattedStylesAttribute(): array
     {
         $styles = $this->styles ?? [];
-        
+
         // Convert any camelCase properties to kebab-case for CSS
         $formattedStyles = [];
         foreach ($styles as $property => $value) {
             $cssProperty = $this->camelToKebab($property);
             $formattedStyles[$cssProperty] = $value;
         }
-        
+
         return $formattedStyles;
     }
 
@@ -84,24 +84,24 @@ class StylePreset extends Model
     public function isBrandCompliant(): bool
     {
         $brandColors = [
-            '#3B82F6', '#1E40AF', '#10B981', '#F59E0B', 
-            '#6B7280', '#059669', '#D97706', '#DC2626'
+            '#3B82F6', '#1E40AF', '#10B981', '#F59E0B',
+            '#6B7280', '#059669', '#D97706', '#DC2626',
         ];
 
         $styles = $this->styles ?? [];
-        
+
         // Check common color properties
         $colorProperties = ['color', 'background-color', 'border-color'];
-        
+
         foreach ($colorProperties as $property) {
             if (isset($styles[$property])) {
                 $color = strtoupper($styles[$property]);
-                if (!in_array($color, array_map('strtoupper', $brandColors))) {
+                if (! in_array($color, array_map('strtoupper', $brandColors))) {
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -111,7 +111,7 @@ class StylePreset extends Model
     public function getPreviewStyle(): array
     {
         $styles = $this->formatted_styles;
-        
+
         // Add some default styles for preview
         return array_merge([
             'width' => '100%',
@@ -120,7 +120,7 @@ class StylePreset extends Model
             'align-items' => 'center',
             'justify-content' => 'center',
             'font-size' => '12px',
-            'border-radius' => '4px'
+            'border-radius' => '4px',
         ], $styles);
     }
 
@@ -135,16 +135,16 @@ class StylePreset extends Model
     /**
      * Create a duplicate of this preset
      */
-    public function duplicate(string $newName = null): self
+    public function duplicate(?string $newName = null): self
     {
         return self::create([
-            'name' => $newName ?? $this->name . ' (Copy)',
+            'name' => $newName ?? $this->name.' (Copy)',
             'description' => $this->description,
             'category' => $this->category,
             'styles' => $this->styles,
             'tailwind_classes' => $this->tailwind_classes,
             'tenant_id' => $this->tenant_id,
-            'created_by' => auth()->id()
+            'created_by' => auth()->id(),
         ]);
     }
 
@@ -156,18 +156,18 @@ class StylePreset extends Model
         // Merge the preset styles with existing component styles
         $existingStyles = $componentData['style'] ?? [];
         $presetStyles = $this->formatted_styles;
-        
+
         $componentData['style'] = array_merge($existingStyles, $presetStyles);
-        
+
         // Add Tailwind classes
         $existingClasses = $componentData['classes'] ?? [];
         if (is_string($existingClasses)) {
             $existingClasses = explode(' ', $existingClasses);
         }
-        
+
         $newClasses = array_unique(array_merge($existingClasses, $this->tailwind_classes ?? []));
         $componentData['classes'] = implode(' ', array_filter($newClasses));
-        
+
         return $componentData;
     }
 
@@ -183,7 +183,7 @@ class StylePreset extends Model
             'styles' => $this->styles,
             'tailwind_classes' => $this->tailwind_classes,
             'is_brand_compliant' => $this->isBrandCompliant(),
-            'exported_at' => now()->toISOString()
+            'exported_at' => now()->toISOString(),
         ];
     }
 }

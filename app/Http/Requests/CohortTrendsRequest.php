@@ -63,13 +63,13 @@ class CohortTrendsRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        if (!$this->has('period')) {
+        if (! $this->has('period')) {
             $this->merge([
                 'period' => 'week',
             ]);
         }
 
-        if (!$this->has('periods')) {
+        if (! $this->has('periods')) {
             $this->merge([
                 'periods' => 12,
             ]);

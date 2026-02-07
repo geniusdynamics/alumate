@@ -4,21 +4,26 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Carbon\Carbon;
 
 class Subscription extends Model
 {
     use HasFactory;
 
     public const STATUS_ACTIVE = 'active';
+
     public const STATUS_CANCELLED = 'cancelled';
+
     public const STATUS_PAST_DUE = 'past_due';
+
     public const STATUS_TRIALING = 'trialing';
+
     public const STATUS_UNPAID = 'unpaid';
+
     public const STATUS_PAUSED = 'paused';
 
     protected $fillable = [
@@ -92,8 +97,8 @@ class Subscription extends Model
     public function scopeExpiringSoon($query, int $days = 7)
     {
         return $query->where('current_period_ends_at', '<=', Carbon::now()->addDays($days))
-                     ->where('current_period_ends_at', '>', Carbon::now())
-                     ->where('cancel_at_period_end', false);
+            ->where('current_period_ends_at', '>', Carbon::now())
+            ->where('cancel_at_period_end', false);
     }
 
     /**
@@ -153,7 +158,7 @@ class Subscription extends Model
      */
     public function daysRemaining(): int
     {
-        if (!$this->current_period_ends_at) {
+        if (! $this->current_period_ends_at) {
             return 0;
         }
 
@@ -165,7 +170,7 @@ class Subscription extends Model
      */
     public function trialDaysRemaining(): int
     {
-        if (!$this->isOnTrial() || !$this->trial_ends_at) {
+        if (! $this->isOnTrial() || ! $this->trial_ends_at) {
             return 0;
         }
 
@@ -178,6 +183,7 @@ class Subscription extends Model
     public function getUsage(string $featureKey): int
     {
         $usage = $this->usage()->where('feature_key', $featureKey)->first();
+
         return $usage ? $usage->usage : 0;
     }
 
@@ -186,7 +192,7 @@ class Subscription extends Model
      */
     public function getLimit(string $featureKey): int|string
     {
-        if (!$this->plan) {
+        if (! $this->plan) {
             return 0;
         }
 
@@ -205,6 +211,7 @@ class Subscription extends Model
         }
 
         $usage = $this->getUsage($featureKey);
+
         return $usage >= (int) $limit;
     }
 
@@ -243,11 +250,11 @@ class Subscription extends Model
      */
     public function getPaymentMethodDisplay(): ?string
     {
-        if (!$this->payment_method_brand || !$this->payment_method_last_four) {
+        if (! $this->payment_method_brand || ! $this->payment_method_last_four) {
             return null;
         }
 
-        return ucfirst($this->payment_method_brand) . ' •••• ' . $this->payment_method_last_four;
+        return ucfirst($this->payment_method_brand).' •••• '.$this->payment_method_last_four;
     }
 
     /**

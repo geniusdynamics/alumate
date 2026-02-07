@@ -12,9 +12,6 @@ class ExportPolicy
 
     /**
      * Determine whether the user can view any exports.
-     *
-     * @param User $user
-     * @return bool
      */
     public function viewAny(User $user): bool
     {
@@ -23,10 +20,6 @@ class ExportPolicy
 
     /**
      * Determine whether the user can view the export.
-     *
-     * @param User $user
-     * @param Export $export
-     * @return bool
      */
     public function view(User $user, Export $export): bool
     {
@@ -36,9 +29,6 @@ class ExportPolicy
 
     /**
      * Determine whether the user can create exports.
-     *
-     * @param User $user
-     * @return bool
      */
     public function create(User $user): bool
     {
@@ -47,10 +37,6 @@ class ExportPolicy
 
     /**
      * Determine whether the user can update the export.
-     *
-     * @param User $user
-     * @param Export $export
-     * @return bool
      */
     public function update(User $user, Export $export): bool
     {
@@ -60,10 +46,6 @@ class ExportPolicy
 
     /**
      * Determine whether the user can delete the export.
-     *
-     * @param User $user
-     * @param Export $export
-     * @return bool
      */
     public function delete(User $user, Export $export): bool
     {
@@ -73,10 +55,6 @@ class ExportPolicy
 
     /**
      * Determine whether the user can restore the export.
-     *
-     * @param User $user
-     * @param Export $export
-     * @return bool
      */
     public function restore(User $user, Export $export): bool
     {
@@ -86,10 +64,6 @@ class ExportPolicy
 
     /**
      * Determine whether the user can permanently delete the export.
-     *
-     * @param User $user
-     * @param Export $export
-     * @return bool
      */
     public function forceDelete(User $user, Export $export): bool
     {

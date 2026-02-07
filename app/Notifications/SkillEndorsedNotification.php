@@ -12,7 +12,9 @@ class SkillEndorsedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $skillName;
+
     protected $endorserName;
+
     protected $endorserId;
 
     /**

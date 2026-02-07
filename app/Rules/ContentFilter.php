@@ -10,7 +10,7 @@ class ContentFilter implements ValidationRule
     private array $profanityWords = [
         // Basic profanity filter - in production, use a more comprehensive list
         'spam', 'scam', 'fraud', 'fake', 'phishing', 'malware', 'virus',
-        'hack', 'exploit', 'attack', 'breach', 'illegal', 'stolen'
+        'hack', 'exploit', 'attack', 'breach', 'illegal', 'stolen',
     ];
 
     private array $spamKeywords = [
@@ -19,7 +19,7 @@ class ContentFilter implements ValidationRule
         'casino', 'viagra', 'cialis', 'weight loss', 'make money fast',
         'work from home', 'earn $$$', 'click here', 'buy now', 'call now',
         'order now', 'subscribe now', 'sign up now', 'join now', 'get rich',
-        'miracle', 'amazing', 'incredible', 'unbelievable', 'fantastic'
+        'miracle', 'amazing', 'incredible', 'unbelievable', 'fantastic',
     ];
 
     private array $suspiciousPatterns = [
@@ -32,7 +32,9 @@ class ContentFilter implements ValidationRule
     ];
 
     private string $filterType;
+
     private int $maxUrls;
+
     private bool $allowHtml;
 
     public function __construct(
@@ -60,48 +62,56 @@ class ContentFilter implements ValidationRule
         // Check for profanity
         if ($this->filterType !== 'none' && $this->containsProfanity($lowerContent)) {
             $fail('The :attribute contains inappropriate language.');
+
             return;
         }
 
         // Check for spam content
         if ($this->filterType === 'strict' && $this->containsSpam($lowerContent)) {
             $fail('The :attribute appears to contain spam content.');
+
             return;
         }
 
         // Check for suspicious patterns
         if ($this->hasSuspiciousPatterns($content)) {
             $fail('The :attribute contains suspicious content patterns.');
+
             return;
         }
 
         // Check URL count
         if ($this->exceedsUrlLimit($content)) {
             $fail("The :attribute contains too many URLs. Maximum allowed: {$this->maxUrls}.");
+
             return;
         }
 
         // Check for HTML if not allowed
-        if (!$this->allowHtml && $this->containsHtml($content)) {
+        if (! $this->allowHtml && $this->containsHtml($content)) {
             $fail('The :attribute cannot contain HTML tags.');
+
             return;
         }
 
         // Check for potential XSS
         if ($this->containsXss($content)) {
             $fail('The :attribute contains potentially dangerous content.');
+
             return;
         }
 
         // Check for SQL injection patterns
         if ($this->containsSqlInjection($content)) {
             $fail('The :attribute contains invalid characters.');
+
             return;
         }
 
         // Check content length and quality
         if ($this->isLowQualityContent($content)) {
             $fail('The :attribute appears to be low quality or gibberish.');
+
             return;
         }
     }
@@ -116,6 +126,7 @@ class ContentFilter implements ValidationRule
                 return true;
             }
         }
+
         return false;
     }
 
@@ -125,13 +136,13 @@ class ContentFilter implements ValidationRule
     private function containsSpam(string $content): bool
     {
         $spamScore = 0;
-        
+
         foreach ($this->spamKeywords as $keyword) {
             if (str_contains($content, $keyword)) {
                 $spamScore++;
             }
         }
-        
+
         // Consider spam if multiple keywords found
         return $spamScore >= 2;
     }
@@ -146,6 +157,7 @@ class ContentFilter implements ValidationRule
                 return true;
             }
         }
+
         return false;
     }
 
@@ -155,6 +167,7 @@ class ContentFilter implements ValidationRule
     private function exceedsUrlLimit(string $content): bool
     {
         $urlCount = preg_match_all('/https?:\/\/\S+/', $content);
+
         return $urlCount > $this->maxUrls;
     }
 
@@ -225,7 +238,7 @@ class ContentFilter implements ValidationRule
     private function isLowQualityContent(string $content): bool
     {
         $content = trim($content);
-        
+
         // Too short
         if (strlen($content) < 3) {
             return false; // Let other validation handle minimum length
@@ -250,9 +263,9 @@ class ContentFilter implements ValidationRule
 
         // Random character sequences (basic heuristic)
         $words = preg_split('/\s+/', $content);
-        $shortWords = array_filter($words, fn($word) => strlen($word) < 3);
+        $shortWords = array_filter($words, fn ($word) => strlen($word) < 3);
         $shortWordRatio = count($shortWords) / max(count($words), 1);
-        
+
         if ($shortWordRatio > 0.7 && count($words) > 5) {
             return true;
         }

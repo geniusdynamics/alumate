@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\NotificationService;
-use App\Models\NotificationPreference;
 use App\Models\NotificationTemplate;
-use Illuminate\Http\Request;
+use App\Services\NotificationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -25,9 +24,6 @@ class NotificationController extends Controller
 
     /**
      * Send a notification
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function send(Request $request): JsonResponse
     {
@@ -43,7 +39,7 @@ class NotificationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -57,21 +53,18 @@ class NotificationController extends Controller
 
             return response()->json([
                 'message' => 'Notifications sent successfully',
-                'result' => $result
+                'result' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to send notifications',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Send bulk notifications
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function sendBulk(Request $request): JsonResponse
     {
@@ -87,7 +80,7 @@ class NotificationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -96,21 +89,18 @@ class NotificationController extends Controller
 
             return response()->json([
                 'message' => 'Bulk notifications sent successfully',
-                'result' => $result
+                'result' => $result,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to send bulk notifications',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Get user notifications
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -126,7 +116,7 @@ class NotificationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -161,9 +151,6 @@ class NotificationController extends Controller
 
     /**
      * Mark notification as read
-     *
-     * @param string $id
-     * @return JsonResponse
      */
     public function markAsRead(string $id): JsonResponse
     {
@@ -171,19 +158,17 @@ class NotificationController extends Controller
 
         if ($this->notificationService->markAsRead($id, $user->id)) {
             return response()->json([
-                'message' => 'Notification marked as read'
+                'message' => 'Notification marked as read',
             ]);
         }
 
         return response()->json([
-            'message' => 'Notification not found'
+            'message' => 'Notification not found',
         ], 404);
     }
 
     /**
      * Mark all notifications as read
-     *
-     * @return JsonResponse
      */
     public function markAllAsRead(): JsonResponse
     {
@@ -191,14 +176,12 @@ class NotificationController extends Controller
         $user->unreadNotifications->markAsRead();
 
         return response()->json([
-            'message' => 'All notifications marked as read'
+            'message' => 'All notifications marked as read',
         ]);
     }
 
     /**
      * Get notification preferences
-     *
-     * @return JsonResponse
      */
     public function getPreferences(): JsonResponse
     {
@@ -206,15 +189,12 @@ class NotificationController extends Controller
         $preferences = $this->notificationService->getAllUserPreferences($user->id);
 
         return response()->json([
-            'preferences' => $preferences
+            'preferences' => $preferences,
         ]);
     }
 
     /**
      * Update notification preferences
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function updatePreferences(Request $request): JsonResponse
     {
@@ -229,7 +209,7 @@ class NotificationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -244,21 +224,18 @@ class NotificationController extends Controller
 
             return response()->json([
                 'message' => 'Notification preferences updated successfully',
-                'preference' => $preference
+                'preference' => $preference,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to update preferences',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * Get notification templates
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getTemplates(Request $request): JsonResponse
     {
@@ -270,7 +247,7 @@ class NotificationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -287,14 +264,12 @@ class NotificationController extends Controller
         $templates = $query->orderBy('name')->get();
 
         return response()->json([
-            'templates' => $templates
+            'templates' => $templates,
         ]);
     }
 
     /**
      * Get notification statistics
-     *
-     * @return JsonResponse
      */
     public function getStats(): JsonResponse
     {
@@ -308,44 +283,38 @@ class NotificationController extends Controller
             'today_count' => $user->notifications()->where('tenant_id', $tenantId)->whereDate('created_at', today())->count(),
             'this_week_count' => $user->notifications()->where('tenant_id', $tenantId)->whereBetween('created_at', [
                 now()->startOfWeek(),
-                now()->endOfWeek()
+                now()->endOfWeek(),
             ])->count(),
         ];
 
         return response()->json([
-            'stats' => $stats
+            'stats' => $stats,
         ]);
     }
 
     /**
      * Delete notification
-     *
-     * @param string $id
-     * @return JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {
         $user = Auth::user();
         $notification = $user->notifications()->find($id);
 
-        if (!$notification) {
+        if (! $notification) {
             return response()->json([
-                'message' => 'Notification not found'
+                'message' => 'Notification not found',
             ], 404);
         }
 
         $notification->delete();
 
         return response()->json([
-            'message' => 'Notification deleted successfully'
+            'message' => 'Notification deleted successfully',
         ]);
     }
 
     /**
      * Schedule notification
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function schedule(Request $request): JsonResponse
     {
@@ -362,7 +331,7 @@ class NotificationController extends Controller
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -376,12 +345,12 @@ class NotificationController extends Controller
             );
 
             return response()->json([
-                'message' => 'Notification scheduled successfully'
+                'message' => 'Notification scheduled successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to schedule notification',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }

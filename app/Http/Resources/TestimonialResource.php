@@ -17,7 +17,7 @@ class TestimonialResource extends JsonResource
         return [
             'id' => $this->id,
             'tenant_id' => $this->tenant_id,
-            
+
             // Author information
             'author' => [
                 'name' => $this->author_name,
@@ -26,45 +26,45 @@ class TestimonialResource extends JsonResource
                 'photo' => $this->author_photo,
                 'display_name' => $this->author_display_name,
             ],
-            
+
             // Categorization
             'graduation_year' => $this->graduation_year,
             'industry' => $this->industry,
             'audience_type' => $this->audience_type,
-            
+
             // Content
             'content' => $this->content,
             'truncated_content' => $this->truncated_content,
             'rating' => $this->rating,
-            
+
             // Video content
             'video' => [
                 'url' => $this->video_url,
                 'thumbnail' => $this->video_thumbnail,
                 'has_video' => $this->hasVideo(),
             ],
-            
+
             // Status and moderation
             'status' => $this->status,
             'featured' => $this->featured,
             'is_approved' => $this->isApproved(),
             'is_pending' => $this->isPending(),
             'is_rejected' => $this->isRejected(),
-            
+
             // Performance metrics
             'performance' => [
                 'view_count' => $this->view_count,
                 'click_count' => $this->click_count,
                 'conversion_rate' => (float) $this->conversion_rate,
             ],
-            
+
             // Additional metadata
             'metadata' => $this->metadata,
-            
+
             // Timestamps
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
-            
+
             // Conditional fields based on user permissions
             'admin_fields' => $this->when(
                 $request->user()?->can('moderate', $this->resource),
@@ -72,7 +72,7 @@ class TestimonialResource extends JsonResource
                     'moderation_actions' => [
                         'can_approve' => $this->isPending(),
                         'can_reject' => $this->isPending() || $this->isApproved(),
-                        'can_archive' => !$this->status === 'archived',
+                        'can_archive' => ! $this->status === 'archived',
                         'can_feature' => $this->isApproved(),
                     ],
                 ]

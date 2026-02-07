@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Analytics;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CohortConversionRequest;
+use App\Http\Requests\CohortEngagementRequest;
+use App\Http\Requests\CohortRetentionRequest;
+use App\Http\Requests\CohortTrendsRequest;
+use App\Http\Requests\CompareCohortAnalysisRequest;
 use App\Http\Requests\StoreCohortAnalysisRequest;
 use App\Http\Requests\UpdateCohortAnalysisRequest;
-use App\Http\Requests\CompareCohortAnalysisRequest;
-use App\Http\Requests\CohortRetentionRequest;
-use App\Http\Requests\CohortEngagementRequest;
-use App\Http\Requests\CohortConversionRequest;
-use App\Http\Requests\CohortTrendsRequest;
 use App\Models\Cohort;
 use App\Services\Analytics\CohortAnalysisService;
 use App\Services\TenantContextService;
@@ -37,9 +37,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Retrieve paginated list of all cohorts with summary metrics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -64,6 +61,7 @@ class CohortAnalysisController extends Controller
                         'day30_retention' => $analysis['retention']['day30'] ?? 0,
                         'engagement_score' => $analysis['engagement']['engagement_score'] ?? 0,
                     ];
+
                     return $cohort;
                 });
             }
@@ -94,9 +92,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Create a new cohort with specified criteria
-     *
-     * @param StoreCohortAnalysisRequest $request
-     * @return JsonResponse
      */
     public function store(StoreCohortAnalysisRequest $request): JsonResponse
     {
@@ -145,9 +140,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Retrieve detailed cohort information with full analysis
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function show(int $id): JsonResponse
     {
@@ -187,10 +179,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Update cohort configuration and criteria
-     *
-     * @param UpdateCohortAnalysisRequest $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function update(UpdateCohortAnalysisRequest $request, int $id): JsonResponse
     {
@@ -250,9 +238,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Delete a cohort
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function destroy(int $id): JsonResponse
     {
@@ -292,10 +277,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Get retention metrics for a cohort
-     *
-     * @param CohortRetentionRequest $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function retention(CohortRetentionRequest $request, int $id): JsonResponse
     {
@@ -343,10 +324,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Get engagement metrics for a cohort
-     *
-     * @param CohortEngagementRequest $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function engagement(CohortEngagementRequest $request, int $id): JsonResponse
     {
@@ -383,10 +360,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Get conversion rates for a cohort
-     *
-     * @param CohortConversionRequest $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function conversion(CohortConversionRequest $request, int $id): JsonResponse
     {
@@ -424,9 +397,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Compare multiple cohorts
-     *
-     * @param CompareCohortAnalysisRequest $request
-     * @return JsonResponse
      */
     public function compare(CompareCohortAnalysisRequest $request): JsonResponse
     {
@@ -435,7 +405,7 @@ class CohortAnalysisController extends Controller
             $tenantId = $this->getCurrentTenantId();
 
             // Authorization check
-            if (!Gate::allows('cohort.compare')) {
+            if (! Gate::allows('cohort.compare')) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to compare cohorts.',
@@ -482,10 +452,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Get trend analysis for a cohort
-     *
-     * @param CohortTrendsRequest $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function trends(CohortTrendsRequest $request, int $id): JsonResponse
     {
@@ -522,10 +488,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Get automated insights for a cohort
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
      */
     public function insights(Request $request, int $id): JsonResponse
     {
@@ -579,8 +541,6 @@ class CohortAnalysisController extends Controller
 
     /**
      * Get current tenant ID with fallback
-     *
-     * @return int
      */
     private function getCurrentTenantId(): int
     {

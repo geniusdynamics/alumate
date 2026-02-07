@@ -1,20 +1,22 @@
 <?php
+
 // ABOUTME: Tenant model for schema-based multi-tenancy management
 // ABOUTME: Manages tenant information and schema operations for multi-tenant architecture
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Services\TenantContextService;
 
 class Tenant extends Model
 {
     use HasFactory, SoftDeletes;
 
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
@@ -32,7 +34,7 @@ class Tenant extends Model
         'address',
         'contact_information',
         'plan',
-        'data'
+        'data',
     ];
 
     protected $casts = [
@@ -41,12 +43,12 @@ class Tenant extends Model
         'trial_ends_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'deleted_at' => 'datetime'
+        'deleted_at' => 'datetime',
     ];
 
     protected $attributes = [
         'status' => 'active',
-        'subscription_status' => 'trial'
+        'subscription_status' => 'trial',
     ];
 
     /**
@@ -58,8 +60,8 @@ class Tenant extends Model
 
         static::creating(function ($tenant) {
             // Generate schema name if not provided
-            if (!$tenant->schema_name) {
-                $tenant->schema_name = 'tenant_' . $tenant->id;
+            if (! $tenant->schema_name) {
+                $tenant->schema_name = 'tenant_'.$tenant->id;
             }
         });
 
@@ -89,7 +91,7 @@ class Tenant extends Model
      */
     public function getSchemaName(): string
     {
-        return $this->schema_name ?: 'tenant_' . $this->id;
+        return $this->schema_name ?: 'tenant_'.$this->id;
     }
 
     /**
@@ -98,6 +100,7 @@ class Tenant extends Model
     public function schemaExists(): bool
     {
         $tenantService = app(TenantContextService::class);
+
         return $tenantService->tenantSchemaExists($this->id);
     }
 
@@ -108,9 +111,9 @@ class Tenant extends Model
     {
         $tenantService = app(TenantContextService::class);
         $schemaName = $tenantService->createTenantSchema($this->id);
-        
+
         $this->update(['schema_name' => $schemaName]);
-        
+
         return $schemaName;
     }
 
@@ -129,6 +132,7 @@ class Tenant extends Model
     public function run(callable $callback)
     {
         $tenantService = app(TenantContextService::class);
+
         return $tenantService->runInTenantContext($this->id, $callback);
     }
 
@@ -170,8 +174,8 @@ class Tenant extends Model
      */
     public function isOnTrial(): bool
     {
-        return $this->subscription_status === 'trial' && 
-               $this->trial_ends_at && 
+        return $this->subscription_status === 'trial' &&
+               $this->trial_ends_at &&
                $this->trial_ends_at->isFuture();
     }
 
@@ -180,8 +184,8 @@ class Tenant extends Model
      */
     public function trialExpired(): bool
     {
-        return $this->subscription_status === 'trial' && 
-               $this->trial_ends_at && 
+        return $this->subscription_status === 'trial' &&
+               $this->trial_ends_at &&
                $this->trial_ends_at->isPast();
     }
 
@@ -217,7 +221,7 @@ class Tenant extends Model
     public function scopeOnTrial($query)
     {
         return $query->where('subscription_status', 'trial')
-                    ->where('trial_ends_at', '>', now());
+            ->where('trial_ends_at', '>', now());
     }
 
     /**
@@ -226,7 +230,7 @@ class Tenant extends Model
     public function scopeTrialExpired($query)
     {
         return $query->where('subscription_status', 'trial')
-                    ->where('trial_ends_at', '<=', now());
+            ->where('trial_ends_at', '<=', now());
     }
 
     /**

@@ -60,7 +60,7 @@ class CohortRetentionRequest extends FormRequest
      */
     protected function prepareForValidation(): void
     {
-        if (!$this->has('days_after') || empty($this->input('days_after'))) {
+        if (! $this->has('days_after') || empty($this->input('days_after'))) {
             $this->merge([
                 'days_after' => [7, 30, 90],
             ]);

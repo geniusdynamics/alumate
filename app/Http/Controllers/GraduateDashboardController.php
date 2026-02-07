@@ -28,7 +28,7 @@ class GraduateDashboardController extends Controller
     protected function getAuthenticatedGraduate(User $user): ?Graduate
     {
         // Ensure user has institution selected
-        if (!$user->institution_id) {
+        if (! $user->institution_id) {
             return null;
         }
 
@@ -44,18 +44,18 @@ class GraduateDashboardController extends Controller
      */
     protected function validateTenantAccess(User $user): ?Tenant
     {
-        if (!$user->institution_id) {
+        if (! $user->institution_id) {
             return null;
         }
 
         $tenant = Tenant::find($user->institution_id);
-        
-        if (!$tenant) {
+
+        if (! $tenant) {
             return null;
         }
 
         // Validate user belongs to this tenant
-        if (!$this->tenantContextService->validateTenantAccess($tenant->id)) {
+        if (! $this->tenantContextService->validateTenantAccess($tenant->id)) {
             return null;
         }
 
@@ -68,7 +68,7 @@ class GraduateDashboardController extends Controller
 
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Please select your institution first.');
         }
@@ -79,7 +79,7 @@ class GraduateDashboardController extends Controller
         // Try to find existing graduate record
         $graduate = Graduate::where('user_id', $user->id)->first();
 
-        if (!$graduate) {
+        if (! $graduate) {
             // Create graduate record if it doesn't exist
             $graduate = Graduate::create([
                 'user_id' => $user->id,
@@ -98,7 +98,7 @@ class GraduateDashboardController extends Controller
         $jobRecommendations = $this->getJobRecommendations($graduate);
         $classmateConnections = $this->getClassmateConnections($graduate);
 
-        if (!$graduate) {
+        if (! $graduate) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Unable to access graduate profile.');
         }
@@ -118,7 +118,7 @@ class GraduateDashboardController extends Controller
 
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Please select your institution first.');
         }
@@ -129,7 +129,7 @@ class GraduateDashboardController extends Controller
         // Get graduate record for the authenticated user
         $graduate = Graduate::where('user_id', $user->id)->first();
 
-        if (!$graduate) {
+        if (! $graduate) {
             // Create graduate record if it doesn't exist
             $graduate = Graduate::create([
                 'user_id' => $user->id,
@@ -142,7 +142,7 @@ class GraduateDashboardController extends Controller
             ]);
         }
 
-        if (!$graduate) {
+        if (! $graduate) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Unable to access graduate profile.');
         }
@@ -159,7 +159,7 @@ class GraduateDashboardController extends Controller
 
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Please select your institution first.');
         }
@@ -170,7 +170,7 @@ class GraduateDashboardController extends Controller
         // Get graduate record for the authenticated user
         $graduate = Graduate::where('user_id', $user->id)->first();
 
-        if (!$graduate) {
+        if (! $graduate) {
             // Create graduate record if it doesn't exist
             $graduate = Graduate::create([
                 'user_id' => $user->id,
@@ -183,7 +183,7 @@ class GraduateDashboardController extends Controller
             ]);
         }
 
-        if (!$graduate) {
+        if (! $graduate) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Unable to access graduate profile.');
         }
@@ -253,7 +253,7 @@ class GraduateDashboardController extends Controller
 
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Please select your institution first.');
         }
@@ -264,7 +264,7 @@ class GraduateDashboardController extends Controller
         // Get graduate record for the authenticated user
         $graduate = Graduate::where('user_id', $user->id)->first();
 
-        if (!$graduate) {
+        if (! $graduate) {
             // Create graduate record if it doesn't exist
             $graduate = Graduate::create([
                 'user_id' => $user->id,
@@ -309,7 +309,7 @@ class GraduateDashboardController extends Controller
 
         // Validate tenant access first
         $tenant = $this->validateTenantAccess($user);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create');
         }
 
@@ -319,7 +319,7 @@ class GraduateDashboardController extends Controller
         // Get graduate record with proper tenant context
         $graduate = Graduate::where('user_id', $user->id)->first();
 
-        if (!$graduate) {
+        if (! $graduate) {
             return redirect()->route('graduates.create');
         }
 
@@ -365,7 +365,7 @@ class GraduateDashboardController extends Controller
 
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Please select your institution first.');
         }
@@ -376,7 +376,7 @@ class GraduateDashboardController extends Controller
         // Get graduate record for authenticated user
         $graduate = Graduate::where('user_id', $user->id)->first();
 
-        if (!$graduate) {
+        if (! $graduate) {
             // Create graduate record if it doesn't exist
             $graduate = Graduate::create([
                 'user_id' => $user->id,
@@ -393,7 +393,7 @@ class GraduateDashboardController extends Controller
         $skillsProgress = $this->getSkillsProgress($graduate);
         $achievements = $this->getAchievements($graduate);
 
-        if (!$graduate) {
+        if (! $graduate) {
             return redirect()->route('graduates.create')
                 ->with('error', 'Unable to access graduate profile.');
         }
@@ -412,7 +412,7 @@ class GraduateDashboardController extends Controller
 
         // Validate tenant access first
         $tenant = $this->validateTenantAccess($user);
-        if (!$tenant) {
+        if (! $tenant) {
             return redirect()->route('graduates.create');
         }
 
@@ -422,7 +422,7 @@ class GraduateDashboardController extends Controller
         // Get graduate record with proper tenant context
         $graduate = Graduate::where('user_id', $user->id)->first();
 
-        if (!$graduate) {
+        if (! $graduate) {
             return redirect()->route('graduates.create');
         }
 

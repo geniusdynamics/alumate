@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Background job for processing image uploads including thumbnail generation,
 // ABOUTME: WebP conversion, and optimization
 
@@ -8,13 +9,13 @@ namespace App\Jobs;
 
 use App\Models\StoredFile;
 use App\Services\ImageProcessingService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class ProcessImageUpload implements ShouldQueue
 {
@@ -37,8 +38,7 @@ class ProcessImageUpload implements ShouldQueue
 
     public function __construct(
         protected StoredFile $storedFile
-    ) {
-    }
+    ) {}
 
     /**
      * Execute the job.
@@ -52,11 +52,12 @@ class ProcessImageUpload implements ShouldQueue
             ]);
 
             // Verify file is an image
-            if (!$this->storedFile->isImage()) {
+            if (! $this->storedFile->isImage()) {
                 Log::info('Skipping image processing - not an image', [
                     'file_id' => $this->storedFile->id,
                     'mime_type' => $this->storedFile->mime_type,
                 ]);
+
                 return;
             }
 
@@ -98,7 +99,7 @@ class ProcessImageUpload implements ShouldQueue
                 $this->storedFile->storage_disk
             );
 
-            if (!empty($thumbnails)) {
+            if (! empty($thumbnails)) {
                 $this->storedFile->updateThumbnails($thumbnails);
 
                 Log::debug('Thumbnails generated', [

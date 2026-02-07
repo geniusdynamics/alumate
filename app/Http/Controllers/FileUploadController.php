@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: File upload controller with support for chunked uploads, signed URLs,
 // ABOUTME: and multi-tenant file management
 
@@ -9,10 +10,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FileUploadRequest;
 use App\Models\StoredFile;
 use App\Services\FileStorageService;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class FileUploadController extends Controller
 {
@@ -98,7 +99,7 @@ class FileUploadController extends Controller
                 disk: $request->input('disk')
             );
 
-            if (!$result['complete']) {
+            if (! $result['complete']) {
                 return response()->json([
                     'success' => true,
                     'complete' => false,
@@ -423,7 +424,7 @@ class FileUploadController extends Controller
      */
     protected function authorizeAccess(StoredFile $storedFile, $user): void
     {
-        if (!$user) {
+        if (! $user) {
             throw new Exception('Authentication required');
         }
 

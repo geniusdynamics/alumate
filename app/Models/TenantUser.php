@@ -1,16 +1,16 @@
 <?php
+
 // ABOUTME: TenantUser pivot model for managing user-tenant relationships in schema-based multi-tenancy
 // ABOUTME: Handles role assignments, permissions, and access control for users within specific tenants
 
 namespace App\Models;
 
+use App\Services\TenantContextService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Carbon\Carbon;
-use App\Services\TenantContextService;
 
 class TenantUser extends Model
 {
@@ -29,7 +29,7 @@ class TenantUser extends Model
         'invitation_expires_at',
         'last_accessed_at',
         'permissions',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
@@ -38,28 +38,39 @@ class TenantUser extends Model
         'invitation_expires_at' => 'datetime',
         'last_accessed_at' => 'datetime',
         'permissions' => 'array',
-        'metadata' => 'array'
+        'metadata' => 'array',
     ];
 
     protected $dates = [
-        'deleted_at'
+        'deleted_at',
     ];
 
     // Available roles
     const ROLE_TENANT_ADMIN = 'tenant_admin';
+
     const ROLE_INSTRUCTOR = 'instructor';
+
     const ROLE_STAFF = 'staff';
+
     const ROLE_STUDENT = 'student';
+
     const ROLE_VIEWER = 'viewer';
 
     // Permission constants
     const PERMISSION_MANAGE_USERS = 'manage_users';
+
     const PERMISSION_MANAGE_COURSES = 'manage_courses';
+
     const PERMISSION_MANAGE_STUDENTS = 'manage_students';
+
     const PERMISSION_ASSIGN_GRADES = 'assign_grades';
+
     const PERMISSION_VIEW_ANALYTICS = 'view_analytics';
+
     const PERMISSION_MANAGE_SETTINGS = 'manage_settings';
+
     const PERMISSION_EXPORT_DATA = 'export_data';
+
     const PERMISSION_IMPORT_DATA = 'import_data';
 
     /**
@@ -86,20 +97,20 @@ class TenantUser extends Model
             ActivityLog::logSystem('tenant_user_created', "User {$tenantUser->user->email} added to tenant {$tenant->name} with role {$tenantUser->role}", [
                 'tenant_id' => $tenant->id,
                 'user_id' => $tenantUser->user_id,
-                'role' => $tenantUser->role
+                'role' => $tenantUser->role,
             ]);
         });
 
         static::updated(function ($tenantUser) {
             $changes = $tenantUser->getChanges();
             unset($changes['updated_at'], $changes['last_accessed_at']);
-            
-            if (!empty($changes)) {
+
+            if (! empty($changes)) {
                 $tenant = $tenantUser->getCurrentTenant();
                 ActivityLog::logSystem('tenant_user_updated', "Tenant user relationship updated for {$tenantUser->user->email}", [
                     'tenant_id' => $tenant->id,
                     'user_id' => $tenantUser->user_id,
-                    'changes' => array_keys($changes)
+                    'changes' => array_keys($changes),
                 ]);
             }
         });
@@ -109,7 +120,7 @@ class TenantUser extends Model
             ActivityLog::logSystem('tenant_user_deleted', "User {$tenantUser->user->email} removed from tenant {$tenant->name}", [
                 'tenant_id' => $tenant->id,
                 'user_id' => $tenantUser->user_id,
-                'role' => $tenantUser->role
+                'role' => $tenantUser->role,
             ]);
         });
     }
@@ -205,6 +216,7 @@ class TenantUser extends Model
     public function hasPermission(string $permission): bool
     {
         $permissions = $this->permissions ?? [];
+
         return in_array($permission, $permissions);
     }
 
@@ -214,12 +226,13 @@ class TenantUser extends Model
     public function grantPermission(string $permission): bool
     {
         $permissions = $this->permissions ?? [];
-        
-        if (!in_array($permission, $permissions)) {
+
+        if (! in_array($permission, $permissions)) {
             $permissions[] = $permission;
+
             return $this->update(['permissions' => $permissions]);
         }
-        
+
         return true;
     }
 
@@ -229,8 +242,8 @@ class TenantUser extends Model
     public function revokePermission(string $permission): bool
     {
         $permissions = $this->permissions ?? [];
-        $permissions = array_filter($permissions, fn($p) => $p !== $permission);
-        
+        $permissions = array_filter($permissions, fn ($p) => $p !== $permission);
+
         return $this->update(['permissions' => array_values($permissions)]);
     }
 
@@ -255,8 +268,8 @@ class TenantUser extends Model
      */
     public function isInvitationValid(): bool
     {
-        return !empty($this->invitation_token) && 
-               $this->invitation_expires_at && 
+        return ! empty($this->invitation_token) &&
+               $this->invitation_expires_at &&
                $this->invitation_expires_at->isFuture();
     }
 
@@ -265,7 +278,7 @@ class TenantUser extends Model
      */
     public function acceptInvitation(): bool
     {
-        if (!$this->isInvitationValid()) {
+        if (! $this->isInvitationValid()) {
             return false;
         }
 
@@ -273,7 +286,7 @@ class TenantUser extends Model
             'is_active' => true,
             'invitation_token' => null,
             'invitation_expires_at' => null,
-            'joined_at' => now()
+            'joined_at' => now(),
         ]);
 
         if ($updated) {
@@ -281,7 +294,7 @@ class TenantUser extends Model
             ActivityLog::logSystem('invitation_accepted', "User {$this->user->email} accepted invitation to tenant {$tenant->name}", [
                 'tenant_id' => $tenant->id,
                 'user_id' => $this->user_id,
-                'role' => $this->role
+                'role' => $this->role,
             ]);
         }
 
@@ -297,7 +310,7 @@ class TenantUser extends Model
         ActivityLog::logSystem('invitation_declined', "User {$this->user->email} declined invitation to tenant {$tenant->name}", [
             'tenant_id' => $tenant->id,
             'user_id' => $this->user_id,
-            'role' => $this->role
+            'role' => $this->role,
         ]);
 
         return $this->delete();
@@ -309,10 +322,10 @@ class TenantUser extends Model
     public function generateInvitationToken(int $expiresInHours = 72): string
     {
         $token = bin2hex(random_bytes(32));
-        
+
         $this->update([
             'invitation_token' => $token,
-            'invitation_expires_at' => now()->addHours($expiresInHours)
+            'invitation_expires_at' => now()->addHours($expiresInHours),
         ]);
 
         return $token;
@@ -337,7 +350,7 @@ class TenantUser extends Model
             $tenant = $this->getCurrentTenant();
             ActivityLog::logSystem('tenant_user_activated', "User {$this->user->email} activated in tenant {$tenant->name}", [
                 'tenant_id' => $tenant->id,
-                'user_id' => $this->user_id
+                'user_id' => $this->user_id,
             ]);
         }
 
@@ -355,7 +368,7 @@ class TenantUser extends Model
             $tenant = $this->getCurrentTenant();
             ActivityLog::logSystem('tenant_user_deactivated', "User {$this->user->email} deactivated in tenant {$tenant->name}", [
                 'tenant_id' => $tenant->id,
-                'user_id' => $this->user_id
+                'user_id' => $this->user_id,
             ]);
         }
 
@@ -369,10 +382,10 @@ class TenantUser extends Model
     {
         $oldRole = $this->role;
         $newPermissions = static::getDefaultPermissions($newRole);
-        
+
         $updated = $this->update([
             'role' => $newRole,
-            'permissions' => $newPermissions
+            'permissions' => $newPermissions,
         ]);
 
         if ($updated) {
@@ -381,7 +394,7 @@ class TenantUser extends Model
                 'tenant_id' => $tenant->id,
                 'user_id' => $this->user_id,
                 'old_role' => $oldRole,
-                'new_role' => $newRole
+                'new_role' => $newRole,
             ]);
         }
 
@@ -402,23 +415,23 @@ class TenantUser extends Model
                 self::PERMISSION_VIEW_ANALYTICS,
                 self::PERMISSION_MANAGE_SETTINGS,
                 self::PERMISSION_EXPORT_DATA,
-                self::PERMISSION_IMPORT_DATA
+                self::PERMISSION_IMPORT_DATA,
             ],
             self::ROLE_INSTRUCTOR => [
                 self::PERMISSION_MANAGE_COURSES,
                 self::PERMISSION_MANAGE_STUDENTS,
                 self::PERMISSION_ASSIGN_GRADES,
                 self::PERMISSION_VIEW_ANALYTICS,
-                self::PERMISSION_EXPORT_DATA
+                self::PERMISSION_EXPORT_DATA,
             ],
             self::ROLE_STAFF => [
                 self::PERMISSION_MANAGE_STUDENTS,
                 self::PERMISSION_VIEW_ANALYTICS,
-                self::PERMISSION_EXPORT_DATA
+                self::PERMISSION_EXPORT_DATA,
             ],
             self::ROLE_STUDENT => [],
             self::ROLE_VIEWER => [
-                self::PERMISSION_VIEW_ANALYTICS
+                self::PERMISSION_VIEW_ANALYTICS,
             ],
             default => []
         };
@@ -434,7 +447,7 @@ class TenantUser extends Model
             self::ROLE_INSTRUCTOR => 'Instructor',
             self::ROLE_STAFF => 'Staff',
             self::ROLE_STUDENT => 'Student',
-            self::ROLE_VIEWER => 'Viewer'
+            self::ROLE_VIEWER => 'Viewer',
         ];
     }
 
@@ -451,7 +464,7 @@ class TenantUser extends Model
             self::PERMISSION_VIEW_ANALYTICS => 'View Analytics',
             self::PERMISSION_MANAGE_SETTINGS => 'Manage Settings',
             self::PERMISSION_EXPORT_DATA => 'Export Data',
-            self::PERMISSION_IMPORT_DATA => 'Import Data'
+            self::PERMISSION_IMPORT_DATA => 'Import Data',
         ];
     }
 
@@ -465,7 +478,7 @@ class TenantUser extends Model
             self::ROLE_STUDENT => 2,
             self::ROLE_STAFF => 3,
             self::ROLE_INSTRUCTOR => 4,
-            self::ROLE_TENANT_ADMIN => 5
+            self::ROLE_TENANT_ADMIN => 5,
         ];
     }
 
@@ -477,7 +490,7 @@ class TenantUser extends Model
         $hierarchy = static::getRoleHierarchy();
         $currentLevel = $hierarchy[$this->role] ?? 0;
         $requiredLevel = $hierarchy[$requiredRole] ?? 0;
-        
+
         return $currentLevel >= $requiredLevel;
     }
 
@@ -494,7 +507,7 @@ class TenantUser extends Model
             'role' => $this->role,
             'permissions_count' => count($this->permissions ?? []),
             'has_pending_invitation' => $this->isInvitationValid(),
-            'invited_by' => $this->invitedBy?->name
+            'invited_by' => $this->invitedBy?->name,
         ];
     }
 
@@ -504,18 +517,18 @@ class TenantUser extends Model
     public static function bulkUpdateRole(array $tenantUserIds, string $newRole): int
     {
         $newPermissions = static::getDefaultPermissions($newRole);
-        
+
         $updated = static::whereIn('id', $tenantUserIds)
             ->update([
                 'role' => $newRole,
-                'permissions' => $newPermissions
+                'permissions' => $newPermissions,
             ]);
 
         // Log bulk update
         ActivityLog::logSystem('bulk_role_update', "Bulk role update: {$updated} users updated to role {$newRole}", [
             'updated_count' => $updated,
             'new_role' => $newRole,
-            'tenant_user_ids' => $tenantUserIds
+            'tenant_user_ids' => $tenantUserIds,
         ]);
 
         return $updated;
@@ -533,7 +546,7 @@ class TenantUser extends Model
         ActivityLog::logSystem("bulk_user_{$status}", "Bulk status update: {$updated} users {$status}", [
             'updated_count' => $updated,
             'is_active' => $isActive,
-            'tenant_user_ids' => $tenantUserIds
+            'tenant_user_ids' => $tenantUserIds,
         ]);
 
         return $updated;
@@ -545,13 +558,13 @@ class TenantUser extends Model
     public static function cleanupExpiredInvitations(): int
     {
         $deleted = static::expiredInvitations()->delete();
-        
+
         if ($deleted > 0) {
             ActivityLog::logSystem('expired_invitations_cleanup', "Cleaned up {$deleted} expired invitations", [
-                'deleted_count' => $deleted
+                'deleted_count' => $deleted,
             ]);
         }
-        
+
         return $deleted;
     }
 
@@ -562,7 +575,7 @@ class TenantUser extends Model
     {
         // In schema-based tenancy, all records in current schema belong to current tenant
         $query = static::query();
-        
+
         return [
             'total_users' => $query->count(),
             'active_users' => $query->active()->count(),
@@ -573,7 +586,7 @@ class TenantUser extends Model
                 ->groupBy('role')
                 ->pluck('count', 'role')
                 ->toArray(),
-            'recently_active' => $query->recentlyAccessed(7)->count()
+            'recently_active' => $query->recentlyAccessed(7)->count(),
         ];
     }
 }

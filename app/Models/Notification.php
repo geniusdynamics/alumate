@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
 
 class Notification extends Model
 {
@@ -40,12 +40,19 @@ class Notification extends Model
     ];
 
     public const TYPE_CONNECTION_REQUEST = 'connection_request';
+
     public const TYPE_CONNECTION_ACCEPTED = 'connection_accepted';
+
     public const TYPE_SKILL_ENDORSEMENT = 'skill_endorsement';
+
     public const TYPE_REFERRAL = 'referral';
+
     public const TYPE_MESSAGE = 'message';
+
     public const TYPE_JOB_APPLICATION = 'job_application';
+
     public const TYPE_EVENT_INVITATION = 'event_invitation';
+
     public const TYPE_SYSTEM = 'system';
 
     public function user(): BelongsTo
@@ -75,7 +82,7 @@ class Notification extends Model
 
     public function markAsRead(): void
     {
-        if (!$this->is_read) {
+        if (! $this->is_read) {
             $this->update([
                 'is_read' => true,
                 'read_at' => now(),

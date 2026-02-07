@@ -15,7 +15,7 @@ class InstitutionDemoRequest extends BaseFormRequest
             [
                 'contact_name' => 'required|string|min:2|max:100|regex:/^[a-zA-Z\s\-\'\.]+$/',
                 'contact_title' => 'required|string|min:2|max:100',
-                'phone' => ['required', new \App\Rules\PhoneNumber()],
+                'phone' => ['required', new \App\Rules\PhoneNumber],
                 'department' => 'required|in:alumni_relations,advancement,marketing,student_affairs,it,administration,career_services,enrollment,communications,development,other',
                 'decision_role' => 'required|in:decision_maker,influencer,evaluator,end_user,researcher',
                 'alumni_count' => 'required|in:<1000,1000-5000,5000-15000,15000-50000,50000-100000,>100000',
@@ -127,13 +127,13 @@ class InstitutionDemoRequest extends BaseFormRequest
     {
         $budget = $this->input('budget_range');
         $timeline = $this->input('implementation_timeline');
-        
+
         if ($budget && $timeline) {
             // Large budgets with immediate timeline might be unrealistic
             if (in_array($budget, ['>250k', '100k-250k']) && $timeline === 'immediate') {
                 $validator->errors()->add('implementation_timeline', 'Large budget implementations typically require more planning time.');
             }
-            
+
             // Small budgets with long timelines might indicate low priority
             if (in_array($budget, ['<10k', '10k-25k']) && $timeline === '>12months') {
                 $validator->errors()->add('budget_range', 'Extended timelines may require larger budget allocations.');
@@ -148,13 +148,13 @@ class InstitutionDemoRequest extends BaseFormRequest
     {
         $institutionSize = $this->input('institution_size');
         $alumniCount = $this->input('alumni_count');
-        
+
         if ($institutionSize && $alumniCount) {
             // Large institutions should have more alumni
             if ($institutionSize === '>30000' && in_array($alumniCount, ['<1000', '1000-5000'])) {
                 $validator->errors()->add('alumni_count', 'Large institutions typically have more alumni.');
             }
-            
+
             // Small institutions shouldn't have too many alumni
             if ($institutionSize === '<1000' && in_array($alumniCount, ['>100000', '50000-100000'])) {
                 $validator->errors()->add('alumni_count', 'Small institutions typically have fewer alumni.');
@@ -170,12 +170,12 @@ class InstitutionDemoRequest extends BaseFormRequest
         $decisionRole = $this->input('decision_role');
         $timeline = $this->input('implementation_timeline');
         $urgencyReason = $this->input('urgency_reason');
-        
+
         // Decision makers with immediate timeline should provide urgency reason
         if ($decisionRole === 'decision_maker' && $timeline === 'immediate' && empty($urgencyReason)) {
             $validator->errors()->add('urgency_reason', 'Please explain the reason for immediate implementation needs.');
         }
-        
+
         // Researchers with immediate timeline might be inconsistent
         if ($decisionRole === 'researcher' && $timeline === 'immediate') {
             $validator->errors()->add('implementation_timeline', 'Research phase typically requires more time for evaluation.');

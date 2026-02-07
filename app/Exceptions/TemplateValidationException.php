@@ -14,16 +14,12 @@ class TemplateValidationException extends Exception
 
     /**
      * Create a new exception instance
-     *
-     * @param string|array $message
-     * @param int $code
-     * @param \Throwable|null $previous
      */
-    public function __construct(string|array $message = "Template validation failed", int $code = 0, ?\Throwable $previous = null)
+    public function __construct(string|array $message = 'Template validation failed', int $code = 0, ?\Throwable $previous = null)
     {
         if (is_array($message)) {
             $this->errors = collect($message);
-            $message = "Template validation failed: " . json_encode($message, JSON_PRETTY_PRINT);
+            $message = 'Template validation failed: '.json_encode($message, JSON_PRETTY_PRINT);
         } else {
             $this->errors = collect([$message]);
         }
@@ -33,8 +29,6 @@ class TemplateValidationException extends Exception
 
     /**
      * Get validation errors
-     *
-     * @return Collection
      */
     public function getErrors(): Collection
     {
@@ -46,7 +40,7 @@ class TemplateValidationException extends Exception
      */
     public function report(): void
     {
-        \Illuminate\Support\Facades\Log::error('Template validation failed: ' . $this->getMessage(), [
+        \Illuminate\Support\Facades\Log::error('Template validation failed: '.$this->getMessage(), [
             'exception' => get_class($this),
             'errors' => $this->errors->toArray(),
             'file' => $this->getFile(),
@@ -57,7 +51,7 @@ class TemplateValidationException extends Exception
     /**
      * Render the exception for API responses
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function render($request)

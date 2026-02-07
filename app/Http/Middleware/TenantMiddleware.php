@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Middleware for automatic tenant resolution and context switching based on domain/subdomain
 // ABOUTME: Handles tenant identification, schema switching, and request routing for multi-tenant applications
 
@@ -7,11 +8,11 @@ namespace App\Http\Middleware;
 use App\Models\Tenant;
 use App\Services\TenantContextService;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Exception;
 
 class TenantMiddleware
 {
@@ -36,12 +37,12 @@ class TenantMiddleware
             // Resolve tenant from request
             $tenant = $this->resolveTenant($request);
 
-            if (!$tenant) {
+            if (! $tenant) {
                 return $this->handleTenantNotFound($request);
             }
 
             // Validate tenant status
-            if (!$this->validateTenantStatus($tenant)) {
+            if (! $this->validateTenantStatus($tenant)) {
                 return $this->handleInactiveTenant($request, $tenant);
             }
 
@@ -63,11 +64,11 @@ class TenantMiddleware
             return $response;
 
         } catch (Exception $e) {
-            Log::error('Tenant middleware error: ' . $e->getMessage(), [
+            Log::error('Tenant middleware error: '.$e->getMessage(), [
                 'url' => $request->fullUrl(),
                 'ip' => $request->ip(),
                 'user_agent' => $request->userAgent(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return $this->handleTenantError($request, $e);
@@ -85,7 +86,7 @@ class TenantMiddleware
             'resolveFromDomain',
             'resolveFromHeader',
             'resolveFromParameter',
-            'resolveFromCache'
+            'resolveFromCache',
         ];
 
         foreach ($strategies as $strategy) {
@@ -109,7 +110,7 @@ class TenantMiddleware
         // Check if we have a subdomain (more than 2 parts for .com domains)
         if (count($parts) >= 3) {
             $subdomain = $parts[0];
-            
+
             // Skip common subdomains
             if (in_array($subdomain, ['www', 'api', 'admin', 'app'])) {
                 return null;
@@ -127,6 +128,7 @@ class TenantMiddleware
     private function resolveFromDomain(Request $request): ?Tenant
     {
         $domain = $request->getHost();
+
         return $this->findTenantByIdentifier($domain, 'domain');
     }
 
@@ -136,7 +138,7 @@ class TenantMiddleware
     private function resolveFromHeader(Request $request): ?Tenant
     {
         $tenantIdentifier = $request->header('X-Tenant');
-        
+
         if ($tenantIdentifier) {
             return $this->findTenantByIdentifier($tenantIdentifier, 'slug');
         }
@@ -150,7 +152,7 @@ class TenantMiddleware
     private function resolveFromParameter(Request $request): ?Tenant
     {
         $tenantIdentifier = $request->query('tenant');
-        
+
         if ($tenantIdentifier) {
             return $this->findTenantByIdentifier($tenantIdentifier, 'slug');
         }
@@ -172,10 +174,10 @@ class TenantMiddleware
     private function findTenantByIdentifier(string $identifier, string $type): ?Tenant
     {
         $cacheKey = "tenant_lookup_{$type}_{$identifier}";
-        
-        return Cache::remember($cacheKey, 3600, function() use ($identifier, $type) {
+
+        return Cache::remember($cacheKey, 3600, function () use ($identifier, $type) {
             $query = Tenant::where('status', 'active');
-            
+
             switch ($type) {
                 case 'subdomain':
                     return $query->where('domain', $identifier)->first();
@@ -207,7 +209,7 @@ class TenantMiddleware
             'api/user/profile',
             'api/performance/*',
             'api/push/vapid-key',
-            'api/webhooks/*'
+            'api/webhooks/*',
         ];
 
         foreach ($skipRoutes as $pattern) {
@@ -218,11 +220,11 @@ class TenantMiddleware
 
         // Skip for certain domains
         $skipDomains = [
-            'admin.' . config('app.domain'),
-            'api.' . config('app.domain'),
+            'admin.'.config('app.domain'),
+            'api.'.config('app.domain'),
             'localhost',
             '127.0.0.1',
-            '0.0.0.0'
+            '0.0.0.0',
         ];
 
         if (in_array($request->getHost(), $skipDomains)) {
@@ -243,16 +245,17 @@ class TenantMiddleware
         }
 
         // Check if tenant schema exists
-        if (!$this->tenantContext->schemaExists($tenant->schema_name)) {
-            Log::error("Tenant schema does not exist", [
+        if (! $this->tenantContext->schemaExists($tenant->schema_name)) {
+            Log::error('Tenant schema does not exist', [
                 'tenant_id' => $tenant->id,
-                'schema_name' => $tenant->schema_name
+                'schema_name' => $tenant->schema_name,
             ]);
+
             return false;
         }
 
         // Check subscription status if applicable
-        if (method_exists($tenant, 'isSubscriptionActive') && !$tenant->isSubscriptionActive()) {
+        if (method_exists($tenant, 'isSubscriptionActive') && ! $tenant->isSubscriptionActive()) {
             return false;
         }
 
@@ -267,18 +270,18 @@ class TenantMiddleware
         Log::warning('Tenant not found', [
             'url' => $request->fullUrl(),
             'host' => $request->getHost(),
-            'ip' => $request->ip()
+            'ip' => $request->ip(),
         ]);
 
         if ($request->expectsJson()) {
             return response()->json([
                 'error' => 'Tenant not found',
-                'message' => 'The requested tenant could not be found or is not accessible.'
+                'message' => 'The requested tenant could not be found or is not accessible.',
             ], 404);
         }
 
         // Redirect to main application or show tenant selection
-        return redirect()->to(config('app.url') . '/tenant-not-found')
+        return redirect()->to(config('app.url').'/tenant-not-found')
             ->with('error', 'Tenant not found');
     }
 
@@ -292,17 +295,17 @@ class TenantMiddleware
             'tenant_name' => $tenant->name,
             'status' => $tenant->status,
             'url' => $request->fullUrl(),
-            'ip' => $request->ip()
+            'ip' => $request->ip(),
         ]);
 
         if ($request->expectsJson()) {
             return response()->json([
                 'error' => 'Tenant inactive',
-                'message' => 'This tenant is currently inactive or suspended.'
+                'message' => 'This tenant is currently inactive or suspended.',
             ], 403);
         }
 
-        return redirect()->to(config('app.url') . '/tenant-inactive')
+        return redirect()->to(config('app.url').'/tenant-inactive')
             ->with('error', 'Tenant is currently inactive');
     }
 
@@ -314,11 +317,11 @@ class TenantMiddleware
         if ($request->expectsJson()) {
             return response()->json([
                 'error' => 'Tenant resolution failed',
-                'message' => 'An error occurred while resolving the tenant context.'
+                'message' => 'An error occurred while resolving the tenant context.',
             ], 500);
         }
 
-        return redirect()->to(config('app.url') . '/error')
+        return redirect()->to(config('app.url').'/error')
             ->with('error', 'An error occurred while accessing the application');
     }
 
@@ -329,27 +332,27 @@ class TenantMiddleware
     {
         try {
             // Log to activity_logs table in tenant schema
-            $this->tenantContext->withTenant($tenant->id, function() use ($request, $tenant) {
+            $this->tenantContext->withTenant($tenant->id, function () use ($request, $tenant) {
                 \DB::table('activity_logs')->insert([
                     'tenant_id' => $tenant->id,
                     'user_id' => auth()->id(),
                     'action' => 'tenant_access',
-                    'description' => 'Tenant accessed via ' . $request->getMethod() . ' ' . $request->path(),
+                    'description' => 'Tenant accessed via '.$request->getMethod().' '.$request->path(),
                     'ip_address' => $request->ip(),
                     'user_agent' => $request->userAgent(),
                     'metadata' => json_encode([
                         'host' => $request->getHost(),
                         'referer' => $request->header('referer'),
-                        'resolution_method' => $this->getResolutionMethod($request)
+                        'resolution_method' => $this->getResolutionMethod($request),
                     ]),
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
             });
         } catch (Exception $e) {
             Log::error('Failed to log tenant access', [
                 'tenant_id' => $tenant->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -362,18 +365,18 @@ class TenantMiddleware
         if ($request->header('X-Tenant')) {
             return 'header';
         }
-        
+
         if ($request->query('tenant')) {
             return 'parameter';
         }
-        
+
         $host = $request->getHost();
         $parts = explode('.', $host);
-        
+
         if (count($parts) >= 3) {
             return 'subdomain';
         }
-        
+
         return 'domain';
     }
 
@@ -385,9 +388,9 @@ class TenantMiddleware
         $response->headers->set('X-Tenant-ID', $tenant->id);
         $response->headers->set('X-Tenant-Name', $tenant->name);
         $response->headers->set('X-Tenant-Schema', $tenant->schema_name);
-        
+
         // Add cache control for tenant-specific content
-        if (!$response->headers->has('Cache-Control')) {
+        if (! $response->headers->has('Cache-Control')) {
             $response->headers->set('Cache-Control', 'private, max-age=300');
         }
     }
@@ -401,7 +404,7 @@ class TenantMiddleware
             // Clear tenant context to prevent memory leaks
             $this->tenantContext->clearContext();
         } catch (Exception $e) {
-            Log::error('Error during tenant middleware termination: ' . $e->getMessage());
+            Log::error('Error during tenant middleware termination: '.$e->getMessage());
         }
     }
 }

@@ -10,8 +10,6 @@ class UpdateTemplateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -34,7 +32,7 @@ class UpdateTemplateRequest extends FormRequest
         foreach ($rules as $field => $rule) {
             if ($field !== 'tenant_id') { // Keep tenant_id required for security
                 if (is_string($rule)) {
-                    $rules[$field] = 'nullable|' . $rule;
+                    $rules[$field] = 'nullable|'.$rule;
                 } elseif (is_array($rule)) {
                     array_unshift($rules[$field], 'nullable');
                 }
@@ -109,17 +107,16 @@ class UpdateTemplateRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate only if structure is being updated
-            if ($this->has('structure') && !empty($this->structure)) {
+            if ($this->has('structure') && ! empty($this->structure)) {
                 try {
                     $this->validateTemplateStructure($validator);
                 } catch (\Exception $e) {
-                    $validator->errors()->add('structure', 'Template structure validation failed: ' . $e->getMessage());
+                    $validator->errors()->add('structure', 'Template structure validation failed: '.$e->getMessage());
                 }
             }
         });
@@ -128,19 +125,20 @@ class UpdateTemplateRequest extends FormRequest
     /**
      * Validate template structure against security and format rules.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
+     *
      * @throws \Exception
      */
     private function validateTemplateStructure($validator): void
     {
         $structure = $this->structure;
 
-        if (!isset($structure['sections']) || !is_array($structure['sections'])) {
+        if (! isset($structure['sections']) || ! is_array($structure['sections'])) {
             throw new \Exception('Template must have a sections array');
         }
 
         foreach ($structure['sections'] as $key => $section) {
-            if (!isset($section['type'])) {
+            if (! isset($section['type'])) {
                 throw new \Exception("Section {$key} must have a type");
             }
 
@@ -149,10 +147,10 @@ class UpdateTemplateRequest extends FormRequest
                 'hero', 'text', 'image', 'video', 'form', 'button',
                 'statistics', 'testimonials', 'accordion', 'tabs',
                 'social_proof', 'pricing', 'newsletter', 'contact',
-                'gallery', 'timeline', 'faq', 'call_to_action'
+                'gallery', 'timeline', 'faq', 'call_to_action',
             ];
 
-            if (!in_array($section['type'], $allowedTypes)) {
+            if (! in_array($section['type'], $allowedTypes)) {
                 throw new \Exception("Section type '{$section['type']}' is not allowed");
             }
 
@@ -166,8 +164,6 @@ class UpdateTemplateRequest extends FormRequest
     /**
      * Validate section configuration based on section type.
      *
-     * @param string $sectionType
-     * @param array $config
      * @throws \Exception
      */
     private function validateSectionConfig(string $sectionType, array $config): void
@@ -182,7 +178,7 @@ class UpdateTemplateRequest extends FormRequest
         };
 
         foreach ($requiredFields as $field) {
-            if (!isset($config[$field]) || empty($config[$field])) {
+            if (! isset($config[$field]) || empty($config[$field])) {
                 throw new \Exception("{$sectionType} section requires '{$field}' configuration");
             }
         }
@@ -190,32 +186,30 @@ class UpdateTemplateRequest extends FormRequest
         // Validate URLs if present
         $urlFields = ['url', 'image_url', 'background_url', 'link_url', 'video_url'];
         foreach ($urlFields as $field) {
-            if (isset($config[$field]) && !empty($config[$field])) {
-                if (!filter_var($config[$field], FILTER_VALIDATE_URL)) {
+            if (isset($config[$field]) && ! empty($config[$field])) {
+                if (! filter_var($config[$field], FILTER_VALIDATE_URL)) {
                     throw new \Exception("{$field} must be a valid URL");
                 }
             }
         }
 
         // Validate email format if present
-        if (isset($config['email']) && !empty($config['email'])) {
-            if (!filter_var($config['email'], FILTER_VALIDATE_EMAIL)) {
-                throw new \Exception("Email must be a valid email address");
+        if (isset($config['email']) && ! empty($config['email'])) {
+            if (! filter_var($config['email'], FILTER_VALIDATE_EMAIL)) {
+                throw new \Exception('Email must be a valid email address');
             }
         }
 
         // Validate color format if present
-        if (isset($config['color']) && !empty($config['color'])) {
-            if (!preg_match('/^#[a-fA-F0-9]{3,6}$/', $config['color'])) {
-                throw new \Exception("Color must be a valid hex color code");
+        if (isset($config['color']) && ! empty($config['color'])) {
+            if (! preg_match('/^#[a-fA-F0-9]{3,6}$/', $config['color'])) {
+                throw new \Exception('Color must be a valid hex color code');
             }
         }
     }
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {

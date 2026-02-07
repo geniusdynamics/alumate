@@ -35,15 +35,12 @@ class PrivacyController extends Controller
 
     /**
      * Get privacy settings for the current user or a specific user
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -52,7 +49,7 @@ class PrivacyController extends Controller
 
             // Check authorization - users can view their own, admins can view tenant users
             $targetUserId = $request->input('user_id', $user->id);
-            if (!$this->canAccessPrivacyData($user, $targetUserId)) {
+            if (! $this->canAccessPrivacyData($user, $targetUserId)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to access these privacy settings.',
@@ -85,15 +82,12 @@ class PrivacyController extends Controller
 
     /**
      * Get user privacy settings
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function show(int $userId): JsonResponse
     {
         try {
             $currentUser = Auth::user();
-            if (!$currentUser) {
+            if (! $currentUser) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -101,7 +95,7 @@ class PrivacyController extends Controller
             }
 
             // Check authorization
-            if (!$this->canAccessPrivacyData($currentUser, $userId)) {
+            if (! $this->canAccessPrivacyData($currentUser, $userId)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to access these privacy settings.',
@@ -110,7 +104,7 @@ class PrivacyController extends Controller
 
             // Verify user exists in tenant context
             $user = $this->verifyUserInTenant($userId);
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'error' => 'User not found in tenant context',
@@ -145,16 +139,12 @@ class PrivacyController extends Controller
 
     /**
      * Update user privacy settings
-     *
-     * @param PrivacyUpdateRequest $request
-     * @param int $userId
-     * @return JsonResponse
      */
     public function update(PrivacyUpdateRequest $request, int $userId): JsonResponse
     {
         try {
             $currentUser = Auth::user();
-            if (!$currentUser) {
+            if (! $currentUser) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -162,7 +152,7 @@ class PrivacyController extends Controller
             }
 
             // Check authorization
-            if (!$this->canModifyPrivacyData($currentUser, $userId)) {
+            if (! $this->canModifyPrivacyData($currentUser, $userId)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to modify these privacy settings.',
@@ -171,7 +161,7 @@ class PrivacyController extends Controller
 
             // Verify user exists in tenant context
             $user = $this->verifyUserInTenant($userId);
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'error' => 'User not found in tenant context',
@@ -227,15 +217,12 @@ class PrivacyController extends Controller
 
     /**
      * Record user consent for a specific type
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function consent(Request $request): JsonResponse
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -243,7 +230,7 @@ class PrivacyController extends Controller
             }
 
             $validated = $request->validate([
-                'consent_type' => 'required|string|in:' . implode(',', self::CONSENT_TYPES),
+                'consent_type' => 'required|string|in:'.implode(',', self::CONSENT_TYPES),
                 'consented' => 'required|boolean',
             ]);
 
@@ -298,15 +285,12 @@ class PrivacyController extends Controller
 
     /**
      * Revoke user consent for a specific type
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function revokeConsent(Request $request): JsonResponse
     {
         try {
             $user = Auth::user();
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -314,7 +298,7 @@ class PrivacyController extends Controller
             }
 
             $validated = $request->validate([
-                'consent_type' => 'required|string|in:' . implode(',', self::CONSENT_TYPES),
+                'consent_type' => 'required|string|in:'.implode(',', self::CONSENT_TYPES),
             ]);
 
             $consentType = $validated['consent_type'];
@@ -358,15 +342,12 @@ class PrivacyController extends Controller
 
     /**
      * Get consent status for a specific user
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function getConsentStatus(int $userId): JsonResponse
     {
         try {
             $currentUser = Auth::user();
-            if (!$currentUser) {
+            if (! $currentUser) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -374,7 +355,7 @@ class PrivacyController extends Controller
             }
 
             // Check authorization - users can view their own, admins can view tenant users
-            if (!$this->canAccessPrivacyData($currentUser, $userId)) {
+            if (! $this->canAccessPrivacyData($currentUser, $userId)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to access this consent status.',
@@ -408,15 +389,12 @@ class PrivacyController extends Controller
 
     /**
      * Export user data (GDPR data portability)
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function exportData(int $userId): JsonResponse
     {
         try {
             $currentUser = Auth::user();
-            if (!$currentUser) {
+            if (! $currentUser) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -424,7 +402,7 @@ class PrivacyController extends Controller
             }
 
             // Check authorization - users can export their own, admins can export tenant users
-            if (!$this->canAccessPrivacyData($currentUser, $userId)) {
+            if (! $this->canAccessPrivacyData($currentUser, $userId)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to export this data.',
@@ -433,7 +411,7 @@ class PrivacyController extends Controller
 
             // Verify user exists in tenant context
             $user = $this->verifyUserInTenant($userId);
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'error' => 'User not found in tenant context',
@@ -468,15 +446,12 @@ class PrivacyController extends Controller
 
     /**
      * Delete user data (GDPR right to be forgotten)
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function deleteData(int $userId): JsonResponse
     {
         try {
             $currentUser = Auth::user();
-            if (!$currentUser) {
+            if (! $currentUser) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -484,7 +459,7 @@ class PrivacyController extends Controller
             }
 
             // Check authorization - users can delete their own, super admins can delete any user
-            if (!$this->canDeleteUserData($currentUser, $userId)) {
+            if (! $this->canDeleteUserData($currentUser, $userId)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to delete this data.',
@@ -530,15 +505,12 @@ class PrivacyController extends Controller
 
     /**
      * Anonymize user data (preserve records but remove identifiers)
-     *
-     * @param int $userId
-     * @return JsonResponse
      */
     public function anonymizeData(int $userId): JsonResponse
     {
         try {
             $currentUser = Auth::user();
-            if (!$currentUser) {
+            if (! $currentUser) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Authentication required',
@@ -546,7 +518,7 @@ class PrivacyController extends Controller
             }
 
             // Check authorization - admins can anonymize user data, users can anonymize their own
-            if (!$this->canAnonymizeUserData($currentUser, $userId)) {
+            if (! $this->canAnonymizeUserData($currentUser, $userId)) {
                 return response()->json([
                     'success' => false,
                     'error' => 'You do not have permission to anonymize this data.',
@@ -591,10 +563,6 @@ class PrivacyController extends Controller
 
     /**
      * Check if user can access privacy data for another user
-     *
-     * @param User $currentUser
-     * @param int $targetUserId
-     * @return bool
      */
     private function canAccessPrivacyData(User $currentUser, int $targetUserId): bool
     {
@@ -614,10 +582,6 @@ class PrivacyController extends Controller
 
     /**
      * Check if user can modify privacy data for another user
-     *
-     * @param User $currentUser
-     * @param int $targetUserId
-     * @return bool
      */
     private function canModifyPrivacyData(User $currentUser, int $targetUserId): bool
     {
@@ -632,10 +596,6 @@ class PrivacyController extends Controller
 
     /**
      * Check if user can delete data for another user
-     *
-     * @param User $currentUser
-     * @param int $targetUserId
-     * @return bool
      */
     private function canDeleteUserData(User $currentUser, int $targetUserId): bool
     {
@@ -650,10 +610,6 @@ class PrivacyController extends Controller
 
     /**
      * Check if user can anonymize data for another user
-     *
-     * @param User $currentUser
-     * @param int $targetUserId
-     * @return bool
      */
     private function canAnonymizeUserData(User $currentUser, int $targetUserId): bool
     {
@@ -668,9 +624,6 @@ class PrivacyController extends Controller
 
     /**
      * Verify user exists in current tenant context
-     *
-     * @param int $userId
-     * @return User|null
      */
     private function verifyUserInTenant(int $userId): ?User
     {

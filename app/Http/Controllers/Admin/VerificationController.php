@@ -30,7 +30,7 @@ class VerificationController extends Controller
             ->when($request->search, function ($q, $search) {
                 $q->whereHas('user', function ($uq) use ($search) {
                     $uq->where('name', 'like', "%{$search}%")
-                       ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             });
 
@@ -58,7 +58,7 @@ class VerificationController extends Controller
 
         $verification = AlumniVerification::findOrFail($requestId);
 
-        if (!$verification->isPending()) {
+        if (! $verification->isPending()) {
             return response()->json([
                 'message' => 'This verification request is not pending',
             ], 400);
@@ -95,7 +95,7 @@ class VerificationController extends Controller
 
         $verification = AlumniVerification::findOrFail($requestId);
 
-        if (!$verification->isPending()) {
+        if (! $verification->isPending()) {
             return response()->json([
                 'message' => 'This verification request is not pending',
             ], 400);
@@ -140,14 +140,14 @@ class VerificationController extends Controller
             $records = $this->parseCsv($file);
         } else {
             // For Excel files, use Laravel Excel
-            $import = new \App\Imports\AlumniVerificationImport();
+            $import = new \App\Imports\AlumniVerificationImport;
             Excel::import($import, $file);
             $records = $import->getData();
         }
 
         // Validate records
         $errors = $this->verificationService->validateBulkImportData($records);
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             return response()->json([
                 'message' => 'Validation errors in import file',
                 'errors' => $errors,
@@ -157,6 +157,7 @@ class VerificationController extends Controller
         // Add institution_id to all records
         $records = array_map(function ($record) use ($request) {
             $record['institution_id'] = $request->institution_id;
+
             return $record;
         }, $records);
 

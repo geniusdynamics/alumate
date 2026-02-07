@@ -14,13 +14,19 @@ class AlumniVerification extends Model
     use HasFactory, SoftDeletes;
 
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_APPROVED = 'approved';
+
     public const STATUS_REJECTED = 'rejected';
+
     public const STATUS_EXPIRED = 'expired';
 
     public const METHOD_MANUAL = 'manual';
+
     public const METHOD_EMAIL_DOMAIN = 'email_domain';
+
     public const METHOD_BULK_IMPORT = 'bulk_import';
+
     public const METHOD_AUTO = 'auto';
 
     protected $fillable = [
@@ -224,14 +230,14 @@ class AlumniVerification extends Model
      */
     public function getDocumentUrls(): array
     {
-        if (!$this->supporting_documents) {
+        if (! $this->supporting_documents) {
             return [];
         }
 
         return array_map(function ($path) {
             return [
                 'path' => $path,
-                'url' => asset('storage/' . $path),
+                'url' => asset('storage/'.$path),
                 'name' => basename($path),
             ];
         }, $this->supporting_documents);

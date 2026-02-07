@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Component;
-use App\Services\ComponentService;
 use App\Services\ComponentAnalyticsService;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Collection;
+use App\Services\ComponentService;
 use Exception;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
 
 class ComponentLibraryBridgeController extends Controller
 {
@@ -32,7 +31,7 @@ class ComponentLibraryBridgeController extends Controller
         return response()->json([
             'categories' => $categories,
             'searchIndex' => $searchIndex,
-            'analytics' => $analytics
+            'analytics' => $analytics,
         ]);
     }
 
@@ -42,20 +41,20 @@ class ComponentLibraryBridgeController extends Controller
     public function getCategories(): JsonResponse
     {
         $categories = $this->getDefaultCategories();
-        
+
         // Add component counts to each category
         foreach ($categories as &$category) {
             $components = Component::forTenant(auth()->user()->tenant_id)
                 ->where('category', $category['id'])
                 ->where('is_active', true)
                 ->get();
-            
+
             $category['components'] = $components->map(function ($component) {
                 return [
                     'id' => $component->id,
                     'name' => $component->name,
                     'type' => $component->type,
-                    'description' => $component->description
+                    'description' => $component->description,
                 ];
             });
         }
@@ -77,11 +76,11 @@ class ComponentLibraryBridgeController extends Controller
             ->where('is_active', true);
 
         // Apply search query
-        if (!empty($query)) {
+        if (! empty($query)) {
             $components->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('description', 'like', "%{$query}%")
-                  ->orWhere('type', 'like', "%{$query}%");
+                    ->orWhere('description', 'like', "%{$query}%")
+                    ->orWhere('type', 'like', "%{$query}%");
             });
         }
 
@@ -94,7 +93,7 @@ class ComponentLibraryBridgeController extends Controller
             $components->where('type', $type);
         }
 
-        if (!empty($tags)) {
+        if (! empty($tags)) {
             $components->where(function ($q) use ($tags) {
                 foreach ($tags as $tag) {
                     $q->orWhereJsonContains('metadata->tags', $tag);
@@ -107,7 +106,7 @@ class ComponentLibraryBridgeController extends Controller
                 'component' => $component,
                 'relevanceScore' => $this->calculateRelevanceScore($component, $query),
                 'matchedFields' => $this->getMatchedFields($component, $query),
-                'highlights' => $this->generateHighlights($component, $query)
+                'highlights' => $this->generateHighlights($component, $query),
             ];
         })->sortByDesc('relevanceScore')->values();
 
@@ -121,7 +120,7 @@ class ComponentLibraryBridgeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'componentId' => 'required|exists:components,id',
-            'context' => 'string|in:grapeJS,preview,page_builder'
+            'context' => 'string|in:grapeJS,preview,page_builder',
         ]);
 
         if ($validator->fails()) {
@@ -151,7 +150,7 @@ class ComponentLibraryBridgeController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'componentId' => 'required|exists:components,id',
-            'rating' => 'required|numeric|min:1|max:5'
+            'rating' => 'required|numeric|min:1|max:5',
         ]);
 
         if ($validator->fails()) {
@@ -186,7 +185,7 @@ class ComponentLibraryBridgeController extends Controller
     public function getMostUsed(Request $request): JsonResponse
     {
         $limit = $request->get('limit', 10);
-        
+
         $components = Component::forTenant(auth()->user()->tenant_id)
             ->where('is_active', true)
             ->orderByDesc('usage_count')
@@ -199,7 +198,7 @@ class ComponentLibraryBridgeController extends Controller
                 'totalUsage' => $component->usage_count ?? 0,
                 'recentUsage' => $this->getRecentUsageCount($component->id),
                 'averageRating' => $this->getAverageRating($component->id),
-                'lastUsed' => $component->last_used_at
+                'lastUsed' => $component->last_used_at,
             ];
         });
 
@@ -212,7 +211,7 @@ class ComponentLibraryBridgeController extends Controller
     public function getRecentlyUsed(Request $request): JsonResponse
     {
         $limit = $request->get('limit', 10);
-        
+
         $components = Component::forTenant(auth()->user()->tenant_id)
             ->where('is_active', true)
             ->whereNotNull('last_used_at')
@@ -224,7 +223,7 @@ class ComponentLibraryBridgeController extends Controller
             return [
                 'componentId' => $component->id,
                 'totalUsage' => $component->usage_count ?? 0,
-                'lastUsed' => $component->last_used_at
+                'lastUsed' => $component->last_used_at,
             ];
         });
 
@@ -237,17 +236,18 @@ class ComponentLibraryBridgeController extends Controller
     public function getTrending(Request $request): JsonResponse
     {
         $limit = $request->get('limit', 10);
-        
+
         $components = Component::forTenant(auth()->user()->tenant_id)
             ->where('is_active', true)
             ->get()
             ->map(function ($component) {
                 $recentUsage = $this->getRecentUsageCount($component->id);
+
                 return [
                     'componentId' => $component->id,
                     'recentUsage' => $recentUsage,
                     'totalUsage' => $component->usage_count ?? 0,
-                    'component' => $component
+                    'component' => $component,
                 ];
             })
             ->sortByDesc('recentUsage')
@@ -263,7 +263,7 @@ class ComponentLibraryBridgeController extends Controller
     public function getAnalytics(): JsonResponse
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $totalComponents = Component::forTenant($tenantId)
             ->where('is_active', true)
             ->count();
@@ -281,8 +281,8 @@ class ComponentLibraryBridgeController extends Controller
                 'totalUsage' => $totalUsage,
                 'averageRating' => $averageRating,
                 'mostUsedCategory' => $mostUsedCategory,
-                'usageTrend' => $usageTrend
-            ]
+                'usageTrend' => $usageTrend,
+            ],
         ]);
     }
 
@@ -337,7 +337,7 @@ class ComponentLibraryBridgeController extends Controller
             'block' => $this->convertToGrapeJSBlock($component),
             'documentation' => $this->generateComponentDocumentation($component),
             'usage' => $this->analyticsService->getComponentStats($componentId),
-            'tooltip' => $this->generateComponentTooltip($component)
+            'tooltip' => $this->generateComponentTooltip($component),
         ];
 
         return response()->json(['data' => $data]);
@@ -355,7 +355,7 @@ class ComponentLibraryBridgeController extends Controller
                 'description' => 'Compelling page headers optimized for different audiences',
                 'components' => [],
                 'order' => 1,
-                'isCollapsed' => false
+                'isCollapsed' => false,
             ],
             [
                 'id' => 'forms',
@@ -364,7 +364,7 @@ class ComponentLibraryBridgeController extends Controller
                 'description' => 'Lead capture forms with built-in validation and CRM integration',
                 'components' => [],
                 'order' => 2,
-                'isCollapsed' => false
+                'isCollapsed' => false,
             ],
             [
                 'id' => 'testimonials',
@@ -373,7 +373,7 @@ class ComponentLibraryBridgeController extends Controller
                 'description' => 'Social proof components to build trust and credibility',
                 'components' => [],
                 'order' => 3,
-                'isCollapsed' => false
+                'isCollapsed' => false,
             ],
             [
                 'id' => 'statistics',
@@ -382,7 +382,7 @@ class ComponentLibraryBridgeController extends Controller
                 'description' => 'Metrics and data visualization components',
                 'components' => [],
                 'order' => 4,
-                'isCollapsed' => false
+                'isCollapsed' => false,
             ],
             [
                 'id' => 'ctas',
@@ -391,7 +391,7 @@ class ComponentLibraryBridgeController extends Controller
                 'description' => 'Conversion-optimized buttons and action elements',
                 'components' => [],
                 'order' => 5,
-                'isCollapsed' => false
+                'isCollapsed' => false,
             ],
             [
                 'id' => 'media',
@@ -400,8 +400,8 @@ class ComponentLibraryBridgeController extends Controller
                 'description' => 'Images, videos, and interactive content components',
                 'components' => [],
                 'order' => 6,
-                'isCollapsed' => false
-            ]
+                'isCollapsed' => false,
+            ],
         ];
     }
 
@@ -420,7 +420,7 @@ class ComponentLibraryBridgeController extends Controller
             );
 
             foreach ($terms as $term) {
-                if (!isset($index[$term])) {
+                if (! isset($index[$term])) {
                     $index[$term] = [];
                 }
                 $index[$term][] = $component->id;
@@ -433,7 +433,7 @@ class ComponentLibraryBridgeController extends Controller
     private function getBasicAnalytics(): array
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         return [
             'totalComponents' => Component::forTenant($tenantId)->where('is_active', true)->count(),
             'totalUsage' => Component::forTenant($tenantId)->sum('usage_count') ?? 0,
@@ -442,7 +442,7 @@ class ComponentLibraryBridgeController extends Controller
                 ->groupBy('category')
                 ->selectRaw('category, count(*) as count')
                 ->pluck('count', 'category')
-                ->toArray()
+                ->toArray(),
         ];
     }
 
@@ -468,7 +468,7 @@ class ComponentLibraryBridgeController extends Controller
         }
 
         // Category/type match
-        if (str_contains(strtolower($component->category), $queryLower) || 
+        if (str_contains(strtolower($component->category), $queryLower) ||
             str_contains(strtolower($component->type), $queryLower)) {
             $score += 3.0;
         }
@@ -503,7 +503,7 @@ class ComponentLibraryBridgeController extends Controller
     private function generateHighlights($component, string $query): array
     {
         $highlights = [];
-        
+
         if (empty($query)) {
             return $highlights;
         }
@@ -523,7 +523,7 @@ class ComponentLibraryBridgeController extends Controller
 
     private function highlightText(string $text, string $query): string
     {
-        return preg_replace('/(' . preg_quote($query, '/') . ')/i', '<mark>$1</mark>', $text);
+        return preg_replace('/('.preg_quote($query, '/').')/i', '<mark>$1</mark>', $text);
     }
 
     private function getRecentUsageCount(string $componentId): int
@@ -545,7 +545,7 @@ class ComponentLibraryBridgeController extends Controller
     private function getMostUsedCategory(): string
     {
         $tenantId = auth()->user()->tenant_id;
-        
+
         $result = Component::forTenant($tenantId)
             ->where('is_active', true)
             ->groupBy('category')
@@ -564,12 +564,12 @@ class ComponentLibraryBridgeController extends Controller
         for ($i = 6; $i >= 0; $i--) {
             $date = $today->copy()->subDays($i);
             $dateStr = $date->format('Y-m-d');
-            
+
             $count = $this->analyticsService->getUsageCountForDate($date, auth()->user()->tenant_id);
-            
+
             $trend[] = [
                 'date' => $dateStr,
-                'count' => $count
+                'count' => $count,
             ];
         }
 
@@ -584,13 +584,14 @@ class ComponentLibraryBridgeController extends Controller
             'examples' => $this->getComponentExamples($component),
             'properties' => $this->getComponentProperties($component),
             'tips' => $this->getComponentTips($component->category),
-            'troubleshooting' => $this->getComponentTroubleshooting($component->category)
+            'troubleshooting' => $this->getComponentTroubleshooting($component->category),
         ];
     }
 
     private function generateComponentTooltip($component): string
     {
         $description = $component->description ?: $this->getDefaultDescription($component->category);
+
         return "{$component->name}\n\n{$description}\n\nClick to add to your page.";
     }
 
@@ -616,7 +617,7 @@ class ComponentLibraryBridgeController extends Controller
 
         return [
             'valid' => empty($errors),
-            'errors' => $errors
+            'errors' => $errors,
         ];
     }
 
@@ -669,12 +670,10 @@ class ComponentLibraryBridgeController extends Controller
                 'data-component-id' => $component->id,
                 'data-component-type' => $component->type,
                 'data-component-category' => $component->category,
-                'data-tenant-id' => $component->tenant_id
-            ]
+                'data-tenant-id' => $component->tenant_id,
+            ],
         ];
     }
-
-
 
     private function getComponentPreviewImage($component): string
     {
@@ -686,8 +685,8 @@ class ComponentLibraryBridgeController extends Controller
     {
         return "<div class=\"component-placeholder component-{$component->category}\">
             <h3>{$component->name}</h3>
-            <p>" . ($component->description ?: 'Component content will be rendered here') . "</p>
-        </div>";
+            <p>".($component->description ?: 'Component content will be rendered here').'</p>
+        </div>';
     }
 
     private function getDefaultDescription(string $category): string
@@ -698,7 +697,7 @@ class ComponentLibraryBridgeController extends Controller
             'testimonials' => 'Build trust and credibility with social proof from satisfied users.',
             'statistics' => 'Showcase key metrics and achievements with animated displays.',
             'ctas' => 'Drive user actions with strategically designed call-to-action elements.',
-            'media' => 'Enhance your content with images, videos, and interactive elements.'
+            'media' => 'Enhance your content with images, videos, and interactive elements.',
         ];
 
         return $descriptions[$category] ?? 'A reusable component for your pages.';
@@ -716,9 +715,9 @@ class ComponentLibraryBridgeController extends Controller
                         'config' => [
                             'audienceType' => 'individual',
                             'headline' => 'Advance Your Career',
-                            'layout' => 'centered'
-                        ]
-                    ]
+                            'layout' => 'centered',
+                        ],
+                    ],
                 ];
             default:
                 return [];
@@ -732,19 +731,19 @@ class ComponentLibraryBridgeController extends Controller
                 'name' => 'id',
                 'type' => 'string',
                 'description' => 'Unique identifier for the component',
-                'required' => false
+                'required' => false,
             ],
             [
                 'name' => 'className',
                 'type' => 'string',
                 'description' => 'Additional CSS classes to apply',
-                'required' => false
-            ]
+                'required' => false,
+            ],
         ];
 
         // Add category-specific properties
         $categoryProperties = $this->getCategoryProperties($component->category);
-        
+
         return array_merge($commonProperties, $categoryProperties);
     }
 
@@ -757,14 +756,14 @@ class ComponentLibraryBridgeController extends Controller
                         'name' => 'headline',
                         'type' => 'string',
                         'description' => 'Main headline text',
-                        'required' => true
+                        'required' => true,
                     ],
                     [
                         'name' => 'audienceType',
                         'type' => 'select',
                         'description' => 'Target audience for the hero section',
-                        'required' => true
-                    ]
+                        'required' => true,
+                    ],
                 ];
             default:
                 return [];
@@ -777,33 +776,33 @@ class ComponentLibraryBridgeController extends Controller
             'hero' => [
                 'Use compelling headlines that speak directly to your audience',
                 'Keep subheadings concise and benefit-focused',
-                'Include a clear call-to-action button'
+                'Include a clear call-to-action button',
             ],
             'forms' => [
                 'Keep forms short to reduce abandonment',
                 'Use clear, descriptive field labels',
-                'Provide real-time validation feedback'
+                'Provide real-time validation feedback',
             ],
             'testimonials' => [
                 'Use testimonials from similar user types',
                 'Include specific details and outcomes',
-                'Mix text and video testimonials for variety'
+                'Mix text and video testimonials for variety',
             ],
             'statistics' => [
                 'Use real data when possible for credibility',
                 'Animate numbers to draw attention',
-                'Provide context for what the numbers mean'
+                'Provide context for what the numbers mean',
             ],
             'ctas' => [
                 'Use action-oriented language',
                 'Make buttons visually prominent',
-                'Test different colors and text'
+                'Test different colors and text',
             ],
             'media' => [
                 'Optimize images for web performance',
                 'Provide alt text for accessibility',
-                'Use consistent aspect ratios'
-            ]
+                'Use consistent aspect ratios',
+            ],
         ];
 
         return $tips[$category] ?? [];
@@ -815,20 +814,20 @@ class ComponentLibraryBridgeController extends Controller
             [
                 'issue' => 'Component not displaying correctly',
                 'solution' => 'Check that all required properties are set and valid',
-                'severity' => 'medium'
-            ]
+                'severity' => 'medium',
+            ],
         ];
 
         $categorySpecific = [];
-        
+
         switch ($category) {
             case 'hero':
                 $categorySpecific = [
                     [
                         'issue' => 'Background image not loading',
                         'solution' => 'Verify image URL is accessible and properly formatted',
-                        'severity' => 'medium'
-                    ]
+                        'severity' => 'medium',
+                    ],
                 ];
                 break;
             case 'forms':
@@ -836,8 +835,8 @@ class ComponentLibraryBridgeController extends Controller
                     [
                         'issue' => 'Form submissions not working',
                         'solution' => 'Check form action URL and ensure proper validation',
-                        'severity' => 'high'
-                    ]
+                        'severity' => 'high',
+                    ],
                 ];
                 break;
         }
@@ -856,7 +855,7 @@ class ComponentLibraryBridgeController extends Controller
             'category' => $this->mapCategoryToGrapeJS($component->category),
             'content' => $this->generateBlockContent($component),
             'attributes' => $this->generateBlockAttributes($component),
-            'media' => null // Will be populated by preview generation
+            'media' => null, // Will be populated by preview generation
         ];
 
         $traits = $this->generateComponentTraits($component);
@@ -867,8 +866,8 @@ class ComponentLibraryBridgeController extends Controller
             'data' => [
                 'block' => $blockData,
                 'traits' => $traits,
-                'styles' => $styles
-            ]
+                'styles' => $styles,
+            ],
         ]);
     }
 
@@ -878,10 +877,10 @@ class ComponentLibraryBridgeController extends Controller
     public function validateTraits(Component $component): JsonResponse
     {
         $validation = $this->validateComponentTraits($component);
-        
+
         return response()->json([
             'success' => true,
-            'data' => $validation
+            'data' => $validation,
         ]);
     }
 
@@ -895,12 +894,12 @@ class ComponentLibraryBridgeController extends Controller
             'features_supported' => $this->getSupportedFeatures($component),
             'limitations' => $this->getComponentLimitations($component),
             'grapejs_version_requirements' => '0.19.0+',
-            'recommended_plugins' => $this->getRecommendedPlugins($component)
+            'recommended_plugins' => $this->getRecommendedPlugins($component),
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $compatibility
+            'data' => $compatibility,
         ]);
     }
 
@@ -913,14 +912,14 @@ class ComponentLibraryBridgeController extends Controller
             'component_ids' => 'required|array',
             'component_ids.*' => 'exists:components,id',
             'include_styles' => 'boolean',
-            'include_assets' => 'boolean'
+            'include_assets' => 'boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -930,7 +929,7 @@ class ComponentLibraryBridgeController extends Controller
         if ($components->count() !== count($componentIds)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Some components could not be found'
+                'message' => 'Some components could not be found',
             ], 422);
         }
 
@@ -943,13 +942,13 @@ class ComponentLibraryBridgeController extends Controller
             'metadata' => [
                 'serialized_at' => now()->toISOString(),
                 'component_count' => $components->count(),
-                'format_version' => '1.0.0'
-            ]
+                'format_version' => '1.0.0',
+            ],
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $serializedData
+            'data' => $serializedData,
         ]);
     }
 
@@ -961,24 +960,24 @@ class ComponentLibraryBridgeController extends Controller
         $validator = Validator::make($request->all(), [
             'grapejs_data' => 'required|array',
             'create_components' => 'boolean',
-            'tenant_id' => 'exists:tenants,id'
+            'tenant_id' => 'exists:tenants,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         $grapeJSData = $request->get('grapejs_data');
-        
+
         // Validate GrapeJS data structure
-        if (!isset($grapeJSData['components']) || !is_array($grapeJSData['components'])) {
+        if (! isset($grapeJSData['components']) || ! is_array($grapeJSData['components'])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid GrapeJS data format'
+                'message' => 'Invalid GrapeJS data format',
             ], 422);
         }
 
@@ -988,7 +987,7 @@ class ComponentLibraryBridgeController extends Controller
         foreach ($grapeJSData['components'] as $componentData) {
             $component = $this->deserializeGrapeJSComponent($componentData);
             $components[] = $component;
-            
+
             if ($request->get('create_components', false)) {
                 // Create actual component record
                 $createdCount++;
@@ -1000,8 +999,8 @@ class ComponentLibraryBridgeController extends Controller
             'data' => [
                 'components' => $components,
                 'created_count' => $createdCount,
-                'warnings' => []
-            ]
+                'warnings' => [],
+            ],
         ]);
     }
 
@@ -1023,16 +1022,16 @@ class ComponentLibraryBridgeController extends Controller
                 'max_load_time' => 0,
                 'min_load_time' => PHP_FLOAT_MAX,
                 'total_components' => count($componentIds),
-                'failed_loads' => 0
+                'failed_loads' => 0,
             ],
             'component_performance' => [],
-            'recommendations' => []
+            'recommendations' => [],
         ];
 
         foreach ($componentIds as $componentId) {
             for ($i = 0; $i < $iterations; $i++) {
                 $componentStartTime = microtime(true);
-                
+
                 try {
                     $component = Component::find($componentId);
                     if ($component) {
@@ -1041,17 +1040,17 @@ class ComponentLibraryBridgeController extends Controller
                 } catch (Exception $e) {
                     $results['test_results']['failed_loads']++;
                 }
-                
+
                 $componentEndTime = microtime(true);
                 $loadTime = ($componentEndTime - $componentStartTime) * 1000;
-                
+
                 $results['component_performance'][] = [
                     'component_id' => $componentId,
                     'load_time' => $loadTime,
                     'memory_usage' => memory_get_usage() - $startMemory,
-                    'render_time' => $loadTime
+                    'render_time' => $loadTime,
                 ];
-                
+
                 $results['test_results']['max_load_time'] = max($results['test_results']['max_load_time'], $loadTime);
                 $results['test_results']['min_load_time'] = min($results['test_results']['min_load_time'], $loadTime);
             }
@@ -1063,7 +1062,7 @@ class ComponentLibraryBridgeController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1089,13 +1088,13 @@ class ComponentLibraryBridgeController extends Controller
             'optimization_suggestions' => [
                 'Enable lazy loading for media components',
                 'Optimize component configuration size',
-                'Use CSS transforms for animations'
-            ]
+                'Use CSS transforms for animations',
+            ],
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $performanceData
+            'data' => $performanceData,
         ]);
     }
 
@@ -1105,24 +1104,24 @@ class ComponentLibraryBridgeController extends Controller
     public function testDragDrop(Component $component, Request $request): JsonResponse
     {
         $testScenarios = $request->get('test_scenarios', []);
-        
+
         $results = [
             'drag_drop_compatible' => true,
             'supported_scenarios' => $testScenarios,
-            'test_results' => []
+            'test_results' => [],
         ];
 
         foreach ($testScenarios as $scenario) {
             $results['test_results'][] = [
                 'scenario' => $scenario,
                 'success' => true,
-                'error_message' => null
+                'error_message' => null,
             ];
         }
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1132,17 +1131,17 @@ class ComponentLibraryBridgeController extends Controller
     public function testResponsive(Component $component, Request $request): JsonResponse
     {
         $testBreakpoints = $request->get('test_breakpoints', ['desktop', 'tablet', 'mobile']);
-        
+
         $results = [
             'responsive_compatible' => true,
             'breakpoint_support' => array_fill_keys($testBreakpoints, true),
             'resize_handle_support' => $request->get('test_resize_handles', false),
-            'test_results' => []
+            'test_results' => [],
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1155,12 +1154,12 @@ class ComponentLibraryBridgeController extends Controller
             'style_manager_compatible' => true,
             'supported_properties' => ['colors', 'typography', 'spacing', 'borders'],
             'theme_integration' => true,
-            'css_variable_support' => true
+            'css_variable_support' => true,
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1170,14 +1169,14 @@ class ComponentLibraryBridgeController extends Controller
     public function testBackwardCompatibility(Component $component, Request $request): JsonResponse
     {
         $targetVersions = $request->get('target_versions', []);
-        
+
         $results = [
             'backward_compatible' => true,
             'version_compatibility' => [],
             'migration_required' => false,
             'migration_path' => [],
             'breaking_changes' => [],
-            'deprecated_features' => []
+            'deprecated_features' => [],
         ];
 
         foreach ($targetVersions as $version) {
@@ -1185,13 +1184,13 @@ class ComponentLibraryBridgeController extends Controller
                 'version' => $version,
                 'compatible' => true,
                 'migration_required' => false,
-                'migration_path' => []
+                'migration_path' => [],
             ];
         }
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1206,12 +1205,12 @@ class ComponentLibraryBridgeController extends Controller
             'average_response_time' => 45.2,
             'memory_usage' => 15 * 1024 * 1024,
             'failed_operations' => 1,
-            'performance_degradation' => 0.05
+            'performance_degradation' => 0.05,
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1224,7 +1223,7 @@ class ComponentLibraryBridgeController extends Controller
             'integrity_maintained' => true,
             'checksum_validation' => true,
             'data_corruption_detected' => false,
-            'operation_results' => []
+            'operation_results' => [],
         ];
 
         $operations = $request->get('operations', []);
@@ -1232,13 +1231,13 @@ class ComponentLibraryBridgeController extends Controller
             $results['operation_results'][] = [
                 'operation' => $operation,
                 'success' => true,
-                'data_integrity_score' => 100
+                'data_integrity_score' => 100,
             ];
         }
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1254,8 +1253,8 @@ class ComponentLibraryBridgeController extends Controller
                 'total_tests' => 25,
                 'passed_tests' => 25,
                 'failed_tests' => 0,
-                'critical_failures' => 0
-            ]
+                'critical_failures' => 0,
+            ],
         ];
 
         $testScenarios = $request->get('test_scenarios', []);
@@ -1264,13 +1263,13 @@ class ComponentLibraryBridgeController extends Controller
                 'scenario' => $scenario,
                 'passed' => true,
                 'differences' => [],
-                'severity' => 'none'
+                'severity' => 'none',
             ];
         }
 
         return response()->json([
             'success' => true,
-            'data' => $results
+            'data' => $results,
         ]);
     }
 
@@ -1288,15 +1287,15 @@ class ComponentLibraryBridgeController extends Controller
                 'label' => $component->name,
                 'category' => $this->mapCategoryToGrapeJS($component->category),
                 'content' => $this->generateBlockContent($component),
-                'attributes' => $this->generateBlockAttributes($component)
+                'attributes' => $this->generateBlockAttributes($component),
             ];
         });
 
         return response()->json([
             'success' => true,
             'data' => [
-                'blocks' => $blocks
-            ]
+                'blocks' => $blocks,
+            ],
         ]);
     }
 
@@ -1304,7 +1303,7 @@ class ComponentLibraryBridgeController extends Controller
 
     private function mapCategoryToGrapeJS(string $category): string
     {
-        return match($category) {
+        return match ($category) {
             'hero' => 'hero-sections',
             'forms' => 'forms-lead-capture',
             'testimonials' => 'testimonials-reviews',
@@ -1325,7 +1324,7 @@ class ComponentLibraryBridgeController extends Controller
         $attributes = [
             'data-component-id' => $component->id,
             'data-component-category' => $component->category,
-            'data-component-name' => $component->name
+            'data-component-name' => $component->name,
         ];
 
         // Add category-specific attributes
@@ -1342,25 +1341,25 @@ class ComponentLibraryBridgeController extends Controller
     {
         $commonTraits = [
             ['name' => 'id', 'type' => 'text', 'label' => 'ID'],
-            ['name' => 'className', 'type' => 'text', 'label' => 'CSS Classes']
+            ['name' => 'className', 'type' => 'text', 'label' => 'CSS Classes'],
         ];
 
-        $categoryTraits = match($component->category) {
+        $categoryTraits = match ($component->category) {
             'hero' => [
                 ['name' => 'headline', 'type' => 'text', 'label' => 'Headline'],
                 ['name' => 'subheading', 'type' => 'text', 'label' => 'Subheading'],
                 ['name' => 'audienceType', 'type' => 'select', 'label' => 'Audience Type', 'options' => [
                     ['id' => 'individual', 'name' => 'Individual'],
                     ['id' => 'institution', 'name' => 'Institution'],
-                    ['id' => 'employer', 'name' => 'Employer']
-                ]]
+                    ['id' => 'employer', 'name' => 'Employer'],
+                ]],
             ],
             'forms' => [
                 ['name' => 'title', 'type' => 'text', 'label' => 'Form Title'],
                 ['name' => 'layout', 'type' => 'select', 'label' => 'Layout', 'options' => [
                     ['id' => 'single-column', 'name' => 'Single Column'],
-                    ['id' => 'two-column', 'name' => 'Two Column']
-                ]]
+                    ['id' => 'two-column', 'name' => 'Two Column'],
+                ]],
             ],
             default => []
         };
@@ -1373,8 +1372,8 @@ class ComponentLibraryBridgeController extends Controller
         return [
             [
                 'selectors' => [".{$component->category}-component"],
-                'style' => ['padding' => '20px', 'margin' => '0']
-            ]
+                'style' => ['padding' => '20px', 'margin' => '0'],
+            ],
         ];
     }
 
@@ -1391,11 +1390,11 @@ class ComponentLibraryBridgeController extends Controller
         // Category-specific validation
         switch ($component->category) {
             case 'hero':
-                if (!isset($component->config['headline'])) {
+                if (! isset($component->config['headline'])) {
                     $errors[] = 'Missing required field: headline';
                 }
-                if (!isset($component->config['audienceType']) || 
-                    !in_array($component->config['audienceType'], ['individual', 'institution', 'employer'])) {
+                if (! isset($component->config['audienceType']) ||
+                    ! in_array($component->config['audienceType'], ['individual', 'institution', 'employer'])) {
                     $errors[] = 'Invalid value for audienceType trait';
                 }
                 break;
@@ -1405,15 +1404,15 @@ class ComponentLibraryBridgeController extends Controller
             'valid' => empty($errors),
             'traits' => $this->generateComponentTraits($component),
             'errors' => $errors,
-            'warnings' => $warnings
+            'warnings' => $warnings,
         ];
     }
 
     private function getSupportedFeatures(Component $component): array
     {
         $baseFeatures = ['drag_drop', 'style_manager', 'trait_manager', 'block_manager'];
-        
-        $categoryFeatures = match($component->category) {
+
+        $categoryFeatures = match ($component->category) {
             'hero' => ['responsive_design', 'background_media', 'cta_buttons'],
             'forms' => ['form_validation', 'field_configuration', 'dynamic_fields'],
             'testimonials' => ['video_support', 'carousel_navigation', 'filtering', 'accessibility'],
@@ -1433,7 +1432,7 @@ class ComponentLibraryBridgeController extends Controller
 
     private function getRecommendedPlugins(Component $component): array
     {
-        return match($component->category) {
+        return match ($component->category) {
             'forms' => ['grapejs-plugin-forms'],
             'media' => ['grapejs-blocks-basic'],
             default => []
@@ -1446,7 +1445,7 @@ class ComponentLibraryBridgeController extends Controller
             'type' => $this->mapCategoryToGrapeJS($component->category),
             'attributes' => $this->generateBlockAttributes($component),
             'components' => [],
-            'styles' => $this->generateComponentStyles($component)
+            'styles' => $this->generateComponentStyles($component),
         ];
     }
 
@@ -1465,13 +1464,13 @@ class ComponentLibraryBridgeController extends Controller
         return [
             'name' => $componentData['attributes']['data-component-name'] ?? 'Imported Component',
             'category' => $this->mapGrapeJSToCategory($componentData['type'] ?? 'general'),
-            'config' => $this->extractConfigFromAttributes($componentData['attributes'] ?? [])
+            'config' => $this->extractConfigFromAttributes($componentData['attributes'] ?? []),
         ];
     }
 
     private function mapGrapeJSToCategory(string $grapeJSType): string
     {
-        return match($grapeJSType) {
+        return match ($grapeJSType) {
             'hero-sections' => 'hero',
             'forms-lead-capture' => 'forms',
             'testimonials-reviews' => 'testimonials',
@@ -1485,14 +1484,14 @@ class ComponentLibraryBridgeController extends Controller
     private function extractConfigFromAttributes(array $attributes): array
     {
         $config = [];
-        
+
         foreach ($attributes as $key => $value) {
-            if (str_starts_with($key, 'data-') && !in_array($key, ['data-component-id', 'data-component-category', 'data-component-name'])) {
+            if (str_starts_with($key, 'data-') && ! in_array($key, ['data-component-id', 'data-component-category', 'data-component-name'])) {
                 $configKey = str_replace('data-', '', $key);
                 $config[$configKey] = $value;
             }
         }
-        
+
         return $config;
     }
 }

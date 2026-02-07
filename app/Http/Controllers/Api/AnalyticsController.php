@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\AnalyticsService;
-use App\Models\AnalyticsEvent;
-use App\Services\TenantContextService;
-use App\Services\EmailAnalyticsService;
-use App\Services\HeatMapService;
-use App\Services\GamificationAnalyticsService;
 use App\Jobs\ProcessAnalyticsEvents;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Cache;
+use App\Models\AnalyticsEvent;
+use App\Services\AnalyticsService;
+use App\Services\EmailAnalyticsService;
+use App\Services\GamificationAnalyticsService;
+use App\Services\HeatMapService;
+use App\Services\TenantContextService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Validator;
 
 class AnalyticsController extends Controller
 {
@@ -27,13 +26,14 @@ class AnalyticsController extends Controller
     ) {
         $this->middleware(['auth', 'role:admin|super_admin']);
     }
+
     /**
      * Store analytics events in batch
      *
      * Accepts a batch of analytics events from client-side tracking.
      * Validates input, processes events with tenant isolation, and stores them efficiently.
      *
-     * @param Request $request The HTTP request containing events array
+     * @param  Request  $request  The HTTP request containing events array
      * @return JsonResponse JSON response with processing results
      */
     public function storeEvents(Request $request): JsonResponse
@@ -72,7 +72,7 @@ class AnalyticsController extends Controller
                     $tenantService->setTenant($eventData['tenant_id']);
 
                     // Check consent and anonymize if needed
-                    if (isset($eventData['consent_flags']) && !$this->hasRequiredConsent($eventData['consent_flags'])) {
+                    if (isset($eventData['consent_flags']) && ! $this->hasRequiredConsent($eventData['consent_flags'])) {
                         $eventData['user_id'] = null;
                         $eventData['properties'] = $this->anonymizeProperties($eventData['properties']);
                     }
@@ -108,13 +108,13 @@ class AnalyticsController extends Controller
                         'error' => $e->getMessage(),
                     ];
                 }
-            // Dispatch async processing job if events were successfully created
-            if (!empty($processedEventIds)) {
-                $tenantId = $events[0]['tenant_id'] ?? null; // Use first event's tenant_id
-                if ($tenantId) {
-                    ProcessAnalyticsEvents::dispatch($processedEventIds, $tenantId)->onQueue('analytics');
+                // Dispatch async processing job if events were successfully created
+                if (! empty($processedEventIds)) {
+                    $tenantId = $events[0]['tenant_id'] ?? null; // Use first event's tenant_id
+                    if ($tenantId) {
+                        ProcessAnalyticsEvents::dispatch($processedEventIds, $tenantId)->onQueue('analytics');
+                    }
                 }
-            }
             }
 
             return response()->json([
@@ -175,7 +175,7 @@ class AnalyticsController extends Controller
      */
     private function anonymizeIp(?string $ip): ?string
     {
-        if (!$ip) {
+        if (! $ip) {
             return null;
         }
 
@@ -183,6 +183,7 @@ class AnalyticsController extends Controller
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $parts = explode('.', $ip);
             $parts[3] = '0';
+
             return implode('.', $parts);
         }
 
@@ -192,6 +193,7 @@ class AnalyticsController extends Controller
             for ($i = 4; $i < 8; $i++) {
                 $parts[$i] = '0';
             }
+
             return implode(':', $parts);
         }
 
@@ -848,10 +850,6 @@ class AnalyticsController extends Controller
 
     /**
      * Get heat map data for a specific page URL
-     *
-     * @param Request $request
-     * @param string $pageUrl
-     * @return JsonResponse
      */
     public function getHeatMapData(Request $request, string $pageUrl): JsonResponse
     {
@@ -870,7 +868,7 @@ class AnalyticsController extends Controller
             ];
 
             // Try to get from cache first
-            $cacheKey = "heatmap:{$currentTenant->id}:{$pageUrl}:" . md5(serialize($dateRange));
+            $cacheKey = "heatmap:{$currentTenant->id}:{$pageUrl}:".md5(serialize($dateRange));
             $cachedData = Cache::get($cacheKey);
 
             if ($cachedData) {
@@ -916,9 +914,6 @@ class AnalyticsController extends Controller
 
     /**
      * Generate heat map data for a specific page URL
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function generateHeatMapData(Request $request): JsonResponse
     {
@@ -949,7 +944,7 @@ class AnalyticsController extends Controller
             ];
 
             // Update cache
-            $cacheKey = "heatmap:{$currentTenant->id}:{$validated['page_url']}:" . md5(serialize($dateRange));
+            $cacheKey = "heatmap:{$currentTenant->id}:{$validated['page_url']}:".md5(serialize($dateRange));
             Cache::put($cacheKey, $responseData, 3600);
 
             return response()->json([
@@ -972,6 +967,7 @@ class AnalyticsController extends Controller
             ], 500);
         }
     }
+
     /**
      * Get gamification metrics
      */

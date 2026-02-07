@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Collection;
-use Throwable;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Analytics Error Handler Service
@@ -21,46 +20,64 @@ use Exception;
 class AnalyticsErrorHandlerService
 {
     private const ERROR_CACHE_KEY = 'analytics_error_stats';
+
     private const ERROR_CACHE_TTL = 3600; // 1 hour
+
     private const MAX_ERROR_HISTORY = 1000;
+
     private const ERROR_RETENTION_DAYS = 30;
 
     private TenantContextService $tenantContextService;
+
     private array $errorConfig;
+
     private array $errorHistory = [];
+
     private array $errorMetrics = [];
+
     private array $errorTrends = [];
 
     /**
      * Error severity levels
      */
     public const SEVERITY_CRITICAL = 'critical';
+
     public const SEVERITY_HIGH = 'high';
+
     public const SEVERITY_MEDIUM = 'medium';
+
     public const SEVERITY_LOW = 'low';
 
     /**
      * Error categories
      */
     public const CATEGORY_DATA_VALIDATION = 'data_validation';
+
     public const CATEGORY_QUERY = 'query';
+
     public const CATEGORY_CALCULATION = 'calculation';
+
     public const CATEGORY_INTEGRATION = 'integration';
+
     public const CATEGORY_PERFORMANCE = 'performance';
+
     public const CATEGORY_SECURITY = 'security';
+
     public const CATEGORY_UNKNOWN = 'unknown';
 
     /**
      * Recovery strategies
      */
     public const RECOVERY_RETRY = 'retry';
+
     public const RECOVERY_FALLBACK = 'fallback';
+
     public const RECOVERY_SKIP = 'skip';
+
     public const RECOVERY_ABORT = 'abort';
 
     /**
-     * @param TenantContextService $tenantContextService
-     * @param array $errorConfig Error handling configuration
+     * @param  array  $errorConfig  Error handling configuration
      */
     public function __construct(
         TenantContextService $tenantContextService,
@@ -73,8 +90,8 @@ class AnalyticsErrorHandlerService
     /**
      * Handle analytics errors
      *
-     * @param Throwable $error The error to handle
-     * @param array $context Additional context information
+     * @param  Throwable  $error  The error to handle
+     * @param  array  $context  Additional context information
      * @return array Error handling result
      */
     public function handleError(Throwable $error, array $context = []): array
@@ -126,8 +143,7 @@ class AnalyticsErrorHandlerService
     /**
      * Log analytics errors
      *
-     * @param array $errorRecord Error record to log
-     * @return void
+     * @param  array  $errorRecord  Error record to log
      */
     public function logError(array $errorRecord): void
     {
@@ -157,8 +173,8 @@ class AnalyticsErrorHandlerService
     /**
      * Recover from analytics errors
      *
-     * @param Throwable $error The error to recover from
-     * @param array $context Error context
+     * @param  Throwable  $error  The error to recover from
+     * @param  array  $context  Error context
      * @return array Recovery result
      */
     public function recoverFromError(Throwable $error, array $context = []): array
@@ -198,7 +214,7 @@ class AnalyticsErrorHandlerService
     /**
      * Get error report for analytics
      *
-     * @param array $filters Filters to apply
+     * @param  array  $filters  Filters to apply
      * @return array Error report
      */
     public function getErrorReport(array $filters = []): array
@@ -259,7 +275,7 @@ class AnalyticsErrorHandlerService
     /**
      * Get error metrics for analytics
      *
-     * @param string $period Period for metrics (hourly, daily, weekly, monthly)
+     * @param  string  $period  Period for metrics (hourly, daily, weekly, monthly)
      * @return array Error metrics
      */
     public function getErrorMetrics(string $period = 'daily'): array
@@ -303,8 +319,8 @@ class AnalyticsErrorHandlerService
     /**
      * Get error trends over time
      *
-     * @param string $interval Time interval (hour, day, week, month)
-     * @param int $limit Number of intervals to return
+     * @param  string  $interval  Time interval (hour, day, week, month)
+     * @param  int  $limit  Number of intervals to return
      * @return array Error trends
      */
     public function getErrorTrends(string $interval = 'day', int $limit = 30): array
@@ -355,7 +371,7 @@ class AnalyticsErrorHandlerService
     /**
      * Configure error handling
      *
-     * @param array $config Configuration options
+     * @param  array  $config  Configuration options
      * @return array Updated configuration
      */
     public function configureErrorHandling(array $config): array
@@ -371,7 +387,7 @@ class AnalyticsErrorHandlerService
     /**
      * Get error alerts
      *
-     * @param array $filters Filters for alerts
+     * @param  array  $filters  Filters for alerts
      * @return array Error alerts
      */
     public function getErrorAlerts(array $filters = []): array
@@ -421,7 +437,7 @@ class AnalyticsErrorHandlerService
     /**
      * Clear errors based on filters
      *
-     * @param array $filters Filters to determine which errors to clear
+     * @param  array  $filters  Filters to determine which errors to clear
      * @return array Result of clearing operation
      */
     public function clearErrors(array $filters = []): array
@@ -442,7 +458,7 @@ class AnalyticsErrorHandlerService
 
             // Remove from history
             $this->errorHistory = array_filter($this->errorHistory, function ($error) use ($clearedIds) {
-                return !in_array($error['id'], $clearedIds);
+                return ! in_array($error['id'], $clearedIds);
             });
 
             // Clear from cache
@@ -458,7 +474,7 @@ class AnalyticsErrorHandlerService
             ]);
 
         } catch (Exception $e) {
-            $result['message'] = 'Failed to clear errors: ' . $e->getMessage();
+            $result['message'] = 'Failed to clear errors: '.$e->getMessage();
             Log::error('Failed to clear analytics errors', [
                 'filters' => $filters,
                 'error' => $e->getMessage(),
@@ -507,11 +523,11 @@ class AnalyticsErrorHandlerService
                 $severity = $error['severity'] ?? self::SEVERITY_MEDIUM;
                 $category = $error['category'] ?? self::CATEGORY_UNKNOWN;
 
-                $statistics['summary'][$severity . '_errors']++;
+                $statistics['summary'][$severity.'_errors']++;
                 $statistics['summary']['unresolved_errors']++;
 
                 // Group by category
-                if (!isset($statistics['by_category'][$category])) {
+                if (! isset($statistics['by_category'][$category])) {
                     $statistics['by_category'][$category] = 0;
                 }
                 $statistics['by_category'][$category]++;
@@ -559,7 +575,7 @@ class AnalyticsErrorHandlerService
     /**
      * Apply configuration changes
      *
-     * @param array $config Configuration to apply
+     * @param  array  $config  Configuration to apply
      */
     private function applyConfiguration(array $config): void
     {
@@ -581,7 +597,6 @@ class AnalyticsErrorHandlerService
     /**
      * Categorize an error
      *
-     * @param Throwable $error
      * @return string Error category
      */
     private function categorizeError(Throwable $error): string
@@ -620,8 +635,6 @@ class AnalyticsErrorHandlerService
     /**
      * Determine severity of an error
      *
-     * @param Throwable $error
-     * @param string $category
      * @return string Error severity
      */
     private function determineSeverity(Throwable $error, string $category): string
@@ -660,7 +673,6 @@ class AnalyticsErrorHandlerService
     /**
      * Determine recovery strategy for an error
      *
-     * @param string $category
      * @return string Recovery strategy
      */
     private function determineRecoveryStrategy(string $category): string
@@ -678,8 +690,6 @@ class AnalyticsErrorHandlerService
     /**
      * Perform retry recovery
      *
-     * @param Throwable $error
-     * @param array $context
      * @return array Recovery result
      */
     private function performRetryRecovery(Throwable $error, array $context): array
@@ -706,8 +716,6 @@ class AnalyticsErrorHandlerService
     /**
      * Perform fallback recovery
      *
-     * @param Throwable $error
-     * @param array $context
      * @return array Recovery result
      */
     private function performFallbackRecovery(Throwable $error, array $context): array
@@ -723,8 +731,6 @@ class AnalyticsErrorHandlerService
     /**
      * Perform skip recovery
      *
-     * @param Throwable $error
-     * @param array $context
      * @return array Recovery result
      */
     private function performSkipRecovery(Throwable $error, array $context): array
@@ -740,8 +746,6 @@ class AnalyticsErrorHandlerService
     /**
      * Perform abort recovery
      *
-     * @param Throwable $error
-     * @param array $context
      * @return array Recovery result
      */
     private function performAbortRecovery(Throwable $error, array $context): array
@@ -757,15 +761,13 @@ class AnalyticsErrorHandlerService
     /**
      * Attempt to recover from an error
      *
-     * @param Throwable $error
-     * @param array $context
      * @return array Recovery result
      */
     private function attemptRecovery(Throwable $error, array $context): array
     {
         $category = $this->categorizeError($error);
 
-        if (!$this->errorConfig['auto_recovery_enabled']) {
+        if (! $this->errorConfig['auto_recovery_enabled']) {
             return [
                 'attempted' => false,
                 'message' => 'Auto-recovery is disabled',
@@ -777,8 +779,6 @@ class AnalyticsErrorHandlerService
 
     /**
      * Track error metrics
-     *
-     * @param array $errorRecord
      */
     private function trackErrorMetrics(array $errorRecord): void
     {
@@ -787,10 +787,10 @@ class AnalyticsErrorHandlerService
         $category = $errorRecord['category'] ?? self::CATEGORY_UNKNOWN;
 
         // Initialize metrics structure if needed
-        if (!isset($this->errorMetrics['by_severity'][$severity])) {
+        if (! isset($this->errorMetrics['by_severity'][$severity])) {
             $this->errorMetrics['by_severity'][$severity] = 0;
         }
-        if (!isset($this->errorMetrics['by_category'][$category])) {
+        if (! isset($this->errorMetrics['by_category'][$category])) {
             $this->errorMetrics['by_category'][$category] = 0;
         }
 
@@ -805,8 +805,6 @@ class AnalyticsErrorHandlerService
 
     /**
      * Add error to history
-     *
-     * @param array $errorRecord
      */
     private function addToErrorHistory(array $errorRecord): void
     {
@@ -823,15 +821,13 @@ class AnalyticsErrorHandlerService
 
     /**
      * Update error trends
-     *
-     * @param array $errorRecord
      */
     private function updateErrorTrends(array $errorRecord): void
     {
         $timestamp = $errorRecord['timestamp'] ?? now()->toIso8601String();
         $date = date('Y-m-d', strtotime($timestamp));
 
-        if (!isset($this->errorTrends[$date])) {
+        if (! isset($this->errorTrends[$date])) {
             $this->errorTrends[$date] = [
                 'date' => $date,
                 'total' => 0,
@@ -844,12 +840,12 @@ class AnalyticsErrorHandlerService
         $severity = $errorRecord['severity'] ?? self::SEVERITY_MEDIUM;
         $category = $errorRecord['category'] ?? self::CATEGORY_UNKNOWN;
 
-        if (!isset($this->errorTrends[$date]['by_severity'][$severity])) {
+        if (! isset($this->errorTrends[$date]['by_severity'][$severity])) {
             $this->errorTrends[$date]['by_severity'][$severity] = 0;
         }
         $this->errorTrends[$date]['by_severity'][$severity]++;
 
-        if (!isset($this->errorTrends[$date]['by_category'][$category])) {
+        if (! isset($this->errorTrends[$date]['by_category'][$category])) {
             $this->errorTrends[$date]['by_category'][$category] = 0;
         }
         $this->errorTrends[$date]['by_category'][$category]++;
@@ -858,8 +854,6 @@ class AnalyticsErrorHandlerService
     /**
      * Get user-friendly error message
      *
-     * @param Throwable $error
-     * @param string $severity
      * @return string User-friendly message
      */
     private function getUserFriendlyMessage(Throwable $error, string $severity): string
@@ -881,7 +875,6 @@ class AnalyticsErrorHandlerService
     /**
      * Sanitize error trace for logging
      *
-     * @param string $trace
      * @return string Sanitized trace
      */
     private function sanitizeTrace(string $trace): string
@@ -896,7 +889,6 @@ class AnalyticsErrorHandlerService
     /**
      * Filter error history based on criteria
      *
-     * @param array $filters
      * @return array Filtered errors
      */
     private function filterErrorHistory(array $filters): array
@@ -907,6 +899,7 @@ class AnalyticsErrorHandlerService
             $since = strtotime($filters['since']);
             $errors = array_filter($errors, function ($error) use ($since) {
                 $timestamp = strtotime($error['timestamp'] ?? 0);
+
                 return $timestamp >= $since;
             });
         }
@@ -915,6 +908,7 @@ class AnalyticsErrorHandlerService
             $until = strtotime($filters['until']);
             $errors = array_filter($errors, function ($error) use ($until) {
                 $timestamp = strtotime($error['timestamp'] ?? 0);
+
                 return $timestamp <= $until;
             });
         }
@@ -939,7 +933,6 @@ class AnalyticsErrorHandlerService
     /**
      * Get time range for period
      *
-     * @param string $period
      * @return array Time range
      */
     private function getTimeRangeForPeriod(string $period): array
@@ -962,8 +955,6 @@ class AnalyticsErrorHandlerService
     /**
      * Calculate error metrics
      *
-     * @param array $metrics
-     * @param array $timeRange
      * @return array Calculated metrics
      */
     private function calculateErrorMetrics(array $metrics, array $timeRange): array
@@ -992,7 +983,6 @@ class AnalyticsErrorHandlerService
     /**
      * Group errors by category
      *
-     * @param array $errors
      * @return array Grouped errors
      */
     private function groupErrorsByCategory(array $errors): array
@@ -1001,7 +991,7 @@ class AnalyticsErrorHandlerService
 
         foreach ($errors as $error) {
             $category = $error['category'] ?? self::CATEGORY_UNKNOWN;
-            if (!isset($grouped[$category])) {
+            if (! isset($grouped[$category])) {
                 $grouped[$category] = [
                     'category' => $category,
                     'count' => 0,
@@ -1017,7 +1007,7 @@ class AnalyticsErrorHandlerService
             ];
         }
 
-        uasort($grouped, fn($a, $b) => $b['count'] <=> $a['count']);
+        uasort($grouped, fn ($a, $b) => $b['count'] <=> $a['count']);
 
         return array_values($grouped);
     }
@@ -1025,7 +1015,6 @@ class AnalyticsErrorHandlerService
     /**
      * Group errors by service/component
      *
-     * @param array $errors
      * @return array Grouped errors
      */
     private function groupErrorsByService(array $errors): array
@@ -1034,7 +1023,7 @@ class AnalyticsErrorHandlerService
 
         foreach ($errors as $error) {
             $service = $error['context']['service'] ?? 'unknown';
-            if (!isset($grouped[$service])) {
+            if (! isset($grouped[$service])) {
                 $grouped[$service] = [
                     'service' => $service,
                     'count' => 0,
@@ -1050,7 +1039,7 @@ class AnalyticsErrorHandlerService
             ];
         }
 
-        uasort($grouped, fn($a, $b) => $b['count'] <=> $a['count']);
+        uasort($grouped, fn ($a, $b) => $b['count'] <=> $a['count']);
 
         return array_values($grouped);
     }
@@ -1058,8 +1047,6 @@ class AnalyticsErrorHandlerService
     /**
      * Get top errors by occurrence
      *
-     * @param array $errors
-     * @param int $limit
      * @return array Top errors
      */
     private function getTopErrors(array $errors, int $limit = 10): array
@@ -1068,7 +1055,7 @@ class AnalyticsErrorHandlerService
 
         foreach ($errors as $error) {
             $message = $error['message'] ?? 'Unknown error';
-            if (!isset($messageCounts[$message])) {
+            if (! isset($messageCounts[$message])) {
                 $messageCounts[$message] = [
                     'message' => $message,
                     'count' => 0,
@@ -1080,7 +1067,7 @@ class AnalyticsErrorHandlerService
             $messageCounts[$message]['count']++;
         }
 
-        uasort($messageCounts, fn($a, $b) => $b['count'] <=> $a['count']);
+        uasort($messageCounts, fn ($a, $b) => $b['count'] <=> $a['count']);
 
         return array_slice(array_values($messageCounts), 0, $limit);
     }
@@ -1088,7 +1075,6 @@ class AnalyticsErrorHandlerService
     /**
      * Get error history for a time range
      *
-     * @param array $timeRange
      * @return array Errors in range
      */
     private function getErrorHistoryForRange(array $timeRange): array
@@ -1102,9 +1088,6 @@ class AnalyticsErrorHandlerService
     /**
      * Group errors by time interval
      *
-     * @param array $errors
-     * @param string $interval
-     * @param int $limit
      * @return array Data points
      */
     private function groupErrorsByInterval(array $errors, string $interval, int $limit): array
@@ -1145,7 +1128,6 @@ class AnalyticsErrorHandlerService
     /**
      * Calculate trend direction
      *
-     * @param array $dataPoints
      * @return string Trend direction
      */
     private function calculateTrendDirection(array $dataPoints): string
@@ -1154,7 +1136,7 @@ class AnalyticsErrorHandlerService
             return 'stable';
         }
 
-        $recentHalf = array_slice($dataPoints, - (int) ceil(count($dataPoints) / 2));
+        $recentHalf = array_slice($dataPoints, -(int) ceil(count($dataPoints) / 2));
         $olderHalf = array_slice($dataPoints, 0, (int) floor(count($dataPoints) / 2));
 
         $recentAvg = array_sum(array_column($recentHalf, 'count')) / count($recentHalf);
@@ -1162,8 +1144,12 @@ class AnalyticsErrorHandlerService
 
         if ($olderAvg > 0) {
             $change = (($recentAvg - $olderAvg) / $olderAvg) * 100;
-            if ($change > 20) return 'increasing';
-            if ($change < -20) return 'decreasing';
+            if ($change > 20) {
+                return 'increasing';
+            }
+            if ($change < -20) {
+                return 'decreasing';
+            }
         }
 
         return 'stable';
@@ -1172,7 +1158,6 @@ class AnalyticsErrorHandlerService
     /**
      * Calculate change percentage
      *
-     * @param array $dataPoints
      * @return float Change percentage
      */
     private function calculateChangePercentage(array $dataPoints): float
@@ -1197,8 +1182,6 @@ class AnalyticsErrorHandlerService
     /**
      * Generate error forecast
      *
-     * @param array $dataPoints
-     * @param int $days
      * @return array Forecast
      */
     private function generateErrorForecast(array $dataPoints, int $days): array
@@ -1226,7 +1209,6 @@ class AnalyticsErrorHandlerService
     /**
      * Generate recommendations based on errors
      *
-     * @param array $errors
      * @return array Recommendations
      */
     private function generateRecommendations(array $errors): array
@@ -1288,7 +1270,6 @@ class AnalyticsErrorHandlerService
     /**
      * Generate alerts from errors
      *
-     * @param array $errors
      * @return array Generated alerts
      */
     private function generateAlertsFromErrors(array $errors): array

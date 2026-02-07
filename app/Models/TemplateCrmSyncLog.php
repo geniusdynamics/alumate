@@ -146,7 +146,7 @@ class TemplateCrmSyncLog extends Model
     /**
      * Mark sync as successful
      */
-    public function markSuccessful(array $responseData = null): void
+    public function markSuccessful(?array $responseData = null): void
     {
         $this->update([
             'status' => 'success',
@@ -172,7 +172,7 @@ class TemplateCrmSyncLog extends Model
      */
     public function getSyncDuration(): ?float
     {
-        if (!$this->synced_at) {
+        if (! $this->synced_at) {
             return null;
         }
 

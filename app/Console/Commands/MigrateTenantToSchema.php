@@ -1,14 +1,15 @@
 <?php
+
 // ABOUTME: Laravel Artisan command for migrating tenant_id based data to schema-based tenancy
 // ABOUTME: Handles the core migration process from hybrid to pure schema-based architecture
 
 namespace App\Console\Commands;
 
+use App\Models\Tenant;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Tenant;
-use Exception;
 
 class MigrateTenantToSchema extends Command
 {
@@ -22,7 +23,9 @@ class MigrateTenantToSchema extends Command
     protected $description = 'Migrate from tenant_id columns to schema-based tenancy';
 
     private $dryRun = false;
+
     private $batchSize = 1000;
+
     private $migrationLog = [];
 
     public function handle()
@@ -31,7 +34,7 @@ class MigrateTenantToSchema extends Command
         $this->batchSize = (int) $this->option('batch-size');
 
         $this->info('Starting tenant migration to schema-based architecture...');
-        $this->info('Dry run mode: ' . ($this->dryRun ? 'ENABLED' : 'DISABLED'));
+        $this->info('Dry run mode: '.($this->dryRun ? 'ENABLED' : 'DISABLED'));
 
         if ($this->option('rollback')) {
             return $this->handleRollback();
@@ -46,13 +49,14 @@ class MigrateTenantToSchema extends Command
 
             if ($tenants->isEmpty()) {
                 $this->warn('No tenants found to migrate.');
+
                 return 0;
             }
 
             $this->info("Found {$tenants->count()} tenants to migrate.");
 
             // Step 3: Create backup if not dry run
-            if (!$this->dryRun) {
+            if (! $this->dryRun) {
                 $this->createPreMigrationBackup();
             }
 
@@ -77,11 +81,13 @@ class MigrateTenantToSchema extends Command
             $this->displayMigrationSummary();
 
             $this->info('Migration completed successfully!');
+
             return 0;
 
         } catch (Exception $e) {
-            $this->error('Migration failed: ' . $e->getMessage());
-            $this->error('Stack trace: ' . $e->getTraceAsString());
+            $this->error('Migration failed: '.$e->getMessage());
+            $this->error('Stack trace: '.$e->getTraceAsString());
+
             return 1;
         }
     }
@@ -91,7 +97,7 @@ class MigrateTenantToSchema extends Command
         $this->info('Validating prerequisites...');
 
         // Check if tenants table exists
-        if (!Schema::hasTable('tenants')) {
+        if (! Schema::hasTable('tenants')) {
             throw new Exception('Tenants table not found. Please ensure tenant management is set up.');
         }
 
@@ -100,7 +106,7 @@ class MigrateTenantToSchema extends Command
             DB::statement('CREATE SCHEMA IF NOT EXISTS test_schema_permissions');
             DB::statement('DROP SCHEMA test_schema_permissions');
         } catch (Exception $e) {
-            throw new Exception('Insufficient database permissions to create schemas: ' . $e->getMessage());
+            throw new Exception('Insufficient database permissions to create schemas: '.$e->getMessage());
         }
 
         // Check for existing schema conflicts
@@ -110,7 +116,7 @@ class MigrateTenantToSchema extends Command
         foreach ($tenants as $tenant) {
             $schemaName = $this->generateSchemaName($tenant);
             if (in_array($schemaName, $existingSchemas)) {
-                if (!$this->confirm("Schema '{$schemaName}' already exists. Continue?")) {
+                if (! $this->confirm("Schema '{$schemaName}' already exists. Continue?")) {
                     throw new Exception('Migration cancelled due to schema conflicts.');
                 }
             }
@@ -123,7 +129,7 @@ class MigrateTenantToSchema extends Command
     {
         $tenantIds = $this->option('tenant');
 
-        if (!empty($tenantIds)) {
+        if (! empty($tenantIds)) {
             return Tenant::whereIn('id', $tenantIds)->get();
         }
 
@@ -133,7 +139,7 @@ class MigrateTenantToSchema extends Command
     private function migrateTenant($tenant)
     {
         $schemaName = $this->generateSchemaName($tenant);
-        
+
         $this->info("\nMigrating tenant: {$tenant->name} (ID: {$tenant->id}) to schema: {$schemaName}");
 
         try {
@@ -159,19 +165,19 @@ class MigrateTenantToSchema extends Command
                 'tenant_name' => $tenant->name,
                 'schema_name' => $schemaName,
                 'status' => 'success',
-                'migrated_at' => now()
+                'migrated_at' => now(),
             ];
 
         } catch (Exception $e) {
-            $this->error("Failed to migrate tenant {$tenant->name}: " . $e->getMessage());
-            
+            $this->error("Failed to migrate tenant {$tenant->name}: ".$e->getMessage());
+
             $this->migrationLog[] = [
                 'tenant_id' => $tenant->id,
                 'tenant_name' => $tenant->name,
                 'schema_name' => $schemaName,
                 'status' => 'failed',
                 'error' => $e->getMessage(),
-                'migrated_at' => now()
+                'migrated_at' => now(),
             ];
 
             throw $e;
@@ -182,12 +188,13 @@ class MigrateTenantToSchema extends Command
     {
         if ($this->dryRun) {
             $this->line("[DRY RUN] Would create schema: {$schemaName}");
+
             return;
         }
 
         $this->line("Creating schema: {$schemaName}");
         DB::statement("CREATE SCHEMA IF NOT EXISTS {$schemaName}");
-        
+
         // Set appropriate permissions
         DB::statement("GRANT USAGE ON SCHEMA {$schemaName} TO authenticated");
         DB::statement("GRANT CREATE ON SCHEMA {$schemaName} TO authenticated");
@@ -197,24 +204,25 @@ class MigrateTenantToSchema extends Command
     {
         if ($this->dryRun) {
             $this->line("[DRY RUN] Would create tables in schema: {$schemaName}");
+
             return;
         }
 
         $this->line("Creating tables in schema: {$schemaName}");
-        
+
         // Set search path to tenant schema
         DB::statement("SET search_path TO {$schemaName}");
 
         // Run tenant-specific migrations
         $migrationFiles = $this->getTenantMigrationFiles();
-        
+
         foreach ($migrationFiles as $migrationFile) {
             $this->line("Running migration: {$migrationFile}");
             $this->runMigrationFile($migrationFile, $schemaName);
         }
 
         // Reset search path
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
     }
 
     private function migrateTenantData($tenant, $schemaName)
@@ -235,14 +243,16 @@ class MigrateTenantToSchema extends Command
         if ($this->dryRun) {
             $count = DB::table($table)->where('tenant_id', $tenant->id)->count();
             $this->line("[DRY RUN] Would migrate {$count} records from {$table}");
+
             return;
         }
 
         // Get total count for progress tracking
         $totalRecords = DB::table($table)->where('tenant_id', $tenant->id)->count();
-        
+
         if ($totalRecords === 0) {
             $this->line("No records to migrate for table: {$table}");
+
             return;
         }
 
@@ -275,26 +285,28 @@ class MigrateTenantToSchema extends Command
         $cleanedRecords = $records->map(function ($record) {
             $recordArray = (array) $record;
             unset($recordArray['tenant_id']);
+
             return $recordArray;
         })->toArray();
 
         // Insert into tenant schema
         DB::statement("SET search_path TO {$schemaName}");
         DB::table($table)->insert($cleanedRecords);
-        DB::statement("SET search_path TO public");
+        DB::statement('SET search_path TO public');
     }
 
     private function updateTenantRecord($tenant, $schemaName)
     {
         if ($this->dryRun) {
             $this->line("[DRY RUN] Would update tenant record with schema: {$schemaName}");
+
             return;
         }
 
         $tenant->update([
             'schema_name' => $schemaName,
             'migration_status' => 'completed',
-            'migrated_at' => now()
+            'migrated_at' => now(),
         ]);
     }
 
@@ -303,13 +315,13 @@ class MigrateTenantToSchema extends Command
         $this->line("Verifying data integrity for tenant: {$tenant->name}");
 
         $tablesToVerify = $this->getTablesToMigrate();
-        
+
         foreach ($tablesToVerify as $table) {
             $originalCount = DB::table($table)->where('tenant_id', $tenant->id)->count();
-            
+
             DB::statement("SET search_path TO {$schemaName}");
             $migratedCount = DB::table($table)->count();
-            DB::statement("SET search_path TO public");
+            DB::statement('SET search_path TO public');
 
             if ($originalCount !== $migratedCount) {
                 throw new Exception("Data verification failed for table {$table}. Original: {$originalCount}, Migrated: {$migratedCount}");
@@ -322,8 +334,9 @@ class MigrateTenantToSchema extends Command
     private function generateSchemaName($tenant)
     {
         // Generate schema name based on tenant slug or ID
-        $baseName = $tenant->slug ?? 'tenant_' . $tenant->id;
-        return 'tenant_' . preg_replace('/[^a-z0-9_]/', '_', strtolower($baseName));
+        $baseName = $tenant->slug ?? 'tenant_'.$tenant->id;
+
+        return 'tenant_'.preg_replace('/[^a-z0-9_]/', '_', strtolower($baseName));
     }
 
     private function getTablesToMigrate()
@@ -346,7 +359,7 @@ class MigrateTenantToSchema extends Command
             'graduates',
             'email_sequences',
             'behavior_events',
-            'template_crm_sync_logs'
+            'template_crm_sync_logs',
         ];
     }
 
@@ -370,7 +383,7 @@ class MigrateTenantToSchema extends Command
             'create_graduates_table.php',
             'create_email_sequences_table.php',
             'create_behavior_events_table.php',
-            'create_template_crm_sync_logs_table.php'
+            'create_template_crm_sync_logs_table.php',
         ];
     }
 
@@ -378,14 +391,14 @@ class MigrateTenantToSchema extends Command
     {
         // This would run the actual migration file
         // For now, we'll use a simplified approach
-        $migrationPath = database_path('migrations/tenant/' . $migrationFile);
-        
+        $migrationPath = database_path('migrations/tenant/'.$migrationFile);
+
         if (file_exists($migrationPath)) {
             // Include and run the migration
             // This is a simplified version - in practice, you'd use Laravel's migration runner
             $this->call('migrate', [
                 '--path' => 'database/migrations/tenant',
-                '--database' => 'tenant'
+                '--database' => 'tenant',
             ]);
         }
     }
@@ -404,34 +417,34 @@ class MigrateTenantToSchema extends Command
     private function createPreMigrationBackup()
     {
         $this->info('Creating pre-migration backup...');
-        
+
         $this->call('backup:pre-migration', [
-            '--type' => 'schema-migration'
+            '--type' => 'schema-migration',
         ]);
     }
 
     private function verifyMigration($tenants)
     {
         $this->info('\nVerifying migration integrity...');
-        
+
         foreach ($tenants as $tenant) {
             $schemaName = $this->generateSchemaName($tenant);
             $this->verifyTenantData($tenant, $schemaName);
         }
-        
+
         $this->info('Migration verification completed successfully.');
     }
 
     private function displayMigrationSummary()
     {
         $this->info('\n=== Migration Summary ===');
-        
+
         $successful = collect($this->migrationLog)->where('status', 'success')->count();
         $failed = collect($this->migrationLog)->where('status', 'failed')->count();
-        
+
         $this->info("Successful migrations: {$successful}");
         $this->info("Failed migrations: {$failed}");
-        
+
         if ($failed > 0) {
             $this->error('\nFailed migrations:');
             foreach ($this->migrationLog as $log) {
@@ -440,9 +453,9 @@ class MigrateTenantToSchema extends Command
                 }
             }
         }
-        
+
         // Save migration log
-        $logFile = storage_path('logs/tenant-migration-' . now()->format('Y-m-d-H-i-s') . '.json');
+        $logFile = storage_path('logs/tenant-migration-'.now()->format('Y-m-d-H-i-s').'.json');
         file_put_contents($logFile, json_encode($this->migrationLog, JSON_PRETTY_PRINT));
         $this->info("\nMigration log saved to: {$logFile}");
     }
@@ -454,7 +467,7 @@ class MigrateTenantToSchema extends Command
         $this->info('1. Restore from pre-migration backup');
         $this->info('2. Update tenant records to remove schema information');
         $this->info('3. Drop tenant schemas');
-        
+
         return 1;
     }
 }

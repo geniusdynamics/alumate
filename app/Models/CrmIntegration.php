@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CrmIntegration extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'provider',

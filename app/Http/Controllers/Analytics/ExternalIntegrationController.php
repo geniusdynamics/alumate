@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Analytics;
 
 use App\Http\Controllers\Controller;
+use App\Services\Analytics\AnalyticsDataSyncService;
 use App\Services\Analytics\GoogleAnalyticsService;
 use App\Services\Analytics\MatomoService;
-use App\Services\Analytics\AnalyticsDataSyncService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 
 /**
  * External Integration Controller for managing Google Analytics and Matomo integrations
@@ -18,7 +17,9 @@ use Illuminate\Support\Facades\Log;
 class ExternalIntegrationController extends Controller
 {
     private GoogleAnalyticsService $googleAnalyticsService;
+
     private MatomoService $matomoService;
+
     private AnalyticsDataSyncService $dataSyncService;
 
     public function __construct(
@@ -33,9 +34,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Get unified analytics data from all sources
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getUnifiedData(Request $request): JsonResponse
     {
@@ -56,9 +54,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Sync events to external platforms
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function syncEvents(Request $request): JsonResponse
     {
@@ -89,8 +84,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Get sync status
-     *
-     * @return JsonResponse
      */
     public function getSyncStatus(): JsonResponse
     {
@@ -104,9 +97,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Get discrepancies between data sources
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getDiscrepancies(Request $request): JsonResponse
     {
@@ -131,9 +121,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Resolve discrepancies
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function resolveDiscrepancies(Request $request): JsonResponse
     {
@@ -157,8 +144,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Validate integration configuration
-     *
-     * @return JsonResponse
      */
     public function validateConfiguration(): JsonResponse
     {
@@ -172,9 +157,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Create Google Analytics goal
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function createGoogleAnalyticsGoal(Request $request): JsonResponse
     {
@@ -207,9 +189,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Create Google Analytics audience
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function createGoogleAnalyticsAudience(Request $request): JsonResponse
     {
@@ -242,9 +221,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Create Matomo goal
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function createMatomoGoal(Request $request): JsonResponse
     {
@@ -279,9 +255,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Create Matomo segment
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function createMatomoSegment(Request $request): JsonResponse
     {
@@ -314,9 +287,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Get Google Analytics report
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getGoogleAnalyticsReport(Request $request): JsonResponse
     {
@@ -347,8 +317,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Get Google Analytics real-time data
-     *
-     * @return JsonResponse
      */
     public function getGoogleAnalyticsRealtimeData(): JsonResponse
     {
@@ -369,9 +337,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Get Matomo report
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getMatomoReport(Request $request): JsonResponse
     {
@@ -395,8 +360,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Get Matomo real-time data
-     *
-     * @return JsonResponse
      */
     public function getMatomoRealtimeData(): JsonResponse
     {
@@ -417,9 +380,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Sync goals to Google Analytics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function syncGoogleAnalyticsGoals(Request $request): JsonResponse
     {
@@ -438,9 +398,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Export segments to Google Analytics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function exportGoogleAnalyticsSegments(Request $request): JsonResponse
     {
@@ -459,9 +416,6 @@ class ExternalIntegrationController extends Controller
 
     /**
      * Sync data to Matomo
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function syncMatomoData(Request $request): JsonResponse
     {

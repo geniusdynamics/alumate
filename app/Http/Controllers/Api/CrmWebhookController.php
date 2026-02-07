@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\CrmIntegrationService;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class CrmWebhookController extends Controller
@@ -21,15 +21,16 @@ class CrmWebhookController extends Controller
     {
         try {
             $payload = $request->all();
-            
+
             Log::info('HubSpot webhook received', [
                 'headers' => $request->headers->all(),
-                'payload_keys' => array_keys($payload)
+                'payload_keys' => array_keys($payload),
             ]);
 
             // Validate HubSpot webhook signature
-            if (!$this->validateHubSpotSignature($request)) {
+            if (! $this->validateHubSpotSignature($request)) {
                 Log::warning('Invalid HubSpot webhook signature');
+
                 return response()->json(['error' => 'Invalid signature'], 401);
             }
 
@@ -41,12 +42,12 @@ class CrmWebhookController extends Controller
         } catch (\Exception $e) {
             Log::error('HubSpot webhook processing failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Webhook processing failed'
+                'error' => 'Webhook processing failed',
             ], 500);
         }
     }
@@ -58,15 +59,16 @@ class CrmWebhookController extends Controller
     {
         try {
             $payload = $request->all();
-            
+
             Log::info('Salesforce webhook received', [
                 'headers' => $request->headers->all(),
-                'payload_keys' => array_keys($payload)
+                'payload_keys' => array_keys($payload),
             ]);
 
             // Validate Salesforce webhook
-            if (!$this->validateSalesforceWebhook($request)) {
+            if (! $this->validateSalesforceWebhook($request)) {
                 Log::warning('Invalid Salesforce webhook');
+
                 return response()->json(['error' => 'Invalid webhook'], 401);
             }
 
@@ -78,12 +80,12 @@ class CrmWebhookController extends Controller
         } catch (\Exception $e) {
             Log::error('Salesforce webhook processing failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Webhook processing failed'
+                'error' => 'Webhook processing failed',
             ], 500);
         }
     }
@@ -95,15 +97,16 @@ class CrmWebhookController extends Controller
     {
         try {
             $payload = $request->all();
-            
+
             Log::info('Pipedrive webhook received', [
                 'headers' => $request->headers->all(),
-                'payload_keys' => array_keys($payload)
+                'payload_keys' => array_keys($payload),
             ]);
 
             // Validate Pipedrive webhook
-            if (!$this->validatePipedriveWebhook($request)) {
+            if (! $this->validatePipedriveWebhook($request)) {
                 Log::warning('Invalid Pipedrive webhook');
+
                 return response()->json(['error' => 'Invalid webhook'], 401);
             }
 
@@ -115,12 +118,12 @@ class CrmWebhookController extends Controller
         } catch (\Exception $e) {
             Log::error('Pipedrive webhook processing failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Webhook processing failed'
+                'error' => 'Webhook processing failed',
             ], 500);
         }
     }
@@ -132,11 +135,11 @@ class CrmWebhookController extends Controller
     {
         try {
             $payload = $request->all();
-            
+
             Log::info('Generic CRM webhook received', [
                 'provider' => $provider,
                 'headers' => $request->headers->all(),
-                'payload_keys' => array_keys($payload)
+                'payload_keys' => array_keys($payload),
             ]);
 
             // Basic validation - in production, implement provider-specific validation
@@ -153,12 +156,12 @@ class CrmWebhookController extends Controller
             Log::error('Generic CRM webhook processing failed', [
                 'provider' => $provider,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => 'Webhook processing failed'
+                'error' => 'Webhook processing failed',
             ], 500);
         }
     }
@@ -170,15 +173,16 @@ class CrmWebhookController extends Controller
     {
         $signature = $request->header('X-HubSpot-Signature-v3');
         $timestamp = $request->header('X-HubSpot-Request-Timestamp');
-        
-        if (!$signature || !$timestamp) {
+
+        if (! $signature || ! $timestamp) {
             return false;
         }
 
         // Get webhook secret from config
         $secret = config('services.hubspot.webhook_secret');
-        if (!$secret) {
+        if (! $secret) {
             Log::warning('HubSpot webhook secret not configured');
+
             return true; // Allow in development
         }
 
@@ -189,7 +193,7 @@ class CrmWebhookController extends Controller
 
         // Calculate expected signature
         $payload = $request->getContent();
-        $expectedSignature = hash('sha256', 'v3' . $timestamp . $payload . $secret);
+        $expectedSignature = hash('sha256', 'v3'.$timestamp.$payload.$secret);
 
         return hash_equals($expectedSignature, $signature);
     }
@@ -202,7 +206,7 @@ class CrmWebhookController extends Controller
         // Salesforce uses IP allowlisting and HTTPS
         // In production, implement proper Salesforce webhook validation
         $userAgent = $request->userAgent();
-        
+
         // Basic validation - check if request comes from Salesforce
         if (str_contains($userAgent, 'Salesforce')) {
             return true;
@@ -223,9 +227,9 @@ class CrmWebhookController extends Controller
     {
         // Pipedrive doesn't use signature validation by default
         // Implement IP allowlisting or custom validation as needed
-        
+
         $userAgent = $request->userAgent();
-        
+
         // Basic validation
         if (str_contains($userAgent, 'Pipedrive')) {
             return true;

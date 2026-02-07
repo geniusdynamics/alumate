@@ -27,42 +27,42 @@ class ComponentResource extends JsonResource
             'is_active' => $this->is_active,
             'usage_count' => $this->usage_count,
             'last_used_at' => $this->last_used_at,
-            
+
             // Computed properties
             'display_name' => $this->display_name,
             'formatted_config' => $this->formatted_config,
-            
+
             // Preview data
             'preview_html' => $this->when(
                 $request->query('include_preview'),
-                fn() => $this->generatePreviewHtml()
+                fn () => $this->generatePreviewHtml()
             ),
-            
+
             // Accessibility metadata
             'accessibility' => $this->when(
                 $request->query('include_accessibility'),
-                fn() => $this->getAccessibilityMetadata()
+                fn () => $this->getAccessibilityMetadata()
             ),
-            
+
             // Responsive configuration
             'responsive_config' => $this->when(
                 $request->query('include_responsive'),
-                fn() => $this->getResponsiveConfig()
+                fn () => $this->getResponsiveConfig()
             ),
-            
+
             // Usage statistics
             'usage_stats' => $this->when(
                 $request->query('include_usage'),
-                fn() => $this->getUsageStats()
+                fn () => $this->getUsageStats()
             ),
-            
+
             // Validation status
             'is_valid' => $this->validateConfig(),
             'validation_errors' => $this->when(
-                !$this->validateConfig(),
-                fn() => $this->getValidationErrors()
+                ! $this->validateConfig(),
+                fn () => $this->getValidationErrors()
             ),
-            
+
             // Relationships
             'theme' => new ComponentThemeResource($this->whenLoaded('theme')),
             'instances' => ComponentInstanceResource::collection(
@@ -71,11 +71,11 @@ class ComponentResource extends JsonResource
             'versions' => ComponentVersionResource::collection(
                 $this->whenLoaded('versions')
             ),
-            
+
             // Timestamps
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            
+
             // Additional metadata
             'meta' => [
                 'has_responsive_config' => $this->hasResponsiveConfig(),
@@ -86,7 +86,7 @@ class ComponentResource extends JsonResource
                 'grapejs_compatible' => $this->isGrapeJSCompatible(),
                 'category_display_name' => $this->getCategoryDisplayName(),
                 'supported_features' => $this->getSupportedFeatures(),
-            ]
+            ],
         ];
     }
 
@@ -105,30 +105,30 @@ class ComponentResource extends JsonResource
     private function isGrapeJSCompatible(): bool
     {
         $config = $this->config ?? [];
-        
+
         // Check required properties
         if (empty($this->name)) {
             return false;
         }
-        
+
         if (empty($this->category)) {
             return false;
         }
-        
+
         // Check category-specific requirements
         switch ($this->category) {
             case 'hero':
-                return !empty($config['headline']) && !empty($config['cta_text']);
+                return ! empty($config['headline']) && ! empty($config['cta_text']);
             case 'forms':
-                return !empty($config['fields']) && is_array($config['fields']);
+                return ! empty($config['fields']) && is_array($config['fields']);
             case 'testimonials':
-                return !empty($config['testimonials']) && is_array($config['testimonials']);
+                return ! empty($config['testimonials']) && is_array($config['testimonials']);
             case 'statistics':
-                return !empty($config['metrics']) && is_array($config['metrics']);
+                return ! empty($config['metrics']) && is_array($config['metrics']);
             case 'ctas':
-                return !empty($config['buttons']) && is_array($config['buttons']);
+                return ! empty($config['buttons']) && is_array($config['buttons']);
             case 'media':
-                return !empty($config['sources']) && is_array($config['sources']);
+                return ! empty($config['sources']) && is_array($config['sources']);
             default:
                 return true;
         }
@@ -145,9 +145,9 @@ class ComponentResource extends JsonResource
             'testimonials' => 'Testimonials',
             'statistics' => 'Statistics',
             'ctas' => 'Call to Actions',
-            'media' => 'Media'
+            'media' => 'Media',
         ];
-        
+
         return $categoryNames[$this->category] ?? ucfirst($this->category);
     }
 
@@ -157,8 +157,8 @@ class ComponentResource extends JsonResource
     private function getSupportedFeatures(): array
     {
         $baseFeatures = ['responsive_design', 'accessibility', 'theme_integration'];
-        
-        $categoryFeatures = match($this->category) {
+
+        $categoryFeatures = match ($this->category) {
             'hero' => ['background_media', 'cta_buttons', 'statistics_display'],
             'forms' => ['field_validation', 'crm_integration', 'conditional_logic'],
             'testimonials' => ['carousel_navigation', 'video_support', 'filtering'],
@@ -167,7 +167,7 @@ class ComponentResource extends JsonResource
             'media' => ['lazy_loading', 'lightbox', 'cdn_integration'],
             default => []
         };
-        
+
         return array_merge($baseFeatures, $categoryFeatures);
     }
 
@@ -179,7 +179,7 @@ class ComponentResource extends JsonResource
         // This would generate a preview based on the component configuration
         return "<div class='component-preview {$this->category}' data-component-id='{$this->id}'>
             <h3>{$this->name}</h3>
-            <p>" . ($this->description ?: 'Component preview') . "</p>
-        </div>";
+            <p>".($this->description ?: 'Component preview').'</p>
+        </div>';
     }
 }

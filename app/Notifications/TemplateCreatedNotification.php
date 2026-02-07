@@ -13,7 +13,9 @@ class TemplateCreatedNotification extends Notification implements ShouldQueue
     use Queueable;
 
     protected $template;
+
     protected $user;
+
     protected $additionalData;
 
     public function __construct($template, $user = null, $additionalData = [])
@@ -77,17 +79,17 @@ class TemplateCreatedNotification extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject("🎨 Template Created: '{$this->template->name}'")
             ->greeting("Hi {$notifiable->name}!")
-            ->line("Great job! Your new template has been successfully created.")
-            ->line("**Template Details:**")
+            ->line('Great job! Your new template has been successfully created.')
+            ->line('**Template Details:**')
             ->line("📄 Name: {$this->template->name}")
             ->line("🎯 Campaign: {$campaignText}")
             ->line("🏷️ Category: {$categoryText}")
             ->line("👥 Audience: {$audienceText}")
             ->when($this->template->is_premium, function ($mail) {
-                return $mail->line("⭐ This is a premium template");
+                return $mail->line('⭐ This is a premium template');
             })
-            ->when(!$this->template->is_premium, function ($mail) {
-                return $mail->line("🔓 This is a standard template");
+            ->when(! $this->template->is_premium, function ($mail) {
+                return $mail->line('🔓 This is a standard template');
             })
             ->action('View Template', url("/templates/{$this->template->id}"))
             ->action('Edit Template', url("/templates/{$this->template->id}/edit"))

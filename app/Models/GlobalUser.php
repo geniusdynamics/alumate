@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Eloquent model for global_users table in hybrid tenancy architecture
 // ABOUTME: Manages cross-tenant user data and relationships with tenant memberships
 
@@ -184,7 +185,7 @@ class GlobalUser extends Authenticatable
      */
     public function getFullNameAttribute(): string
     {
-        return trim($this->first_name . ' ' . $this->last_name);
+        return trim($this->first_name.' '.$this->last_name);
     }
 
     /**
@@ -192,7 +193,7 @@ class GlobalUser extends Authenticatable
      */
     public function getInitialsAttribute(): string
     {
-        return strtoupper(substr($this->first_name, 0, 1) . substr($this->last_name, 0, 1));
+        return strtoupper(substr($this->first_name, 0, 1).substr($this->last_name, 0, 1));
     }
 
     /**
@@ -202,9 +203,9 @@ class GlobalUser extends Authenticatable
     {
         return $query->where(function ($q) use ($search) {
             $q->where('first_name', 'ILIKE', "%{$search}%")
-              ->orWhere('last_name', 'ILIKE', "%{$search}%")
-              ->orWhere('email', 'ILIKE', "%{$search}%")
-              ->orWhereRaw("CONCAT(first_name, ' ', last_name) ILIKE ?", ["%{$search}%"]);
+                ->orWhere('last_name', 'ILIKE', "%{$search}%")
+                ->orWhere('email', 'ILIKE', "%{$search}%")
+                ->orWhereRaw("CONCAT(first_name, ' ', last_name) ILIKE ?", ["%{$search}%"]);
         });
     }
 
@@ -271,7 +272,7 @@ class GlobalUser extends Authenticatable
     public function getActivitySummary(): array
     {
         $memberships = $this->activeTenantMemberships()->with('tenant')->get();
-        
+
         return [
             'total_tenants' => $memberships->count(),
             'roles' => $memberships->pluck('role')->unique()->values()->toArray(),

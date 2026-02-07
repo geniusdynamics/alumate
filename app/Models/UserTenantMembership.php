@@ -1,16 +1,17 @@
 <?php
+
 // ABOUTME: Eloquent model for user_tenant_memberships table in schema-based tenancy architecture
 // ABOUTME: Manages the many-to-many relationship between global users and tenants with roles and permissions
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Carbon\Carbon;
 
 class UserTenantMembership extends Model
 {
@@ -222,7 +223,7 @@ class UserTenantMembership extends Model
     {
         $defaultPermissions = self::DEFAULT_PERMISSIONS[$this->role] ?? [];
         $customPermissions = $this->permissions ?? [];
-        
+
         return array_unique(array_merge($defaultPermissions, $customPermissions));
     }
 
@@ -240,12 +241,13 @@ class UserTenantMembership extends Model
     public function addPermission(string $permission): bool
     {
         $permissions = $this->permissions ?? [];
-        
-        if (!in_array($permission, $permissions)) {
+
+        if (! in_array($permission, $permissions)) {
             $permissions[] = $permission;
+
             return $this->update(['permissions' => $permissions]);
         }
-        
+
         return true;
     }
 
@@ -255,8 +257,8 @@ class UserTenantMembership extends Model
     public function removePermission(string $permission): bool
     {
         $permissions = $this->permissions ?? [];
-        $permissions = array_filter($permissions, fn($p) => $p !== $permission);
-        
+        $permissions = array_filter($permissions, fn ($p) => $p !== $permission);
+
         return $this->update(['permissions' => array_values($permissions)]);
     }
 
@@ -273,10 +275,10 @@ class UserTenantMembership extends Model
      */
     public function getDaysSinceLastActiveAttribute(): ?int
     {
-        if (!$this->last_active_at) {
+        if (! $this->last_active_at) {
             return null;
         }
-        
+
         return $this->last_active_at->diffInDays(now());
     }
 
@@ -293,10 +295,10 @@ class UserTenantMembership extends Model
      */
     public function isInactiveFor(int $days): bool
     {
-        if (!$this->last_active_at) {
+        if (! $this->last_active_at) {
             return $this->joined_at->diffInDays(now()) >= $days;
         }
-        
+
         return $this->last_active_at->diffInDays(now()) >= $days;
     }
 
@@ -348,13 +350,13 @@ class UserTenantMembership extends Model
     public function scopeInactiveFor($query, int $days)
     {
         $cutoffDate = Carbon::now()->subDays($days);
-        
+
         return $query->where(function ($q) use ($cutoffDate) {
             $q->where('last_active_at', '<', $cutoffDate)
-              ->orWhere(function ($subQ) use ($cutoffDate) {
-                  $subQ->whereNull('last_active_at')
-                       ->where('joined_at', '<', $cutoffDate);
-              });
+                ->orWhere(function ($subQ) use ($cutoffDate) {
+                    $subQ->whereNull('last_active_at')
+                        ->where('joined_at', '<', $cutoffDate);
+                });
         });
     }
 
@@ -371,11 +373,11 @@ class UserTenantMembership extends Model
                     $rolesWithPermission[] = $role;
                 }
             }
-            
-            if (!empty($rolesWithPermission)) {
+
+            if (! empty($rolesWithPermission)) {
                 $q->whereIn('role', $rolesWithPermission);
             }
-            
+
             // Also check custom permissions
             $q->orWhereJsonContains('permissions', $permission);
         });
@@ -384,11 +386,11 @@ class UserTenantMembership extends Model
     /**
      * Get membership statistics for a tenant (schema-based tenancy - tenantId parameter ignored).
      */
-    public static function getStatsForTenant(string $tenantId = null): array
+    public static function getStatsForTenant(?string $tenantId = null): array
     {
         // In schema-based tenancy, we get all memberships from current schema
         $memberships = self::all();
-        
+
         return [
             'total' => $memberships->count(),
             'active' => $memberships->where('status', 'active')->count(),
@@ -397,7 +399,7 @@ class UserTenantMembership extends Model
             'inactive' => $memberships->where('status', 'inactive')->count(),
             'by_role' => $memberships->groupBy('role')->map->count()->toArray(),
             'recent_joins' => $memberships->where('joined_at', '>=', now()->subDays(30))->count(),
-            'inactive_30_days' => $memberships->filter(fn($m) => $m->isInactiveFor(30))->count(),
+            'inactive_30_days' => $memberships->filter(fn ($m) => $m->isInactiveFor(30))->count(),
         ];
     }
 
@@ -410,7 +412,7 @@ class UserTenantMembership extends Model
 
         // Set default joined_at timestamp
         static::creating(function ($model) {
-            if (!$model->joined_at) {
+            if (! $model->joined_at) {
                 $model->joined_at = now();
             }
         });

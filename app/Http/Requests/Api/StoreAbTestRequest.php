@@ -31,7 +31,7 @@ class StoreAbTestRequest extends FormRequest
             'variants.*.name' => 'required|string|max:100',
             'variants.*.weight' => 'required|numeric|min:0|max:100',
             'goal_event' => 'required|string|max:255',
-            'audience_criteria' => 'nullable|array'
+            'audience_criteria' => 'nullable|array',
         ];
     }
 
@@ -46,7 +46,7 @@ class StoreAbTestRequest extends FormRequest
             'variants.min' => 'At least 2 variants are required',
             'variants.*.name.required' => 'Variant name is required',
             'variants.*.weight.required' => 'Variant weight is required',
-            'goal_event.required' => 'Goal event is required'
+            'goal_event.required' => 'Goal event is required',
         ];
     }
 }

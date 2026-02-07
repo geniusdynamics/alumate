@@ -19,7 +19,7 @@ class TrackLearningRequest extends FormRequest
     {
         // Check if user owns the course or is a tenant admin
         $courseId = $this->input('course_id');
-        if (!$courseId) {
+        if (! $courseId) {
             return false;
         }
 
@@ -95,7 +95,7 @@ class TrackLearningRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Ensure tenant context
-        if (!session()->has('tenant_id')) {
+        if (! session()->has('tenant_id')) {
             abort(403, 'Tenant context required');
         }
     }

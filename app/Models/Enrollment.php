@@ -1,19 +1,19 @@
 <?php
+
 // ABOUTME: Enrollment model for schema-based multi-tenancy managing student-course relationships
 // ABOUTME: Handles enrollment data within tenant schemas with status tracking, grade management, and validation
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Carbon\Carbon;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Exception;
 
 class Enrollment extends Model
 {
@@ -35,7 +35,7 @@ class Enrollment extends Model
         'payment_status',
         'payment_amount',
         'notes',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
@@ -45,11 +45,11 @@ class Enrollment extends Model
         'grade_points' => 'decimal:2',
         'credits_earned' => 'decimal:2',
         'payment_amount' => 'decimal:2',
-        'metadata' => 'array'
+        'metadata' => 'array',
     ];
 
     protected $dates = [
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $appends = [
@@ -57,31 +57,49 @@ class Enrollment extends Model
         'is_completed',
         'is_dropped',
         'duration_days',
-        'current_tenant'
+        'current_tenant',
     ];
 
     // Status constants
     const STATUS_ACTIVE = 'active';
+
     const STATUS_COMPLETED = 'completed';
+
     const STATUS_DROPPED = 'dropped';
+
     const STATUS_WITHDRAWN = 'withdrawn';
+
     const STATUS_FAILED = 'failed';
+
     const STATUS_PENDING = 'pending';
 
     // Grade constants
     const GRADE_A_PLUS = 'A+';
+
     const GRADE_A = 'A';
+
     const GRADE_A_MINUS = 'A-';
+
     const GRADE_B_PLUS = 'B+';
+
     const GRADE_B = 'B';
+
     const GRADE_B_MINUS = 'B-';
+
     const GRADE_C_PLUS = 'C+';
+
     const GRADE_C = 'C';
+
     const GRADE_C_MINUS = 'C-';
+
     const GRADE_D_PLUS = 'D+';
+
     const GRADE_D = 'D';
+
     const GRADE_F = 'F';
+
     const GRADE_INCOMPLETE = 'I';
+
     const GRADE_WITHDRAW = 'W';
 
     /**
@@ -94,7 +112,7 @@ class Enrollment extends Model
         // Ensure we're in a tenant context
         static::addGlobalScope('tenant_context', function (Builder $builder) {
             $tenantService = app(TenantContextService::class);
-            if (!$tenantService->getCurrentTenantId()) {
+            if (! $tenantService->getCurrentTenantId()) {
                 throw new Exception('Enrollment model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });
@@ -104,7 +122,7 @@ class Enrollment extends Model
             if (empty($enrollment->enrollment_date)) {
                 $enrollment->enrollment_date = now();
             }
-            
+
             // Set default status
             if (empty($enrollment->status)) {
                 $enrollment->status = self::STATUS_PENDING;
@@ -114,7 +132,7 @@ class Enrollment extends Model
             if (empty($enrollment->academic_year)) {
                 $enrollment->academic_year = static::getCurrentAcademicYear();
             }
-            
+
             if (empty($enrollment->semester)) {
                 $enrollment->semester = static::getCurrentSemester();
             }
@@ -129,9 +147,9 @@ class Enrollment extends Model
             // Set completion date when status changes to completed
             if ($enrollment->isDirty('status') && $enrollment->status === self::STATUS_COMPLETED) {
                 $enrollment->completion_date = now();
-                
+
                 // Set credits earned from course if not already set
-                if (!$enrollment->credits_earned && $enrollment->course) {
+                if (! $enrollment->credits_earned && $enrollment->course) {
                     $enrollment->credits_earned = $enrollment->course->credits;
                 }
             }
@@ -218,11 +236,12 @@ class Enrollment extends Model
      */
     public function getDurationDaysAttribute(): ?int
     {
-        if (!$this->enrollment_date) {
+        if (! $this->enrollment_date) {
             return null;
         }
 
         $endDate = $this->completion_date ?? $this->dropped_date ?? now();
+
         return $this->enrollment_date->diffInDays($endDate);
     }
 
@@ -232,10 +251,11 @@ class Enrollment extends Model
     public function getCurrentTenantAttribute(): ?array
     {
         $tenant = TenantContextService::getCurrentTenant();
+
         return $tenant ? [
             'id' => $tenant->id,
             'name' => $tenant->name,
-            'schema' => $tenant->schema_name
+            'schema' => $tenant->schema_name,
         ] : null;
     }
 
@@ -258,7 +278,7 @@ class Enrollment extends Model
             self::GRADE_D => 1.0,
             self::GRADE_F => 0.0,
             self::GRADE_INCOMPLETE => 0.0,
-            self::GRADE_WITHDRAW => 0.0
+            self::GRADE_WITHDRAW => 0.0,
         ];
 
         return $gradePoints[$grade] ?? 0.0;
@@ -271,12 +291,12 @@ class Enrollment extends Model
     {
         $now = Carbon::now();
         $year = $now->year;
-        
+
         // Academic year typically starts in August/September
         if ($now->month >= 8) {
-            return $year . '-' . ($year + 1);
+            return $year.'-'.($year + 1);
         } else {
-            return ($year - 1) . '-' . $year;
+            return ($year - 1).'-'.$year;
         }
     }
 
@@ -287,7 +307,7 @@ class Enrollment extends Model
     {
         $now = Carbon::now();
         $month = $now->month;
-        
+
         if ($month >= 8 && $month <= 12) {
             return 'Fall';
         } elseif ($month >= 1 && $month <= 5) {
@@ -308,7 +328,7 @@ class Enrollment extends Model
             self::STATUS_COMPLETED => 'Completed',
             self::STATUS_DROPPED => 'Dropped',
             self::STATUS_WITHDRAWN => 'Withdrawn',
-            self::STATUS_FAILED => 'Failed'
+            self::STATUS_FAILED => 'Failed',
         ];
     }
 
@@ -331,7 +351,7 @@ class Enrollment extends Model
             self::GRADE_D => 'D (1.0)',
             self::GRADE_F => 'F (0.0)',
             self::GRADE_INCOMPLETE => 'I (Incomplete)',
-            self::GRADE_WITHDRAW => 'W (Withdraw)'
+            self::GRADE_WITHDRAW => 'W (Withdraw)',
         ];
     }
 
@@ -365,7 +385,7 @@ class Enrollment extends Model
     public function scopeCurrentSemester(Builder $query): Builder
     {
         return $query->where('semester', static::getCurrentSemester())
-                    ->where('academic_year', static::getCurrentAcademicYear());
+            ->where('academic_year', static::getCurrentAcademicYear());
     }
 
     /**
@@ -374,7 +394,7 @@ class Enrollment extends Model
     public function scopeForSemester(Builder $query, string $semester, string $academicYear): Builder
     {
         return $query->where('semester', $semester)
-                    ->where('academic_year', $academicYear);
+            ->where('academic_year', $academicYear);
     }
 
     /**
@@ -383,7 +403,7 @@ class Enrollment extends Model
     public function scopeWithGrades(Builder $query): Builder
     {
         return $query->whereNotNull('grade')
-                    ->whereNotNull('grade_points');
+            ->whereNotNull('grade_points');
     }
 
     /**
@@ -392,32 +412,32 @@ class Enrollment extends Model
     public function scopePassing(Builder $query): Builder
     {
         return $query->where('grade_points', '>=', 2.0)
-                    ->whereNotIn('grade', [self::GRADE_F, self::GRADE_INCOMPLETE, self::GRADE_WITHDRAW]);
+            ->whereNotIn('grade', [self::GRADE_F, self::GRADE_INCOMPLETE, self::GRADE_WITHDRAW]);
     }
 
     /**
      * Complete the enrollment with a grade
      */
-    public function complete(string $grade, float $creditsEarned = null): bool
+    public function complete(string $grade, ?float $creditsEarned = null): bool
     {
         $this->grade = $grade;
         $this->grade_points = static::calculateGradePoints($grade);
         $this->status = self::STATUS_COMPLETED;
         $this->completion_date = now();
-        
+
         if ($creditsEarned !== null) {
             $this->credits_earned = $creditsEarned;
-        } elseif (!$this->credits_earned && $this->course) {
+        } elseif (! $this->credits_earned && $this->course) {
             $this->credits_earned = $this->course->credits;
         }
 
         $saved = $this->save();
-        
+
         if ($saved) {
             $this->logActivity('completed', "Enrollment completed with grade: {$grade}", [
                 'grade' => $grade,
                 'grade_points' => $this->grade_points,
-                'credits_earned' => $this->credits_earned
+                'credits_earned' => $this->credits_earned,
             ]);
         }
 
@@ -427,7 +447,7 @@ class Enrollment extends Model
     /**
      * Drop the enrollment
      */
-    public function drop(string $reason = null): bool
+    public function drop(?string $reason = null): bool
     {
         $this->status = self::STATUS_DROPPED;
         $this->dropped_date = now();
@@ -435,11 +455,11 @@ class Enrollment extends Model
         $this->credits_earned = 0;
 
         $saved = $this->save();
-        
+
         if ($saved) {
             $this->logActivity('dropped', 'Enrollment dropped', [
                 'reason' => $reason,
-                'dropped_date' => $this->dropped_date->toDateString()
+                'dropped_date' => $this->dropped_date->toDateString(),
             ]);
         }
 
@@ -449,7 +469,7 @@ class Enrollment extends Model
     /**
      * Withdraw from the enrollment
      */
-    public function withdraw(string $reason = null): bool
+    public function withdraw(?string $reason = null): bool
     {
         $this->status = self::STATUS_WITHDRAWN;
         $this->dropped_date = now();
@@ -459,11 +479,11 @@ class Enrollment extends Model
         $this->credits_earned = 0;
 
         $saved = $this->save();
-        
+
         if ($saved) {
             $this->logActivity('withdrawn', 'Enrollment withdrawn', [
                 'reason' => $reason,
-                'withdrawn_date' => $this->dropped_date->toDateString()
+                'withdrawn_date' => $this->dropped_date->toDateString(),
             ]);
         }
 
@@ -481,7 +501,7 @@ class Enrollment extends Model
 
         $this->status = self::STATUS_ACTIVE;
         $saved = $this->save();
-        
+
         if ($saved) {
             $this->logActivity('activated', 'Enrollment activated');
         }
@@ -497,13 +517,13 @@ class Enrollment extends Model
         $enrollments = static::where('student_id', $student->id)->get();
         $completedEnrollments = $enrollments->where('status', self::STATUS_COMPLETED);
         $activeEnrollments = $enrollments->where('status', self::STATUS_ACTIVE);
-        
+
         $totalCreditsAttempted = $enrollments->sum('course.credits');
         $totalCreditsEarned = $completedEnrollments->sum('credits_earned');
         $gradePoints = $completedEnrollments->where('grade_points', '>', 0);
-        
-        $gpa = $gradePoints->count() > 0 
-            ? $gradePoints->avg('grade_points') 
+
+        $gpa = $gradePoints->count() > 0
+            ? $gradePoints->avg('grade_points')
             : 0;
 
         return [
@@ -514,9 +534,9 @@ class Enrollment extends Model
             'total_credits_attempted' => $totalCreditsAttempted,
             'total_credits_earned' => $totalCreditsEarned,
             'gpa' => round($gpa, 2),
-            'completion_rate' => $enrollments->count() > 0 
-                ? ($completedEnrollments->count() / $enrollments->count() * 100) 
-                : 0
+            'completion_rate' => $enrollments->count() > 0
+                ? ($completedEnrollments->count() / $enrollments->count() * 100)
+                : 0,
         ];
     }
 
@@ -528,39 +548,39 @@ class Enrollment extends Model
         $enrollments = static::where('course_id', $course->id)->get();
         $completedEnrollments = $enrollments->where('status', self::STATUS_COMPLETED);
         $grades = $completedEnrollments->whereNotNull('grade_points');
-        
+
         return [
             'total_enrollments' => $enrollments->count(),
             'active_enrollments' => $enrollments->where('status', self::STATUS_ACTIVE)->count(),
             'completed_enrollments' => $completedEnrollments->count(),
             'dropped_enrollments' => $enrollments->whereIn('status', [self::STATUS_DROPPED, self::STATUS_WITHDRAWN])->count(),
             'average_grade' => $grades->avg('grade_points') ?: 0,
-            'pass_rate' => $grades->count() > 0 
-                ? ($grades->where('grade_points', '>=', 2.0)->count() / $grades->count() * 100) 
+            'pass_rate' => $grades->count() > 0
+                ? ($grades->where('grade_points', '>=', 2.0)->count() / $grades->count() * 100)
                 : 0,
-            'completion_rate' => $enrollments->count() > 0 
-                ? ($completedEnrollments->count() / $enrollments->count() * 100) 
-                : 0
+            'completion_rate' => $enrollments->count() > 0
+                ? ($completedEnrollments->count() / $enrollments->count() * 100)
+                : 0,
         ];
     }
 
     /**
      * Get semester enrollment statistics
      */
-    public static function getSemesterStatistics(string $semester = null, string $academicYear = null): array
+    public static function getSemesterStatistics(?string $semester = null, ?string $academicYear = null): array
     {
         $query = static::query();
-        
+
         if ($semester && $academicYear) {
             $query->forSemester($semester, $academicYear);
         } else {
             $query->currentSemester();
         }
-        
+
         $enrollments = $query->get();
         $completedEnrollments = $enrollments->where('status', self::STATUS_COMPLETED);
         $grades = $completedEnrollments->whereNotNull('grade_points');
-        
+
         return [
             'semester' => $semester ?: static::getCurrentSemester(),
             'academic_year' => $academicYear ?: static::getCurrentAcademicYear(),
@@ -570,9 +590,9 @@ class Enrollment extends Model
             'dropped_enrollments' => $enrollments->whereIn('status', [self::STATUS_DROPPED, self::STATUS_WITHDRAWN])->count(),
             'average_gpa' => $grades->avg('grade_points') ?: 0,
             'total_credits_earned' => $completedEnrollments->sum('credits_earned'),
-            'completion_rate' => $enrollments->count() > 0 
-                ? ($completedEnrollments->count() / $enrollments->count() * 100) 
-                : 0
+            'completion_rate' => $enrollments->count() > 0
+                ? ($completedEnrollments->count() / $enrollments->count() * 100)
+                : 0,
         ];
     }
 
@@ -582,7 +602,7 @@ class Enrollment extends Model
     public static function bulkUpdateStatus(array $enrollmentIds, string $status, array $additionalData = []): int
     {
         $updateData = array_merge(['status' => $status], $additionalData);
-        
+
         // Add status-specific fields
         if ($status === self::STATUS_COMPLETED) {
             $updateData['completion_date'] = now();
@@ -590,7 +610,7 @@ class Enrollment extends Model
             $updateData['dropped_date'] = now();
             $updateData['credits_earned'] = 0;
         }
-        
+
         return static::whereIn('id', $enrollmentIds)->update($updateData);
     }
 
@@ -611,14 +631,14 @@ class Enrollment extends Model
                 'user_agent' => request()->userAgent(),
                 'metadata' => array_merge($metadata, [
                     'enrollment_status' => $this->status,
-                    'enrollment_date' => $this->enrollment_date?->toDateString()
-                ])
+                    'enrollment_date' => $this->enrollment_date?->toDateString(),
+                ]),
             ]);
         } catch (Exception $e) {
             \Log::error('Failed to log enrollment activity', [
                 'enrollment_id' => $this->id,
                 'action' => $action,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -631,36 +651,36 @@ class Enrollment extends Model
         $errors = [];
 
         // Check if student exists
-        if (!$this->student) {
+        if (! $this->student) {
             $errors[] = "Enrollment references non-existent student ID: {$this->student_id}";
         }
 
         // Check if course exists
-        if (!$this->course) {
+        if (! $this->course) {
             $errors[] = "Enrollment references non-existent course ID: {$this->course_id}";
         }
 
         // Check date consistency
         if ($this->completion_date && $this->enrollment_date && $this->completion_date < $this->enrollment_date) {
-            $errors[] = "Completion date is before enrollment date";
+            $errors[] = 'Completion date is before enrollment date';
         }
 
         if ($this->dropped_date && $this->enrollment_date && $this->dropped_date < $this->enrollment_date) {
-            $errors[] = "Dropped date is before enrollment date";
+            $errors[] = 'Dropped date is before enrollment date';
         }
 
         // Check status consistency
-        if ($this->status === self::STATUS_COMPLETED && !$this->completion_date) {
-            $errors[] = "Completed enrollment missing completion date";
+        if ($this->status === self::STATUS_COMPLETED && ! $this->completion_date) {
+            $errors[] = 'Completed enrollment missing completion date';
         }
 
-        if (in_array($this->status, [self::STATUS_DROPPED, self::STATUS_WITHDRAWN]) && !$this->dropped_date) {
-            $errors[] = "Dropped/withdrawn enrollment missing dropped date";
+        if (in_array($this->status, [self::STATUS_DROPPED, self::STATUS_WITHDRAWN]) && ! $this->dropped_date) {
+            $errors[] = 'Dropped/withdrawn enrollment missing dropped date';
         }
 
         // Check grade consistency
         if ($this->grade && $this->grade_points !== static::calculateGradePoints($this->grade)) {
-            $errors[] = "Grade points do not match letter grade";
+            $errors[] = 'Grade points do not match letter grade';
         }
 
         return $errors;

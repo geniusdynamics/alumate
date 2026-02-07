@@ -46,7 +46,7 @@ class AbTestResource extends JsonResource
                     'id' => $this->template->id,
                     'name' => $this->template->name,
                     'category' => $this->template->category,
-                    'audience_type' => $this->template->audience_type
+                    'audience_type' => $this->template->audience_type,
                 ];
             }),
 
@@ -56,13 +56,14 @@ class AbTestResource extends JsonResource
 
             'events_summary' => $this->whenLoaded('events', function () {
                 $events = $this->events;
+
                 return [
                     'total' => $events->count(),
                     'by_variant' => $events->groupBy('variant_id')->map->count(),
                     'by_type' => $events->groupBy('event_type')->map->count(),
-                    'unique_sessions' => $events->pluck('session_id')->unique()->count()
+                    'unique_sessions' => $events->pluck('session_id')->unique()->count(),
                 ];
-            })
+            }),
         ];
     }
 }

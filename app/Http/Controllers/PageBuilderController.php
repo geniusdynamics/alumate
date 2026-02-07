@@ -25,14 +25,14 @@ class PageBuilderController extends Controller
     public function index(Request $request): Response
     {
         $pages = LandingPage::query()
-            ->when($request->search, fn($query) => $query->where('name', 'like', '%' . $request->search . '%'))
-            ->when($request->status, fn($query) => $query->where('status', $request->status))
+            ->when($request->search, fn ($query) => $query->where('name', 'like', '%'.$request->search.'%'))
+            ->when($request->status, fn ($query) => $query->where('status', $request->status))
             ->orderBy('updated_at', 'desc')
             ->paginate(15);
 
         return Inertia::render('PageBuilder/Index', [
             'pages' => $pages,
-            'filters' => $request->only(['search', 'status'])
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
@@ -53,7 +53,7 @@ class PageBuilderController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'template_id' => 'nullable|exists:templates,id',
-            'content' => 'nullable|array'
+            'content' => 'nullable|array',
         ]);
 
         $page = LandingPage::create([
@@ -62,12 +62,12 @@ class PageBuilderController extends Controller
             'template_id' => $validated['template_id'] ?? null,
             'content' => $validated['content'] ?? [],
             'status' => 'draft',
-            'user_id' => auth()->id()
+            'user_id' => auth()->id(),
         ]);
 
         return response()->json([
             'message' => 'Page created successfully',
-            'page' => $page
+            'page' => $page,
         ], 201);
     }
 
@@ -77,7 +77,7 @@ class PageBuilderController extends Controller
     public function edit(LandingPage $page): Response
     {
         return Inertia::render('PageBuilder/Edit', [
-            'page' => $page
+            'page' => $page,
         ]);
     }
 
@@ -90,14 +90,14 @@ class PageBuilderController extends Controller
             'name' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
             'content' => 'sometimes|array',
-            'meta_data' => 'sometimes|array'
+            'meta_data' => 'sometimes|array',
         ]);
 
         $page->update($validated);
 
         return response()->json([
             'message' => 'Page updated successfully',
-            'page' => $page
+            'page' => $page,
         ]);
     }
 
@@ -108,14 +108,14 @@ class PageBuilderController extends Controller
     {
         try {
             $this->publishingWorkflowService->publishPage($page);
-            
+
             return response()->json([
                 'message' => 'Page published successfully',
-                'page' => $page->fresh()
+                'page' => $page->fresh(),
             ]);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to publish page: ' . $e->getMessage()
+                'message' => 'Failed to publish page: '.$e->getMessage(),
             ], 500);
         }
     }

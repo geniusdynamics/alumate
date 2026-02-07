@@ -1,16 +1,17 @@
 <?php
+
 // ABOUTME: AttendanceRecord model for schema-based multi-tenancy managing student attendance
 // ABOUTME: Handles attendance tracking within tenant schemas with status management and validation
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
-use Exception;
 
 class AttendanceRecord extends Model
 {
@@ -26,31 +27,35 @@ class AttendanceRecord extends Model
         'check_out_time',
         'notes',
         'recorded_by',
-        'metadata'
+        'metadata',
     ];
 
     protected $casts = [
         'attendance_date' => 'date',
         'check_in_time' => 'datetime',
         'check_out_time' => 'datetime',
-        'metadata' => 'array'
+        'metadata' => 'array',
     ];
 
     protected $dates = [
-        'deleted_at'
+        'deleted_at',
     ];
 
     protected $appends = [
         'is_present',
         'duration_minutes',
-        'current_tenant'
+        'current_tenant',
     ];
 
     // Status constants
     const STATUS_PRESENT = 'present';
+
     const STATUS_ABSENT = 'absent';
+
     const STATUS_LATE = 'late';
+
     const STATUS_EXCUSED = 'excused';
+
     const STATUS_TARDY = 'tardy';
 
     /**
@@ -62,7 +67,7 @@ class AttendanceRecord extends Model
 
         // Ensure we're in a tenant context
         static::addGlobalScope('tenant_context', function (Builder $builder) {
-            if (!TenantContextService::hasTenant()) {
+            if (! TenantContextService::hasTenant()) {
                 throw new Exception('AttendanceRecord model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });
@@ -72,7 +77,7 @@ class AttendanceRecord extends Model
             if (empty($record->attendance_date)) {
                 $record->attendance_date = now()->toDateString();
             }
-            
+
             // Set default status
             if (empty($record->status)) {
                 $record->status = self::STATUS_PRESENT;
@@ -138,7 +143,7 @@ class AttendanceRecord extends Model
      */
     public function getDurationMinutesAttribute(): ?int
     {
-        if (!$this->check_in_time || !$this->check_out_time) {
+        if (! $this->check_in_time || ! $this->check_out_time) {
             return null;
         }
 
@@ -151,10 +156,11 @@ class AttendanceRecord extends Model
     public function getCurrentTenantAttribute(): ?array
     {
         $tenant = TenantContextService::getCurrentTenant();
+
         return $tenant ? [
             'id' => $tenant->id,
             'name' => $tenant->name,
-            'schema' => $tenant->schema_name
+            'schema' => $tenant->schema_name,
         ] : null;
     }
 
@@ -174,12 +180,12 @@ class AttendanceRecord extends Model
                 'model_id' => $this->id,
                 'properties' => array_merge($properties, [
                     'attendance_date' => $this->attendance_date,
-                    'status' => $this->status
-                ])
+                    'status' => $this->status,
+                ]),
             ]);
         } catch (Exception $e) {
             // Log the error but don't fail the main operation
-            \Log::error('Failed to log attendance activity: ' . $e->getMessage());
+            \Log::error('Failed to log attendance activity: '.$e->getMessage());
         }
     }
 

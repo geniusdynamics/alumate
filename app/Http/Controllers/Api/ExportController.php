@@ -14,17 +14,14 @@ class ExportController extends Controller
 {
     /**
      * Display a listing of exports
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
         $exports = Export::where('tenant_id', tenant()->id)
-            ->when($request->status, fn($q) => $q->where('status', $request->status))
-            ->when($request->format, fn($q) => $q->where('format', $request->format))
-            ->when($request->start_date, fn($q) => $q->whereDate('created_at', '>=', $request->start_date))
-            ->when($request->end_date, fn($q) => $q->whereDate('created_at', '<=', $request->end_date))
+            ->when($request->status, fn ($q) => $q->where('status', $request->status))
+            ->when($request->format, fn ($q) => $q->where('format', $request->format))
+            ->when($request->start_date, fn ($q) => $q->whereDate('created_at', '>=', $request->start_date))
+            ->when($request->end_date, fn ($q) => $q->whereDate('created_at', '<=', $request->end_date))
             ->orderBy('created_at', 'desc')
             ->paginate($request->per_page ?? 15);
 
@@ -40,15 +37,12 @@ class ExportController extends Controller
                 'total_count' => Export::where('tenant_id', tenant()->id)->count(),
                 'statuses' => ['pending', 'processing', 'completed', 'failed'],
                 'formats' => ['json', 'xml', 'yaml', 'zip', 'html', 'pdf', 'markdown'],
-            ]
+            ],
         ]);
     }
 
     /**
      * Store a newly created export
-     *
-     * @param CreateExportRequest $request
-     * @return JsonResponse
      */
     public function store(CreateExportRequest $request): JsonResponse
     {
@@ -69,9 +63,6 @@ class ExportController extends Controller
 
     /**
      * Display the specified export
-     *
-     * @param Export $export
-     * @return JsonResponse
      */
     public function show(Export $export): JsonResponse
     {
@@ -84,9 +75,6 @@ class ExportController extends Controller
 
     /**
      * Remove the specified export
-     *
-     * @param Export $export
-     * @return JsonResponse
      */
     public function destroy(Export $export): JsonResponse
     {
@@ -107,7 +95,6 @@ class ExportController extends Controller
     /**
      * Download export file
      *
-     * @param Export $export
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse|JsonResponse
      */
     public function download(Export $export)
@@ -120,7 +107,7 @@ class ExportController extends Controller
             ], 422);
         }
 
-        if (!$export->file_path || !Storage::exists($export->file_path)) {
+        if (! $export->file_path || ! Storage::exists($export->file_path)) {
             return response()->json([
                 'message' => 'Export file not found',
             ], 404);

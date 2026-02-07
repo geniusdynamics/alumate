@@ -27,7 +27,7 @@ class TenantOnboardingController extends Controller
         $user = Auth::user();
         $tenant = $user->currentTenant;
 
-        if (!$tenant) {
+        if (! $tenant) {
             return Inertia::render('Onboarding/CreateTenant');
         }
 
@@ -35,7 +35,7 @@ class TenantOnboardingController extends Controller
             ->whereIn('status', [TenantOnboarding::STATUS_IN_PROGRESS, TenantOnboarding::STATUS_PAUSED])
             ->first();
 
-        if (!$onboarding && $tenant->onboarding_status === 'completed') {
+        if (! $onboarding && $tenant->onboarding_status === 'completed') {
             return redirect()->route('dashboard');
         }
 
@@ -70,7 +70,7 @@ class TenantOnboardingController extends Controller
         // Create tenant
         $tenant = \App\Models\Tenant::create([
             'name' => $request->tenant_name,
-            'slug' => \Illuminate\Support\Str::slug($request->tenant_name) . '-' . uniqid(),
+            'slug' => \Illuminate\Support\Str::slug($request->tenant_name).'-'.uniqid(),
             'subscription_status' => 'trial',
             'trial_ends_at' => now()->addDays(14),
         ]);
@@ -110,7 +110,7 @@ class TenantOnboardingController extends Controller
         $user = Auth::user();
         $tenant = $user->currentTenant;
 
-        if (!$tenant) {
+        if (! $tenant) {
             return response()->json([
                 'message' => 'No tenant found',
             ], 404);
@@ -120,7 +120,7 @@ class TenantOnboardingController extends Controller
             ->latest()
             ->first();
 
-        if (!$onboarding) {
+        if (! $onboarding) {
             return response()->json([
                 'message' => 'No onboarding found',
             ], 404);
@@ -150,7 +150,7 @@ class TenantOnboardingController extends Controller
         $user = Auth::user();
         $tenant = $user->currentTenant;
 
-        if (!$tenant) {
+        if (! $tenant) {
             return response()->json([
                 'message' => 'No tenant found',
             ], 404);
@@ -160,7 +160,7 @@ class TenantOnboardingController extends Controller
             ->where('status', TenantOnboarding::STATUS_IN_PROGRESS)
             ->first();
 
-        if (!$onboarding) {
+        if (! $onboarding) {
             return response()->json([
                 'message' => 'No active onboarding found',
             ], 404);
@@ -193,7 +193,7 @@ class TenantOnboardingController extends Controller
             ->where('status', TenantOnboarding::STATUS_IN_PROGRESS)
             ->first();
 
-        if (!$onboarding) {
+        if (! $onboarding) {
             return response()->json([
                 'message' => 'No active onboarding found',
             ], 404);
@@ -219,7 +219,7 @@ class TenantOnboardingController extends Controller
             ->where('status', TenantOnboarding::STATUS_IN_PROGRESS)
             ->first();
 
-        if (!$onboarding) {
+        if (! $onboarding) {
             return response()->json([
                 'message' => 'No active onboarding found',
             ], 404);
@@ -333,7 +333,7 @@ class TenantOnboardingController extends Controller
             ->where('status', TenantOnboarding::STATUS_IN_PROGRESS)
             ->first();
 
-        if (!$onboarding) {
+        if (! $onboarding) {
             return response()->json([
                 'message' => 'No active onboarding found',
             ], 404);
@@ -359,7 +359,7 @@ class TenantOnboardingController extends Controller
             ->where('status', TenantOnboarding::STATUS_IN_PROGRESS)
             ->first();
 
-        if (!$onboarding) {
+        if (! $onboarding) {
             return response()->json([
                 'message' => 'No active onboarding found',
             ], 404);

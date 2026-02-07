@@ -1,18 +1,19 @@
 <?php
+
 // ABOUTME: BrandLogo model for schema-based multi-tenancy managing brand logo assets
 // ABOUTME: Handles logo data within tenant schemas with file management, versioning, and usage tracking
 
 namespace App\Models;
 
 use App\Services\TenantContextService;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Exception;
 
 class BrandLogo extends Model
 {
@@ -110,7 +111,7 @@ class BrandLogo extends Model
 
         // Ensure we're in a tenant context
         static::addGlobalScope('tenant_context', function (Builder $builder) {
-            if (!TenantContextService::hasTenant()) {
+            if (! TenantContextService::hasTenant()) {
                 throw new Exception('BrandLogo model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });
@@ -126,7 +127,7 @@ class BrandLogo extends Model
     /**
      * Scope query to specific tenant (legacy compatibility)
      */
-    public function scopeForTenant($query, int $tenantId = null)
+    public function scopeForTenant($query, ?int $tenantId = null)
     {
         // In schema-based tenancy, tenant context is handled automatically
         return $query;
@@ -178,10 +179,11 @@ class BrandLogo extends Model
     public function getCurrentTenant(): ?array
     {
         $tenant = TenantContextService::getCurrentTenant();
+
         return $tenant ? [
             'id' => $tenant->id,
             'name' => $tenant->name,
-            'slug' => $tenant->slug
+            'slug' => $tenant->slug,
         ] : null;
     }
 
@@ -265,7 +267,7 @@ class BrandLogo extends Model
     public function getDimensions(): string
     {
         if ($this->width && $this->height) {
-            return $this->width . 'x' . $this->height . 'px';
+            return $this->width.'x'.$this->height.'px';
         }
 
         return 'Unknown';
@@ -276,7 +278,7 @@ class BrandLogo extends Model
      */
     public function getFormattedFileSize(): string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return 'Unknown';
         }
 
@@ -289,7 +291,7 @@ class BrandLogo extends Model
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
@@ -375,12 +377,12 @@ class BrandLogo extends Model
      */
     protected function generateUniqueSlug(string $name): string
     {
-        $baseSlug = Str::slug($name . '-' . $this->logo_type);
+        $baseSlug = Str::slug($name.'-'.$this->logo_type);
         $slug = $baseSlug;
         $counter = 1;
 
         while ($this->slugExists($slug)) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -450,8 +452,8 @@ class BrandLogo extends Model
             'mime_type' => 'nullable|string|max:100',
             'width' => 'nullable|integer|min:1',
             'height' => 'nullable|integer|min:1',
-            'usage_context' => 'required|in:' . implode(',', self::USAGE_CONTEXTS),
-            'logo_type' => 'required|in:' . implode(',', self::LOGO_TYPES),
+            'usage_context' => 'required|in:'.implode(',', self::USAGE_CONTEXTS),
+            'logo_type' => 'required|in:'.implode(',', self::LOGO_TYPES),
             'is_primary' => 'boolean',
             'is_default' => 'boolean',
             'is_active' => 'boolean',
@@ -471,7 +473,7 @@ class BrandLogo extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_logos,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_logos,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_logos,slug';
         }

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class SequenceEnrollment extends Model
@@ -218,9 +217,9 @@ class SequenceEnrollment extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['lead_id'] = 'required|exists:leads,id|unique:sequence_enrollments,lead_id,' . $ignoreId . ',id,sequence_id,' . request('sequence_id');
+            $rules['lead_id'] = 'required|exists:leads,id|unique:sequence_enrollments,lead_id,'.$ignoreId.',id,sequence_id,'.request('sequence_id');
         } else {
-            $rules['lead_id'] = 'required|exists:leads,id|unique:sequence_enrollments,lead_id,NULL,id,sequence_id,' . request('sequence_id');
+            $rules['lead_id'] = 'required|exists:leads,id|unique:sequence_enrollments,lead_id,NULL,id,sequence_id,'.request('sequence_id');
         }
 
         return $rules;

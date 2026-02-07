@@ -24,7 +24,9 @@ class ConsentPurgeJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public int $userId;
+
     public string $consentType;
+
     public int $tries = 3;
 
     /**
@@ -46,12 +48,13 @@ class ConsentPurgeJob implements ShouldQueue
         try {
             // Check if consent is still revoked (30-day retention period)
             $consent = Consent::byUser($this->userId)
-                              ->byType($this->consentType)
-                              ->expired()
-                              ->first();
+                ->byType($this->consentType)
+                ->expired()
+                ->first();
 
-            if (!$consent) {
+            if (! $consent) {
                 Log::info("Consent not expired yet for user {$this->userId}, skipping purge");
+
                 return;
             }
 
@@ -71,7 +74,7 @@ class ConsentPurgeJob implements ShouldQueue
             Log::info("Completed consent purge for user {$this->userId}");
 
         } catch (\Exception $e) {
-            Log::error("Failed to purge consent data for user {$this->userId}: " . $e->getMessage());
+            Log::error("Failed to purge consent data for user {$this->userId}: ".$e->getMessage());
             throw $e;
         }
     }
@@ -87,7 +90,7 @@ class ConsentPurgeJob implements ShouldQueue
             Log::info("User {$this->userId} opted out - external platform opt-out pending implementation");
 
         } catch (\Exception $e) {
-            Log::warning("Failed to opt-out user from external platforms: " . $e->getMessage());
+            Log::warning('Failed to opt-out user from external platforms: '.$e->getMessage());
         }
     }
 }

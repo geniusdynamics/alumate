@@ -3,14 +3,14 @@
 namespace App\Observers;
 
 use App\Jobs\UpdateUserCirclesJob;
-use App\Models\User;
-use App\Services\CircleManager;
-use App\Services\GroupManager;
-use App\Services\CachingStrategyService;
-use App\Services\ComponentCachingService;
-use Illuminate\Support\Facades\Log;
 use App\Models\AnalyticsEvent;
+use App\Models\User;
+use App\Services\CachingStrategyService;
+use App\Services\CircleManager;
+use App\Services\ComponentCachingService;
+use App\Services\GroupManager;
 use App\Services\HeatMapService;
+use Illuminate\Support\Facades\Log;
 
 class UserObserver
 {
@@ -21,6 +21,7 @@ class UserObserver
     protected CachingStrategyService $cachingStrategyService;
 
     protected ComponentCachingService $componentCachingService;
+
     protected HeatMapService $heatMapService;
 
     public function __construct(

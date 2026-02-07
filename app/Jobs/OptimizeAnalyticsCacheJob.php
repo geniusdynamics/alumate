@@ -25,6 +25,7 @@ class OptimizeAnalyticsCacheJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     protected ?string $tenantId;
+
     protected array $cacheOptions;
 
     /**
@@ -51,7 +52,7 @@ class OptimizeAnalyticsCacheJob implements ShouldQueue
         try {
             Log::info('Starting OptimizeAnalyticsCacheJob', [
                 'tenant_id' => $this->tenantId,
-                'cache_options' => $this->cacheOptions
+                'cache_options' => $this->cacheOptions,
             ]);
 
             $startTime = microtime(true);
@@ -87,14 +88,14 @@ class OptimizeAnalyticsCacheJob implements ShouldQueue
             Log::info('OptimizeAnalyticsCacheJob completed successfully', [
                 'tenant_id' => $this->tenantId,
                 'cache_operations' => $cacheOperations,
-                'duration' => $duration
+                'duration' => $duration,
             ]);
 
         } catch (\Exception $e) {
             Log::error('OptimizeAnalyticsCacheJob failed', [
                 'tenant_id' => $this->tenantId,
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             throw $e;
@@ -114,7 +115,7 @@ class OptimizeAnalyticsCacheJob implements ShouldQueue
         Log::debug('Warmed leaderboard cache', [
             'tenant_id' => $this->tenantId,
             'limit' => $limit,
-            'entries_cached' => $leaderboard->count()
+            'entries_cached' => $leaderboard->count(),
         ]);
     }
 
@@ -136,7 +137,7 @@ class OptimizeAnalyticsCacheJob implements ShouldQueue
             Log::debug('Warmed metrics cache', [
                 'tenant_id' => $this->tenantId,
                 'date_range' => $range,
-                'total_events' => $metrics['total_events']
+                'total_events' => $metrics['total_events'],
             ]);
         }
     }
@@ -149,7 +150,7 @@ class OptimizeAnalyticsCacheJob implements ShouldQueue
         // This would require getting popular pages and warming their heatmaps
         // Implementation depends on having access to page analytics
         Log::debug('Heatmap cache warming skipped (not implemented)', [
-            'tenant_id' => $this->tenantId
+            'tenant_id' => $this->tenantId,
         ]);
     }
 
@@ -168,7 +169,7 @@ class OptimizeAnalyticsCacheJob implements ShouldQueue
      */
     public function tags(): array
     {
-        return ['analytics', 'cache', 'optimization', 'tenant:' . ($this->tenantId ?? 'global')];
+        return ['analytics', 'cache', 'optimization', 'tenant:'.($this->tenantId ?? 'global')];
     }
 
     /**

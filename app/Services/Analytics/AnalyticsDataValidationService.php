@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Analytics Data Validation Service
@@ -22,8 +20,11 @@ use Exception;
 class AnalyticsDataValidationService
 {
     private const MAX_STRING_LENGTH = 65535;
+
     private const MAX_ARRAY_SIZE = 1000;
+
     private const MIN_TIMESTAMP_AGE_DAYS = 365;
+
     private const MAX_TIMESTAMP_FUTURE_DAYS = 1;
 
     private TenantContextService $tenantContextService;
@@ -32,35 +33,47 @@ class AnalyticsDataValidationService
      * Validation error types
      */
     public const ERROR_TYPE_REQUIRED = 'required';
+
     public const ERROR_TYPE_FORMAT = 'format';
+
     public const ERROR_TYPE_RANGE = 'range';
+
     public const ERROR_TYPE_LENGTH = 'length';
+
     public const ERROR_TYPE_TYPE = 'type';
+
     public const ERROR_TYPE_UNIQUE = 'unique';
+
     public const ERROR_TYPE_TENANT = 'tenant';
+
     public const ERROR_TYPE_UNKNOWN = 'unknown';
 
     /**
      * Validation severity levels
      */
     public const SEVERITY_CRITICAL = 'critical';
+
     public const SEVERITY_HIGH = 'high';
+
     public const SEVERITY_MEDIUM = 'medium';
+
     public const SEVERITY_LOW = 'low';
+
     public const SEVERITY_INFO = 'info';
 
     /**
      * Data quality scores
      */
     public const QUALITY_EXCELLENT = 100;
+
     public const QUALITY_GOOD = 80;
+
     public const QUALITY_FAIR = 60;
+
     public const QUALITY_POOR = 40;
+
     public const QUALITY_CRITICAL = 0;
 
-    /**
-     * @param TenantContextService $tenantContextService
-     */
     public function __construct(TenantContextService $tenantContextService)
     {
         $this->tenantContextService = $tenantContextService;
@@ -69,7 +82,7 @@ class AnalyticsDataValidationService
     /**
      * Validate analytics event data
      *
-     * @param array $event Event data to validate
+     * @param  array  $event  Event data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateEventData(array $event): array
@@ -81,7 +94,7 @@ class AnalyticsDataValidationService
         // Required fields check
         $requiredFields = ['event_name', 'user_id', 'occurred_at'];
         foreach ($requiredFields as $field) {
-            if (!isset($event[$field])) {
+            if (! isset($event[$field])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_REQUIRED,
                     $field,
@@ -97,7 +110,7 @@ class AnalyticsDataValidationService
 
         // Validate event_name
         if (isset($event['event_name'])) {
-            if (!is_string($event['event_name'])) {
+            if (! is_string($event['event_name'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'event_name',
@@ -113,7 +126,7 @@ class AnalyticsDataValidationService
                     self::SEVERITY_MEDIUM
                 );
                 $score -= 5;
-            } elseif (!preg_match('/^[a-z][a-z0-9_]*$/', $event['event_name'])) {
+            } elseif (! preg_match('/^[a-z][a-z0-9_]*$/', $event['event_name'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'event_name',
@@ -126,7 +139,7 @@ class AnalyticsDataValidationService
 
         // Validate user_id
         if (isset($event['user_id'])) {
-            if (!is_int($event['user_id']) && !is_string($event['user_id'])) {
+            if (! is_int($event['user_id']) && ! is_string($event['user_id'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'user_id',
@@ -140,7 +153,7 @@ class AnalyticsDataValidationService
         // Validate occurred_at timestamp
         if (isset($event['occurred_at'])) {
             $timestampCheck = $this->validateTimestamp($event['occurred_at']);
-            if (!$timestampCheck['valid']) {
+            if (! $timestampCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'occurred_at',
@@ -153,7 +166,7 @@ class AnalyticsDataValidationService
 
         // Validate session_id if present
         if (isset($event['session_id'])) {
-            if (!is_string($event['session_id']) || strlen($event['session_id']) > 255) {
+            if (! is_string($event['session_id']) || strlen($event['session_id']) > 255) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'session_id',
@@ -165,7 +178,7 @@ class AnalyticsDataValidationService
         }
 
         // Validate properties if present
-        if (isset($event['properties']) && !is_array($event['properties'])) {
+        if (isset($event['properties']) && ! is_array($event['properties'])) {
             $errors[] = $this->createError(
                 self::ERROR_TYPE_TYPE,
                 'properties',
@@ -182,7 +195,7 @@ class AnalyticsDataValidationService
         // Validate tenant_id for isolation
         if (isset($event['tenant_id'])) {
             $tenantCheck = $this->validateTenantId($event['tenant_id']);
-            if (!$tenantCheck['valid']) {
+            if (! $tenantCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TENANT,
                     'tenant_id',
@@ -205,7 +218,7 @@ class AnalyticsDataValidationService
     /**
      * Validate session data
      *
-     * @param array $session Session data to validate
+     * @param  array  $session  Session data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateSessionData(array $session): array
@@ -217,7 +230,7 @@ class AnalyticsDataValidationService
         // Required fields check
         $requiredFields = ['session_id', 'user_id', 'start_time'];
         foreach ($requiredFields as $field) {
-            if (!isset($session[$field])) {
+            if (! isset($session[$field])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_REQUIRED,
                     $field,
@@ -233,7 +246,7 @@ class AnalyticsDataValidationService
 
         // Validate session_id
         if (isset($session['session_id'])) {
-            if (!is_string($session['session_id']) || strlen($session['session_id']) > 255) {
+            if (! is_string($session['session_id']) || strlen($session['session_id']) > 255) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'session_id',
@@ -246,7 +259,7 @@ class AnalyticsDataValidationService
 
         // Validate user_id
         if (isset($session['user_id'])) {
-            if (!is_int($session['user_id']) && !is_string($session['user_id'])) {
+            if (! is_int($session['user_id']) && ! is_string($session['user_id'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'user_id',
@@ -260,7 +273,7 @@ class AnalyticsDataValidationService
         // Validate start_time
         if (isset($session['start_time'])) {
             $timestampCheck = $this->validateTimestamp($session['start_time']);
-            if (!$timestampCheck['valid']) {
+            if (! $timestampCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'start_time',
@@ -274,7 +287,7 @@ class AnalyticsDataValidationService
         // Validate end_time if present and session is complete
         if (isset($session['end_time'])) {
             $timestampCheck = $this->validateTimestamp($session['end_time']);
-            if (!$timestampCheck['valid']) {
+            if (! $timestampCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'end_time',
@@ -299,7 +312,7 @@ class AnalyticsDataValidationService
 
         // Validate duration if present
         if (isset($session['duration_seconds'])) {
-            if (!is_numeric($session['duration_seconds']) || $session['duration_seconds'] < 0) {
+            if (! is_numeric($session['duration_seconds']) || $session['duration_seconds'] < 0) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_RANGE,
                     'duration_seconds',
@@ -320,7 +333,7 @@ class AnalyticsDataValidationService
 
         // Validate page_count if present
         if (isset($session['page_count'])) {
-            if (!is_int($session['page_count']) || $session['page_count'] < 0) {
+            if (! is_int($session['page_count']) || $session['page_count'] < 0) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_RANGE,
                     'page_count',
@@ -342,7 +355,7 @@ class AnalyticsDataValidationService
         // Validate tenant_id for isolation
         if (isset($session['tenant_id'])) {
             $tenantCheck = $this->validateTenantId($session['tenant_id']);
-            if (!$tenantCheck['valid']) {
+            if (! $tenantCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TENANT,
                     'tenant_id',
@@ -365,7 +378,7 @@ class AnalyticsDataValidationService
     /**
      * Validate user data for analytics
      *
-     * @param array $user User data to validate
+     * @param  array  $user  User data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateUserData(array $user): array
@@ -377,7 +390,7 @@ class AnalyticsDataValidationService
         // Required fields check
         $requiredFields = ['id'];
         foreach ($requiredFields as $field) {
-            if (!isset($user[$field])) {
+            if (! isset($user[$field])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_REQUIRED,
                     $field,
@@ -393,7 +406,7 @@ class AnalyticsDataValidationService
 
         // Validate id
         if (isset($user['id'])) {
-            if (!is_int($user['id']) && !is_string($user['id'])) {
+            if (! is_int($user['id']) && ! is_string($user['id'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'id',
@@ -406,7 +419,7 @@ class AnalyticsDataValidationService
 
         // Validate email if present
         if (isset($user['email'])) {
-            if (!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
+            if (! filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'email',
@@ -420,8 +433,8 @@ class AnalyticsDataValidationService
         // Validate graduation_year if present
         if (isset($user['graduation_year'])) {
             $currentYear = (int) date('Y');
-            if (!is_int($user['graduation_year']) || 
-                $user['graduation_year'] < 1900 || 
+            if (! is_int($user['graduation_year']) ||
+                $user['graduation_year'] < 1900 ||
                 $user['graduation_year'] > (int) ($currentYear + 10)) {
                 $maxYear = $currentYear + 10;
                 $errors[] = $this->createError(
@@ -437,7 +450,7 @@ class AnalyticsDataValidationService
         // Validate tenant_id for isolation
         if (isset($user['tenant_id'])) {
             $tenantCheck = $this->validateTenantId($user['tenant_id']);
-            if (!$tenantCheck['valid']) {
+            if (! $tenantCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TENANT,
                     'tenant_id',
@@ -460,7 +473,7 @@ class AnalyticsDataValidationService
     /**
      * Validate metrics data
      *
-     * @param array $metrics Metrics data to validate
+     * @param  array  $metrics  Metrics data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateMetricsData(array $metrics): array
@@ -471,9 +484,9 @@ class AnalyticsDataValidationService
 
         // Validate period if present
         if (isset($metrics['period'])) {
-            if (!is_array($metrics['period']) || 
-                !isset($metrics['period']['start']) || 
-                !isset($metrics['period']['end'])) {
+            if (! is_array($metrics['period']) ||
+                ! isset($metrics['period']['start']) ||
+                ! isset($metrics['period']['end'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'period',
@@ -484,8 +497,8 @@ class AnalyticsDataValidationService
             } else {
                 $startCheck = $this->validateTimestamp($metrics['period']['start']);
                 $endCheck = $this->validateTimestamp($metrics['period']['end']);
-                
-                if (!$startCheck['valid']) {
+
+                if (! $startCheck['valid']) {
                     $errors[] = $this->createError(
                         self::ERROR_TYPE_FORMAT,
                         'period.start',
@@ -494,8 +507,8 @@ class AnalyticsDataValidationService
                     );
                     $score -= 10;
                 }
-                
-                if (!$endCheck['valid']) {
+
+                if (! $endCheck['valid']) {
                     $errors[] = $this->createError(
                         self::ERROR_TYPE_FORMAT,
                         'period.end',
@@ -523,7 +536,7 @@ class AnalyticsDataValidationService
         $numericMetrics = ['page_views', 'unique_visitors', 'sessions', 'bounce_rate', 'avg_session_duration'];
         foreach ($numericMetrics as $metric) {
             if (isset($metrics[$metric])) {
-                if (!is_numeric($metrics[$metric])) {
+                if (! is_numeric($metrics[$metric])) {
                     $errors[] = $this->createError(
                         self::ERROR_TYPE_TYPE,
                         $metric,
@@ -559,7 +572,7 @@ class AnalyticsDataValidationService
         // Validate tenant_id for isolation
         if (isset($metrics['tenant_id'])) {
             $tenantCheck = $this->validateTenantId($metrics['tenant_id']);
-            if (!$tenantCheck['valid']) {
+            if (! $tenantCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TENANT,
                     'tenant_id',
@@ -582,7 +595,7 @@ class AnalyticsDataValidationService
     /**
      * Validate cohort data
      *
-     * @param array $cohort Cohort data to validate
+     * @param  array  $cohort  Cohort data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateCohortData(array $cohort): array
@@ -594,7 +607,7 @@ class AnalyticsDataValidationService
         // Required fields check
         $requiredFields = ['name'];
         foreach ($requiredFields as $field) {
-            if (!isset($cohort[$field])) {
+            if (! isset($cohort[$field])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_REQUIRED,
                     $field,
@@ -610,7 +623,7 @@ class AnalyticsDataValidationService
 
         // Validate name
         if (isset($cohort['name'])) {
-            if (!is_string($cohort['name'])) {
+            if (! is_string($cohort['name'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'name',
@@ -630,7 +643,7 @@ class AnalyticsDataValidationService
         }
 
         // Validate criteria if present
-        if (isset($cohort['criteria']) && !is_array($cohort['criteria'])) {
+        if (isset($cohort['criteria']) && ! is_array($cohort['criteria'])) {
             $errors[] = $this->createError(
                 self::ERROR_TYPE_TYPE,
                 'criteria',
@@ -642,7 +655,7 @@ class AnalyticsDataValidationService
 
         // Validate members_count if present
         if (isset($cohort['members_count'])) {
-            if (!is_int($cohort['members_count']) || $cohort['members_count'] < 0) {
+            if (! is_int($cohort['members_count']) || $cohort['members_count'] < 0) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_RANGE,
                     'members_count',
@@ -656,7 +669,7 @@ class AnalyticsDataValidationService
         // Validate acquisition_date if present
         if (isset($cohort['acquisition_date'])) {
             $timestampCheck = $this->validateTimestamp($cohort['acquisition_date']);
-            if (!$timestampCheck['valid']) {
+            if (! $timestampCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'acquisition_date',
@@ -670,7 +683,7 @@ class AnalyticsDataValidationService
         // Validate tenant_id for isolation
         if (isset($cohort['tenant_id'])) {
             $tenantCheck = $this->validateTenantId($cohort['tenant_id']);
-            if (!$tenantCheck['valid']) {
+            if (! $tenantCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TENANT,
                     'tenant_id',
@@ -693,7 +706,7 @@ class AnalyticsDataValidationService
     /**
      * Validate attribution data
      *
-     * @param array $attribution Attribution data to validate
+     * @param  array  $attribution  Attribution data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateAttributionData(array $attribution): array
@@ -705,7 +718,7 @@ class AnalyticsDataValidationService
         // Required fields check
         $requiredFields = ['user_id', 'source', 'timestamp'];
         foreach ($requiredFields as $field) {
-            if (!isset($attribution[$field])) {
+            if (! isset($attribution[$field])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_REQUIRED,
                     $field,
@@ -721,7 +734,7 @@ class AnalyticsDataValidationService
 
         // Validate user_id
         if (isset($attribution['user_id'])) {
-            if (!is_int($attribution['user_id']) && !is_string($attribution['user_id'])) {
+            if (! is_int($attribution['user_id']) && ! is_string($attribution['user_id'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'user_id',
@@ -734,7 +747,7 @@ class AnalyticsDataValidationService
 
         // Validate source
         if (isset($attribution['source'])) {
-            if (!is_string($attribution['source'])) {
+            if (! is_string($attribution['source'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'source',
@@ -756,7 +769,7 @@ class AnalyticsDataValidationService
         // Validate timestamp
         if (isset($attribution['timestamp'])) {
             $timestampCheck = $this->validateTimestamp($attribution['timestamp']);
-            if (!$timestampCheck['valid']) {
+            if (! $timestampCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'timestamp',
@@ -770,11 +783,11 @@ class AnalyticsDataValidationService
         // Validate event_type if present
         if (isset($attribution['event_type'])) {
             $validEventTypes = ['page_view', 'click', 'form_submit', 'purchase', 'signup', 'login'];
-            if (!in_array($attribution['event_type'], $validEventTypes)) {
+            if (! in_array($attribution['event_type'], $validEventTypes)) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_FORMAT,
                     'event_type',
-                    'Invalid event type. Must be one of: ' . implode(', ', $validEventTypes),
+                    'Invalid event type. Must be one of: '.implode(', ', $validEventTypes),
                     self::SEVERITY_MEDIUM
                 );
                 $score -= 10;
@@ -783,7 +796,7 @@ class AnalyticsDataValidationService
 
         // Validate value if present
         if (isset($attribution['value'])) {
-            if (!is_numeric($attribution['value'])) {
+            if (! is_numeric($attribution['value'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'value',
@@ -805,7 +818,7 @@ class AnalyticsDataValidationService
         // Validate tenant_id for isolation
         if (isset($attribution['tenant_id'])) {
             $tenantCheck = $this->validateTenantId($attribution['tenant_id']);
-            if (!$tenantCheck['valid']) {
+            if (! $tenantCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TENANT,
                     'tenant_id',
@@ -828,7 +841,7 @@ class AnalyticsDataValidationService
     /**
      * Validate custom event data
      *
-     * @param array $customEvent Custom event data to validate
+     * @param  array  $customEvent  Custom event data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateCustomEventData(array $customEvent): array
@@ -840,7 +853,7 @@ class AnalyticsDataValidationService
         // Required fields check
         $requiredFields = ['name', 'user_id'];
         foreach ($requiredFields as $field) {
-            if (!isset($customEvent[$field])) {
+            if (! isset($customEvent[$field])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_REQUIRED,
                     $field,
@@ -856,7 +869,7 @@ class AnalyticsDataValidationService
 
         // Validate name
         if (isset($customEvent['name'])) {
-            if (!is_string($customEvent['name'])) {
+            if (! is_string($customEvent['name'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'name',
@@ -877,7 +890,7 @@ class AnalyticsDataValidationService
 
         // Validate user_id
         if (isset($customEvent['user_id'])) {
-            if (!is_int($customEvent['user_id']) && !is_string($customEvent['user_id'])) {
+            if (! is_int($customEvent['user_id']) && ! is_string($customEvent['user_id'])) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TYPE,
                     'user_id',
@@ -890,7 +903,7 @@ class AnalyticsDataValidationService
 
         // Validate definition_id if present
         if (isset($customEvent['definition_id'])) {
-            if (!is_int($customEvent['definition_id']) || $customEvent['definition_id'] <= 0) {
+            if (! is_int($customEvent['definition_id']) || $customEvent['definition_id'] <= 0) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_RANGE,
                     'definition_id',
@@ -902,7 +915,7 @@ class AnalyticsDataValidationService
         }
 
         // Validate data_json if present
-        if (isset($customEvent['data_json']) && !is_array($customEvent['data_json'])) {
+        if (isset($customEvent['data_json']) && ! is_array($customEvent['data_json'])) {
             $errors[] = $this->createError(
                 self::ERROR_TYPE_TYPE,
                 'data_json',
@@ -915,7 +928,7 @@ class AnalyticsDataValidationService
         // Validate tenant_id for isolation
         if (isset($customEvent['tenant_id'])) {
             $tenantCheck = $this->validateTenantId($customEvent['tenant_id']);
-            if (!$tenantCheck['valid']) {
+            if (! $tenantCheck['valid']) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_TENANT,
                     'tenant_id',
@@ -938,7 +951,7 @@ class AnalyticsDataValidationService
     /**
      * Validate batch data
      *
-     * @param array $data Batch data to validate
+     * @param  array  $data  Batch data to validate
      * @return array Validation result with errors and quality score
      */
     public function validateBatchData(array $data): array
@@ -948,7 +961,7 @@ class AnalyticsDataValidationService
         $score = self::QUALITY_EXCELLENT;
 
         // Check if data is an array
-        if (!is_array($data)) {
+        if (! is_array($data)) {
             $errors[] = $this->createError(
                 self::ERROR_TYPE_TYPE,
                 'data',
@@ -956,7 +969,7 @@ class AnalyticsDataValidationService
                 self::SEVERITY_CRITICAL
             );
             $score -= 30;
-            
+
             return [
                 'valid' => false,
                 'errors' => $errors,
@@ -980,7 +993,7 @@ class AnalyticsDataValidationService
             $errors[] = $this->createError(
                 self::ERROR_TYPE_RANGE,
                 'data',
-                "Batch size exceeds maximum of " . self::MAX_ARRAY_SIZE . " records",
+                'Batch size exceeds maximum of '.self::MAX_ARRAY_SIZE.' records',
                 self::SEVERITY_HIGH
             );
             $score -= 15;
@@ -992,7 +1005,7 @@ class AnalyticsDataValidationService
         $validCount = 0;
 
         foreach ($data as $index => $item) {
-            if (!is_array($item)) {
+            if (! is_array($item)) {
                 $itemErrors[] = [
                     'index' => $index,
                     'errors' => [$this->createError(
@@ -1003,13 +1016,14 @@ class AnalyticsDataValidationService
                     )],
                 ];
                 $totalScore -= 10;
+
                 continue;
             }
 
             // Detect item type and validate accordingly
             $itemValidation = $this->detectAndValidateItem($item);
-            
-            if (!$itemValidation['valid']) {
+
+            if (! $itemValidation['valid']) {
                 $itemErrors[] = [
                     'index' => $index,
                     'errors' => $itemValidation['errors'],
@@ -1049,14 +1063,14 @@ class AnalyticsDataValidationService
     /**
      * Get validation report for analytics data quality
      *
-     * @param string $dataType Type of data to generate report for
-     * @param array $filters Optional filters to apply
+     * @param  string  $dataType  Type of data to generate report for
+     * @param  array  $filters  Optional filters to apply
      * @return array Validation report
      */
     public function getValidationReport(string $dataType, array $filters = []): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $report = [
             'data_type' => $dataType,
             'tenant_id' => $tenantId,
@@ -1086,7 +1100,7 @@ class AnalyticsDataValidationService
                 'filters' => $filters,
                 'error' => $e->getMessage(),
             ]);
-            
+
             return $report;
         }
     }
@@ -1094,8 +1108,8 @@ class AnalyticsDataValidationService
     /**
      * Fix validation errors automatically where possible
      *
-     * @param array $errors Validation errors to fix
-     * @param array $data Original data
+     * @param  array  $errors  Validation errors to fix
+     * @param  array  $data  Original data
      * @return array Fixed data with report
      */
     public function fixValidationErrors(array $errors, array $data): array
@@ -1108,7 +1122,7 @@ class AnalyticsDataValidationService
             if (isset($error['field'])) {
                 $field = $error['field'];
                 $type = $error['type'] ?? self::ERROR_TYPE_UNKNOWN;
-                
+
                 switch ($type) {
                     case self::ERROR_TYPE_LENGTH:
                         if (isset($fixedData[$field]) && is_string($fixedData[$field])) {
@@ -1121,7 +1135,7 @@ class AnalyticsDataValidationService
                             ];
                         }
                         break;
-                        
+
                     case self::ERROR_TYPE_FORMAT:
                         if ($field === 'email' && isset($fixedData[$field])) {
                             $fixedData[$field] = filter_var($fixedData[$field], FILTER_SANITIZE_EMAIL);
@@ -1131,7 +1145,7 @@ class AnalyticsDataValidationService
                             ];
                         }
                         break;
-                        
+
                     case self::ERROR_TYPE_RANGE:
                         if (isset($fixedData[$field]) && is_numeric($fixedData[$field])) {
                             if ($fixedData[$field] < 0) {
@@ -1145,7 +1159,7 @@ class AnalyticsDataValidationService
                             }
                         }
                         break;
-                        
+
                     default:
                         $failedFixes[] = [
                             'field' => $field,
@@ -1169,7 +1183,7 @@ class AnalyticsDataValidationService
     /**
      * Validate a timestamp
      *
-     * @param mixed $timestamp
+     * @param  mixed  $timestamp
      * @return array Validation result
      */
     private function validateTimestamp($timestamp): array
@@ -1179,21 +1193,21 @@ class AnalyticsDataValidationService
             $now = now();
             $minDate = $now->copy()->subDays(self::MIN_TIMESTAMP_AGE_DAYS);
             $maxDate = $now->copy()->addDays(self::MAX_TIMESTAMP_FUTURE_DAYS);
-            
+
             if ($date->lessThan($minDate)) {
                 return [
                     'valid' => false,
-                    'message' => 'Timestamp is too old (older than ' . self::MIN_TIMESTAMP_AGE_DAYS . ' days)',
+                    'message' => 'Timestamp is too old (older than '.self::MIN_TIMESTAMP_AGE_DAYS.' days)',
                 ];
             }
-            
+
             if ($date->greaterThan($maxDate)) {
                 return [
                     'valid' => false,
                     'message' => 'Timestamp is in the future',
                 ];
             }
-            
+
             return ['valid' => true];
         } catch (\Exception $e) {
             return [
@@ -1206,14 +1220,13 @@ class AnalyticsDataValidationService
     /**
      * Validate properties array
      *
-     * @param array $properties
      * @return array Validation result with errors and score deduction
      */
     private function validateProperties(array $properties): array
     {
         $errors = [];
         $scoreDeduction = 0;
-        
+
         if (count($properties) > 100) {
             $errors[] = $this->createError(
                 self::ERROR_TYPE_LENGTH,
@@ -1223,9 +1236,9 @@ class AnalyticsDataValidationService
             );
             $scoreDeduction += 5;
         }
-        
+
         foreach ($properties as $key => $value) {
-            if (!is_string($key) || strlen($key) > 255) {
+            if (! is_string($key) || strlen($key) > 255) {
                 $errors[] = $this->createError(
                     self::ERROR_TYPE_LENGTH,
                     "properties[{$key}]",
@@ -1235,7 +1248,7 @@ class AnalyticsDataValidationService
                 $scoreDeduction += 2;
             }
         }
-        
+
         return [
             'errors' => $errors,
             'score_deduction' => $scoreDeduction,
@@ -1245,27 +1258,25 @@ class AnalyticsDataValidationService
     /**
      * Validate tenant ID
      *
-     * @param string $tenantId
      * @return array Validation result
      */
     private function validateTenantId(string $tenantId): array
     {
         $currentTenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         if ($currentTenantId && $tenantId !== $currentTenantId) {
             return [
                 'valid' => false,
                 'message' => 'Tenant ID mismatch - data belongs to a different tenant',
             ];
         }
-        
+
         return ['valid' => true];
     }
 
     /**
      * Detect item type and validate accordingly
      *
-     * @param array $item
      * @return array Validation result
      */
     private function detectAndValidateItem(array $item): array
@@ -1274,22 +1285,22 @@ class AnalyticsDataValidationService
         if (isset($item['event_name']) || isset($item['occurred_at'])) {
             return $this->validateEventData($item);
         }
-        
+
         // Check if it's a session
         if (isset($item['session_id']) || isset($item['start_time'])) {
             return $this->validateSessionData($item);
         }
-        
+
         // Check if it's a user
         if (isset($item['email']) || (isset($item['id']) && count($item) <= 5)) {
             return $this->validateUserData($item);
         }
-        
+
         // Check if it's custom event
         if (isset($item['definition_id']) || isset($item['data_json'])) {
             return $this->validateCustomEventData($item);
         }
-        
+
         // Default: basic validation
         return [
             'valid' => true,
@@ -1302,10 +1313,10 @@ class AnalyticsDataValidationService
     /**
      * Create a validation error
      *
-     * @param string $type Error type
-     * @param string $field Field name
-     * @param string $message Error message
-     * @param string $severity Error severity
+     * @param  string  $type  Error type
+     * @param  string  $field  Field name
+     * @param  string  $message  Error message
+     * @param  string  $severity  Error severity
      * @return array Error object
      */
     private function createError(string $type, string $field, string $message, string $severity): array

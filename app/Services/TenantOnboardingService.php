@@ -16,10 +16,15 @@ use Illuminate\Support\Str;
 class TenantOnboardingService
 {
     public const STEP_INSTITUTION_INFO = 1;
+
     public const STEP_BRANDING = 2;
+
     public const STEP_ADMIN_SETUP = 3;
+
     public const STEP_DATA_IMPORT = 4;
+
     public const STEP_PAYMENT = 5;
+
     public const STEP_REVIEW = 6;
 
     public const STEPS = [
@@ -413,7 +418,7 @@ class TenantOnboardingService
 
             case self::STEP_ADMIN_SETUP:
                 // Add additional admins
-                if (!empty($data['additional_admins'])) {
+                if (! empty($data['additional_admins'])) {
                     foreach ($data['additional_admins'] as $adminData) {
                         $this->addTenantAdmin($tenant, $adminData);
                     }
@@ -486,7 +491,7 @@ class TenantOnboardingService
     private function calculateCompletionRate(): float
     {
         $total = TenantOnboarding::count();
-        
+
         if ($total === 0) {
             return 0;
         }

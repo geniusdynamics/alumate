@@ -27,8 +27,6 @@ class TemplateSecurityRequest extends FormRequest
 
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -131,8 +129,6 @@ class TemplateSecurityRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
@@ -145,7 +141,7 @@ class TemplateSecurityRequest extends FormRequest
         // Set tenant_id from authenticated user
         if (auth()->check()) {
             $user = auth()->user();
-            if (!$user->hasRole(['super-admin', 'admin'])) {
+            if (! $user->hasRole(['super-admin', 'admin'])) {
                 // For non-admin users, force tenant isolation
                 $data['tenant_id'] = $user->tenant_id;
             }
@@ -158,7 +154,6 @@ class TemplateSecurityRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
@@ -199,7 +194,7 @@ class TemplateSecurityRequest extends FormRequest
         $data = $this->validated();
 
         // Skip security validation if no structure provided
-        if (!isset($data['structure'])) {
+        if (! isset($data['structure'])) {
             return;
         }
 
@@ -213,7 +208,6 @@ class TemplateSecurityRequest extends FormRequest
     /**
      * Perform additional security checks on the data
      *
-     * @param array $data
      * @throws TemplateSecurityException
      */
     protected function performSecurityChecks(array $data): void
@@ -238,14 +232,14 @@ class TemplateSecurityRequest extends FormRequest
                     'type' => $issueType,
                     'pattern' => $pattern,
                     'severity' => 'high',
-                    'context' => 'input_validation'
+                    'context' => 'input_validation',
                 ];
             }
         }
 
-        if (!empty($issues)) {
+        if (! empty($issues)) {
             throw new TemplateSecurityException(
-                "Template security validation failed",
+                'Template security validation failed',
                 $issues
             );
         }
@@ -253,9 +247,6 @@ class TemplateSecurityRequest extends FormRequest
 
     /**
      * Sanitize input data
-     *
-     * @param array $data
-     * @return array
      */
     protected function sanitizeInputData(array $data): array
     {
@@ -273,14 +264,11 @@ class TemplateSecurityRequest extends FormRequest
 
     /**
      * Sanitize string input
-     *
-     * @param string $string
-     * @return string
      */
     protected function sanitizeString(string $string): string
     {
         // Remove potential null bytes
-        $string = str_replace("\0", "", $string);
+        $string = str_replace("\0", '', $string);
 
         // Trim and normalize whitespace
         $string = trim($string);
@@ -296,9 +284,6 @@ class TemplateSecurityRequest extends FormRequest
 
     /**
      * Get user-friendly message for security violations
-     *
-     * @param array $issue
-     * @return string
      */
     protected function getSecurityViolationMessage(array $issue): string
     {
@@ -327,7 +312,7 @@ class TemplateSecurityRequest extends FormRequest
     /**
      * Perform additional custom validations
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     protected function performCustomValidations($validator): void
     {
@@ -356,7 +341,7 @@ class TemplateSecurityRequest extends FormRequest
     /**
      * Validate URL security
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     protected function validateUrlSecurity($validator): void
     {
@@ -372,10 +357,10 @@ class TemplateSecurityRequest extends FormRequest
                 ]);
 
                 foreach ($urls as $url) {
-                    if (!$this->isUrlAllowed($url)) {
+                    if (! $this->isUrlAllowed($url)) {
                         $validator->errors()->add(
                             "structure.sections.{$index}.config",
-                            "The provided URL is not allowed or may be unsafe."
+                            'The provided URL is not allowed or may be unsafe.'
                         );
                         break;
                     }
@@ -386,15 +371,12 @@ class TemplateSecurityRequest extends FormRequest
 
     /**
      * Check if URL is allowed
-     *
-     * @param string $url
-     * @return bool
      */
     protected function isUrlAllowed(string $url): bool
     {
         $parsed = parse_url($url);
 
-        if (!$parsed || !isset($parsed['host'])) {
+        if (! $parsed || ! isset($parsed['host'])) {
             // Allow relative URLs
             return true;
         }
@@ -414,7 +396,7 @@ class TemplateSecurityRequest extends FormRequest
         }
 
         // Allow HTTPS only for external domains
-        if (!isset($parsed['scheme'])) {
+        if (! isset($parsed['scheme'])) {
             return false;
         }
 

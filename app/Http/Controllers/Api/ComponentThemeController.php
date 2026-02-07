@@ -41,7 +41,7 @@ class ComponentThemeController extends Controller
                 'last_page' => $themes->lastPage(),
                 'per_page' => $themes->perPage(),
                 'total' => $themes->total(),
-            ]
+            ],
         ]);
     }
 
@@ -54,7 +54,7 @@ class ComponentThemeController extends Controller
 
         return response()->json([
             'theme' => new ComponentThemeResource($theme),
-            'message' => 'Theme created successfully'
+            'message' => 'Theme created successfully',
         ], 201);
     }
 
@@ -66,7 +66,7 @@ class ComponentThemeController extends Controller
         $this->authorize('view', $theme);
 
         return response()->json([
-            'theme' => new ComponentThemeResource($theme)
+            'theme' => new ComponentThemeResource($theme),
         ]);
     }
 
@@ -86,7 +86,7 @@ class ComponentThemeController extends Controller
 
         return response()->json([
             'theme' => new ComponentThemeResource($theme),
-            'message' => 'Theme updated successfully'
+            'message' => 'Theme updated successfully',
         ]);
     }
 
@@ -100,13 +100,13 @@ class ComponentThemeController extends Controller
         // Check if theme can be deleted (not default theme and not in use)
         if ($theme->is_default) {
             return response()->json([
-                'message' => 'Cannot delete default theme. Set another theme as default first.'
+                'message' => 'Cannot delete default theme. Set another theme as default first.',
             ], 422);
         }
 
         if ($theme->components()->exists()) {
             return response()->json([
-                'message' => 'Cannot delete theme with associated components. Remove associations first.'
+                'message' => 'Cannot delete theme with associated components. Remove associations first.',
             ], 422);
         }
 
@@ -128,14 +128,14 @@ class ComponentThemeController extends Controller
         $this->authorize('view', $theme);
 
         $request->validate([
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|max:255',
         ]);
 
         $newTheme = $this->themeService->duplicateTheme($theme, $request->name);
 
         return response()->json([
             'theme' => new ComponentThemeResource($newTheme),
-            'message' => 'Theme duplicated successfully'
+            'message' => 'Theme duplicated successfully',
         ], 201);
     }
 
@@ -148,7 +148,7 @@ class ComponentThemeController extends Controller
 
         $request->validate([
             'component_ids' => 'required|array',
-            'component_ids.*' => 'exists:components,id'
+            'component_ids.*' => 'exists:components,id',
         ]);
 
         $results = $this->themeService->applyTheme($theme, $request->component_ids);
@@ -161,7 +161,7 @@ class ComponentThemeController extends Controller
         return response()->json([
             'message' => 'Theme applied successfully',
             'applied_count' => $results['applied_count'],
-            'skipped_count' => $results['skipped_count']
+            'skipped_count' => $results['skipped_count'],
         ]);
     }
 
@@ -176,7 +176,7 @@ class ComponentThemeController extends Controller
         $previewData = $this->themeService->generatePreview($theme, $componentIds);
 
         // Cache the preview for performance
-        $cacheKey = "theme_preview_{$theme->id}_" . md5(serialize($componentIds));
+        $cacheKey = "theme_preview_{$theme->id}_".md5(serialize($componentIds));
         $cachedPreview = Cache::get($cacheKey);
 
         if ($cachedPreview) {
@@ -200,7 +200,7 @@ class ComponentThemeController extends Controller
         return response()->json([
             'css' => $css,
             'theme_id' => $theme->id,
-            'compiled_at' => now()->toISOString()
+            'compiled_at' => now()->toISOString(),
         ]);
     }
 
@@ -212,7 +212,7 @@ class ComponentThemeController extends Controller
         $this->authorize('view', $theme);
 
         $request->validate([
-            'config' => 'required|array'
+            'config' => 'required|array',
         ]);
 
         $validationResult = $this->themeService->validateThemeConfig($request->config);
@@ -223,7 +223,7 @@ class ComponentThemeController extends Controller
             'warnings' => $validationResult['warnings'] ?? [],
             'message' => $validationResult['valid']
                 ? 'Theme configuration is valid'
-                : 'Theme configuration has issues'
+                : 'Theme configuration has issues',
         ], $validationResult['valid'] ? 200 : 422);
     }
 
@@ -239,7 +239,7 @@ class ComponentThemeController extends Controller
         return response()->json([
             'theme' => $theme->only(['id', 'name', 'slug', 'is_default']),
             'inheritance_chain' => $inheritanceChain,
-            'merged_config' => $theme->getMergedConfig()
+            'merged_config' => $theme->getMergedConfig(),
         ]);
     }
 
@@ -252,7 +252,7 @@ class ComponentThemeController extends Controller
 
         $request->validate([
             'overrides' => 'required|array',
-            'overrides.*' => 'array'
+            'overrides.*' => 'array',
         ]);
 
         $originalConfig = $theme->config;
@@ -260,12 +260,12 @@ class ComponentThemeController extends Controller
         $theme->save();
 
         // Create backup of original config
-        $backupPath = "themes/backups/override_{$theme->id}_" . now()->format('Y_m_d_H_i_s');
-        Storage::put($backupPath . '.json', json_encode([
+        $backupPath = "themes/backups/override_{$theme->id}_".now()->format('Y_m_d_H_i_s');
+        Storage::put($backupPath.'.json', json_encode([
             'theme_id' => $theme->id,
             'original_config' => $originalConfig,
             'overrides' => $request->overrides,
-            'backed_up_at' => now()->toISOString()
+            'backed_up_at' => now()->toISOString(),
         ]));
 
         // Clear caches
@@ -275,7 +275,7 @@ class ComponentThemeController extends Controller
         return response()->json([
             'theme' => new ComponentThemeResource($theme),
             'message' => 'Theme overrides applied successfully',
-            'backup_path' => $backupPath
+            'backup_path' => $backupPath,
         ]);
     }
 
@@ -290,7 +290,7 @@ class ComponentThemeController extends Controller
 
         return response()->json([
             'theme' => new ComponentThemeResource($theme),
-            'message' => 'Theme set as default successfully'
+            'message' => 'Theme set as default successfully',
         ]);
     }
 
@@ -305,7 +305,7 @@ class ComponentThemeController extends Controller
 
         return response()->json([
             'backup_path' => $backupPath,
-            'message' => 'Theme backup created successfully'
+            'message' => 'Theme backup created successfully',
         ]);
     }
 
@@ -315,28 +315,28 @@ class ComponentThemeController extends Controller
     public function restore(Request $request): JsonResponse
     {
         $request->validate([
-            'backup_path' => 'required|string|regex:/^themes\/backups\//'
+            'backup_path' => 'required|string|regex:/^themes\/backups\//',
         ]);
 
-        if (!Storage::exists($request->backup_path . '.json')) {
+        if (! Storage::exists($request->backup_path.'.json')) {
             return response()->json([
-                'message' => 'Backup file not found'
+                'message' => 'Backup file not found',
             ], 404);
         }
 
-        $backupData = json_decode(Storage::get($request->backup_path . '.json'), true);
+        $backupData = json_decode(Storage::get($request->backup_path.'.json'), true);
 
         // Validate backup belongs to current tenant
-        if (!isset($backupData['theme_id'])) {
+        if (! isset($backupData['theme_id'])) {
             $themeId = $backupData['theme_id']; // Adjust based on backup structure
             $theme = ComponentTheme::forTenant(Auth::user()->tenant_id)->find($themeId);
         } else {
             $theme = ComponentTheme::forTenant(Auth::user()->tenant_id)->find($backupData['theme_id']);
         }
 
-        if (!$theme) {
+        if (! $theme) {
             return response()->json([
-                'message' => 'Theme not found or access denied'
+                'message' => 'Theme not found or access denied',
             ], 404);
         }
 
@@ -351,7 +351,7 @@ class ComponentThemeController extends Controller
 
         return response()->json([
             'theme' => new ComponentThemeResource($theme),
-            'message' => 'Theme restored from backup successfully'
+            'message' => 'Theme restored from backup successfully',
         ]);
     }
 
@@ -366,7 +366,7 @@ class ComponentThemeController extends Controller
 
         return response()->json([
             'stats' => $stats,
-            'theme' => $theme->only(['id', 'name', 'slug'])
+            'theme' => $theme->only(['id', 'name', 'slug']),
         ]);
     }
 
@@ -378,7 +378,7 @@ class ComponentThemeController extends Controller
         $request->validate([
             'action' => 'required|string|in:delete,set_default,export',
             'theme_ids' => 'required|array|min:1',
-            'theme_ids.*' => 'exists:component_themes,id'
+            'theme_ids.*' => 'exists:component_themes,id',
         ]);
 
         $themes = ComponentTheme::forTenant(Auth::user()->tenant_id)
@@ -391,10 +391,11 @@ class ComponentThemeController extends Controller
 
         if ($request->action === 'export') {
             $exportData = $this->themeService->bulkExportThemes($themes);
+
             return response()->json([
                 'themes' => $exportData,
                 'count' => $themes->count(),
-                'exported_at' => now()->toISOString()
+                'exported_at' => now()->toISOString(),
             ]);
         }
 
@@ -402,7 +403,7 @@ class ComponentThemeController extends Controller
             try {
                 switch ($request->action) {
                     case 'delete':
-                        if (!$theme->is_default && !$theme->components()->exists()) {
+                        if (! $theme->is_default && ! $theme->components()->exists()) {
                             $this->themeService->deleteTheme($theme);
                             $results[] = ['id' => $theme->id, 'status' => 'deleted'];
                             $successCount++;
@@ -435,8 +436,8 @@ class ComponentThemeController extends Controller
             'summary' => [
                 'success' => $successCount,
                 'errors' => $errorCount,
-                'total' => count($themes)
-            ]
+                'total' => count($themes),
+            ],
         ]);
     }
 
@@ -448,13 +449,13 @@ class ComponentThemeController extends Controller
         $request->validate([
             'format' => 'string|in:json,tailwind,css',
             'theme_ids' => 'nullable|array',
-            'theme_ids.*' => 'exists:component_themes,id'
+            'theme_ids.*' => 'exists:component_themes,id',
         ]);
 
         $format = $request->get('format', 'json');
         $themeIds = $request->get('theme_ids', []);
 
-        if (!empty($themeIds)) {
+        if (! empty($themeIds)) {
             $themes = ComponentTheme::forTenant(Auth::user()->tenant_id)
                 ->whereIn('id', $themeIds)
                 ->get();
@@ -468,7 +469,7 @@ class ComponentThemeController extends Controller
             'themes' => $exportData,
             'format' => $format,
             'exported_at' => now()->toISOString(),
-            'count' => $themes->count()
+            'count' => $themes->count(),
         ]);
     }
 
@@ -487,7 +488,7 @@ class ComponentThemeController extends Controller
                 'css' => $theme->compileToCss(),
                 'merged_config' => $theme->getMergedConfig(),
                 'inheritance_chain' => $theme->getInheritanceChain(),
-                'cached_at' => now()->toISOString()
+                'cached_at' => now()->toISOString(),
             ];
         });
 

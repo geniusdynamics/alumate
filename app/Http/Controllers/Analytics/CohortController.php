@@ -26,8 +26,6 @@ class CohortController extends Controller
 
     /**
      * Retrieve paginated list of cohorts with metrics
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -45,6 +43,7 @@ class CohortController extends Controller
             $cohorts->getCollection()->transform(function ($cohort) {
                 $analysis = $this->cohortService->analyzeCohort($cohort->id);
                 $cohort->analysis = $analysis ?: [];
+
                 return $cohort;
             });
 
@@ -74,9 +73,6 @@ class CohortController extends Controller
 
     /**
      * Create a new cohort
-     *
-     * @param CreateCohortRequest $request
-     * @return JsonResponse
      */
     public function store(CreateCohortRequest $request): JsonResponse
     {
@@ -93,7 +89,7 @@ class CohortController extends Controller
             // Create cohort using service
             $cohortResult = $this->cohortService->createCohort($cohortData['criteria']);
 
-            if (!$cohortResult) {
+            if (! $cohortResult) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Failed to create cohort',
@@ -131,9 +127,6 @@ class CohortController extends Controller
 
     /**
      * Get detailed cohort analysis
-     *
-     * @param string $cohortId
-     * @return JsonResponse
      */
     public function show(string $cohortId): JsonResponse
     {
@@ -173,10 +166,6 @@ class CohortController extends Controller
 
     /**
      * Update cohort and recalculate members
-     *
-     * @param UpdateCohortRequest $request
-     * @param string $cohortId
-     * @return JsonResponse
      */
     public function update(UpdateCohortRequest $request, string $cohortId): JsonResponse
     {
@@ -226,9 +215,6 @@ class CohortController extends Controller
 
     /**
      * Delete a cohort
-     *
-     * @param string $cohortId
-     * @return JsonResponse
      */
     public function destroy(string $cohortId): JsonResponse
     {
@@ -260,8 +246,6 @@ class CohortController extends Controller
 
     /**
      * Compare multiple cohorts
-     *
-     * @return JsonResponse
      */
     public function compare(): JsonResponse
     {

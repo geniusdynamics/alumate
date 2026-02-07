@@ -20,14 +20,14 @@ class SecurityMiddleware
 
         // Check if IP is blocked
         if ($securityService->isIpBlocked($request->ip())) {
-            Log::warning('Blocked request from IP: ' . $request->ip(), [
+            Log::warning('Blocked request from IP: '.$request->ip(), [
                 'path' => $request->path(),
                 'user_agent' => $request->userAgent(),
             ]);
 
             return response()->json([
                 'error' => 'Access denied',
-                'message' => 'Your IP address has been blocked due to security policies.'
+                'message' => 'Your IP address has been blocked due to security policies.',
             ], 403);
         }
 
@@ -42,12 +42,12 @@ class SecurityMiddleware
 
             return response()->json([
                 'error' => 'Suspicious activity detected',
-                'message' => 'Your request contains suspicious patterns and has been blocked.'
+                'message' => 'Your request contains suspicious patterns and has been blocked.',
             ], 403);
         }
 
         // Check rate limiting
-        $identifier = $request->ip() . ':' . $request->path();
+        $identifier = $request->ip().':'.$request->path();
         if ($securityService->detectRateLimitViolation($identifier, 10, 1)) { // 10 requests per minute
             Log::warning('Rate limit exceeded', [
                 'ip' => $request->ip(),
@@ -57,7 +57,7 @@ class SecurityMiddleware
 
             return response()->json([
                 'error' => 'Too many requests',
-                'message' => 'You have exceeded the rate limit. Please try again later.'
+                'message' => 'You have exceeded the rate limit. Please try again later.',
             ], 429);
         }
 

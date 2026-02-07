@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Analytics;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Attribution\StoreTouchpointRequest;
-use App\Http\Requests\Attribution\CalculateAttributionRequest;
-use App\Http\Requests\Attribution\CompareModelsRequest;
-use App\Http\Requests\Attribution\ChannelPerformanceRequest;
 use App\Http\Requests\Attribution\BudgetRecommendationsRequest;
+use App\Http\Requests\Attribution\CalculateAttributionRequest;
+use App\Http\Requests\Attribution\ChannelPerformanceRequest;
+use App\Http\Requests\Attribution\CompareModelsRequest;
 use App\Http\Requests\Attribution\ConversionPathRequest;
+use App\Http\Requests\Attribution\StoreTouchpointRequest;
 use App\Models\AttributionTouch;
 use App\Services\Analytics\AttributionTrackingService;
 use App\Services\TenantContextService;
@@ -46,9 +46,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * List all attribution touchpoints with optional filtering and pagination
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function index(Request $request): JsonResponse
     {
@@ -126,9 +123,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Track a new attribution touchpoint
-     *
-     * @param StoreTouchpointRequest $request
-     * @return JsonResponse
      */
     public function store(StoreTouchpointRequest $request): JsonResponse
     {
@@ -139,7 +133,7 @@ class AttributionAnalysisController extends Controller
 
             // Add user_id from authenticated user if not provided
             $userId = Auth::id();
-            if (!isset($validated['user_id']) && $userId) {
+            if (! isset($validated['user_id']) && $userId) {
                 $validated['user_id'] = $userId;
             }
 
@@ -185,9 +179,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Get touchpoint details by ID
-     *
-     * @param int $id
-     * @return JsonResponse
      */
     public function show(int $id): JsonResponse
     {
@@ -198,7 +189,7 @@ class AttributionAnalysisController extends Controller
                 ->with(['user:id,name,email'])
                 ->find($id);
 
-            if (!$touch) {
+            if (! $touch) {
                 return response()->json([
                     'success' => false,
                     'error' => 'Touchpoint not found',
@@ -238,10 +229,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Calculate attribution for a user using specified model
-     *
-     * @param int $userId
-     * @param CalculateAttributionRequest $request
-     * @return JsonResponse
      */
     public function calculate(int $userId, CalculateAttributionRequest $request): JsonResponse
     {
@@ -290,10 +277,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Compare different attribution models for a user
-     *
-     * @param int $userId
-     * @param CompareModelsRequest $request
-     * @return JsonResponse
      */
     public function compareModels(int $userId, CompareModelsRequest $request): JsonResponse
     {
@@ -351,9 +334,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Get channel performance analysis
-     *
-     * @param ChannelPerformanceRequest $request
-     * @return JsonResponse
      */
     public function channelPerformance(ChannelPerformanceRequest $request): JsonResponse
     {
@@ -401,9 +381,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Get budget allocation recommendations
-     *
-     * @param BudgetRecommendationsRequest $request
-     * @return JsonResponse
      */
     public function budgetRecommendations(BudgetRecommendationsRequest $request): JsonResponse
     {
@@ -453,10 +430,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Get conversion path for a user
-     *
-     * @param int $userId
-     * @param ConversionPathRequest $request
-     * @return JsonResponse
      */
     public function conversionPath(int $userId, ConversionPathRequest $request): JsonResponse
     {
@@ -525,16 +498,13 @@ class AttributionAnalysisController extends Controller
     {
         $tenantId = $this->getCurrentTenantId();
 
-        if (!$tenantId || $tenantId === 1) {
+        if (! $tenantId || $tenantId === 1) {
             throw new \Exception('Tenant context is required for this operation');
         }
     }
 
     /**
      * Generate model comparison analysis
-     *
-     * @param array $modelResults
-     * @return array
      */
     private function generateModelComparison(array $modelResults): array
     {
@@ -575,7 +545,7 @@ class AttributionAnalysisController extends Controller
             $comparison['channel_attribution_differences'][$channel] = $channelValues;
 
             // Find winner for this channel
-            if (!empty($channelValues)) {
+            if (! empty($channelValues)) {
                 $winner = array_keys($channelValues, max($channelValues))[0];
                 $comparison['winner_by_channel'][$channel] = [
                     'model' => $winner,
@@ -592,10 +562,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Generate insights from model comparison
-     *
-     * @param array $modelResults
-     * @param array $comparison
-     * @return array
      */
     private function generateComparisonInsights(array $modelResults, array $comparison): array
     {
@@ -609,15 +575,15 @@ class AttributionAnalysisController extends Controller
         if ($maxValue > 0 && ($maxValue - $minValue) / $maxValue > 0.1) {
             $minModel = array_search($minValue, $totalValues, true);
             $maxModel = array_search($maxValue, $totalValues, true);
-            $insights[] = "Attribution model choice significantly impacts results: {$minModel} attributes " .
-                round(($maxValue - $minValue) / $maxValue * 100) . "% less value than {$maxModel}";
+            $insights[] = "Attribution model choice significantly impacts results: {$minModel} attributes ".
+                round(($maxValue - $minValue) / $maxValue * 100)."% less value than {$maxModel}";
         }
 
         // Check for first vs last click differences
         if (isset($totalValues['first_click']) && isset($totalValues['last_click'])) {
             $difference = abs($totalValues['first_click'] - $totalValues['last_click']);
             if ($difference > 0) {
-                $insights[] = "First-touch attributes more value to initial engagement, while last-touch focuses on final conversion point";
+                $insights[] = 'First-touch attributes more value to initial engagement, while last-touch focuses on final conversion point';
             }
         }
 
@@ -626,10 +592,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Calculate ROI for channels
-     *
-     * @param array $channels
-     * @param array $channelCosts
-     * @return array
      */
     private function calculateChannelROI(array $channels, array $channelCosts): array
     {
@@ -658,9 +620,6 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Categorize ROI values
-     *
-     * @param float $roi
-     * @return string
      */
     private function categorizeROI(float $roi): string
     {
@@ -679,15 +638,12 @@ class AttributionAnalysisController extends Controller
 
     /**
      * Generate insights from budget recommendations
-     *
-     * @param array $recommendations
-     * @return array
      */
     private function generateBudgetInsights(array $recommendations): array
     {
         $insights = [];
 
-        if (!isset($recommendations['recommendations'])) {
+        if (! isset($recommendations['recommendations'])) {
             return $insights;
         }
 
@@ -709,9 +665,9 @@ class AttributionAnalysisController extends Controller
         if (isset($recommendations['summary']['avg_efficiency_score'])) {
             $avgScore = $recommendations['summary']['avg_efficiency_score'];
             if ($avgScore > 70) {
-                $insights[] = "Overall channel efficiency is strong - current allocation strategy is working well";
+                $insights[] = 'Overall channel efficiency is strong - current allocation strategy is working well';
             } elseif ($avgScore < 40) {
-                $insights[] = "Channel efficiency is below average - consider reviewing marketing mix strategy";
+                $insights[] = 'Channel efficiency is below average - consider reviewing marketing mix strategy';
             }
         }
 

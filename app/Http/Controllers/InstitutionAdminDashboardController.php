@@ -816,6 +816,7 @@ class InstitutionAdminDashboardController extends Controller
                     return false;
                 }
                 $yearsSinceGraduation = $now->diffInYears($graduate->graduation_date);
+
                 return $yearsSinceGraduation >= 0 && $yearsSinceGraduation < 2;
             });
 
@@ -824,6 +825,7 @@ class InstitutionAdminDashboardController extends Controller
                     return false;
                 }
                 $yearsSinceGraduation = $now->diffInYears($graduate->graduation_date);
+
                 return $yearsSinceGraduation >= 2 && $yearsSinceGraduation < 4;
             });
 
@@ -832,6 +834,7 @@ class InstitutionAdminDashboardController extends Controller
                     return false;
                 }
                 $yearsSinceGraduation = $now->diffInYears($graduate->graduation_date);
+
                 return $yearsSinceGraduation >= 4;
             });
 
@@ -855,7 +858,7 @@ class InstitutionAdminDashboardController extends Controller
         }
 
         $salaries = $graduates->pluck('current_salary')->filter()->sort()->values();
-        
+
         if ($salaries->isEmpty()) {
             return ['average' => 0, 'median' => 0];
         }

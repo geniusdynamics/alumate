@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * LearningProgress Model
@@ -103,8 +103,8 @@ class LearningProgress extends Model
         $minModules = $criteria['modules_completed'] ?? 5;
 
         return $query->where('total_score', '>=', $minScore)
-                    ->where('modules_completed', '>=', $minModules)
-                    ->where('certified', false);
+            ->where('modules_completed', '>=', $minModules)
+            ->where('certified', false);
     }
 
     /**
@@ -182,6 +182,7 @@ class LearningProgress extends Model
     {
         // Assuming course has modules_count, otherwise use a default
         $totalModules = $this->course->modules_count ?? 10;
+
         return $totalModules > 0 ? round(($this->modules_completed / $totalModules) * 100, 2) : 0;
     }
 }

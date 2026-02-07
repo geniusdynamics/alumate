@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: EmailPreference model for managing email preferences with schema-based tenant isolation
 // ABOUTME: Uses schema-based tenancy where each tenant has their own database schema for complete data isolation
 
@@ -10,7 +11,6 @@ use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * EmailPreference Model
@@ -82,6 +82,7 @@ class EmailPreference extends Model
     {
         // Schema-based tenancy: Return current tenant from context instead of database relationship
         $tenant = $this->getCurrentTenant();
+
         return $this->belongsTo(Tenant::class)->where('id', $tenant->id ?? null);
     }
 
@@ -134,8 +135,8 @@ class EmailPreference extends Model
                     'timestamp' => now()->toISOString(),
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
-                ]
-            ])
+                ],
+            ]),
         ]);
     }
 
@@ -153,8 +154,8 @@ class EmailPreference extends Model
                     'timestamp' => now()->toISOString(),
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
-                ]
-            ])
+                ],
+            ]),
         ]);
     }
 
@@ -176,8 +177,8 @@ class EmailPreference extends Model
                     'new_preferences' => $updatedPreferences,
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
-                ]
-            ])
+                ],
+            ]),
         ]);
     }
 
@@ -196,8 +197,8 @@ class EmailPreference extends Model
                     'timestamp' => now()->toISOString(),
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         return $token;

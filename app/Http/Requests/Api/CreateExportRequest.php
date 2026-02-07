@@ -8,8 +8,6 @@ class CreateExportRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -94,22 +92,20 @@ class CreateExportRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
         // Set default values
-        if (!$this->has('include_dependencies')) {
+        if (! $this->has('include_dependencies')) {
             $this->merge(['include_dependencies' => false]);
         }
-        if (!$this->has('include_assets')) {
+        if (! $this->has('include_assets')) {
             $this->merge(['include_assets' => false]);
         }
-        if (!$this->has('compress')) {
+        if (! $this->has('compress')) {
             $this->merge(['compress' => false]);
         }
-        if ($this->has('encryption') && !$this->input('encryption.enabled')) {
+        if ($this->has('encryption') && ! $this->input('encryption.enabled')) {
             $this->merge(['encryption' => null]);
         }
     }

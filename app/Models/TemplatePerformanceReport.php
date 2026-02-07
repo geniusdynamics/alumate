@@ -40,8 +40,11 @@ class TemplatePerformanceReport extends Model
      * Report status constants
      */
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_PROCESSING = 'processing';
+
     public const STATUS_COMPLETED = 'completed';
+
     public const STATUS_FAILED = 'failed';
 
     /**
@@ -149,7 +152,7 @@ class TemplatePerformanceReport extends Model
      */
     public function isValid(): bool
     {
-        return $this->isCompleted() && !$this->isExpired();
+        return $this->isCompleted() && ! $this->isExpired();
     }
 
     /**
@@ -163,7 +166,7 @@ class TemplatePerformanceReport extends Model
     /**
      * Mark report as completed
      */
-    public function markAsCompleted(array $data = null): void
+    public function markAsCompleted(?array $data = null): void
     {
         $updateData = [
             'status' => self::STATUS_COMPLETED,
@@ -175,7 +178,7 @@ class TemplatePerformanceReport extends Model
         }
 
         // Set expiration date (24 hours from now)
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             $updateData['expires_at'] = now()->addHours(24);
         }
 
@@ -185,7 +188,7 @@ class TemplatePerformanceReport extends Model
     /**
      * Mark report as failed
      */
-    public function markAsFailed(string $errorMessage = null): void
+    public function markAsFailed(?string $errorMessage = null): void
     {
         $updateData = ['status' => self::STATUS_FAILED];
 
@@ -201,7 +204,7 @@ class TemplatePerformanceReport extends Model
      */
     public function getReportData(): ?array
     {
-        if (!$this->isValid()) {
+        if (! $this->isValid()) {
             return null;
         }
 
@@ -239,11 +242,11 @@ class TemplatePerformanceReport extends Model
             'tenant_id' => 'required|exists:tenants,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'report_type' => 'required|string|in:' . implode(',', self::REPORT_TYPES),
+            'report_type' => 'required|string|in:'.implode(',', self::REPORT_TYPES),
             'parameters' => 'nullable|array',
             'data' => 'nullable|array',
             'format' => 'string|in:json,csv,excel,pdf',
-            'status' => 'string|in:' . implode(',', [self::STATUS_PENDING, self::STATUS_PROCESSING, self::STATUS_COMPLETED, self::STATUS_FAILED]),
+            'status' => 'string|in:'.implode(',', [self::STATUS_PENDING, self::STATUS_PROCESSING, self::STATUS_COMPLETED, self::STATUS_FAILED]),
             'generated_at' => 'nullable|date',
             'expires_at' => 'nullable|date',
             'error_message' => 'nullable|string|max:1000',

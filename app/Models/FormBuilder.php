@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FormBuilder extends Model
@@ -24,7 +24,7 @@ class FormBuilder extends Model
         'error_message',
         'redirect_url',
         'is_active',
-        'tenant_id'
+        'tenant_id',
     ];
 
     protected $casts = [
@@ -32,7 +32,7 @@ class FormBuilder extends Model
         'validation_rules' => 'array',
         'conditional_logic' => 'array',
         'crm_integration_config' => 'array',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
     public function page(): BelongsTo
