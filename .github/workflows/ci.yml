@@ -45,20 +45,25 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Node dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run PHP Linting (Pint)
         run: vendor/bin/pint
 
       - name: Run JS Linting (ESLint)
-        run: npm run lint
+        run: pnpm run lint
 
       - name: TypeScript Type Check
         run: npx vue-tsc --noEmit
@@ -529,14 +534,19 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Node dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Generate Ziggy Routes
         run: |
@@ -545,13 +555,13 @@ jobs:
           APP_KEY: base64:placeholder-key-for-frontend-build
 
       - name: TypeScript Type Check
-        run: npx vue-tsc --noEmit
+        run: pnpm exec vue-tsc --noEmit
 
       - name: Run Frontend Tests (Vitest)
-        run: npm test
+        run: pnpm test
 
       - name: Build Frontend Assets
-        run: npm run build
+        run: pnpm run build
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -586,21 +596,26 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install Node dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Run Composer Audit
         run: composer audit --no-interaction
         continue-on-error: false
 
-      - name: Run npm Audit
-        run: npm audit --audit-level=high
+      - name: Run pnpm Audit
+        run: pnpm audit --audit-level high
         continue-on-error: false
 
       - name: Check for Sensitive Data
