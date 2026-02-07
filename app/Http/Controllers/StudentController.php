@@ -6,6 +6,7 @@ use App\Models\SuccessStory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class StudentController extends Controller
@@ -217,6 +218,15 @@ class StudentController extends Controller
             ->limit(8)
             ->get()
             ->map(function ($alumni) use ($user) {
+                // Calculate mutual connections
+                $mutualConnectionsCount = $this->calculateMutualConnections($user, $alumni);
+                
+                // Calculate response rate based on connection acceptance history
+                $responseRate = $this->calculateResponseRate($alumni);
+                
+                // Check if connection already sent
+                $connectionSent = $this->checkConnectionExists($user, $alumni);
+                
                 return [
                     'id' => $alumni->id,
                     'name' => $alumni->name,
@@ -227,13 +237,92 @@ class StudentController extends Controller
                     'industry' => $alumni->industry,
                     'expertise' => $alumni->skills ? (is_array($alumni->skills) ? $alumni->skills : json_decode($alumni->skills, true)) : [],
                     'stories_count' => $alumni->successStories->count(),
-                    'mutual_connections_count' => 0, // TODO: Calculate actual mutual connections
-                    'response_rate' => rand(70, 95), // TODO: Calculate actual response rate
+                    'mutual_connections_count' => $mutualConnectionsCount,
+                    'response_rate' => $responseRate,
                     'connection_reason' => $this->getConnectionReason($alumni, $user),
                     'mentorship_available' => $alumni->profile->mentorship_available ?? false,
-                    'connection_sent' => false, // TODO: Check if connection already sent
+                    'connection_sent' => $connectionSent,
                 ];
             });
+    }
+
+    /**
+     * Calculate mutual connections between two users.
+     */
+    private function calculateMutualConnections(User $user, User $alumni): int
+    {
+        // Get user connections
+        $userConnectionIds = DB::table('connections')
+            ->where(function ($query) use ($user) {
+                $query->where('requester_id', $user->id)
+                    ->orWhere('recipient_id', $user->id);
+            })
+            ->where('status', 'accepted')
+            ->get()
+            ->map(function ($connection) use ($user) {
+                return $connection->requester_id === $user->id 
+                    ? $connection->recipient_id 
+                    : $connection->requester_id;
+            });
+
+        // Get alumni connections
+        $alumniConnectionIds = DB::table('connections')
+            ->where(function ($query) use ($alumni) {
+                $query->where('requester_id', $alumni->id)
+                    ->orWhere('recipient_id', $alumni->id);
+            })
+            ->where('status', 'accepted')
+            ->get()
+            ->map(function ($connection) use ($alumni) {
+                return $connection->requester_id === $alumni->id 
+                    ? $connection->recipient_id 
+                    : $connection->requester_id;
+            });
+
+        // Calculate intersection (mutual connections)
+        return $userConnectionIds->intersect($alumniConnectionIds)->count();
+    }
+
+    /**
+     * Calculate response rate based on connection acceptance history.
+     */
+    private function calculateResponseRate(User $alumni): int
+    {
+        $totalRequests = DB::table('connections')
+            ->where('recipient_id', $alumni->id)
+            ->count();
+
+        if ($totalRequests === 0) {
+            return 85; // Default for new users
+        }
+
+        $acceptedRequests = DB::table('connections')
+            ->where('recipient_id', $alumni->id)
+            ->where('status', 'accepted')
+            ->count();
+
+        $responseRate = (int) round(($acceptedRequests / $totalRequests) * 100);
+        
+        // Clamp between 50 and 100
+        return max(50, min(100, $responseRate));
+    }
+
+    /**
+     * Check if connection already exists between users.
+     */
+    private function checkConnectionExists(User $user, User $alumni): bool
+    {
+        return DB::table('connections')
+            ->where(function ($query) use ($user, $alumni) {
+                $query->where(function ($q) use ($user, $alumni) {
+                    $q->where('requester_id', $user->id)
+                        ->where('recipient_id', $alumni->id);
+                })->orWhere(function ($q) use ($user, $alumni) {
+                    $q->where('requester_id', $alumni->id)
+                        ->where('recipient_id', $user->id);
+                });
+            })
+            ->exists();
     }
 
     private function getConnectionReason($alumni, $user)

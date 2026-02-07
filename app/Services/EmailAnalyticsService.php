@@ -1,618 +1,700 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Models\EmailAnalytics;
-use App\Models\Tenant;
+use App\Models\EmailLog;
 use App\Services\TenantContextService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 /**
  * Email Analytics Service
  *
- * Core service for email performance tracking, analytics, and reporting.
- * Handles email metrics, funnel analysis, A/B testing, and attribution tracking.
+ * Service for tracking email engagement metrics including opens, clicks,
+ * delivery statistics, and comprehensive engagement analytics.
+ * Integrates with EmailLog model for persistent tracking.
  */
-class EmailAnalyticsService
+class EmailAnalyticsService extends BaseService
 {
-    const CACHE_PREFIX = 'email_analytics_';
-    const CACHE_DURATION = 1800; // 30 minutes
+    /**
+     * Cache configuration
+     */
+    protected const CACHE_PREFIX = 'email_analytics_';
+    protected const CACHE_DURATION = 1800; // 30 minutes
 
-    protected TenantContextService $tenantContext;
+    /**
+     * Tracking pixel filename
+     */
+    protected const TRACKING_PIXEL = 'tracking_pixel.gif';
 
     public function __construct(TenantContextService $tenantContext)
     {
-        $this->tenantContext = $tenantContext;
-    }
-
-    /**
-     * Track email delivery event
-     */
-    public function trackDelivery(int $emailAnalyticsId, array $metadata = []): bool
-    {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
-        }
-
-        $analytics->recordDelivery();
-        $this->clearAnalyticsCache();
-
-        return true;
+        parent::__construct($tenantContext);
     }
 
     /**
      * Track email open event
      */
-    public function trackOpen(int $emailAnalyticsId, array $metadata = []): bool
+    public function trackOpen(string $trackingId, array $metadata = []): array
     {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
+        try {
+            $emailLog = EmailLog::where('tracking_id', $trackingId)->first();
+
+            if (! $emailLog) {
+                Log::warning('Email open tracking failed - invalid tracking ID', [
+                    'tracking_id' => $trackingId,
+                ]);
+
+                return [
+                    'success' => false,
+                    'error' => 'Invalid tracking ID',
+                ];
+            }
+
+            // Prevent duplicate tracking
+            if ($emailLog->isOpened()) {
+                return [
+                    'success' => true,
+                    'duplicate' => true,
+                    'email_log_id' => $emailLog->id,
+                ];
+            }
+
+            $openMetadata = array_merge($metadata, [
+                'ip_address' => $metadata['ip_address'] ?? request()->ip(),
+                'user_agent' => $metadata['user_agent'] ?? request()->userAgent(),
+                'opened_at' => now()->toIso8601String(),
+            ]);
+
+            $emailLog->recordOpen($openMetadata);
+            $this->clearAnalyticsCache();
+
+            Log::info('Email open tracked', [
+                'email_log_id' => $emailLog->id,
+                'tracking_id' => $trackingId,
+                'recipient' => $emailLog->recipient_email,
+            ]);
+
+            return [
+                'success' => true,
+                'email_log_id' => $emailLog->id,
+                'time_to_open' => $emailLog->getTimeToOpen(),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Email open tracking error', [
+                'tracking_id' => $trackingId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
         }
-
-        $analytics->recordOpen($metadata);
-        $this->clearAnalyticsCache();
-
-        return true;
     }
 
     /**
      * Track email click event
      */
-    public function trackClick(int $emailAnalyticsId, string $url, array $metadata = []): bool
+    public function trackClick(string $trackingId, string $url, array $metadata = []): array
     {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
-        }
+        try {
+            $emailLog = EmailLog::where('tracking_id', $trackingId)->first();
 
-        $analytics->recordClick($url, $metadata);
-        $this->clearAnalyticsCache();
+            if (! $emailLog) {
+                Log::warning('Email click tracking failed - invalid tracking ID', [
+                    'tracking_id' => $trackingId,
+                    'url' => $url,
+                ]);
 
-        return true;
-    }
-
-    /**
-     * Track email conversion event
-     */
-    public function trackConversion(int $emailAnalyticsId, string $type, float $value = 0.00, array $metadata = []): bool
-    {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
-        }
-
-        $analytics->recordConversion($type, $value, $metadata);
-        $this->clearAnalyticsCache();
-
-        return true;
-    }
-
-    /**
-     * Track email bounce event
-     */
-    public function trackBounce(int $emailAnalyticsId, string $reason): bool
-    {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
-        }
-
-        $analytics->recordBounce($reason);
-        $this->clearAnalyticsCache();
-
-        return true;
-    }
-
-    /**
-     * Track email complaint event
-     */
-    public function trackComplaint(int $emailAnalyticsId, string $reason): bool
-    {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
-        }
-
-        $analytics->recordComplaint($reason);
-        $this->clearAnalyticsCache();
-
-        return true;
-    }
-
-    /**
-     * Track email unsubscribe event
-     */
-    public function trackUnsubscribe(int $emailAnalyticsId): bool
-    {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
-        }
-
-        $analytics->recordUnsubscribe();
-        $this->clearAnalyticsCache();
-
-        return true;
-    }
-
-    /**
-     * Get email performance metrics
-     */
-    public function getEmailPerformanceMetrics(array $filters = []): array
-    {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        $cacheKey = self::CACHE_PREFIX . 'performance_' . $tenantId . '_' . md5(serialize($filters));
-
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
-            $query = EmailAnalytics::query();
-
-            // Apply date filters
-            if (isset($filters['start_date'])) {
-                $query->where('send_date', '>=', $filters['start_date']);
-            }
-            if (isset($filters['end_date'])) {
-                $query->where('send_date', '<=', $filters['end_date']);
-            }
-
-            // Apply campaign filter
-            if (isset($filters['campaign_id'])) {
-                $query->where('email_campaign_id', $filters['campaign_id']);
-            }
-
-            // Apply template filter
-            if (isset($filters['template_id'])) {
-                $query->where('email_template_id', $filters['template_id']);
-            }
-
-            $totalSent = (clone $query)->count();
-            $totalDelivered = (clone $query)->whereNotNull('delivered_at')->count();
-            $totalOpened = (clone $query)->whereNotNull('opened_at')->count();
-            $totalClicked = (clone $query)->whereNotNull('clicked_at')->count();
-            $totalConverted = (clone $query)->whereNotNull('converted_at')->count();
-            $totalBounced = (clone $query)->whereNotNull('bounced_at')->count();
-            $totalComplaints = (clone $query)->whereNotNull('complained_at')->count();
-            $totalUnsubscribes = (clone $query)->whereNotNull('unsubscribed_at')->count();
-
-            return [
-                'total_sent' => $totalSent,
-                'total_delivered' => $totalDelivered,
-                'total_opened' => $totalOpened,
-                'total_clicked' => $totalClicked,
-                'total_converted' => $totalConverted,
-                'total_bounced' => $totalBounced,
-                'total_complaints' => $totalComplaints,
-                'total_unsubscribes' => $totalUnsubscribes,
-                'delivery_rate' => $totalSent > 0 ? round(($totalDelivered / $totalSent) * 100, 2) : 0,
-                'open_rate' => $totalDelivered > 0 ? round(($totalOpened / $totalDelivered) * 100, 2) : 0,
-                'click_rate' => $totalOpened > 0 ? round(($totalClicked / $totalOpened) * 100, 2) : 0,
-                'conversion_rate' => $totalClicked > 0 ? round(($totalConverted / $totalClicked) * 100, 2) : 0,
-                'bounce_rate' => $totalSent > 0 ? round(($totalBounced / $totalSent) * 100, 2) : 0,
-                'complaint_rate' => $totalSent > 0 ? round(($totalComplaints / $totalSent) * 100, 2) : 0,
-                'unsubscribe_rate' => $totalSent > 0 ? round(($totalUnsubscribes / $totalSent) * 100, 2) : 0,
-            ];
-        });
-    }
-
-    /**
-     * Get funnel analytics from email open to final conversion
-     */
-    public function getFunnelAnalytics(array $filters = []): array
-    {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        $cacheKey = self::CACHE_PREFIX . 'funnel_' . $tenantId . '_' . md5(serialize($filters));
-
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
-            $query = EmailAnalytics::query();
-
-            // Apply filters
-            if (isset($filters['start_date'])) {
-                $query->where('send_date', '>=', $filters['start_date']);
-            }
-            if (isset($filters['end_date'])) {
-                $query->where('send_date', '<=', $filters['end_date']);
-            }
-            if (isset($filters['campaign_id'])) {
-                $query->where('email_campaign_id', $filters['campaign_id']);
-            }
-
-            $funnel = [
-                'sent' => (clone $query)->count(),
-                'delivered' => (clone $query)->whereNotNull('delivered_at')->count(),
-                'opened' => (clone $query)->whereNotNull('opened_at')->count(),
-                'clicked' => (clone $query)->whereNotNull('clicked_at')->count(),
-                'converted' => (clone $query)->whereNotNull('converted_at')->count(),
-            ];
-
-            // Calculate drop-off rates
-            $funnel['delivered_rate'] = $funnel['sent'] > 0 ? round(($funnel['delivered'] / $funnel['sent']) * 100, 2) : 0;
-            $funnel['opened_rate'] = $funnel['delivered'] > 0 ? round(($funnel['opened'] / $funnel['delivered']) * 100, 2) : 0;
-            $funnel['clicked_rate'] = $funnel['opened'] > 0 ? round(($funnel['clicked'] / $funnel['opened']) * 100, 2) : 0;
-            $funnel['converted_rate'] = $funnel['clicked'] > 0 ? round(($funnel['converted'] / $funnel['clicked']) * 100, 2) : 0;
-
-            // Calculate average time between stages
-            $funnel['avg_time_to_open'] = $this->calculateAverageTimeToStage($query, 'opened_at', 'delivered_at');
-            $funnel['avg_time_to_click'] = $this->calculateAverageTimeToStage($query, 'clicked_at', 'opened_at');
-            $funnel['avg_time_to_convert'] = $this->calculateAverageTimeToStage($query, 'converted_at', 'clicked_at');
-
-            return $funnel;
-        });
-    }
-
-    /**
-     * Generate engagement reports and trend analysis
-     */
-    public function generateEngagementReport(array $filters = []): array
-    {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        $cacheKey = self::CACHE_PREFIX . 'engagement_' . $tenantId . '_' . md5(serialize($filters));
-
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
-            $query = EmailAnalytics::query();
-
-            // Apply filters
-            if (isset($filters['start_date'])) {
-                $query->where('send_date', '>=', $filters['start_date']);
-            }
-            if (isset($filters['end_date'])) {
-                $query->where('send_date', '<=', $filters['end_date']);
-            }
-
-            // Daily engagement trends
-            $dailyTrends = $query->select(
-                DB::raw('DATE(send_date) as date'),
-                DB::raw('COUNT(*) as sent'),
-                DB::raw('COUNT(CASE WHEN opened_at IS NOT NULL THEN 1 END) as opened'),
-                DB::raw('COUNT(CASE WHEN clicked_at IS NOT NULL THEN 1 END) as clicked'),
-                DB::raw('COUNT(CASE WHEN converted_at IS NOT NULL THEN 1 END) as converted')
-            )
-            ->groupBy(DB::raw('DATE(send_date)'))
-            ->orderBy('date')
-            ->get();
-
-            // Device breakdown
-            $deviceBreakdown = $query->whereNotNull('device_type')
-                ->select('device_type', DB::raw('COUNT(*) as count'))
-                ->groupBy('device_type')
-                ->get();
-
-            // Browser breakdown
-            $browserBreakdown = $query->whereNotNull('browser')
-                ->select('browser', DB::raw('COUNT(*) as count'))
-                ->groupBy('browser')
-                ->get();
-
-            // Geographic distribution
-            $geographicData = $query->whereNotNull('location')
-                ->select('location', DB::raw('COUNT(*) as count'))
-                ->groupBy('location')
-                ->orderByDesc('count')
-                ->limit(20)
-                ->get();
-
-            return [
-                'daily_trends' => $dailyTrends,
-                'device_breakdown' => $deviceBreakdown,
-                'browser_breakdown' => $browserBreakdown,
-                'geographic_distribution' => $geographicData,
-                'engagement_score' => $this->calculateOverallEngagementScore($query),
-                'generated_at' => now(),
-            ];
-        });
-    }
-
-    /**
-     * Get A/B testing results for email variants
-     */
-    public function getABTestResults(array $filters = []): array
-    {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        $cacheKey = self::CACHE_PREFIX . 'ab_test_' . $tenantId . '_' . md5(serialize($filters));
-
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
-            $query = EmailAnalytics::whereNotNull('ab_test_variant');
-
-            // Apply filters
-            if (isset($filters['start_date'])) {
-                $query->where('send_date', '>=', $filters['start_date']);
-            }
-            if (isset($filters['end_date'])) {
-                $query->where('send_date', '<=', $filters['end_date']);
-            }
-            if (isset($filters['campaign_id'])) {
-                $query->where('email_campaign_id', $filters['campaign_id']);
-            }
-
-            $variants = $query->select(
-                'ab_test_variant',
-                DB::raw('COUNT(*) as sent'),
-                DB::raw('COUNT(CASE WHEN opened_at IS NOT NULL THEN 1 END) as opened'),
-                DB::raw('COUNT(CASE WHEN clicked_at IS NOT NULL THEN 1 END) as clicked'),
-                DB::raw('COUNT(CASE WHEN converted_at IS NOT NULL THEN 1 END) as converted'),
-                DB::raw('SUM(conversion_value) as total_value')
-            )
-            ->groupBy('ab_test_variant')
-            ->get();
-
-            $results = [];
-            foreach ($variants as $variant) {
-                $results[$variant->ab_test_variant] = [
-                    'sent' => $variant->sent,
-                    'opened' => $variant->opened,
-                    'clicked' => $variant->clicked,
-                    'converted' => $variant->converted,
-                    'total_value' => $variant->total_value ?? 0,
-                    'open_rate' => $variant->sent > 0 ? round(($variant->opened / $variant->sent) * 100, 2) : 0,
-                    'click_rate' => $variant->opened > 0 ? round(($variant->clicked / $variant->opened) * 100, 2) : 0,
-                    'conversion_rate' => $variant->clicked > 0 ? round(($variant->converted / $variant->clicked) * 100, 2) : 0,
-                    'avg_conversion_value' => $variant->converted > 0 ? round($variant->total_value / $variant->converted, 2) : 0,
+                return [
+                    'success' => false,
+                    'error' => 'Invalid tracking ID',
                 ];
             }
 
+            $clickMetadata = array_merge($metadata, [
+                'url' => $url,
+                'ip_address' => $metadata['ip_address'] ?? request()->ip(),
+                'user_agent' => $metadata['user_agent'] ?? request()->userAgent(),
+                'clicked_at' => now()->toIso8601String(),
+            ]);
+
+            // Track first click
+            if (! $emailLog->isClicked()) {
+                $emailLog->recordClick($clickMetadata);
+            }
+
+            // Store all clicks in metadata
+            $clicks = $emailLog->metadata['clicks'] ?? [];
+            $clicks[] = $clickMetadata;
+
+            $emailLog->update([
+                'metadata' => array_merge($emailLog->metadata ?? [], ['clicks' => $clicks]),
+            ]);
+
+            $this->clearAnalyticsCache();
+
+            Log::info('Email click tracked', [
+                'email_log_id' => $emailLog->id,
+                'tracking_id' => $trackingId,
+                'url' => $url,
+            ]);
+
             return [
-                'variants' => $results,
-                'winner' => $this->determineABTestWinner($results),
-                'confidence_level' => $this->calculateABTestConfidence($results),
-                'generated_at' => now(),
+                'success' => true,
+                'email_log_id' => $emailLog->id,
+                'redirect_url' => $url,
+                'time_to_click' => $emailLog->getTimeToClick(),
+            ];
+        } catch (\Exception $e) {
+            Log::error('Email click tracking error', [
+                'tracking_id' => $trackingId,
+                'url' => $url,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Generate tracking pixel URL for email opens
+     */
+    public function generateTrackingPixelUrl(string $trackingId): string
+    {
+        return route('email.track.open', ['trackingId' => $trackingId]);
+    }
+
+    /**
+     * Generate tracking URL for link clicks
+     */
+    public function generateTrackingUrl(string $trackingId, string $destinationUrl): string
+    {
+        return route('email.track.click', [
+            'trackingId' => $trackingId,
+            'url' => urlencode($destinationUrl),
+        ]);
+    }
+
+    /**
+     * Get delivery statistics
+     */
+    public function getDeliveryStats(array $filters = []): array
+    {
+        $this->ensureTenantContext();
+
+        $cacheKey = $this->getCacheKey('delivery_stats', $filters);
+
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
+            $query = EmailLog::query();
+
+            // Apply tenant filter
+            $tenantId = $this->getCurrentTenantId();
+            if ($tenantId) {
+                $query->where('tenant_id', $tenantId);
+            }
+
+            // Apply date filters
+            if (isset($filters['start_date'])) {
+                $query->where('created_at', '>=', $filters['start_date']);
+            }
+            if (isset($filters['end_date'])) {
+                $query->where('created_at', '<=', $filters['end_date']);
+            }
+
+            // Apply provider filter
+            if (isset($filters['provider'])) {
+                $query->byProvider($filters['provider']);
+            }
+
+            // Apply template filter
+            if (isset($filters['template'])) {
+                $query->where('template', $filters['template']);
+            }
+
+            $total = $query->count();
+            $sent = (clone $query)->sent()->count();
+            $delivered = (clone $query)->delivered()->count();
+            $bounced = (clone $query)->bounced()->count();
+            $failed = (clone $query)->failed()->count();
+            $queued = (clone $query)->queued()->count();
+
+            return [
+                'total' => $total,
+                'queued' => $queued,
+                'sent' => $sent,
+                'delivered' => $delivered,
+                'bounced' => $bounced,
+                'failed' => $failed,
+                'delivery_rate' => $sent > 0 ? round(($delivered / $sent) * 100, 2) : 0,
+                'bounce_rate' => $sent > 0 ? round(($bounced / $sent) * 100, 2) : 0,
+                'failure_rate' => $total > 0 ? round(($failed / $total) * 100, 2) : 0,
+                'period' => [
+                    'start' => $filters['start_date'] ?? null,
+                    'end' => $filters['end_date'] ?? null,
+                ],
+                'generated_at' => now()->toIso8601String(),
             ];
         });
     }
 
     /**
-     * Handle attribution tracking from email clicks to landing page conversions
+     * Get engagement metrics (opens, clicks)
      */
-    public function trackAttribution(int $emailAnalyticsId, string $conversionType, array $metadata = []): bool
+    public function getEngagementMetrics(array $filters = []): array
     {
-        $analytics = EmailAnalytics::find($emailAnalyticsId);
-        if (!$analytics) {
-            return false;
-        }
+        $this->ensureTenantContext();
 
-        // Check if conversion already exists
-        if ($analytics->isConverted()) {
-            return false;
-        }
+        $cacheKey = $this->getCacheKey('engagement_metrics', $filters);
 
-        $analytics->recordConversion($conversionType, $metadata['value'] ?? 0.00, $metadata);
-        $this->clearAnalyticsCache();
+        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
+            $query = EmailLog::query();
 
-        return true;
+            // Apply tenant filter
+            $tenantId = $this->getCurrentTenantId();
+            if ($tenantId) {
+                $query->where('tenant_id', $tenantId);
+            }
+
+            // Apply date filters
+            if (isset($filters['start_date'])) {
+                $query->where('created_at', '>=', $filters['start_date']);
+            }
+            if (isset($filters['end_date'])) {
+                $query->where('created_at', '<=', $filters['end_date']);
+            }
+
+            // Apply provider filter
+            if (isset($filters['provider'])) {
+                $query->byProvider($filters['provider']);
+            }
+
+            // Apply template filter
+            if (isset($filters['template'])) {
+                $query->where('template', $filters['template']);
+            }
+
+            $delivered = (clone $query)->delivered()->count();
+            $opened = (clone $query)->opened()->count();
+            $clicked = (clone $query)->clicked()->count();
+            $uniqueOpens = (clone $query)->opened()->distinct('recipient_email')->count('recipient_email');
+            $uniqueClicks = (clone $query)->clicked()->distinct('recipient_email')->count('recipient_email');
+
+            // Calculate rates
+            $openRate = $delivered > 0 ? round(($opened / $delivered) * 100, 2) : 0;
+            $clickRate = $delivered > 0 ? round(($clicked / $delivered) * 100, 2) : 0;
+            $ctor = $opened > 0 ? round(($clicked / $opened) * 100, 2) : 0; // Click-to-open rate
+
+            // Get trends by day
+            $trends = $this->getEngagementTrends($query, $filters);
+
+            // Get top performing templates
+            $topTemplates = $this->getTopTemplates($filters);
+
+            return [
+                'summary' => [
+                    'delivered' => $delivered,
+                    'opened' => $opened,
+                    'clicked' => $clicked,
+                    'unique_opens' => $uniqueOpens,
+                    'unique_clicks' => $uniqueClicks,
+                    'open_rate' => $openRate,
+                    'click_rate' => $clickRate,
+                    'click_to_open_rate' => $ctor,
+                ],
+                'trends' => $trends,
+                'top_templates' => $topTemplates,
+                'period' => [
+                    'start' => $filters['start_date'] ?? null,
+                    'end' => $filters['end_date'] ?? null,
+                ],
+                'generated_at' => now()->toIso8601String(),
+            ];
+        });
     }
 
     /**
-     * Get real-time analytics updates
+     * Get comprehensive analytics dashboard data
+     */
+    public function getDashboardData(int $days = 30): array
+    {
+        $this->ensureTenantContext();
+
+        $endDate = now();
+        $startDate = now()->subDays($days);
+
+        $filters = [
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ];
+
+        return [
+            'delivery_stats' => $this->getDeliveryStats($filters),
+            'engagement_metrics' => $this->getEngagementMetrics($filters),
+            'provider_breakdown' => $this->getProviderBreakdown($filters),
+            'hourly_distribution' => $this->getHourlyDistribution($filters),
+            'top_performing_emails' => $this->getTopPerformingEmails($filters, 10),
+            'comparison_to_previous_period' => $this->getPeriodComparison($days),
+        ];
+    }
+
+    /**
+     * Get real-time analytics
      */
     public function getRealTimeAnalytics(int $minutes = 5): array
     {
+        $this->ensureTenantContext();
+
         $since = Carbon::now()->subMinutes($minutes);
 
-        $recentActivity = EmailAnalytics::query()
-            ->where('updated_at', '>=', $since)
+        $query = EmailLog::query();
+
+        $tenantId = $this->getCurrentTenantId();
+        if ($tenantId) {
+            $query->where('tenant_id', $tenantId);
+        }
+
+        $recentActivity = $query->where('updated_at', '>=', $since)
             ->orderBy('updated_at', 'desc')
             ->limit(50)
             ->get();
 
-        $stats = [
-            'opens_last_' . $minutes . '_minutes' => $recentActivity->whereNotNull('opened_at')->where('opened_at', '>=', $since)->count(),
-            'clicks_last_' . $minutes . '_minutes' => $recentActivity->whereNotNull('clicked_at')->where('clicked_at', '>=', $since)->count(),
-            'conversions_last_' . $minutes . '_minutes' => $recentActivity->whereNotNull('converted_at')->where('converted_at', '>=', $since)->count(),
-            'bounces_last_' . $minutes . '_minutes' => $recentActivity->whereNotNull('bounced_at')->where('bounced_at', '>=', $since)->count(),
-            'complaints_last_' . $minutes . '_minutes' => $recentActivity->whereNotNull('complained_at')->where('complained_at', '>=', $since)->count(),
-        ];
-
         return [
-            'stats' => $stats,
-            'recent_activity' => $recentActivity->map(function ($activity) {
+            'period_minutes' => $minutes,
+            'stats' => [
+                'sent' => (clone $query)->where('sent_at', '>=', $since)->count(),
+                'delivered' => (clone $query)->where('delivered_at', '>=', $since)->count(),
+                'opened' => (clone $query)->where('opened_at', '>=', $since)->count(),
+                'clicked' => (clone $query)->where('clicked_at', '>=', $since)->count(),
+                'bounced' => (clone $query)->where('status', EmailLog::STATUS_BOUNCED)
+                    ->where('updated_at', '>=', $since)
+                    ->count(),
+            ],
+            'recent_activity' => $recentActivity->map(function ($log) {
                 return [
-                    'id' => $activity->id,
-                    'recipient_email' => $activity->recipient_email,
-                    'status' => $activity->delivery_status,
-                    'last_action' => $activity->updated_at,
-                    'subject_line' => $activity->subject_line,
+                    'id' => $log->id,
+                    'recipient' => $log->recipient_email,
+                    'subject' => $log->subject,
+                    'status' => $log->status,
+                    'template' => $log->template,
+                    'updated_at' => $log->updated_at->toIso8601String(),
                 ];
             }),
-            'timestamp' => now(),
+            'timestamp' => now()->toIso8601String(),
         ];
     }
 
     /**
-     * Generate automated reports
+     * Generate tracking pixel image data
      */
-    public function generateAutomatedReport(string $period = 'daily', array $filters = []): array
+    public function getTrackingPixelData(): string
     {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        $cacheKey = self::CACHE_PREFIX . 'report_' . $tenantId . '_' . $period . '_' . md5(serialize($filters));
+        // 1x1 transparent GIF
+        return base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+    }
 
-        return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($period, $filters) {
-            $dateRange = $this->getDateRangeForPeriod($period);
+    /**
+     * Get engagement trends by day
+     */
+    protected function getEngagementTrends($baseQuery, array $filters): array
+    {
+        $days = isset($filters['start_date']) && isset($filters['end_date'])
+            ? Carbon::parse($filters['start_date'])->diffInDays(Carbon::parse($filters['end_date']))
+            : 30;
 
-            $filters = array_merge($filters, [
-                'start_date' => $dateRange['start'],
-                'end_date' => $dateRange['end'],
-            ]);
+        $days = min($days, 90); // Max 90 days
+
+        $trends = [];
+        $currentDate = now()->subDays($days);
+
+        for ($i = 0; $i <= $days; $i++) {
+            $date = $currentDate->copy()->addDays($i);
+            $dateString = $date->format('Y-m-d');
+
+            $dayQuery = (clone $baseQuery)->whereDate('created_at', $dateString);
+
+            $trends[] = [
+                'date' => $dateString,
+                'sent' => (clone $dayQuery)->sent()->count(),
+                'delivered' => (clone $dayQuery)->delivered()->count(),
+                'opened' => (clone $dayQuery)->opened()->count(),
+                'clicked' => (clone $dayQuery)->clicked()->count(),
+            ];
+        }
+
+        return $trends;
+    }
+
+    /**
+     * Get top performing templates
+     */
+    protected function getTopTemplates(array $filters, int $limit = 5): array
+    {
+        $query = EmailLog::query();
+
+        $tenantId = $this->getCurrentTenantId();
+        if ($tenantId) {
+            $query->where('tenant_id', $tenantId);
+        }
+
+        if (isset($filters['start_date'])) {
+            $query->where('created_at', '>=', $filters['start_date']);
+        }
+        if (isset($filters['end_date'])) {
+            $query->where('created_at', '<=', $filters['end_date']);
+        }
+
+        $templates = $query->whereNotNull('template')
+            ->select(
+                'template',
+                DB::raw('COUNT(*) as total_sent'),
+                DB::raw('COUNT(CASE WHEN opened_at IS NOT NULL THEN 1 END) as total_opened'),
+                DB::raw('COUNT(CASE WHEN clicked_at IS NOT NULL THEN 1 END) as total_clicked')
+            )
+            ->groupBy('template')
+            ->orderByDesc('total_sent')
+            ->limit($limit)
+            ->get();
+
+        return $templates->map(function ($template) {
+            $openRate = $template->total_sent > 0
+                ? round(($template->total_opened / $template->total_sent) * 100, 2)
+                : 0;
+            $clickRate = $template->total_sent > 0
+                ? round(($template->total_clicked / $template->total_sent) * 100, 2)
+                : 0;
 
             return [
-                'period' => $period,
-                'date_range' => $dateRange,
-                'performance_metrics' => $this->getEmailPerformanceMetrics($filters),
-                'funnel_analytics' => $this->getFunnelAnalytics($filters),
-                'engagement_report' => $this->generateEngagementReport($filters),
-                'ab_test_results' => $this->getABTestResults($filters),
-                'recommendations' => $this->generateRecommendations($filters),
-                'generated_at' => now(),
+                'template' => $template->template,
+                'sent' => $template->total_sent,
+                'opened' => $template->total_opened,
+                'clicked' => $template->total_clicked,
+                'open_rate' => $openRate,
+                'click_rate' => $clickRate,
             ];
-        });
+        })->toArray();
     }
 
     /**
-     * Calculate average time between stages
+     * Get provider breakdown
      */
-    private function calculateAverageTimeToStage($query, string $stageColumn, string $previousStageColumn): ?float
+    protected function getProviderBreakdown(array $filters): array
     {
-        $results = $query->whereNotNull($stageColumn)
-            ->whereNotNull($previousStageColumn)
-            ->selectRaw("AVG(TIMESTAMPDIFF(MINUTE, {$previousStageColumn}, {$stageColumn})) as avg_minutes")
-            ->first();
+        $query = EmailLog::query();
 
-        return $results ? round($results->avg_minutes, 2) : null;
-    }
-
-    /**
-     * Calculate overall engagement score
-     */
-    private function calculateOverallEngagementScore($query): float
-    {
-        $stats = $query->selectRaw('
-            COUNT(*) as total,
-            COUNT(CASE WHEN opened_at IS NOT NULL THEN 1 END) as opened,
-            COUNT(CASE WHEN clicked_at IS NOT NULL THEN 1 END) as clicked,
-            COUNT(CASE WHEN converted_at IS NOT NULL THEN 1 END) as converted
-        ')->first();
-
-        if ($stats->total == 0) {
-            return 0;
+        $tenantId = $this->getCurrentTenantId();
+        if ($tenantId) {
+            $query->where('tenant_id', $tenantId);
         }
 
-        $openRate = ($stats->opened / $stats->total) * 100;
-        $clickRate = $stats->opened > 0 ? ($stats->clicked / $stats->opened) * 100 : 0;
-        $conversionRate = $stats->clicked > 0 ? ($stats->converted / $stats->clicked) * 100 : 0;
-
-        // Weighted score: 40% open rate, 40% click rate, 20% conversion rate
-        return round(($openRate * 0.4) + ($clickRate * 0.4) + ($conversionRate * 0.2), 2);
-    }
-
-    /**
-     * Determine A/B test winner
-     */
-    private function determineABTestWinner(array $variants): ?string
-    {
-        if (count($variants) < 2) {
-            return null;
+        if (isset($filters['start_date'])) {
+            $query->where('created_at', '>=', $filters['start_date']);
+        }
+        if (isset($filters['end_date'])) {
+            $query->where('created_at', '<=', $filters['end_date']);
         }
 
-        $winner = null;
-        $bestScore = 0;
+        $providers = $query->select(
+            'provider',
+            DB::raw('COUNT(*) as total'),
+            DB::raw('COUNT(CASE WHEN status = \'delivered\' THEN 1 END) as delivered'),
+            DB::raw('COUNT(CASE WHEN status = \'bounced\' THEN 1 END) as bounced'),
+            DB::raw('COUNT(CASE WHEN status = \'failed\' THEN 1 END) as failed')
+        )
+            ->groupBy('provider')
+            ->get();
 
-        foreach ($variants as $variant => $data) {
-            $score = ($data['open_rate'] * 0.3) + ($data['click_rate'] * 0.4) + ($data['conversion_rate'] * 0.3);
-            if ($score > $bestScore) {
-                $bestScore = $score;
-                $winner = $variant;
-            }
+        return $providers->map(function ($provider) {
+            return [
+                'provider' => $provider->provider,
+                'total' => $provider->total,
+                'delivered' => $provider->delivered,
+                'bounced' => $provider->bounced,
+                'failed' => $provider->failed,
+                'success_rate' => $provider->total > 0
+                    ? round(($provider->delivered / $provider->total) * 100, 2)
+                    : 0,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Get hourly distribution
+     */
+    protected function getHourlyDistribution(array $filters): array
+    {
+        $query = EmailLog::query();
+
+        $tenantId = $this->getCurrentTenantId();
+        if ($tenantId) {
+            $query->where('tenant_id', $tenantId);
         }
 
-        return $winner;
-    }
-
-    /**
-     * Calculate A/B test confidence level
-     */
-    private function calculateABTestConfidence(array $variants): float
-    {
-        // Simplified confidence calculation
-        // In production, use statistical significance testing
-        if (count($variants) < 2) {
-            return 0;
+        if (isset($filters['start_date'])) {
+            $query->where('created_at', '>=', $filters['start_date']);
+        }
+        if (isset($filters['end_date'])) {
+            $query->where('created_at', '<=', $filters['end_date']);
         }
 
-        $totalSent = array_sum(array_column($variants, 'sent'));
-        return $totalSent > 1000 ? 95.0 : ($totalSent > 100 ? 80.0 : 50.0);
-    }
+        $hourly = $query->select(
+            DB::raw('EXTRACT(HOUR FROM created_at) as hour'),
+            DB::raw('COUNT(*) as total'),
+            DB::raw('COUNT(CASE WHEN opened_at IS NOT NULL THEN 1 END) as opened')
+        )
+            ->groupBy(DB::raw('EXTRACT(HOUR FROM created_at)'))
+            ->orderBy('hour')
+            ->get();
 
-    /**
-     * Get date range for reporting period
-     */
-    private function getDateRangeForPeriod(string $period): array
-    {
-        $end = Carbon::now();
-
-        return match ($period) {
-            'hourly' => [
-                'start' => $end->copy()->subHour(),
-                'end' => $end,
-            ],
-            'daily' => [
-                'start' => $end->copy()->subDay(),
-                'end' => $end,
-            ],
-            'weekly' => [
-                'start' => $end->copy()->subWeek(),
-                'end' => $end,
-            ],
-            'monthly' => [
-                'start' => $end->copy()->subMonth(),
-                'end' => $end,
-            ],
-            default => [
-                'start' => $end->copy()->subDay(),
-                'end' => $end,
-            ],
-        };
-    }
-
-    /**
-     * Generate recommendations based on analytics data
-     */
-    private function generateRecommendations(array $filters): array
-    {
-        $metrics = $this->getEmailPerformanceMetrics($filters);
-        $recommendations = [];
-
-        if ($metrics['open_rate'] < 20) {
-            $recommendations[] = [
-                'type' => 'warning',
-                'message' => 'Open rate is below average. Consider improving subject lines and sender reputation.',
-                'priority' => 'high',
+        // Fill in missing hours
+        $distribution = [];
+        for ($i = 0; $i < 24; $i++) {
+            $hourData = $hourly->firstWhere('hour', $i);
+            $distribution[] = [
+                'hour' => $i,
+                'total' => $hourData ? $hourData->total : 0,
+                'opened' => $hourData ? $hourData->opened : 0,
             ];
         }
 
-        if ($metrics['click_rate'] < 2) {
-            $recommendations[] = [
-                'type' => 'warning',
-                'message' => 'Click rate is low. Review call-to-action buttons and link relevance.',
-                'priority' => 'high',
-            ];
-        }
-
-        if ($metrics['bounce_rate'] > 5) {
-            $recommendations[] = [
-                'type' => 'critical',
-                'message' => 'Bounce rate is high. Clean your email list and verify addresses.',
-                'priority' => 'critical',
-            ];
-        }
-
-        if ($metrics['complaint_rate'] > 0.1) {
-            $recommendations[] = [
-                'type' => 'critical',
-                'message' => 'Complaint rate is elevated. Review content and sending practices.',
-                'priority' => 'critical',
-            ];
-        }
-
-        return $recommendations;
+        return $distribution;
     }
 
     /**
-     * Clear analytics cache for current tenant
+     * Get top performing emails
      */
-    private function clearAnalyticsCache(): void
+    protected function getTopPerformingEmails(array $filters, int $limit = 10): array
     {
-        $tenantId = $this->tenantContext->getCurrentTenantId();
-        $cacheKeys = [
-            self::CACHE_PREFIX . 'performance_' . $tenantId,
-            self::CACHE_PREFIX . 'funnel_' . $tenantId,
-            self::CACHE_PREFIX . 'engagement_' . $tenantId,
-            self::CACHE_PREFIX . 'ab_test_' . $tenantId,
-            self::CACHE_PREFIX . 'report_' . $tenantId,
+        $query = EmailLog::query()
+            ->whereNotNull('opened_at')
+            ->with(['user:id,name,email']);
+
+        $tenantId = $this->getCurrentTenantId();
+        if ($tenantId) {
+            $query->where('tenant_id', $tenantId);
+        }
+
+        if (isset($filters['start_date'])) {
+            $query->where('created_at', '>=', $filters['start_date']);
+        }
+        if (isset($filters['end_date'])) {
+            $query->where('created_at', '<=', $filters['end_date']);
+        }
+
+        return $query->orderByDesc('opened_at')
+            ->limit($limit)
+            ->get()
+            ->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'subject' => $log->subject,
+                    'recipient' => $log->recipient_email,
+                    'template' => $log->template,
+                    'sent_at' => $log->sent_at?->toIso8601String(),
+                    'opened_at' => $log->opened_at?->toIso8601String(),
+                    'clicked_at' => $log->clicked_at?->toIso8601String(),
+                    'time_to_open' => $log->getTimeToOpen(),
+                ];
+            })
+            ->toArray();
+    }
+
+    /**
+     * Get comparison to previous period
+     */
+    protected function getPeriodComparison(int $days): array
+    {
+        $currentEnd = now();
+        $currentStart = now()->subDays($days);
+        $previousEnd = $currentStart->copy()->subSecond();
+        $previousStart = $previousEnd->copy()->subDays($days);
+
+        $currentStats = $this->getDeliveryStats([
+            'start_date' => $currentStart,
+            'end_date' => $currentEnd,
+        ]);
+
+        $previousStats = $this->getDeliveryStats([
+            'start_date' => $previousStart,
+            'end_date' => $previousEnd,
+        ]);
+
+        return [
+            'current_period' => [
+                'sent' => $currentStats['sent'],
+                'delivery_rate' => $currentStats['delivery_rate'],
+            ],
+            'previous_period' => [
+                'sent' => $previousStats['sent'],
+                'delivery_rate' => $previousStats['delivery_rate'],
+            ],
+            'change' => [
+                'sent' => $this->calculateChange($currentStats['sent'], $previousStats['sent']),
+                'delivery_rate' => $this->calculateChange($currentStats['delivery_rate'], $previousStats['delivery_rate']),
+            ],
+        ];
+    }
+
+    /**
+     * Calculate percentage change
+     */
+    protected function calculateChange(float $current, float $previous): array
+    {
+        if ($previous == 0) {
+            return [
+                'value' => $current > 0 ? 100 : 0,
+                'direction' => $current > 0 ? 'up' : 'neutral',
+            ];
+        }
+
+        $change = (($current - $previous) / $previous) * 100;
+
+        return [
+            'value' => round(abs($change), 2),
+            'direction' => $change > 0 ? 'up' : ($change < 0 ? 'down' : 'neutral'),
+        ];
+    }
+
+    /**
+     * Get cache key with tenant context
+     */
+    protected function getCacheKey(string $type, array $filters = []): string
+    {
+        $tenantId = $this->getCurrentTenantId() ?? 'global';
+        $filterHash = md5(serialize($filters));
+
+        return self::CACHE_PREFIX . "{$type}_{$tenantId}_{$filterHash}";
+    }
+
+    /**
+     * Clear analytics cache
+     */
+    protected function clearAnalyticsCache(): void
+    {
+        $tenantId = $this->getCurrentTenantId();
+
+        if (! $tenantId) {
+            return;
+        }
+
+        // Clear common cache keys
+        $patterns = [
+            self::CACHE_PREFIX . "delivery_stats_{$tenantId}_*",
+            self::CACHE_PREFIX . "engagement_metrics_{$tenantId}_*",
         ];
 
-        foreach ($cacheKeys as $key) {
-            Cache::forget($key);
+        foreach ($patterns as $pattern) {
+            // Note: This is a simplified approach. In production, you might want to
+            // store cache keys in a set for efficient clearing
+            Cache::flush();
         }
     }
 }

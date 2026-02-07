@@ -1,530 +1,525 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
-use App\Models\Course;
-use App\Models\Graduate;
-use App\Models\Job;
-use App\Models\SavedSearch;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Tenant;
+use Elastic\Elasticsearch\Client;
+use Elastic\Elasticsearch\ClientBuilder;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
-class SearchService extends BaseService
+class SearchService
 {
-    public function searchJobs(array $criteria, int $perPage = 20)
+    private ?Client $client = null;
+
+    public function __construct()
     {
-        $query = Job::with(['employer', 'course'])
-            ->active()
-            ->notExpired();
+        $this->initializeClient();
+    }
 
-        $this->applyJobFilters($query, $criteria);
+    /**
+     * Initialize Elasticsearch client.
+     */
+    private function initializeClient(): void
+    {
+        try {
+            $hosts = config('elasticsearch.hosts', ['http://localhost:9200']);
+            
+            $this->client = ClientBuilder::create()
+                ->setHosts($hosts)
+                ->setRetries(config('elasticsearch.retries', 3))
+                ->build();
+        } catch (\Exception $e) {
+            Log::error('Failed to initialize Elasticsearch client', [
+                'error' => $e->getMessage(),
+            ]);
+            $this->client = null;
+        }
+    }
 
-        $results = $query->paginate($perPage);
+    /**
+     * Check if Elasticsearch is available.
+     */
+    public function isAvailable(): bool
+    {
+        if (!$this->client) {
+            return false;
+        }
 
-        // Calculate match scores for each job if user is a graduate
-        if (auth()->check() && auth()->user()->hasRole('graduate')) {
-            $graduate = auth()->user()->graduate;
-            if ($graduate) {
-                $results->getCollection()->transform(function ($job) use ($graduate) {
-                    $matchData = $job->calculateMatchScore($graduate);
-                    $job->match_score = $matchData['score'];
-                    $job->match_factors = $matchData['factors'];
+        try {
+            $response = $this->client->ping();
+            return $response->asBool();
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
 
-                    return $job;
-                });
+    /**
+     * Create index for a tenant.
+     */
+    public function createIndex(string $tenantId, string $type = 'alumni'): bool
+    {
+        if (!$this->client) {
+            return false;
+        }
 
-                // Sort by match score
-                $sorted = $results->getCollection()->sortByDesc('match_score');
-                $results->setCollection($sorted);
+        $indexName = $this->getIndexName($tenantId, $type);
+
+        try {
+            // Check if index exists
+            $exists = $this->client->indices()->exists(['index' => $indexName])->asBool();
+            
+            if ($exists) {
+                return true;
             }
-        }
 
-        return $results;
-    }
+            // Create index with mappings
+            $mappings = $this->getMappings($type);
+            
+            $this->client->indices()->create([
+                'index' => $indexName,
+                'body' => [
+                    'settings' => [
+                        'number_of_shards' => 1,
+                        'number_of_replicas' => 0,
+                        'analysis' => [
+                            'analyzer' => [
+                                'custom_analyzer' => [
+                                    'type' => 'custom',
+                                    'tokenizer' => 'standard',
+                                    'filter' => ['lowercase', 'asciifolding'],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'mappings' => $mappings,
+                ],
+            ]);
 
-    public function searchGraduates(array $criteria, int $perPage = 20)
-    {
-        $query = Graduate::with(['course', 'applications'])
-            ->where('job_search_active', true)
-            ->where('allow_employer_contact', true);
-
-        $this->applyGraduateFilters($query, $criteria);
-
-        $results = $query->paginate($perPage);
-
-        // Calculate match scores if searching for a specific job
-        if (! empty($criteria['job_id'])) {
-            $job = Job::find($criteria['job_id']);
-            if ($job) {
-                $results->getCollection()->transform(function ($graduate) use ($job) {
-                    $matchData = $job->calculateMatchScore($graduate);
-                    $graduate->match_score = $matchData['score'];
-                    $graduate->match_factors = $matchData['factors'];
-
-                    return $graduate;
-                });
-
-                // Sort by match score
-                $sorted = $results->getCollection()->sortByDesc('match_score');
-                $results->setCollection($sorted);
-            }
-        }
-
-        return $results;
-    }
-
-    public function searchCourses(array $criteria, int $perPage = 20)
-    {
-        $query = Course::with(['institution', 'graduates', 'jobs'])
-            ->active();
-
-        $this->applyCourseFilters($query, $criteria);
-
-        return $query->paginate($perPage);
-    }
-
-    public function getJobRecommendations($graduate, int $limit = 10)
-    {
-        $baseQuery = Job::with(['employer', 'course'])
-            ->active()
-            ->notExpired();
-
-        // Primary match: same course
-        $courseJobs = (clone $baseQuery)
-            ->where('course_id', $graduate->course_id)
-            ->get();
-
-        // Secondary match: skill-based
-        $skillJobs = collect();
-        if (! empty($graduate->skills)) {
-            $skillJobs = (clone $baseQuery)
-                ->where('course_id', '!=', $graduate->course_id)
-                ->where(function ($query) use ($graduate) {
-                    foreach ($graduate->skills as $skill) {
-                        $query->orWhereJsonContains('required_skills', $skill);
-                    }
-                })
-                ->get();
-        }
-
-        // Combine and score all jobs
-        $allJobs = $courseJobs->merge($skillJobs)->unique('id');
-
-        $scoredJobs = $allJobs->map(function ($job) use ($graduate) {
-            $matchData = $job->calculateMatchScore($graduate);
-            $job->match_score = $matchData['score'];
-            $job->match_factors = $matchData['factors'];
-
-            return $job;
-        });
-
-        return $scoredJobs->sortByDesc('match_score')->take($limit);
-    }
-
-    public function getCandidateRecommendations($job, int $limit = 20)
-    {
-        $baseQuery = Graduate::with(['course', 'applications'])
-            ->where('job_search_active', true)
-            ->where('allow_employer_contact', true);
-
-        // Primary match: same course
-        $courseGraduates = (clone $baseQuery)
-            ->where('course_id', $job->course_id)
-            ->get();
-
-        // Secondary match: skill-based
-        $skillGraduates = collect();
-        if (! empty($job->required_skills)) {
-            $skillGraduates = (clone $baseQuery)
-                ->where('course_id', '!=', $job->course_id)
-                ->where(function ($query) use ($job) {
-                    foreach ($job->required_skills as $skill) {
-                        $query->orWhereJsonContains('skills', $skill);
-                    }
-                })
-                ->get();
-        }
-
-        // Combine and score all graduates
-        $allGraduates = $courseGraduates->merge($skillGraduates)->unique('id');
-
-        $scoredGraduates = $allGraduates->map(function ($graduate) use ($job) {
-            $matchData = $job->calculateMatchScore($graduate);
-            $graduate->match_score = $matchData['score'];
-            $graduate->match_factors = $matchData['factors'];
-
-            return $graduate;
-        });
-
-        return $scoredGraduates->sortByDesc('match_score')->take($limit);
-    }
-
-    public function getAdvancedJobMatches($graduate, array $preferences = [])
-    {
-        $query = Job::with(['employer', 'course'])
-            ->active()
-            ->notExpired();
-
-        // Apply graduate preferences
-        if (! empty($preferences['location'])) {
-            $query->where('location', 'like', "%{$preferences['location']}%");
-        }
-
-        if (! empty($preferences['salary_min'])) {
-            $query->where('salary_min', '>=', $preferences['salary_min']);
-        }
-
-        if (! empty($preferences['job_type'])) {
-            $query->where('job_type', $preferences['job_type']);
-        }
-
-        if (! empty($preferences['work_arrangement'])) {
-            $query->where('work_arrangement', $preferences['work_arrangement']);
-        }
-
-        $jobs = $query->get();
-
-        // Calculate compatibility scores
-        $scoredJobs = $jobs->map(function ($job) use ($graduate, $preferences) {
-            $matchData = $job->calculateMatchScore($graduate);
-            $compatibilityScore = $this->calculateCompatibilityScore($job, $graduate, $preferences);
-
-            $job->match_score = $matchData['score'];
-            $job->match_factors = $matchData['factors'];
-            $job->compatibility_score = $compatibilityScore['score'];
-            $job->compatibility_factors = $compatibilityScore['factors'];
-            $job->overall_score = ($matchData['score'] * 0.7) + ($compatibilityScore['score'] * 0.3);
-
-            return $job;
-        });
-
-        return $scoredJobs->sortByDesc('overall_score');
-    }
-
-    public function calculateCompatibilityScore($job, $graduate, $preferences = [])
-    {
-        $score = 0;
-        $factors = [];
-
-        // Location preference (20% weight)
-        if (! empty($preferences['location'])) {
-            if (stripos($job->location, $preferences['location']) !== false) {
-                $score += 20;
-                $factors['location_match'] = true;
-            }
-        }
-
-        // Salary expectation (25% weight)
-        if (! empty($preferences['salary_min']) && $job->salary_min) {
-            if ($job->salary_min >= $preferences['salary_min']) {
-                $score += 25;
-                $factors['salary_match'] = true;
-            } elseif ($job->salary_max && $job->salary_max >= $preferences['salary_min']) {
-                $score += 15;
-                $factors['salary_partial_match'] = true;
-            }
-        }
-
-        // Job type preference (15% weight)
-        if (! empty($preferences['job_type'])) {
-            if ($job->job_type === $preferences['job_type']) {
-                $score += 15;
-                $factors['job_type_match'] = true;
-            }
-        }
-
-        // Work arrangement preference (15% weight)
-        if (! empty($preferences['work_arrangement'])) {
-            if ($job->work_arrangement === $preferences['work_arrangement']) {
-                $score += 15;
-                $factors['work_arrangement_match'] = true;
-            }
-        }
-
-        // Experience level compatibility (25% weight)
-        $experienceScore = $this->calculateExperienceCompatibility($job, $graduate);
-        $score += $experienceScore * 0.25;
-        $factors['experience_compatibility'] = $experienceScore;
-
-        return [
-            'score' => round($score, 2),
-            'factors' => $factors,
-        ];
-    }
-
-    private function calculateExperienceCompatibility($job, $graduate)
-    {
-        // This is a simplified calculation - in a real system you'd have more detailed experience data
-        $graduateExperience = $graduate->employment_status === 'employed' ? 1 : 0;
-        $requiredExperience = $job->min_experience_years ?? 0;
-
-        if ($requiredExperience === 0) {
-            return 100; // Entry level position
-        }
-
-        if ($graduateExperience >= $requiredExperience) {
-            return 100;
-        }
-
-        // Partial match based on how close they are
-        return max(0, 100 - (($requiredExperience - $graduateExperience) * 20));
-    }
-
-    private function applyJobFilters(Builder $query, array $criteria)
-    {
-        if (! empty($criteria['keywords'])) {
-            $query->where(function ($q) use ($criteria) {
-                $q->where('title', 'like', "%{$criteria['keywords']}%")
-                    ->orWhere('description', 'like', "%{$criteria['keywords']}%");
-            });
-        }
-
-        if (! empty($criteria['location'])) {
-            $query->where('location', 'like', "%{$criteria['location']}%");
-        }
-
-        if (! empty($criteria['course_id'])) {
-            $query->where('course_id', $criteria['course_id']);
-        }
-
-        if (! empty($criteria['job_type'])) {
-            $query->where('job_type', $criteria['job_type']);
-        }
-
-        if (! empty($criteria['experience_level'])) {
-            $query->where('experience_level', $criteria['experience_level']);
-        }
-
-        if (! empty($criteria['salary_min'])) {
-            $query->where(function ($q) use ($criteria) {
-                $q->where('salary_min', '>=', $criteria['salary_min'])
-                    ->orWhere('salary_max', '>=', $criteria['salary_min']);
-            });
-        }
-
-        if (! empty($criteria['salary_max'])) {
-            $query->where(function ($q) use ($criteria) {
-                $q->where('salary_max', '<=', $criteria['salary_max'])
-                    ->orWhere('salary_min', '<=', $criteria['salary_max']);
-            });
-        }
-
-        if (! empty($criteria['skills'])) {
-            $query->where(function ($q) use ($criteria) {
-                foreach ($criteria['skills'] as $skill) {
-                    $q->orWhereJsonContains('required_skills', $skill);
-                }
-            });
-        }
-
-        if (! empty($criteria['work_arrangement'])) {
-            $query->where('work_arrangement', $criteria['work_arrangement']);
-        }
-
-        if (! empty($criteria['employer_verified'])) {
-            $query->whereHas('employer', function ($q) {
-                $q->where('verification_status', 'verified');
-            });
-        }
-
-        // Sort options
-        $sortBy = $criteria['sort_by'] ?? 'created_at';
-        $sortOrder = $criteria['sort_order'] ?? 'desc';
-
-        switch ($sortBy) {
-            case 'salary':
-                $query->orderBy('salary_max', $sortOrder);
-                break;
-            case 'deadline':
-                $query->orderBy('application_deadline', $sortOrder);
-                break;
-            case 'applications':
-                $query->orderBy('total_applications', $sortOrder);
-                break;
-            default:
-                $query->orderBy($sortBy, $sortOrder);
+            Log::info("Search index created", ['index' => $indexName]);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to create search index", [
+                'index' => $indexName,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
         }
     }
 
-    private function applyGraduateFilters(Builder $query, array $criteria)
+    /**
+     * Index a document.
+     */
+    public function indexDocument(string $tenantId, string $type, string $id, array $data): bool
     {
-        if (! empty($criteria['keywords'])) {
-            $query->where(function ($q) use ($criteria) {
-                $q->where('name', 'like', "%{$criteria['keywords']}%")
-                    ->orWhere('current_job_title', 'like', "%{$criteria['keywords']}%");
-            });
+        if (!$this->client) {
+            return false;
         }
 
-        if (! empty($criteria['course_id'])) {
-            $query->where('course_id', $criteria['course_id']);
+        $indexName = $this->getIndexName($tenantId, $type);
+
+        try {
+            $this->client->index([
+                'index' => $indexName,
+                'id' => $id,
+                'body' => $data,
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to index document", [
+                'index' => $indexName,
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Bulk index documents.
+     */
+    public function bulkIndex(string $tenantId, string $type, array $documents): array
+    {
+        if (!$this->client) {
+            return ['success' => false, 'error' => 'Elasticsearch not available'];
         }
 
-        if (! empty($criteria['graduation_year'])) {
-            if (is_array($criteria['graduation_year'])) {
-                $query->whereBetween('graduation_year', $criteria['graduation_year']);
+        $indexName = $this->getIndexName($tenantId, $type);
+        
+        $body = [];
+        foreach ($documents as $document) {
+            $body[] = ['index' => ['_index' => $indexName, '_id' => $document['id']]];
+            unset($document['id']);
+            $body[] = $document;
+        }
+
+        try {
+            $response = $this->client->bulk(['body' => $body]);
+            $result = $response->asArray();
+
+            return [
+                'success' => true,
+                'indexed' => $result['items'] ?? [],
+                'errors' => $result['errors'] ?? false,
+                'took' => $result['took'] ?? 0,
+            ];
+        } catch (\Exception $e) {
+            Log::error("Bulk index failed", [
+                'index' => $indexName,
+                'error' => $e->getMessage(),
+            ]);
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Search across an index.
+     */
+    public function search(
+        string $tenantId,
+        string $type,
+        string $query,
+        array $filters = [],
+        int $page = 1,
+        int $perPage = 20
+    ): array {
+        if (!$this->client) {
+            return $this->fallbackSearch($tenantId, $type, $query, $filters, $page, $perPage);
+        }
+
+        $indexName = $this->getIndexName($tenantId, $type);
+
+        try {
+            $searchBody = [
+                'from' => ($page - 1) * $perPage,
+                'size' => $perPage,
+                'query' => [
+                    'bool' => [
+                        'must' => [
+                            [
+                                'multi_match' => [
+                                    'query' => $query,
+                                    'fields' => ['name^3', 'email^2', 'bio', 'skills', 'company', 'title'],
+                                    'type' => 'best_fields',
+                                    'fuzziness' => 'AUTO',
+                                ],
+                            ],
+                        ],
+                        'filter' => $this->buildFilters($filters),
+                    ],
+                ],
+                'highlight' => [
+                    'fields' => [
+                        'name' => new \stdClass(),
+                        'bio' => new \stdClass(),
+                    ],
+                ],
+                'sort' => [
+                    '_score' => 'desc',
+                ],
+            ];
+
+            $response = $this->client->search([
+                'index' => $indexName,
+                'body' => $searchBody,
+            ]);
+
+            $result = $response->asArray();
+
+            return [
+                'data' => $this->formatSearchResults($result),
+                'total' => $result['hits']['total']['value'] ?? 0,
+                'page' => $page,
+                'per_page' => $perPage,
+                'took' => $result['took'] ?? 0,
+                'source' => 'elasticsearch',
+            ];
+        } catch (\Exception $e) {
+            Log::warning("Elasticsearch search failed, using fallback", [
+                'error' => $e->getMessage(),
+            ]);
+            return $this->fallbackSearch($tenantId, $type, $query, $filters, $page, $perPage);
+        }
+    }
+
+    /**
+     * Get search suggestions (autocomplete).
+     */
+    public function suggest(string $tenantId, string $type, string $query, int $limit = 5): array
+    {
+        if (!$this->client) {
+            return [];
+        }
+
+        $indexName = $this->getIndexName($tenantId, $type);
+
+        try {
+            $response = $this->client->search([
+                'index' => $indexName,
+                'body' => [
+                    'size' => 0,
+                    'suggest' => [
+                        'name_suggest' => [
+                            'prefix' => $query,
+                            'completion' => [
+                                'field' => 'name_suggest',
+                                'fuzzy' => ['fuzziness' => 'AUTO'],
+                                'size' => $limit,
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+
+            $result = $response->asArray();
+            $suggestions = $result['suggest']['name_suggest'][0]['options'] ?? [];
+
+            return array_map(fn ($s) => $s['text'], $suggestions);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    /**
+     * Delete a document from the index.
+     */
+    public function deleteDocument(string $tenantId, string $type, string $id): bool
+    {
+        if (!$this->client) {
+            return false;
+        }
+
+        $indexName = $this->getIndexName($tenantId, $type);
+
+        try {
+            $this->client->delete([
+                'index' => $indexName,
+                'id' => $id,
+            ]);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to delete document", [
+                'index' => $indexName,
+                'id' => $id,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Delete an entire index.
+     */
+    public function deleteIndex(string $tenantId, string $type): bool
+    {
+        if (!$this->client) {
+            return false;
+        }
+
+        $indexName = $this->getIndexName($tenantId, $type);
+
+        try {
+            $this->client->indices()->delete(['index' => $indexName]);
+            return true;
+        } catch (\Exception $e) {
+            Log::error("Failed to delete index", [
+                'index' => $indexName,
+                'error' => $e->getMessage(),
+            ]);
+            return false;
+        }
+    }
+
+    /**
+     * Get index statistics.
+     */
+    public function getStats(string $tenantId, string $type): array
+    {
+        if (!$this->client) {
+            return ['error' => 'Elasticsearch not available'];
+        }
+
+        $indexName = $this->getIndexName($tenantId, $type);
+
+        try {
+            $response = $this->client->indices()->stats(['index' => $indexName]);
+            return $response->asArray();
+        } catch (\Exception $e) {
+            return ['error' => $e->getMessage()];
+        }
+    }
+
+    /**
+     * Build filter clauses.
+     */
+    private function buildFilters(array $filters): array
+    {
+        $filterClauses = [];
+
+        foreach ($filters as $field => $value) {
+            if (is_array($value)) {
+                $filterClauses[] = ['terms' => [$field => $value]];
             } else {
-                $query->where('graduation_year', $criteria['graduation_year']);
+                $filterClauses[] = ['term' => [$field => $value]];
             }
         }
 
-        if (! empty($criteria['employment_status'])) {
-            $query->where('employment_status', $criteria['employment_status']);
+        return $filterClauses;
+    }
+
+    /**
+     * Format search results.
+     */
+    private function formatSearchResults(array $result): array
+    {
+        $hits = $result['hits']['hits'] ?? [];
+
+        return array_map(function ($hit) {
+            return [
+                'id' => $hit['_id'],
+                'score' => $hit['_score'],
+                'source' => $hit['_source'],
+                'highlight' => $hit['highlight'] ?? [],
+            ];
+        }, $hits);
+    }
+
+    /**
+     * Fallback search using database.
+     */
+    private function fallbackSearch(
+        string $tenantId,
+        string $type,
+        string $query,
+        array $filters,
+        int $page,
+        int $perPage
+    ): array {
+        // Use database search as fallback
+        $tenant = Tenant::find($tenantId);
+        
+        if (!$tenant) {
+            return ['data' => [], 'total' => 0, 'source' => 'fallback'];
         }
 
-        if (! empty($criteria['skills'])) {
-            $query->where(function ($q) use ($criteria) {
-                foreach ($criteria['skills'] as $skill) {
-                    $q->orWhereJsonContains('skills', $skill);
+        return $tenant->run(function () use ($query, $filters, $page, $perPage) {
+            $qb = \App\Models\User::query()
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%")
+                      ->orWhere('email', 'like', "%{$query}%")
+                      ->orWhereHas('profile', function ($pq) use ($query) {
+                          $pq->where('bio', 'like', "%{$query}%")
+                             ->orWhere('company', 'like', "%{$query}%")
+                             ->orWhere('title', 'like', "%{$query}%");
+                      });
+                });
+
+            // Apply filters
+            foreach ($filters as $field => $value) {
+                if ($field === 'graduation_year') {
+                    $qb->whereHas('education', function ($eq) use ($value) {
+                        $eq->where('graduation_year', $value);
+                    });
                 }
-            });
-        }
-
-        if (! empty($criteria['min_gpa'])) {
-            $query->where('gpa', '>=', $criteria['min_gpa']);
-        }
-
-        if (! empty($criteria['max_gpa'])) {
-            $query->where('gpa', '<=', $criteria['max_gpa']);
-        }
-
-        if (! empty($criteria['location'])) {
-            $query->where('address', 'like', "%{$criteria['location']}%");
-        }
-
-        if (! empty($criteria['profile_completion_min'])) {
-            $query->where('profile_completion_percentage', '>=', $criteria['profile_completion_min']);
-        }
-
-        // Sort options
-        $sortBy = $criteria['sort_by'] ?? 'profile_completion_percentage';
-        $sortOrder = $criteria['sort_order'] ?? 'desc';
-
-        $query->orderBy($sortBy, $sortOrder);
-    }
-
-    private function applyCourseFilters(Builder $query, array $criteria)
-    {
-        if (! empty($criteria['keywords'])) {
-            $query->where(function ($q) use ($criteria) {
-                $q->where('name', 'like', "%{$criteria['keywords']}%")
-                    ->orWhere('description', 'like', "%{$criteria['keywords']}%");
-            });
-        }
-
-        if (! empty($criteria['level'])) {
-            $query->where('level', $criteria['level']);
-        }
-
-        if (! empty($criteria['duration_min'])) {
-            $query->where('duration_months', '>=', $criteria['duration_min']);
-        }
-
-        if (! empty($criteria['duration_max'])) {
-            $query->where('duration_months', '<=', $criteria['duration_max']);
-        }
-
-        if (! empty($criteria['skills'])) {
-            $query->where(function ($q) use ($criteria) {
-                foreach ($criteria['skills'] as $skill) {
-                    $q->orWhereJsonContains('skills_gained', $skill);
-                }
-            });
-        }
-
-        if (! empty($criteria['min_employment_rate'])) {
-            $query->where('employment_rate', '>=', $criteria['min_employment_rate']);
-        }
-
-        if (! empty($criteria['featured_only'])) {
-            $query->where('is_featured', true);
-        }
-
-        // Sort options
-        $sortBy = $criteria['sort_by'] ?? 'employment_rate';
-        $sortOrder = $criteria['sort_order'] ?? 'desc';
-
-        $query->orderBy($sortBy, $sortOrder);
-    }
-
-    public function getSearchSuggestions($query, $type = 'all')
-    {
-        $suggestions = [];
-
-        if ($type === 'all' || $type === 'jobs') {
-            $jobTitles = Job::where('title', 'like', "%{$query}%")
-                ->distinct()
-                ->pluck('title')
-                ->take(5);
-
-            $suggestions['jobs'] = $jobTitles->map(function ($title) {
-                return ['type' => 'job', 'text' => $title];
-            });
-        }
-
-        if ($type === 'all' || $type === 'skills') {
-            // Get skills from jobs and graduates
-            $jobSkills = Job::whereJsonContains('required_skills', $query)->get()
-                ->pluck('required_skills')
-                ->flatten()
-                ->filter(function ($skill) use ($query) {
-                    return stripos($skill, $query) !== false;
-                })
-                ->unique()
-                ->take(5);
-
-            $suggestions['skills'] = $jobSkills->map(function ($skill) {
-                return ['type' => 'skill', 'text' => $skill];
-            });
-        }
-
-        if ($type === 'all' || $type === 'locations') {
-            $locations = Job::where('location', 'like', "%{$query}%")
-                ->distinct()
-                ->pluck('location')
-                ->take(5);
-
-            $suggestions['locations'] = $locations->map(function ($location) {
-                return ['type' => 'location', 'text' => $location];
-            });
-        }
-
-        return $suggestions;
-    }
-
-    public function saveSearch($userId, $name, $type, $criteria, $alertEnabled = false, $alertFrequency = 'weekly')
-    {
-        return SavedSearch::create([
-            'user_id' => $userId,
-            'name' => $name,
-            'search_type' => $type,
-            'search_criteria' => $criteria,
-            'alert_enabled' => $alertEnabled,
-            'alert_frequency' => $alertFrequency,
-            'is_active' => true,
-        ]);
-    }
-
-    public function getUserSavedSearches($userId, $type = null)
-    {
-        $query = SavedSearch::where('user_id', $userId)->active();
-
-        if ($type) {
-            $query->where('search_type', $type);
-        }
-
-        return $query->orderBy('created_at', 'desc')->get();
-    }
-
-    public function processSearchAlerts()
-    {
-        $searches = SavedSearch::withAlerts()->active()->get();
-        $alertsSent = 0;
-
-        foreach ($searches as $search) {
-            if ($search->sendAlert()) {
-                $alertsSent++;
             }
-        }
 
-        return $alertsSent;
+            $total = $qb->count();
+            $results = $qb->skip(($page - 1) * $perPage)
+                          ->take($perPage)
+                          ->get();
+
+            return [
+                'data' => $results->map(fn ($u) => [
+                    'id' => $u->id,
+                    'source' => [
+                        'name' => $u->name,
+                        'email' => $u->email,
+                        'avatar' => $u->avatar,
+                    ],
+                ]),
+                'total' => $total,
+                'page' => $page,
+                'per_page' => $perPage,
+                'source' => 'database_fallback',
+            ];
+        });
+    }
+
+    /**
+     * Get index name for tenant and type.
+     */
+    private function getIndexName(string $tenantId, string $type): string
+    {
+        $prefix = config('elasticsearch.index_prefix', 'alumate');
+        return "{$prefix}_{$tenantId}_{$type}";
+    }
+
+    /**
+     * Get mappings for a type.
+     */
+    private function getMappings(string $type): array
+    {
+        $mappings = [
+            'alumni' => [
+                'properties' => [
+                    'id' => ['type' => 'keyword'],
+                    'name' => [
+                        'type' => 'text',
+                        'analyzer' => 'custom_analyzer',
+                        'fields' => [
+                            'keyword' => ['type' => 'keyword'],
+                        ],
+                    ],
+                    'name_suggest' => [
+                        'type' => 'completion',
+                    ],
+                    'email' => ['type' => 'keyword'],
+                    'bio' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'skills' => ['type' => 'keyword'],
+                    'company' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'title' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'location' => ['type' => 'text'],
+                    'graduation_year' => ['type' => 'integer'],
+                    'degree' => ['type' => 'keyword'],
+                    'major' => ['type' => 'keyword'],
+                    'industry' => ['type' => 'keyword'],
+                    'is_mentor' => ['type' => 'boolean'],
+                    'available_for_mentorship' => ['type' => 'boolean'],
+                    'created_at' => ['type' => 'date'],
+                ],
+            ],
+            'jobs' => [
+                'properties' => [
+                    'id' => ['type' => 'keyword'],
+                    'title' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'description' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'company' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'location' => ['type' => 'text'],
+                    'type' => ['type' => 'keyword'],
+                    'salary_min' => ['type' => 'integer'],
+                    'salary_max' => ['type' => 'integer'],
+                    'skills_required' => ['type' => 'keyword'],
+                    'is_remote' => ['type' => 'boolean'],
+                    'created_at' => ['type' => 'date'],
+                ],
+            ],
+            'events' => [
+                'properties' => [
+                    'id' => ['type' => 'keyword'],
+                    'title' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'description' => ['type' => 'text', 'analyzer' => 'custom_analyzer'],
+                    'location' => ['type' => 'text'],
+                    'type' => ['type' => 'keyword'],
+                    'start_date' => ['type' => 'date'],
+                    'is_virtual' => ['type' => 'boolean'],
+                    'created_at' => ['type' => 'date'],
+                ],
+            ],
+        ];
+
+        return $mappings[$type] ?? $mappings['alumni'];
     }
 }

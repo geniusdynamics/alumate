@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,39 +13,32 @@ class Backup extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
-        'user_id',
-        'name',
-        'description',
         'type',
+        'subtype',
+        'filename',
+        'path',
+        'cloud_path',
+        'cloud_disk',
+        'size',
+        'checksum',
+        'tenant_id',
         'status',
-        'file_name',
-        'file_size',
-        'file_path',
-        'download_url',
-        'include_data',
-        'include_files',
-        'include_config',
-        'compress',
-        'encryption',
-        'schedule',
-        'retention_days',
-        'error_message',
         'completed_at',
+        'verified_at',
+        'verification_status',
+        'metadata',
+        'error_message',
     ];
 
     protected $casts = [
-        'include_data' => 'boolean',
-        'include_files' => 'boolean',
-        'include_config' => 'boolean',
-        'compress' => 'boolean',
-        'encryption' => 'array',
-        'schedule' => 'array',
+        'size' => 'integer',
         'completed_at' => 'datetime',
+        'verified_at' => 'datetime',
+        'metadata' => 'array',
     ];
 
     /**
-     * Get the tenant that owns the backup
+     * Get the tenant for this backup.
      */
     public function tenant(): BelongsTo
     {
@@ -51,15 +46,22 @@ class Backup extends Model
     }
 
     /**
-     * Get the user that created the backup
+     * Format size for display.
      */
-    public function user(): BelongsTo
+    public function getFormattedSize(): string
     {
-        return $this->belongsTo(User::class);
+        $bytes = $this->size;
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+
+        for ($i = 0; $bytes > 1024; $i++) {
+            $bytes /= 1024;
+        }
+
+        return round($bytes, 2) . ' ' . $units[$i];
     }
 
     /**
-     * Check if the backup is completed
+     * Check if backup is completed.
      */
     public function isCompleted(): bool
     {
@@ -67,14 +69,24 @@ class Backup extends Model
     }
 
     /**
-     * Check if the backup is expired
+     * Check if backup is verified.
      */
-    public function isExpired(): bool
+    public function isVerified(): bool
     {
-        if (!$this->completed_at || !$this->retention_days) {
-            return false;
-        }
+        return $this->verification_status === 'valid';
+    }
 
-        return $this->completed_at->addDays($this->retention_days)->isPast();
+    /**
+     * Get status color for UI.
+     */
+    public function getStatusColor(): string
+    {
+        return match ($this->status) {
+            'completed' => 'green',
+            'pending' => 'yellow',
+            'failed' => 'red',
+            'running' => 'blue',
+            default => 'gray',
+        };
     }
 }

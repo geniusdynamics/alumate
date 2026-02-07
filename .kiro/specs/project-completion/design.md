@@ -8,15 +8,21 @@ This design document outlines the architecture and implementation approach for c
 
 ### System Components
 
-The completion work spans four major areas:
+The completion work spans seven major areas:
 
-1. **Advanced Analytics Completion** - Finish remaining analytics features (cohort analysis, attribution modeling, custom events, external integrations, automated insights, privacy compliance, learning analytics)
+1. **Critical Blockers (P0)** - Payment system, alumni verification, email infrastructure, file storage, tenant onboarding
 
-2. **Production Infrastructure** - Set up load balancing, database clustering, CDN, SSL, monitoring, alerting, and backup systems
+2. **Advanced Analytics Completion** - Finish remaining analytics features (cohort analysis, attribution modeling, custom events, external integrations, automated insights, privacy compliance, learning analytics)
 
-3. **Documentation and Training** - Create comprehensive user guides, API documentation, video tutorials, and in-app help
+3. **Search and Real-Time Features** - Elasticsearch integration, WebSocket server, push notifications
 
-4. **Final Quality Assurance** - Conduct integration testing, performance testing, security testing, and user acceptance testing
+4. **Security Hardening** - Penetration testing, tenant isolation, rate limiting, encryption
+
+5. **Production Infrastructure** - Load balancing, database clustering, CDN, SSL, monitoring, alerting, backup systems
+
+6. **Documentation and Training** - User guides, API documentation, video tutorials, in-app help
+
+7. **Final Quality Assurance** - Integration testing, performance testing, security testing, user acceptance testing
 
 ### Integration Points
 
@@ -27,6 +33,125 @@ The completion work spans four major areas:
 - **Infrastructure**: Production servers, load balancers, database clusters, Redis cache, queue workers
 
 ## Components and Interfaces
+
+### 0. Critical Blocker Components (P0)
+
+**Payment and Subscription Service**
+```typescript
+interface PaymentService {
+  createSubscription(userId: string, planId: string, paymentMethod: PaymentMethod): Subscription
+  updateSubscription(subscriptionId: string, newPlanId: string): Subscription
+  cancelSubscription(subscriptionId: string, reason: string): CancellationResult
+  processPayment(subscriptionId: string): PaymentResult
+  handleFailedPayment(subscriptionId: string): RetryResult
+  generateInvoice(subscriptionId: string): Invoice
+  trackRevenue(period: TimePeriod): RevenueMetrics
+}
+
+interface SubscriptionPlan {
+  id: string
+  name: string
+  price: number
+  interval: 'monthly' | 'yearly'
+  features: PlanFeature[]
+  limits: UsageLimits
+}
+
+interface UsageLimits {
+  maxJobPostings: number
+  maxAlumni: number
+  maxStorage: number
+  maxAdmins: number
+}
+```
+
+**Alumni Verification Service**
+```typescript
+interface AlumniVerificationService {
+  submitVerification(userId: string, data: VerificationData): VerificationRequest
+  approveVerification(requestId: string, adminId: string): VerificationResult
+  rejectVerification(requestId: string, adminId: string, reason: string): VerificationResult
+  autoVerifyByEmail(email: string, institutionId: string): VerificationResult
+  bulkVerify(csvData: string, institutionId: string): BulkVerificationResult
+  checkVerificationStatus(userId: string): VerificationStatus
+}
+
+interface VerificationData {
+  institutionId: string
+  graduationYear: number
+  studentId?: string
+  degree?: string
+  major?: string
+  supportingDocuments?: File[]
+}
+```
+
+**Email Delivery Service**
+```typescript
+interface EmailService {
+  send(to: string, template: string, data: EmailData): SendResult
+  sendBulk(recipients: string[], template: string, data: EmailData): BulkSendResult
+  handleBounce(bounceData: BounceData): void
+  handleSpamComplaint(complaintData: ComplaintData): void
+  unsubscribe(email: string, category: string): void
+  trackDeliverability(): DeliverabilityMetrics
+  retryFailed(emailId: string): RetryResult
+}
+
+interface EmailConfiguration {
+  provider: 'sendgrid' | 'mailgun' | 'ses'
+  apiKey: string
+  domain: string
+  fromEmail: string
+  fromName: string
+  replyTo: string
+}
+```
+
+**File Storage Service**
+```typescript
+interface FileStorageService {
+  upload(file: File, path: string, options: UploadOptions): UploadResult
+  delete(path: string): DeleteResult
+  getUrl(path: string, expiration?: number): string
+  generateThumbnail(imagePath: string, size: ImageSize): string
+  optimizeImage(imagePath: string): OptimizationResult
+  scanForVirus(file: File): ScanResult
+  checkQuota(userId: string): QuotaStatus
+}
+
+interface UploadOptions {
+  visibility: 'public' | 'private'
+  maxSize: number
+  allowedTypes: string[]
+  generateThumbnails: boolean
+  optimize: boolean
+}
+```
+
+**Tenant Onboarding Service**
+```typescript
+interface OnboardingService {
+  startOnboarding(institutionData: InstitutionData): OnboardingSession
+  saveProgress(sessionId: string, step: number, data: StepData): void
+  resumeOnboarding(sessionId: string): OnboardingSession
+  completeOnboarding(sessionId: string): CompletionResult
+  importData(sessionId: string, dataType: string, csvData: string): ImportResult
+  configureBranding(sessionId: string, branding: BrandingConfig): void
+  setupPayment(sessionId: string, planId: string, paymentMethod: PaymentMethod): void
+}
+
+interface OnboardingSession {
+  id: string
+  institutionId: string
+  currentStep: number
+  totalSteps: number
+  completedSteps: string[]
+  data: Record<string, any>
+  createdAt: Date
+  expiresAt: Date
+}
+```
 
 ### 1. Advanced Analytics Completion
 
@@ -171,6 +296,122 @@ interface HelpSystem {
 
 ## Data Models
 
+### P0 Blocker Models
+
+### Subscription Model
+```typescript
+interface Subscription {
+  id: string
+  userId: string
+  tenantId: string
+  planId: string
+  status: 'active' | 'cancelled' | 'past_due' | 'trialing'
+  currentPeriodStart: Date
+  currentPeriodEnd: Date
+  cancelAt?: Date
+  canceledAt?: Date
+  trialEnd?: Date
+  paymentMethod: PaymentMethod
+  createdAt: Date
+  updatedAt: Date
+}
+
+interface PaymentMethod {
+  id: string
+  type: 'card' | 'bank_account'
+  last4: string
+  brand?: string
+  expiryMonth?: number
+  expiryYear?: number
+}
+```
+
+### Alumni Verification Model
+```typescript
+interface AlumniVerification {
+  id: string
+  userId: string
+  institutionId: string
+  status: 'pending' | 'approved' | 'rejected'
+  graduationYear: number
+  studentId?: string
+  degree?: string
+  major?: string
+  verificationMethod: 'manual' | 'email_domain' | 'bulk_import'
+  reviewedBy?: string
+  reviewedAt?: Date
+  rejectionReason?: string
+  createdAt: Date
+  updatedAt: Date
+}
+```
+
+### Email Delivery Model
+```typescript
+interface EmailLog {
+  id: string
+  to: string
+  from: string
+  subject: string
+  template: string
+  status: 'queued' | 'sent' | 'delivered' | 'bounced' | 'failed'
+  provider: string
+  providerId?: string
+  bounceType?: 'hard' | 'soft'
+  bounceReason?: string
+  openedAt?: Date
+  clickedAt?: Date
+  sentAt?: Date
+  deliveredAt?: Date
+  createdAt: Date
+}
+```
+
+### File Storage Model
+```typescript
+interface StoredFile {
+  id: string
+  userId: string
+  tenantId: string
+  path: string
+  filename: string
+  mimeType: string
+  size: number
+  visibility: 'public' | 'private'
+  cdnUrl?: string
+  thumbnails?: Record<string, string>
+  metadata: Record<string, any>
+  virusScanStatus: 'pending' | 'clean' | 'infected'
+  createdAt: Date
+  deletedAt?: Date
+}
+```
+
+### Onboarding Session Model
+```typescript
+interface OnboardingSession {
+  id: string
+  institutionId: string
+  currentStep: number
+  totalSteps: number
+  completedSteps: string[]
+  data: {
+    institution?: InstitutionData
+    branding?: BrandingConfig
+    admins?: AdminData[]
+    payment?: PaymentData
+    imports?: ImportData[]
+  }
+  status: 'in_progress' | 'completed' | 'abandoned'
+  createdAt: Date
+  updatedAt: Date
+  completedAt?: Date
+  expiresAt: Date
+}
+```
+
+### Existing Analytics Models
+
 ### Cohort Model
 ```typescript
 interface Cohort {
@@ -222,6 +463,50 @@ interface Consent {
 ## Correctness Properties
 
 *A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
+
+### P0 Blocker Properties
+
+### Property 0.1: Payment Processing Idempotency
+*For any* payment request, processing the same payment multiple times should not result in duplicate charges
+**Validates: Requirement 1**
+
+### Property 0.2: Subscription Billing Accuracy
+*For any* subscription upgrade or downgrade, prorated billing calculations should be mathematically correct
+**Validates: Requirement 1**
+
+### Property 0.3: Alumni Verification Integrity
+*For any* alumni verification request, approval should grant access and rejection should deny access consistently
+**Validates: Requirement 2**
+
+### Property 0.4: Email Delivery Reliability
+*For any* critical email (verification, password reset), the system should retry failed deliveries up to 3 times
+**Validates: Requirement 3**
+
+### Property 0.5: File Upload Security
+*For any* file upload, files exceeding size limits or containing viruses should be rejected before storage
+**Validates: Requirement 4**
+
+### Property 0.6: Onboarding Progress Persistence
+*For any* onboarding session, progress should be saved and resumable after interruption
+**Validates: Requirement 5**
+
+### Property 0.7: Search Result Consistency
+*For any* search query, executing the same query multiple times should return consistent results
+**Validates: Requirement 7**
+
+### Property 0.8: WebSocket Connection Resilience
+*For any* WebSocket disconnection, the system should automatically reconnect within 30 seconds
+**Validates: Requirement 8**
+
+### Property 0.9: Rate Limit Enforcement
+*For any* API endpoint, requests exceeding rate limits should be rejected with 429 status code
+**Validates: Requirement 9**
+
+### Property 0.10: Backup Completeness
+*For any* backup operation, all data should be included and verifiable through checksums
+**Validates: Requirement 10**
+
+### Analytics Properties
 
 ### Property 1: Cohort Retention Calculation Accuracy
 *For any* cohort and time period, calculating retention metrics should produce consistent results when run multiple times with the same data
@@ -284,6 +569,38 @@ interface Consent {
 **Validates: Requirements 9.1**
 
 ## Error Handling
+
+### P0 Blocker Errors
+
+**Payment Processing Errors**
+- **Payment Gateway Failure**: Retry with exponential backoff, notify user of payment issue
+- **Invalid Payment Method**: Return clear error message, prompt user to update payment method
+- **Subscription Limit Exceeded**: Enforce limits gracefully, prompt user to upgrade plan
+- **Prorated Billing Error**: Log error, use fallback calculation, alert finance team
+
+**Alumni Verification Errors**
+- **Invalid Verification Data**: Return field-level validation errors with clear messages
+- **Duplicate Verification Request**: Prevent duplicate submissions, show existing request status
+- **Verification Timeout**: Send reminder emails, allow re-submission after timeout
+- **Bulk Import Failure**: Rollback partial imports, provide detailed error report
+
+**Email Delivery Errors**
+- **SMTP Connection Failure**: Retry with exponential backoff, switch to backup provider if available
+- **Bounce Handling**: Mark email as undeliverable, notify user to update email address
+- **Spam Complaint**: Immediately unsubscribe user, log complaint for review
+- **Rate Limit Exceeded**: Queue emails for later delivery, implement sending throttle
+
+**File Storage Errors**
+- **Upload Failure**: Retry upload, provide clear error message to user
+- **Virus Detected**: Reject file immediately, notify user of security issue
+- **Storage Quota Exceeded**: Prevent upload, prompt user to upgrade plan or delete files
+- **CDN Unavailability**: Fallback to origin server, alert operations team
+
+**Onboarding Errors**
+- **Session Expiration**: Allow session extension, save progress before expiration
+- **Import Validation Failure**: Provide detailed error report with line numbers
+- **Payment Setup Failure**: Allow retry, provide alternative payment methods
+- **Incomplete Onboarding**: Send reminder emails, allow resumption from last step
 
 ### Analytics Errors
 - **Cohort Creation Failure**: Validate criteria before creation, provide clear error messages for invalid criteria

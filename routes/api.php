@@ -2127,4 +2127,36 @@ Route::get('stats', function () {
     } catch (\Exception $e) {
         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
+});// Subscription and Billing routes
+Route::middleware('auth:sanctum')->prefix('subscriptions')->group(function () {
+    Route::get('/plans', [App\Http\Controllers\SubscriptionController::class, 'plans']);
+    Route::get('/current', [App\Http\Controllers\SubscriptionController::class, 'show']);
+    Route::post('/', [App\Http\Controllers\SubscriptionController::class, 'store']);
+    Route::post('/change-plan', [App\Http\Controllers\SubscriptionController::class, 'changePlan']);
+    Route::post('/cancel', [App\Http\Controllers\SubscriptionController::class, 'cancel']);
+    Route::post('/resume', [App\Http\Controllers\SubscriptionController::class, 'resume']);
+    Route::post('/payment-method', [App\Http\Controllers\SubscriptionController::class, 'updatePaymentMethod']);
+    Route::get('/preview-change', [App\Http\Controllers\SubscriptionController::class, 'previewChange']);
+    Route::get('/invoices', [App\Http\Controllers\SubscriptionController::class, 'invoices']);
+    Route::get('/invoices/{invoice}/download', [App\Http\Controllers\SubscriptionController::class, 'downloadInvoice']);
+    Route::get('/stripe-key', [App\Http\Controllers\SubscriptionController::class, 'getStripeKey']);
+});
+
+// Stripe webhook route (public)
+Route::post('/webhooks/stripe', [App\Http\Controllers\WebhookController::class, 'handleStripe']);
+
+// Alumni Verification routes
+Route::middleware('auth:sanctum')->prefix('verification')->group(function () {
+    Route::post('/submit', [App\Http\Controllers\VerificationController::class, 'submit']);
+    Route::get('/status', [App\Http\Controllers\VerificationController::class, 'status']);
+    Route::post('/upload-document', [App\Http\Controllers\VerificationController::class, 'uploadDocument']);
+});
+
+// Admin Verification routes
+Route::middleware(['auth:sanctum', 'role:admin|super-admin'])->prefix('admin/verification')->group(function () {
+    Route::get('/requests', [App\Http\Controllers\Admin\VerificationController::class, 'index']);
+    Route::post('/requests/{requestId}/approve', [App\Http\Controllers\Admin\VerificationController::class, 'approve']);
+    Route::post('/requests/{requestId}/reject', [App\Http\Controllers\Admin\VerificationController::class, 'reject']);
+    Route::post('/bulk-import', [App\Http\Controllers\Admin\VerificationController::class, 'bulkImport']);
+    Route::get('/analytics', [App\Http\Controllers\Admin\VerificationController::class, 'analytics']);
 });
