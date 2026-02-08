@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Component;
-use App\Models\ComponentVersion;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -27,14 +26,14 @@ class ComponentMigrationService
 
             // Get current format version
             $currentVersion = $component->getConfigValue('grapejs_format_version', '1.0.0');
-            
+
             if (version_compare($currentVersion, $targetVersion, '>=')) {
                 throw new \Exception("Component is already at or above target version {$targetVersion}");
             }
 
             // Apply migrations step by step
             $migrationPath = $this->getMigrationPath($currentVersion, $targetVersion);
-            
+
             foreach ($migrationPath as $step) {
                 $component = $this->applyMigrationStep($component, $step);
             }
@@ -75,9 +74,9 @@ class ComponentMigrationService
 
             // Validate migrated configuration
             $validationResult = $this->validateMigratedConfig($migratedConfig, $component->category);
-            
-            if (!$validationResult['valid']) {
-                throw new \Exception('Migration resulted in invalid configuration: ' . implode(', ', $validationResult['errors']));
+
+            if (! $validationResult['valid']) {
+                throw new \Exception('Migration resulted in invalid configuration: '.implode(', ', $validationResult['errors']));
             }
 
             // Update component configuration
@@ -178,19 +177,19 @@ class ComponentMigrationService
                     case 'responsive_breakpoints':
                         $updatedConfig = $this->addResponsiveBreakpoints($updatedConfig, $config);
                         break;
-                    
+
                     case 'accessibility_enhancements':
                         $updatedConfig = $this->addAccessibilityEnhancements($updatedConfig, $config);
                         break;
-                    
+
                     case 'performance_optimizations':
                         $updatedConfig = $this->addPerformanceOptimizations($updatedConfig, $config);
                         break;
-                    
+
                     case 'new_style_manager':
                         $updatedMetadata = $this->updateStyleManagerConfig($updatedMetadata, $config);
                         break;
-                    
+
                     case 'enhanced_traits':
                         $updatedMetadata = $this->updateTraitManagerConfig($updatedMetadata, $config);
                         break;
@@ -239,7 +238,7 @@ class ComponentMigrationService
                     ->first();
             }
 
-            if (!$targetVersion) {
+            if (! $targetVersion) {
                 throw new \Exception('No suitable version found for rollback');
             }
 
@@ -290,7 +289,7 @@ class ComponentMigrationService
 
         while (version_compare($currentVersion, $toVersion, '<')) {
             $nextStep = null;
-            
+
             if (isset($migrations[$currentVersion])) {
                 foreach ($migrations[$currentVersion] as $nextVersion => $migration) {
                     if (version_compare($nextVersion, $toVersion, '<=')) {
@@ -305,7 +304,7 @@ class ComponentMigrationService
                 }
             }
 
-            if (!$nextStep) {
+            if (! $nextStep) {
                 throw new \Exception("No migration path found from {$currentVersion} to {$toVersion}");
             }
 
@@ -327,15 +326,15 @@ class ComponentMigrationService
             case 'add_responsive_config':
                 $config = $this->addResponsiveConfigMigration($config);
                 break;
-            
+
             case 'add_accessibility_metadata':
                 $config = $this->addAccessibilityMetadataMigration($config);
                 break;
-            
+
             case 'major_format_update':
                 $config = $this->majorFormatUpdateMigration($config);
                 break;
-            
+
             default:
                 throw new \Exception("Unknown migration: {$migration}");
         }
@@ -358,19 +357,19 @@ class ComponentMigrationService
                 case 'rename_field':
                     $migratedConfig = $this->renameField($migratedConfig, $change['from'], $change['to']);
                     break;
-                
+
                 case 'move_field':
                     $migratedConfig = $this->moveField($migratedConfig, $change['from'], $change['to']);
                     break;
-                
+
                 case 'transform_field':
                     $migratedConfig = $this->transformField($migratedConfig, $change['field'], $change['transformer']);
                     break;
-                
+
                 case 'add_default':
                     $migratedConfig = $this->addDefaultValue($migratedConfig, $change['field'], $change['default']);
                     break;
-                
+
                 case 'remove_field':
                     $migratedConfig = $this->removeField($migratedConfig, $change['field']);
                     break;
@@ -386,17 +385,17 @@ class ComponentMigrationService
     private function migrateComponent(Component $component, array $options): Component
     {
         $migrationType = $options['type'] ?? 'grapejs_format';
-        
+
         switch ($migrationType) {
             case 'grapejs_format':
                 return $this->migrateToGrapeJSFormat($component, $options['target_version']);
-            
+
             case 'config_schema':
                 return $this->migrateConfigurationSchema($component, $options['schema_changes']);
-            
+
             case 'feature_update':
                 return $this->updateForNewGrapeJSFeatures($component, $options['new_features']);
-            
+
             default:
                 throw new \Exception("Unknown migration type: {$migrationType}");
         }
@@ -500,25 +499,27 @@ class ComponentMigrationService
 
     private function addResponsiveConfigMigration(array $config): array
     {
-        if (!isset($config['responsive'])) {
+        if (! isset($config['responsive'])) {
             $config['responsive'] = [
                 'desktop' => [],
                 'tablet' => [],
                 'mobile' => [],
             ];
         }
+
         return $config;
     }
 
     private function addAccessibilityMetadataMigration(array $config): array
     {
-        if (!isset($config['accessibility'])) {
+        if (! isset($config['accessibility'])) {
             $config['accessibility'] = [
                 'semanticTag' => 'div',
                 'keyboardNavigation' => ['focusable' => false],
                 'motionPreferences' => ['respectReducedMotion' => true],
             ];
         }
+
         return $config;
     }
 
@@ -526,7 +527,7 @@ class ComponentMigrationService
     {
         // Implement major format changes
         $config['format_version'] = '2.0.0';
-        
+
         // Restructure configuration for new format
         if (isset($config['old_structure'])) {
             $config['new_structure'] = $this->convertToNewStructure($config['old_structure']);
@@ -554,6 +555,7 @@ class ComponentMigrationService
             $config[$to] = $config[$from];
             unset($config[$from]);
         }
+
         return $config;
     }
 
@@ -564,6 +566,7 @@ class ComponentMigrationService
             data_set($config, $to, $value);
             data_forget($config, $from);
         }
+
         return $config;
     }
 
@@ -573,20 +576,23 @@ class ComponentMigrationService
         if ($value !== null) {
             data_set($config, $field, $transformer($value));
         }
+
         return $config;
     }
 
     private function addDefaultValue(array $config, string $field, mixed $default): array
     {
-        if (!isset($config[$field])) {
+        if (! isset($config[$field])) {
             data_set($config, $field, $default);
         }
+
         return $config;
     }
 
     private function removeField(array $config, string $field): array
     {
         data_forget($config, $field);
+
         return $config;
     }
 
@@ -595,6 +601,7 @@ class ComponentMigrationService
     private function addResponsiveBreakpoints(array $config, array $breakpointConfig): array
     {
         $config['responsive']['breakpoints'] = $breakpointConfig;
+
         return $config;
     }
 
@@ -604,24 +611,28 @@ class ComponentMigrationService
             $config['accessibility'] ?? [],
             $accessibilityConfig
         );
+
         return $config;
     }
 
     private function addPerformanceOptimizations(array $config, array $performanceConfig): array
     {
         $config['performance'] = $performanceConfig;
+
         return $config;
     }
 
     private function updateStyleManagerConfig(array $metadata, array $styleConfig): array
     {
         $metadata['grapejs']['styleManager'] = $styleConfig;
+
         return $metadata;
     }
 
     private function updateTraitManagerConfig(array $metadata, array $traitConfig): array
     {
         $metadata['grapejs']['traitManager'] = $traitConfig;
+
         return $metadata;
     }
 
@@ -645,13 +656,13 @@ class ComponentMigrationService
         // Category-specific validation
         switch ($category) {
             case 'hero':
-                if (!isset($config['headline']) && !isset($config['title'])) {
+                if (! isset($config['headline']) && ! isset($config['title'])) {
                     $validation['warnings'][] = 'Hero component missing headline or title';
                 }
                 break;
-            
+
             case 'forms':
-                if (!isset($config['fields']) || empty($config['fields'])) {
+                if (! isset($config['fields']) || empty($config['fields'])) {
                     $validation['warnings'][] = 'Form component has no fields defined';
                 }
                 break;

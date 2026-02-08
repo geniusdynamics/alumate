@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
-use Exception;
 
 /**
  * Analytics Performance Optimizer Service
@@ -24,16 +24,21 @@ class AnalyticsPerformanceOptimizer
 {
     // Cache TTL constants (in seconds)
     private const CACHE_TTL_SHORT = 300;      // 5 minutes
+
     private const CACHE_TTL_MEDIUM = 900;     // 15 minutes
+
     private const CACHE_TTL_LONG = 3600;       // 1 hour
+
     private const CACHE_TTL_VERY_LONG = 86400; // 24 hours
 
     // Batch processing constants
     private const DEFAULT_BATCH_SIZE = 1000;
+
     private const MAX_BATCH_SIZE = 5000;
 
     // Query optimization constants
     private const MAX_QUERY_EXECUTION_TIME = 30; // seconds
+
     private const SLOW_QUERY_THRESHOLD = 1;      // seconds
 
     private TenantContextService $tenantContext;
@@ -46,7 +51,7 @@ class AnalyticsPerformanceOptimizer
     /**
      * Optimize an analytics query for better performance
      *
-     * @param Builder $query The query to optimize
+     * @param  Builder  $query  The query to optimize
      * @return Builder The optimized query
      */
     public function optimizeQuery(Builder $query): Builder
@@ -84,9 +89,9 @@ class AnalyticsPerformanceOptimizer
     /**
      * Cache a query result with specified TTL
      *
-     * @param Builder $query The query to cache
-     * @param int $ttl Cache TTL in seconds
-     * @param string|null $customKey Custom cache key suffix
+     * @param  Builder  $query  The query to cache
+     * @param  int  $ttl  Cache TTL in seconds
+     * @param  string|null  $customKey  Custom cache key suffix
      * @return mixed The cached result
      */
     public function cacheQueryResult(Builder $query, int $ttl = self::CACHE_TTL_MEDIUM, ?string $customKey = null)
@@ -115,7 +120,7 @@ class AnalyticsPerformanceOptimizer
     /**
      * Invalidate cache entries matching a pattern
      *
-     * @param string $pattern Cache key pattern to invalidate
+     * @param  string  $pattern  Cache key pattern to invalidate
      * @return int Number of cache entries invalidated
      */
     public function invalidateCache(string $pattern): int
@@ -123,7 +128,7 @@ class AnalyticsPerformanceOptimizer
         try {
             $tenantId = $this->tenantContext->getCurrentTenantId();
             $fullPattern = "analytics:{$tenantId}:{$pattern}*";
-            
+
             $invalidatedCount = 0;
 
             // Get all cache keys matching the pattern
@@ -194,14 +199,14 @@ class AnalyticsPerformanceOptimizer
     /**
      * Analyze query performance and return metrics
      *
-     * @param Builder $query The query to analyze
+     * @param  Builder  $query  The query to analyze
      * @return array Performance analysis results
      */
     public function analyzeQueryPerformance(Builder $query): array
     {
         try {
             $startTime = microtime(true);
-            
+
             // Execute query and measure time
             $query->get();
             $executionTime = microtime(true) - $startTime;
@@ -250,20 +255,20 @@ class AnalyticsPerformanceOptimizer
     /**
      * Suggest indexes for a table based on query patterns
      *
-     * @param string $table The table name
+     * @param  string  $table  The table name
      * @return array Index suggestions
      */
     public function suggestIndexes(string $table): array
     {
         try {
             $tenantId = $this->tenantContext->getCurrentTenantId();
-            
+
             // Get table statistics and query patterns
             $suggestions = [];
-            
+
             // Analyze common query patterns for the table
             $commonPatterns = $this->analyzeQueryPatterns($table);
-            
+
             foreach ($commonPatterns as $pattern) {
                 $suggestions[] = [
                     'table' => $table,
@@ -275,7 +280,7 @@ class AnalyticsPerformanceOptimizer
             }
 
             // Sort by priority
-            usort($suggestions, fn($a, $b) => $b['priority'] <=> $a['priority']);
+            usort($suggestions, fn ($a, $b) => $b['priority'] <=> $a['priority']);
 
             Log::info('Index suggestions generated', [
                 'table' => $table,
@@ -309,14 +314,14 @@ class AnalyticsPerformanceOptimizer
     /**
      * Optimize data retrieval based on request parameters
      *
-     * @param Request $request The HTTP request
+     * @param  Request  $request  The HTTP request
      * @return array Optimization settings
      */
     public function optimizeDataRetrieval(Request $request): array
     {
         try {
             $tenantId = $this->tenantContext->getCurrentTenantId();
-            
+
             $optimizations = [
                 'tenant_id' => $tenantId,
                 'applied_optimizations' => [],
@@ -356,23 +361,23 @@ class AnalyticsPerformanceOptimizer
     /**
      * Batch process data with specified batch size
      *
-     * @param Collection|array $data The data to process
-     * @param int $batchSize Batch size (default: 1000)
-     * @param callable $processor Callback function to process each batch
+     * @param  Collection|array  $data  The data to process
+     * @param  int  $batchSize  Batch size (default: 1000)
+     * @param  callable  $processor  Callback function to process each batch
      * @return array Batch processing results
      */
-    public function batchProcessData(Collection|array $data, int $batchSize = self::DEFAULT_BATCH_SIZE, callable $processor): array
+    public function batchProcessData(Collection|array $data, int $batchSize, callable $processor): array
     {
         try {
             // Normalize to array
             $items = $data instanceof Collection ? $data->toArray() : $data;
-            
+
             // Validate batch size
             $batchSize = min(max($batchSize, 1), self::MAX_BATCH_SIZE);
-            
+
             $totalItems = count($items);
             $batches = ceil($totalItems / $batchSize);
-            
+
             $results = [
                 'total_items' => $totalItems,
                 'batch_size' => $batchSize,
@@ -387,7 +392,7 @@ class AnalyticsPerformanceOptimizer
             for ($i = 0; $i < $batches; $i++) {
                 $batchStart = $i * $batchSize;
                 $batch = array_slice($items, $batchStart, $batchSize);
-                
+
                 try {
                     $batchResult = $processor($batch, $i + 1);
                     $results['results'][] = [
@@ -397,7 +402,7 @@ class AnalyticsPerformanceOptimizer
                         'success' => true,
                     ];
                     $results['processed_batches']++;
-                    
+
                 } catch (Exception $e) {
                     $results['results'][] = [
                         'batch' => $i + 1,
@@ -406,7 +411,7 @@ class AnalyticsPerformanceOptimizer
                         'success' => false,
                     ];
                     $results['failed_batches']++;
-                    
+
                     Log::error('Batch processing failed', [
                         'batch' => $i + 1,
                         'error' => $e->getMessage(),
@@ -450,7 +455,7 @@ class AnalyticsPerformanceOptimizer
     {
         // Check if query is already selecting specific columns
         $queryStr = $query->toSql();
-        
+
         // If query uses SELECT *, suggest or apply specific selections
         if (str_contains($queryStr, 'select *')) {
             // For now, log a warning - in production, you might want to enforce this
@@ -496,6 +501,7 @@ class AnalyticsPerformanceOptimizer
     private function buildCacheKey(string $type, string $suffix = ''): string
     {
         $tenantId = $this->tenantContext->getCurrentTenantId() ?? 'global';
+
         return "analytics:{$tenantId}:{$type}:{$suffix}";
     }
 
@@ -505,7 +511,7 @@ class AnalyticsPerformanceOptimizer
     private function analyzeQueryPlan(array $explanation): array
     {
         $analysis = [];
-        
+
         foreach ($explanation as $row) {
             $analysis[] = [
                 'type' => $row['type'] ?? 'unknown',
@@ -526,7 +532,7 @@ class AnalyticsPerformanceOptimizer
     private function analyzeQueryPatterns(string $table): array
     {
         $patterns = [];
-        
+
         // Common patterns that benefit from indexes
         $patterns[] = [
             'columns' => ['tenant_id'],
@@ -555,11 +561,11 @@ class AnalyticsPerformanceOptimizer
     private function determineIndexType(array $pattern): string
     {
         $columnCount = count($pattern['columns']);
-        
+
         if ($columnCount === 1) {
             return 'BTREE'; // Standard B-tree index
         }
-        
+
         return 'BTREE'; // Composite indexes also use BTREE by default
     }
 
@@ -570,7 +576,7 @@ class AnalyticsPerformanceOptimizer
     {
         $perPage = $request->get('per_page', 15);
         $perPage = in_array($perPage, [10, 25, 50, 100]) ? $perPage : 15;
-        
+
         return [
             'per_page' => $perPage,
             'max_per_page' => 100,
@@ -585,7 +591,7 @@ class AnalyticsPerformanceOptimizer
     {
         $sortColumn = $request->get('sort_column');
         $sortDirection = $request->get('sort_direction', 'asc');
-        
+
         return [
             'sort_column' => $sortColumn,
             'sort_direction' => in_array(strtolower($sortDirection), ['asc', 'desc']) ? $sortDirection : 'asc',
@@ -599,7 +605,7 @@ class AnalyticsPerformanceOptimizer
     private function optimizeFiltering(Request $request): array
     {
         $filters = $request->all();
-        
+
         return [
             'filters_applied' => array_keys($filters),
             'recommendation' => 'Use indexed columns for filtering',
@@ -637,6 +643,7 @@ class AnalyticsPerformanceOptimizer
         try {
             $cacheKey = $this->buildCacheKey('dashboard_summary');
             Cache::put($cacheKey, ['warmed' => true], self::CACHE_TTL_LONG);
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -651,6 +658,7 @@ class AnalyticsPerformanceOptimizer
         try {
             $cacheKey = $this->buildCacheKey('cohort_overview');
             Cache::put($cacheKey, ['warmed' => true], self::CACHE_TTL_LONG);
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -665,6 +673,7 @@ class AnalyticsPerformanceOptimizer
         try {
             $cacheKey = $this->buildCacheKey('engagement_metrics');
             Cache::put($cacheKey, ['warmed' => true], self::CACHE_TTL_MEDIUM);
+
             return true;
         } catch (Exception $e) {
             return false;
@@ -679,6 +688,7 @@ class AnalyticsPerformanceOptimizer
         try {
             $cacheKey = $this->buildCacheKey('retention_data');
             Cache::put($cacheKey, ['warmed' => true], self::CACHE_TTL_LONG);
+
             return true;
         } catch (Exception $e) {
             return false;

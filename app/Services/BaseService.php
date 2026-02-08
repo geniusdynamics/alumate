@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 /**
  * ABOUTME: Base service class providing common tenant functionality for schema-based multi-tenancy
@@ -13,7 +12,9 @@ use Exception;
 abstract class BaseService
 {
     protected TenantContextService $tenantContext;
+
     protected ?string $currentTenantId = null;
+
     protected ?string $currentSchema = null;
 
     public function __construct(TenantContextService $tenantContext)
@@ -51,7 +52,7 @@ abstract class BaseService
      */
     protected function withCurrentTenantContext(callable $callback)
     {
-        if (!$this->currentTenantId) {
+        if (! $this->currentTenantId) {
             throw new Exception('No current tenant context available');
         }
 
@@ -89,7 +90,7 @@ abstract class BaseService
      */
     protected function ensureTenantContext(): void
     {
-        if (!$this->getCurrentTenantId()) {
+        if (! $this->getCurrentTenantId()) {
             throw new Exception('Tenant context is required for this operation');
         }
     }
@@ -147,7 +148,7 @@ abstract class BaseService
     protected function getTenantConfig(string $key, $default = null)
     {
         $this->ensureTenantContext();
-        
+
         // This would retrieve tenant-specific configuration
         // Implementation depends on how you store tenant configs
         return $this->tenantContext->getTenantConfig($key, $default);
@@ -177,7 +178,7 @@ abstract class BaseService
     protected function executeInTransaction(callable $callback)
     {
         $this->ensureTenantContext();
-        
+
         return \Illuminate\Support\Facades\DB::transaction($callback);
     }
 
@@ -187,7 +188,7 @@ abstract class BaseService
     protected function getPaginatedResults($query, int $perPage = 15, array $columns = ['*'])
     {
         $this->ensureTenantContext();
-        
+
         return $query->paginate($perPage, $columns);
     }
 
@@ -198,7 +199,7 @@ abstract class BaseService
     {
         // Apply tenant-specific filters if needed
         // Most filtering is now handled by schema isolation
-        
+
         if (isset($filters['active']) && $filters['active'] !== null) {
             $query->where('is_active', $filters['active']);
         }
@@ -220,6 +221,7 @@ abstract class BaseService
     protected function getTenantCacheKey(string $key): string
     {
         $tenantId = $this->getCurrentTenantId();
+
         return "tenant:{$tenantId}:{$key}";
     }
 
@@ -229,6 +231,7 @@ abstract class BaseService
     protected function rememberInTenantCache(string $key, callable $callback, int $ttl = 3600)
     {
         $cacheKey = $this->getTenantCacheKey($key);
+
         return \Illuminate\Support\Facades\Cache::remember($cacheKey, $ttl, $callback);
     }
 

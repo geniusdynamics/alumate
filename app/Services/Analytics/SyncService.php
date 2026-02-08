@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Models\SyncLog;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;
-use Exception;
 
 /**
  * Data Synchronization Service
@@ -20,12 +19,17 @@ use Exception;
 class SyncService
 {
     private const CACHE_TTL = 900; // 15 minutes
+
     private const MAX_RETRIES = 3;
+
     private const RETRY_DELAY = 1000; // milliseconds
+
     private const DISCREPANCY_THRESHOLD = 0.05; // 5% threshold for flagging discrepancies
 
     private ConsentService $consentService;
+
     private GoogleAnalyticsService $googleAnalyticsService;
+
     private MatomoService $matomoService;
 
     /**
@@ -47,9 +51,9 @@ class SyncService
      * Aggregates metrics from internal AnalyticsEvent/SessionRecording/Cohort models
      * and external services, unifying them into a normalized schema.
      *
-     * @param string $tenantId Tenant identifier
-     * @param array $sources Array of sources to sync ['ga', 'matomo']
-     * @param array $timeRange Time range for sync ['start' => date, 'end' => date]
+     * @param  string  $tenantId  Tenant identifier
+     * @param  array  $sources  Array of sources to sync ['ga', 'matomo']
+     * @param  array  $timeRange  Time range for sync ['start' => date, 'end' => date]
      * @return array Unified metrics data
      */
     public function syncData(string $tenantId, array $sources = ['ga', 'matomo'], array $timeRange = []): array
@@ -106,8 +110,8 @@ class SyncService
      * Compares metrics across sources and flags discrepancies above threshold.
      * Applies resolution rules: prefer internal for consented data, average for others.
      *
-     * @param string $tenantId Tenant identifier
-     * @param array $timeRange Time range for comparison
+     * @param  string  $tenantId  Tenant identifier
+     * @param  array  $timeRange  Time range for comparison
      * @return array Discrepancy report with resolutions
      */
     public function detectDiscrepancies(string $tenantId, array $timeRange = []): array
@@ -118,14 +122,14 @@ class SyncService
 
             // Check GA discrepancies
             $gaMetrics = $this->getExternalMetrics('ga', $tenantId, $timeRange);
-            if (!empty($gaMetrics)) {
+            if (! empty($gaMetrics)) {
                 $gaDiscrepancies = $this->compareMetrics($internalMetrics, $gaMetrics, 'ga');
                 $discrepancies = array_merge($discrepancies, $gaDiscrepancies);
             }
 
             // Check Matomo discrepancies
             $matomoMetrics = $this->getExternalMetrics('matomo', $tenantId, $timeRange);
-            if (!empty($matomoMetrics)) {
+            if (! empty($matomoMetrics)) {
                 $matomoDiscrepancies = $this->compareMetrics($internalMetrics, $matomoMetrics, 'matomo');
                 $discrepancies = array_merge($discrepancies, $matomoDiscrepancies);
             }
@@ -134,7 +138,7 @@ class SyncService
             $resolvedData = $this->resolveDiscrepancies($discrepancies, $tenantId);
 
             // Log discrepancies
-            if (!empty($discrepancies)) {
+            if (! empty($discrepancies)) {
                 $this->logSyncResult($tenantId, 'discrepancy_detection', 'success', [
                     'discrepancies_found' => count($discrepancies),
                     'resolved' => count($resolvedData['resolutions']),
@@ -166,7 +170,7 @@ class SyncService
      *
      * Tracks last sync time, error counts, and success rates via Redis.
      *
-     * @param string $tenantId Tenant identifier
+     * @param  string  $tenantId  Tenant identifier
      * @return array Status report
      */
     public function monitorSync(string $tenantId): array
@@ -202,16 +206,17 @@ class SyncService
      * Integrates with CrmIntegrationService to sync learning progress
      * and analytics data to HubSpot, Salesforce, and other CRMs.
      *
-     * @param string $tenantId Tenant identifier
-     * @param array $learningData Learning progress data to sync
-     * @param string $provider CRM provider (hubspot, salesforce, etc.)
+     * @param  string  $tenantId  Tenant identifier
+     * @param  array  $learningData  Learning progress data to sync
+     * @param  string  $provider  CRM provider (hubspot, salesforce, etc.)
      * @return bool Success status
      */
     public function syncLearningToCrm(string $tenantId, array $learningData, string $provider = 'hubspot'): bool
     {
         try {
-            if (!class_exists('\App\Services\Integrations\CrmIntegrationService')) {
+            if (! class_exists('\App\Services\Integrations\CrmIntegrationService')) {
                 Log::warning('CrmIntegrationService not available for learning sync');
+
                 return false;
             }
 
@@ -250,16 +255,16 @@ class SyncService
      *
      * Skips sync for withdrawn categories and purges discrepancies if consent revoked.
      *
-     * @param string $tenantId Tenant identifier
-     * @param int $userId User identifier
-     * @param string $consentCategory Consent category being withdrawn
+     * @param  string  $tenantId  Tenant identifier
+     * @param  int  $userId  User identifier
+     * @param  string  $consentCategory  Consent category being withdrawn
      * @return bool Success status
      */
     public function handleConsent(string $tenantId, int $userId, string $consentCategory): bool
     {
         try {
             // Check if consent affects analytics sync
-            if (!$this->consentService->checkConsent($userId, $consentCategory)) {
+            if (! $this->consentService->checkConsent($userId, $consentCategory)) {
                 Log::info('Consent withdrawn, purging user data from sync', [
                     'tenant_id' => $tenantId,
                     'user_id' => $userId,
@@ -325,6 +330,7 @@ class SyncService
                     return $this->fetchMatomoMetrics($tenantId, $timeRange);
                 default:
                     Log::warning('Unknown external source requested', ['source' => $source]);
+
                     return [];
             }
         } catch (Exception $e) {
@@ -414,7 +420,7 @@ class SyncService
 
         // Merge external data
         foreach ($external as $source => $metrics) {
-            if (!empty($metrics)) {
+            if (! empty($metrics)) {
                 $unified['sources'][] = $source;
 
                 // Use external data where available, preferring internal for accuracy

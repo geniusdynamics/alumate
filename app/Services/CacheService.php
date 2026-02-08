@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Service for managing cache operations with error handling and fallbacks
 // ABOUTME: Updated for schema-based tenancy - provides tenant-aware caching utilities
 

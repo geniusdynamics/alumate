@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
+use App\Jobs\SyncLeadToCrm;
+use App\Models\CrmIntegration;
 use App\Models\Lead;
 use App\Models\User;
-use App\Models\CrmIntegration;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
 use ZipArchive;
-use App\Jobs\SyncLeadToCrm;
 
 class GdprComplianceService
 {
@@ -28,7 +27,7 @@ class GdprComplianceService
             'data_processing_purposes' => [
                 'lead_management',
                 'customer_service',
-                'service_delivery'
+                'service_delivery',
             ],
             'retention_period' => '7 years',
             'legal_basis' => $consentData['legal_basis'] ?? 'consent',
@@ -38,8 +37,8 @@ class GdprComplianceService
                 'erasure',
                 'portability',
                 'restriction',
-                'objection'
-            ]
+                'objection',
+            ],
         ];
 
         // Add marketing purposes if consent given
@@ -52,7 +51,7 @@ class GdprComplianceService
         // Store GDPR data in lead's behavioral data
         $behavioralData = $lead->behavioral_data ?? [];
         $behavioralData['gdpr_compliance'] = $gdprData;
-        
+
         $lead->update(['behavioral_data' => $behavioralData]);
 
         // Log consent activity
@@ -61,7 +60,7 @@ class GdprComplianceService
         Log::info('GDPR consent recorded', [
             'lead_id' => $lead->id,
             'consent_given' => $gdprData['consent_given'],
-            'marketing_consent' => $gdprData['marketing_consent']
+            'marketing_consent' => $gdprData['marketing_consent'],
         ]);
     }
 
@@ -80,17 +79,17 @@ class GdprComplianceService
                 'email' => $email,
                 'leads' => [],
                 'users' => [],
-                'activities' => []
+                'activities' => [],
             ];
 
             // Collect lead data
             foreach ($leads as $lead) {
                 $leadData = $lead->toArray();
-                
+
                 // Include activities
                 $activities = $lead->activities()->get()->toArray();
                 $leadData['activities'] = $activities;
-                
+
                 $personalData['leads'][] = $leadData;
             }
 
@@ -102,15 +101,15 @@ class GdprComplianceService
             }
 
             // Generate export file
-            $filename = 'gdpr_export_' . md5($email) . '_' . now()->format('Y-m-d_H-i-s') . '.json';
+            $filename = 'gdpr_export_'.md5($email).'_'.now()->format('Y-m-d_H-i-s').'.json';
             $encryptedData = $this->encrypt(json_encode($personalData, JSON_PRETTY_PRINT));
-            Storage::disk('local')->put('gdpr_exports/' . $filename, $encryptedData);
+            Storage::disk('local')->put('gdpr_exports/'.$filename, $encryptedData);
 
             Log::info('GDPR access request processed', [
                 'email' => $email,
                 'leads_found' => count($leads),
                 'users_found' => count($users),
-                'export_file' => $filename
+                'export_file' => $filename,
             ]);
 
             return [
@@ -118,18 +117,18 @@ class GdprComplianceService
                 'data' => $personalData,
                 'export_file' => $filename,
                 'leads_found' => count($leads),
-                'users_found' => count($users)
+                'users_found' => count($users),
             ];
 
         } catch (\Exception $e) {
             Log::error('GDPR access request failed', [
                 'email' => $email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -149,7 +148,7 @@ class GdprComplianceService
             $results = [
                 'leads_processed' => 0,
                 'users_processed' => 0,
-                'activities_processed' => 0
+                'activities_processed' => 0,
             ];
 
             // Process leads
@@ -176,24 +175,24 @@ class GdprComplianceService
             Log::info('GDPR erasure request processed', [
                 'email' => $email,
                 'anonymize_only' => $anonymizeOnly,
-                'results' => $results
+                'results' => $results,
             ]);
 
             return [
                 'success' => true,
                 'results' => $results,
-                'message' => 'Erasure request processed successfully'
+                'message' => 'Erasure request processed successfully',
             ];
 
         } catch (\Exception $e) {
             Log::error('GDPR erasure request failed', [
                 'email' => $email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -205,32 +204,32 @@ class GdprComplianceService
     {
         try {
             $accessData = $this->handleAccessRequest($email);
-            
-            if (!$accessData['success']) {
+
+            if (! $accessData['success']) {
                 return $accessData;
             }
 
             // Create portable format (CSV for structured data)
             $portableData = $this->convertToPortableFormat($accessData['data']);
-            
-            $filename = 'gdpr_portable_' . md5($email) . '_' . now()->format('Y-m-d_H-i-s') . '.zip';
+
+            $filename = 'gdpr_portable_'.md5($email).'_'.now()->format('Y-m-d_H-i-s').'.zip';
             $this->createPortableExport($portableData, $filename);
 
             return [
                 'success' => true,
                 'export_file' => $filename,
-                'message' => 'Portable data export created'
+                'message' => 'Portable data export created',
             ];
 
         } catch (\Exception $e) {
             Log::error('GDPR portability request failed', [
                 'email' => $email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -246,25 +245,25 @@ class GdprComplianceService
 
             foreach ($leads as $lead) {
                 $behavioralData = $lead->behavioral_data ?? [];
-                
+
                 if (isset($behavioralData['gdpr_compliance'])) {
                     $behavioralData['gdpr_compliance']['marketing_consent'] = false;
                     $behavioralData['gdpr_compliance']['marketing_consent_withdrawn_at'] = now()->toISOString();
-                    
+
                     $lead->update(['behavioral_data' => $behavioralData]);
-                    
+
                     $lead->addActivity('marketing_consent_withdrawn', 'Marketing consent withdrawn', null, [
                         'withdrawn_at' => now()->toISOString(),
-                        'method' => 'api_request'
+                        'method' => 'api_request',
                     ]);
-                    
+
                     $processed++;
                 }
             }
 
             Log::info('Marketing consent withdrawn', [
                 'email' => $email,
-                'leads_processed' => $processed
+                'leads_processed' => $processed,
             ]);
 
             // Dispatch CRM sync jobs for leads that had consent withdrawn
@@ -280,18 +279,18 @@ class GdprComplianceService
             return [
                 'success' => true,
                 'leads_processed' => $processed,
-                'message' => 'Marketing consent withdrawn successfully'
+                'message' => 'Marketing consent withdrawn successfully',
             ];
 
         } catch (\Exception $e) {
             Log::error('Marketing consent withdrawal failed', [
                 'email' => $email,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [
                 'success' => false,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ];
         }
     }
@@ -327,18 +326,18 @@ class GdprComplianceService
         $lead->update([
             'first_name' => 'Anonymized',
             'last_name' => 'User',
-            'email' => 'anonymized_' . $lead->id . '@example.com',
+            'email' => 'anonymized_'.$lead->id.'@example.com',
             'phone' => null,
             'company' => 'Anonymized Company',
             'job_title' => 'Anonymized Title',
             'notes' => 'Data anonymized per GDPR request',
             'form_data' => ['anonymized' => true],
-            'utm_data' => ['anonymized' => true]
+            'utm_data' => ['anonymized' => true],
         ]);
 
         $lead->addActivity('gdpr_anonymized', 'Lead data anonymized per GDPR request', null, [
             'anonymized_at' => now()->toISOString(),
-            'original_id' => $lead->id
+            'original_id' => $lead->id,
         ]);
     }
 
@@ -349,9 +348,9 @@ class GdprComplianceService
     {
         $user->update([
             'name' => 'Anonymized User',
-            'email' => 'anonymized_' . $user->id . '@example.com',
+            'email' => 'anonymized_'.$user->id.'@example.com',
             'phone' => null,
-            'bio' => 'Data anonymized per GDPR request'
+            'bio' => 'Data anonymized per GDPR request',
         ]);
     }
 
@@ -364,7 +363,7 @@ class GdprComplianceService
         $portable = [
             'leads.csv' => [],
             'activities.csv' => [],
-            'users.csv' => []
+            'users.csv' => [],
         ];
 
         // Process leads
@@ -393,9 +392,9 @@ class GdprComplianceService
      */
     private function createPortableExport(array $portableData, string $filename): void
     {
-        $zipPath = Storage::disk('local')->path('gdpr_exports/' . $filename);
-        $zip = new ZipArchive();
-        if ($zip->open($zipPath, ZipArchive::CREATE) === TRUE) {
+        $zipPath = Storage::disk('local')->path('gdpr_exports/'.$filename);
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE) === true) {
             foreach ($portableData as $fileName => $data) {
                 $csv = $this->arrayToCsv($data);
                 $zip->addFromString($fileName, $csv);
@@ -420,7 +419,7 @@ class GdprComplianceService
             'expired_leads_count' => $expiredLeads->count(),
             'expired_leads' => $expiredLeads->pluck('id')->toArray(),
             'cutoff_date' => $cutoffDate->toISOString(),
-            'retention_period_years' => $retentionPeriod
+            'retention_period_years' => $retentionPeriod,
         ];
 
         Log::info('GDPR retention compliance check', $results);
@@ -435,6 +434,7 @@ class GdprComplianceService
     {
         $key = env('GDPR_ENCRYPTION_KEY');
         $iv = env('GDPR_IV');
+
         return openssl_encrypt($data, 'aes-256-cbc', $key, 0, $iv);
     }
 
@@ -445,6 +445,7 @@ class GdprComplianceService
     {
         $key = env('GDPR_ENCRYPTION_KEY');
         $iv = env('GDPR_IV');
+
         return openssl_decrypt($encryptedData, 'aes-256-cbc', $key, 0, $iv);
     }
 
@@ -453,17 +454,20 @@ class GdprComplianceService
      */
     private function arrayToCsv(array $data): string
     {
-        if (empty($data)) return '';
+        if (empty($data)) {
+            return '';
+        }
         $csv = '';
         $headers = array_keys($data[0]);
-        $csv .= implode(',', array_map(function($header) {
-            return '"' . str_replace('"', '""', $header) . '"';
-        }, $headers)) . "\n";
+        $csv .= implode(',', array_map(function ($header) {
+            return '"'.str_replace('"', '""', $header).'"';
+        }, $headers))."\n";
         foreach ($data as $row) {
-            $csv .= implode(',', array_map(function($value) {
-                return '"' . str_replace('"', '""', $value ?? '') . '"';
-            }, $row)) . "\n";
+            $csv .= implode(',', array_map(function ($value) {
+                return '"'.str_replace('"', '""', $value ?? '').'"';
+            }, $row))."\n";
         }
+
         return $csv;
     }
 
@@ -484,13 +488,13 @@ class GdprComplianceService
         }
 
         Log::info('GDPR expired data cleanup completed', [
-            'leads_cleaned' => $cleaned
+            'leads_cleaned' => $cleaned,
         ]);
 
         return [
             'success' => true,
             'leads_cleaned' => $cleaned,
-            'message' => 'Expired data cleanup completed'
+            'message' => 'Expired data cleanup completed',
         ];
     }
 }

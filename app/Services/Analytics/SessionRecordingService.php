@@ -4,25 +4,23 @@ declare(strict_types=1);
 
 namespace App\Services\Analytics;
 
-use App\Models\SessionRecording;
 use App\Models\AnalyticsEvent;
+use App\Models\SessionRecording;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class SessionRecordingService
 {
     private const COMPRESSION_PREFIX = 'compressed:';
+
     private const RAGE_CLICK_THRESHOLD = 3;
+
     private const CONFUSION_THRESHOLD = 5;
 
     /**
      * Capture a session event and store it in the recording
-     *
-     * @param string $sessionId
-     * @param array $eventData
-     * @return bool
      */
     public function captureSessionEvent(string $sessionId, array $eventData): bool
     {
@@ -70,15 +68,13 @@ class SessionRecordingService
                 'session_id' => $sessionId,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
 
     /**
      * Retrieve full session recording with playback data
-     *
-     * @param string $sessionId
-     * @return array|null
      */
     public function getSessionRecording(string $sessionId): ?array
     {
@@ -89,7 +85,7 @@ class SessionRecordingService
                 ->bySessionId($sessionId)
                 ->first();
 
-            if (!$recording) {
+            if (! $recording) {
                 return null;
             }
 
@@ -113,15 +109,13 @@ class SessionRecordingService
                 'session_id' => $sessionId,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
 
     /**
      * Apply privacy masking to recording data
-     *
-     * @param array $recordingData
-     * @return array
      */
     public function maskSensitiveData(array $recordingData): array
     {
@@ -151,15 +145,12 @@ class SessionRecordingService
 
     /**
      * Analyze session behavior for patterns
-     *
-     * @param string $sessionId
-     * @return array
      */
     public function analyzeSessionBehavior(string $sessionId): array
     {
         $recording = $this->getSessionRecording($sessionId);
 
-        if (!$recording) {
+        if (! $recording) {
             return [];
         }
 
@@ -180,9 +171,6 @@ class SessionRecordingService
 
     /**
      * Compress recording data for storage optimization
-     *
-     * @param array $data
-     * @return array|string
      */
     public function compressRecordingData(array $data): array|string
     {
@@ -194,7 +182,7 @@ class SessionRecordingService
         $compressedData = gzcompress($jsonData);
 
         if (strlen($compressedData) < strlen($jsonData)) {
-            return self::COMPRESSION_PREFIX . base64_encode($compressedData);
+            return self::COMPRESSION_PREFIX.base64_encode($compressedData);
         }
 
         return $compressed;
@@ -202,13 +190,10 @@ class SessionRecordingService
 
     /**
      * Check if user has consented to recording
-     *
-     * @param int|null $userId
-     * @return bool
      */
     public function hasRecordingConsent(?int $userId): bool
     {
-        if (!$userId) {
+        if (! $userId) {
             return false; // Anonymous users require explicit consent
         }
 
@@ -217,17 +202,12 @@ class SessionRecordingService
         return Cache::remember(
             "user_recording_consent_{$userId}",
             3600,
-            fn() => true // Replace with actual consent check
+            fn () => true // Replace with actual consent check
         );
     }
 
     /**
      * Get sessions within date range
-     *
-     * @param Carbon $startDate
-     * @param Carbon $endDate
-     * @param array $filters
-     * @return Collection
      */
     public function getSessionsInRange(Carbon $startDate, Carbon $endDate, array $filters = []): Collection
     {
@@ -252,7 +232,6 @@ class SessionRecordingService
     /**
      * Anonymize old recordings based on retention policy
      *
-     * @param int $daysOld
      * @return int Number of recordings anonymized
      */
     public function anonymizeOldRecordings(int $daysOld = 365): int
@@ -371,7 +350,8 @@ class SessionRecordingService
         // Mask email addresses
         if (filter_var($value, FILTER_VALIDATE_EMAIL)) {
             $parts = explode('@', $value);
-            return substr($parts[0], 0, 2) . '***@' . $parts[1];
+
+            return substr($parts[0], 0, 2).'***@'.$parts[1];
         }
 
         // Mask other sensitive data
@@ -380,7 +360,7 @@ class SessionRecordingService
 
     private function pseudonymizeUserId(int|string $userId): string
     {
-        return hash('sha256', (string) $userId . env('APP_KEY'));
+        return hash('sha256', (string) $userId.env('APP_KEY'));
     }
 
     private function calculateSessionQualityScore(array $data): float
@@ -447,12 +427,12 @@ class SessionRecordingService
 
     private function countRageClicks(array $data): int
     {
-        $clickEvents = array_filter($data, fn($event) => ($event['type'] ?? '') === 'click');
+        $clickEvents = array_filter($data, fn ($event) => ($event['type'] ?? '') === 'click');
         $rageClicks = 0;
 
         foreach ($clickEvents as $index => $event) {
             $timestamp = strtotime($event['timestamp'] ?? '0');
-            $nearbyClicks = array_filter($clickEvents, function($otherEvent) use ($timestamp, $index) {
+            $nearbyClicks = array_filter($clickEvents, function ($otherEvent) use ($timestamp) {
                 return abs(strtotime($otherEvent['timestamp'] ?? '0') - $timestamp) < 1000;
             });
 
@@ -495,7 +475,7 @@ class SessionRecordingService
             $delta = [];
 
             foreach ($current as $key => $value) {
-                if (!isset($previous[$key]) || $previous[$key] !== $value) {
+                if (! isset($previous[$key]) || $previous[$key] !== $value) {
                     $delta[$key] = $value;
                 }
             }

@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\EmailLog;
-use App\Services\TenantContextService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 /**
  * Email Analytics Service
@@ -24,6 +23,7 @@ class EmailAnalyticsService extends BaseService
      * Cache configuration
      */
     protected const CACHE_PREFIX = 'email_analytics_';
+
     protected const CACHE_DURATION = 1800; // 30 minutes
 
     /**
@@ -671,7 +671,7 @@ class EmailAnalyticsService extends BaseService
         $tenantId = $this->getCurrentTenantId() ?? 'global';
         $filterHash = md5(serialize($filters));
 
-        return self::CACHE_PREFIX . "{$type}_{$tenantId}_{$filterHash}";
+        return self::CACHE_PREFIX."{$type}_{$tenantId}_{$filterHash}";
     }
 
     /**
@@ -687,8 +687,8 @@ class EmailAnalyticsService extends BaseService
 
         // Clear common cache keys
         $patterns = [
-            self::CACHE_PREFIX . "delivery_stats_{$tenantId}_*",
-            self::CACHE_PREFIX . "engagement_metrics_{$tenantId}_*",
+            self::CACHE_PREFIX."delivery_stats_{$tenantId}_*",
+            self::CACHE_PREFIX."engagement_metrics_{$tenantId}_*",
         ];
 
         foreach ($patterns as $pattern) {

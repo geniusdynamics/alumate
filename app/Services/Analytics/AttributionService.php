@@ -6,14 +6,10 @@ namespace App\Services\Analytics;
 
 use App\Models\AttributionTouch;
 use App\Models\User;
-use App\Services\Analytics\ConsentService;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-use Exception;
 
 /**
  * Attribution Service
@@ -24,12 +20,13 @@ use Exception;
 class AttributionService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const CHUNK_SIZE = 1000;
 
     /**
      * Track a user touchpoint for attribution analysis
      *
-     * @param array $touchData Touch data including user_id, source, event_type, etc.
+     * @param  array  $touchData  Touch data including user_id, source, event_type, etc.
      * @return AttributionTouch The created touch record
      */
     public function trackTouch(array $touchData): AttributionTouch
@@ -39,7 +36,7 @@ class AttributionService
             $consentService = app(ConsentService::class);
 
             // Check consent before tracking
-            if (!$consentService->checkConsent($touchData['user_id'], 'analytics')) {
+            if (! $consentService->checkConsent($touchData['user_id'], 'analytics')) {
                 Log::info('Skipping attribution tracking due to lack of consent', [
                     'user_id' => $touchData['user_id'],
                     'tenant_id' => $tenantId,
@@ -81,10 +78,10 @@ class AttributionService
     /**
      * Calculate attribution for a user within a time period
      *
-     * @param int $userId User ID to calculate attribution for
-     * @param string $startDate Start date for attribution window
-     * @param string $endDate End date for attribution window
-     * @param string $model Attribution model: 'last_touch', 'first_touch', 'linear', 'time_decay', 'position_based'
+     * @param  int  $userId  User ID to calculate attribution for
+     * @param  string  $startDate  Start date for attribution window
+     * @param  string  $endDate  End date for attribution window
+     * @param  string  $model  Attribution model: 'last_touch', 'first_touch', 'linear', 'time_decay', 'position_based'
      * @return array Attribution results with sources and their attributed values
      */
     public function calculateAttribution(int $userId, string $startDate, string $endDate, string $model = 'last_touch'): array
@@ -137,6 +134,7 @@ class AttributionService
                 'model' => $model,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -144,19 +142,19 @@ class AttributionService
     /**
      * Get attribution summary for multiple users
      *
-     * @param array $userIds Array of user IDs
-     * @param string $startDate Start date
-     * @param string $endDate End date
-     * @param string $model Attribution model
+     * @param  array  $userIds  Array of user IDs
+     * @param  string  $startDate  Start date
+     * @param  string  $endDate  End date
+     * @param  string  $model  Attribution model
      * @return array Summary of attribution across users
      */
     public function getAttributionSummary(array $userIds, string $startDate, string $endDate, string $model = 'last_touch'): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "attribution_summary_" . md5(serialize($userIds)) . "_{$startDate}_{$endDate}_{$model}";
+            $cacheKey = 'attribution_summary_'.md5(serialize($userIds))."_{$startDate}_{$endDate}_{$model}";
 
-            return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userIds, $startDate, $endDate, $model, $tenantId) {
+            return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userIds, $startDate, $endDate, $model) {
                 $summary = [
                     'period' => ['start' => $startDate, 'end' => $endDate],
                     'model' => $model,
@@ -173,14 +171,14 @@ class AttributionService
                     foreach ($chunk as $userId) {
                         $userAttribution = $this->calculateAttribution($userId, $startDate, $endDate, $model);
 
-                        if (!empty($userAttribution)) {
+                        if (! empty($userAttribution)) {
                             $summary['total_value'] += $userAttribution['total_value'];
                             $summary['user_attributions'][] = $userAttribution;
 
                             // Aggregate source breakdown
                             foreach ($userAttribution['sources'] as $source) {
                                 $sourceName = $source['name'];
-                                if (!isset($summary['source_breakdown'][$sourceName])) {
+                                if (! isset($summary['source_breakdown'][$sourceName])) {
                                     $summary['source_breakdown'][$sourceName] = [
                                         'name' => $sourceName,
                                         'total_value' => 0,
@@ -215,6 +213,7 @@ class AttributionService
                 'model' => $model,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -222,8 +221,8 @@ class AttributionService
     /**
      * Get touch history for a user
      *
-     * @param int $userId User ID
-     * @param int $limit Maximum number of touches to return
+     * @param  int  $userId  User ID
+     * @param  int  $limit  Maximum number of touches to return
      * @return Collection Collection of attribution touches
      */
     public function getTouchHistory(int $userId, int $limit = 50): Collection
@@ -240,9 +239,9 @@ class AttributionService
     /**
      * Get channel contribution analysis
      *
-     * @param string $channel Channel name to analyze
-     * @param string $startDate Start date
-     * @param string $endDate End date
+     * @param  string  $channel  Channel name to analyze
+     * @param  string  $startDate  Start date
+     * @param  string  $endDate  End date
      * @return array Channel contribution data
      */
     public function getChannelContribution(string $channel, string $startDate, string $endDate): array
@@ -293,6 +292,7 @@ class AttributionService
                 'end_date' => $endDate,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -300,10 +300,10 @@ class AttributionService
     /**
      * Calculate channel ROI
      *
-     * @param string $channel Channel name
-     * @param string $startDate Start date
-     * @param string $endDate End date
-     * @param float $channelSpend Amount spent on the channel
+     * @param  string  $channel  Channel name
+     * @param  string  $startDate  Start date
+     * @param  string  $endDate  End date
+     * @param  float  $channelSpend  Amount spent on the channel
      * @return array ROI calculation results
      */
     public function calculateChannelROI(string $channel, string $startDate, string $endDate, float $channelSpend = 0): array
@@ -345,6 +345,7 @@ class AttributionService
                 'end_date' => $endDate,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -352,9 +353,9 @@ class AttributionService
     /**
      * Generate budget allocation recommendations
      *
-     * @param string $startDate Start date for analysis
-     * @param string $endDate End date for analysis
-     * @param float $totalBudget Total budget to allocate
+     * @param  string  $startDate  Start date for analysis
+     * @param  string  $endDate  End date for analysis
+     * @param  float  $totalBudget  Total budget to allocate
      * @return array Budget recommendations
      */
     public function generateBudgetRecommendations(string $startDate, string $endDate, float $totalBudget = 0): array
@@ -395,7 +396,7 @@ class AttributionService
                     $contribution = $this->getChannelContribution($channel, $startDate, $endDate);
                     $roi = $this->calculateChannelROI($channel, $startDate, $endDate, 0);
 
-                    if (!empty($contribution) && !empty($roi)) {
+                    if (! empty($contribution) && ! empty($roi)) {
                         $channelData[$channel] = [
                             'channel' => $channel,
                             'revenue' => $contribution['total_value'],
@@ -477,6 +478,7 @@ class AttributionService
                 'total_budget' => $totalBudget,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -484,8 +486,8 @@ class AttributionService
     /**
      * Calculate efficiency score for a channel
      *
-     * @param array $contribution Channel contribution data
-     * @param array $roi Channel ROI data
+     * @param  array  $contribution  Channel contribution data
+     * @param  array  $roi  Channel ROI data
      * @return float Efficiency score (0-100)
      */
     private function calculateEfficiencyScore(array $contribution, array $roi): float
@@ -522,9 +524,9 @@ class AttributionService
     /**
      * Apply attribution model to touches
      *
-     * @param Collection $touches Collection of touches
-     * @param float $totalValue Total value to attribute
-     * @param string $model Attribution model
+     * @param  Collection  $touches  Collection of touches
+     * @param  float  $totalValue  Total value to attribute
+     * @param  string  $model  Attribution model
      * @return array Attributed sources with percentages and values
      */
     private function applyAttributionModel(Collection $touches, float $totalValue, string $model): array
@@ -554,7 +556,7 @@ class AttributionService
                 'touch_count' => 1,
                 'first_touch' => false,
                 'last_touch' => true,
-            ]
+            ],
         ];
     }
 
@@ -574,7 +576,7 @@ class AttributionService
                 'touch_count' => 1,
                 'first_touch' => true,
                 'last_touch' => false,
-            ]
+            ],
         ];
     }
 
@@ -733,11 +735,11 @@ class AttributionService
      */
     private function validateTouchData(array $touchData): void
     {
-        if (!isset($touchData['user_id'])) {
+        if (! isset($touchData['user_id'])) {
             throw new Exception('User ID is required for attribution touch');
         }
 
-        if (!isset($touchData['event_type'])) {
+        if (! isset($touchData['event_type'])) {
             throw new Exception('Event type is required for attribution touch');
         }
 
@@ -746,7 +748,7 @@ class AttributionService
         }
 
         $validEventTypes = ['page_view', 'click', 'form_submit', 'purchase', 'signup', 'login'];
-        if (!in_array($touchData['event_type'], $validEventTypes)) {
+        if (! in_array($touchData['event_type'], $validEventTypes)) {
             throw new Exception('Invalid event type for attribution touch');
         }
     }

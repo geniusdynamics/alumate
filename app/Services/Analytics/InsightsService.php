@@ -7,15 +7,14 @@ namespace App\Services\Analytics;
 use App\Models\AnalyticsEvent;
 use App\Models\CustomEvent;
 use App\Models\LearningProgress;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
-use App\Jobs\Analytics\InsightsGenerationJob;
 
 /**
  * Service for generating automated insights and recommendations
- * 
+ *
  * This service analyzes analytics data to detect trends, anomalies, and generate actionable recommendations
  * using statistical methods like moving averages and z-score analysis.
  */
@@ -24,7 +23,7 @@ class InsightsService
     /**
      * Generate insights based on analytics data
      *
-     * @param array $options Configuration options for insight generation
+     * @param  array  $options  Configuration options for insight generation
      * @return array Array of insights with trends and recommendations
      */
     public function generateInsights(array $options = []): array
@@ -36,14 +35,16 @@ class InsightsService
 
         // Check consent for data access
         $consentService = app(ConsentService::class);
-        if (!$consentService->hasConsent()) {
+        if (! $consentService->hasConsent()) {
             Log::warning('Insights generation attempted without data processing consent');
+
             return [];
         }
 
         // Queue heavy computation if needed
         if ($options['queue'] ?? false) {
             \App\Jobs\Analytics\InsightsGenerationJob::dispatch($options);
+
             return ['queued' => true, 'message' => 'Insight generation queued'];
         }
 
@@ -54,10 +55,10 @@ class InsightsService
 
         // Analyze trends
         $trends = $this->analyzeTrends($analyticsEvents, $customEvents, $learningProgress, $period);
-        
+
         // Detect anomalies
         $anomalies = $this->detectAnomalies($analyticsEvents, $customEvents, $learningProgress);
-        
+
         // Generate recommendations
         $recommendations = $this->generateRecommendations($trends, $anomalies, $analyticsEvents, $customEvents, $learningProgress);
 
@@ -73,7 +74,7 @@ class InsightsService
                 'data_points' => $trend['data_points'],
                 'timestamp' => now(),
                 'anomaly' => $this->isAnomaly($trend['trend_score']),
-                'recommendation' => $this->findRecommendationForTrend($trend, $recommendations)
+                'recommendation' => $this->findRecommendationForTrend($trend, $recommendations),
             ];
         }
 
@@ -87,7 +88,7 @@ class InsightsService
                 'id' => Str::uuid()->toString(),
                 'baseline' => $anomaly['baseline'],
                 'timestamp' => now(),
-                'recommendation' => $this->findRecommendationForAnomaly($anomaly, $recommendations)
+                'recommendation' => $this->findRecommendationForAnomaly($anomaly, $recommendations),
             ];
         }
 
@@ -97,9 +98,9 @@ class InsightsService
     /**
      * Track the effectiveness of a recommendation
      *
-     * @param string $insightId The ID of the insight/recommendation
-     * @param int $effectivenessScore Score from 1-10 indicating effectiveness
-     * @param array $metadata Additional metadata about the implementation
+     * @param  string  $insightId  The ID of the insight/recommendation
+     * @param  int  $effectivenessScore  Score from 1-10 indicating effectiveness
+     * @param  array  $metadata  Additional metadata about the implementation
      * @return bool Success status
      */
     public function trackEffectiveness(string $insightId, int $effectivenessScore, array $metadata = []): bool
@@ -111,15 +112,15 @@ class InsightsService
         // Store effectiveness data for learning and improvement
         $key = "insight_effectiveness_{$insightId}";
         $currentData = Cache::get($key, []);
-        
+
         $effectivenessData = [
             'score' => $effectivenessScore,
             'timestamp' => now(),
-            'metadata' => $metadata
+            'metadata' => $metadata,
         ];
 
         $currentData[] = $effectivenessData;
-        
+
         // Keep only last 10 effectiveness records to avoid cache bloat
         if (count($currentData) > 10) {
             $currentData = array_slice($currentData, -10);
@@ -136,7 +137,7 @@ class InsightsService
     /**
      * Get average effectiveness for a specific insight type
      *
-     * @param string $insightId The insight ID
+     * @param  string  $insightId  The insight ID
      * @return float Average effectiveness score
      */
     public function getInsightEffectiveness(string $insightId): float
@@ -149,6 +150,7 @@ class InsightsService
         }
 
         $total = array_sum(array_column($data, 'score'));
+
         return $total / count($data);
     }
 
@@ -159,7 +161,7 @@ class InsightsService
     {
         $query = AnalyticsEvent::whereBetween('created_at', [$startDate, $endDate]);
 
-        if (!empty($filters['event_types'])) {
+        if (! empty($filters['event_types'])) {
             $query->whereIn('event_type', $filters['event_types']);
         }
 
@@ -173,7 +175,7 @@ class InsightsService
     {
         $query = CustomEvent::whereBetween('created_at', [$startDate, $endDate]);
 
-        if (!empty($filters['event_types'])) {
+        if (! empty($filters['event_types'])) {
             $query->whereIn('event_type', $filters['event_types']);
         }
 
@@ -187,7 +189,7 @@ class InsightsService
     {
         $query = LearningProgress::whereBetween('created_at', [$startDate, $endDate]);
 
-        if (!empty($filters['course_ids'])) {
+        if (! empty($filters['course_ids'])) {
             $query->whereIn('course_id', $filters['course_ids']);
         }
 
@@ -236,12 +238,12 @@ class InsightsService
             $endOfDay = $date->endOfDay();
 
             $dailyEngagement = $analyticsEvents
-                ->filter(fn($event) => $event->created_at >= $startOfDay && $event->created_at <= $endOfDay)
+                ->filter(fn ($event) => $event->created_at >= $startOfDay && $event->created_at <= $endOfDay)
                 ->count();
 
             $dataPoints[] = [
                 'date' => $date->format('Y-m-d'),
-                'value' => $dailyEngagement
+                'value' => $dailyEngagement,
             ];
         }
 
@@ -251,11 +253,11 @@ class InsightsService
 
         // Calculate moving average
         $movingAvg = $this->calculateMovingAverage($dataPoints, 7);
-        
+
         // Calculate trend score (simple: last 3 days vs previous 3 days)
         $recentAvg = $this->calculateAverageFromEnd($dataPoints, 3);
         $prevAvg = $this->calculateAverageFromEnd($dataPoints, 6, 3);
-        
+
         $trendScore = 0;
         if ($prevAvg > 0) {
             $trendScore = (($recentAvg - $prevAvg) / $prevAvg) * 100;
@@ -266,7 +268,7 @@ class InsightsService
             'description' => 'User engagement trend over the selected period',
             'trend_score' => $trendScore,
             'data_points' => $dataPoints,
-            'moving_average' => $movingAvg
+            'moving_average' => $movingAvg,
         ];
     }
 
@@ -284,12 +286,12 @@ class InsightsService
             $endOfDay = $date->endOfDay();
 
             $dailyProgress = $learningProgress
-                ->filter(fn($progress) => $progress->created_at >= $startOfDay && $progress->created_at <= $endOfDay)
+                ->filter(fn ($progress) => $progress->created_at >= $startOfDay && $progress->created_at <= $endOfDay)
                 ->count();
 
             $dataPoints[] = [
                 'date' => $date->format('Y-m-d'),
-                'value' => $dailyProgress
+                'value' => $dailyProgress,
             ];
         }
 
@@ -299,11 +301,11 @@ class InsightsService
 
         // Calculate moving average
         $movingAvg = $this->calculateMovingAverage($dataPoints, 7);
-        
+
         // Calculate trend score
         $recentAvg = $this->calculateAverageFromEnd($dataPoints, 3);
         $prevAvg = $this->calculateAverageFromEnd($dataPoints, 6, 3);
-        
+
         $trendScore = 0;
         if ($prevAvg > 0) {
             $trendScore = (($recentAvg - $prevAvg) / $prevAvg) * 100;
@@ -314,7 +316,7 @@ class InsightsService
             'description' => 'Learning progress trend over the selected period',
             'trend_score' => $trendScore,
             'data_points' => $dataPoints,
-            'moving_average' => $movingAvg
+            'moving_average' => $movingAvg,
         ];
     }
 
@@ -332,12 +334,12 @@ class InsightsService
             $endOfDay = $date->endOfDay();
 
             $dailyEvents = $customEvents
-                ->filter(fn($event) => $event->created_at >= $startOfDay && $event->created_at <= $endOfDay)
+                ->filter(fn ($event) => $event->created_at >= $startOfDay && $event->created_at <= $endOfDay)
                 ->count();
 
             $dataPoints[] = [
                 'date' => $date->format('Y-m-d'),
-                'value' => $dailyEvents
+                'value' => $dailyEvents,
             ];
         }
 
@@ -347,11 +349,11 @@ class InsightsService
 
         // Calculate moving average
         $movingAvg = $this->calculateMovingAverage($dataPoints, 7);
-        
+
         // Calculate trend score
         $recentAvg = $this->calculateAverageFromEnd($dataPoints, 3);
         $prevAvg = $this->calculateAverageFromEnd($dataPoints, 6, 3);
-        
+
         $trendScore = 0;
         if ($prevAvg > 0) {
             $trendScore = (($recentAvg - $prevAvg) / $prevAvg) * 100;
@@ -362,7 +364,7 @@ class InsightsService
             'description' => 'Custom events trend over the selected period',
             'trend_score' => $trendScore,
             'data_points' => $dataPoints,
-            'moving_average' => $movingAvg
+            'moving_average' => $movingAvg,
         ];
     }
 
@@ -394,7 +396,7 @@ class InsightsService
     private function detectEngagementAnomalies(Collection $analyticsEvents): array
     {
         $anomalies = [];
-        
+
         // Group events by day
         $dailyEvents = $analyticsEvents->groupBy(function ($event) {
             return $event->created_at->format('Y-m-d');
@@ -405,9 +407,9 @@ class InsightsService
         }
 
         // Calculate mean and standard deviation
-        $dailyCounts = $dailyEvents->map(fn($events) => $events->count())->values()->toArray();
+        $dailyCounts = $dailyEvents->map(fn ($events) => $events->count())->values()->toArray();
         $mean = array_sum($dailyCounts) / count($dailyCounts);
-        $variance = array_sum(array_map(fn($value) => pow($value - $mean, 2), $dailyCounts)) / count($dailyCounts);
+        $variance = array_sum(array_map(fn ($value) => pow($value - $mean, 2), $dailyCounts)) / count($dailyCounts);
         $stdDev = sqrt($variance);
 
         if ($stdDev === 0) {
@@ -434,7 +436,7 @@ class InsightsService
                     'severity' => $severity,
                     'value' => $count,
                     'baseline' => $mean,
-                    'z_score' => $zScore
+                    'z_score' => $zScore,
                 ];
             }
         }
@@ -448,7 +450,7 @@ class InsightsService
     private function detectLearningAnomalies(Collection $learningProgress): array
     {
         $anomalies = [];
-        
+
         // Group progress by day
         $dailyProgress = $learningProgress->groupBy(function ($progress) {
             return $progress->created_at->format('Y-m-d');
@@ -459,9 +461,9 @@ class InsightsService
         }
 
         // Calculate mean and standard deviation
-        $dailyCounts = $dailyProgress->map(fn($progress) => $progress->count())->values()->toArray();
+        $dailyCounts = $dailyProgress->map(fn ($progress) => $progress->count())->values()->toArray();
         $mean = array_sum($dailyCounts) / count($dailyCounts);
-        $variance = array_sum(array_map(fn($value) => pow($value - $mean, 2), $dailyCounts)) / count($dailyCounts);
+        $variance = array_sum(array_map(fn ($value) => pow($value - $mean, 2), $dailyCounts)) / count($dailyCounts);
         $stdDev = sqrt($variance);
 
         if ($stdDev === 0) {
@@ -488,7 +490,7 @@ class InsightsService
                     'severity' => $severity,
                     'value' => $count,
                     'baseline' => $mean,
-                    'z_score' => $zScore
+                    'z_score' => $zScore,
                 ];
             }
         }
@@ -502,7 +504,7 @@ class InsightsService
     private function detectCustomEventAnomalies(Collection $customEvents): array
     {
         $anomalies = [];
-        
+
         // Group events by day
         $dailyEvents = $customEvents->groupBy(function ($event) {
             return $event->created_at->format('Y-m-d');
@@ -513,9 +515,9 @@ class InsightsService
         }
 
         // Calculate mean and standard deviation
-        $dailyCounts = $dailyEvents->map(fn($events) => $events->count())->values()->toArray();
+        $dailyCounts = $dailyEvents->map(fn ($events) => $events->count())->values()->toArray();
         $mean = array_sum($dailyCounts) / count($dailyCounts);
-        $variance = array_sum(array_map(fn($value) => pow($value - $mean, 2), $dailyCounts)) / count($dailyCounts);
+        $variance = array_sum(array_map(fn ($value) => pow($value - $mean, 2), $dailyCounts)) / count($dailyCounts);
         $stdDev = sqrt($variance);
 
         if ($stdDev === 0) {
@@ -542,7 +544,7 @@ class InsightsService
                     'severity' => $severity,
                     'value' => $count,
                     'baseline' => $mean,
-                    'z_score' => $zScore
+                    'z_score' => $zScore,
                 ];
             }
         }
@@ -567,7 +569,7 @@ class InsightsService
                     'description' => 'Significant drop in engagement detected. Consider launching engagement campaigns.',
                     'expected_impact' => '+15% retention',
                     'priority' => 'high',
-                    'action' => 'Launch re-engagement campaign'
+                    'action' => 'Launch re-engagement campaign',
                 ];
             } elseif ($trend['metric'] === 'engagement' && $trend['trend_score'] > 20) {
                 // Significant spike in engagement
@@ -577,7 +579,7 @@ class InsightsService
                     'description' => 'Significant engagement spike detected. Capitalize on momentum.',
                     'expected_impact' => '+10% conversion',
                     'priority' => 'medium',
-                    'action' => 'Launch conversion-focused campaigns'
+                    'action' => 'Launch conversion-focused campaigns',
                 ];
             } elseif ($trend['metric'] === 'learning_progress' && $trend['trend_score'] < -20) {
                 // Significant drop in learning progress
@@ -587,7 +589,7 @@ class InsightsService
                     'description' => 'Significant drop in learning progress detected. Consider optimizing course content.',
                     'expected_impact' => '+25% completion rate',
                     'priority' => 'high',
-                    'action' => 'Review and optimize course content'
+                    'action' => 'Review and optimize course content',
                 ];
             }
         }
@@ -599,30 +601,30 @@ class InsightsService
                 $recommendations[] = [
                     'type' => 'retention_strategy',
                     'target' => 'at_risk_users',
-                    'description' => 'Significant drop in engagement detected on ' . $anomaly['date'] . '. Immediate retention action needed.',
+                    'description' => 'Significant drop in engagement detected on '.$anomaly['date'].'. Immediate retention action needed.',
                     'expected_impact' => '+20% retention',
                     'priority' => 'critical',
-                    'action' => 'Deploy emergency retention strategy'
+                    'action' => 'Deploy emergency retention strategy',
                 ];
             } elseif ($anomaly['metric'] === 'learning_progress' && $anomaly['severity'] === 'high' && $anomaly['value'] < $anomaly['baseline']) {
                 // Significant drop in learning progress
                 $recommendations[] = [
                     'type' => 'intervention',
                     'target' => 'struggling_learners',
-                    'description' => 'Significant drop in learning progress detected on ' . $anomaly['date'] . '. Consider learner intervention.',
+                    'description' => 'Significant drop in learning progress detected on '.$anomaly['date'].'. Consider learner intervention.',
                     'expected_impact' => '+30% course completion',
                     'priority' => 'high',
-                    'action' => 'Implement learner support intervention'
+                    'action' => 'Implement learner support intervention',
                 ];
             } elseif ($anomaly['metric'] === 'custom_events' && $anomaly['severity'] === 'high' && $anomaly['value'] > $anomaly['baseline']) {
                 // Significant spike in custom events
                 $recommendations[] = [
                     'type' => 'optimization',
                     'target' => 'high_performing_features',
-                    'description' => 'Significant spike in custom events detected on ' . $anomaly['date'] . '. Optimize for this behavior.',
+                    'description' => 'Significant spike in custom events detected on '.$anomaly['date'].'. Optimize for this behavior.',
                     'expected_impact' => '+15% user satisfaction',
                     'priority' => 'medium',
-                    'action' => 'Analyze and optimize successful features'
+                    'action' => 'Analyze and optimize successful features',
                 ];
             }
         }
@@ -634,7 +636,7 @@ class InsightsService
             // Using a method that likely exists based on the AttributionService structure
             // We'll implement a method that gets attribution summary data
             $attributionSummary = $attributionService->getAttributionSummary([], now()->subDays(30)->format('Y-m-d'), now()->format('Y-m-d'));
-            if (!empty($attributionSummary)) {
+            if (! empty($attributionSummary)) {
                 $recommendation['attribution_insights'] = $attributionSummary;
             }
         }
@@ -656,7 +658,7 @@ class InsightsService
                 return $rec;
             }
         }
-        
+
         return null;
     }
 
@@ -674,7 +676,7 @@ class InsightsService
                 return $rec;
             }
         }
-        
+
         return null;
     }
 
@@ -713,23 +715,23 @@ class InsightsService
     {
         $result = [];
         $count = count($dataPoints);
-        
+
         for ($i = 0; $i < $count; $i++) {
             $sum = 0;
             $items = 0;
-            
+
             // Calculate average for window
             for ($j = max(0, $i - $windowSize + 1); $j <= $i; $j++) {
                 $sum += $dataPoints[$j]['value'];
                 $items++;
             }
-            
+
             $result[] = [
                 'date' => $dataPoints[$i]['date'],
-                'value' => $items > 0 ? $sum / $items : 0
+                'value' => $items > 0 ? $sum / $items : 0,
             ];
         }
-        
+
         return $result;
     }
 
@@ -742,8 +744,9 @@ class InsightsService
         if (empty($slice)) {
             return 0;
         }
-        
+
         $sum = array_sum(array_column($slice, 'value'));
+
         return $sum / count($slice);
     }
 
@@ -761,10 +764,10 @@ class InsightsService
 
         $key = "insight_type_effectiveness_{$type}";
         $data = Cache::get($key, ['total_score' => 0, 'count' => 0]);
-        
+
         $data['total_score'] += $effectivenessScore;
         $data['count']++;
-        
+
         Cache::put($key, $data, now()->addDays(30));
     }
 }

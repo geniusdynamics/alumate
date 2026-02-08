@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Component;
-use App\Models\ComponentTheme;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -13,8 +12,11 @@ class ComponentAccessibilityService
      * WCAG 2.1 AA compliance thresholds
      */
     protected const WCAG_AA_CONTRAST_RATIO = 4.5;
+
     protected const WCAG_AAA_CONTRAST_RATIO = 7.0;
+
     protected const WCAG_AA_LARGE_TEXT_CONTRAST_RATIO = 3.0;
+
     protected const WCAG_AAA_LARGE_TEXT_CONTRAST_RATIO = 4.5;
 
     /**
@@ -41,7 +43,7 @@ class ComponentAccessibilityService
             'issues' => [],
             'successes' => [],
             'suggestions' => [],
-            'breakdown' => []
+            'breakdown' => [],
         ];
 
         // Analyze different accessibility aspects
@@ -50,7 +52,7 @@ class ComponentAccessibilityService
             'color_contrast' => $this->analyzeColorContrast($component),
             'keyboard_navigation' => $this->analyzeKeyboardNavigation($component),
             'screen_reader_support' => $this->analyzeScreenReaderSupport($component),
-            'mobile_accessibility' => $this->analyzeMobileAccessibility($component)
+            'mobile_accessibility' => $this->analyzeMobileAccessibility($component),
         ];
 
         // Combine all aspect results
@@ -59,7 +61,7 @@ class ComponentAccessibilityService
             $assessment['successes'] = array_merge($assessment['successes'], $result['successes']);
             $assessment['suggestions'] = array_merge($assessment['suggestions'], $result['suggestions']);
             $assessment['breakdown'][$aspect] = $result;
-            $assessment['score_' . $aspect] = $result['score'];
+            $assessment['score_'.$aspect] = $result['score'];
         }
 
         // Calculate overall score and grade
@@ -84,12 +86,12 @@ class ComponentAccessibilityService
         $score = 100;
 
         // Check for proper semantic elements
-        if (!isset($config['semantic_tag']) || $config['semantic_tag'] === 'div') {
+        if (! isset($config['semantic_tag']) || $config['semantic_tag'] === 'div') {
             $issues[] = [
                 'rule_id' => '1.3.1',
                 'description' => 'Non-semantic HTML elements used (div instead of semantic element)',
                 'severity' => 'medium',
-                'impact' => 'Screen readers cannot identify content structure properly'
+                'impact' => 'Screen readers cannot identify content structure properly',
             ];
             $score -= 30;
             $suggestions[] = 'Use semantic HTML elements like header, nav, main, section, article, aside, footer';
@@ -106,7 +108,7 @@ class ComponentAccessibilityService
                 'rule_id' => '2.4.6',
                 'description' => 'Missing or improper heading structure',
                 'severity' => 'medium',
-                'impact' => 'Users cannot navigate content efficiently'
+                'impact' => 'Users cannot navigate content efficiently',
             ];
             $score -= 20;
         }
@@ -115,7 +117,7 @@ class ComponentAccessibilityService
             'score' => max(0, $score),
             'issues' => $issues,
             'successes' => $successes,
-            'suggestions' => $suggestions
+            'suggestions' => $suggestions,
         ];
     }
 
@@ -135,19 +137,20 @@ class ComponentAccessibilityService
         // Get colors from component config or theme
         $colors = $this->getColorsForAnalysis($component);
 
-        if (!isset($colors['text']) || !isset($colors['background'])) {
+        if (! isset($colors['text']) || ! isset($colors['background'])) {
             $issues[] = [
                 'rule_id' => '1.4.3',
                 'description' => 'Text and background colors not defined',
                 'severity' => 'high',
-                'impact' => 'Text may not be readable for users with visual impairments'
+                'impact' => 'Text may not be readable for users with visual impairments',
             ];
             $score -= 100;
+
             return [
                 'score' => max(0, $score),
                 'issues' => $issues,
                 'successes' => $successes,
-                'suggestions' => $suggestions
+                'suggestions' => $suggestions,
             ];
         }
 
@@ -162,7 +165,7 @@ class ComponentAccessibilityService
                 'rule_id' => '1.4.3',
                 'description' => "Poor color contrast ratio: {$contrastRatio}:1 (below WCAG AA standard of 4.5:1)",
                 'severity' => 'high',
-                'impact' => 'Text may be difficult or impossible to read for users with visual impairments'
+                'impact' => 'Text may be difficult or impossible to read for users with visual impairments',
             ];
             $score -= 80;
             $suggestions[] = 'Adjust colors to meet WCAG AA contrast ratio of 4.5:1';
@@ -174,7 +177,7 @@ class ComponentAccessibilityService
             'score' => max(0, $score),
             'issues' => $issues,
             'successes' => $successes,
-            'suggestions' => $suggestions
+            'suggestions' => $suggestions,
         ];
     }
 
@@ -191,12 +194,12 @@ class ComponentAccessibilityService
         $score = 100;
 
         // Check for focus management
-        if (!isset($accessibility['focusable']) && $this->componentMayNeedFocus($component->category)) {
+        if (! isset($accessibility['focusable']) && $this->componentMayNeedFocus($component->category)) {
             $issues[] = [
                 'rule_id' => '2.1.1',
                 'description' => 'Component may require keyboard focus management',
                 'severity' => 'medium',
-                'impact' => 'Users cannot access component using keyboard-only navigation'
+                'impact' => 'Users cannot access component using keyboard-only navigation',
             ];
             $score -= 30;
             $suggestions[] = 'Ensure all interactive elements are keyboard accessible';
@@ -208,12 +211,12 @@ class ComponentAccessibilityService
         // Check for logical tab order
         if ($this->hasMultipleInteractiveElements($component)) {
             $tabOrder = $accessibility['tab_order'] ?? null;
-            if (!$tabOrder) {
+            if (! $tabOrder) {
                 $issues[] = [
                     'rule_id' => '2.4.3',
                     'description' => 'Complex component may have illogical tab order',
                     'severity' => 'medium',
-                    'impact' => 'Users may experience confusing navigation flow'
+                    'impact' => 'Users may experience confusing navigation flow',
                 ];
                 $score -= 20;
                 $suggestions[] = 'Ensure logical tab order for all interactive elements';
@@ -229,7 +232,7 @@ class ComponentAccessibilityService
                 'rule_id' => '2.4.7',
                 'description' => 'Missing visible focus indicators',
                 'severity' => 'medium',
-                'impact' => 'Users cannot see where they are when navigating with keyboard'
+                'impact' => 'Users cannot see where they are when navigating with keyboard',
             ];
             $score -= 30;
             $suggestions[] = 'Add visible focus indicators (outline, background, border changes)';
@@ -242,7 +245,7 @@ class ComponentAccessibilityService
             'score' => max(0, $score),
             'issues' => $issues,
             'successes' => $successes,
-            'suggestions' => $suggestions
+            'suggestions' => $suggestions,
         ];
     }
 
@@ -259,12 +262,12 @@ class ComponentAccessibilityService
         $score = 100;
 
         // Check for ARIA labels
-        if (!isset($accessibility['aria_label'])) {
+        if (! isset($accessibility['aria_label'])) {
             $issues[] = [
                 'rule_id' => '4.1.2',
                 'description' => 'Missing ARIA label for component',
                 'severity' => 'medium',
-                'impact' => 'Screen readers cannot announce component purpose'
+                'impact' => 'Screen readers cannot announce component purpose',
             ];
             $score -= 30;
             $suggestions[] = 'Add descriptive aria-label attribute';
@@ -274,12 +277,12 @@ class ComponentAccessibilityService
         }
 
         // Check for ARIA roles
-        if (!isset($accessibility['role']) && $this->componentNeedsExplicitRole($component->category)) {
+        if (! isset($accessibility['role']) && $this->componentNeedsExplicitRole($component->category)) {
             $issues[] = [
                 'rule_id' => '4.1.2',
                 'description' => 'Missing ARIA role for complex component',
                 'severity' => 'medium',
-                'impact' => 'Screen readers cannot understand component type and purpose'
+                'impact' => 'Screen readers cannot understand component type and purpose',
             ];
             $score -= 25;
             $suggestions[] = 'Add appropriate ARIA role attribute';
@@ -291,7 +294,7 @@ class ComponentAccessibilityService
             'score' => max(0, $score),
             'issues' => $issues,
             'successes' => $successes,
-            'suggestions' => $suggestions
+            'suggestions' => $suggestions,
         ];
     }
 
@@ -318,7 +321,7 @@ class ComponentAccessibilityService
                     'rule_id' => '1.4.4',
                     'description' => 'Mobile font size may be too small (below recommended 14px)',
                     'severity' => 'medium',
-                    'impact' => 'Text may be difficult to read on mobile devices'
+                    'impact' => 'Text may be difficult to read on mobile devices',
                 ];
                 $score -= 30;
                 $suggestions[] = 'Ensure minimum font size of 14px (16px preferred) on mobile';
@@ -331,7 +334,7 @@ class ComponentAccessibilityService
                 'rule_id' => '1.4.10',
                 'description' => 'Missing mobile-responsive considerations',
                 'severity' => 'low',
-                'impact' => 'Component may not work well on mobile devices'
+                'impact' => 'Component may not work well on mobile devices',
             ];
             $score -= 20;
             $suggestions[] = 'Add mobile-specific configuration and test on mobile devices';
@@ -341,7 +344,7 @@ class ComponentAccessibilityService
             'score' => max(0, $score),
             'issues' => $issues,
             'successes' => $successes,
-            'suggestions' => $suggestions
+            'suggestions' => $suggestions,
         ];
     }
 
@@ -355,7 +358,7 @@ class ComponentAccessibilityService
             $assessment['score_color_contrast'] ?? 100,
             $assessment['score_keyboard_navigation'] ?? 100,
             $assessment['score_screen_reader_support'] ?? 100,
-            $assessment['score_mobile_accessibility'] ?? 100
+            $assessment['score_mobile_accessibility'] ?? 100,
         ];
 
         // Weighted average (some aspects are more critical than others)
@@ -376,17 +379,40 @@ class ComponentAccessibilityService
      */
     protected function calculateGrade(float $score): string
     {
-        if ($score >= 95) return 'A+';
-        if ($score >= 90) return 'A';
-        if ($score >= 85) return 'A-';
-        if ($score >= 80) return 'B+';
-        if ($score >= 75) return 'B';
-        if ($score >= 70) return 'B-';
-        if ($score >= 65) return 'C+';
-        if ($score >= 60) return 'C';
-        if ($score >= 55) return 'C-';
-        if ($score >= 50) return 'D+';
-        if ($score >= 40) return 'D';
+        if ($score >= 95) {
+            return 'A+';
+        }
+        if ($score >= 90) {
+            return 'A';
+        }
+        if ($score >= 85) {
+            return 'A-';
+        }
+        if ($score >= 80) {
+            return 'B+';
+        }
+        if ($score >= 75) {
+            return 'B';
+        }
+        if ($score >= 70) {
+            return 'B-';
+        }
+        if ($score >= 65) {
+            return 'C+';
+        }
+        if ($score >= 60) {
+            return 'C';
+        }
+        if ($score >= 55) {
+            return 'C-';
+        }
+        if ($score >= 50) {
+            return 'D+';
+        }
+        if ($score >= 40) {
+            return 'D';
+        }
+
         return 'F';
     }
 
@@ -396,7 +422,7 @@ class ComponentAccessibilityService
     protected function determineCompliance(array $assessment): bool
     {
         $overallScore = $assessment['overall_score'];
-        $criticalIssues = array_filter($assessment['issues'], fn($issue) => $issue['severity'] === 'high');
+        $criticalIssues = array_filter($assessment['issues'], fn ($issue) => $issue['severity'] === 'high');
 
         // Must score at least 70% with no critical issues to be compliant
         return $overallScore >= 70 && count($criticalIssues) === 0;
@@ -410,7 +436,7 @@ class ComponentAccessibilityService
         $rgb1 = $this->hexToRgb($color1);
         $rgb2 = $this->hexToRgb($color2);
 
-        if (!$rgb1 || !$rgb2) {
+        if (! $rgb1 || ! $rgb2) {
             return 0.0;
         }
 
@@ -441,7 +467,7 @@ class ComponentAccessibilityService
         return [
             'r' => hexdec(substr($hex, 0, 2)),
             'g' => hexdec(substr($hex, 2, 2)),
-            'b' => hexdec(substr($hex, 4, 2))
+            'b' => hexdec(substr($hex, 4, 2)),
         ];
     }
 
@@ -482,6 +508,7 @@ class ComponentAccessibilityService
     protected function componentMayNeedFocus(string $category): bool
     {
         $focusableCategories = ['forms', 'ctas', 'testimonials', 'statistics', 'hero'];
+
         return in_array($category, $focusableCategories);
     }
 
@@ -522,6 +549,7 @@ class ComponentAccessibilityService
     protected function componentNeedsExplicitRole(string $category): bool
     {
         $complexCategories = ['forms', 'testimonials', 'statistics', 'hero'];
+
         return in_array($category, $complexCategories);
     }
 
@@ -554,21 +582,21 @@ class ComponentAccessibilityService
             'grades_count' => [
                 'A+' => 0, 'A' => 0, 'A-' => 0, 'B+' => 0, 'B' => 0,
                 'B-' => 0, 'C+' => 0, 'C' => 0, 'C-' => 0, 'D+' => 0,
-                'D' => 0, 'F' => 0
+                'D' => 0, 'F' => 0,
             ],
             'compliance_levels' => [
                 'compliant' => 0,
                 'partial' => 0,
-                'non_compliant' => 0
+                'non_compliant' => 0,
             ],
             'critical_issues_by_type' => [
                 'color_contrast' => 0,
                 'keyboard_navigation' => 0,
                 'screen_reader_support' => 0,
-                'semantic_html' => 0
+                'semantic_html' => 0,
             ],
             'average_score' => 0,
-            'component_assessments' => []
+            'component_assessments' => [],
         ];
 
         $totalScore = 0;
@@ -580,7 +608,7 @@ class ComponentAccessibilityService
                 'name' => $component->name,
                 'score' => $assessment['overall_score'],
                 'grade' => $assessment['grade'],
-                'is_compliant' => $assessment['is_compliant']
+                'is_compliant' => $assessment['is_compliant'],
             ];
 
             $summary['grades_count'][$assessment['grade']]++;
@@ -636,7 +664,7 @@ class ComponentAccessibilityService
             'high_impact_improvements' => $this->getHighImpactImprovements($assessment),
             'ongoing_maintenance' => $this->getOngoingMaintenance($assessment),
             'testing_checklist' => $this->getTestingChecklist(),
-            'estimated_improvement' => $this->estimateScoreImprovement($assessment)
+            'estimated_improvement' => $this->estimateScoreImprovement($assessment),
         ];
     }
 
@@ -653,7 +681,7 @@ class ComponentAccessibilityService
                     'priority' => 'critical',
                     'description' => $issue['description'],
                     'suggestion' => $this->getSuggestionForIssue($issue),
-                    'effort' => 'medium'
+                    'effort' => 'medium',
                 ];
             }
         }
@@ -672,7 +700,7 @@ class ComponentAccessibilityService
             $improvements[] = [
                 'description' => $suggestion,
                 'impact' => 'high',
-                'effort' => 'medium'
+                'effort' => 'medium',
             ];
         }
 
@@ -688,18 +716,18 @@ class ComponentAccessibilityService
             [
                 'description' => 'Regular accessibility audits during development',
                 'impact' => 'high',
-                'effort' => 'low'
+                'effort' => 'low',
             ],
             [
                 'description' => 'Test with keyboard-only navigation',
                 'impact' => 'medium',
-                'effort' => 'low'
+                'effort' => 'low',
             ],
             [
                 'description' => 'Validate color contrast ratios',
                 'impact' => 'high',
-                'effort' => 'low'
-            ]
+                'effort' => 'low',
+            ],
         ];
     }
 
@@ -716,7 +744,7 @@ class ComponentAccessibilityService
             'Test that text can resize up to 200% without breaking layout',
             'Verify form validation messages are announced to screen readers',
             'Check heading hierarchy for logical document structure',
-            'Test focus indicators are visible and have adequate contrast'
+            'Test focus indicators are visible and have adequate contrast',
         ];
     }
 

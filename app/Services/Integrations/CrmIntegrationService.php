@@ -6,10 +6,10 @@ namespace App\Services\Integrations;
 
 use App\Models\LearningProgress;
 use App\Models\SyncLog;
+use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Exception;
 
 /**
  * CRM Integration Service for Analytics
@@ -21,14 +21,16 @@ use Exception;
 class CrmIntegrationService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const MAX_RETRIES = 3;
+
     private const RETRY_DELAY = 1000; // milliseconds
 
     /**
      * Sync learning progress data to CRM
      *
-     * @param LearningProgress $progress Learning progress record
-     * @param string $provider CRM provider (hubspot, salesforce, frappe, zoho)
+     * @param  LearningProgress  $progress  Learning progress record
+     * @param  string  $provider  CRM provider (hubspot, salesforce, frappe, zoho)
      * @return bool Success status
      */
     public function syncLearningProgress(LearningProgress $progress, string $provider = 'hubspot'): bool
@@ -36,8 +38,9 @@ class CrmIntegrationService
         try {
             // Check if CRM integration is configured
             $config = $this->getCrmConfig($provider);
-            if (!$config) {
+            if (! $config) {
                 Log::info('CRM integration not configured', ['provider' => $provider]);
+
                 return false;
             }
 
@@ -49,9 +52,11 @@ class CrmIntegrationService
 
             if ($result['success']) {
                 $this->logSync($progress, $provider, 'success', $result);
+
                 return true;
             } else {
                 $this->logSync($progress, $provider, 'failed', $result);
+
                 return false;
             }
 
@@ -59,10 +64,11 @@ class CrmIntegrationService
             Log::error('CRM sync failed', [
                 'progress_id' => $progress->id,
                 'provider' => $provider,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             $this->logSync($progress, $provider, 'error', ['error' => $e->getMessage()]);
+
             return false;
         }
     }
@@ -79,7 +85,7 @@ class CrmIntegrationService
                 case 'hubspot':
                     return config('services.hubspot.api_key') ? [
                         'api_key' => config('services.hubspot.api_key'),
-                        'base_url' => 'https://api.hubapi.com'
+                        'base_url' => 'https://api.hubapi.com',
                     ] : null;
 
                 case 'salesforce':
@@ -87,21 +93,21 @@ class CrmIntegrationService
                         'client_id' => config('services.salesforce.client_id'),
                         'client_secret' => config('services.salesforce.client_secret'),
                         'instance_url' => config('services.salesforce.instance_url'),
-                        'access_token' => $this->getSalesforceToken($provider)
+                        'access_token' => $this->getSalesforceToken($provider),
                     ] : null;
 
                 case 'frappe':
                     return config('services.frappe.api_key') ? [
                         'api_key' => config('services.frappe.api_key'),
                         'api_secret' => config('services.frappe.api_secret'),
-                        'base_url' => config('services.frappe.base_url')
+                        'base_url' => config('services.frappe.base_url'),
                     ] : null;
 
                 case 'zoho':
                     return config('services.zoho.client_id') ? [
                         'client_id' => config('services.zoho.client_id'),
                         'client_secret' => config('services.zoho.client_secret'),
-                        'access_token' => $this->getZohoToken($provider)
+                        'access_token' => $this->getZohoToken($provider),
                     ] : null;
 
                 default:
@@ -124,7 +130,7 @@ class CrmIntegrationService
             'modules_completed' => $progress->modules_completed,
             'completion_percentage' => $progress->completion_percentage,
             'last_activity' => $progress->updated_at->toISOString(),
-            'certified' => $progress->certified ?? false
+            'certified' => $progress->certified ?? false,
         ];
 
         switch ($provider) {
@@ -137,8 +143,8 @@ class CrmIntegrationService
                         'total_score' => $baseData['total_score'],
                         'last_learning_activity' => $baseData['last_activity'],
                         'certified_status' => $baseData['certified'] ? 'Certified' : 'In Progress',
-                        'tenant_id' => $baseData['tenant_id']
-                    ]
+                        'tenant_id' => $baseData['tenant_id'],
+                    ],
                 ];
 
             case 'salesforce':
@@ -149,7 +155,7 @@ class CrmIntegrationService
                     'Total_Score__c' => $baseData['total_score'],
                     'Last_Learning_Activity__c' => $baseData['last_activity'],
                     'Certified_Status__c' => $baseData['certified'] ? 'Certified' : 'In Progress',
-                    'Tenant_ID__c' => $baseData['tenant_id']
+                    'Tenant_ID__c' => $baseData['tenant_id'],
                 ];
 
             case 'frappe':
@@ -162,8 +168,8 @@ class CrmIntegrationService
                         'total_score' => $baseData['total_score'],
                         'last_activity' => $baseData['last_activity'],
                         'certified' => $baseData['certified'],
-                        'tenant_id' => $baseData['tenant_id']
-                    ]
+                        'tenant_id' => $baseData['tenant_id'],
+                    ],
                 ];
 
             default:
@@ -212,7 +218,7 @@ class CrmIntegrationService
 
         return [
             'success' => false,
-            'error' => $lastError?->getMessage() ?? 'Max retries exceeded'
+            'error' => $lastError?->getMessage() ?? 'Max retries exceeded',
         ];
     }
 
@@ -223,15 +229,16 @@ class CrmIntegrationService
     {
         $response = Http::withHeaders([
             'Authorization' => "Bearer {$config['api_key']}",
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ])->post("{$config['base_url']}/crm/v3/objects/learning_progress", $data);
 
         if ($response->successful()) {
             $responseData = $response->json();
+
             return [
                 'success' => true,
                 'crm_id' => $responseData['id'] ?? null,
-                'response' => $responseData
+                'response' => $responseData,
             ];
         }
 
@@ -243,7 +250,7 @@ class CrmIntegrationService
         return [
             'success' => false,
             'error' => $response->json()['message'] ?? 'HubSpot API error',
-            'status' => $response->status()
+            'status' => $response->status(),
         ];
     }
 
@@ -254,15 +261,16 @@ class CrmIntegrationService
     {
         $response = Http::withHeaders([
             'Authorization' => "Bearer {$config['access_token']}",
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ])->post("{$config['instance_url']}/services/data/v58.0/sobjects/Learning_Progress__c/", $data);
 
         if ($response->successful()) {
             $responseData = $response->json();
+
             return [
                 'success' => true,
                 'crm_id' => $responseData['id'] ?? null,
-                'response' => $responseData
+                'response' => $responseData,
             ];
         }
 
@@ -274,7 +282,7 @@ class CrmIntegrationService
         return [
             'success' => false,
             'error' => $response->json()['message'] ?? 'Salesforce API error',
-            'status' => $response->status()
+            'status' => $response->status(),
         ];
     }
 
@@ -285,22 +293,23 @@ class CrmIntegrationService
     {
         $response = Http::withHeaders([
             'Authorization' => "token {$config['api_key']}:{$config['api_secret']}",
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ])->post("{$config['base_url']}/api/resource/Learning Progress", $data);
 
         if ($response->successful()) {
             $responseData = $response->json();
+
             return [
                 'success' => true,
                 'crm_id' => $responseData['data']['name'] ?? null,
-                'response' => $responseData
+                'response' => $responseData,
             ];
         }
 
         return [
             'success' => false,
             'error' => $response->json()['message'] ?? 'Frappe API error',
-            'status' => $response->status()
+            'status' => $response->status(),
         ];
     }
 
@@ -311,22 +320,23 @@ class CrmIntegrationService
     {
         $response = Http::withHeaders([
             'Authorization' => "Zoho-oauthtoken {$config['access_token']}",
-            'Content-Type' => 'application/json'
+            'Content-Type' => 'application/json',
         ])->post('https://www.zohoapis.com/crm/v2/Learning_Progress', $data);
 
         if ($response->successful()) {
             $responseData = $response->json();
+
             return [
                 'success' => true,
                 'crm_id' => $responseData['data'][0]['details']['id'] ?? null,
-                'response' => $responseData
+                'response' => $responseData,
             ];
         }
 
         return [
             'success' => false,
             'error' => $response->json()['message'] ?? 'Zoho API error',
-            'status' => $response->status()
+            'status' => $response->status(),
         ];
     }
 
@@ -335,16 +345,18 @@ class CrmIntegrationService
      */
     private function getSalesforceToken(string $provider): ?string
     {
-        $cacheKey = "salesforce_token";
+        $cacheKey = 'salesforce_token';
 
         return Cache::remember($cacheKey, 3600, function () use ($provider) {
             $config = $this->getCrmConfig($provider);
-            if (!$config) return null;
+            if (! $config) {
+                return null;
+            }
 
             $response = Http::asForm()->post($config['token_url'] ?? 'https://login.salesforce.com/services/oauth2/token', [
                 'grant_type' => 'client_credentials',
                 'client_id' => $config['client_id'],
-                'client_secret' => $config['client_secret']
+                'client_secret' => $config['client_secret'],
             ]);
 
             if ($response->successful()) {
@@ -360,16 +372,18 @@ class CrmIntegrationService
      */
     private function getZohoToken(string $provider): ?string
     {
-        $cacheKey = "zoho_token";
+        $cacheKey = 'zoho_token';
 
         return Cache::remember($cacheKey, 3600, function () use ($provider) {
             $config = $this->getCrmConfig($provider);
-            if (!$config) return null;
+            if (! $config) {
+                return null;
+            }
 
             $response = Http::asForm()->post('https://accounts.zoho.com/oauth/v2/token', [
                 'grant_type' => 'client_credentials',
                 'client_id' => $config['client_id'],
-                'client_secret' => $config['client_secret']
+                'client_secret' => $config['client_secret'],
             ]);
 
             if ($response->successful()) {
@@ -394,7 +408,7 @@ class CrmIntegrationService
             'request_data' => $data['request'] ?? [],
             'response_data' => $data['response'] ?? $data,
             'error_message' => $data['error'] ?? null,
-            'synced_at' => now()
+            'synced_at' => now(),
         ]);
     }
 }

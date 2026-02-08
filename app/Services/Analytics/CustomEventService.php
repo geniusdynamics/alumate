@@ -6,14 +6,12 @@ namespace App\Services\Analytics;
 
 use App\Models\CustomEvent;
 use App\Models\CustomEventDefinition;
-use App\Services\Analytics\ConsentService;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Custom Event Service
@@ -24,13 +22,13 @@ use Exception;
 class CustomEventService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const CHUNK_SIZE = 1000;
 
     /**
      * Define a new custom event
      *
-     * @param array $data Event definition data
-     * @return CustomEventDefinition
+     * @param  array  $data  Event definition data
      */
     public function defineEvent(array $data): CustomEventDefinition
     {
@@ -71,8 +69,7 @@ class CustomEventService
     /**
      * Track a custom event
      *
-     * @param array $data Event tracking data
-     * @return CustomEvent
+     * @param  array  $data  Event tracking data
      */
     public function trackEvent(array $data): CustomEvent
     {
@@ -84,8 +81,8 @@ class CustomEventService
             $this->validateEventTrackingData($data);
 
             // Check consent
-            if (!$consentService->checkConsent($data['user_id'], 'analytics')) {
-                throw new Exception("User has not consented to analytics tracking");
+            if (! $consentService->checkConsent($data['user_id'], 'analytics')) {
+                throw new Exception('User has not consented to analytics tracking');
             }
 
             // Validate event data against definition
@@ -93,8 +90,8 @@ class CustomEventService
                 ->active()
                 ->find($data['definition_id']);
 
-            if (!$definition) {
-                throw new Exception("Event definition not found or inactive");
+            if (! $definition) {
+                throw new Exception('Event definition not found or inactive');
             }
 
             $this->validateEventData($data['data_json'], $definition->parameters_json);
@@ -129,15 +126,14 @@ class CustomEventService
     /**
      * Aggregate events for analytics
      *
-     * @param int $definitionId
-     * @param array $filters Optional filters
+     * @param  array  $filters  Optional filters
      * @return array Aggregated data
      */
     public function aggregateEvents(int $definitionId, array $filters = []): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "custom_event_aggregate_{$tenantId}_{$definitionId}_" . md5(serialize($filters));
+            $cacheKey = "custom_event_aggregate_{$tenantId}_{$definitionId}_".md5(serialize($filters));
 
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($definitionId, $filters, $tenantId) {
                 $query = CustomEvent::byTenant($tenantId)
@@ -187,14 +183,13 @@ class CustomEventService
                 'filters' => $filters,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
 
     /**
      * Get event definitions for tenant
-     *
-     * @return Collection
      */
     public function getEventDefinitions(): Collection
     {
@@ -212,15 +207,13 @@ class CustomEventService
     /**
      * Queue large aggregation jobs
      *
-     * @param int $definitionId
-     * @param array $filters
      * @return string Job ID
      */
     public function queueAggregation(int $definitionId, array $filters = []): string
     {
         // This would dispatch a job for large aggregations
         // For now, return a placeholder
-        return 'job_' . uniqid();
+        return 'job_'.uniqid();
     }
 
     // Private helper methods
@@ -242,20 +235,20 @@ class CustomEventService
             throw new Exception('Event name is required');
         }
 
-        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $data['name'])) {
+        if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $data['name'])) {
             throw new Exception('Event name must be alphanumeric with underscores, starting with letter or underscore');
         }
 
-        if (empty($data['parameters_json']) || !is_array($data['parameters_json'])) {
+        if (empty($data['parameters_json']) || ! is_array($data['parameters_json'])) {
             throw new Exception('Parameters JSON must be a non-empty array');
         }
 
         foreach ($data['parameters_json'] as $param) {
-            if (!isset($param['name']) || !isset($param['type'])) {
+            if (! isset($param['name']) || ! isset($param['type'])) {
                 throw new Exception('Each parameter must have name and type');
             }
 
-            if (!in_array($param['type'], ['string', 'number', 'boolean'])) {
+            if (! in_array($param['type'], ['string', 'number', 'boolean'])) {
                 throw new Exception('Parameter type must be string, number, or boolean');
             }
         }
@@ -271,7 +264,7 @@ class CustomEventService
             throw new Exception('User ID is required');
         }
 
-        if (!isset($data['data_json']) || !is_array($data['data_json'])) {
+        if (! isset($data['data_json']) || ! is_array($data['data_json'])) {
             throw new Exception('Event data must be provided as JSON array');
         }
     }
@@ -282,7 +275,7 @@ class CustomEventService
             $paramName = $param['name'];
             $paramType = $param['type'];
 
-            if (!array_key_exists($paramName, $eventData)) {
+            if (! array_key_exists($paramName, $eventData)) {
                 throw new Exception("Required parameter '{$paramName}' is missing");
             }
 
@@ -300,7 +293,7 @@ class CustomEventService
             default => false,
         };
 
-        if (!$valid) {
+        if (! $valid) {
             throw new Exception("Parameter '{$paramName}' must be of type '{$type}'");
         }
     }
@@ -347,7 +340,7 @@ class CustomEventService
         $startDate = isset($filters['start_date']) ? Carbon::parse($filters['start_date']) : $events->min('timestamp');
         $endDate = isset($filters['end_date']) ? Carbon::parse($filters['end_date']) : $events->max('timestamp');
 
-        if (!$startDate || !$endDate) {
+        if (! $startDate || ! $endDate) {
             return [];
         }
 

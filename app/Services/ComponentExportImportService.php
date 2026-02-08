@@ -4,12 +4,12 @@ namespace App\Services;
 
 use App\Models\Component;
 use App\Models\ComponentVersion;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Carbon\Carbon;
 use ZipArchive;
 
 class ComponentExportImportService
@@ -90,7 +90,7 @@ class ComponentExportImportService
 
         return DB::transaction(function () use ($exportData, $overwriteExisting, $preserveIds, $tenantId) {
             $componentData = $exportData['component'];
-            
+
             // Check if component already exists
             $existingComponent = null;
             if ($preserveIds && isset($componentData['id'])) {
@@ -101,7 +101,7 @@ class ComponentExportImportService
                     ->first();
             }
 
-            if ($existingComponent && !$overwriteExisting) {
+            if ($existingComponent && ! $overwriteExisting) {
                 throw new \Exception("Component with slug '{$componentData['slug']}' already exists");
             }
 
@@ -117,12 +117,12 @@ class ComponentExportImportService
             }
 
             // Import versions if available
-            if (isset($exportData['versions']) && !empty($exportData['versions'])) {
+            if (isset($exportData['versions']) && ! empty($exportData['versions'])) {
                 $this->importVersionHistory($component, $exportData['versions']);
             }
 
             // Import analytics if available
-            if (isset($exportData['analytics']) && !empty($exportData['analytics'])) {
+            if (isset($exportData['analytics']) && ! empty($exportData['analytics'])) {
                 $this->importAnalytics($component, $exportData['analytics']);
             }
 
@@ -184,17 +184,17 @@ class ComponentExportImportService
     public function exportToFile(Component $component, string $format = 'json'): string
     {
         $exportData = $this->exportComponent($component, ['format' => 'grapejs']);
-        $filename = "component-{$component->slug}-" . now()->format('Y-m-d-H-i-s');
+        $filename = "component-{$component->slug}-".now()->format('Y-m-d-H-i-s');
 
         switch ($format) {
             case 'json':
                 $content = json_encode($exportData, JSON_PRETTY_PRINT);
                 $filename .= '.json';
                 break;
-            
+
             case 'zip':
                 return $this->createZipExport($component, $exportData);
-            
+
             default:
                 throw new \InvalidArgumentException("Unsupported export format: {$format}");
         }
@@ -210,7 +210,7 @@ class ComponentExportImportService
      */
     public function importFromFile(string $filePath, array $options = []): Component
     {
-        if (!Storage::disk('local')->exists($filePath)) {
+        if (! Storage::disk('local')->exists($filePath)) {
             throw new \Exception("Import file not found: {$filePath}");
         }
 
@@ -224,11 +224,11 @@ class ComponentExportImportService
                     throw new \Exception('Invalid JSON format in import file');
                 }
                 break;
-            
+
             case 'zip':
                 $exportData = $this->extractFromZipImport($filePath);
                 break;
-            
+
             default:
                 throw new \InvalidArgumentException("Unsupported import format: {$extension}");
         }
@@ -338,7 +338,7 @@ class ComponentExportImportService
     private function generateGrapeJSContent(Component $component): string
     {
         $config = $component->config ?? [];
-        
+
         // Generate basic HTML structure based on component type
         return match ($component->category) {
             'hero' => $this->generateHeroContent($config),
@@ -364,7 +364,7 @@ class ComponentExportImportService
 
         // Add responsive classes
         $responsiveConfig = $component->getResponsiveConfig();
-        if (!empty($responsiveConfig)) {
+        if (! empty($responsiveConfig)) {
             $classes[] = 'responsive-component';
         }
 
@@ -415,8 +415,8 @@ class ComponentExportImportService
                 'changes' => $versionData['changes'] ?? [],
                 'description' => $versionData['description'] ?? null,
                 'created_by' => auth()->id(), // Use current user as importer
-                'created_at' => isset($versionData['created_at']) 
-                    ? Carbon::parse($versionData['created_at']) 
+                'created_at' => isset($versionData['created_at'])
+                    ? Carbon::parse($versionData['created_at'])
                     : now(),
             ]);
         }
@@ -431,8 +431,8 @@ class ComponentExportImportService
         if (isset($analytics['usage_stats'])) {
             $component->update([
                 'usage_count' => $analytics['usage_stats']['usage_count'] ?? 0,
-                'last_used_at' => isset($analytics['usage_stats']['last_used_at']) 
-                    ? Carbon::parse($analytics['usage_stats']['last_used_at']) 
+                'last_used_at' => isset($analytics['usage_stats']['last_used_at'])
+                    ? Carbon::parse($analytics['usage_stats']['last_used_at'])
                     : null,
             ]);
         }
@@ -470,11 +470,11 @@ class ComponentExportImportService
      */
     private function createZipExport(Component $component, array $exportData): string
     {
-        $filename = "component-{$component->slug}-" . now()->format('Y-m-d-H-i-s') . '.zip';
+        $filename = "component-{$component->slug}-".now()->format('Y-m-d-H-i-s').'.zip';
         $zipPath = storage_path("app/exports/components/{$filename}");
 
-        $zip = new ZipArchive();
-        if ($zip->open($zipPath, ZipArchive::CREATE) !== TRUE) {
+        $zip = new ZipArchive;
+        if ($zip->open($zipPath, ZipArchive::CREATE) !== true) {
             throw new \Exception('Cannot create ZIP file');
         }
 
@@ -495,17 +495,17 @@ class ComponentExportImportService
      */
     private function generateExportReadme(Component $component): string
     {
-        return "# Component Export: {$component->name}\n\n" .
-               "**Category:** {$component->category}\n" .
-               "**Type:** {$component->type}\n" .
-               "**Version:** {$component->version}\n\n" .
-               "## Description\n\n" .
-               ($component->description ?? 'No description provided.') . "\n\n" .
-               "## Export Information\n\n" .
-               "- Exported at: " . now()->toDateTimeString() . "\n" .
-               "- Exported by: " . (auth()->user()->name ?? 'Unknown') . "\n" .
-               "- Component ID: {$component->id}\n\n" .
-               "## Import Instructions\n\n" .
+        return "# Component Export: {$component->name}\n\n".
+               "**Category:** {$component->category}\n".
+               "**Type:** {$component->type}\n".
+               "**Version:** {$component->version}\n\n".
+               "## Description\n\n".
+               ($component->description ?? 'No description provided.')."\n\n".
+               "## Export Information\n\n".
+               '- Exported at: '.now()->toDateTimeString()."\n".
+               '- Exported by: '.(auth()->user()->name ?? 'Unknown')."\n".
+               "- Component ID: {$component->id}\n\n".
+               "## Import Instructions\n\n".
                "Use the ComponentExportImportService to import this component into your system.\n";
     }
 
@@ -515,51 +515,52 @@ class ComponentExportImportService
         $headline = $config['headline'] ?? 'Hero Headline';
         $subheading = $config['subheading'] ?? 'Hero subheading text';
         $ctaText = $config['cta_text'] ?? 'Get Started';
-        
-        return "<div class='hero-component'>" .
-               "<h1>{$headline}</h1>" .
-               "<p>{$subheading}</p>" .
-               "<button class='cta-button'>{$ctaText}</button>" .
-               "</div>";
+
+        return "<div class='hero-component'>".
+               "<h1>{$headline}</h1>".
+               "<p>{$subheading}</p>".
+               "<button class='cta-button'>{$ctaText}</button>".
+               '</div>';
     }
 
     private function generateFormContent(array $config): string
     {
-        return "<form class='form-component'>" .
-               "<div class='form-fields'></div>" .
-               "<button type='submit'>" . ($config['submit_text'] ?? 'Submit') . "</button>" .
-               "</form>";
+        return "<form class='form-component'>".
+               "<div class='form-fields'></div>".
+               "<button type='submit'>".($config['submit_text'] ?? 'Submit').'</button>'.
+               '</form>';
     }
 
     private function generateTestimonialContent(array $config): string
     {
-        return "<div class='testimonial-component'>" .
-               "<blockquote>Testimonial content</blockquote>" .
-               "<cite>Author Name</cite>" .
-               "</div>";
+        return "<div class='testimonial-component'>".
+               '<blockquote>Testimonial content</blockquote>'.
+               '<cite>Author Name</cite>'.
+               '</div>';
     }
 
     private function generateStatisticsContent(array $config): string
     {
-        return "<div class='statistics-component'>" .
-               "<div class='stat-item'>" .
-               "<span class='stat-number'>100</span>" .
-               "<span class='stat-label'>Statistic</span>" .
-               "</div>" .
-               "</div>";
+        return "<div class='statistics-component'>".
+               "<div class='stat-item'>".
+               "<span class='stat-number'>100</span>".
+               "<span class='stat-label'>Statistic</span>".
+               '</div>'.
+               '</div>';
     }
 
     private function generateCTAContent(array $config): string
     {
         $text = $config['text'] ?? 'Call to Action';
+
         return "<button class='cta-component'>{$text}</button>";
     }
 
     private function generateMediaContent(array $config): string
     {
-        return "<div class='media-component'>" .
-               "<img src='placeholder.jpg' alt='Media content' />" .
-               "</div>";
+        return "<div class='media-component'>".
+               "<img src='placeholder.jpg' alt='Media content' />".
+               '</div>';
     }
 
     private function generateStyleManagerConfig(Component $component): array
@@ -575,7 +576,7 @@ class ComponentExportImportService
                         'right',
                         'left',
                         'bottom',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'Layout',
@@ -586,7 +587,7 @@ class ComponentExportImportService
                         'min-height',
                         'margin',
                         'padding',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'Typography',
@@ -600,7 +601,7 @@ class ComponentExportImportService
                         'text-align',
                         'text-decoration',
                         'text-shadow',
-                    ]
+                    ],
                 ],
                 [
                     'name' => 'Decorations',
@@ -610,9 +611,9 @@ class ComponentExportImportService
                         'border',
                         'box-shadow',
                         'background',
-                    ]
+                    ],
                 ],
-            ]
+            ],
         ];
     }
 
@@ -665,7 +666,7 @@ class ComponentExportImportService
         };
 
         return [
-            'traits' => array_merge($baseTraits, $categoryTraits)
+            'traits' => array_merge($baseTraits, $categoryTraits),
         ];
     }
 

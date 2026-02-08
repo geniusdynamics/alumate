@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services\Analytics;
 
-use App\Models\Cohort;
-use App\Models\User;
 use App\Models\AnalyticsEvent;
+use App\Models\Cohort;
 use App\Models\LearningProgress;
-use App\Services\Analytics\ConsentService;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Cohort Analysis Service
@@ -27,7 +25,9 @@ use Exception;
 class CohortAnalysisService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const CHUNK_SIZE = 1000;
+
     private const CONFIDENCE_LEVEL_95 = 1.96;
 
     private ConsentService $consentService;
@@ -40,9 +40,9 @@ class CohortAnalysisService
     /**
      * Create a cohort based on specified criteria
      *
-     * @param string $name Cohort name
-     * @param array $criteria Cohort definition criteria
-     * @param int|null $createdBy User ID who creates the cohort
+     * @param  string  $name  Cohort name
+     * @param  array  $criteria  Cohort definition criteria
+     * @param  int|null  $createdBy  User ID who creates the cohort
      * @return Cohort The created cohort model
      */
     public function createCohort(string $name, array $criteria, ?int $createdBy = null): Cohort
@@ -56,7 +56,7 @@ class CohortAnalysisService
             $query = User::query();
 
             // Apply tenant scoping
-            if (!$this->isSuperAdmin()) {
+            if (! $this->isSuperAdmin()) {
                 $query->whereHas('tenants', function ($q) use ($tenantId) {
                     $q->where('tenant_id', $tenantId);
                 });
@@ -66,10 +66,10 @@ class CohortAnalysisService
             $query->where(function ($q) {
                 $q->whereDoesntHave('consents', function ($consentQuery) {
                     $consentQuery->where('category', 'analytics')
-                                ->where('granted', false);
+                        ->where('granted', false);
                 })->orWhereHas('consents', function ($consentQuery) {
                     $consentQuery->where('category', 'analytics')
-                                ->where('granted', true);
+                        ->where('granted', true);
                 });
             });
 
@@ -129,8 +129,8 @@ class CohortAnalysisService
     /**
      * Calculate retention rate for a cohort
      *
-     * @param int $cohortId Cohort ID
-     * @param int $daysAfter Number of days after acquisition
+     * @param  int  $cohortId  Cohort ID
+     * @param  int  $daysAfter  Number of days after acquisition
      * @return float Retention rate as percentage (0-100)
      */
     public function calculateRetention(int $cohortId, int $daysAfter): float
@@ -139,6 +139,7 @@ class CohortAnalysisService
             $cohort = Cohort::byTenant($this->getCurrentTenantId())->findOrFail($cohortId);
 
             $cacheKey = "cohort_retention_{$cohortId}_{$daysAfter}";
+
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($cohort, $daysAfter) {
                 $totalUsers = $cohort->members_count;
                 if ($totalUsers === 0) {
@@ -174,6 +175,7 @@ class CohortAnalysisService
                 'days_after' => $daysAfter,
                 'error' => $e->getMessage(),
             ]);
+
             return 0.0;
         }
     }
@@ -181,7 +183,7 @@ class CohortAnalysisService
     /**
      * Calculate engagement metrics for a cohort
      *
-     * @param int $cohortId Cohort ID
+     * @param  int  $cohortId  Cohort ID
      * @return array Engagement metrics
      */
     public function calculateEngagement(int $cohortId): array
@@ -190,6 +192,7 @@ class CohortAnalysisService
             $cohort = Cohort::byTenant($this->getCurrentTenantId())->findOrFail($cohortId);
 
             $cacheKey = "cohort_engagement_{$cohortId}";
+
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($cohort) {
                 $tenantId = $cohort->tenant_id;
                 $criteria = $cohort->criteria_json ?? [];
@@ -248,6 +251,7 @@ class CohortAnalysisService
                 'cohort_id' => $cohortId,
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'avg_sessions_per_week' => 0.0,
                 'avg_pages_per_session' => 0.0,
@@ -260,7 +264,7 @@ class CohortAnalysisService
     /**
      * Calculate conversion rates for a cohort
      *
-     * @param int $cohortId Cohort ID
+     * @param  int  $cohortId  Cohort ID
      * @return array Conversion funnel data
      */
     public function calculateConversionRate(int $cohortId): array
@@ -269,6 +273,7 @@ class CohortAnalysisService
             $cohort = Cohort::byTenant($this->getCurrentTenantId())->findOrFail($cohortId);
 
             $cacheKey = "cohort_conversion_{$cohortId}";
+
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($cohort) {
                 $tenantId = $cohort->tenant_id;
                 $criteria = $cohort->criteria_json ?? [];
@@ -342,6 +347,7 @@ class CohortAnalysisService
                 'cohort_id' => $cohortId,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -349,8 +355,8 @@ class CohortAnalysisService
     /**
      * Analyze a cohort with comprehensive metrics
      *
-     * @param int $cohortId Cohort ID
-     * @param array $options Analysis options (date_range, etc.)
+     * @param  int  $cohortId  Cohort ID
+     * @param  array  $options  Analysis options (date_range, etc.)
      * @return array Analysis results with size, retention, churn, and engagement metrics
      */
     public function analyzeCohort(int $cohortId, array $options = []): array
@@ -358,8 +364,9 @@ class CohortAnalysisService
         try {
             $cohort = Cohort::byTenant($this->getCurrentTenantId())->findOrFail($cohortId);
 
-            $cacheKey = "cohort_analysis_{$cohortId}_" . md5(serialize($options));
+            $cacheKey = "cohort_analysis_{$cohortId}_".md5(serialize($options));
             $currentCohortId = $cohortId;
+
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($cohort, $options, $currentCohortId) {
                 $size = $cohort->members_count;
                 $criteria = $cohort->criteria_json ?? [];
@@ -419,6 +426,7 @@ class CohortAnalysisService
                 'cohort_id' => $cohortId,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -426,7 +434,7 @@ class CohortAnalysisService
     /**
      * Compare retention rates between cohorts with insights
      *
-     * @param array $cohortIds Array of cohort IDs to compare
+     * @param  array  $cohortIds  Array of cohort IDs to compare
      * @return array Comparison results with retention deltas and insights
      */
     public function compareCohorts(array $cohortIds): array
@@ -442,7 +450,7 @@ class CohortAnalysisService
             // Collect retention data for each cohort
             foreach ($cohortIds as $cohortId) {
                 $cohort = Cohort::byTenant($this->getCurrentTenantId())->find($cohortId);
-                if (!$cohort) {
+                if (! $cohort) {
                     continue;
                 }
 
@@ -494,6 +502,7 @@ class CohortAnalysisService
                 'cohort_ids' => $cohortIds,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -501,9 +510,9 @@ class CohortAnalysisService
     /**
      * Analyze trends over time for a cohort
      *
-     * @param int $cohortId Cohort ID
-     * @param string $period 'day', 'week', 'month'
-     * @param int $periods Number of periods to analyze
+     * @param  int  $cohortId  Cohort ID
+     * @param  string  $period  'day', 'week', 'month'
+     * @param  int  $periods  Number of periods to analyze
      * @return array Trend analysis data
      */
     public function analyzeTrends(int $cohortId, string $period = 'week', int $periods = 12): array
@@ -513,12 +522,13 @@ class CohortAnalysisService
 
             $cacheKey = "cohort_trends_{$cohortId}_{$period}_{$periods}";
             $currentCohortId = $cohortId;
+
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($cohort, $period, $periods, $currentCohortId) {
                 $criteria = $cohort->criteria_json ?? [];
                 $tenantId = $cohort->tenant_id;
 
                 $trends = [];
-                $periodFormat = match($period) {
+                $periodFormat = match ($period) {
                     'day' => 'Y-m-d',
                     'week' => 'Y-W',
                     'month' => 'Y-m',
@@ -592,6 +602,7 @@ class CohortAnalysisService
                 'periods' => $periods,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -599,7 +610,7 @@ class CohortAnalysisService
     /**
      * Generate automated insights for a cohort
      *
-     * @param int $cohortId Cohort ID
+     * @param  int  $cohortId  Cohort ID
      * @return array Array of actionable insights
      */
     public function generateInsights(int $cohortId): array
@@ -697,7 +708,7 @@ class CohortAnalysisService
             }
 
             // Trend insights
-            if (!empty($trends['trends'])) {
+            if (! empty($trends['trends'])) {
                 $recentTrend = end($trends['trends']);
                 $previousTrend = $trends['trends'][count($trends['trends']) - 2] ?? null;
 
@@ -721,6 +732,7 @@ class CohortAnalysisService
                 'cohort_id' => $cohortId,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -728,9 +740,7 @@ class CohortAnalysisService
     /**
      * Group users by acquisition date
      *
-     * @param Carbon $startDate
-     * @param string $period 'day', 'week', 'month'
-     * @return Collection
+     * @param  string  $period  'day', 'week', 'month'
      */
     public function groupUsersByAcquisitionDate(Carbon $startDate, string $period = 'week'): Collection
     {
@@ -738,13 +748,13 @@ class CohortAnalysisService
 
         $query = User::query();
 
-        if (!$this->isSuperAdmin()) {
+        if (! $this->isSuperAdmin()) {
             $query->whereHas('tenants', function ($q) use ($tenantId) {
                 $q->where('tenant_id', $tenantId);
             });
         }
 
-        $dateFormat = match($period) {
+        $dateFormat = match ($period) {
             'day' => '%Y-%m-%d',
             'week' => '%Y-%u',
             'month' => '%Y-%m',
@@ -760,10 +770,6 @@ class CohortAnalysisService
 
     /**
      * Calculate statistical significance between two data sets
-     *
-     * @param array $data1
-     * @param array $data2
-     * @return array
      */
     public function calculateStatisticalSignificance(array $data1, array $data2): array
     {
@@ -876,6 +882,7 @@ class CohortAnalysisService
         // Simplified approximation using normal distribution for df=1
         if ($degreesOfFreedom === 1) {
             $z = sqrt($chiSquare) - sqrt($degreesOfFreedom - 0.5);
+
             return 1 - $this->normalCDF($z);
         }
 
@@ -921,7 +928,7 @@ class CohortAnalysisService
             if (abs($deltas['day7_delta']) > 10) {
                 $insights[] = [
                     'type' => 'retention_comparison',
-                    'message' => "Significant 7-day retention difference of " . round($deltas['day7_delta'], 1) . "% in {$comparison}",
+                    'message' => 'Significant 7-day retention difference of '.round($deltas['day7_delta'], 1)."% in {$comparison}",
                     'recommendation' => 'Analyze onboarding processes and user engagement strategies',
                 ];
             }
@@ -979,18 +986,18 @@ class CohortAnalysisService
         $result = [];
         for ($i = 0; $i < count($trends); $i++) {
             $trend = $trends[$i];
-            
+
             if ($i === 0) {
                 $trend['indicator'] = 'neutral';
                 $trend['change_percent'] = 0;
             } else {
                 $previous = $trends[$i - 1];
-                $change = $previous['active_users'] > 0 
+                $change = $previous['active_users'] > 0
                     ? (($trend['active_users'] - $previous['active_users']) / $previous['active_users']) * 100
                     : 0;
-                
+
                 $trend['change_percent'] = round($change, 2);
-                $trend['indicator'] = match(true) {
+                $trend['indicator'] = match (true) {
                     $change > 10 => 'up',
                     $change > 0 => 'slight_up',
                     $change < -10 => 'down',
@@ -998,7 +1005,7 @@ class CohortAnalysisService
                     default => 'neutral',
                 };
             }
-            
+
             $result[] = $trend;
         }
 
@@ -1021,10 +1028,10 @@ class CohortAnalysisService
         $recentPeriods = array_slice($trends, -4);
         $olderPeriods = array_slice($trends, -8, 4);
 
-        $recentAvg = !empty($recentPeriods) ? array_sum(array_column($recentPeriods, 'active_users')) / count($recentPeriods) : 0;
-        $olderAvg = !empty($olderPeriods) ? array_sum(array_column($olderPeriods, 'active_users')) / count($olderPeriods) : 0;
+        $recentAvg = ! empty($recentPeriods) ? array_sum(array_column($recentPeriods, 'active_users')) / count($recentPeriods) : 0;
+        $olderAvg = ! empty($olderPeriods) ? array_sum(array_column($olderPeriods, 'active_users')) / count($olderPeriods) : 0;
 
-        $overallTrend = match(true) {
+        $overallTrend = match (true) {
             $recentAvg > $olderAvg * 1.1 => 'improving',
             $recentAvg < $olderAvg * 0.9 => 'declining',
             default => 'stable',
@@ -1034,15 +1041,15 @@ class CohortAnalysisService
             'overall_trend' => $overallTrend,
             'avg_active_users' => round(array_sum($activeUsers) / count($activeUsers), 2),
             'total_events' => array_sum($events),
-            'periods_with_growth' => count(array_filter($trends, fn($t) => in_array($t['indicator'], ['up', 'slight_up']))),
-            'periods_with_decline' => count(array_filter($trends, fn($t) => in_array($t['indicator'], ['down', 'slight_down']))),
+            'periods_with_growth' => count(array_filter($trends, fn ($t) => in_array($t['indicator'], ['up', 'slight_up']))),
+            'periods_with_decline' => count(array_filter($trends, fn ($t) => in_array($t['indicator'], ['down', 'slight_down']))),
         ];
     }
 
     /**
      * Calculate conversion rates for a cohort (alias)
      *
-     * @param int $cohortId Cohort ID
+     * @param  int  $cohortId  Cohort ID
      * @return array Conversion funnel data
      */
     public function calculateConversionRates(int $cohortId): array
@@ -1053,7 +1060,6 @@ class CohortAnalysisService
     /**
      * Validate cohort criteria
      *
-     * @param array $criteria
      * @throws \InvalidArgumentException
      */
     private function validateCohortCriteria(array $criteria): void
@@ -1064,7 +1070,7 @@ class CohortAnalysisService
 
         $allowedKeys = ['grad_year', 'degree', 'acquisition_date', 'acquisition_source', 'major', 'metadata'];
         foreach ($criteria as $key => $value) {
-            if (!in_array($key, $allowedKeys)) {
+            if (! in_array($key, $allowedKeys)) {
                 throw new \InvalidArgumentException("Invalid cohort criteria key: {$key}");
             }
             if (empty($value) && $value !== 0 && $value !== false) {

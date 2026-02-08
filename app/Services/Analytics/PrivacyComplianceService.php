@@ -9,9 +9,9 @@ use App\Models\Consent;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\TenantContextService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Privacy Compliance Service for managing user data privacy and compliance
@@ -50,8 +50,8 @@ class PrivacyComplianceService
     /**
      * Check if user has given consent for a specific type
      *
-     * @param int $userId User ID to check
-     * @param string $consentType Consent type (default: 'analytics')
+     * @param  int  $userId  User ID to check
+     * @param  string  $consentType  Consent type (default: 'analytics')
      * @return bool True if consent is given
      */
     public function checkConsent(int $userId, string $consentType = 'analytics'): bool
@@ -62,9 +62,9 @@ class PrivacyComplianceService
     /**
      * Record user consent for a specific type
      *
-     * @param int $userId User ID
-     * @param string $consentType Consent type
-     * @param bool $consented Whether consent is granted
+     * @param  int  $userId  User ID
+     * @param  string  $consentType  Consent type
+     * @param  bool  $consented  Whether consent is granted
      * @return bool True if successfully recorded
      */
     public function recordConsent(int $userId, string $consentType, bool $consented): bool
@@ -88,8 +88,8 @@ class PrivacyComplianceService
     /**
      * Revoke user consent for a specific type
      *
-     * @param int $userId User ID
-     * @param string $consentType Consent type
+     * @param  int  $userId  User ID
+     * @param  string  $consentType  Consent type
      * @return bool True if successfully revoked
      */
     public function revokeConsent(int $userId, string $consentType): bool
@@ -111,7 +111,7 @@ class PrivacyComplianceService
     /**
      * Get all consent status for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return array Array of consent statuses
      */
     public function getConsentStatus(int $userId): array
@@ -133,7 +133,7 @@ class PrivacyComplianceService
     /**
      * Anonymize user data while preserving consent records
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return bool True if successfully anonymized
      */
     public function anonymizeData(int $userId): bool
@@ -171,7 +171,7 @@ class PrivacyComplianceService
     /**
      * Delete all user data (right to be forgotten)
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return bool True if successfully deleted
      */
     public function deleteData(int $userId): bool
@@ -229,7 +229,7 @@ class PrivacyComplianceService
     /**
      * Export all user data (data portability)
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return array Array of exported data
      */
     public function exportData(int $userId): array
@@ -259,7 +259,7 @@ class PrivacyComplianceService
      */
     public function checkDataRetention(): array
     {
-        $cacheKey = self::RETENTION_CACHE_KEY . 'compliance_' . date('Ymd');
+        $cacheKey = self::RETENTION_CACHE_KEY.'compliance_'.date('Ymd');
 
         // Check if compliance check was done today
         if (Cache::has($cacheKey)) {
@@ -286,7 +286,7 @@ class PrivacyComplianceService
             $results['summary']['records_to_purge'] += $tenantResults['records_to_purge'];
             $results['summary']['tenants_processed']++;
 
-            if (!empty($tenantResults['issues'])) {
+            if (! empty($tenantResults['issues'])) {
                 $results['issues'][] = [
                     'tenant_id' => $tenant->id,
                     'issues' => $tenantResults['issues'],
@@ -329,7 +329,7 @@ class PrivacyComplianceService
                 'purged_count' => $tenantResults['purged_count'],
             ];
 
-            if (!empty($tenantResults['errors'])) {
+            if (! empty($tenantResults['errors'])) {
                 $results['errors'] = array_merge(
                     $results['errors'],
                     $tenantResults['errors']
@@ -350,8 +350,8 @@ class PrivacyComplianceService
     /**
      * Get last consent update for a user
      *
-     * @param int $userId User ID
-     * @param string $consentType Consent type
+     * @param  int  $userId  User ID
+     * @param  string  $consentType  Consent type
      * @return string|null ISO8601 timestamp
      */
     private function getLastConsentUpdate(int $userId, string $consentType): ?string
@@ -367,7 +367,7 @@ class PrivacyComplianceService
     /**
      * Anonymize analytics events for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      */
     private function anonymizeAnalyticsEvents(int $userId): void
     {
@@ -375,7 +375,7 @@ class PrivacyComplianceService
             ->where('user_id', $userId)
             ->update([
                 'user_id' => null,
-                'session_id' => hash('sha256', $userId . '_anonymized'),
+                'session_id' => hash('sha256', $userId.'_anonymized'),
                 'ip_address' => null,
                 'updated_at' => now(),
             ]);
@@ -384,7 +384,7 @@ class PrivacyComplianceService
     /**
      * Anonymize activity logs for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      */
     private function anonymizeActivityLogs(int $userId): void
     {
@@ -400,7 +400,7 @@ class PrivacyComplianceService
     /**
      * Anonymize insights for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      */
     private function anonymizeInsights(int $userId): void
     {
@@ -415,7 +415,7 @@ class PrivacyComplianceService
     /**
      * Anonymize consent records for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      */
     private function anonymizeConsentRecords(int $userId): void
     {
@@ -428,20 +428,20 @@ class PrivacyComplianceService
     /**
      * Get tenant ID for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return string Tenant ID
      */
     private function getUserTenantId(int $userId): string
     {
         $user = User::find($userId);
+
         return $user?->tenant_id ?? 'default';
     }
 
     /**
      * Export consent records for a user
      *
-     * @param int $userId User ID
-     * @return array
+     * @param  int  $userId  User ID
      */
     private function exportConsentRecords(int $userId): array
     {
@@ -453,12 +453,11 @@ class PrivacyComplianceService
     /**
      * Export analytics data for a user
      *
-     * @param int $userId User ID
-     * @return array
+     * @param  int  $userId  User ID
      */
     private function exportAnalyticsData(int $userId): array
     {
-        if (!$this->consentService->hasConsent($userId, 'analytics')) {
+        if (! $this->consentService->hasConsent($userId, 'analytics')) {
             return ['status' => 'consent_not_granted'];
         }
 
@@ -471,8 +470,7 @@ class PrivacyComplianceService
     /**
      * Export activity data for a user
      *
-     * @param int $userId User ID
-     * @return array
+     * @param  int  $userId  User ID
      */
     private function exportActivityData(int $userId): array
     {
@@ -485,8 +483,7 @@ class PrivacyComplianceService
     /**
      * Export insights data for a user
      *
-     * @param int $userId User ID
-     * @return array
+     * @param  int  $userId  User ID
      */
     private function exportInsightsData(int $userId): array
     {
@@ -499,8 +496,7 @@ class PrivacyComplianceService
     /**
      * Check retention compliance for a tenant
      *
-     * @param string $tenantId Tenant ID
-     * @return array
+     * @param  string  $tenantId  Tenant ID
      */
     private function checkTenantRetention(string $tenantId): array
     {
@@ -532,8 +528,7 @@ class PrivacyComplianceService
     /**
      * Apply retention policies for a tenant
      *
-     * @param string $tenantId Tenant ID
-     * @return array
+     * @param  string  $tenantId  Tenant ID
      */
     private function applyTenantRetentionPolicies(string $tenantId): array
     {

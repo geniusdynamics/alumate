@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Models\Consent;
-use App\Services\Analytics\PrivacyAuditService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -16,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 class ConsentService
 {
     private const CONSENT_CACHE_KEY = 'analytics_consent_';
+
     private const CACHE_TTL_MINUTES = 60;
 
     public function __construct(
@@ -25,21 +25,21 @@ class ConsentService
     /**
      * Check if the current user has given consent for analytics tracking
      *
-     * @param int|null $userId User ID to check (null for current user)
-     * @param string $type Consent type (default: 'analytics')
+     * @param  int|null  $userId  User ID to check (null for current user)
+     * @param  string  $type  Consent type (default: 'analytics')
      * @return bool True if consent is given, false otherwise
      */
     public function hasConsent(?int $userId = null, string $type = 'analytics'): bool
     {
         $user = $userId ? null : Auth::user();
 
-        if (!$user && !$userId) {
+        if (! $user && ! $userId) {
             // For guest users, check session or default to no consent
             return session('analytics_consent', false);
         }
 
         $targetUserId = $userId ?? $user->id;
-        $cacheKey = self::CONSENT_CACHE_KEY . $targetUserId . '_' . $type;
+        $cacheKey = self::CONSENT_CACHE_KEY.$targetUserId.'_'.$type;
 
         // Check if consent status is cached
         if (Cache::has($cacheKey)) {
@@ -61,17 +61,18 @@ class ConsentService
     /**
      * Grant consent for analytics tracking
      *
-     * @param int|null $userId User ID to grant consent for (null for current user)
-     * @param string $type Consent type (default: 'analytics')
+     * @param  int|null  $userId  User ID to grant consent for (null for current user)
+     * @param  string  $type  Consent type (default: 'analytics')
      * @return bool True if consent was successfully granted
      */
     public function grantConsent(?int $userId = null, string $type = 'analytics'): bool
     {
         $user = $userId ? null : Auth::user();
 
-        if (!$user && !$userId) {
+        if (! $user && ! $userId) {
             // For guest users, set session consent
             session(['analytics_consent' => true]);
+
             return true;
         }
 
@@ -95,7 +96,7 @@ class ConsentService
             // Clear cache
             $this->clearCachedConsent($targetUserId, $type);
 
-            Log::info("Analytics consent granted", [
+            Log::info('Analytics consent granted', [
                 'user_id' => $targetUserId,
                 'type' => $type,
                 'ip_address' => request()->ip(),
@@ -103,11 +104,12 @@ class ConsentService
 
             return true;
         } catch (\Exception $e) {
-            Log::error("Failed to grant analytics consent", [
+            Log::error('Failed to grant analytics consent', [
                 'user_id' => $targetUserId,
                 'type' => $type,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -115,17 +117,18 @@ class ConsentService
     /**
      * Revoke consent for analytics tracking
      *
-     * @param int|null $userId User ID to revoke consent for (null for current user)
-     * @param string $type Consent type (default: 'analytics')
+     * @param  int|null  $userId  User ID to revoke consent for (null for current user)
+     * @param  string  $type  Consent type (default: 'analytics')
      * @return bool True if consent was successfully revoked
      */
     public function revokeConsent(?int $userId = null, string $type = 'analytics'): bool
     {
         $user = $userId ? null : Auth::user();
 
-        if (!$user && !$userId) {
+        if (! $user && ! $userId) {
             // For guest users, remove session consent
             session()->forget('analytics_consent');
+
             return true;
         }
 
@@ -145,7 +148,7 @@ class ConsentService
                 // Clear cache
                 $this->clearCachedConsent($targetUserId, $type);
 
-                Log::info("Analytics consent revoked", [
+                Log::info('Analytics consent revoked', [
                     'user_id' => $targetUserId,
                     'type' => $type,
                     'ip_address' => request()->ip(),
@@ -154,11 +157,12 @@ class ConsentService
 
             return true;
         } catch (\Exception $e) {
-            Log::error("Failed to revoke analytics consent", [
+            Log::error('Failed to revoke analytics consent', [
                 'user_id' => $targetUserId,
                 'type' => $type,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -166,16 +170,16 @@ class ConsentService
     /**
      * Check consent before performing an action and auto-prompt if needed
      *
-     * @param string $action Action being performed
-     * @param mixed $user User instance or ID
-     * @param string $type Consent type
+     * @param  string  $action  Action being performed
+     * @param  mixed  $user  User instance or ID
+     * @param  string  $type  Consent type
      * @return bool True if action can proceed
      */
     public function checkConsentBeforeAction(string $action, $user, string $type = 'analytics'): bool
     {
         $userId = is_int($user) ? $user : $user->id;
 
-        if (!$this->hasConsent($userId, $type)) {
+        if (! $this->hasConsent($userId, $type)) {
             // Log the attempt for audit
             $this->generateAuditLog($userId, 'consent_required', [
                 'action' => $action,
@@ -193,10 +197,9 @@ class ConsentService
     /**
      * Generate audit log for privacy events
      *
-     * @param int $userId User ID
-     * @param string $action Action performed
-     * @param array $details Additional details
-     * @return void
+     * @param  int  $userId  User ID
+     * @param  string  $action  Action performed
+     * @param  array  $details  Additional details
      */
     public function generateAuditLog(int $userId, string $action, array $details = []): void
     {
@@ -206,7 +209,7 @@ class ConsentService
     /**
      * Handle data export request for GDPR right to portability
      *
-     * @param mixed $user User instance or ID
+     * @param  mixed  $user  User instance or ID
      * @return array Exported data
      */
     public function handleDataExportRequest($user): array
@@ -239,8 +242,8 @@ class ConsentService
     /**
      * Integrate CCPA opt-out functionality
      *
-     * @param mixed $user User instance or ID
-     * @param bool $optOut Whether to opt out (true) or opt in (false)
+     * @param  mixed  $user  User instance or ID
+     * @param  bool  $optOut  Whether to opt out (true) or opt in (false)
      * @return bool Success status
      */
     public function integrateCCPAOptOut($user, bool $optOut = true): bool
@@ -274,19 +277,18 @@ class ConsentService
     /**
      * Clear cached consent for a user
      *
-     * @param int|null $userId User ID to clear consent for (null for current user)
-     * @param string $type Consent type (default: 'analytics')
-     * @return void
+     * @param  int|null  $userId  User ID to clear consent for (null for current user)
+     * @param  string  $type  Consent type (default: 'analytics')
      */
     public function clearCachedConsent(?int $userId = null, string $type = 'analytics'): void
     {
         $user = $userId ? null : Auth::user();
 
         if ($userId) {
-            $cacheKey = self::CONSENT_CACHE_KEY . $userId . '_' . $type;
+            $cacheKey = self::CONSENT_CACHE_KEY.$userId.'_'.$type;
             Cache::forget($cacheKey);
         } elseif ($user) {
-            $cacheKey = self::CONSENT_CACHE_KEY . $user->id . '_' . $type;
+            $cacheKey = self::CONSENT_CACHE_KEY.$user->id.'_'.$type;
             Cache::forget($cacheKey);
         }
     }

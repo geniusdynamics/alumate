@@ -6,11 +6,9 @@ namespace App\Services\Analytics;
 
 use App\Models\CustomEvent;
 use App\Models\CustomEventDefinition;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Exception;
 
 /**
  * Behavior Flow Service
@@ -21,29 +19,27 @@ use Exception;
 class BehaviorFlowService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const MAX_PATH_DEPTH = 10;
+
     private const MIN_PATH_FREQUENCY = 2;
 
     /**
      * Analyze behavior flow for a specific event
-     *
-     * @param int $definitionId
-     * @param array $filters
-     * @return array
      */
     public function analyzeBehaviorFlow(int $definitionId, array $filters = []): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "behavior_flow_{$tenantId}_{$definitionId}_" . md5(serialize($filters));
+            $cacheKey = "behavior_flow_{$tenantId}_{$definitionId}_".md5(serialize($filters));
 
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($definitionId, $filters, $tenantId) {
                 $definition = CustomEventDefinition::byTenant($tenantId)
                     ->active()
                     ->find($definitionId);
 
-                if (!$definition) {
-                    throw new Exception("Event definition not found");
+                if (! $definition) {
+                    throw new Exception('Event definition not found');
                 }
 
                 // Get events for definition
@@ -97,19 +93,17 @@ class BehaviorFlowService
     /**
      * Analyze funnel for a sequence of events
      *
-     * @param array $eventSequence Array of event definition IDs
-     * @param array $filters
-     * @return array
+     * @param  array  $eventSequence  Array of event definition IDs
      */
     public function analyzeFunnel(array $eventSequence, array $filters = []): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "funnel_analysis_{$tenantId}_" . md5(serialize($eventSequence) . serialize($filters));
+            $cacheKey = "funnel_analysis_{$tenantId}_".md5(serialize($eventSequence).serialize($filters));
 
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($eventSequence, $filters, $tenantId) {
                 if (count($eventSequence) < 2) {
-                    throw new Exception("Funnel requires at least 2 events");
+                    throw new Exception('Funnel requires at least 2 events');
                 }
 
                 // Get event definitions
@@ -120,7 +114,7 @@ class BehaviorFlowService
                     ->keyBy('id');
 
                 if ($definitions->count() !== count($eventSequence)) {
-                    throw new Exception("One or more event definitions not found");
+                    throw new Exception('One or more event definitions not found');
                 }
 
                 // Analyze funnel steps
@@ -157,10 +151,6 @@ class BehaviorFlowService
 
     /**
      * Get events for analysis
-     *
-     * @param int $definitionId
-     * @param array $filters
-     * @return Collection
      */
     private function getEvents(int $definitionId, array $filters): Collection
     {
@@ -183,9 +173,6 @@ class BehaviorFlowService
 
     /**
      * Extract user paths from events
-     *
-     * @param Collection $events
-     * @return array
      */
     private function extractUserPaths(Collection $events): array
     {
@@ -210,9 +197,6 @@ class BehaviorFlowService
 
     /**
      * Build flow graph from user paths
-     *
-     * @param array $userPaths
-     * @return array
      */
     private function buildFlowGraph(array $userPaths): array
     {
@@ -225,7 +209,7 @@ class BehaviorFlowService
                 $to = $path[$i + 1]['event_name'];
 
                 $key = "{$from}|{$to}";
-                if (!isset($transitions[$key])) {
+                if (! isset($transitions[$key])) {
                     $transitions[$key] = [
                         'from' => $from,
                         'to' => $to,
@@ -244,7 +228,7 @@ class BehaviorFlowService
             $from = $transition['from'];
             $to = $transition['to'];
 
-            if (!isset($graph[$from])) {
+            if (! isset($graph[$from])) {
                 $graph[$from] = [
                     'event' => $from,
                     'outgoing' => [],
@@ -276,10 +260,6 @@ class BehaviorFlowService
 
     /**
      * Calculate flow metrics
-     *
-     * @param array $userPaths
-     * @param array $flowGraph
-     * @return array
      */
     private function calculateFlowMetrics(array $userPaths, array $flowGraph): array
     {
@@ -315,9 +295,6 @@ class BehaviorFlowService
 
     /**
      * Identify common paths
-     *
-     * @param array $userPaths
-     * @return array
      */
     private function identifyCommonPaths(array $userPaths): array
     {
@@ -331,7 +308,7 @@ class BehaviorFlowService
                     $subPath = array_slice($path, $i, $length);
                     $pathKey = implode(' -> ', array_column($subPath, 'event_name'));
 
-                    if (!isset($pathCounts[$pathKey])) {
+                    if (! isset($pathCounts[$pathKey])) {
                         $pathCounts[$pathKey] = [
                             'path' => $pathKey,
                             'events' => $subPath,
@@ -368,10 +345,6 @@ class BehaviorFlowService
 
     /**
      * Generate optimization suggestions
-     *
-     * @param array $metrics
-     * @param array $flowGraph
-     * @return array
      */
     private function generateOptimizationSuggestions(array $metrics, array $flowGraph): array
     {
@@ -404,7 +377,7 @@ class BehaviorFlowService
                 'type' => 'path_length',
                 'severity' => 'medium',
                 'message' => "Average path length is {$metrics['avg_path_length']} events, which may indicate complexity",
-                'recommendation' => "Consider simplifying user journey or providing shortcuts to reduce number of steps required to complete key actions.",
+                'recommendation' => 'Consider simplifying user journey or providing shortcuts to reduce number of steps required to complete key actions.',
             ];
         }
 
@@ -413,8 +386,8 @@ class BehaviorFlowService
             $suggestions[] = [
                 'type' => 'engagement',
                 'severity' => 'high',
-                'message' => "Low user engagement with an average of " . round($metrics['total_events'] / $metrics['total_users'], 2) . " events per user",
-                'recommendation' => "Investigate why users are not engaging more deeply with the application. Consider improving onboarding, adding features, or enhancing user experience.",
+                'message' => 'Low user engagement with an average of '.round($metrics['total_events'] / $metrics['total_users'], 2).' events per user',
+                'recommendation' => 'Investigate why users are not engaging more deeply with the application. Consider improving onboarding, adding features, or enhancing user experience.',
             ];
         }
 
@@ -423,10 +396,6 @@ class BehaviorFlowService
 
     /**
      * Analyze funnel steps
-     *
-     * @param array $eventSequence
-     * @param array $filters
-     * @return array
      */
     private function analyzeFunnelSteps(array $eventSequence, array $filters): array
     {
@@ -438,7 +407,7 @@ class BehaviorFlowService
                 ->active()
                 ->find($definitionId);
 
-            if (!$definition) {
+            if (! $definition) {
                 continue;
             }
 
@@ -467,9 +436,6 @@ class BehaviorFlowService
 
     /**
      * Calculate conversion rates
-     *
-     * @param array $funnelSteps
-     * @return array
      */
     private function calculateConversionRates(array $funnelSteps): array
     {
@@ -486,7 +452,7 @@ class BehaviorFlowService
                 ? round(($step['unique_users'] / $initialUsers) * 100, 2)
                 : 0;
 
-            $stepKey = 'step_' . ($index + 1);
+            $stepKey = 'step_'.($index + 1);
             $rates[$stepKey] = [
                 'step' => $index + 1,
                 'users' => $step['unique_users'],
@@ -515,9 +481,6 @@ class BehaviorFlowService
 
     /**
      * Identify drop-off points
-     *
-     * @param array $funnelSteps
-     * @return array
      */
     private function identifyDropOffPoints(array $funnelSteps): array
     {
@@ -555,10 +518,6 @@ class BehaviorFlowService
 
     /**
      * Generate funnel insights
-     *
-     * @param array $funnelSteps
-     * @param array $conversionRates
-     * @return array
      */
     private function generateFunnelInsights(array $funnelSteps, array $conversionRates): array
     {
@@ -570,19 +529,19 @@ class BehaviorFlowService
             $insights[] = [
                 'type' => 'positive',
                 'message' => "Excellent overall conversion rate of {$overallRate}%",
-                'recommendation' => "Continue monitoring and look for opportunities to further optimize the funnel.",
+                'recommendation' => 'Continue monitoring and look for opportunities to further optimize the funnel.',
             ];
         } elseif ($overallRate > 40) {
             $insights[] = [
                 'type' => 'neutral',
                 'message' => "Moderate overall conversion rate of {$overallRate}%",
-                'recommendation' => "Focus on improving steps with the highest drop-off rates.",
+                'recommendation' => 'Focus on improving steps with the highest drop-off rates.',
             ];
         } else {
             $insights[] = [
                 'type' => 'negative',
                 'message' => "Low overall conversion rate of {$overallRate}%",
-                'recommendation' => "Review the entire funnel and identify major barriers to conversion.",
+                'recommendation' => 'Review the entire funnel and identify major barriers to conversion.',
             ];
         }
 
@@ -591,9 +550,6 @@ class BehaviorFlowService
 
     /**
      * Calculate median
-     *
-     * @param array $values
-     * @return float
      */
     private function calculateMedian(array $values): float
     {
@@ -614,8 +570,6 @@ class BehaviorFlowService
 
     /**
      * Get empty flow response
-     *
-     * @return array
      */
     private function getEmptyFlowResponse(): array
     {
@@ -640,8 +594,6 @@ class BehaviorFlowService
 
     /**
      * Get current tenant ID
-     *
-     * @return int
      */
     private function getCurrentTenantId(): int
     {

@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Component service for managing components with schema-based tenant context
 // ABOUTME: Updated to work with schema-based tenancy instead of tenant_id columns
 
@@ -6,7 +7,6 @@ namespace App\Services;
 
 use App\Models\Component;
 use App\Models\ComponentTheme;
-use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +22,7 @@ class ComponentService
     {
         $this->tenantContext = $tenantContext;
     }
+
     /**
      * Create a new component with validation and tenant scoping
      */
@@ -402,7 +403,6 @@ class ComponentService
 
         return $query->exists();
     }
-
 
     /**
      * Generate preview data for a component

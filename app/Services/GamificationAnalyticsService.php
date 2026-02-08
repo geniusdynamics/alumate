@@ -7,8 +7,6 @@ namespace App\Services;
 use App\Models\AnalyticsEvent;
 use App\Models\User;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Service for tracking and analyzing gamification analytics
@@ -66,6 +64,7 @@ class GamificationAnalyticsService extends BaseService
                 'user_id' => $userId,
                 'gamification_type' => $gamificationType,
             ]);
+
             return false;
         }
     }
@@ -97,6 +96,7 @@ class GamificationAnalyticsService extends BaseService
             ];
         } catch (\Exception $e) {
             $this->handleServiceError($e, 'get_user_points', ['user_id' => $userId]);
+
             return ['total_points' => 0, 'total_events' => 0, 'last_earned_at' => null];
         }
     }
@@ -125,6 +125,7 @@ class GamificationAnalyticsService extends BaseService
                 });
         } catch (\Exception $e) {
             $this->handleServiceError($e, 'get_user_badges', ['user_id' => $userId]);
+
             return collect();
         }
     }
@@ -163,6 +164,7 @@ class GamificationAnalyticsService extends BaseService
                 });
         } catch (\Exception $e) {
             $this->handleServiceError($e, 'get_leaderboard');
+
             return collect();
         }
     }
@@ -179,7 +181,7 @@ class GamificationAnalyticsService extends BaseService
             $query = AnalyticsEvent::byTenant($tenantId)
                 ->where('event_type', 'gamification');
 
-            if (!empty($dateRange)) {
+            if (! empty($dateRange)) {
                 $query->byDateRange($dateRange[0], $dateRange[1]);
             }
 
@@ -201,6 +203,7 @@ class GamificationAnalyticsService extends BaseService
             ];
         } catch (\Exception $e) {
             $this->handleServiceError($e, 'get_gamification_metrics');
+
             return [
                 'total_events' => 0,
                 'unique_users' => 0,
@@ -249,6 +252,7 @@ class GamificationAnalyticsService extends BaseService
                 });
         } catch (\Exception $e) {
             $this->handleServiceError($e, 'get_activity_timeline');
+
             return collect();
         }
     }
@@ -274,7 +278,7 @@ class GamificationAnalyticsService extends BaseService
                 ')
                 ->first();
 
-            if (!$recentActivity || $recentActivity->event_count == 0) {
+            if (! $recentActivity || $recentActivity->event_count == 0) {
                 return 0.0;
             }
 
@@ -287,6 +291,7 @@ class GamificationAnalyticsService extends BaseService
             return round(($frequencyScore * 0.4 + $pointsScore * 0.4 + $consistencyScore * 0.2) * 100, 2);
         } catch (\Exception $e) {
             $this->handleServiceError($e, 'get_user_engagement_score', ['user_id' => $userId]);
+
             return 0.0;
         }
     }

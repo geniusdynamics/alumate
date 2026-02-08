@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Service for implementing intelligent caching strategies with multi-layer cache support
 // ABOUTME: Updated for schema-based tenancy - provides tenant-aware cache warming and invalidation
 

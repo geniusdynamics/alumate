@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Models\EmailSequence;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 
 class EmailTrackingService
 {
@@ -60,10 +60,11 @@ class EmailTrackingService
     {
         $trackingData = $this->getTrackingData($trackingId);
 
-        if (!$trackingData) {
+        if (! $trackingData) {
             Log::warning('Email open tracking failed - invalid tracking ID', [
                 'tracking_id' => $trackingId,
             ]);
+
             return ['success' => false, 'error' => 'Invalid tracking ID'];
         }
 
@@ -101,11 +102,12 @@ class EmailTrackingService
     {
         $trackingData = $this->getTrackingData($trackingId);
 
-        if (!$trackingData) {
+        if (! $trackingData) {
             Log::warning('Link click tracking failed - invalid tracking ID', [
                 'tracking_id' => $trackingId,
                 'url' => $url,
             ]);
+
             return ['success' => false, 'error' => 'Invalid tracking ID'];
         }
 
@@ -116,7 +118,7 @@ class EmailTrackingService
         ];
 
         // Initialize clicks array if not exists
-        if (!isset($trackingData['clicks'])) {
+        if (! isset($trackingData['clicks'])) {
             $trackingData['clicks'] = [];
         }
 
@@ -153,8 +155,9 @@ class EmailTrackingService
         $email = $bounceData['email'] ?? null;
         $bounceType = $bounceData['bounce_type'] ?? 'unknown';
 
-        if (!$messageId && !$email) {
+        if (! $messageId && ! $email) {
             Log::warning('Bounce notification missing identifiers', $bounceData);
+
             return ['success' => false, 'error' => 'Missing message ID or email'];
         }
 
@@ -166,15 +169,16 @@ class EmailTrackingService
         }
 
         // Fallback to email search
-        if (!$trackingData && $email) {
+        if (! $trackingData && $email) {
             $trackingData = $this->findTrackingDataByEmail($email);
         }
 
-        if (!$trackingData) {
+        if (! $trackingData) {
             Log::warning('Bounce notification - tracking data not found', [
                 'message_id' => $messageId,
                 'email' => $email,
             ]);
+
             return ['success' => false, 'error' => 'Tracking data not found'];
         }
 
@@ -209,8 +213,9 @@ class EmailTrackingService
         $messageId = $complaintData['message_id'] ?? null;
         $email = $complaintData['email'] ?? null;
 
-        if (!$messageId && !$email) {
+        if (! $messageId && ! $email) {
             Log::warning('Complaint notification missing identifiers', $complaintData);
+
             return ['success' => false, 'error' => 'Missing message ID or email'];
         }
 
@@ -222,15 +227,16 @@ class EmailTrackingService
         }
 
         // Fallback to email search
-        if (!$trackingData && $email) {
+        if (! $trackingData && $email) {
             $trackingData = $this->findTrackingDataByEmail($email);
         }
 
-        if (!$trackingData) {
+        if (! $trackingData) {
             Log::warning('Complaint notification - tracking data not found', [
                 'message_id' => $messageId,
                 'email' => $email,
             ]);
+
             return ['success' => false, 'error' => 'Tracking data not found'];
         }
 
@@ -270,7 +276,7 @@ class EmailTrackingService
     {
         return URL::signedRoute('email.tracking.click', [
             'trackingId' => $trackingId,
-            'url' => urlencode($destinationUrl)
+            'url' => urlencode($destinationUrl),
         ]);
     }
 
@@ -281,7 +287,7 @@ class EmailTrackingService
     {
         $events = $request->all();
 
-        if (!is_array($events)) {
+        if (! is_array($events)) {
             $events = [$events];
         }
 
@@ -410,6 +416,7 @@ class EmailTrackingService
                 return $this->processSESEvent($event);
             default:
                 Log::warning('Unknown webhook provider', ['provider' => $provider]);
+
                 return ['success' => false, 'error' => 'Unknown provider'];
         }
     }

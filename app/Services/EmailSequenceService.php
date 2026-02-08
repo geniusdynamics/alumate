@@ -2,19 +2,18 @@
 
 namespace App\Services;
 
+use App\Models\EmailSend;
 use App\Models\EmailSequence;
+use App\Models\Lead;
 use App\Models\SequenceEmail;
 use App\Models\SequenceEnrollment;
-use App\Models\EmailSend;
-use App\Models\Lead;
-use App\Models\EmailTemplate;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Carbon\Carbon;
 
 /**
  * Email Sequence Service
@@ -28,14 +27,16 @@ class EmailSequenceService
      * Cache keys and durations
      */
     private const CACHE_PREFIX = 'email_sequences_';
+
     private const CACHE_DURATION = 300; // 5 minutes
+
     private const SEQUENCE_CACHE_DURATION = 600; // 10 minutes
 
     /**
      * Create a new email sequence
      *
-     * @param array $data Sequence data
-     * @return EmailSequence
+     * @param  array  $data  Sequence data
+     *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function createSequence(array $data): EmailSequence
@@ -85,10 +86,6 @@ class EmailSequenceService
 
     /**
      * Update an existing email sequence
-     *
-     * @param int $sequenceId
-     * @param array $data
-     * @return EmailSequence
      */
     public function updateSequence(int $sequenceId, array $data): EmailSequence
     {
@@ -136,9 +133,6 @@ class EmailSequenceService
 
     /**
      * Delete an email sequence
-     *
-     * @param int $sequenceId
-     * @return bool
      */
     public function deleteSequence(int $sequenceId): bool
     {
@@ -177,13 +171,11 @@ class EmailSequenceService
     /**
      * Get sequence by ID with tenant isolation
      *
-     * @param int $sequenceId
-     * @return EmailSequence
      * @throws ModelNotFoundException
      */
     public function getSequenceById(int $sequenceId): EmailSequence
     {
-        $cacheKey = self::CACHE_PREFIX . "sequence_{$sequenceId}";
+        $cacheKey = self::CACHE_PREFIX."sequence_{$sequenceId}";
 
         return Cache::remember($cacheKey, self::SEQUENCE_CACHE_DURATION, function () use ($sequenceId) {
             return EmailSequence::where('tenant_id', tenant()->id)
@@ -194,13 +186,10 @@ class EmailSequenceService
 
     /**
      * Get all sequences for current tenant
-     *
-     * @param array $filters
-     * @return Collection
      */
     public function getAllSequences(array $filters = []): Collection
     {
-        $cacheKey = self::CACHE_PREFIX . 'all_' . md5(serialize($filters));
+        $cacheKey = self::CACHE_PREFIX.'all_'.md5(serialize($filters));
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
             $query = EmailSequence::where('tenant_id', tenant()->id)
@@ -226,9 +215,6 @@ class EmailSequenceService
     /**
      * Enroll a lead in a sequence
      *
-     * @param int $sequenceId
-     * @param int $leadId
-     * @return SequenceEnrollment
      * @throws \Exception
      */
     public function enrollLead(int $sequenceId, int $leadId): SequenceEnrollment
@@ -283,9 +269,6 @@ class EmailSequenceService
 
     /**
      * Process sequence progression for a lead
-     *
-     * @param int $enrollmentId
-     * @return bool
      */
     public function processSequenceProgression(int $enrollmentId): bool
     {
@@ -305,7 +288,7 @@ class EmailSequenceService
             ->orderBy('send_order')
             ->first();
 
-        if (!$nextEmail) {
+        if (! $nextEmail) {
             // Sequence completed
             $enrollment->update([
                 'status' => 'completed',
@@ -335,9 +318,6 @@ class EmailSequenceService
 
     /**
      * Pause sequence enrollment
-     *
-     * @param int $enrollmentId
-     * @return bool
      */
     public function pauseEnrollment(int $enrollmentId): bool
     {
@@ -355,9 +335,6 @@ class EmailSequenceService
 
     /**
      * Resume sequence enrollment
-     *
-     * @param int $enrollmentId
-     * @return bool
      */
     public function resumeEnrollment(int $enrollmentId): bool
     {
@@ -375,9 +352,6 @@ class EmailSequenceService
 
     /**
      * Unsubscribe lead from sequence
-     *
-     * @param int $enrollmentId
-     * @return bool
      */
     public function unsubscribeFromSequence(int $enrollmentId): bool
     {
@@ -396,7 +370,6 @@ class EmailSequenceService
     /**
      * Validate sequence configuration
      *
-     * @param int $sequenceId
      * @return array Validation results
      */
     public function validateSequenceConfiguration(int $sequenceId): array
@@ -423,7 +396,7 @@ class EmailSequenceService
 
         // Check template references
         foreach ($sequence->emails as $email) {
-            if (!$email->template) {
+            if (! $email->template) {
                 $errors[] = "Email step {$email->send_order} references invalid template";
             }
         }
@@ -442,9 +415,6 @@ class EmailSequenceService
 
     /**
      * Get sequence statistics
-     *
-     * @param int $sequenceId
-     * @return array
      */
     public function getSequenceStats(int $sequenceId): array
     {
@@ -489,10 +459,6 @@ class EmailSequenceService
 
     /**
      * Duplicate an existing sequence
-     *
-     * @param int $sequenceId
-     * @param string $newName
-     * @return EmailSequence
      */
     public function duplicateSequence(int $sequenceId, string $newName): EmailSequence
     {
@@ -549,8 +515,6 @@ class EmailSequenceService
     /**
      * Validate sequence data
      *
-     * @param array $data
-     * @param bool $isNew
      * @throws \Illuminate\Validation\ValidationException
      */
     private function validateSequenceData(array $data, bool $isNew = true): void
@@ -577,9 +541,6 @@ class EmailSequenceService
 
     /**
      * Create sequence emails
-     *
-     * @param EmailSequence $sequence
-     * @param array $emailsData
      */
     private function createSequenceEmails(EmailSequence $sequence, array $emailsData): void
     {
@@ -597,9 +558,6 @@ class EmailSequenceService
 
     /**
      * Update sequence emails
-     *
-     * @param EmailSequence $sequence
-     * @param array $emailsData
      */
     private function updateSequenceEmails(EmailSequence $sequence, array $emailsData): void
     {
@@ -612,9 +570,6 @@ class EmailSequenceService
 
     /**
      * Send sequence email
-     *
-     * @param SequenceEnrollment $enrollment
-     * @param SequenceEmail $sequenceEmail
      */
     private function sendSequenceEmail(SequenceEnrollment $enrollment, SequenceEmail $sequenceEmail): void
     {
@@ -637,16 +592,14 @@ class EmailSequenceService
 
     /**
      * Clear sequence-related caches
-     *
-     * @param int|null $sequenceId
      */
     private function clearSequenceCache(?int $sequenceId = null): void
     {
         if ($sequenceId) {
-            Cache::forget(self::CACHE_PREFIX . "sequence_{$sequenceId}");
+            Cache::forget(self::CACHE_PREFIX."sequence_{$sequenceId}");
         }
 
-        Cache::forget(self::CACHE_PREFIX . 'all');
-        Cache::forget(self::CACHE_PREFIX . 'all_' . md5('')); // Clear all filtered caches
+        Cache::forget(self::CACHE_PREFIX.'all');
+        Cache::forget(self::CACHE_PREFIX.'all_'.md5('')); // Clear all filtered caches
     }
 }
