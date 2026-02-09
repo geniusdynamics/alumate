@@ -335,36 +335,50 @@ class SecurityService extends BaseService
         foreach ($inputs as $key => $value) {
             if (is_string($value)) {
                 $content .= ' ' . $value;
+            } elseif (is_array($value)) {
+                // Recursively check arrays for nested strings
+                $content .= ' ' . $this->flattenArrayToString($value);
             }
         }
 
+        // More comprehensive and normalized patterns to prevent bypasses
         $patterns = [
-            // SQL Injection patterns - simplified
-            '/SELECT.*FROM/i',
-            '/DROP.*TABLE/i',
-            '/INSERT.*INTO/i',
-            '/DELETE.*FROM/i',
-            '/UPDATE.*SET/i',
-            '/UNION.*SELECT/i',
-            '/OR.*1\s*=\s*1/i',
-            '/AND.*1\s*=\s*1/i',
+            // SQL Injection patterns - more comprehensive
+            '/(union(\s)+select|exec(\s)+\(|insert(\s)+into|delete(\s)+from|update(\s)+.+set|drop(\s)+(table|database|view)|alter(\s)+.+table|create(\s)+.+table|exec(\s)+xp_|exec(\s)+sp_|waitfor(\s)+delay)/i',
 
-            // XSS patterns
-            '/<script/i',
-            '/javascript:/i',
-            '/on\w+=/i',
+            // Boolean-based SQL injection
+            '/(or\s+1\s*=\s*1|and\s+1\s*=\s*1|or\s+0\s*=\s*0|and\s+0\s*=\s*0)/i',
+
+            // Time-based SQL injection
+            '/(sleep\(|benchmark\(|waitfor(\s)+delay|pg_sleep\(|dbms_lock.sleep)/i',
+
+            // Common SQL keywords with obfuscation
+            '/(sel\b.*ect\b|ins\b.*ert\b|upd\b.*ate\b|del\b.*ete\b|dro\b.*p\b)/i',
+
+            // XSS patterns - more comprehensive
+            '/(<script|javascript:|vbscript:|onload=|onerror=|onmouseover=|onclick=|onfocus=|onblur=|onsubmit=|onchange=|onkeydown=|onkeypress=|onkeyup=)/i',
+
+            // URL-encoded XSS
+            '/(%3c|%3e|%22|%27|%3C|%3E|%22|%27)/i',
 
             // Command injection patterns
-            '/[;&|`].*rm/i',
-            '/[;&|`].*del/i',
-            '/\$\(/i',
+            '/(\|\||\`|&&|\$\(.*\)|`.*`)/',
 
-            // Path traversal
-            '/\.\.\//i',
+            // Path traversal with encoding
+            '/(\.\.\/|\.\.\\|%2e%2e%2f|%2e%2e\/|%2e%2e%5c|%2e%2e\\)/i',
+
+            // File inclusion
+            '/(include\s+|require\s+|include_once\s+|require_once\s+).*\(/i',
+
+            // Base64 encoded attempts
+            '/(JXNjcmlwdHx8c2NyaXB0|PHNjcmlwdHx8c2NyaXB0|PHNjcmlwdD58fHNjcmlwdD4=)/i',
         ];
 
         foreach ($patterns as $pattern) {
-            if (preg_match($pattern, $content)) {
+            // Normalize content to detect encoded attempts
+            $normalizedContent = $this->normalizeContent($content);
+
+            if (preg_match($pattern, $content) || preg_match($pattern, $normalizedContent)) {
                 $this->logSecurityEvent(
                     SecurityEvent::TYPE_MALICIOUS_REQUEST,
                     SecurityEvent::SEVERITY_CRITICAL,
@@ -372,6 +386,8 @@ class SecurityService extends BaseService
                     [
                         'pattern' => $pattern,
                         'request_path' => $request->path(),
+                        'raw_content_length' => strlen($content),
+                        'normalized_content_length' => strlen($normalizedContent),
                     ],
                     null,
                     $request->ip(),
@@ -382,6 +398,41 @@ class SecurityService extends BaseService
         }
 
         return false;
+    }
+
+    /**
+     * Flatten array to string for security checking
+     */
+    private function flattenArrayToString(array $array): string
+    {
+        $result = '';
+
+        foreach ($array as $key => $value) {
+            if (is_string($value)) {
+                $result .= ' ' . $value;
+            } elseif (is_array($value)) {
+                $result .= ' ' . $this->flattenArrayToString($value);
+            } elseif (is_object($value)) {
+                $result .= ' ' . json_encode($value);
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Normalize content to detect encoded attacks
+     */
+    private function normalizeContent(string $content): string
+    {
+        // Decode common encodings
+        $decoded = urldecode($content);
+        $decoded = html_entity_decode($decoded, ENT_QUOTES, 'UTF-8');
+
+        // Remove common whitespace variations
+        $decoded = preg_replace('/\s+/', ' ', $decoded);
+
+        return $decoded;
     }
 
     /**

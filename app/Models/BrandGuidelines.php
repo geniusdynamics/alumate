@@ -91,7 +91,8 @@ class BrandGuidelines extends Model
 
         // Apply tenant context for schema-based multi-tenancy
         static::addGlobalScope('tenant_context', function ($builder) {
-            TenantContextService::applyTenantContext($builder);
+            $tenantContextService = app(TenantContextService::class);
+            $tenantContextService->applyTenantContext($builder);
         });
 
         // Auto-generate slug if not provided
@@ -140,7 +141,8 @@ class BrandGuidelines extends Model
      */
     public function getCurrentTenant()
     {
-        return TenantContextService::getCurrentTenant();
+        $tenantContextService = app(TenantContextService::class);
+        return $tenantContextService->getCurrentTenant();
     }
 
     /**

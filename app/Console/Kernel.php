@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
         Commands\BackupRestoreCommand::class,
         Commands\BackupVerifyCommand::class,
         Commands\BackupCleanupCommand::class,
+        Commands\CleanUpLogs::class,
     ];
 
     /**
@@ -69,6 +70,13 @@ class Kernel extends ConsoleKernel
         // Database backup verification - Weekly on Sunday at 6:00 AM
         $schedule->command('backup:verify')
             ->weeklyOn(Schedule::SUNDAY, '06:00')
+            ->withoutOverlapping()
+            ->onOneServer()
+            ->appendOutputTo(storage_path('logs/scheduler.log'));
+
+        // Log cleanup - Daily at 3:00 AM
+        $schedule->command('logs:cleanup')
+            ->dailyAt('03:00')
             ->withoutOverlapping()
             ->onOneServer()
             ->appendOutputTo(storage_path('logs/scheduler.log'));

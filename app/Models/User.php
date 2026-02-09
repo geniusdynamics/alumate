@@ -240,6 +240,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Scope to get users with their roles and tenants eagerly loaded
+     */
+    public function scopeWithRolesAndTenants($query)
+    {
+        return $query->with(['roles', 'tenants']);
+    }
+
+    /**
+     * Scope to get users with their tenant users relationship
+     */
+    public function scopeWithTenantUsers($query)
+    {
+        return $query->with(['tenantUsers']);
+    }
+
+    /**
      * Get activity logs for this user
      */
     public function activityLogs(): HasMany

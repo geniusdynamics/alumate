@@ -602,6 +602,56 @@ class ActivityLog extends Model
     }
 
     /**
+     * Clean old logs with configurable retention periods
+     */
+    public static function cleanLogsByRetention(): int
+    {
+        $deletedCount = 0;
+
+        // Delete low severity logs older than 30 days
+        $lowSeverityCutoff = now()->subDays(config('logging.retention.low_severity_days', 30));
+        $deletedCount += static::where('severity', self::SEVERITY_LOW)
+            ->where('performed_at', '<', $lowSeverityCutoff)
+            ->delete();
+
+        // Delete medium severity logs older than 90 days
+        $mediumSeverityCutoff = now()->subDays(config('logging.retention.medium_severity_days', 90));
+        $deletedCount += static::where('severity', self::SEVERITY_MEDIUM)
+            ->where('performed_at', '<', $mediumSeverityCutoff)
+            ->delete();
+
+        // Delete high severity logs older than 180 days (keep critical logs indefinitely)
+        $highSeverityCutoff = now()->subDays(config('logging.retention.high_severity_days', 180));
+        $deletedCount += static::where('severity', self::SEVERITY_HIGH)
+            ->where('performed_at', '<', $highSeverityCutoff)
+            ->where('category', '!=', self::CATEGORY_SECURITY) // Keep security logs longer
+            ->delete();
+
+        // Keep security category logs for extended period
+        $securityCutoff = now()->subDays(config('logging.retention.security_category_days', 365));
+        $deletedCount += static::where('category', self::CATEGORY_SECURITY)
+            ->where('performed_at', '<', $securityCutoff)
+            ->where('severity', '!=', self::SEVERITY_CRITICAL) // Still keep critical security logs indefinitely
+            ->delete();
+
+        return $deletedCount;
+    }
+
+    /**
+     * Get log retention configuration
+     */
+    public static function getRetentionConfig(): array
+    {
+        return [
+            'low_severity_days' => config('logging.retention.low_severity_days', 30),
+            'medium_severity_days' => config('logging.retention.medium_severity_days', 90),
+            'high_severity_days' => config('logging.retention.high_severity_days', 180),
+            'critical_severity_days' => 'indefinite', // Critical logs kept indefinitely
+            'security_category_days' => config('logging.retention.security_category_days', 365),
+        ];
+    }
+
+    /**
      * Export activities to CSV
      */
     public static function exportToCsv(array $filters = []): string

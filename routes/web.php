@@ -116,4 +116,56 @@ Route::post('/homepage/track-cta', [\App\Http\Controllers\HomepageController::cl
 Route::post('/homepage/track-conversion', [\App\Http\Controllers\HomepageController::class, 'trackConversion'])->name('homepage.track-conversion');
 Route::get('/homepage/ab-test-results/{testId}', [\App\Http\Controllers\HomepageController::class, 'getABTestResults'])->name('homepage.ab-test-results');
 
+// Main dashboard route - redirects users based on their role
+Route::get('/dashboard', function () {
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    $user = auth()->user();
+
+    // Redirect based on user role
+    if ($user->hasRole('super-admin')) {
+        return redirect()->route('super-admin.dashboard');
+    } elseif ($user->hasRole('institution-admin')) {
+        return redirect()->route('institution-admin.dashboard');
+    } elseif ($user->hasRole('employer')) {
+        return redirect()->route('employer.dashboard');
+    } elseif ($user->hasRole('graduate') || $user->hasRole('alumni')) {
+        return redirect()->route('graduate.dashboard');
+    } else {
+        // Default to general dashboard for other user types
+        return Inertia::render('Dashboard');
+    }
+})->middleware(['auth'])->name('dashboard');
+
+// Dashboard routes for different user types
+Route::middleware(['auth'])->group(function () {
+    // Super Admin Dashboard
+    Route::middleware(['role:super-admin'])->prefix('super-admin')->name('super-admin.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\SuperAdminDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/analytics', [\App\Http\Controllers\SuperAdminDashboardController::class, 'analytics'])->name('analytics');
+        Route::get('/institutions', [\App\Http\Controllers\SuperAdminDashboardController::class, 'institutions'])->name('institutions');
+        Route::get('/users', [\App\Http\Controllers\SuperAdminDashboardController::class, 'users'])->name('users');
+        Route::get('/employer-verification', [\App\Http\Controllers\SuperAdminDashboardController::class, 'employerVerification'])->name('employer-verification');
+        Route::get('/reports', [\App\Http\Controllers\SuperAdminDashboardController::class, 'reports'])->name('reports');
+        Route::get('/system-health', [\App\Http\Controllers\SuperAdminDashboardController::class, 'systemHealth'])->name('system-health');
+    });
+
+    // Institution Admin Dashboard
+    Route::middleware(['role:institution-admin'])->prefix('institution-admin')->name('institution-admin.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'index'])->name('dashboard');
+    });
+
+    // Graduate Dashboard
+    Route::middleware(['role:graduate,alumni'])->prefix('graduate')->name('graduate.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\GraduateDashboardController::class, 'index'])->name('dashboard');
+    });
+
+    // Employer Dashboard
+    Route::middleware(['role:employer'])->prefix('employer')->name('employer.')->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\EmployerDashboardController::class, 'index'])->name('dashboard');
+    });
+});
+
 require __DIR__ . '/auth.php';
