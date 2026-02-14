@@ -376,7 +376,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Check if user can access a specific institution
      */
-    public function canAccessInstitution(int|string $institutionId): bool
+    public function canAccessInstitution($institutionId): bool
     {
         if ($this->is_super_admin) {
             return true;
