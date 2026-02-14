@@ -2,8 +2,8 @@
 
 namespace Tests\Unit;
 
+use App\Models\AlumniConnection;
 use App\Models\Circle;
-use App\Models\Connection;
 use App\Models\User;
 use App\Services\AlumniRecommendationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -13,6 +13,8 @@ use Tests\TestCase;
 class AlumniRecommendationServiceTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected $tenancy = false;
 
     private AlumniRecommendationService $service;
 
@@ -68,13 +70,13 @@ class AlumniRecommendationServiceTest extends TestCase
         // Create mutual connection
         $mutualConnection = User::factory()->create();
 
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $mutualConnection->id,
             'status' => 'accepted',
         ]);
 
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->candidate->id,
             'connected_user_id' => $mutualConnection->id,
             'status' => 'accepted',
@@ -110,24 +112,24 @@ class AlumniRecommendationServiceTest extends TestCase
         $connection3 = User::factory()->create();
 
         // User connected to 1 and 2
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $connection1->id,
             'status' => 'accepted',
         ]);
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $connection2->id,
             'status' => 'accepted',
         ]);
 
         // Candidate connected to 2 and 3
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->candidate->id,
             'connected_user_id' => $connection2->id,
             'status' => 'accepted',
         ]);
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->candidate->id,
             'connected_user_id' => $connection3->id,
             'status' => 'accepted',
@@ -158,7 +160,7 @@ class AlumniRecommendationServiceTest extends TestCase
     public function test_filter_recommendations_excludes_connected_users()
     {
         // Create connection between users
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $this->candidate->id,
             'status' => 'accepted',
@@ -182,7 +184,7 @@ class AlumniRecommendationServiceTest extends TestCase
     public function test_filter_recommendations_excludes_pending_requests()
     {
         // Create pending connection request
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $this->candidate->id,
             'status' => 'pending',
@@ -229,14 +231,14 @@ class AlumniRecommendationServiceTest extends TestCase
         $secondDegree = User::factory()->create();
 
         // User -> First degree connection
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $firstDegree->id,
             'status' => 'accepted',
         ]);
 
         // First degree -> Second degree connection
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $firstDegree->id,
             'connected_user_id' => $secondDegree->id,
             'status' => 'accepted',
@@ -257,12 +259,12 @@ class AlumniRecommendationServiceTest extends TestCase
         $this->user->circles()->attach($circle);
         $this->candidate->circles()->attach($circle);
 
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $mutualConnection->id,
             'status' => 'accepted',
         ]);
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->candidate->id,
             'connected_user_id' => $mutualConnection->id,
             'status' => 'accepted',
