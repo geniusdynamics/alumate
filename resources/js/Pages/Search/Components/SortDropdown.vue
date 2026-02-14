@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="relative inline-block text-left">
         <div>
             <button
@@ -36,7 +36,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -89,3 +89,4 @@ document.addEventListener('click', (e) => {
     }
 });
 </script>
+

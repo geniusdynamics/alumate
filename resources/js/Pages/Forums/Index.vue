@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="forums-index">
         <!-- Header -->
         <div class="border-b bg-white shadow-sm">
@@ -128,7 +128,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ChatBubbleLeftRightIcon, MagnifyingGlassIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
@@ -249,6 +249,7 @@ onMounted(() => {
     background-color: #f9fafb;
 }
 </style>
+
 
 
 

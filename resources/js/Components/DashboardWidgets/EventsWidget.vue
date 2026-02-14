@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="card-mobile border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div class="card-mobile-header">
             <h3 class="card-mobile-title">Upcoming Events</h3>
@@ -113,7 +113,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ArrowRightIcon, CalendarDaysIcon, ClockIcon, MapPinIcon, VideoCameraIcon } from '@heroicons/vue/24/outline';
 import { Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
@@ -191,3 +191,4 @@ const rsvpToEvent = async (event, status) => {
     }
 };
 </script>
+

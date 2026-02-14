@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="search-suggestions">
         <div class="suggestions-list">
             <div v-for="(suggestion, index) in suggestions" :key="index" @click="selectSuggestion(suggestion)" class="suggestion-item">
@@ -32,7 +32,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // Props
 const props = defineProps({
     suggestions: {
@@ -105,3 +105,4 @@ onUnmounted(() => {
     @apply text-sm text-gray-500;
 }
 </style>
+

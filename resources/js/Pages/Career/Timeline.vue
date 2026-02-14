@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Career Timeline">
         <Head title="Career Timeline" />
 
@@ -244,7 +244,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CareerEntryModal from '@/Components/CareerEntryModal.vue';
 import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
 import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
@@ -280,6 +280,7 @@ const handleEntrySaved = () => {
     window.location.reload();
 };
 </script>
+
 
 
 

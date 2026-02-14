@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <svg
         :class="['icon', `icon-${name}`]"
         :width="size"
@@ -112,7 +112,7 @@
     </svg>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
     name: {
         type: String,
@@ -132,3 +132,4 @@ defineProps({
     flex-shrink: 0;
 }
 </style>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         class="mentorship-goal-card rounded-lg border border-gray-200 bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
@@ -167,7 +167,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     ChatBubbleLeftIcon,
     CheckCircleIcon,
@@ -288,3 +288,4 @@ const openResource = (url) => {
     transform: translateY(-2px);
 }
 </style>
+

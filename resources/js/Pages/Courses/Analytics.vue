@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -313,6 +313,7 @@ const getEmploymentRateColor = (rate) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

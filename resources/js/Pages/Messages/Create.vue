@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="New Message">
         <template #header>
             <h2 class="text-xl font-semibold leading-tight text-gray-800">New Message</h2>
@@ -128,7 +128,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
@@ -185,6 +185,7 @@ const submit = () => {
     form.post(route('messages.store'));
 };
 </script>
+
 
 
 

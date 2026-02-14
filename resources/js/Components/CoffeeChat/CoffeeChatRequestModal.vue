@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div class="mx-4 w-full max-w-md rounded-lg bg-white p-6">
             <div class="mb-4 flex items-center justify-between">
@@ -105,7 +105,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
 
@@ -199,3 +199,4 @@ onMounted(() => {
     form.value.proposed_times[0] = tomorrow.toISOString().slice(0, 16);
 });
 </script>
+

@@ -31,10 +31,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function setupDatabase(): void
     {
-        // Use PostgreSQL for tests since SQLite driver is not available
-        config(['database.default' => 'pgsql']);
-        config(['database.connections.pgsql.database' => 'laravel_test']);
-
+        // Use the default database connection configured in phpunit.xml
         // Only run migrations if not already run
         if (! Schema::hasTable('migrations')) {
             Artisan::call('migrate:fresh');

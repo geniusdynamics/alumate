@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Header -->
@@ -279,7 +279,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CampaignBuilder from '@/Components/EmailMarketing/CampaignBuilder.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
@@ -423,6 +423,7 @@ onMounted(() => {
     loadAnalytics();
 });
 </script>
+
 
 
 

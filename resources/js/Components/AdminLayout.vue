@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-900 text-white">
         <!-- Sidebar -->
         <div class="fixed inset-y-0 left-0 z-50 w-64 border-r border-gray-700 bg-gray-800">
@@ -78,7 +78,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import NavLink from '@/Components/NavLink.vue';
 import { ArrowRightOnRectangleIcon, BellIcon, Cog6ToothIcon, MagnifyingGlassIcon, UserIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
@@ -106,6 +106,7 @@ const logout = () => {
     router.post(route('logout'));
 };
 </script>
+
 
 
 

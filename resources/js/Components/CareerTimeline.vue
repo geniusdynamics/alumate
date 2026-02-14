@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="career-timeline">
         <!-- Header -->
         <div class="mb-6 flex items-center justify-between">
@@ -107,7 +107,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { BriefcaseIcon, PlusIcon, StarIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref } from 'vue';
 import AddCareerModal from './AddCareerModal.vue';
@@ -309,3 +309,4 @@ onMounted(() => {
     @apply mx-auto max-w-4xl;
 }
 </style>
+

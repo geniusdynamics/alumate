@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <!-- Background overlay -->
@@ -171,7 +171,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { reactive, ref } from 'vue';
 
@@ -224,3 +224,4 @@ const saveGoal = async () => {
     }
 };
 </script>
+

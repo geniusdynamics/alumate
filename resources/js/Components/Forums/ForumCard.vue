@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="cursor-pointer rounded-lg bg-white shadow transition-shadow duration-200 hover:shadow-md" @click="$emit('click')">
         <div class="p-6">
             <div class="flex items-start justify-between">
@@ -70,13 +70,13 @@
                 <div class="space-y-2">
                     <div v-for="topic in forum.latest_topics.slice(0, 3)" :key="topic.id" class="flex items-center justify-between text-sm">
                         <div class="flex min-w-0 flex-1 items-center space-x-2">
-                            <span v-if="topic.is_sticky" class="h-4 w-4 flex-shrink-0 text-yellow-500" title="Sticky"> 📌 </span>
-                            <span v-if="topic.is_announcement" class="h-4 w-4 flex-shrink-0 text-blue-500" title="Announcement"> 📢 </span>
+                            <span v-if="topic.is_sticky" class="h-4 w-4 flex-shrink-0 text-yellow-500" title="Sticky"> ðŸ“Œ </span>
+                            <span v-if="topic.is_announcement" class="h-4 w-4 flex-shrink-0 text-blue-500" title="Announcement"> ðŸ“¢ </span>
                             <span class="truncate font-medium text-gray-900">{{ topic.title }}</span>
                         </div>
                         <div class="flex flex-shrink-0 items-center space-x-2 text-xs text-gray-500">
                             <span>{{ topic.posts_count }} posts</span>
-                            <span>•</span>
+                            <span>â€¢</span>
                             <span>{{ formatTimeAgo(topic.last_post_at || topic.created_at) }}</span>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { BuildingOfficeIcon, ChatBubbleLeftRightIcon, LockClosedIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 
 // Props
@@ -129,3 +129,4 @@ const formatTimeAgo = (date) => {
     overflow: hidden;
 }
 </style>
+

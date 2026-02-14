@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Mentorship">
         <Head title="Mentorship" />
 
@@ -151,7 +151,7 @@
                                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                                 {{ formatSessionDate(session.scheduled_at) }}
                                             </p>
-                                            <p class="text-xs text-gray-400">{{ session.duration }} minutes • {{ session.type }}</p>
+                                            <p class="text-xs text-gray-400">{{ session.duration }} minutes â€¢ {{ session.type }}</p>
                                         </div>
                                     </div>
                                     <div class="flex space-x-2">
@@ -236,7 +236,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
 import MentorCard from '@/Components/MentorCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -305,6 +305,7 @@ const handleMentorProfileCreated = () => {
     router.reload();
 };
 </script>
+
 
 
 

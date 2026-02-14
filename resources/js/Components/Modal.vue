@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <teleport to="body">
         <div
             v-if="show"
@@ -40,7 +40,7 @@
     </teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     show: {
         type: Boolean,
@@ -58,3 +58,4 @@ const props = defineProps({
 
 defineEmits(['close']);
 </script>
+

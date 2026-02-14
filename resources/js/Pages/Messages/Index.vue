@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="messaging-app">
         <Head title="Messages" />
 
@@ -50,7 +50,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ChatInterface from '@/Components/Messaging/ChatInterface.vue';
 import ConversationList from '@/Components/Messaging/ConversationList.vue';
 import { useAuthStore } from '@/Stores/auth';
@@ -263,6 +263,7 @@ onUnmounted(() => {
     @apply bg-gray-400 dark:bg-gray-500;
 }
 </style>
+
 
 
 

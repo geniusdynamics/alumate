@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="modal-overlay" @click="$emit('close')">
         <div class="modal-content" @click.stop>
             <div class="modal-header">
@@ -186,7 +186,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useMessagingStore } from '@/Stores/messaging';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
@@ -493,6 +493,7 @@ onMounted(() => {
     @apply border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700;
 }
 </style>
+
 
 
 

@@ -224,7 +224,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SwipeableTabNavigation from '@/Components/Mobile/SwipeableTabNavigation.vue';
 import TouchOptimizedControls from '@/Components/Mobile/TouchOptimizedControls.vue';
 import {

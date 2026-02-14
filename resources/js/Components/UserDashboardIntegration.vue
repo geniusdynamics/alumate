@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="user-dashboard-integration">
         <!-- Quick Actions Bar -->
         <div class="mb-6 rounded-lg bg-white shadow dark:bg-gray-800">
@@ -272,7 +272,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PostCreator from '@/Components/PostCreator.vue';
 import userFlowIntegration from '@/Services/UserFlowIntegration';
 import {
@@ -508,6 +508,7 @@ const formatDate = (dateString) => {
     position: relative;
 }
 </style>
+
 
 
 

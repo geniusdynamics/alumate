@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Alumni Recommendations">
         <Head title="Alumni Recommendations" />
 
@@ -148,7 +148,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ConnectionInsights from '@/Components/ConnectionInsights.vue';
 import RecommendationCard from '@/Components/RecommendationCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -193,6 +193,7 @@ const handleConnectRequest = (userId) => {
     );
 };
 </script>
+
 
 
 

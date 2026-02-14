@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-700 bg-gray-800 p-6">
         <div class="flex items-center">
             <div class="flex-shrink-0">
@@ -18,7 +18,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -109,3 +109,4 @@ const changeColorClass = computed(() => {
     return 'text-gray-400';
 });
 </script>
+

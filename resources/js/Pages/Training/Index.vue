@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <DefaultLayout title="Training & Documentation">
         <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <!-- Header -->
@@ -269,7 +269,7 @@
                                 <p class="mt-1 text-gray-600 dark:text-gray-400">Quick answers to common questions</p>
                             </div>
                             <Link :href="route('training.faqs')" class="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
-                                View All FAQs →
+                                View All FAQs â†’
                             </Link>
                         </div>
                     </div>
@@ -328,7 +328,7 @@
     </DefaultLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
@@ -477,6 +477,7 @@ const toggleFAQ = (faqId) => {
     }
 };
 </script>
+
 
 
 

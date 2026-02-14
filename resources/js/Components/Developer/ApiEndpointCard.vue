@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 p-6 dark:border-gray-700">
             <div class="flex items-start justify-between">
@@ -199,7 +199,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -253,3 +253,4 @@ const tryEndpoint = () => {
     console.log('Try endpoint:', props.endpoint);
 };
 </script>
+

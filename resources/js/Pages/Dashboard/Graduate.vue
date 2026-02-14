@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import UserDashboardIntegration from '@/Components/UserDashboardIntegration.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -331,7 +331,7 @@ const applyToJob = (job) => {
                                     :href="route('graduate.jobs')"
                                     class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500"
                                 >
-                                    Browse available jobs →
+                                    Browse available jobs â†’
                                 </Link>
                             </div>
                         </div>
@@ -379,7 +379,7 @@ const applyToJob = (job) => {
                                 </div>
                                 <div class="mt-4">
                                     <Link :href="route('graduate.profile')" class="text-sm text-indigo-600 hover:text-indigo-500">
-                                        Update profile →
+                                        Update profile â†’
                                     </Link>
                                 </div>
                             </div>
@@ -489,6 +489,7 @@ const applyToJob = (job) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

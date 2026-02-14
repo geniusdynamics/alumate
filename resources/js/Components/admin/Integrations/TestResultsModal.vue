@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="$emit('close')"></div>
@@ -148,7 +148,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CheckCircleIcon, ExclamationTriangleIcon, XCircleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 
 defineProps({
@@ -160,3 +160,4 @@ defineProps({
 
 defineEmits(['close']);
 </script>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <nav class="professional-mega-menu">
     <div class="menu-container">
       <!-- Use Cases Menu -->
@@ -363,7 +363,7 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import {
   ChevronDown,

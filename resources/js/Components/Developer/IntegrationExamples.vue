@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 p-6 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Integration Examples</h3>
@@ -255,7 +255,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { BellIcon, BookOpenIcon, ChartBarIcon, DocumentTextIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
 import { ref } from 'vue';
 
@@ -1071,3 +1071,4 @@ const runTest = (test) => {
     // Implement test execution logic
 };
 </script>
+

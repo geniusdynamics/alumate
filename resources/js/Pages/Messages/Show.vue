@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Message">
         <template #header>
             <div class="flex items-center justify-between">
@@ -6,7 +6,7 @@
                     {{ message.subject }}
                 </h2>
                 <div class="flex items-center space-x-2">
-                    <Link :href="route('messages.index')" class="text-gray-500 hover:text-gray-700"> ← Back to Messages </Link>
+                    <Link :href="route('messages.index')" class="text-gray-500 hover:text-gray-700"> â† Back to Messages </Link>
                 </div>
             </div>
         </template>
@@ -126,7 +126,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 
@@ -166,6 +166,7 @@ const deleteMessage = () => {
     }
 };
 </script>
+
 
 
 

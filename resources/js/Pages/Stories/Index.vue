@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Success Stories">
         <Head title="Success Stories" />
 
@@ -157,7 +157,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Pagination from '@/Components/Pagination.vue';
 import SuccessStoryCard from '@/Components/SuccessStories/SuccessStoryCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -209,6 +209,7 @@ const clearFilters = () => {
     @apply border-2 border-yellow-200 dark:border-yellow-600;
 }
 </style>
+
 
 
 

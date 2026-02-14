@@ -329,7 +329,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 
 defineOptions({

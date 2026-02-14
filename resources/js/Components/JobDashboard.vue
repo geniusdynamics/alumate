@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="job-dashboard">
         <!-- Header Section -->
         <div class="dashboard-header">
@@ -70,7 +70,7 @@
 
         <!-- Empty State -->
         <div v-else class="empty-state">
-            <div class="empty-icon">🎯</div>
+            <div class="empty-icon">ðŸŽ¯</div>
             <h3>No matching jobs found</h3>
             <p>Try adjusting your filters or check back later for new opportunities.</p>
             <button @click="resetFilters" class="reset-filters-btn">Reset Filters</button>
@@ -97,7 +97,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { debounce } from 'lodash';
 import { computed, onMounted, reactive, ref } from 'vue';
 import ApplicationModal from './ApplicationModal.vue';
@@ -524,3 +524,4 @@ onMounted(() => {
     }
 }
 </style>
+

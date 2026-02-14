@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Key Performance Indicators">
         <template #header>
             <div class="flex items-center justify-between">
@@ -175,7 +175,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AnalyticsChart from '@/Components/AnalyticsChart.vue';
 import Modal from '@/Components/Modal.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -394,6 +394,7 @@ const getDetailedTrendChartOptions = () => {
     };
 };
 </script>
+
 
 
 

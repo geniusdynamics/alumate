@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -268,7 +268,7 @@ const downloadDocument = (document) => {
                                         <div>
                                             <div class="font-medium text-gray-900">{{ document.name }}</div>
                                             <div class="text-sm text-gray-600">
-                                                Uploaded: {{ formatDate(document.uploaded_at) }} • Size:
+                                                Uploaded: {{ formatDate(document.uploaded_at) }} â€¢ Size:
                                                 {{ (document.size / 1024 / 1024).toFixed(2) }} MB
                                             </div>
                                         </div>
@@ -550,6 +550,7 @@ const downloadDocument = (document) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

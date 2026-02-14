@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="ab-test-manager">
         <!-- Header -->
         <div class="rounded-lg bg-white shadow dark:bg-gray-800">
@@ -288,7 +288,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
@@ -463,3 +463,4 @@ onMounted(() => {
     }, 30000); // Refresh every 30 seconds
 });
 </script>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="space-y-8">
         <!-- ROI Overview Cards -->
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -226,7 +226,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Chart from 'chart.js/auto';
 import { computed, nextTick, onMounted, ref } from 'vue';
 
@@ -477,3 +477,4 @@ onMounted(() => {
     });
 });
 </script>
+

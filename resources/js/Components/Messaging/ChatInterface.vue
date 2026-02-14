@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="chat-interface">
         <div v-if="!conversation" class="no-conversation">
             <div class="py-12 text-center">
@@ -253,7 +253,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAuthStore } from '@/Stores/auth';
 import { useMessagingStore } from '@/Stores/messaging';
 import { formatDistanceToNow } from 'date-fns';
@@ -591,6 +591,7 @@ onUnmounted(() => {
     @apply px-3 py-1.5 text-xs;
 }
 </style>
+
 
 
 

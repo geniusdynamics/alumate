@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Appearance Settings">
         <Head title="Appearance Settings" />
 
@@ -238,7 +238,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import { useTheme } from '@/Composables/useTheme';
@@ -364,6 +364,7 @@ onMounted(() => {
     --border-secondary: 255 255 255;
 }
 </style>
+
 
 
 

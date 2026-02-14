@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-50">
         <Head title="User Management" />
 
@@ -203,7 +203,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { EnvelopeIcon, ExclamationTriangleIcon, UserIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { format } from 'date-fns';
@@ -272,3 +272,4 @@ const suspendUser = () => {
     }
 };
 </script>
+

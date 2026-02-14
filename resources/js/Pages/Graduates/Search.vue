@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -58,6 +58,7 @@ watch([search, institution, course, year, employment_status], ([value, value2, v
         </div>
     </AppLayout>
 </template>
+
 
 
 

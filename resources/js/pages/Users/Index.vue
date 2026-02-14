@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Users" />
 
@@ -181,7 +181,7 @@
                                     <option value="last_login_at">Sort by Last Login</option>
                                 </select>
                                 <button @click="toggleSortDirection" class="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-50">
-                                    {{ form.direction === 'asc' ? '↑' : '↓' }}
+                                    {{ form.direction === 'asc' ? 'â†‘' : 'â†“' }}
                                 </button>
                             </div>
                         </div>
@@ -369,7 +369,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 import { reactive, ref } from 'vue';
@@ -480,3 +480,4 @@ const bulkAction = (action) => {
     }
 };
 </script>
+

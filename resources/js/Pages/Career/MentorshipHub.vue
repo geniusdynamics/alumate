@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Mentorship Hub">
         <Head title="Mentorship Hub" />
 
@@ -203,7 +203,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
 import LearningResources from '@/Components/LearningResources.vue';
 import MentorDirectory from '@/Components/MentorDirectory.vue';
@@ -338,6 +338,7 @@ const handleSessionScheduled = () => {
     router.reload({ only: ['upcomingSessions'] });
 };
 </script>
+
 
 
 

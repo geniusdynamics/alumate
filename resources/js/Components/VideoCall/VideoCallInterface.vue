@@ -1,10 +1,10 @@
-<template>
+﻿<template>
     <div class="video-call-interface">
         <!-- Call Header -->
         <div class="call-header flex items-center justify-between bg-gray-900 p-4 text-white">
             <div class="call-info">
                 <h2 class="text-lg font-semibold">{{ call.title }}</h2>
-                <p class="text-sm text-gray-300">{{ formatDuration(callDuration) }} • {{ activeParticipants.length }} participants</p>
+                <p class="text-sm text-gray-300">{{ formatDuration(callDuration) }} â€¢ {{ activeParticipants.length }} participants</p>
             </div>
 
             <div class="call-actions flex space-x-2">
@@ -75,7 +75,7 @@
                             <p class="font-medium">{{ participant.user.name }}</p>
                             <p class="text-xs text-gray-400">
                                 {{ participant.role }}
-                                <span v-if="participant.is_active" class="ml-1 text-green-400">• Active</span>
+                                <span v-if="participant.is_active" class="ml-1 text-green-400">â€¢ Active</span>
                             </p>
                         </div>
 
@@ -230,7 +230,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -546,3 +546,4 @@ onUnmounted(() => {
     @apply break-words;
 }
 </style>
+

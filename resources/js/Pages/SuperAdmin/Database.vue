@@ -94,7 +94,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import DarkStatCard from '@/Components/DarkStatCard.vue';
 import { Head } from '@inertiajs/vue3';

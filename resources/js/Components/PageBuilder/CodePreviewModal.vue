@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
     <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
       <!-- Background overlay -->
@@ -423,7 +423,7 @@ const openInNewTab = () => {
             <button id="demo-button">Demo Button</button>
             <div id="demo-output"></div>
           </div>
-          <script>
+          <script lang="ts">
             ${props.code.code}
           </script>
         </body>
@@ -460,3 +460,4 @@ onMounted(() => {
   }
 })
 </script>
+

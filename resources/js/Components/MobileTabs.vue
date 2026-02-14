@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="mobile-tabs">
         <!-- Tab Headers -->
         <div class="tabs-mobile" ref="tabHeaderContainer">
@@ -81,7 +81,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useSwipeableTabs } from '@/Composables/useSwipeGestures';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline';
 import { onMounted, ref, watch } from 'vue';
@@ -310,6 +310,7 @@ defineExpose({
     }
 }
 </style>
+
 
 
 

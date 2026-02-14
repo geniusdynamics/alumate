@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <BaseModal :show="show" max-width="lg" @close="$emit('close')">
         <div class="p-6">
             <!-- Header -->
@@ -56,7 +56,7 @@
 
                 <!-- Key Benefits -->
                 <div v-if="feature.benefits && feature.benefits.length > 0" class="mb-4">
-                    <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">✨ Key Benefits:</h4>
+                    <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">âœ¨ Key Benefits:</h4>
                     <ul class="space-y-2">
                         <li
                             v-for="benefit in feature.benefits"
@@ -71,7 +71,7 @@
 
                 <!-- How It Works -->
                 <div v-if="feature.howItWorks && feature.howItWorks.length > 0" class="mb-4">
-                    <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">🔧 How It Works:</h4>
+                    <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">ðŸ”§ How It Works:</h4>
                     <ol class="space-y-2">
                         <li
                             v-for="(step, index) in feature.howItWorks"
@@ -90,10 +90,10 @@
 
                 <!-- Pro Tips -->
                 <div v-if="feature.tips && feature.tips.length > 0" class="mb-4">
-                    <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">💡 Pro Tips:</h4>
+                    <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">ðŸ’¡ Pro Tips:</h4>
                     <ul class="space-y-2">
                         <li v-for="tip in feature.tips" :key="tip" class="flex items-start space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                            <span class="mt-0.5 text-yellow-500">💡</span>
+                            <span class="mt-0.5 text-yellow-500">ðŸ’¡</span>
                             <span>{{ tip }}</span>
                         </li>
                     </ul>
@@ -116,7 +116,7 @@
 
             <!-- Related Features -->
             <div v-if="feature.relatedFeatures && feature.relatedFeatures.length > 0" class="mb-6">
-                <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">🔗 You might also like:</h4>
+                <h4 class="mb-3 text-sm font-semibold text-gray-900 dark:text-white">ðŸ”— You might also like:</h4>
                 <div class="flex flex-wrap gap-2">
                     <button
                         v-for="relatedFeature in feature.relatedFeatures"
@@ -168,7 +168,7 @@
     </BaseModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BaseModal from '@/Components/ui/BaseModal.vue';
 import {
     AcademicCapIcon,
@@ -279,6 +279,7 @@ const showRelatedFeature = (relatedFeature) => {
     animation: slideInUp 0.3s ease-out;
 }
 </style>
+
 
 
 

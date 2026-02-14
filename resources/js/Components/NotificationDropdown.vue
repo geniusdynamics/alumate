@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="notification-dropdown relative">
         <!-- Notification Bell Button -->
         <button
@@ -83,7 +83,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import NotificationItem from './NotificationItem.vue';
@@ -304,3 +304,4 @@ defineExpose({
     animation: pulse 2s infinite;
 }
 </style>
+

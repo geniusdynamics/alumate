@@ -1,12 +1,12 @@
-<template>
+﻿<template>
     <div class="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">
         <div class="flex items-start justify-between">
             <div class="flex-1">
                 <h3 class="text-lg font-semibold text-gray-900">
                     {{ course.name }}
                 </h3>
-                <p class="mt-1 text-sm text-gray-600">{{ course.code }} • {{ course.level }}</p>
-                <p class="mt-1 text-sm text-gray-500">{{ course.department }} • {{ course.institution }}</p>
+                <p class="mt-1 text-sm text-gray-600">{{ course.code }} â€¢ {{ course.level }}</p>
+                <p class="mt-1 text-sm text-gray-500">{{ course.department }} â€¢ {{ course.institution }}</p>
 
                 <div class="mt-3">
                     <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800">
@@ -74,7 +74,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     course: {
         type: Object,
@@ -110,3 +110,4 @@ const getEmploymentRateClass = (rate) => {
     return 'text-red-600 font-medium';
 };
 </script>
+

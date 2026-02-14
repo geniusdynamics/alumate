@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 p-6 dark:border-gray-700">
             <div class="flex items-center justify-between">
@@ -217,7 +217,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { apiEndpoints } from '@/Data/apiDocumentation.js';
 import { computed, reactive, ref } from 'vue';
 
@@ -450,6 +450,7 @@ const downloadCollection = (collection) => {
     URL.revokeObjectURL(url);
 };
 </script>
+
 
 
 

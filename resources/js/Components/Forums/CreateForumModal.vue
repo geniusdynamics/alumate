@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <!-- Background overlay -->
@@ -63,7 +63,7 @@
                                             type="text"
                                             maxlength="2"
                                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                                            placeholder="💬"
+                                            placeholder="ðŸ’¬"
                                         />
                                     </div>
 
@@ -160,7 +160,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
 // Emits
@@ -173,7 +173,7 @@ const form = ref({
     name: '',
     description: '',
     color: '#3B82F6',
-    icon: '💬',
+    icon: 'ðŸ’¬',
     visibility: 'public',
     group_id: '',
     requires_approval: false,
@@ -230,3 +230,4 @@ onMounted(() => {
     loadAvailableGroups();
 });
 </script>
+

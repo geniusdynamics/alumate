@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <BaseModal :show="true" @close="$emit('close')" max-width="2xl">
         <div class="p-6">
             <div class="mb-6 flex items-center justify-between">
@@ -110,7 +110,7 @@
     </BaseModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BaseModal from '@/Components/ui/BaseModal.vue';
 import { PhotoIcon, VideoCameraIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { reactive, ref } from 'vue';
@@ -196,6 +196,7 @@ const createPost = async () => {
     }
 };
 </script>
+
 
 
 

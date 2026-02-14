@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div :class="['message-bubble', isOwn ? 'message-own' : 'message-other']">
         <!-- Avatar (for other users) -->
         <div v-if="showAvatar && !isOwn" class="message-avatar">
@@ -174,7 +174,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { format, formatDistanceToNow } from 'date-fns';
 import { computed, ref } from 'vue';
 
@@ -390,3 +390,4 @@ const openImageModal = (attachment) => {
     }
 }
 </style>
+

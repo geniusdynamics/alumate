@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Scholarships">
         <template #header>
             <div class="flex items-center justify-between">
@@ -193,7 +193,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import CreateScholarshipModal from '@/Components/Scholarships/CreateScholarshipModal.vue';
 import ScholarshipCard from '@/Components/Scholarships/ScholarshipCard.vue';
@@ -323,6 +323,7 @@ onMounted(() => {
     // Load initial data
 });
 </script>
+
 
 
 

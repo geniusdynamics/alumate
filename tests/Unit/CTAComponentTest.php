@@ -3,10 +3,16 @@
 use App\Models\Component;
 use App\Models\Tenant;
 use App\Services\ComponentService;
+use Illuminate\Validation\ValidationException;
+
+/** @var Tenant $tenant */
+/** @var ComponentService $componentService */
+/** @var int $tenant_id */
 
 beforeEach(function () {
     $this->tenant = Tenant::factory()->create();
     $this->componentService = app(ComponentService::class);
+    $this->tenant_id = $this->tenant->id;
 });
 
 describe('CTA Component Creation', function () {
@@ -29,11 +35,12 @@ describe('CTA Component Creation', function () {
         ];
 
         $component = $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Primary Signup CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $this->tenant->id);
+        ]);
 
         expect($component)->toBeInstanceOf(Component::class);
         expect($component->category)->toBe('ctas');
@@ -63,11 +70,12 @@ describe('CTA Component Creation', function () {
         ];
 
         $component = $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Hero Banner CTA',
             'category' => 'ctas',
             'type' => 'banner',
             'config' => $config
-        ], $this->tenant->id);
+        ]);
 
         expect($component->config['type'])->toBe('banner');
         expect($component->config['bannerConfig']['title'])->toBe('Connect with Alumni Worldwide');
@@ -92,11 +100,12 @@ describe('CTA Component Creation', function () {
         ];
 
         $component = $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Learn More Link',
             'category' => 'ctas',
             'type' => 'inline-link',
             'config' => $config
-        ], $this->tenant->id);
+        ]);
 
         expect($component->config['type'])->toBe('inline-link');
         expect($component->config['inlineLinkConfig']['text'])->toBe('Learn more about our platform');
@@ -117,11 +126,12 @@ describe('CTA Component Validation', function () {
         ];
 
         expect(fn() => $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Invalid Button CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $this->tenant->id))->toThrow(InvalidArgumentException::class);
+        ]))->toThrow(ValidationException::class);
     });
 
     it('validates CTA button styles', function () {
@@ -136,11 +146,12 @@ describe('CTA Component Validation', function () {
         ];
 
         expect(fn() => $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Invalid Style CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $this->tenant->id))->toThrow(InvalidArgumentException::class);
+        ]))->toThrow(ValidationException::class);
     });
 
     it('validates CTA button sizes', function () {
@@ -155,11 +166,12 @@ describe('CTA Component Validation', function () {
         ];
 
         expect(fn() => $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Invalid Size CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $this->tenant->id))->toThrow(InvalidArgumentException::class);
+        ]))->toThrow(ValidationException::class);
     });
 });
 
@@ -202,11 +214,12 @@ describe('CTA Component A/B Testing', function () {
         ];
 
         $component = $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'A/B Test CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $this->tenant->id);
+        ]);
 
         expect($component->config['abTest']['enabled'])->toBeTrue();
         expect($component->config['abTest']['testId'])->toBe('signup_button_test');
@@ -243,11 +256,12 @@ describe('CTA Component Tracking', function () {
         ];
 
         $component = $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Tracked CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $this->tenant->id);
+        ]);
 
         expect($component->config['trackingEnabled'])->toBeTrue();
         expect($component->config['conversionGoal'])->toBe('signup');
@@ -276,11 +290,12 @@ describe('CTA Component Accessibility', function () {
         ];
 
         $component = $this->componentService->create([
+            'tenant_id' => $this->tenant_id,
             'name' => 'Accessible CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $this->tenant->id);
+        ]);
 
         expect($component->config['respectReducedMotion'])->toBeTrue();
         expect($component->config['highContrast'])->toBeTrue();
@@ -305,18 +320,20 @@ describe('CTA Component Tenant Isolation', function () {
         ];
 
         $component1 = $this->componentService->create([
+            'tenant_id' => $tenant1->id,
             'name' => 'Tenant 1 CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $tenant1->id);
+        ]);
 
         $component2 = $this->componentService->create([
+            'tenant_id' => $tenant2->id,
             'name' => 'Tenant 2 CTA',
             'category' => 'ctas',
             'type' => 'button',
             'config' => $config
-        ], $tenant2->id);
+        ]);
 
         // Components should be isolated by tenant
         $tenant1Components = Component::where('tenant_id', $tenant1->id)->get();

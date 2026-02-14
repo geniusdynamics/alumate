@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Predictive Analytics">
         <template #header>
             <div class="flex items-center justify-between">
@@ -251,7 +251,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Modal from '@/Components/Modal.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
@@ -358,6 +358,7 @@ const getConfidenceClass = (confidence) => {
     return classes[confidence] || classes.low;
 };
 </script>
+
 
 
 

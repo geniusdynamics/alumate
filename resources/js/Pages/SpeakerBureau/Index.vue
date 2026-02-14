@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Alumni Speaker Bureau">
         <Head title="Alumni Speaker Bureau" />
 
@@ -246,7 +246,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Pagination from '@/Components/Pagination.vue';
 import SpeakerCard from '@/Components/SpeakerCard.vue';
 import SpeakingEventCard from '@/Components/SpeakingEventCard.vue';
@@ -303,6 +303,7 @@ const handleViewEventDetails = (eventId) => {
     router.visit(route('speaker-bureau.event', eventId));
 };
 </script>
+
 
 
 

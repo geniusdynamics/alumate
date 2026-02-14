@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8 dark:bg-gray-900">
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <div class="text-center">
@@ -87,12 +87,12 @@
 
                 <!-- Tips -->
                 <div class="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
-                    <h4 class="mb-2 text-sm font-medium text-blue-800 dark:text-blue-200">💡 Offline Tips</h4>
+                    <h4 class="mb-2 text-sm font-medium text-blue-800 dark:text-blue-200">ðŸ’¡ Offline Tips</h4>
                     <ul class="space-y-1 text-xs text-blue-700 dark:text-blue-300">
-                        <li>• Check your WiFi or mobile data connection</li>
-                        <li>• Some content may be available from cache</li>
-                        <li>• Your actions will sync when you're back online</li>
-                        <li>• Try refreshing the page once connected</li>
+                        <li>â€¢ Check your WiFi or mobile data connection</li>
+                        <li>â€¢ Some content may be available from cache</li>
+                        <li>â€¢ Your actions will sync when you're back online</li>
+                        <li>â€¢ Try refreshing the page once connected</li>
                     </ul>
                 </div>
 
@@ -118,12 +118,12 @@
 
         <!-- Footer -->
         <div class="mt-8 text-center">
-            <p class="text-sm text-gray-500 dark:text-gray-400">Alumni Platform • Offline Mode</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Alumni Platform â€¢ Offline Mode</p>
         </div>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { BookmarkIcon, BriefcaseIcon, ChevronRightIcon, ClockIcon, UserGroupIcon, WifiIcon as WifiOffIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -278,3 +278,4 @@ const goHome = () => {
     router.visit('/dashboard');
 };
 </script>
+

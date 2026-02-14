@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Reunions">
         <Head title="Reunions" />
 
@@ -188,7 +188,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Pagination from '@/Components/Pagination.vue';
 import ReunionCard from '@/Components/ReunionCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -247,6 +247,7 @@ const handleFavoriteToggle = (reunionId, isFavorited) => {
     router.reload({ only: ['reunions'] });
 };
 </script>
+
 
 
 

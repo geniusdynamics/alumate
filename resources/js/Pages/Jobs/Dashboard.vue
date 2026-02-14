@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Job Dashboard">
         <Head title="Job Dashboard" />
 
@@ -153,7 +153,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
 import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
 import PullToRefresh from '@/Components/PullToRefresh.vue';
@@ -323,6 +323,7 @@ const closeModals = () => {
     selectedJob.value = null;
 };
 </script>
+
 
 
 

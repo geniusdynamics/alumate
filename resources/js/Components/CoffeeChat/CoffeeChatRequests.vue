@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="coffee-chat-requests">
         <div class="mb-6">
             <h2 class="mb-2 text-2xl font-bold text-gray-900">Coffee Chat Requests</h2>
@@ -54,7 +54,7 @@
                                 <h3 class="font-semibold text-gray-900">
                                     {{ getRequestUser(request).name }}
                                 </h3>
-                                <p class="text-sm text-gray-600">{{ getRequestDirection(request) }} • {{ formatDate(request.created_at) }}</p>
+                                <p class="text-sm text-gray-600">{{ getRequestDirection(request) }} â€¢ {{ formatDate(request.created_at) }}</p>
                             </div>
                         </div>
 
@@ -162,7 +162,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
@@ -380,3 +380,4 @@ onMounted(() => {
     @apply mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8;
 }
 </style>
+

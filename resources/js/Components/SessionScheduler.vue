@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 h-full w-full overflow-y-auto bg-gray-600 bg-opacity-50">
         <div class="relative top-20 mx-auto w-full max-w-2xl rounded-md border bg-white p-5 shadow-lg">
             <div class="mt-3">
@@ -134,7 +134,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
@@ -247,3 +247,4 @@ onMounted(() => {
     loadMentorships();
 });
 </script>
+

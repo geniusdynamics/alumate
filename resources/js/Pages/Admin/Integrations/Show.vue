@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout>
         <div class="space-y-6">
             <!-- Header -->
@@ -16,7 +16,7 @@
                         </h1>
                         <div class="mt-1 flex items-center space-x-4">
                             <span class="text-sm text-gray-600 dark:text-gray-400">
-                                {{ getTypeLabel(integration.type) }} • {{ integration.provider }}
+                                {{ getTypeLabel(integration.type) }} â€¢ {{ integration.provider }}
                             </span>
                             <span
                                 :class="[
@@ -207,7 +207,7 @@
                                     {{ formatConfigKey(key) }}
                                 </label>
                                 <div class="text-sm text-gray-900 dark:text-white">
-                                    <span v-if="isSecretField(key)" class="text-gray-500 dark:text-gray-400"> •••••••••••• </span>
+                                    <span v-if="isSecretField(key)" class="text-gray-500 dark:text-gray-400"> â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢ </span>
                                     <span v-else-if="typeof value === 'boolean'">
                                         {{ value ? 'Yes' : 'No' }}
                                     </span>
@@ -325,7 +325,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import TestResultsModal from '@/Components/admin/Integrations/TestResultsModal.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import {
@@ -487,6 +487,7 @@ const copyWebhookUrl = async () => {
     }
 };
 </script>
+
 
 
 

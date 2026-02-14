@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Import/Export Center" />
 
@@ -344,7 +344,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -375,3 +375,4 @@ const formatDate = (dateString) => {
     });
 };
 </script>
+

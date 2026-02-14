@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout app-name="Alumate" user-role="Super Admin" page-title="Activity Monitoring" :navigation-items="navigationItems">
         <Head title="Activity Monitoring" />
 
@@ -90,7 +90,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import DarkStatCard from '@/Components/DarkStatCard.vue';
 import { BriefcaseIcon, CalendarIcon, ChatBubbleLeftRightIcon, DocumentTextIcon, UserPlusIcon, UsersIcon } from '@heroicons/vue/24/outline';
@@ -182,6 +182,7 @@ const formatTimeAgo = (timestamp) => {
     return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
 };
 </script>
+
 
 
 

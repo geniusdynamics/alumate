@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout app-name="Alumate" user-role="Super Admin" page-title="Content Management" :navigation-items="navigationItems">
         <Head title="Content Management" />
 
@@ -107,7 +107,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import DarkStatCard from '@/Components/DarkStatCard.vue';
 import { Head } from '@inertiajs/vue3';
@@ -186,6 +186,7 @@ const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMM dd, yyyy');
 };
 </script>
+
 
 
 

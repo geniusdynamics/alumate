@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Link
         :href="href"
         :class="[
@@ -11,7 +11,7 @@
     </Link>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BellIcon,
@@ -80,3 +80,4 @@ const iconComponent = computed(() => {
     return iconMap[props.icon] || HomeIcon;
 });
 </script>
+

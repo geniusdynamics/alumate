@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div v-if="show" class="modal-overlay" @click="closeModal">
         <div class="modal-container" @click.stop>
             <div class="modal-header">
@@ -169,7 +169,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ConnectionInsights from './ConnectionInsights.vue';
 import Icon from './Icon.vue';
 
@@ -515,7 +515,7 @@ const formatDate = (dateString) => {
 }
 
 .requirement-item::before {
-    content: '✓';
+    content: 'âœ“';
     position: absolute;
     left: 0;
     color: #10b981;
@@ -648,3 +648,4 @@ const formatDate = (dateString) => {
     }
 }
 </style>
+

@@ -35,7 +35,7 @@ class ComponentTheme extends Model
     protected static function booted(): void
     {
         static::addGlobalScope('tenantContext', function (Builder $builder) {
-            TenantContextService::applyTenantScope($builder);
+            app(TenantContextService::class)->applyTenantContext($builder);
         });
     }
 

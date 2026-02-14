@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="modal-overlay" @click="$emit('close')">
         <div class="modal-content" @click.stop>
             <div class="modal-header">
@@ -77,7 +77,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
 // Props
@@ -141,7 +141,7 @@ const filterSummary = computed(() => {
         summaryParts.push(`Skills: ${props.filters.skills.join(', ')}`);
     }
 
-    return summaryParts.join(' • ');
+    return summaryParts.join(' â€¢ ');
 });
 
 // Methods
@@ -380,3 +380,4 @@ onMounted(() => {
     background-color: #f9fafb;
 }
 </style>
+

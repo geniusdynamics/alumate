@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <!-- Background overlay -->
@@ -197,7 +197,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -345,3 +345,4 @@ onMounted(() => {
     loadOptions();
 });
 </script>
+

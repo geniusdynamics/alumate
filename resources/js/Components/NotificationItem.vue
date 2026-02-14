@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         :class="[
             'notification-item group cursor-pointer border-b border-gray-100 px-4 py-3 transition-colors hover:bg-gray-50',
@@ -69,7 +69,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -156,13 +156,13 @@ const showConnectionActions = computed(() => {
 
 const getReactionEmoji = (type) => {
     const emojis = {
-        like: '👍',
-        love: '❤️',
-        celebrate: '🎉',
-        support: '🤝',
-        insightful: '💡',
+        like: 'ðŸ‘',
+        love: 'â¤ï¸',
+        celebrate: 'ðŸŽ‰',
+        support: 'ðŸ¤',
+        insightful: 'ðŸ’¡',
     };
-    return emojis[type] || '👍';
+    return emojis[type] || 'ðŸ‘';
 };
 
 const getReactionText = (type) => {
@@ -299,3 +299,4 @@ const declineConnection = async () => {
     @apply opacity-100;
 }
 </style>
+

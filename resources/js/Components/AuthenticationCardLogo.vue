@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Link href="/">
         <div class="flex items-center">
             <div class="text-2xl font-bold text-gray-900">
@@ -8,6 +8,7 @@
     </Link>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 </script>
+

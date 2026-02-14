@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Institution Analytics" />
 
@@ -227,7 +227,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -269,3 +269,4 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 };
 </script>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="guided-tour-overlay">
         <!-- Backdrop -->
         <div class="fixed inset-0 z-40 bg-black bg-opacity-50"></div>
@@ -73,10 +73,10 @@
 
                 <!-- Tips -->
                 <div v-if="currentStepData.tips && currentStepData.tips.length > 0" class="mb-4">
-                    <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">💡 Pro Tips:</h4>
+                    <h4 class="mb-2 text-sm font-medium text-gray-900 dark:text-white">ðŸ’¡ Pro Tips:</h4>
                     <ul class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
                         <li v-for="tip in currentStepData.tips" :key="tip" class="flex items-start space-x-2">
-                            <span class="mt-0.5 text-blue-500">•</span>
+                            <span class="mt-0.5 text-blue-500">â€¢</span>
                             <span>{{ tip }}</span>
                         </li>
                     </ul>
@@ -134,7 +134,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -325,3 +325,4 @@ const nextStep = () => {
     transition: all 0.3s ease-in-out;
 }
 </style>
+

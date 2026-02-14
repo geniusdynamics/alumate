@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
         <MetricCard
             title="Total Raised"
@@ -42,7 +42,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import MetricCard from '@/Components/Analytics/MetricCard.vue';
 
 const props = defineProps({
@@ -90,6 +90,7 @@ const calculateTrend = (metric) => {
     };
 };
 </script>
+
 
 
 

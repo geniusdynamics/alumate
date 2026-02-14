@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
 
 const form = useForm({
@@ -50,3 +50,4 @@ const submit = () => {
         </form>
     </section>
 </template>
+

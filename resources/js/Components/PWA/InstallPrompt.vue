@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <Transition
             enter-active-class="transition-all duration-300 ease-out"
@@ -111,7 +111,7 @@
     </Teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ArrowDownTrayIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { onMounted, onUnmounted, ref } from 'vue';
 
@@ -282,7 +282,7 @@ const showInstallSuccessMessage = () => {
     // Create a temporary success notification
     const notification = document.createElement('div');
     notification.className = 'fixed top-4 right-4 z-50 rounded-lg bg-green-500 px-4 py-2 text-white shadow-lg';
-    notification.textContent = '✅ App installed successfully!';
+    notification.textContent = 'âœ… App installed successfully!';
 
     document.body.appendChild(notification);
 
@@ -362,3 +362,4 @@ defineExpose({
 <style scoped>
 /* Additional custom styles if needed */
 </style>
+

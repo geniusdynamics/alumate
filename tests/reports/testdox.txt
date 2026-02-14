@@ -1,0 +1,12 @@
+D:\DevCenter\abuilds\alumate\tests\Unit\CTAComponentTest.php
+ [x] `CTA Component Creation` → it can create a CTA button component
+ [x] `CTA Component Creation` → it can create a CTA banner component
+ [x] `CTA Component Creation` → it can create a CTA inline link component
+ [x] `CTA Component Validation` → it validates required fields for button CTA
+ [x] `CTA Component Validation` → it validates CTA button styles
+ [x] `CTA Component Validation` → it validates CTA button sizes
+ [x] `CTA Component A/B Testing` → it can create CTA with A/B test configuration
+ [x] `CTA Component Tracking` → it includes tracking parameters in configuration
+ [x] `CTA Component Accessibility` → it includes accessibility configuration
+ [x] `CTA Component Tenant Isolation` → it scopes CTA components to tenant
+

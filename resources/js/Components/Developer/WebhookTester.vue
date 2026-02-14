@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 p-6 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Webhook Tester</h3>
@@ -288,7 +288,7 @@ function verifyWebhookSignature(payload, signature, secret) {
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { enhancedWebhookEvents } from '@/Data/completeApiDocumentation.js';
 import { computed, ref, watch } from 'vue';
 
@@ -488,6 +488,7 @@ const sendTestWebhook = async () => {
     }
 };
 </script>
+
 
 
 

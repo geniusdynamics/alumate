@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Fundraising Analytics">
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -135,7 +135,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CampaignPerformanceChart from '@/Components/Analytics/Fundraising/CampaignPerformanceChart.vue';
 import DonorAnalytics from '@/Components/Analytics/Fundraising/DonorAnalytics.vue';
 import GivingPatternsAnalysis from '@/Components/Analytics/Fundraising/GivingPatternsAnalysis.vue';
@@ -246,6 +246,7 @@ onMounted(() => {
     loadDashboard();
 });
 </script>
+
 
 
 

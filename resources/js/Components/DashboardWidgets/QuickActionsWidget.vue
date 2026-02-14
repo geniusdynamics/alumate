@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="card-mobile border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div class="card-mobile-header">
             <h3 class="card-mobile-title">Quick Actions</h3>
@@ -126,7 +126,7 @@
     <PostCreatorModal v-if="showPostCreator" @close="showPostCreator = false" @posted="onPostCreated" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PostCreatorModal from '@/Components/PostCreatorModal.vue';
 import {
     AcademicCapIcon,
@@ -178,6 +178,7 @@ const dismissFeatureDiscovery = () => {
     localStorage.setItem('feature-discovery-dismissed', 'true');
 };
 </script>
+
 
 
 

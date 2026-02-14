@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="custom-code-editor" :class="{ loading: isLoading, error: hasErrors }">
         <!-- Editor Header -->
         <div class="editor-header">
@@ -565,7 +565,7 @@ const generatePreviewHTML = (): string => {
       <div class="preview-container">
         ${html}
       </div>
-      <script>
+      <script lang="ts">
         ${js}
       ${'</'}script>
     </body>
@@ -959,3 +959,4 @@ interface ValidationError {
     }
 }
 </style>
+

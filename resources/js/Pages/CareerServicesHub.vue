@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 via-green-50 to-emerald-100">
     <!-- Hero Section -->
     <section class="relative overflow-hidden bg-gradient-to-br from-emerald-900 via-teal-900 to-cyan-900 text-white">
@@ -298,7 +298,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 
 defineOptions({

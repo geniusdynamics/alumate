@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="timeline-container">
         <!-- Pull to refresh indicator -->
         <div v-if="isPullingToRefresh" class="pull-to-refresh-indicator" :class="{ active: pullDistance > 50 }">
@@ -104,7 +104,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { onMounted, onUnmounted, ref } from 'vue';
 import PostCard from './PostCard.vue';
@@ -467,3 +467,4 @@ defineExpose({
     @apply bg-gray-400;
 }
 </style>
+

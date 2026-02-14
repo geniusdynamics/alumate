@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-50">
         <Head title="Alumate - Alumni Management Platform" />
 
@@ -55,7 +55,7 @@
                 <div class="mb-20 text-center">
                     <div class="mb-8">
                         <span class="mb-6 inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800">
-                            🎓 Connecting Alumni with Opportunities
+                            ðŸŽ“ Connecting Alumni with Opportunities
                         </span>
                     </div>
                     <h2 class="mb-6 text-5xl font-bold text-gray-900 sm:text-6xl">
@@ -364,7 +364,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="rounded bg-blue-200 px-2 py-1 font-mono text-xs text-blue-600">password</p>
-                                        <Link :href="route('login')" class="text-sm font-medium text-blue-600 hover:text-blue-800">Login →</Link>
+                                        <Link :href="route('login')" class="text-sm font-medium text-blue-600 hover:text-blue-800">Login â†’</Link>
                                     </div>
                                 </div>
                                 <div
@@ -376,7 +376,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="rounded bg-green-200 px-2 py-1 font-mono text-xs text-green-600">password</p>
-                                        <Link :href="route('login')" class="text-sm font-medium text-green-600 hover:text-green-800">Login →</Link>
+                                        <Link :href="route('login')" class="text-sm font-medium text-green-600 hover:text-green-800">Login â†’</Link>
                                     </div>
                                 </div>
                                 <div
@@ -388,7 +388,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="rounded bg-orange-200 px-2 py-1 font-mono text-xs text-orange-600">password</p>
-                                        <Link :href="route('login')" class="text-sm font-medium text-orange-600 hover:text-orange-800">Login →</Link>
+                                        <Link :href="route('login')" class="text-sm font-medium text-orange-600 hover:text-orange-800">Login â†’</Link>
                                     </div>
                                 </div>
                                 <div
@@ -400,7 +400,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="rounded bg-purple-200 px-2 py-1 font-mono text-xs text-purple-600">password</p>
-                                        <Link :href="route('login')" class="text-sm font-medium text-purple-600 hover:text-purple-800">Login →</Link>
+                                        <Link :href="route('login')" class="text-sm font-medium text-purple-600 hover:text-purple-800">Login â†’</Link>
                                     </div>
                                 </div>
                             </div>
@@ -503,7 +503,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 
 const scrollToFeatures = () => {
@@ -513,3 +513,4 @@ const scrollToFeatures = () => {
     }
 };
 </script>
+

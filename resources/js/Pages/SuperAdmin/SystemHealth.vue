@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-50">
         <Head title="System Health" />
 
@@ -291,7 +291,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     ArrowLeftIcon,
     ArrowPathIcon,
@@ -398,3 +398,4 @@ const refreshHealth = () => {
     });
 };
 </script>
+

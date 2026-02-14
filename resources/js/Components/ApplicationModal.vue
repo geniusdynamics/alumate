@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div v-if="show" class="modal-overlay" @click="closeModal">
         <div class="modal-container" @click.stop>
             <div class="modal-header">
@@ -123,7 +123,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, ref } from 'vue';
 import Icon from './Icon.vue';
 
@@ -576,3 +576,4 @@ const submitApplication = async () => {
     }
 }
 </style>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Help & Support">
         <template #header>
             <div class="flex items-center justify-between">
@@ -151,7 +151,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Pagination from '@/Components/Pagination.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
@@ -214,6 +214,7 @@ const formatDate = (date) => {
     });
 };
 </script>
+
 
 
 

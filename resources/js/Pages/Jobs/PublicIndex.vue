@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -105,11 +105,11 @@ const getJobTypeColor = (type) => {
 
 const getWorkArrangementIcon = (arrangement) => {
     const icons = {
-        remote: '🏠',
-        hybrid: '🔄',
-        on_site: '🏢',
+        remote: 'ðŸ ',
+        hybrid: 'ðŸ”„',
+        on_site: 'ðŸ¢',
     };
-    return icons[arrangement] || '🏢';
+    return icons[arrangement] || 'ðŸ¢';
 };
 </script>
 
@@ -253,7 +253,7 @@ const getWorkArrangementIcon = (arrangement) => {
                                         :href="route('jobs.public.show', rec.job.id)"
                                         class="text-sm font-medium text-indigo-600 hover:text-indigo-800"
                                     >
-                                        View Details →
+                                        View Details â†’
                                     </Link>
                                 </div>
                             </div>
@@ -438,6 +438,7 @@ const getWorkArrangementIcon = (arrangement) => {
     overflow: hidden;
 }
 </style>
+
 
 
 

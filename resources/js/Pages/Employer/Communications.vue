@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -228,7 +228,7 @@ const blockCandidate = (conversation) => {
                                                 {{ selectedConversation.candidate?.user?.name }}
                                             </h3>
                                             <p class="text-sm text-gray-600">
-                                                {{ selectedConversation.candidate?.course?.name }} • Graduated
+                                                {{ selectedConversation.candidate?.course?.name }} â€¢ Graduated
                                                 {{ selectedConversation.candidate?.graduation_year }}
                                             </p>
                                         </div>
@@ -374,6 +374,7 @@ const blockCandidate = (conversation) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

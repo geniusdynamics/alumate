@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="space-y-8">
         <!-- Summary Stats -->
         <div class="grid grid-cols-1 gap-6 md:grid-cols-4">
@@ -187,7 +187,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Chart from 'chart.js/auto';
 import { nextTick, onMounted, ref } from 'vue';
 
@@ -446,3 +446,4 @@ onMounted(() => {
     });
 });
 </script>
+

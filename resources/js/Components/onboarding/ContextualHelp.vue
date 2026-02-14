@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="contextual-help-tooltip fixed z-50 max-w-xs rounded-lg bg-gray-900 text-white shadow-xl" :style="tooltipStyle">
         <!-- Arrow -->
         <div class="absolute h-3 w-3 rotate-45 transform bg-gray-900" :style="arrowStyle"></div>
@@ -40,10 +40,10 @@
 
             <!-- Tips (if provided) -->
             <div v-if="helpContent.tips && helpContent.tips.length > 0" class="mb-3">
-                <h4 class="mb-2 text-xs font-semibold text-gray-200">💡 Tips:</h4>
+                <h4 class="mb-2 text-xs font-semibold text-gray-200">ðŸ’¡ Tips:</h4>
                 <ul class="space-y-1 text-xs text-gray-300">
                     <li v-for="tip in helpContent.tips" :key="tip" class="flex items-start space-x-2">
-                        <span class="mt-0.5 text-yellow-400">•</span>
+                        <span class="mt-0.5 text-yellow-400">â€¢</span>
                         <span>{{ tip }}</span>
                     </li>
                 </ul>
@@ -72,7 +72,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ArrowTopRightOnSquareIcon, QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed } from 'vue';
 
@@ -203,3 +203,4 @@ const performAction = (action) => {
     }
 }
 </style>
+

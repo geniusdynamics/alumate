@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Career Goals">
         <Head title="Career Goals" />
 
@@ -169,7 +169,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import GoalModal from '@/Components/GoalModal.vue';
 import MilestoneCard from '@/Components/MilestoneCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -239,6 +239,7 @@ const handleGoalSaved = () => {
     router.reload();
 };
 </script>
+
 
 
 

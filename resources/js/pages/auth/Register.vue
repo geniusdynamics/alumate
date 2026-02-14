@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <Head title="Join Alumate" />
 
@@ -375,7 +375,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -441,3 +441,4 @@ const submit = () => {
     });
 };
 </script>
+

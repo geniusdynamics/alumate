@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Career Guidance">
         <Head title="Student Career Guidance" />
 
@@ -57,7 +57,7 @@
                                         :href="route('students.career-explorer')"
                                         class="mt-3 inline-block text-sm text-blue-600 hover:text-blue-500"
                                     >
-                                        Explore All Careers →
+                                        Explore All Careers â†’
                                     </Link>
                                 </div>
 
@@ -77,7 +77,7 @@
                                         :href="route('students.skill-development')"
                                         class="mt-3 inline-block text-sm text-green-600 hover:text-green-500"
                                     >
-                                        View Learning Path →
+                                        View Learning Path â†’
                                     </Link>
                                 </div>
                             </div>
@@ -243,7 +243,7 @@
                                     <h4 class="text-sm font-medium text-gray-900 dark:text-white">{{ event.title }}</h4>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatEventDate(event.date) }}</p>
                                     <Link :href="route('events.show', event.id)" class="text-xs text-blue-600 hover:text-blue-500">
-                                        Learn More →
+                                        Learn More â†’
                                     </Link>
                                 </div>
                             </div>
@@ -285,7 +285,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CareerStoryCard from '@/Components/CareerStoryCard.vue';
 import CareerToolCard from '@/Components/CareerToolCard.vue';
 import IndustryInsightCard from '@/Components/IndustryInsightCard.vue';
@@ -345,6 +345,7 @@ const handleConnectAlumni = (alumniId) => {
     );
 };
 </script>
+
 
 
 

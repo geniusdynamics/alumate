@@ -1,10 +1,10 @@
-<template>
+﻿<template>
     <div class="analytics-chart">
         <canvas ref="chartCanvas" :height="height"></canvas>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Chart from 'chart.js/auto';
 import { nextTick, onMounted, ref, watch } from 'vue';
 
@@ -175,3 +175,4 @@ watch(
     width: 100%;
 }
 </style>
+

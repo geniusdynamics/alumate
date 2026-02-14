@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="comment-form">
         <div class="flex space-x-3">
             <img :src="user.avatar_url || '/default-avatar.png'" :alt="user.name" class="h-8 w-8 flex-shrink-0 rounded-full" />
@@ -71,7 +71,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import { computed, nextTick, onMounted, ref } from 'vue';
 
@@ -282,3 +282,4 @@ textarea {
     @apply transition-colors duration-150;
 }
 </style>
+

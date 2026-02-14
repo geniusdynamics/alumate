@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Analytics Reports">
         <template #header>
             <div class="flex items-center justify-between">
@@ -250,7 +250,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Modal from '@/Components/Modal.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ClockIcon } from '@heroicons/vue/24/outline';
@@ -438,6 +438,7 @@ const formatCellValue = (value) => {
     return String(value);
 };
 </script>
+
 
 
 

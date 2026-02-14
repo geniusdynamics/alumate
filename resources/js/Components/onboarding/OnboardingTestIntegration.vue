@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="onboarding-test-integration p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             Onboarding System Test
@@ -94,7 +94,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import OnboardingService from '@/Services/OnboardingService.js'
 
@@ -278,3 +278,4 @@ const addTestResult = (message, success) => {
 }
 </script>
 </template>
+

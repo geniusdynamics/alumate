@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <Transition
             name="modal"
@@ -33,7 +33,7 @@
     </Teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
 
 const props = defineProps({

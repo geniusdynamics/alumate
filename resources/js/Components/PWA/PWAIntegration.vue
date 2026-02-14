@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div>
         <!-- Install Prompt Component -->
         <InstallPrompt
@@ -28,7 +28,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
 import PushNotificationService from '../../Services/PushNotificationService.js';
 import InstallPrompt from './InstallPrompt.vue';
@@ -265,3 +265,4 @@ defineExpose({
 <style scoped>
 /* Component-specific styles if needed */
 </style>
+

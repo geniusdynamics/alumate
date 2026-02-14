@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="modal-overlay" @click="closeModal">
         <div class="modal-container" @click.stop>
             <div class="modal-header">
@@ -61,7 +61,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const emit = defineEmits(['close', 'upload']);
@@ -196,3 +196,4 @@ const uploadPhotos = async () => {
     @apply disabled:cursor-not-allowed disabled:opacity-50;
 }
 </style>
+

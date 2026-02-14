@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -97,7 +97,7 @@ const getExperienceLevelText = (level) => {
                     <h2 class="text-xl font-semibold leading-tight text-gray-800">
                         {{ job.title }}
                     </h2>
-                    <p class="mt-1 text-sm text-gray-600">{{ job.employer.company_name }} • {{ job.location }}</p>
+                    <p class="mt-1 text-sm text-gray-600">{{ job.employer.company_name }} â€¢ {{ job.location }}</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <span :class="getStatusColor(job.status)" class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">
@@ -354,6 +354,7 @@ const getExperienceLevelText = (level) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

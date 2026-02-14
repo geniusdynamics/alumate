@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import GraduateActions from '@/Pages/Graduates/Partials/GraduateActions.vue';
 import ProfileCompletionProgress from '@/Pages/Graduates/Partials/ProfileCompletionProgress.vue';
@@ -229,7 +229,7 @@ const formatCurrency = (amount) => {
                                         <h4 class="font-medium text-gray-900">{{ cert.name }}</h4>
                                         <div class="mt-1 text-sm text-gray-600">
                                             <span v-if="cert.issuer">Issued by: {{ cert.issuer }}</span>
-                                            <span v-if="cert.issuer && cert.date_obtained"> • </span>
+                                            <span v-if="cert.issuer && cert.date_obtained"> â€¢ </span>
                                             <span v-if="cert.date_obtained">{{ formatDate(cert.date_obtained) }}</span>
                                         </div>
                                     </div>
@@ -437,6 +437,7 @@ const formatCurrency = (amount) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

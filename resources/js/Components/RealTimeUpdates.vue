@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="real-time-updates">
         <!-- Live Activity Feed -->
         <div v-if="showActivityFeed" class="activity-feed">
@@ -145,7 +145,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
 import userFlowIntegration from '@/Services/UserFlowIntegration';
 import {
@@ -525,6 +525,7 @@ const formatTimeAgo = (timestamp) => {
     background: #1f2937;
 }
 </style>
+
 
 
 

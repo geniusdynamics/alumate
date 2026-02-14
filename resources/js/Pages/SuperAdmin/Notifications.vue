@@ -156,7 +156,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import DarkStatCard from '@/Components/DarkStatCard.vue';
 import { BellIcon } from '@heroicons/vue/24/outline';

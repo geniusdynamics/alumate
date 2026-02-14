@@ -214,7 +214,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AlumniSuggestionsWidget from '@/Components/DashboardWidgets/AlumniSuggestionsWidget.vue';
 import EventsWidget from '@/Components/DashboardWidgets/EventsWidget.vue';
 import JobRecommendationsWidget from '@/Components/DashboardWidgets/JobRecommendationsWidget.vue';

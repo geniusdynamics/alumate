@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <Transition
             enter-active-class="transition-all duration-300 ease-out"
@@ -60,7 +60,7 @@
     </Teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CheckCircleIcon, ExclamationTriangleIcon, SignalSlashIcon, WifiIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
@@ -159,7 +159,7 @@ const connectionInfo = computed(() => {
     if (downlink) parts.push(downlink);
     if (rtt) parts.push(rtt);
 
-    return parts.join(' • ');
+    return parts.join(' â€¢ ');
 });
 
 // Methods
@@ -406,3 +406,4 @@ defineExpose({
 <style scoped>
 /* Additional custom styles if needed */
 </style>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="people-you-may-know">
         <div class="mb-6 flex items-center justify-between">
             <h2 class="text-xl font-semibold text-gray-900">People You May Know</h2>
@@ -143,7 +143,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { nextTick, onMounted, ref } from 'vue';
 import Icon from './Icon.vue';
@@ -322,3 +322,4 @@ const checkScrollButtons = () => {
     display: none;
 }
 </style>
+

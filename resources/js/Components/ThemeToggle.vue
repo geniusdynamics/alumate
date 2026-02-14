@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="theme-toggle">
         <!-- Simple Toggle Button -->
         <button
@@ -86,7 +86,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useTheme } from '@/Composables/useTheme';
 import { CheckIcon, ChevronDownIcon, ComputerDesktopIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
 import { onMounted, onUnmounted, ref } from 'vue';
@@ -197,6 +197,7 @@ onUnmounted(() => {
     }
 }
 </style>
+
 
 
 

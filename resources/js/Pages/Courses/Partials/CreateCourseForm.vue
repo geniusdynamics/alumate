@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -229,7 +229,7 @@ const submit = () => {
                         class="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm text-red-800"
                     >
                         {{ skill }}
-                        <button type="button" @click="removeRequiredSkill(index)" class="ml-2 text-red-600 hover:text-red-800">×</button>
+                        <button type="button" @click="removeRequiredSkill(index)" class="ml-2 text-red-600 hover:text-red-800">Ã—</button>
                     </span>
                 </div>
             </div>
@@ -255,7 +255,7 @@ const submit = () => {
                         class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm text-green-800"
                     >
                         {{ skill }}
-                        <button type="button" @click="removeSkillGained(index)" class="ml-2 text-green-600 hover:text-green-800">×</button>
+                        <button type="button" @click="removeSkillGained(index)" class="ml-2 text-green-600 hover:text-green-800">Ã—</button>
                     </span>
                 </div>
             </div>
@@ -281,7 +281,7 @@ const submit = () => {
                         class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800"
                     >
                         {{ path }}
-                        <button type="button" @click="removeCareerPath(index)" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
+                        <button type="button" @click="removeCareerPath(index)" class="ml-2 text-blue-600 hover:text-blue-800">Ã—</button>
                     </span>
                 </div>
             </div>
@@ -373,3 +373,4 @@ const submit = () => {
         </form>
     </section>
 </template>
+

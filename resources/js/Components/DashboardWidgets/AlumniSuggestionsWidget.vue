@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="card-mobile border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div class="card-mobile-header">
             <h3 class="card-mobile-title">People You May Know</h3>
@@ -85,7 +85,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ArrowRightIcon, UserPlusIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
@@ -158,3 +158,4 @@ const sendConnectionRequest = async (suggestion) => {
     }
 };
 </script>
+

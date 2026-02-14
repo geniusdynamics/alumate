@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="lightbox-overlay" @click="closeLightbox">
         <div class="lightbox-container" @click.stop>
             <!-- Close button -->
@@ -95,7 +95,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { format } from 'date-fns';
 import { computed, ref } from 'vue';
 
@@ -292,3 +292,4 @@ document.addEventListener('keydown', handleKeydown);
     }
 }
 </style>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-green-200 bg-gradient-to-r from-green-50 to-blue-50 p-6 shadow-sm transition-shadow hover:shadow-md">
         <!-- Header -->
         <div class="mb-4 flex items-start justify-between">
@@ -107,7 +107,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     ArrowTrendingUpIcon,
@@ -245,3 +245,4 @@ const share = () => {
     console.log('Sharing milestone:', props.milestone.id);
 };
 </script>
+

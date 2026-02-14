@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
@@ -94,7 +94,7 @@ const reject = () => {
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-xl font-semibold leading-tight text-gray-800">Review Job Posting</h2>
-                    <p class="mt-1 text-sm text-gray-600">{{ job.title }} • {{ job.employer.company_name }}</p>
+                    <p class="mt-1 text-sm text-gray-600">{{ job.title }} â€¢ {{ job.employer.company_name }}</p>
                 </div>
                 <Link
                     :href="route('admin.job-approval.index')"
@@ -238,7 +238,7 @@ const reject = () => {
                                         </span>
                                     </div>
                                     <div class="space-y-1 text-sm text-gray-600">
-                                        <div>{{ otherJob.location }} • {{ formatSalary(otherJob) }}</div>
+                                        <div>{{ otherJob.location }} â€¢ {{ formatSalary(otherJob) }}</div>
                                         <div>Posted {{ formatDate(otherJob.created_at) }}</div>
                                     </div>
                                 </div>
@@ -412,6 +412,7 @@ const reject = () => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="global-search relative">
         <!-- Search Input -->
         <div class="relative">
@@ -113,7 +113,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -345,3 +345,4 @@ defineExpose({
     @apply relative;
 }
 </style>
+

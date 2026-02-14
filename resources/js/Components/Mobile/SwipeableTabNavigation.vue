@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="swipeable-tabs-container">
         <!-- Tab Headers -->
         <div class="tabs-mobile" ref="tabsContainer">
@@ -70,7 +70,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -434,3 +434,4 @@ defineExpose({
     }
 }
 </style>
+

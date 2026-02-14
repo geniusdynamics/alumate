@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -47,7 +47,7 @@ const getPerformanceText = (rate) => {
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-xl font-semibold leading-tight text-gray-800">Job Analytics</h2>
-                    <p class="mt-1 text-sm text-gray-600">{{ job.title }} • {{ job.employer.company_name }}</p>
+                    <p class="mt-1 text-sm text-gray-600">{{ job.title }} â€¢ {{ job.employer.company_name }}</p>
                 </div>
                 <Link
                     :href="route('jobs.show', job.id)"
@@ -394,6 +394,7 @@ const getPerformanceText = (rate) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="flex rounded-md shadow-sm">
         <button
             @click="$emit('view-changed', 'grid')"
@@ -36,7 +36,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     currentView: {
         type: String,
@@ -46,3 +46,4 @@ const props = defineProps({
 
 defineEmits(['view-changed']);
 </script>
+

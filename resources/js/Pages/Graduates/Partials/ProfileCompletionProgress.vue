@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -157,3 +157,4 @@ const getFieldPriorityIcon = (priority) => {
         </div>
     </div>
 </template>
+

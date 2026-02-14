@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <input
         :id="id"
         ref="input"
@@ -11,7 +11,7 @@
     />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
@@ -41,3 +41,4 @@ onMounted(() => {
 
 defineExpose({ focus: () => input.value.focus() });
 </script>
+

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -422,6 +422,7 @@ const getStepTitle = (step) => {
         </div>
     </div>
 </template>
+
 
 
 

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div ref="container" class="pull-to-refresh-container relative">
         <!-- Pull to Refresh Indicator -->
         <div v-if="showIndicator" class="pull-to-refresh" :style="{ transform: `translateY(${Math.max(0, pullDistance - 60)}px)` }">
@@ -24,7 +24,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { usePullToRefresh } from '@/Composables/useSwipeGestures';
 import { ArrowDownIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 
@@ -111,6 +111,7 @@ defineExpose({
     }
 }
 </style>
+
 
 
 

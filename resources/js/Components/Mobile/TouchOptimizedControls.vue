@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="touch-optimized-controls">
         <!-- Touch-optimized Button -->
         <component
@@ -198,7 +198,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CheckIcon, ChevronDownIcon, ArrowPathIcon as LoadingIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
@@ -796,3 +796,4 @@ onUnmounted(() => {
     }
 }
 </style>
+

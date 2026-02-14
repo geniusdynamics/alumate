@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Achievements">
         <template #header>
             <div class="flex items-center justify-between">
@@ -103,7 +103,7 @@
                 <div class="mb-8 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white shadow-lg">
                     <div class="flex items-center justify-between">
                         <div>
-                            <h3 class="mb-2 text-xl font-bold">🎉 Recent Achievements</h3>
+                            <h3 class="mb-2 text-xl font-bold">ðŸŽ‰ Recent Achievements</h3>
                             <p class="text-blue-100">Celebrating our latest alumni successes</p>
                         </div>
                         <div class="text-right">
@@ -155,7 +155,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import AchievementCelebration from '@/Components/AchievementCelebration.vue';
 import AchievementCard from '@/Components/Achievements/AchievementCard.vue';
@@ -318,6 +318,7 @@ onMounted(() => {
     // Load initial data
 });
 </script>
+
 
 
 

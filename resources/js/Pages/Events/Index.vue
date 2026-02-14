@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Events">
         <Head title="Events" />
 
@@ -132,7 +132,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import EventCard from '@/Components/EventCard.vue';
 import Pagination from '@/Components/Pagination.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -203,6 +203,7 @@ const handleEventUnregistration = (eventId) => {
     });
 };
 </script>
+
 
 
 

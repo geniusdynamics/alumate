@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout app-name="Alumate" user-role="Super Admin" page-title="System Settings" :navigation-items="navigationItems">
         <Head title="System Settings" />
 
@@ -149,7 +149,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -231,6 +231,7 @@ const toggleMaintenanceMode = () => {
     console.log('Toggling maintenance mode');
 };
 </script>
+
 
 
 

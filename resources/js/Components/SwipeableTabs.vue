@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="swipeable-tabs">
         <!-- Tab Headers -->
         <div class="tabs-mobile" ref="tabsContainer" role="tablist" :aria-label="tabsAriaLabel || 'Tab navigation'">
@@ -88,7 +88,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 
@@ -518,3 +518,4 @@ defineExpose({
     }
 }
 </style>
+

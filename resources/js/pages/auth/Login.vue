@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background-color: #f3f4f6; padding: 20px">
         <div style="width: 100%; max-width: 400px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1)">
             <Head title="Log in" />
@@ -128,7 +128,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
@@ -149,3 +149,4 @@ const submit = () => {
     });
 };
 </script>
+

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -394,7 +394,7 @@ const quickActions = [
                                 </div>
                                 <div class="mt-4">
                                     <Link :href="route('employer.analytics')" class="text-sm text-indigo-600 hover:text-indigo-500">
-                                        View detailed analytics →
+                                        View detailed analytics â†’
                                     </Link>
                                 </div>
                             </div>
@@ -427,7 +427,7 @@ const quickActions = [
                         <div v-else class="py-6 text-center">
                             <p class="text-gray-500">No jobs posted yet</p>
                             <Link :href="route('jobs.create')" class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
-                                Post your first job →
+                                Post your first job â†’
                             </Link>
                         </div>
                     </div>
@@ -436,6 +436,7 @@ const quickActions = [
         </div>
     </AppLayout>
 </template>
+
 
 
 

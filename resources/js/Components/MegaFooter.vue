@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <footer class="bg-gray-900 text-white">
     <!-- Main Footer Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -105,7 +105,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex flex-col md:flex-row justify-between items-center">
           <div class="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2024 Alumate. All rights reserved.
+            Â© 2024 Alumate. All rights reserved.
           </div>
           <div class="flex space-x-6 text-sm">
             <a href="#" class="text-gray-400 hover:text-purple-400 transition-colors duration-300">Privacy Policy</a>
@@ -119,6 +119,6 @@
   </footer>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // No props needed for this component
 </script>

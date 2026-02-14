@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import GraduateActions from '@/Pages/Graduates/Partials/GraduateActions.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -574,6 +574,7 @@ const exportGraduates = () => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

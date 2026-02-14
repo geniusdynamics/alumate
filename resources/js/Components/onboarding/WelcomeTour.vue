@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="welcome-tour-container">
         <!-- Welcome Modal -->
         <BaseModal :show="showWelcomeModal" max-width="2xl" :closeable="false">
@@ -8,7 +8,7 @@
                     <div class="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600">
                         <RocketLaunchIcon class="h-12 w-12 text-white" />
                     </div>
-                    <h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Welcome to Your Alumni Platform! 🎉</h1>
+                    <h1 class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Welcome to Your Alumni Platform! ðŸŽ‰</h1>
                     <p class="text-lg text-gray-600 dark:text-gray-400">Let's get you started with a quick tour of all the amazing features</p>
                 </div>
 
@@ -96,7 +96,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BaseModal from '@/Components/ui/BaseModal.vue';
 import OnboardingService from '@/Services/OnboardingService.js';
 import { ArrowRightIcon, BriefcaseIcon, ClockIcon, HeartIcon, RocketLaunchIcon, UsersIcon } from '@heroicons/vue/24/outline';
@@ -243,7 +243,7 @@ const showCompletionMessage = () => {
         new CustomEvent('show-notification', {
             detail: {
                 type: 'success',
-                title: 'Welcome Tour Complete! 🎉',
+                title: 'Welcome Tour Complete! ðŸŽ‰',
                 message: "You're all set to explore your alumni platform. Happy networking!",
                 duration: 5000,
             },
@@ -286,3 +286,4 @@ defineExpose({
     animation: fadeInUp 0.5s ease-out;
 }
 </style>
+

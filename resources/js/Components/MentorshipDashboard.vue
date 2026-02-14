@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-8">
@@ -267,7 +267,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CalendarIcon, CheckCircleIcon, ClockIcon, PlusIcon, StarIcon, UserGroupIcon, UserIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
@@ -383,3 +383,4 @@ onMounted(() => {
     loadData();
 });
 </script>
+

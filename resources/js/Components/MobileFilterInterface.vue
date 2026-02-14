@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="mobile-filter-interface">
         <!-- Filter Toggle Button -->
         <button
@@ -259,7 +259,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useDebouncedRef } from '@/Composables/useDebounce';
 import {
     BriefcaseIcon,
@@ -652,6 +652,7 @@ input[type='range']::-moz-range-thumb {
     transform: translateY(0);
 }
 </style>
+
 
 
 
