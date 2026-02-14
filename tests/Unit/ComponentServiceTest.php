@@ -11,7 +11,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function () {
     $this->tenant = Tenant::factory()->create();
-    $this->service = new ComponentService;
+    $this->service = app(ComponentService::class);
 
     // Create a default theme for the tenant
     $this->defaultTheme = ComponentTheme::factory()->create([
