@@ -23,7 +23,7 @@ class AlumniRecommendationServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->service = new AlumniRecommendationService;
+        $this->service = app(AlumniRecommendationService::class);
 
         // Create test users
         $this->user = User::factory()->create([

@@ -426,7 +426,7 @@ class AlumniDirectoryService extends BaseService
     private function getInstitutions(): array
     {
         return DB::table('institutions')
-            ->select('id', 'name', DB::raw('COUNT(educations.id) as alumni_count'))
+            ->select('institutions.id', 'institutions.name', DB::raw('COUNT(educations.id) as alumni_count'))
             ->leftJoin('educations', 'institutions.id', '=', 'educations.institution_id')
             ->groupBy('institutions.id', 'institutions.name')
             ->orderBy('alumni_count', 'desc')

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 // use Laravel\Sanctum\HasApiTokens; // Commented out - Sanctum not installed
@@ -44,6 +45,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'metadata',
         'graduation_year',
         'degree',
+        'location',
+        'skills',
     ];
 
     protected $hidden = [
@@ -64,6 +67,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'metadata' => 'array',
         'graduation_year' => 'integer',
         'degree' => 'string',
+        'skills' => 'array',
+        'location' => 'string',
     ];
 
     protected $dates = [
@@ -209,7 +214,8 @@ class User extends Authenticatable implements MustVerifyEmail
             return self::ROLE_SUPER_ADMIN;
         }
 
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $tenantService = app(TenantContextService::class);
+        $currentTenant = $tenantService->getCurrentTenant();
         if (! $currentTenant) {
             return null;
         }
@@ -301,6 +307,90 @@ class User extends Authenticatable implements MustVerifyEmail
     public function analyticsEvents(): HasMany
     {
         return $this->hasMany(AnalyticsEvent::class);
+    }
+
+    /**
+     * Get user's education history
+     */
+    public function educations(): HasMany
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    /**
+     * Get user's work experiences
+     */
+    public function workExperiences(): HasMany
+    {
+        return $this->hasMany(WorkExperience::class);
+    }
+
+    /**
+     * Get user's alumni connections (as initiator)
+     */
+    public function connections(): HasMany
+    {
+        return $this->hasMany(AlumniConnection::class, 'user_id');
+    }
+
+    /**
+     * Get user's alumni connections (as initiator)
+     */
+    public function alumniConnections(): HasMany
+    {
+        return $this->hasMany(AlumniConnection::class, 'user_id');
+    }
+
+    /**
+     * Get user's alumni connections (as connected user)
+     */
+    public function connectedTo(): HasMany
+    {
+        return $this->hasMany(AlumniConnection::class, 'connected_user_id');
+    }
+
+    /**
+     * Get user's social profiles
+     */
+    public function socialProfiles(): HasMany
+    {
+        return $this->hasMany(SocialProfile::class);
+    }
+
+    /**
+     * Get user's circles
+     */
+    public function circles(): BelongsToMany
+    {
+        return $this->belongsToMany(Circle::class, 'circle_memberships')
+            ->withPivot('joined_at', 'status')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get user's groups
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_memberships')
+            ->withPivot('role', 'joined_at', 'status')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get user's achievements
+     */
+    public function achievements(): HasMany
+    {
+        return $this->hasMany(Achievement::class);
+    }
+
+    /**
+     * Get user's certifications
+     */
+    public function certifications(): HasMany
+    {
+        return $this->hasMany(Certification::class);
     }
 
     /**
