@@ -1,13 +1,20 @@
-Job Matching Service (Tests\Unit\JobMatchingService)
- [x] Calculate match score returns weighted score
- [ ] Connection score increases with mutual connections
- [x] Skills score calculates percentage match
- [x] Skills score handles partial matches
- [ ] Education score considers degree relevance
- [x] Circle score calculates alumni overlap
- [ ] Find mutual connections returns connected employees
- [x] Get match reasons returns detailed explanations
- [x] Store match score creates or updates record
- [x] Zero connection score when no mutual connections
- [x] Neutral skills score when no skills data
+Career Timeline Service (Tests\Unit\CareerTimelineService)
+ [ ] Get timeline for user returns correct structure
+ [ ] Get timeline for user with viewer permissions
+ [x] Add career entry creates entry successfully
+ [x] Add career entry marks as current and updates others
+ [x] Add career entry validates dates
+ [x] Add career entry validates future start date
+ [ ] Update career entry updates successfully
+ [ ] Update career entry handles current position
+ [x] Add milestone creates milestone successfully
+ [ ] Calculate career progression returns correct metrics
+ [ ] Calculate career progression handles empty timeline
+ [ ] Suggest career goals for junior developer
+ [ ] Suggest career goals for experienced developer
+ [ ] Suggest career goals for long tenure
+ [ ] Timeline combines career entries and milestones
+ [ ] Career stats calculation
+ [ ] Auto milestone creation for job change
+ [ ] Promotion detection
 

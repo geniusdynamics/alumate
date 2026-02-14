@@ -1,25 +1,196 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Unit\JobMatchingServiceTest" file="Job Matching Service (Tests\Unit\JobMatchingService)" tests="11" assertions="26" errors="0" failures="3" skipped="0" time="50.949514">
-    <testcase name="Calculate match score returns weighted score" file="Job Matching Service (Tests\Unit\JobMatchingService)::Calculate match score returns weighted score" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="5" time="40.484878"/>
-    <testcase name="Connection score increases with mutual connections" file="Job Matching Service (Tests\Unit\JobMatchingService)::Connection score increases with mutual connections" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="1.416237">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Connection score increases with mutual connectionsFailed asserting that 0.0 is greater than 0.&#13;
-at tests\Unit\JobMatchingServiceTest.php:88</failure>
+  <testsuite name="Tests\Unit\CareerTimelineServiceTest" file="Career Timeline Service (Tests\Unit\CareerTimelineService)" tests="18" assertions="19" errors="13" failures="0" skipped="0" time="44.968967">
+    <testcase name="Get timeline for user returns correct structure" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Get timeline for user returns correct structure" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="30.602971">
+      <error type="Illuminate\Database\QueryException">Get timeline for user returns correct structureIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: select "id", "user_id", "company", "title", "start_date", "end_date", "description", "is_current", "achievements", "location", "company_logo_url", "industry", "employment_type", "duration_in_months" from "career_timelines" where "user_id" = 1 and "career_timelines"."deleted_at" is null order by "start_date" desc)&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:36
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:36</error>
     </testcase>
-    <testcase name="Skills score calculates percentage match" file="Job Matching Service (Tests\Unit\JobMatchingService)::Skills score calculates percentage match" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.855224"/>
-    <testcase name="Skills score handles partial matches" file="Job Matching Service (Tests\Unit\JobMatchingService)::Skills score handles partial matches" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.823097"/>
-    <testcase name="Education score considers degree relevance" file="Job Matching Service (Tests\Unit\JobMatchingService)::Education score considers degree relevance" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.877156">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Education score considers degree relevanceFailed asserting that 30.0 is greater than 50.&#13;
-at tests\Unit\JobMatchingServiceTest.php:147</failure>
+    <testcase name="Get timeline for user with viewer permissions" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Get timeline for user with viewer permissions" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.912130">
+      <error type="Illuminate\Database\QueryException">Get timeline for user with viewer permissionsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: select "id", "user_id", "company", "title", "start_date", "end_date", "description", "is_current", "achievements", "location", "company_logo_url", "industry", "employment_type", "duration_in_months" from "career_timelines" where "user_id" = 2 and "career_timelines"."deleted_at" is null order by "start_date" desc)&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:62
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:62</error>
     </testcase>
-    <testcase name="Circle score calculates alumni overlap" file="Job Matching Service (Tests\Unit\JobMatchingService)::Circle score calculates alumni overlap" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="1.385445"/>
-    <testcase name="Find mutual connections returns connected employees" file="Job Matching Service (Tests\Unit\JobMatchingService)::Find mutual connections returns connected employees" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="1.056980">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Find mutual connections returns connected employeesFailed asserting that actual size 0 matches expected size 1.&#13;
-at tests\Unit\JobMatchingServiceTest.php:209</failure>
+    <testcase name="Add career entry creates entry successfully" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Add career entry creates entry successfully" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="6" time="0.868650"/>
+    <testcase name="Add career entry marks as current and updates others" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Add career entry marks as current and updates others" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="2" time="0.875620"/>
+    <testcase name="Add career entry validates dates" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Add career entry validates dates" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="2" time="0.843233"/>
+    <testcase name="Add career entry validates future start date" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Add career entry validates future start date" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="2" time="0.828696"/>
+    <testcase name="Update career entry updates successfully" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Update career entry updates successfully" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.818642">
+      <error type="ErrorException">Update career entry updates successfullyErrorException: Undefined array key "start_date"&#13;
+at vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php:258
+at app\Services\CareerTimelineService.php:279
+at app\Services\CareerTimelineService.php:90
+at tests\Unit\CareerTimelineServiceTest.php:161</error>
     </testcase>
-    <testcase name="Get match reasons returns detailed explanations" file="Job Matching Service (Tests\Unit\JobMatchingService)::Get match reasons returns detailed explanations" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="6" time="1.081497"/>
-    <testcase name="Store match score creates or updates record" file="Job Matching Service (Tests\Unit\JobMatchingService)::Store match score creates or updates record" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="7" time="1.365506"/>
-    <testcase name="Zero connection score when no mutual connections" file="Job Matching Service (Tests\Unit\JobMatchingService)::Zero connection score when no mutual connections" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.833341"/>
-    <testcase name="Neutral skills score when no skills data" file="Job Matching Service (Tests\Unit\JobMatchingService)::Neutral skills score when no skills data" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.770154"/>
+    <testcase name="Update career entry handles current position" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Update career entry handles current position" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.851058">
+      <error type="ErrorException">Update career entry handles current positionErrorException: Undefined array key "start_date"&#13;
+at vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php:258
+at app\Services\CareerTimelineService.php:279
+at app\Services\CareerTimelineService.php:90
+at tests\Unit\CareerTimelineServiceTest.php:175</error>
+    </testcase>
+    <testcase name="Add milestone creates milestone successfully" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Add milestone creates milestone successfully" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="5" time="0.800383"/>
+    <testcase name="Calculate career progression returns correct metrics" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Calculate career progression returns correct metrics" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.792390">
+      <error type="TypeError">Calculate career progression returns correct metricsTypeError: App\Services\CareerTimelineService::calculateCareerProgression(): Argument #1 ($careerEntries) must be of type Illuminate\Support\Collection, App\Models\User given, called in D:\DevCenter\abuilds\alumate\tests\Unit\CareerTimelineServiceTest.php on line 230&#13;
+at app\Services\CareerTimelineService.php:127
+at tests\Unit\CareerTimelineServiceTest.php:230</error>
+    </testcase>
+    <testcase name="Calculate career progression handles empty timeline" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Calculate career progression handles empty timeline" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.943357">
+      <error type="TypeError">Calculate career progression handles empty timelineTypeError: App\Services\CareerTimelineService::calculateCareerProgression(): Argument #1 ($careerEntries) must be of type Illuminate\Support\Collection, App\Models\User given, called in D:\DevCenter\abuilds\alumate\tests\Unit\CareerTimelineServiceTest.php on line 249&#13;
+at app\Services\CareerTimelineService.php:127
+at tests\Unit\CareerTimelineServiceTest.php:249</error>
+    </testcase>
+    <testcase name="Suggest career goals for junior developer" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Suggest career goals for junior developer" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.834715">
+      <error type="TypeError">Suggest career goals for junior developerTypeError: App\Services\CareerTimelineService::calculateCareerProgression(): Argument #1 ($careerEntries) must be of type Illuminate\Support\Collection, App\Models\User given, called in D:\DevCenter\abuilds\alumate\app\Services\CareerTimelineService.php on line 163&#13;
+at app\Services\CareerTimelineService.php:127
+at app\Services\CareerTimelineService.php:163
+at tests\Unit\CareerTimelineServiceTest.php:270</error>
+    </testcase>
+    <testcase name="Suggest career goals for experienced developer" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Suggest career goals for experienced developer" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.980181">
+      <error type="TypeError">Suggest career goals for experienced developerTypeError: App\Services\CareerTimelineService::calculateCareerProgression(): Argument #1 ($careerEntries) must be of type Illuminate\Support\Collection, App\Models\User given, called in D:\DevCenter\abuilds\alumate\app\Services\CareerTimelineService.php on line 163&#13;
+at app\Services\CareerTimelineService.php:127
+at app\Services\CareerTimelineService.php:163
+at tests\Unit\CareerTimelineServiceTest.php:292</error>
+    </testcase>
+    <testcase name="Suggest career goals for long tenure" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Suggest career goals for long tenure" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.730568">
+      <error type="TypeError">Suggest career goals for long tenureTypeError: App\Services\CareerTimelineService::calculateCareerProgression(): Argument #1 ($careerEntries) must be of type Illuminate\Support\Collection, App\Models\User given, called in D:\DevCenter\abuilds\alumate\app\Services\CareerTimelineService.php on line 163&#13;
+at app\Services\CareerTimelineService.php:127
+at app\Services\CareerTimelineService.php:163
+at tests\Unit\CareerTimelineServiceTest.php:314</error>
+    </testcase>
+    <testcase name="Timeline combines career entries and milestones" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Timeline combines career entries and milestones" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.794568">
+      <error type="Illuminate\Database\QueryException">Timeline combines career entries and milestonesIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: select "id", "user_id", "company", "title", "start_date", "end_date", "description", "is_current", "achievements", "location", "company_logo_url", "industry", "employment_type", "duration_in_months" from "career_timelines" where "user_id" = 16 and "career_timelines"."deleted_at" is null order by "start_date" desc)&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:338
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:338</error>
+    </testcase>
+    <testcase name="Career stats calculation" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Career stats calculation" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="0" time="0.816867">
+      <error type="Illuminate\Database\QueryException">Career stats calculationIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: select "id", "user_id", "company", "title", "start_date", "end_date", "description", "is_current", "achievements", "location", "company_logo_url", "industry", "employment_type", "duration_in_months" from "career_timelines" where "user_id" = 17 and "career_timelines"."deleted_at" is null order by "start_date" desc)&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:357
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "duration_in_months" does not exist
+LINE 1: ...company_logo_url", "industry", "employment_type", "duration_...
+                                                             ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3389
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3374
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3964
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:3373
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:902
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:884
+at app\Services\CareerTimelineService.php:22
+at tests\Unit\CareerTimelineServiceTest.php:357</error>
+    </testcase>
+    <testcase name="Auto milestone creation for job change" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Auto milestone creation for job change" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="1" time="0.872769">
+      <error type="Error">Auto milestone creation for job changeError: Call to undefined method Tests\Unit\CareerTimelineServiceTest::assertStringContains()&#13;
+at tests\Unit\CareerTimelineServiceTest.php:394</error>
+    </testcase>
+    <testcase name="Promotion detection" file="Career Timeline Service (Tests\Unit\CareerTimelineService)::Promotion detection" class="Tests\Unit\CareerTimelineServiceTest" classname="Tests.Unit.CareerTimelineServiceTest" assertions="1" time="0.802170">
+      <error type="Error">Promotion detectionError: Call to undefined method Tests\Unit\CareerTimelineServiceTest::assertStringContains()&#13;
+at tests\Unit\CareerTimelineServiceTest.php:427</error>
+    </testcase>
   </testsuite>
 </testsuites>
