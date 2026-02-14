@@ -1,2 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites/>
+<testsuites>
+  <testsuite name="Tests\Unit\GrapeJSCompatibilityTest" file="tests\Unit\GrapeJSCompatibilityTest.php" tests="16" assertions="87" errors="1" failures="8" skipped="0" time="52.180318">
+    <testcase name="`GrapeJS Component Type Compatibility` → it validates hero component compatibility with GrapeJS features" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Component Type Compatibility` → it validates hero component compatibility with GrapeJS features" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="2" time="36.302159">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Component Type Compatibility` → it validates hero component compatibility with GrapeJS featuresFailed asserting that an array has the key true.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\AssertableJsonString.php:303
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:1001
+at tests\Unit\GrapeJSCompatibilityTest.php:41</failure>
+    </testcase>
+    <testcase name="`GrapeJS Component Type Compatibility` → it validates form component compatibility with validation features" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Component Type Compatibility` → it validates form component compatibility with validation features" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="5" time="0.784699"/>
+    <testcase name="`GrapeJS Component Type Compatibility` → it validates testimonial component compatibility with media features" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Component Type Compatibility` → it validates testimonial component compatibility with media features" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="5" time="0.785948"/>
+    <testcase name="`GrapeJS Component Type Compatibility` → it validates statistics component compatibility with animation features" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Component Type Compatibility` → it validates statistics component compatibility with animation features" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="5" time="0.901036"/>
+    <testcase name="`GrapeJS Component Type Compatibility` → it validates CTA component compatibility with tracking features" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Component Type Compatibility` → it validates CTA component compatibility with tracking features" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="5" time="0.953735"/>
+    <testcase name="`GrapeJS Component Type Compatibility` → it validates media component compatibility with optimization features" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Component Type Compatibility` → it validates media component compatibility with optimization features" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="5" time="1.066948"/>
+    <testcase name="`GrapeJS Drag and Drop Compatibility` → it tests drag and drop functionality for all component types" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Drag and Drop Compatibility` → it tests drag and drop functionality for all component types" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="42" time="1.259347"/>
+    <testcase name="`GrapeJS Drag and Drop Compatibility` → it validates component nesting capabilities" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Drag and Drop Compatibility` → it validates component nesting capabilities" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="1" time="1.430248">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Drag and Drop Compatibility` → it validates component nesting capabilitiesExpected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Unit\GrapeJSCompatibilityTest.php:289</failure>
+    </testcase>
+    <testcase name="`GrapeJS Drag and Drop Compatibility` → it tests component resizing and responsive behavior" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Drag and Drop Compatibility` → it tests component resizing and responsive behavior" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="3" time="1.032812">
+      <error type="ErrorException">`GrapeJS Drag and Drop Compatibility` → it tests component resizing and responsive behaviorErrorException: Undefined array key "aspect_ratio_support"&#13;
+at vendor\laravel\framework\src\Illuminate\Foundation\Bootstrap\HandleExceptions.php:258
+at tests\Unit\GrapeJSCompatibilityTest.php:326</error>
+    </testcase>
+    <testcase name="`GrapeJS Style Manager Integration` → it validates style manager compatibility with component themes" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Style Manager Integration` → it validates style manager compatibility with component themes" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="8" time="1.044829"/>
+    <testcase name="`GrapeJS Style Manager Integration` → it tests custom CSS property integration" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Style Manager Integration` → it tests custom CSS property integration" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="1" time="1.209833">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Style Manager Integration` → it tests custom CSS property integrationExpected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Unit\GrapeJSCompatibilityTest.php:408</failure>
+    </testcase>
+    <testcase name="`GrapeJS Style Manager Integration` → it validates CSS Grid and Flexbox compatibility" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Style Manager Integration` → it validates CSS Grid and Flexbox compatibility" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="1" time="1.217528">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Style Manager Integration` → it validates CSS Grid and Flexbox compatibilityExpected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Unit\GrapeJSCompatibilityTest.php:444</failure>
+    </testcase>
+    <testcase name="`GrapeJS Plugin Compatibility` → it tests compatibility with common GrapeJS plugins" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Plugin Compatibility` → it tests compatibility with common GrapeJS plugins" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="1" time="1.148435">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Plugin Compatibility` → it tests compatibility with common GrapeJS pluginsExpected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Unit\GrapeJSCompatibilityTest.php:475</failure>
+    </testcase>
+    <testcase name="`GrapeJS Plugin Compatibility` → it validates custom plugin integration" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Plugin Compatibility` → it validates custom plugin integration" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="1" time="1.014935">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Plugin Compatibility` → it validates custom plugin integrationExpected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Unit\GrapeJSCompatibilityTest.php:512</failure>
+    </testcase>
+    <testcase name="`GrapeJS Browser Compatibility` → it validates cross-browser compatibility" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Browser Compatibility` → it validates cross-browser compatibility" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="1" time="1.017769">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Browser Compatibility` → it validates cross-browser compatibilityExpected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Unit\GrapeJSCompatibilityTest.php:549</failure>
+    </testcase>
+    <testcase name="`GrapeJS Browser Compatibility` → it tests mobile browser compatibility" file="tests\Unit\GrapeJSCompatibilityTest.php::`GrapeJS Browser Compatibility` → it tests mobile browser compatibility" class="Tests\Unit\GrapeJSCompatibilityTest" classname="Tests.Unit.GrapeJSCompatibilityTest" assertions="1" time="1.010056">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">`GrapeJS Browser Compatibility` → it tests mobile browser compatibilityExpected response status code [200] but received 404.
+Failed asserting that 404 is identical to 200.&#13;
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponseAssert.php:45
+at vendor\laravel\framework\src\Illuminate\Testing\TestResponse.php:174
+at vendor\laravel\framework\src\Illuminate\Testing\Concerns\AssertsStatusCodes.php:16
+at tests\Unit\GrapeJSCompatibilityTest.php:589</failure>
+    </testcase>
+  </testsuite>
+</testsuites>
