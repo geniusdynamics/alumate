@@ -1,18 +1,13 @@
-D:\DevCenter\abuilds\alumate\tests\Unit\ComponentCollectionTest.php
- [x] collection filters by category
- [x] collection filters by type
- [x] collection filters active components
- [x] collection filters inactive components
- [x] collection groups by category
- [x] collection groups by type
- [x] collection filters by config key
- [x] collection filters by config value
- [x] collection sorts by name
- [ ] collection searches components
- [x] collection gets usage stats
- [x] collection gets recent components
- [x] collection filters by version
- [x] collection gets latest versions
- [x] collection validates all components
- [x] collection filters valid components
+Job Matching Service (Tests\Unit\JobMatchingService)
+ [x] Calculate match score returns weighted score
+ [ ] Connection score increases with mutual connections
+ [x] Skills score calculates percentage match
+ [x] Skills score handles partial matches
+ [ ] Education score considers degree relevance
+ [x] Circle score calculates alumni overlap
+ [ ] Find mutual connections returns connected employees
+ [x] Get match reasons returns detailed explanations
+ [x] Store match score creates or updates record
+ [x] Zero connection score when no mutual connections
+ [x] Neutral skills score when no skills data
 

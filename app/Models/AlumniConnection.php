@@ -16,6 +16,8 @@ class AlumniConnection extends Model
         'user_id',
         'connected_user_id',
         'status',
+        'message',
+        'connected_at',
     ];
 
     protected $casts = [

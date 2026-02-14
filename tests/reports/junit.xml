@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Unit\ComponentCollectionTest" file="tests\Unit\ComponentCollectionTest.php" tests="16" assertions="45" errors="1" failures="0" skipped="0" time="75.387589">
-    <testcase name="collection filters by category" file="tests\Unit\ComponentCollectionTest.php::collection filters by category" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="2" time="55.078168"/>
-    <testcase name="collection filters by type" file="tests\Unit\ComponentCollectionTest.php::collection filters by type" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="2" time="0.959141"/>
-    <testcase name="collection filters active components" file="tests\Unit\ComponentCollectionTest.php::collection filters active components" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="2" time="1.122398"/>
-    <testcase name="collection filters inactive components" file="tests\Unit\ComponentCollectionTest.php::collection filters inactive components" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="2" time="1.184501"/>
-    <testcase name="collection groups by category" file="tests\Unit\ComponentCollectionTest.php::collection groups by category" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="4" time="1.252334"/>
-    <testcase name="collection groups by type" file="tests\Unit\ComponentCollectionTest.php::collection groups by type" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="4" time="1.146901"/>
-    <testcase name="collection filters by config key" file="tests\Unit\ComponentCollectionTest.php::collection filters by config key" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="2" time="1.144119"/>
-    <testcase name="collection filters by config value" file="tests\Unit\ComponentCollectionTest.php::collection filters by config value" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="2" time="1.551312"/>
-    <testcase name="collection sorts by name" file="tests\Unit\ComponentCollectionTest.php::collection sorts by name" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="4" time="1.311384"/>
-    <testcase name="collection searches components" file="tests\Unit\ComponentCollectionTest.php::collection searches components" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="0" time="1.969013">
-      <error type="Pest\Exceptions\InvalidExpectationValue">collection searches componentsPest\Exceptions\InvalidExpectationValue: Invalid expectation value type. Expected [countable|iterable].&#13;
-at tests\Unit\ComponentCollectionTest.php:129</error>
+  <testsuite name="Tests\Unit\JobMatchingServiceTest" file="Job Matching Service (Tests\Unit\JobMatchingService)" tests="11" assertions="26" errors="0" failures="3" skipped="0" time="50.949514">
+    <testcase name="Calculate match score returns weighted score" file="Job Matching Service (Tests\Unit\JobMatchingService)::Calculate match score returns weighted score" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="5" time="40.484878"/>
+    <testcase name="Connection score increases with mutual connections" file="Job Matching Service (Tests\Unit\JobMatchingService)::Connection score increases with mutual connections" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="1.416237">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Connection score increases with mutual connectionsFailed asserting that 0.0 is greater than 0.&#13;
+at tests\Unit\JobMatchingServiceTest.php:88</failure>
     </testcase>
-    <testcase name="collection gets usage stats" file="tests\Unit\ComponentCollectionTest.php::collection gets usage stats" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="6" time="1.689878"/>
-    <testcase name="collection gets recent components" file="tests\Unit\ComponentCollectionTest.php::collection gets recent components" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="3" time="1.427311"/>
-    <testcase name="collection filters by version" file="tests\Unit\ComponentCollectionTest.php::collection filters by version" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="2" time="1.335885"/>
-    <testcase name="collection gets latest versions" file="tests\Unit\ComponentCollectionTest.php::collection gets latest versions" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="3" time="1.381039"/>
-    <testcase name="collection validates all components" file="tests\Unit\ComponentCollectionTest.php::collection validates all components" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="3" time="1.616443"/>
-    <testcase name="collection filters valid components" file="tests\Unit\ComponentCollectionTest.php::collection filters valid components" class="Tests\Unit\ComponentCollectionTest" classname="Tests.Unit.ComponentCollectionTest" assertions="4" time="1.217764"/>
+    <testcase name="Skills score calculates percentage match" file="Job Matching Service (Tests\Unit\JobMatchingService)::Skills score calculates percentage match" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.855224"/>
+    <testcase name="Skills score handles partial matches" file="Job Matching Service (Tests\Unit\JobMatchingService)::Skills score handles partial matches" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.823097"/>
+    <testcase name="Education score considers degree relevance" file="Job Matching Service (Tests\Unit\JobMatchingService)::Education score considers degree relevance" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.877156">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Education score considers degree relevanceFailed asserting that 30.0 is greater than 50.&#13;
+at tests\Unit\JobMatchingServiceTest.php:147</failure>
+    </testcase>
+    <testcase name="Circle score calculates alumni overlap" file="Job Matching Service (Tests\Unit\JobMatchingService)::Circle score calculates alumni overlap" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="1.385445"/>
+    <testcase name="Find mutual connections returns connected employees" file="Job Matching Service (Tests\Unit\JobMatchingService)::Find mutual connections returns connected employees" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="1.056980">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Find mutual connections returns connected employeesFailed asserting that actual size 0 matches expected size 1.&#13;
+at tests\Unit\JobMatchingServiceTest.php:209</failure>
+    </testcase>
+    <testcase name="Get match reasons returns detailed explanations" file="Job Matching Service (Tests\Unit\JobMatchingService)::Get match reasons returns detailed explanations" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="6" time="1.081497"/>
+    <testcase name="Store match score creates or updates record" file="Job Matching Service (Tests\Unit\JobMatchingService)::Store match score creates or updates record" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="7" time="1.365506"/>
+    <testcase name="Zero connection score when no mutual connections" file="Job Matching Service (Tests\Unit\JobMatchingService)::Zero connection score when no mutual connections" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.833341"/>
+    <testcase name="Neutral skills score when no skills data" file="Job Matching Service (Tests\Unit\JobMatchingService)::Neutral skills score when no skills data" class="Tests\Unit\JobMatchingServiceTest" classname="Tests.Unit.JobMatchingServiceTest" assertions="1" time="0.770154"/>
   </testsuite>
 </testsuites>

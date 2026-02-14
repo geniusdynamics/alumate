@@ -354,6 +354,14 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get user's career timelines
+     */
+    public function careerTimelines(): HasMany
+    {
+        return $this->hasMany(CareerTimeline::class);
+    }
+
+    /**
      * Get user's alumni connections (as initiator)
      */
     public function connections(): HasMany
