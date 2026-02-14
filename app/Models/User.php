@@ -83,6 +83,26 @@ class User extends Authenticatable implements MustVerifyEmail
         'deleted_at',
     ];
 
+    /**
+     * Searchable columns for this model
+     */
+    protected array $searchableColumns = [
+        'name',
+        'email',
+        'first_name',
+        'last_name',
+    ];
+
+    /**
+     * Sortable columns for this model
+     */
+    protected array $sortableColumns = [
+        'name',
+        'email',
+        'created_at',
+        'last_login_at',
+    ];
+
     protected $appends = [
         'full_name',
         'initials',
@@ -505,6 +525,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeVerified(Builder $query): Builder
     {
         return $query->whereNotNull('email_verified_at');
+    }
+
+    /**
+     * Scope for suspended users
+     */
+    public function scopeSuspended(Builder $query): Builder
+    {
+        return $query->where('is_suspended', true);
+    }
+
+    /**
+     * Scope for recently active users
+     */
+    public function scopeRecentlyActive(Builder $query): Builder
+    {
+        return $query->where('last_login_at', '>=', now()->subDays(30));
     }
 
     /**
