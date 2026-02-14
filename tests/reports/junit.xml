@@ -1,80 +1,235 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="CLI Arguments" tests="63" assertions="270" errors="0" failures="0" skipped="0" time="101.447897">
-    <testsuite name="Tests\Unit\AlumniDirectoryServiceTest" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)" tests="11" assertions="33" errors="0" failures="0" skipped="0" time="48.477179">
-      <testcase name="Can build basic filter query" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can build basic filter query" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="1" time="37.587829"/>
-      <testcase name="Can filter by graduation year range" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can filter by graduation year range" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="2" time="1.236887"/>
-      <testcase name="Can filter by location" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can filter by location" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="2" time="1.003968"/>
-      <testcase name="Can filter by company" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can filter by company" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="2" time="1.006494"/>
-      <testcase name="Can filter by skills" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can filter by skills" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="2" time="1.062204"/>
-      <testcase name="Can get alumni profile with privacy controls" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can get alumni profile with privacy controls" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="6" time="1.094915"/>
-      <testcase name="Can get mutual connections" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can get mutual connections" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="2" time="1.058771"/>
-      <testcase name="Can get connection status" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can get connection status" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="3" time="1.086365"/>
-      <testcase name="Can get available filters" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Can get available filters" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="9" time="1.002503"/>
-      <testcase name="Pagination works correctly" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Pagination works correctly" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="3" time="1.287056"/>
-      <testcase name="Sorting works correctly" file="Alumni Directory Service (Tests\Unit\AlumniDirectoryService)::Sorting works correctly" class="Tests\Unit\AlumniDirectoryServiceTest" classname="Tests.Unit.AlumniDirectoryServiceTest" assertions="1" time="1.050188"/>
+  <testsuite name="CLI Arguments" tests="35" assertions="55" errors="10" failures="12" skipped="0" time="66.275982">
+    <testsuite name="Tests\Unit\Models\ComponentTest" file="Component (Tests\Unit\Models\Component)" tests="28" assertions="38" errors="10" failures="11" skipped="0" time="60.416436">
+      <testcase name="Fillable attributes" file="Component (Tests\Unit\Models\Component)::Fillable attributes" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="9" time="31.865060"/>
+      <testcase name="Cast attributes" file="Component (Tests\Unit\Models\Component)::Cast attributes" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="4" time="0.756274">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Cast attributesFailed asserting that an array has the key 'is_template'.&#13;
+at tests\Unit\Models\ComponentTest.php:52</failure>
+      </testcase>
+      <testcase name="Hidden attributes" file="Component (Tests\Unit\Models\Component)::Hidden attributes" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="1" time="0.737613"/>
+      <testcase name="Belongs to tenant relationship" file="Component (Tests\Unit\Models\Component)::Belongs to tenant relationship" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="1" time="1.624378">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Belongs to tenant relationshipFailed asserting that null is an instance of class App\Models\Tenant.&#13;
+at tests\Unit\Models\ComponentTest.php:81</failure>
+      </testcase>
+      <testcase name="Belongs to theme relationship" file="Component (Tests\Unit\Models\Component)::Belongs to theme relationship" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.093956">
+        <error type="Illuminate\Database\QueryException">Belongs to theme relationshipIlluminate\Database\QueryException: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "component_themes" violates foreign key constraint "component_themes_tenant_id_foreign"
+DETAIL:  Key (tenant_id)=(1) is not present in table "tenants". (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "component_themes" ("tenant_id", "name", "slug", "config", "is_default", "updated_at", "created_at") values (1, Test Theme 262, test-theme-262, {"colors":{"primary":"#22ab64","secondary":"#c1298e","accent":"#fde311","background":"#ffffff","text":"#333333"},"typography":{"font_family":"Arial, sans-serif","heading_font":"Georgia, serif","font_sizes":{"base":"16px","heading":"2rem"},"line_height":1.6},"spacing":{"base":"1rem","small":"0.5rem","large":"2rem","section_padding":"1.5rem"},"borders":{"radius":"4px","width":"1px"},"animations":{"duration":"0.3s","easing":"ease"}}, 0, 2026-02-14 19:40:28, 2026-02-14 19:40:28) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at tests\Unit\Models\ComponentTest.php:90
+Caused by
+PDOException: SQLSTATE[23503]: Foreign key violation: 7 ERROR:  insert or update on table "component_themes" violates foreign key constraint "component_themes_tenant_id_foreign"
+DETAIL:  Key (tenant_id)=(1) is not present in table "tenants".
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at tests\Unit\Models\ComponentTest.php:90</error>
+      </testcase>
+      <testcase name="Has many instances relationship" file="Component (Tests\Unit\Models\Component)::Has many instances relationship" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.061322">
+        <error type="Illuminate\Database\QueryException">Has many instances relationshipIlluminate\Database\QueryException: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type bigint: "homepage"
+CONTEXT:  unnamed portal parameter $4 = '...' (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "component_instances" ("custom_config", "position", "page_type", "page_id", "component_id", "updated_at", "created_at") values ({}, 1, landing_page, homepage, 2, 2026-02-14 19:40:29, 2026-02-14 19:40:29) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:386
+at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:383
+at tests\Unit\Models\ComponentTest.php:105
+Caused by
+PDOException: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type bigint: "homepage"
+CONTEXT:  unnamed portal parameter $4 = '...'
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:386
+at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:383
+at tests\Unit\Models\ComponentTest.php:105</error>
+      </testcase>
+      <testcase name="Has many versions relationship" file="Component (Tests\Unit\Models\Component)::Has many versions relationship" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.139854">
+        <error type="Illuminate\Database\QueryException">Has many versions relationshipIlluminate\Database\QueryException: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "version_number" of relation "component_versions" violates not-null constraint
+DETAIL:  Failing row contains (1, 3, null, null, null, ["Added new feature"], null, null, 2026-02-14 19:40:30, 2026-02-14 19:40:30). (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "component_versions" ("changes", "component_id", "updated_at", "created_at") values (["Added new feature"], 3, 2026-02-14 19:40:30, 2026-02-14 19:40:30) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:386
+at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:383
+at tests\Unit\Models\ComponentTest.php:123
+Caused by
+PDOException: SQLSTATE[23502]: Not null violation: 7 ERROR:  null value in column "version_number" of relation "component_versions" violates not-null constraint
+DETAIL:  Failing row contains (1, 3, null, null, null, ["Added new feature"], null, null, 2026-02-14 19:40:30, 2026-02-14 19:40:30).
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:386
+at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Relations\HasOneOrMany.php:383
+at tests\Unit\Models\ComponentTest.php:123</error>
+      </testcase>
+      <testcase name="For tenant scope" file="Component (Tests\Unit\Models\Component)::For tenant scope" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="1" time="1.161287">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">For tenant scopeFailed asserting that actual size 3 matches expected size 2.&#13;
+at tests\Unit\Models\ComponentTest.php:146</failure>
+      </testcase>
+      <testcase name="Active scope" file="Component (Tests\Unit\Models\Component)::Active scope" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="1.048640"/>
+      <testcase name="By category scope" file="Component (Tests\Unit\Models\Component)::By category scope" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="1.085509"/>
+      <testcase name="By type scope" file="Component (Tests\Unit\Models\Component)::By type scope" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="1.070161"/>
+      <testcase name="Display name accessor" file="Component (Tests\Unit\Models\Component)::Display name accessor" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="1" time="0.908709"/>
+      <testcase name="Formatted config accessor" file="Component (Tests\Unit\Models\Component)::Formatted config accessor" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="1" time="1.144152">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Formatted config accessorFailed asserting that two arrays are equal.&#13;
+at tests\Unit\Models\ComponentTest.php:212</failure>
+      </testcase>
+      <testcase name="Generate preview html method" file="Component (Tests\Unit\Models\Component)::Generate preview html method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="0.901734">
+        <error type="BadMethodCallException">Generate preview html methodBadMethodCallException: Call to undefined method App\Models\Component::generatePreviewHtml()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at tests\Unit\Models\ComponentTest.php:227</error>
+      </testcase>
+      <testcase name="Generate responsive variants method" file="Component (Tests\Unit\Models\Component)::Generate responsive variants method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="0.919721">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Generate responsive variants methodFailed asserting that an array has the key 'mobile'.&#13;
+at tests\Unit\Models\ComponentTest.php:244</failure>
+      </testcase>
+      <testcase name="Has responsive config method" file="Component (Tests\Unit\Models\Component)::Has responsive config method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="1" time="1.110550">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Has responsive config methodFailed asserting that false is true.&#13;
+at tests\Unit\Models\ComponentTest.php:260</failure>
+      </testcase>
+      <testcase name="Has accessibility features method" file="Component (Tests\Unit\Models\Component)::Has accessibility features method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="1" time="1.254349">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Has accessibility features methodFailed asserting that false is true.&#13;
+at tests\Unit\Models\ComponentTest.php:275</failure>
+      </testcase>
+      <testcase name="Is mobile optimized method" file="Component (Tests\Unit\Models\Component)::Is mobile optimized method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="1.094508"/>
+      <testcase name="Get accessibility metadata method" file="Component (Tests\Unit\Models\Component)::Get accessibility metadata method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="0.931340">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Get accessibility metadata methodFailed asserting that an array has the key 'wcag_compliant'.&#13;
+at tests\Unit\Models\ComponentTest.php:305</failure>
+      </testcase>
+      <testcase name="Get usage stats method" file="Component (Tests\Unit\Models\Component)::Get usage stats method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="0.952172">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Get usage stats methodFailed asserting that an array has the key 'total_usage'.&#13;
+at tests\Unit\Models\ComponentTest.php:319</failure>
+      </testcase>
+      <testcase name="Validate config method" file="Component (Tests\Unit\Models\Component)::Validate config method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="1.194287">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Validate config methodFailed asserting that true is false.&#13;
+at tests\Unit\Models\ComponentTest.php:349</failure>
+      </testcase>
+      <testcase name="Get validation errors method" file="Component (Tests\Unit\Models\Component)::Get validation errors method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.032094">
+        <error type="BadMethodCallException">Get validation errors methodBadMethodCallException: Call to undefined method App\Models\Component::getValidationErrors()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at tests\Unit\Models\ComponentTest.php:363</error>
+      </testcase>
+      <testcase name="Get tailwind mappings method" file="Component (Tests\Unit\Models\Component)::Get tailwind mappings method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="2" time="1.086188">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Get tailwind mappings methodFailed asserting that an array has the key 'classes'.&#13;
+at tests\Unit\Models\ComponentTest.php:380</failure>
+      </testcase>
+      <testcase name="Get category display name method" file="Component (Tests\Unit\Models\Component)::Get category display name method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.113378">
+        <error type="BadMethodCallException">Get category display name methodBadMethodCallException: Call to undefined method App\Models\Component::getCategoryDisplayName()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at tests\Unit\Models\ComponentTest.php:390</error>
+      </testcase>
+      <testcase name="Get supported features method" file="Component (Tests\Unit\Models\Component)::Get supported features method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.035122">
+        <error type="BadMethodCallException">Get supported features methodBadMethodCallException: Call to undefined method App\Models\Component::getSupportedFeatures()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at tests\Unit\Models\ComponentTest.php:402</error>
+      </testcase>
+      <testcase name="Increment usage count method" file="Component (Tests\Unit\Models\Component)::Increment usage count method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="0.959309">
+        <error type="BadMethodCallException">Increment usage count methodBadMethodCallException: Call to undefined method App\Models\Component::incrementUsageCount()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at tests\Unit\Models\ComponentTest.php:417</error>
+      </testcase>
+      <testcase name="Update last used at method" file="Component (Tests\Unit\Models\Component)::Update last used at method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.088757">
+        <error type="BadMethodCallException">Update last used at methodBadMethodCallException: Call to undefined method App\Models\Component::updateLastUsedAt()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at tests\Unit\Models\ComponentTest.php:429</error>
+      </testcase>
+      <testcase name="Duplicate method" file="Component (Tests\Unit\Models\Component)::Duplicate method" class="Tests\Unit\Models\ComponentTest" classname="Tests.Unit.Models.ComponentTest" assertions="0" time="1.046012">
+        <error type="BadMethodCallException">Duplicate methodBadMethodCallException: Call to undefined method App\Models\Component::duplicate()&#13;
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:67
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:36
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at tests\Unit\Models\ComponentTest.php:444</error>
+      </testcase>
     </testsuite>
-    <testsuite name="Tests\Unit\AlumniRecommendationServiceTest" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)" tests="13" assertions="23" errors="0" failures="0" skipped="0" time="14.063314">
-      <testcase name="Get recommendations for user returns collection" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Get recommendations for user returns collection" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="1" time="1.320124"/>
-      <testcase name="Calculate connection score with shared circles" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Calculate connection score with shared circles" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="3" time="1.080627"/>
-      <testcase name="Calculate connection score with mutual connections" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Calculate connection score with mutual connections" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="1" time="1.099517"/>
-      <testcase name="Get shared circles returns common circles" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Get shared circles returns common circles" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="2" time="1.157294"/>
-      <testcase name="Get mutual connections returns common connections" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Get mutual connections returns common connections" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="2" time="1.312318"/>
-      <testcase name="Get interest similarity calculates overlap" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Get interest similarity calculates overlap" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="3" time="1.083908"/>
-      <testcase name="Filter recommendations excludes connected users" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Filter recommendations excludes connected users" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="1" time="0.917887"/>
-      <testcase name="Filter recommendations excludes pending requests" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Filter recommendations excludes pending requests" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="1" time="1.029949"/>
-      <testcase name="Dismiss recommendation caches dismissal" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Dismiss recommendation caches dismissal" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="1" time="0.876148"/>
-      <testcase name="Clear recommendation cache removes cache" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Clear recommendation cache removes cache" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="1" time="0.875028"/>
-      <testcase name="Get second degree connections returns correct users" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Get second degree connections returns correct users" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="2" time="1.140785"/>
-      <testcase name="Scoring weights are applied correctly" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Scoring weights are applied correctly" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="3" time="1.111061"/>
-      <testcase name="Recommendations are cached" file="Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)::Recommendations are cached" class="Tests\Unit\AlumniRecommendationServiceTest" classname="Tests.Unit.AlumniRecommendationServiceTest" assertions="2" time="1.058668"/>
-    </testsuite>
-    <testsuite name="Tests\Unit\CTAComponentTest" file="tests\Unit\CTAComponentTest.php" tests="10" assertions="29" errors="0" failures="0" skipped="0" time="12.976160">
-      <testcase name="`CTA Component Creation` → it can create a CTA button component" file="tests\Unit\CTAComponentTest.php::`CTA Component Creation` → it can create a CTA button component" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="6" time="2.482334"/>
-      <testcase name="`CTA Component Creation` → it can create a CTA banner component" file="tests\Unit\CTAComponentTest.php::`CTA Component Creation` → it can create a CTA banner component" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="4" time="1.015007"/>
-      <testcase name="`CTA Component Creation` → it can create a CTA inline link component" file="tests\Unit\CTAComponentTest.php::`CTA Component Creation` → it can create a CTA inline link component" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="3" time="1.058511"/>
-      <testcase name="`CTA Component Validation` → it validates required fields for button CTA" file="tests\Unit\CTAComponentTest.php::`CTA Component Validation` → it validates required fields for button CTA" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="1" time="1.290414"/>
-      <testcase name="`CTA Component Validation` → it validates CTA button styles" file="tests\Unit\CTAComponentTest.php::`CTA Component Validation` → it validates CTA button styles" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="1" time="1.285569"/>
-      <testcase name="`CTA Component Validation` → it validates CTA button sizes" file="tests\Unit\CTAComponentTest.php::`CTA Component Validation` → it validates CTA button sizes" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="1" time="1.054278"/>
-      <testcase name="`CTA Component A/B Testing` → it can create CTA with A/B test configuration" file="tests\Unit\CTAComponentTest.php::`CTA Component A/B Testing` → it can create CTA with A/B test configuration" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="3" time="1.019429"/>
-      <testcase name="`CTA Component Tracking` → it includes tracking parameters in configuration" file="tests\Unit\CTAComponentTest.php::`CTA Component Tracking` → it includes tracking parameters in configuration" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="4" time="1.120388"/>
-      <testcase name="`CTA Component Accessibility` → it includes accessibility configuration" file="tests\Unit\CTAComponentTest.php::`CTA Component Accessibility` → it includes accessibility configuration" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="3" time="0.997119"/>
-      <testcase name="`CTA Component Tenant Isolation` → it scopes CTA components to tenant" file="tests\Unit\CTAComponentTest.php::`CTA Component Tenant Isolation` → it scopes CTA components to tenant" class="Tests\Unit\CTAComponentTest" classname="Tests.Unit.CTAComponentTest" assertions="3" time="1.653113"/>
-    </testsuite>
-    <testsuite name="Tests\Unit\MediaServiceTest" file="tests\Unit\MediaServiceTest.php" tests="11" assertions="59" errors="0" failures="0" skipped="0" time="9.589407">
-      <testcase name="`MediaService Logic` → it validates media service configuration" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates media service configuration" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="4" time="0.890970"/>
-      <testcase name="`MediaService Logic` → it validates file type detection logic" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates file type detection logic" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="7" time="0.933436"/>
-      <testcase name="`MediaService Logic` → it calculates responsive image variant sizes" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it calculates responsive image variant sizes" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="10" time="1.046915"/>
-      <testcase name="`MediaService Logic` → it validates image optimization settings" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates image optimization settings" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="7" time="0.849124"/>
-      <testcase name="`MediaService Logic` → it validates file size calculations" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates file size calculations" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="3" time="0.899902"/>
-      <testcase name="`MediaService Logic` → it validates metadata structure" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates metadata structure" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="8" time="0.936932"/>
-      <testcase name="`MediaService Logic` → it validates secure path generation logic" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates secure path generation logic" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="4" time="0.977834"/>
-      <testcase name="`MediaService Logic` → it validates gallery structure" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates gallery structure" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="5" time="0.716421"/>
-      <testcase name="`MediaService Logic` → it validates search filter logic" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates search filter logic" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="3" time="0.735240"/>
-      <testcase name="`MediaService Logic` → it validates CDN URL generation" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates CDN URL generation" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="2" time="0.755973"/>
-      <testcase name="`MediaService Logic` → it validates format conversion options" file="tests\Unit\MediaServiceTest.php::`MediaService Logic` → it validates format conversion options" class="Tests\Unit\MediaServiceTest" classname="Tests.Unit.MediaServiceTest" assertions="6" time="0.846661"/>
-    </testsuite>
-    <testsuite name="Tests\Unit\GrapeJSIntegrationTest" file="tests\Unit\GrapeJSIntegrationTest.php" tests="10" assertions="47" errors="0" failures="0" skipped="0" time="10.345190">
-      <testcase name="it converts component to GrapeJS block format" file="tests\Unit\GrapeJSIntegrationTest.php::it converts component to GrapeJS block format" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="5" time="1.349545"/>
-      <testcase name="it maps component categories to GrapeJS categories correctly" file="tests\Unit\GrapeJSIntegrationTest.php::it maps component categories to GrapeJS categories correctly" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="6" time="0.986964"/>
-      <testcase name="it validates component configuration for GrapeJS compatibility" file="tests\Unit\GrapeJSIntegrationTest.php::it validates component configuration for GrapeJS compatibility" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="4" time="1.107727"/>
-      <testcase name="it generates component traits for GrapeJS property panel" file="tests\Unit\GrapeJSIntegrationTest.php::it generates component traits for GrapeJS property panel" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="9" time="0.923216"/>
-      <testcase name="it handles responsive configuration for GrapeJS device manager" file="tests\Unit\GrapeJSIntegrationTest.php::it handles responsive configuration for GrapeJS device manager" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="4" time="0.941370"/>
-      <testcase name="it includes accessibility metadata for GrapeJS components" file="tests\Unit\GrapeJSIntegrationTest.php::it includes accessibility metadata for GrapeJS components" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="6" time="1.040504"/>
-      <testcase name="it integrates component themes with GrapeJS styling" file="tests\Unit\GrapeJSIntegrationTest.php::it integrates component themes with GrapeJS styling" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="3" time="1.040819"/>
-      <testcase name="it handles component versioning for GrapeJS" file="tests\Unit\GrapeJSIntegrationTest.php::it handles component versioning for GrapeJS" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="4" time="1.047708"/>
-      <testcase name="it tracks component usage statistics for GrapeJS analytics" file="tests\Unit\GrapeJSIntegrationTest.php::it tracks component usage statistics for GrapeJS analytics" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="3" time="0.918117"/>
-      <testcase name="it handles errors gracefully in GrapeJS integration" file="tests\Unit\GrapeJSIntegrationTest.php::it handles errors gracefully in GrapeJS integration" class="Tests\Unit\GrapeJSIntegrationTest" classname="Tests.Unit.GrapeJSIntegrationTest" assertions="3" time="0.989219"/>
-    </testsuite>
-    <testsuite name="Tests\Unit\VideoTestimonialComponentTest" file="tests\Unit\VideoTestimonialComponentTest.php" tests="8" assertions="79" errors="0" failures="0" skipped="0" time="5.996648">
-      <testcase name="it can create video testimonial configuration with enhanced features" file="tests\Unit\VideoTestimonialComponentTest.php::it can create video testimonial configuration with enhanced features" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="11" time="0.778509"/>
-      <testcase name="it validates video quality configurations" file="tests\Unit\VideoTestimonialComponentTest.php::it validates video quality configurations" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="32" time="0.732753"/>
-      <testcase name="it supports accessibility features configuration" file="tests\Unit\VideoTestimonialComponentTest.php::it supports accessibility features configuration" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="7" time="0.678096"/>
-      <testcase name="it supports bandwidth-aware video loading configuration" file="tests\Unit\VideoTestimonialComponentTest.php::it supports bandwidth-aware video loading configuration" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="6" time="0.723172"/>
-      <testcase name="it supports touch gesture configuration for carousel" file="tests\Unit\VideoTestimonialComponentTest.php::it supports touch gesture configuration for carousel" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="6" time="0.724769"/>
-      <testcase name="it supports analytics tracking configuration" file="tests\Unit\VideoTestimonialComponentTest.php::it supports analytics tracking configuration" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="8" time="0.811822"/>
-      <testcase name="it validates video format support" file="tests\Unit\VideoTestimonialComponentTest.php::it validates video format support" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="3" time="0.788869"/>
-      <testcase name="it supports video optimization features" file="tests\Unit\VideoTestimonialComponentTest.php::it supports video optimization features" class="Tests\Unit\VideoTestimonialComponentTest" classname="Tests.Unit.VideoTestimonialComponentTest" assertions="6" time="0.758657"/>
+    <testsuite name="Tests\Unit\Models\CircleTest" file="Circle (Tests\Unit\Models\Circle)" tests="7" assertions="17" errors="0" failures="1" skipped="0" time="5.859547">
+      <testcase name="Circle can be created" file="Circle (Tests\Unit\Models\Circle)::Circle can be created" class="Tests\Unit\Models\CircleTest" classname="Tests.Unit.Models.CircleTest" assertions="4" time="1.063415"/>
+      <testcase name="Circle casts criteria as array" file="Circle (Tests\Unit\Models\Circle)::Circle casts criteria as array" class="Tests\Unit\Models\CircleTest" classname="Tests.Unit.Models.CircleTest" assertions="2" time="0.833546"/>
+      <testcase name="Circle can add member" file="Circle (Tests\Unit\Models\Circle)::Circle can add member" class="Tests\Unit\Models\CircleTest" classname="Tests.Unit.Models.CircleTest" assertions="3" time="0.877449"/>
+      <testcase name="Circle cannot add duplicate member" file="Circle (Tests\Unit\Models\Circle)::Circle cannot add duplicate member" class="Tests\Unit\Models\CircleTest" classname="Tests.Unit.Models.CircleTest" assertions="2" time="0.787011"/>
+      <testcase name="Circle can remove member" file="Circle (Tests\Unit\Models\Circle)::Circle can remove member" class="Tests\Unit\Models\CircleTest" classname="Tests.Unit.Models.CircleTest" assertions="3" time="0.755193"/>
+      <testcase name="Circle updates member count" file="Circle (Tests\Unit\Models\Circle)::Circle updates member count" class="Tests\Unit\Models\CircleTest" classname="Tests.Unit.Models.CircleTest" assertions="2" time="0.822972"/>
+      <testcase name="Circle scopes work correctly" file="Circle (Tests\Unit\Models\Circle)::Circle scopes work correctly" class="Tests\Unit\Models\CircleTest" classname="Tests.Unit.Models.CircleTest" assertions="1" time="0.719960">
+        <failure type="PHPUnit\Framework\ExpectationFailedException">Circle scopes work correctlyFailed asserting that 2 matches expected 1.&#13;
+at tests\Unit\Models\CircleTest.php:104</failure>
+      </testcase>
     </testsuite>
   </testsuite>
 </testsuites>

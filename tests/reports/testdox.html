@@ -51,86 +51,46 @@
         </style>
     </head>
     <body>
-        <h2>Alumni Directory Service (Tests\Unit\AlumniDirectoryService)</h2>
+        <h2>Circle (Tests\Unit\Models\Circle)</h2>
         <ul>
-            <li class="success">Can build basic filter query</li>
-            <li class="success">Can filter by graduation year range</li>
-            <li class="success">Can filter by location</li>
-            <li class="success">Can filter by company</li>
-            <li class="success">Can filter by skills</li>
-            <li class="success">Can get alumni profile with privacy controls</li>
-            <li class="success">Can get mutual connections</li>
-            <li class="success">Can get connection status</li>
-            <li class="success">Can get available filters</li>
-            <li class="success">Pagination works correctly</li>
-            <li class="success">Sorting works correctly</li>
+            <li class="success">Circle can be created</li>
+            <li class="success">Circle casts criteria as array</li>
+            <li class="success">Circle can add member</li>
+            <li class="success">Circle cannot add duplicate member</li>
+            <li class="success">Circle can remove member</li>
+            <li class="success">Circle updates member count</li>
+            <li class="defect">Circle scopes work correctly</li>
         </ul>
-        <h2>Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)</h2>
+        <h2>Component (Tests\Unit\Models\Component)</h2>
         <ul>
-            <li class="success">Get recommendations for user returns collection</li>
-            <li class="success">Calculate connection score with shared circles</li>
-            <li class="success">Calculate connection score with mutual connections</li>
-            <li class="success">Get shared circles returns common circles</li>
-            <li class="success">Get mutual connections returns common connections</li>
-            <li class="success">Get interest similarity calculates overlap</li>
-            <li class="success">Filter recommendations excludes connected users</li>
-            <li class="success">Filter recommendations excludes pending requests</li>
-            <li class="success">Dismiss recommendation caches dismissal</li>
-            <li class="success">Clear recommendation cache removes cache</li>
-            <li class="success">Get second degree connections returns correct users</li>
-            <li class="success">Scoring weights are applied correctly</li>
-            <li class="success">Recommendations are cached</li>
-        </ul>
-        <h2>D:\DevCenter\abuilds\alumate\tests\Unit\CTAComponentTest.php</h2>
-        <ul>
-            <li class="success">`CTA Component Creation` → it can create a CTA button component</li>
-            <li class="success">`CTA Component Creation` → it can create a CTA banner component</li>
-            <li class="success">`CTA Component Creation` → it can create a CTA inline link component</li>
-            <li class="success">`CTA Component Validation` → it validates required fields for button CTA</li>
-            <li class="success">`CTA Component Validation` → it validates CTA button styles</li>
-            <li class="success">`CTA Component Validation` → it validates CTA button sizes</li>
-            <li class="success">`CTA Component A/B Testing` → it can create CTA with A/B test configuration</li>
-            <li class="success">`CTA Component Tracking` → it includes tracking parameters in configuration</li>
-            <li class="success">`CTA Component Accessibility` → it includes accessibility configuration</li>
-            <li class="success">`CTA Component Tenant Isolation` → it scopes CTA components to tenant</li>
-        </ul>
-        <h2>D:\DevCenter\abuilds\alumate\tests\Unit\GrapeJSIntegrationTest.php</h2>
-        <ul>
-            <li class="success">it converts component to GrapeJS block format</li>
-            <li class="success">it maps component categories to GrapeJS categories correctly</li>
-            <li class="success">it validates component configuration for GrapeJS compatibility</li>
-            <li class="success">it generates component traits for GrapeJS property panel</li>
-            <li class="success">it handles responsive configuration for GrapeJS device manager</li>
-            <li class="success">it includes accessibility metadata for GrapeJS components</li>
-            <li class="success">it integrates component themes with GrapeJS styling</li>
-            <li class="success">it handles component versioning for GrapeJS</li>
-            <li class="success">it tracks component usage statistics for GrapeJS analytics</li>
-            <li class="success">it handles errors gracefully in GrapeJS integration</li>
-        </ul>
-        <h2>D:\DevCenter\abuilds\alumate\tests\Unit\MediaServiceTest.php</h2>
-        <ul>
-            <li class="success">`MediaService Logic` → it validates media service configuration</li>
-            <li class="success">`MediaService Logic` → it validates file type detection logic</li>
-            <li class="success">`MediaService Logic` → it calculates responsive image variant sizes</li>
-            <li class="success">`MediaService Logic` → it validates image optimization settings</li>
-            <li class="success">`MediaService Logic` → it validates file size calculations</li>
-            <li class="success">`MediaService Logic` → it validates metadata structure</li>
-            <li class="success">`MediaService Logic` → it validates secure path generation logic</li>
-            <li class="success">`MediaService Logic` → it validates gallery structure</li>
-            <li class="success">`MediaService Logic` → it validates search filter logic</li>
-            <li class="success">`MediaService Logic` → it validates CDN URL generation</li>
-            <li class="success">`MediaService Logic` → it validates format conversion options</li>
-        </ul>
-        <h2>D:\DevCenter\abuilds\alumate\tests\Unit\VideoTestimonialComponentTest.php</h2>
-        <ul>
-            <li class="success">it can create video testimonial configuration with enhanced features</li>
-            <li class="success">it validates video quality configurations</li>
-            <li class="success">it supports accessibility features configuration</li>
-            <li class="success">it supports bandwidth-aware video loading configuration</li>
-            <li class="success">it supports touch gesture configuration for carousel</li>
-            <li class="success">it supports analytics tracking configuration</li>
-            <li class="success">it validates video format support</li>
-            <li class="success">it supports video optimization features</li>
+            <li class="success">Fillable attributes</li>
+            <li class="defect">Cast attributes</li>
+            <li class="success">Hidden attributes</li>
+            <li class="defect">Belongs to tenant relationship</li>
+            <li class="defect">Belongs to theme relationship</li>
+            <li class="defect">Has many instances relationship</li>
+            <li class="defect">Has many versions relationship</li>
+            <li class="defect">For tenant scope</li>
+            <li class="success">Active scope</li>
+            <li class="success">By category scope</li>
+            <li class="success">By type scope</li>
+            <li class="success">Display name accessor</li>
+            <li class="defect">Formatted config accessor</li>
+            <li class="defect">Generate preview html method</li>
+            <li class="defect">Generate responsive variants method</li>
+            <li class="defect">Has responsive config method</li>
+            <li class="defect">Has accessibility features method</li>
+            <li class="success">Is mobile optimized method</li>
+            <li class="defect">Get accessibility metadata method</li>
+            <li class="defect">Get usage stats method</li>
+            <li class="defect">Validate config method</li>
+            <li class="defect">Get validation errors method</li>
+            <li class="defect">Get tailwind mappings method</li>
+            <li class="defect">Get category display name method</li>
+            <li class="defect">Get supported features method</li>
+            <li class="defect">Increment usage count method</li>
+            <li class="defect">Update last used at method</li>
+            <li class="defect">Duplicate method</li>
         </ul>
     </body>
 </html>

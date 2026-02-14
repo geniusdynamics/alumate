@@ -1,75 +1,39 @@
-Alumni Directory Service (Tests\Unit\AlumniDirectoryService)
- [x] Can build basic filter query
- [x] Can filter by graduation year range
- [x] Can filter by location
- [x] Can filter by company
- [x] Can filter by skills
- [x] Can get alumni profile with privacy controls
- [x] Can get mutual connections
- [x] Can get connection status
- [x] Can get available filters
- [x] Pagination works correctly
- [x] Sorting works correctly
+Circle (Tests\Unit\Models\Circle)
+ [x] Circle can be created
+ [x] Circle casts criteria as array
+ [x] Circle can add member
+ [x] Circle cannot add duplicate member
+ [x] Circle can remove member
+ [x] Circle updates member count
+ [ ] Circle scopes work correctly
 
-Alumni Recommendation Service (Tests\Unit\AlumniRecommendationService)
- [x] Get recommendations for user returns collection
- [x] Calculate connection score with shared circles
- [x] Calculate connection score with mutual connections
- [x] Get shared circles returns common circles
- [x] Get mutual connections returns common connections
- [x] Get interest similarity calculates overlap
- [x] Filter recommendations excludes connected users
- [x] Filter recommendations excludes pending requests
- [x] Dismiss recommendation caches dismissal
- [x] Clear recommendation cache removes cache
- [x] Get second degree connections returns correct users
- [x] Scoring weights are applied correctly
- [x] Recommendations are cached
-
-D:\DevCenter\abuilds\alumate\tests\Unit\CTAComponentTest.php
- [x] `CTA Component Creation` → it can create a CTA button component
- [x] `CTA Component Creation` → it can create a CTA banner component
- [x] `CTA Component Creation` → it can create a CTA inline link component
- [x] `CTA Component Validation` → it validates required fields for button CTA
- [x] `CTA Component Validation` → it validates CTA button styles
- [x] `CTA Component Validation` → it validates CTA button sizes
- [x] `CTA Component A/B Testing` → it can create CTA with A/B test configuration
- [x] `CTA Component Tracking` → it includes tracking parameters in configuration
- [x] `CTA Component Accessibility` → it includes accessibility configuration
- [x] `CTA Component Tenant Isolation` → it scopes CTA components to tenant
-
-D:\DevCenter\abuilds\alumate\tests\Unit\GrapeJSIntegrationTest.php
- [x] it converts component to GrapeJS block format
- [x] it maps component categories to GrapeJS categories correctly
- [x] it validates component configuration for GrapeJS compatibility
- [x] it generates component traits for GrapeJS property panel
- [x] it handles responsive configuration for GrapeJS device manager
- [x] it includes accessibility metadata for GrapeJS components
- [x] it integrates component themes with GrapeJS styling
- [x] it handles component versioning for GrapeJS
- [x] it tracks component usage statistics for GrapeJS analytics
- [x] it handles errors gracefully in GrapeJS integration
-
-D:\DevCenter\abuilds\alumate\tests\Unit\MediaServiceTest.php
- [x] `MediaService Logic` → it validates media service configuration
- [x] `MediaService Logic` → it validates file type detection logic
- [x] `MediaService Logic` → it calculates responsive image variant sizes
- [x] `MediaService Logic` → it validates image optimization settings
- [x] `MediaService Logic` → it validates file size calculations
- [x] `MediaService Logic` → it validates metadata structure
- [x] `MediaService Logic` → it validates secure path generation logic
- [x] `MediaService Logic` → it validates gallery structure
- [x] `MediaService Logic` → it validates search filter logic
- [x] `MediaService Logic` → it validates CDN URL generation
- [x] `MediaService Logic` → it validates format conversion options
-
-D:\DevCenter\abuilds\alumate\tests\Unit\VideoTestimonialComponentTest.php
- [x] it can create video testimonial configuration with enhanced features
- [x] it validates video quality configurations
- [x] it supports accessibility features configuration
- [x] it supports bandwidth-aware video loading configuration
- [x] it supports touch gesture configuration for carousel
- [x] it supports analytics tracking configuration
- [x] it validates video format support
- [x] it supports video optimization features
+Component (Tests\Unit\Models\Component)
+ [x] Fillable attributes
+ [ ] Cast attributes
+ [x] Hidden attributes
+ [ ] Belongs to tenant relationship
+ [ ] Belongs to theme relationship
+ [ ] Has many instances relationship
+ [ ] Has many versions relationship
+ [ ] For tenant scope
+ [x] Active scope
+ [x] By category scope
+ [x] By type scope
+ [x] Display name accessor
+ [ ] Formatted config accessor
+ [ ] Generate preview html method
+ [ ] Generate responsive variants method
+ [ ] Has responsive config method
+ [ ] Has accessibility features method
+ [x] Is mobile optimized method
+ [ ] Get accessibility metadata method
+ [ ] Get usage stats method
+ [ ] Validate config method
+ [ ] Get validation errors method
+ [ ] Get tailwind mappings method
+ [ ] Get category display name method
+ [ ] Get supported features method
+ [ ] Increment usage count method
+ [ ] Update last used at method
+ [ ] Duplicate method
 
