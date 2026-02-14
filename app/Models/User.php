@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 // use Laravel\Sanctum\HasApiTokens; // Commented out - Sanctum not installed
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -47,6 +48,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'degree',
         'location',
         'skills',
+        'is_mentor',
+        'login_count',
+        'institution_id',
+        'is_suspended',
     ];
 
     protected $hidden = [
@@ -69,6 +74,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'degree' => 'string',
         'skills' => 'array',
         'location' => 'string',
+        'is_mentor' => 'boolean',
+        'login_count' => 'integer',
+        'institution_id' => 'integer',
     ];
 
     protected $dates = [
@@ -355,6 +363,88 @@ class User extends Authenticatable implements MustVerifyEmail
     public function socialProfiles(): HasMany
     {
         return $this->hasMany(SocialProfile::class);
+    }
+
+    /**
+     * Check if user has a specific role
+     */
+    public function hasSpecificRole(string $role): bool
+    {
+        return $this->hasRole($role);
+    }
+
+    /**
+     * Check if user can access a specific institution
+     */
+    public function canAccessInstitution(int|string $institutionId): bool
+    {
+        if ($this->is_super_admin) {
+            return true;
+        }
+        return $this->tenantUsers()
+            ->where('institution_id', $institutionId)
+            ->exists();
+    }
+
+    /**
+     * Generate API token for user
+     */
+    public function generateApiToken(): string
+    {
+        return \Str::random(60);
+    }
+
+    /**
+     * Get user activity summary
+     */
+    public function getActivitySummary(): array
+    {
+        return [
+            'total_logins' => $this->login_count ?? 0,
+            'last_login' => $this->last_login_at,
+            'account_created' => $this->created_at,
+            'is_active' => $this->is_active,
+        ];
+    }
+
+    /**
+     * Check if user is a mentor
+     */
+    public function isMentor(): bool
+    {
+        return $this->is_mentor ?? false;
+    }
+
+    /**
+     * Check if user can be a mentor
+     */
+    public function canBeMentor(): bool
+    {
+        return $this->is_active && $this->email_verified_at !== null;
+    }
+
+    /**
+     * Get user's institution relationship
+     */
+    public function institution(): HasOne
+    {
+        return $this->hasOne(Tenant::class, 'id', 'institution_id');
+    }
+
+    /**
+     * Get user's employer relationship
+     */
+    public function employer(): HasOne
+    {
+        return $this->hasOne(Employer::class);
+    }
+
+    /**
+     * Get user's student profile relationship
+     */
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
     }
 
     /**
