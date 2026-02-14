@@ -295,6 +295,19 @@ class ComponentService
     {
         $rules = $ignoreId ? Component::getUniqueValidationRules($ignoreId) : Component::getValidationRules();
 
+        // For updates, make tenant_id, category and type optional if not provided
+        if ($ignoreId) {
+            if (!isset($data['tenant_id'])) {
+                $rules['tenant_id'] = 'sometimes|exists:tenants,id';
+            }
+            if (!isset($data['category'])) {
+                $rules['category'] = 'sometimes';
+            }
+            if (!isset($data['type'])) {
+                $rules['type'] = 'sometimes';
+            }
+        }
+
         $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
