@@ -1,2 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites/>
+<testsuites>
+  <testsuite name="Tests\Unit\Models\GroupTest" file="Group (Tests\Unit\Models\Group)" tests="8" assertions="15" errors="1" failures="4" skipped="0" time="46.033071">
+    <testcase name="Group can be created" file="Group (Tests\Unit\Models\Group)::Group can be created" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="0" time="34.997771">
+      <error type="Illuminate\Database\QueryException">Group can be createdIlluminate\Database\QueryException: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type bigint: "adipisci-voluptatum-dolores-id-atque-nulla"
+CONTEXT:  unnamed portal parameter $5 = '...' (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "groups" ("name", "description", "type", "privacy", "institution_id", "creator_id", "settings", "updated_at", "created_at") values (Test Group, A test group, custom, public, adipisci-voluptatum-dolores-id-atque-nulla, 1, {"test":"value"}, 2026-02-15 05:56:01, 2026-02-15 05:56:01) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1219
+at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1218
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2556
+at tests\Unit\Models\GroupTest.php:20
+Caused by
+PDOException: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type bigint: "adipisci-voluptatum-dolores-id-atque-nulla"
+CONTEXT:  unnamed portal parameter $5 = '...'
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1219
+at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1218
+at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2556
+at tests\Unit\Models\GroupTest.php:20</error>
+    </testcase>
+    <testcase name="Group casts settings as array" file="Group (Tests\Unit\Models\Group)::Group casts settings as array" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="2" time="2.274906"/>
+    <testcase name="Group can add member" file="Group (Tests\Unit\Models\Group)::Group can add member" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="3" time="1.256511"/>
+    <testcase name="Group adds pending member for private groups" file="Group (Tests\Unit\Models\Group)::Group adds pending member for private groups" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="3" time="1.835255">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Group adds pending member for private groupsFailed asserting that 410 matches expected 0.&#13;
+at tests\Unit\Models\GroupTest.php:68</failure>
+    </testcase>
+    <testcase name="Group can approve member" file="Group (Tests\Unit\Models\Group)::Group can approve member" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="3" time="1.580571"/>
+    <testcase name="Group can check user permissions" file="Group (Tests\Unit\Models\Group)::Group can check user permissions" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="1" time="1.699044">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Group can check user permissionsFailed asserting that false is true.&#13;
+at tests\Unit\Models\GroupTest.php:96</failure>
+    </testcase>
+    <testcase name="Group can check posting permissions" file="Group (Tests\Unit\Models\Group)::Group can check posting permissions" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="1" time="1.187013">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Group can check posting permissionsFailed asserting that false is true.&#13;
+at tests\Unit\Models\GroupTest.php:117</failure>
+    </testcase>
+    <testcase name="Group scopes work correctly" file="Group (Tests\Unit\Models\Group)::Group scopes work correctly" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="2" time="1.202000">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Group scopes work correctlyFailed asserting that 2 matches expected 1.&#13;
+at tests\Unit\Models\GroupTest.php:129</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

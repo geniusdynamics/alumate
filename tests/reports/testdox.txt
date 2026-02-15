@@ -1,0 +1,10 @@
+Group (Tests\Unit\Models\Group)
+ [ ] Group can be created
+ [x] Group casts settings as array
+ [x] Group can add member
+ [ ] Group adds pending member for private groups
+ [x] Group can approve member
+ [ ] Group can check user permissions
+ [ ] Group can check posting permissions
+ [ ] Group scopes work correctly
+
