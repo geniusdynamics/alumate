@@ -1,0 +1,3 @@
+﻿
+  [44;1m INFO [49;22m Unknown option "--format". Most similar options are --all, --colors, --columns, --covers, --debug.
+
