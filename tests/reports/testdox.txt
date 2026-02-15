@@ -1,10 +1,20 @@
-Circle Manager (Tests\Unit\Services\CircleManager)
- [ ] Generates school year circle for user
- [ ] Generates multi school circles for user with multiple educations
- [x] Finds existing circle instead of creating duplicate
- [x] Creates new circle when none exists
- [x] Generates school combinations correctly
- [x] Assigns user to circles
- [ ] Updates circles for user
- [ ] Gets circle statistics
+Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)
+ [ ] Can create landing page analytics event
+ [ ] Belongs to landing page relationship
+ [ ] Belongs to tenant relationship
+ [ ] Belongs to template relationship
+ [ ] Scope by tenant
+ [ ] Scope by template
+ [ ] Scope by event type
+ [ ] Scope by date range
+ [ ] Scope compliant
+ [ ] Privacy anonymization
+ [ ] Can retain data logic
+ [ ] Casts properties correctly
+ [ ] Fillable attributes include tenant fields
+ [ ] Device detection analytics
+ [ ] Broswer detection analytics
+ [ ] Geographic distribution tracking
+ [ ] Handles missing template relationship
+ [ ] Handles missing tenant context
 

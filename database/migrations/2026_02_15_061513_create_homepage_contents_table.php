@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('homepage_contents', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->nullable()->constrained()->onDelete('cascade');
+            $table->uuid('tenant_id')->nullable();
             $table->string('section');
             $table->string('key');
             $table->json('content')->nullable();

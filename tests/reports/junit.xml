@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Unit\Services\CircleManagerTest" file="Circle Manager (Tests\Unit\Services\CircleManager)" tests="8" assertions="11" errors="3" failures="1" skipped="0" time="59.105720">
-    <testcase name="Generates school year circle for user" file="Circle Manager (Tests\Unit\Services\CircleManager)::Generates school year circle for user" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="0" time="53.543663">
-      <error type="Illuminate\Database\QueryException">Generates school year circle for userIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
-LINE 1: insert into "education_histories" ("graduate_id", "instituti...
-                    ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "education_histories" ("graduate_id", "institution_name", "degree", "field_of_study", "start_year", "end_year", "updated_at", "created_at") values (1, Test University, Master of Arts, English Literature, 2006, 2020, 2026-02-15 06:03:15, 2026-02-15 06:03:15) returning "id")&#13;
+  <testsuite name="Tests\Unit\Models\LandingPageAnalyticsTest" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)" tests="18" assertions="0" errors="18" failures="0" skipped="0" time="0.000000">
+    <testcase name="Can create landing page analytics event" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Can create landing page analytics event" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Can create landing page analytics eventIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (archived, 1, 1543, 214, {"show_program_details":true,"enable_waitlist":true,"display_faculty_bios":true,"include_curriculum":true,"show_alumni_outcomes":true,"offer_info_sessions":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["job opportunities","career","work experience","community","events","professional","skills","leadership"], 1, ut-inventore-porro-consequatur-amet, Professional Executive Development, professional-executive-development-8421, A comprehensive landing page designed for individual audiences focusing on leadership. Discover what we have to offer and take the next step., individual, leadership, individual, ?, 9sw2da2jZB6Wyzf3JkcYnk2Fm7chvqO3, https://preview.example.com/pages/professional-executive-development, ?, Professional Executive Development, A comprehensive landing page designed for individual audiences focusing on leadership. Discover what we have to offer and take the next step., https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Professional+Executive+Development, GA-382807636, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=PRO, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:22, 2026-02-15 06:55:22) returning "id")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
@@ -21,11 +21,11 @@ at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.p
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
-at tests\Unit\Services\CircleManagerTest.php:29
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
 Caused by
-PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
-LINE 1: insert into "education_histories" ("graduate_id", "instituti...
-                    ^
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
 
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
@@ -43,12 +43,12 @@ at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.p
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
-at tests\Unit\Services\CircleManagerTest.php:29</error>
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
     </testcase>
-    <testcase name="Generates multi school circles for user with multiple educations" file="Circle Manager (Tests\Unit\Services\CircleManager)::Generates multi school circles for user with multiple educations" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="0" time="0.674563">
-      <error type="Illuminate\Database\QueryException">Generates multi school circles for user with multiple educationsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
-LINE 1: insert into "education_histories" ("graduate_id", "instituti...
-                    ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "education_histories" ("graduate_id", "institution_name", "degree", "field_of_study", "start_year", "end_year", "updated_at", "created_at") values (2, University A, Master of Science, Marketing, 2006, 2018, 2026-02-15 06:03:16, 2026-02-15 06:03:16) returning "id")&#13;
+    <testcase name="Belongs to landing page relationship" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Belongs to landing page relationship" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Belongs to landing page relationshipIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (published, 4, 7491, 558, {"show_program_details":true,"enable_waitlist":true,"display_faculty_bios":true,"include_curriculum":true,"show_alumni_outcomes":true,"offer_info_sessions":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["community","education","mentorship","professional development","graduates","career services","success stories","skills"], 2, sit-quaerat-maxime-nulla-tempore, Alumni Leadership Journey, alumni-leadership-journey-136440, A comprehensive landing page designed for individual audiences focusing on leadership. Discover what we have to offer and take the next step., individual, leadership, individual, 2026-01-13 23:25:38, Moiyih9u3V12u1c2IIS8U4SPQSSmbUMR, https://preview.example.com/pages/alumni-leadership-journey, https://example.com/p/alumni-leadership-journey, Alumni Leadership Journey, A comprehensive landing page designed for individual audiences focusing on leadership. Discover what we have to offer and take the next step., https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Alumni+Leadership+Journey, GA-433975857, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=ALU, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:25, 2026-02-15 06:55:25) returning "id")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
@@ -65,11 +65,11 @@ at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.p
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
-at tests\Unit\Services\CircleManagerTest.php:49
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
 Caused by
-PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
-LINE 1: insert into "education_histories" ("graduate_id", "instituti...
-                    ^
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
 
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
@@ -87,16 +87,12 @@ at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.p
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
-at tests\Unit\Services\CircleManagerTest.php:49</error>
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
     </testcase>
-    <testcase name="Finds existing circle instead of creating duplicate" file="Circle Manager (Tests\Unit\Services\CircleManager)::Finds existing circle instead of creating duplicate" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="2" time="0.936243"/>
-    <testcase name="Creates new circle when none exists" file="Circle Manager (Tests\Unit\Services\CircleManager)::Creates new circle when none exists" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="3" time="0.759322"/>
-    <testcase name="Generates school combinations correctly" file="Circle Manager (Tests\Unit\Services\CircleManager)::Generates school combinations correctly" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="1" time="0.683515"/>
-    <testcase name="Assigns user to circles" file="Circle Manager (Tests\Unit\Services\CircleManager)::Assigns user to circles" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="3" time="0.964400"/>
-    <testcase name="Updates circles for user" file="Circle Manager (Tests\Unit\Services\CircleManager)::Updates circles for user" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="0" time="0.808773">
-      <error type="Illuminate\Database\QueryException">Updates circles for userIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
-LINE 1: insert into "education_histories" ("graduate_id", "instituti...
-                    ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "education_histories" ("graduate_id", "institution_name", "degree", "field_of_study", "start_year", "end_year", "updated_at", "created_at") values (4, Old University, Associate Degree, Music, 2015, 2018, 2026-02-15 06:03:20, 2026-02-15 06:03:20) returning "id")&#13;
+    <testcase name="Belongs to tenant relationship" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Belongs to tenant relationship" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Belongs to tenant relationshipIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (reviewing, 2, 2471, 320, {"show_welcome_video":true,"enable_social_proof":true,"collect_demographics":true,"offer_mentorship":false,"highlight_resources":true,"personalization_enabled":true,"show_recruitment_tools":true,"enable_candidate_tracking":true,"include_analytics_dashboard":true,"track_hiring_metrics":true,"display_employer_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["work experience","professional","recruiting","career"], 3, qui-quia-accusamus-voluptate-quae-et, Employer Join Our Community, employer-join-our-community-8552, A comprehensive landing page designed for employer audiences focusing on onboarding. This page helps new users get started and understand all available resources and opportunities., employer, onboarding, individual, ?, pdM0pKpOnEH0kgtjkgr1K7D3f2SiSzQJ, https://preview.example.com/pages/employer-join-our-community, ?, Employer Join Our Community, A comprehensive landing page designed for employer audiences focusing on onboarding. This page helps new users get started and understand all available resource, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Employer+Join+Our+Community, GA-179438568, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=EMP, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:26, 2026-02-15 06:55:26) returning "id")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
@@ -113,11 +109,11 @@ at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.p
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
-at tests\Unit\Services\CircleManagerTest.php:141
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
 Caused by
-PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
-LINE 1: insert into "education_histories" ("graduate_id", "instituti...
-                    ^
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
 
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
@@ -135,11 +131,667 @@ at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.p
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
-at tests\Unit\Services\CircleManagerTest.php:141</error>
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
     </testcase>
-    <testcase name="Gets circle statistics" file="Circle Manager (Tests\Unit\Services\CircleManager)::Gets circle statistics" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="2" time="0.735240">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Gets circle statisticsFailed asserting that 7 matches expected 5.&#13;
-at tests\Unit\Services\CircleManagerTest.php:175</failure>
+    <testcase name="Belongs to template relationship" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Belongs to template relationship" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Belongs to template relationshipIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (archived, 4, 6433, 896, {"show_program_details":true,"enable_waitlist":true,"display_faculty_bios":true,"include_curriculum":true,"show_alumni_outcomes":true,"offer_info_sessions":true,"show_recruitment_tools":true,"enable_candidate_tracking":true,"include_analytics_dashboard":true,"track_hiring_metrics":true,"display_employer_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["events","networking","education","professional","career","work experience","success stories"], 4, et-dolorem-repudiandae-cumque-et-vel-reiciendis, Corporate Executive Training, corporate-executive-training-52603, A comprehensive landing page designed for employer audiences focusing on leadership. Discover what we have to offer and take the next step., employer, leadership, individual, ?, z7s3TEQqFXgVTUH4WaRMxrocrii6LMoa, https://preview.example.com/pages/corporate-executive-training, ?, Corporate Executive Training, A comprehensive landing page designed for employer audiences focusing on leadership. Discover what we have to offer and take the next step., https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Corporate+Executive+Training, GA-268713539, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=COR, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:27, 2026-02-15 06:55:27) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Scope by tenant" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Scope by tenant" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Scope by tenantIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (published, 2, 709, 343, {"show_event_date":true,"enable_registration":true,"display_speakers":true,"show_venue_details":true,"include_agenda":true,"rsvp_required":true,"show_admin_features":true,"enable_bulk_operations":true,"include_institutional_data":true,"track_group_progress":true,"display_institution_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["leadership","community","career services","graduates","mentorship","education","job opportunities"], 5, aperiam-totam-cupiditate-explicabo-veniam, College Career Fair 2024, college-career-fair-2024-26545, A comprehensive landing page designed for institution audiences focusing on event_promotion. Promote your upcoming events with detailed information and easy registration options., institution, event_promotion, individual, 2025-10-27 11:22:18, pYlTwWN2R01fpRtcTEJ8qZ6mxM28RzRn, https://preview.example.com/pages/college-career-fair-2024, https://example.com/p/college-career-fair-2024, College Career Fair 2024, A comprehensive landing page designed for institution audiences focusing on event_promotion. Promote your upcoming events with detailed information and easy reg, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=College+Career+Fair+2024, GA-518322104, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=COL, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:29, 2026-02-15 06:55:29) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Scope by template" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Scope by template" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Scope by templateIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (published, 5, 6722, 626, {"show_event_date":true,"enable_registration":true,"display_speakers":true,"show_venue_details":true,"include_agenda":true,"rsvp_required":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["networking","alumni","skills","mentorship","career","recruiting"], 6, dolores-at-quibusdam-fugit-perspiciatis-nemo-aut-sequi, Graduate Industry Conference, graduate-industry-conference-29821, A comprehensive landing page designed for individual audiences focusing on event_promotion. Promote your upcoming events with detailed information and easy registration options., individual, event_promotion, individual, 2025-09-15 12:40:56, bavMsxfTOmkciNPYGPQ6AFEzc8DSPZmn, https://preview.example.com/pages/graduate-industry-conference, https://example.com/p/graduate-industry-conference, Graduate Industry Conference, A comprehensive landing page designed for individual audiences focusing on event_promotion. Promote your upcoming events with detailed information and easy regi, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Graduate+Industry+Conference, GA-190829300, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=GRA, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:30, 2026-02-15 06:55:30) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Scope by event type" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Scope by event type" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Scope by event typeIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (draft, 3, 2316, 664, {"show_service_overview":true,"enable_contact_form":true,"display_testimonials":true,"include_case_studies":false,"show_team_members":true,"offer_free_consultation":true,"show_admin_features":true,"enable_bulk_operations":true,"include_institutional_data":true,"track_group_progress":true,"display_institution_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["networking","alumni","education","job opportunities","work experience","success stories","industry connections","professional development"], 7, eos-enim-sint-non-veniam-voluptatem-itaque, College Discover Our Services, college-discover-our-services-5, A comprehensive landing page designed for institution audiences focusing on marketing. Discover what we have to offer and take the next step., institution, marketing, individual, ?, TnXC1HapWjP904V1V5c4NzLMeVU56wf2, https://preview.example.com/pages/college-discover-our-services, ?, College Discover Our Services, A comprehensive landing page designed for institution audiences focusing on marketing. Discover what we have to offer and take the next step., https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=College+Discover+Our+Services, GA-418860355, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=COL, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:31, 2026-02-15 06:55:31) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Scope by date range" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Scope by date range" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Scope by date rangeIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (reviewing, 2, 5447, 933, {"show_job_listings":true,"enable_application_tracking":true,"display_company_culture":true,"include_benefits_info":true,"show_team_photos":true,"offer_referral_program":false,"show_admin_features":true,"enable_bulk_operations":true,"include_institutional_data":true,"track_group_progress":true,"display_institution_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["professional development","work experience","networking","industry connections","graduates","leadership"], 8, voluptates-quisquam-eligendi-sunt-accusamus-ipsum-dolor, Academic We're Hiring, academic-were-hiring-4, A comprehensive landing page designed for institution audiences focusing on recruiting. Attract top talent with our professional recruiting pages and career opportunity listings., institution, recruiting, individual, ?, cFEgpMCU1cMjJtvc1VrBAdHZ0wNtvsud, https://preview.example.com/pages/academic-were-hiring, ?, Academic We're Hiring, A comprehensive landing page designed for institution audiences focusing on recruiting. Attract top talent with our professional recruiting pages and career opp, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Academic+We%27re+Hiring, GA-164557710, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=ACA, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:32, 2026-02-15 06:55:32) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Scope compliant" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Scope compliant" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Scope compliantIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (published, 2, 6790, 114, {"show_job_board":true,"enable_resume_builder":true,"include_skill_assessment":true,"display_salary_data":true,"offer_career_coaching":true,"show_alumni_success":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["community","industry connections","professional development","mentorship","career services"], 9, iusto-qui-aut-ipsa-et, Professional Skills Enhancement, professional-skills-enhancement-94875634, A comprehensive landing page designed for individual audiences focusing on career_services. Access comprehensive career development resources and professional growth opportunities., individual, career_services, individual, 2025-12-07 15:43:12, d0tIyJZ0gNAloYdfYXvB7DZ7gqh0GnvQ, https://preview.example.com/pages/professional-skills-enhancement, https://example.com/p/professional-skills-enhancement, Professional Skills Enhancement, A comprehensive landing page designed for individual audiences focusing on career_services. Access comprehensive career development resources and professional g, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Professional+Skills+Enhancement, GA-163240993, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=PRO, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:33, 2026-02-15 06:55:33) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Privacy anonymization" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Privacy anonymization" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Privacy anonymizationIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (published, 1, 1038, 470, {"show_member_count":true,"enable_direct_messaging":true,"display_active_groups":true,"include_search_filters":true,"show_connection_suggestions":true,"highlight_featured_profiles":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["job opportunities","professional","career services","career","skills","events","community","education"], 10, qui-in-facere-illo-voluptates-aut-vero-sed, Graduate Industry Connections, graduate-industry-connections-1, A comprehensive landing page designed for individual audiences focusing on networking. Connect professionals and create meaningful relationships through our networking platform., individual, networking, individual, 2025-09-05 08:57:52, l9LPAsugNOLIfQIGUdt6VgLGa1o28vcP, https://preview.example.com/pages/graduate-industry-connections, https://example.com/p/graduate-industry-connections, Graduate Industry Connections, A comprehensive landing page designed for individual audiences focusing on networking. Connect professionals and create meaningful relationships through our net, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Graduate+Industry+Connections, GA-165013166, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=GRA, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:35, 2026-02-15 06:55:35) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Can retain data logic" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Can retain data logic" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Can retain data logicIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (draft, 5, 5914, 711, {"show_impact_stories":true,"enable_donation_tiers":true,"display_donor_list":false,"include_tax_info":true,"show_progress_bar":true,"offer_monthly_option":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["alumni","education","mentorship","career services"], 11, enim-sunt-nihil-ut-porro, Professional Support Our Mission, professional-support-our-mission-66665, A comprehensive landing page designed for individual audiences focusing on donation. Encourage contributions and donations to support important causes and community initiatives., individual, donation, individual, ?, jsrPkj8F6Dv7nm2buVdK5mrrFjEc0PD6, https://preview.example.com/pages/professional-support-our-mission, ?, Professional Support Our Mission, A comprehensive landing page designed for individual audiences focusing on donation. Encourage contributions and donations to support important causes and commu, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Professional+Support+Our+Mission, GA-387693151, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=PRO, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:36, 2026-02-15 06:55:36) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Casts properties correctly" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Casts properties correctly" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Casts properties correctlyIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (draft, 1, 8789, 615, {"show_member_count":true,"enable_direct_messaging":true,"display_active_groups":true,"include_search_filters":true,"show_connection_suggestions":true,"highlight_featured_profiles":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["success stories","career","career services","professional","graduates","events","education"], 12, eum-magni-est-cumque-facilis-officiis-laudantium-quos, Alumni Professional Networking, alumni-professional-networking-256, A comprehensive landing page designed for individual audiences focusing on networking. Connect professionals and create meaningful relationships through our networking platform., individual, networking, individual, ?, ushphcAAUEZNv5tFdmNiueQZl4rnnIT2, https://preview.example.com/pages/alumni-professional-networking, ?, Alumni Professional Networking, A comprehensive landing page designed for individual audiences focusing on networking. Connect professionals and create meaningful relationships through our net, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Alumni+Professional+Networking, GA-257814418, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=ALU, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:37, 2026-02-15 06:55:37) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Fillable attributes include tenant fields" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Fillable attributes include tenant fields" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Fillable attributes include tenant fieldsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (reviewing, 5, 5273, 695, {"show_welcome_video":true,"enable_social_proof":true,"collect_demographics":true,"offer_mentorship":false,"highlight_resources":true,"personalization_enabled":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["education","career services","leadership","industry connections","work experience","networking","skills","professional"], 13, quidem-explicabo-adipisci-ut, Professional Welcome to Success, professional-welcome-to-success-24516, A comprehensive landing page designed for individual audiences focusing on onboarding. This page helps new users get started and understand all available resources and opportunities., individual, onboarding, individual, ?, soovUC8FXyzecISljva3onCBqNyXlxNc, https://preview.example.com/pages/professional-welcome-to-success, ?, Professional Welcome to Success, A comprehensive landing page designed for individual audiences focusing on onboarding. This page helps new users get started and understand all available resour, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Professional+Welcome+to+Success, GA-356343229, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=PRO, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:38, 2026-02-15 06:55:38) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Device detection analytics" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Device detection analytics" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Device detection analyticsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (reviewing, 3, 8982, 526, {"show_job_listings":true,"enable_application_tracking":true,"display_company_culture":true,"include_benefits_info":true,"show_team_photos":true,"offer_referral_program":false,"show_admin_features":true,"enable_bulk_operations":true,"include_institutional_data":true,"track_group_progress":true,"display_institution_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["networking","alumni","professional","mentorship"], 14, unde-iusto-fuga-in-consequatur, University Career Opportunities, university-career-opportunities-7, A comprehensive landing page designed for institution audiences focusing on recruiting. Attract top talent with our professional recruiting pages and career opportunity listings., institution, recruiting, individual, ?, Db4E6mgY676PbzLNnVdkBTEiWw4MT2vF, https://preview.example.com/pages/university-career-opportunities, ?, University Career Opportunities, A comprehensive landing page designed for institution audiences focusing on recruiting. Attract top talent with our professional recruiting pages and career opp, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=University+Career+Opportunities, GA-360442737, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=UNI, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:39, 2026-02-15 06:55:39) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Broswer detection analytics" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Broswer detection analytics" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Broswer detection analyticsIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (reviewing, 1, 4847, 68, {"show_event_date":true,"enable_registration":true,"display_speakers":true,"show_venue_details":true,"include_agenda":true,"rsvp_required":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["industry connections","success stories","events","professional","skills","mentorship"], 15, quibusdam-distinctio-dolores-nobis-doloribus-tenetur, Member Leadership Summit, member-leadership-summit-7, A comprehensive landing page designed for individual audiences focusing on event_promotion. Promote your upcoming events with detailed information and easy registration options., individual, event_promotion, individual, ?, ZtbRthTtbLOE8ZKisQ1T5rHeDteOn5AJ, https://preview.example.com/pages/member-leadership-summit, ?, Member Leadership Summit, A comprehensive landing page designed for individual audiences focusing on event_promotion. Promote your upcoming events with detailed information and easy regi, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Member+Leadership+Summit, GA-507976139, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=MEM, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:41, 2026-02-15 06:55:41) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Geographic distribution tracking" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Geographic distribution tracking" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Geographic distribution trackingIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (archived, 1, 7490, 407, {"show_impact_stories":true,"enable_donation_tiers":true,"display_donor_list":false,"include_tax_info":true,"show_progress_bar":true,"offer_monthly_option":true,"show_recruitment_tools":true,"enable_candidate_tracking":true,"include_analytics_dashboard":true,"track_hiring_metrics":true,"display_employer_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["networking","leadership","career services","recruiting","community","mentorship"], 16, ratione-ut-nihil-veniam-repellat-reiciendis-ducimus-et, Company Impact Our Community, company-impact-our-community-7427386, A comprehensive landing page designed for employer audiences focusing on donation. Encourage contributions and donations to support important causes and community initiatives., employer, donation, individual, ?, pu4IJ3Ul9L4l3QmVBJrjPjti79deOMf1, https://preview.example.com/pages/company-impact-our-community, ?, Company Impact Our Community, A comprehensive landing page designed for employer audiences focusing on donation. Encourage contributions and donations to support important causes and communi, https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Company+Impact+Our+Community, GA-881183292, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=COM, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:42, 2026-02-15 06:55:42) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Handles missing template relationship" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Handles missing template relationship" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Handles missing template relationshipIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (published, 3, 5037, 869, {"show_program_details":true,"enable_waitlist":true,"display_faculty_bios":true,"include_curriculum":true,"show_alumni_outcomes":true,"offer_info_sessions":true,"show_admin_features":true,"enable_bulk_operations":true,"include_institutional_data":true,"track_group_progress":true,"display_institution_branding":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["alumni","industry connections","skills","job opportunities","work experience"], 17, ad-a-voluptas-cumque-voluptas, University Leadership Program, university-leadership-program-53109, A comprehensive landing page designed for institution audiences focusing on leadership. Discover what we have to offer and take the next step., institution, leadership, individual, 2026-01-26 09:55:43, XAp0yXNDnEqEydBEquGZlJ8yOuKJ0Z5C, https://preview.example.com/pages/university-leadership-program, https://example.com/p/university-leadership-program, University Leadership Program, A comprehensive landing page designed for institution audiences focusing on leadership. Discover what we have to offer and take the next step., https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=University+Leadership+Program, GA-867461138, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=UNI, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:43, 2026-02-15 06:55:43) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
+    </testcase>
+    <testcase name="Handles missing tenant context" file="Landing Page Analytics (Tests\Unit\Models\LandingPageAnalytics)::Handles missing tenant context" class="Tests\Unit\Models\LandingPageAnalyticsTest" classname="Tests.Unit.Models.LandingPageAnalyticsTest" assertions="0" time="0.000000">
+      <error type="Illuminate\Database\QueryException">Handles missing tenant contextIlluminate\Database\QueryException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "landing_pages" ("status", "version", "usage_count", "conversion_count", "config", "brand_config", "seo_keywords", "template_id", "tenant_id", "name", "slug", "description", "audience_type", "campaign_type", "category", "published_at", "draft_hash", "preview_url", "public_url", "seo_title", "seo_description", "social_image", "tracking_id", "favicon_url", "custom_css", "custom_js", "created_by", "updated_by", "updated_at", "created_at") values (draft, 1, 7620, 139, {"show_program_details":true,"enable_waitlist":true,"display_faculty_bios":true,"include_curriculum":true,"show_alumni_outcomes":true,"offer_info_sessions":true,"personalization_level":"high","show_peer_connections":true,"enable_user_dashboard":true,"track_personal_progress":true,"custom_content_delivery":true}, {"primary_color":"#3B82F6","secondary_color":"#64748B","accent_color":"#EF4444","font_family":"Inter, sans-serif","heading_font_family":"Inter, sans-serif","body_font_family":"Inter, sans-serif","border_radius":"8px","button_style":"rounded","logo_position":"top-left","favicon_url":"https:\/\/via.placeholder.com\/32x32\/3B82F6\/FFFFFF?text=F","custom_variables":{"--brand-primary":"#3B82F6","--brand-secondary":"#64748B","--brand-accent":"#EF4444","--brand-text":"#1E293B","--brand-background":"#FFFFFF"},"responsive_breakpoints":{"mobile":"576px","tablet":"768px","desktop":"1024px","wide":"1200px"},"typography_scale":{"xs":"0.75rem","sm":"0.875rem","base":"1rem","lg":"1.125rem","xl":"1.25rem","2xl":"1.5rem","3xl":"1.875rem","4xl":"2.25rem","5xl":"3rem"},"spacing_scale":{"1":"0.25rem","2":"0.5rem","3":"0.75rem","4":"1rem","5":"1.25rem","6":"1.5rem","8":"2rem","10":"2.5rem","12":"3rem","16":"4rem","20":"5rem","24":"6rem"}}, ["graduates","alumni","community","job opportunities","career services","career","recruiting","mentorship"], 18, ut-aspernatur-sed-corporis-nihil-totam, Graduate Leadership Program, graduate-leadership-program-9131, A comprehensive landing page designed for individual audiences focusing on leadership. Discover what we have to offer and take the next step., individual, leadership, individual, ?, gej5Zl3x6ijoPyNt5QbLkbueNm03ANEq, https://preview.example.com/pages/graduate-leadership-program, ?, Graduate Leadership Program, A comprehensive landing page designed for individual audiences focusing on leadership. Discover what we have to offer and take the next step., https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=Graduate+Leadership+Program, GA-428828876, https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=GRA, /* Custom styles */, // Custom JavaScript, ?, ?, 2026-02-15 06:55:45, 2026-02-15 06:55:45) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25
+Caused by
+PDOException: SQLSTATE[42703]: Undefined column: 7 ERROR:  column "version" of relation "landing_pages" does not exist
+LINE 1: insert into "landing_pages" ("status", "version", "usage_cou...
+                                               ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Models\LandingPageAnalyticsTest.php:25</error>
     </testcase>
   </testsuite>
 </testsuites>
