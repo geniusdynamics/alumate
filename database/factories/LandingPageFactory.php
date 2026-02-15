@@ -67,8 +67,8 @@ class LandingPageFactory extends Factory
             'social_image' => 'https://via.placeholder.com/1200x630/3B82F6/FFFFFF?text=' . urlencode($name),
             'tracking_id' => 'GA-' . fake()->numberBetween(100000000, 999999999),
             'favicon_url' => 'https://via.placeholder.com/32x32/3B82F6/FFFFFF?text=' . strtoupper(substr($name, 0, 3)),
-            'custom_css' => '/* Custom styles */',
-            'custom_js' => '// Custom JavaScript',
+            'custom_css' => $this->generateCustomCss($campaignType),
+            'custom_js' => $this->generateCustomJs($campaignType),
             'created_by' => null,
             'updated_by' => null,
         ];
@@ -318,7 +318,41 @@ class LandingPageFactory extends Factory
 
     private function generateCustomJs(string $campaignType): string
     {
-        return "// Custom JavaScript for {$campaignType} landing page";
+        $jsFunctions = [
+            'onboarding' => <<<'JS'
+function initializeWelcomeTour() {
+    console.log('Welcome tour initialized');
+}
+
+function trackUserEngagement() {
+    document.addEventListener('click', function(e) {
+        if (e.target.matches('.engagement-element')) {
+            console.log('User engagement tracked');
+        }
+    });
+}
+JS,
+
+            'event_promotion' => <<<'JS'
+function initializeEventCountdown() {
+    console.log('Event countdown initialized');
+}
+JS,
+
+            'recruiting' => <<<'JS'
+function initializeJobFilters() {
+    console.log('Job filters initialized');
+}
+JS,
+
+            'donation' => <<<'JS'
+function initializeDonationTracker() {
+    console.log('Donation tracker initialized');
+}
+JS,
+        ];
+
+        return $jsFunctions[$campaignType] ?? "// Custom JavaScript for {$campaignType}";
     }
 
     // State methods
