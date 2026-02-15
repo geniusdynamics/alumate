@@ -51,16 +51,16 @@
         </style>
     </head>
     <body>
-        <h2>Group (Tests\Unit\Models\Group)</h2>
+        <h2>Circle Manager (Tests\Unit\Services\CircleManager)</h2>
         <ul>
-            <li class="defect">Group can be created</li>
-            <li class="success">Group casts settings as array</li>
-            <li class="success">Group can add member</li>
-            <li class="defect">Group adds pending member for private groups</li>
-            <li class="success">Group can approve member</li>
-            <li class="defect">Group can check user permissions</li>
-            <li class="defect">Group can check posting permissions</li>
-            <li class="defect">Group scopes work correctly</li>
+            <li class="defect">Generates school year circle for user</li>
+            <li class="defect">Generates multi school circles for user with multiple educations</li>
+            <li class="success">Finds existing circle instead of creating duplicate</li>
+            <li class="success">Creates new circle when none exists</li>
+            <li class="success">Generates school combinations correctly</li>
+            <li class="success">Assigns user to circles</li>
+            <li class="defect">Updates circles for user</li>
+            <li class="defect">Gets circle statistics</li>
         </ul>
     </body>
 </html>

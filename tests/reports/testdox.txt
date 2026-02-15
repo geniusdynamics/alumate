@@ -1,10 +1,10 @@
-Group (Tests\Unit\Models\Group)
- [ ] Group can be created
- [x] Group casts settings as array
- [x] Group can add member
- [ ] Group adds pending member for private groups
- [x] Group can approve member
- [ ] Group can check user permissions
- [ ] Group can check posting permissions
- [ ] Group scopes work correctly
+Circle Manager (Tests\Unit\Services\CircleManager)
+ [ ] Generates school year circle for user
+ [ ] Generates multi school circles for user with multiple educations
+ [x] Finds existing circle instead of creating duplicate
+ [x] Creates new circle when none exists
+ [x] Generates school combinations correctly
+ [x] Assigns user to circles
+ [ ] Updates circles for user
+ [ ] Gets circle statistics
 

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="Tests\Unit\Models\GroupTest" file="Group (Tests\Unit\Models\Group)" tests="8" assertions="15" errors="1" failures="4" skipped="0" time="46.033071">
-    <testcase name="Group can be created" file="Group (Tests\Unit\Models\Group)::Group can be created" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="0" time="34.997771">
-      <error type="Illuminate\Database\QueryException">Group can be createdIlluminate\Database\QueryException: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type bigint: "adipisci-voluptatum-dolores-id-atque-nulla"
-CONTEXT:  unnamed portal parameter $5 = '...' (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "groups" ("name", "description", "type", "privacy", "institution_id", "creator_id", "settings", "updated_at", "created_at") values (Test Group, A test group, custom, public, adipisci-voluptatum-dolores-id-atque-nulla, 1, {"test":"value"}, 2026-02-15 05:56:01, 2026-02-15 05:56:01) returning "id")&#13;
+  <testsuite name="Tests\Unit\Services\CircleManagerTest" file="Circle Manager (Tests\Unit\Services\CircleManager)" tests="8" assertions="11" errors="3" failures="1" skipped="0" time="59.105720">
+    <testcase name="Generates school year circle for user" file="Circle Manager (Tests\Unit\Services\CircleManager)::Generates school year circle for user" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="0" time="53.543663">
+      <error type="Illuminate\Database\QueryException">Generates school year circle for userIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
+LINE 1: insert into "education_histories" ("graduate_id", "instituti...
+                    ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "education_histories" ("graduate_id", "institution_name", "degree", "field_of_study", "start_year", "end_year", "updated_at", "created_at") values (1, Test University, Master of Arts, English Literature, 2006, 2020, 2026-02-15 06:03:15, 2026-02-15 06:03:15) returning "id")&#13;
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
@@ -15,16 +16,16 @@ at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1219
-at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1218
-at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2556
-at tests\Unit\Models\GroupTest.php:20
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Services\CircleManagerTest.php:29
 Caused by
-PDOException: SQLSTATE[22P02]: Invalid text representation: 7 ERROR:  invalid input syntax for type bigint: "adipisci-voluptatum-dolores-id-atque-nulla"
-CONTEXT:  unnamed portal parameter $5 = '...'
+PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
+LINE 1: insert into "education_histories" ("graduate_id", "instituti...
+                    ^
 
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
 at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
@@ -37,32 +38,108 @@ at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
 at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1219
-at vendor\laravel\framework\src\Illuminate\Support\helpers.php:388
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:1218
-at vendor\laravel\framework\src\Illuminate\Support\Traits\ForwardsCalls.php:23
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2540
-at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:2556
-at tests\Unit\Models\GroupTest.php:20</error>
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Services\CircleManagerTest.php:29</error>
     </testcase>
-    <testcase name="Group casts settings as array" file="Group (Tests\Unit\Models\Group)::Group casts settings as array" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="2" time="2.274906"/>
-    <testcase name="Group can add member" file="Group (Tests\Unit\Models\Group)::Group can add member" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="3" time="1.256511"/>
-    <testcase name="Group adds pending member for private groups" file="Group (Tests\Unit\Models\Group)::Group adds pending member for private groups" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="3" time="1.835255">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Group adds pending member for private groupsFailed asserting that 410 matches expected 0.&#13;
-at tests\Unit\Models\GroupTest.php:68</failure>
+    <testcase name="Generates multi school circles for user with multiple educations" file="Circle Manager (Tests\Unit\Services\CircleManager)::Generates multi school circles for user with multiple educations" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="0" time="0.674563">
+      <error type="Illuminate\Database\QueryException">Generates multi school circles for user with multiple educationsIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
+LINE 1: insert into "education_histories" ("graduate_id", "instituti...
+                    ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "education_histories" ("graduate_id", "institution_name", "degree", "field_of_study", "start_year", "end_year", "updated_at", "created_at") values (2, University A, Master of Science, Marketing, 2006, 2018, 2026-02-15 06:03:16, 2026-02-15 06:03:16) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Services\CircleManagerTest.php:49
+Caused by
+PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
+LINE 1: insert into "education_histories" ("graduate_id", "instituti...
+                    ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Services\CircleManagerTest.php:49</error>
     </testcase>
-    <testcase name="Group can approve member" file="Group (Tests\Unit\Models\Group)::Group can approve member" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="3" time="1.580571"/>
-    <testcase name="Group can check user permissions" file="Group (Tests\Unit\Models\Group)::Group can check user permissions" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="1" time="1.699044">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Group can check user permissionsFailed asserting that false is true.&#13;
-at tests\Unit\Models\GroupTest.php:96</failure>
+    <testcase name="Finds existing circle instead of creating duplicate" file="Circle Manager (Tests\Unit\Services\CircleManager)::Finds existing circle instead of creating duplicate" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="2" time="0.936243"/>
+    <testcase name="Creates new circle when none exists" file="Circle Manager (Tests\Unit\Services\CircleManager)::Creates new circle when none exists" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="3" time="0.759322"/>
+    <testcase name="Generates school combinations correctly" file="Circle Manager (Tests\Unit\Services\CircleManager)::Generates school combinations correctly" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="1" time="0.683515"/>
+    <testcase name="Assigns user to circles" file="Circle Manager (Tests\Unit\Services\CircleManager)::Assigns user to circles" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="3" time="0.964400"/>
+    <testcase name="Updates circles for user" file="Circle Manager (Tests\Unit\Services\CircleManager)::Updates circles for user" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="0" time="0.808773">
+      <error type="Illuminate\Database\QueryException">Updates circles for userIlluminate\Database\QueryException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
+LINE 1: insert into "education_histories" ("graduate_id", "instituti...
+                    ^ (Connection: pgsql, Host: 127.0.0.1, Port: 5433, Database: alumate_testing, SQL: insert into "education_histories" ("graduate_id", "institution_name", "degree", "field_of_study", "start_year", "end_year", "updated_at", "created_at") values (4, Old University, Associate Degree, Music, 2015, 2018, 2026-02-15 06:03:20, 2026-02-15 06:03:20) returning "id")&#13;
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Services\CircleManagerTest.php:141
+Caused by
+PDOException: SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation "education_histories" does not exist
+LINE 1: insert into "education_histories" ("graduate_id", "instituti...
+                    ^
+
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:425
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:827
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:794
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:411
+at vendor\laravel\framework\src\Illuminate\Database\Connection.php:398
+at vendor\laravel\framework\src\Illuminate\Database\Query\Processors\PostgresProcessor.php:24
+at vendor\laravel\framework\src\Illuminate\Database\Query\Builder.php:4054
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Builder.php:2235
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1436
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1401
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Model.php:1240
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:370
+at vendor\laravel\framework\src\Illuminate\Collections\Traits\EnumeratesValues.php:275
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:365
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:321
+at vendor\laravel\framework\src\Illuminate\Database\Eloquent\Factories\Factory.php:315
+at tests\Unit\Services\CircleManagerTest.php:141</error>
     </testcase>
-    <testcase name="Group can check posting permissions" file="Group (Tests\Unit\Models\Group)::Group can check posting permissions" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="1" time="1.187013">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Group can check posting permissionsFailed asserting that false is true.&#13;
-at tests\Unit\Models\GroupTest.php:117</failure>
-    </testcase>
-    <testcase name="Group scopes work correctly" file="Group (Tests\Unit\Models\Group)::Group scopes work correctly" class="Tests\Unit\Models\GroupTest" classname="Tests.Unit.Models.GroupTest" assertions="2" time="1.202000">
-      <failure type="PHPUnit\Framework\ExpectationFailedException">Group scopes work correctlyFailed asserting that 2 matches expected 1.&#13;
-at tests\Unit\Models\GroupTest.php:129</failure>
+    <testcase name="Gets circle statistics" file="Circle Manager (Tests\Unit\Services\CircleManager)::Gets circle statistics" class="Tests\Unit\Services\CircleManagerTest" classname="Tests.Unit.Services.CircleManagerTest" assertions="2" time="0.735240">
+      <failure type="PHPUnit\Framework\ExpectationFailedException">Gets circle statisticsFailed asserting that 7 matches expected 5.&#13;
+at tests\Unit\Services\CircleManagerTest.php:175</failure>
     </testcase>
   </testsuite>
 </testsuites>
