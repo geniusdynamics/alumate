@@ -913,3 +913,885 @@ session:{token} -> User session data (TTL: token expiry)
 
 *A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees.*
 
+
+### Property 1: Authentication Credentials Validation
+
+*For any* authentication attempt with valid credentials, the system should successfully authenticate and issue tokens; *for any* authentication attempt with invalid credentials, the system should reject the attempt.
+
+**Validates: Requirements 1.1**
+
+### Property 2: Token Scope Assignment
+
+*For any* authenticated user, the issued access token should contain exactly the OAuth2 scopes corresponding to that user's role and permissions.
+
+**Validates: Requirements 1.2**
+
+### Property 3: 2FA Enforcement for Sensitive Scopes
+
+*For any* user action requiring the payment:approve scope, the system should enforce 2FA verification before allowing the action to proceed.
+
+**Validates: Requirements 1.3**
+
+### Property 4: Scope-Based Authorization
+
+*For any* resource access attempt, the system should validate that the requesting user's token contains the required OAuth2 scope before granting access.
+
+**Validates: Requirements 1.4**
+
+### Property 5: Account Lockout After Failed Attempts
+
+*For any* user account, after exactly 3 consecutive failed authentication attempts, the system should temporarily lock the account and send administrator notifications.
+
+**Validates: Requirements 1.7**
+
+### Property 6: Unique Identifier Generation
+
+*For any* newly created merchant or app configuration, the system should generate a unique identifier that does not collide with any existing identifier in the system.
+
+**Validates: Requirements 2.1, 32.1**
+
+### Property 7: Automatic Resource Provisioning
+
+*For any* newly created merchant, the system should automatically provision a corresponding SasaPay-backed wallet; *for any* wallet query, a corresponding SasaPay wallet should exist.
+
+**Validates: Requirements 2.2, 6.1**
+
+### Property 8: Secrets Backend Storage
+
+*For any* gateway credential or sensitive configuration, the system should store it in the configured secrets backend (OpenBao or encrypted PostgreSQL) and never in plaintext in the primary database.
+
+**Validates: Requirements 2.4, 15.1, 15.7, 36.1**
+
+### Property 9: Gateway Routing Correctness
+
+*For any* payment initiation, the system should route the payment through the Gateway_Adapter that matches the configured gateway type for that merchant's app configuration.
+
+**Validates: Requirements 3.1**
+
+### Property 10: Ledger Recording Completeness
+
+*For any* financial transaction (payment, transfer, withdrawal, or fee), the Shadow_Ledger should create corresponding ledger entries that link to the transaction.
+
+**Validates: Requirements 3.3, 6.5, 35.5**
+
+### Property 11: Fee Calculation Accuracy
+
+*For any* processed payment, the system should calculate and record gateway_fee, platform_fee, and integrator_fee such that the sum of all fees does not exceed the transaction amount.
+
+**Validates: Requirements 3.7**
+
+### Property 12: Double-Entry Ledger Integrity
+
+*For any* transaction recorded in the Shadow_Ledger, the sum of all debit amounts should equal the sum of all credit amounts (double-entry property), and all ledger operations should maintain ACID compliance under concurrent access.
+
+**Validates: Requirements 4.1, 4.6**
+
+### Property 13: Reconciliation Balance Comparison
+
+*For any* reconciliation run, the system should compare the internal Shadow_Ledger balance against the Payment_Provider API balance for the same account and time period.
+
+**Validates: Requirements 4.2**
+
+### Property 14: Discrepancy Alert Generation
+
+*For any* detected discrepancy between system balance and provider balance, the system should create an alert record visible to Super_Admin users.
+
+**Validates: Requirements 4.3**
+
+### Property 15: Multi-Channel Transaction Visibility
+
+*For any* merchant with multiple configured payment channels, the income dashboard should display transactions from all channels without omission.
+
+**Validates: Requirements 5.1**
+
+### Property 16: Unidentified Payment Categorization
+
+*For any* incoming payment that lacks a valid customer reference or cannot be matched to an expected transaction, the system should place it in the unidentified payments bin.
+
+**Validates: Requirements 5.4**
+
+### Property 17: Spend Limit Enforcement
+
+*For any* wallet transaction attempt, if the transaction amount would cause the wallet to exceed any configured spending limit (daily, transaction, or category), the Spend_Rules_Engine should reject the transaction.
+
+**Validates: Requirements 6.3, 20.3**
+
+### Property 18: Maker-Checker Workflow Initiation
+
+*For any* payment initiation by a user with payment:create scope, the system should create a pending payment request that requires approval before execution.
+
+**Validates: Requirements 7.1**
+
+### Property 19: Self-Approval Prevention
+
+*For any* payment approval attempt, if the approver user ID matches the requester user ID, the system should reject the approval.
+
+**Validates: Requirements 7.6**
+
+### Property 20: Tax System Submission Completeness
+
+*For any* completed payment transaction, the system should send fiscal data to the merchant's configured Tax_System (if enabled).
+
+**Validates: Requirements 8.1, 31.3**
+
+### Property 21: Fiscal Receipt Association
+
+*For any* Tax_System response containing a fiscal receipt, the system should store the receipt and associate it with the originating transaction record.
+
+**Validates: Requirements 8.2**
+
+### Property 22: Dashboard Metrics Accuracy
+
+*For any* Super_Admin dashboard view, the displayed gross transaction volume should equal the sum of all completed transaction amounts for the specified time period.
+
+**Validates: Requirements 9.1**
+
+### Property 23: Revenue Component Calculation
+
+*For any* revenue metrics display, the sum of COGS (gateway fees), integrator payouts, and net platform revenue should equal the total platform fees collected.
+
+**Validates: Requirements 9.2**
+
+### Property 24: Integrator Revenue Tracking
+
+*For any* integrator, the displayed total revenue share should equal the sum of all integrator_fee amounts from transactions associated with that integrator's merchants.
+
+**Validates: Requirements 10.1**
+
+### Property 25: Refund Revenue Adjustment
+
+*For any* transaction refund, the system should create offsetting ledger entries that reverse the original gateway_fee, platform_fee, and integrator_fee allocations.
+
+**Validates: Requirements 10.6**
+
+### Property 26: API Key Uniqueness
+
+*For any* generated API key pair (Client ID and Client Secret), both the Client ID and the hashed Client Secret should be unique across all API credentials in the system.
+
+**Validates: Requirements 11.1**
+
+### Property 27: Immediate Credential Revocation
+
+*For any* API key revocation or merchant freeze action, all subsequent API requests using those credentials should be rejected immediately without delay.
+
+**Validates: Requirements 11.6, 14.1**
+
+### Property 28: Webhook Logging Completeness
+
+*For any* webhook sent to a merchant endpoint, the system should create a webhook log entry containing the request payload, response status, and timestamp.
+
+**Validates: Requirements 12.1**
+
+### Property 29: Webhook Retry Logic
+
+*For any* failed webhook delivery, the system should retry the delivery with exponential backoff for exactly 5 attempts before moving it to the dead letter queue.
+
+**Validates: Requirements 12.3**
+
+### Property 30: KYB Approval Access Control
+
+*For any* merchant without KYB approval status, the system should restrict API access to sandbox mode only and reject any live API requests.
+
+**Validates: Requirements 13.7, 26.7**
+
+### Property 31: KYB Approval Activation
+
+*For any* KYB approval action by a Super_Admin, the system should immediately update the merchant's status to enable live API access.
+
+**Validates: Requirements 13.4**
+
+### Property 32: Payment Link Expiry Enforcement
+
+*For any* payment link with an expiry timestamp in the past, the system should reject payment attempts and return an expiry error message.
+
+**Validates: Requirements 16.5**
+
+### Property 33: Batch Processing Completeness
+
+*For any* validated batch file with N rows, the system should create exactly N individual payment requests.
+
+**Validates: Requirements 17.2**
+
+### Property 34: Batch Error Isolation
+
+*For any* batch payment processing, if one payment fails, the system should continue processing the remaining payments in the batch without stopping.
+
+**Validates: Requirements 17.6**
+
+### Property 35: ERP Sync Completeness
+
+*For any* completed transaction when ERP integration is enabled, the system should create a sync record and attempt to send the transaction to the connected ERP system.
+
+**Validates: Requirements 18.2**
+
+### Property 36: Routing Rule Application
+
+*For any* payment initiation, the system should select the gateway by evaluating routing rules in priority order and choosing the first rule whose conditions match the payment parameters.
+
+**Validates: Requirements 19.2**
+
+### Property 37: Automatic Failover Execution
+
+*For any* gateway failure during payment processing, the Failover_Logic should automatically route the payment to the next available gateway according to the configured fallback chain.
+
+**Validates: Requirements 19.3**
+
+### Property 38: Spend Rules Evaluation Completeness
+
+*For any* wallet transaction initiation, the Spend_Rules_Engine should evaluate all active spend rules associated with that wallet before allowing or rejecting the transaction.
+
+**Validates: Requirements 20.2**
+
+### Property 39: Receipt Encryption
+
+*For any* uploaded receipt file, the system should store it with encryption applied before persisting to storage.
+
+**Validates: Requirements 21.2**
+
+### Property 40: Immediate Balance Updates
+
+*For any* completed transaction affecting a wallet, the wallet balance should be updated immediately and reflect the transaction within the same database transaction.
+
+**Validates: Requirements 22.1**
+
+### Property 41: Concurrent Transaction Safety
+
+*For any* set of concurrent transactions affecting the same wallet, the Shadow_Ledger should maintain balance consistency using database transaction isolation, ensuring no lost updates or race conditions.
+
+**Validates: Requirements 22.3**
+
+### Property 42: Audit Log Completeness
+
+*For any* financial transaction or administrative action, the system should create an immutable audit log entry that cannot be modified or deleted.
+
+**Validates: Requirements 23.1, 23.7, 38.3**
+
+### Property 43: Audit Log Retention
+
+*For any* audit log entry, the system should retain it for a minimum of 7 years from the creation date.
+
+**Validates: Requirements 23.6**
+
+### Property 44: Rate Limit Enforcement
+
+*For any* API request, the system should check the client's rate limit counter; if the limit is exceeded, the system should reject the request with HTTP 429 status.
+
+**Validates: Requirements 24.1, 24.2**
+
+### Property 45: Payment Notification Delivery
+
+*For any* completed payment transaction, the system should create and attempt to deliver a notification to the merchant through their configured notification channels.
+
+**Validates: Requirements 25.1**
+
+### Property 46: Sandbox Environment Isolation
+
+*For any* API request in sandbox mode, the system should route all gateway operations to test endpoints and never affect live gateway balances or create real transactions.
+
+**Validates: Requirements 26.1**
+
+### Property 47: Search Performance Bounds
+
+*For any* transaction search query, the system should return results within 2 seconds regardless of query complexity or result set size.
+
+**Validates: Requirements 27.6**
+
+### Property 48: Multi-Currency Data Preservation
+
+*For any* payment received in a foreign currency, the system should record both the original currency/amount and the converted base currency/amount in the transaction record.
+
+**Validates: Requirements 28.1, 28.6**
+
+### Property 49: Performance Alert Generation
+
+*For any* system metric (latency, error rate, queue depth) that exceeds configured thresholds, the system should generate and send an alert to Super_Admin users.
+
+**Validates: Requirements 29.1**
+
+### Property 50: Export Data Completeness
+
+*For any* transaction export request, the generated file should include all relevant transaction fields (date, amount, gateway, fees, status, fiscal receipt numbers) without omission.
+
+**Validates: Requirements 30.2**
+
+### Property 51: Tax System Adapter Configuration
+
+*For any* Tax_System enablement by an Integrator, the system should configure and activate the appropriate tax adapter for the merchant's country.
+
+**Validates: Requirements 31.2**
+
+### Property 52: App Configuration Payment Attribution
+
+*For any* incoming payment, the system should correctly identify and attribute the payment to the source app configuration based on the gateway credentials used.
+
+**Validates: Requirements 32.3**
+
+### Property 53: Platform Fee Revenue Share Calculation
+
+*For any* monthly platform fee billing, the system should calculate the Integrator's revenue share as a percentage of the fee and record the split in the Shadow_Ledger.
+
+**Validates: Requirements 33.1, 33.7**
+
+### Property 54: STK Push Gateway Routing
+
+*For any* STK Push initiation by a merchant, the system should send the request to the gateway configured in the merchant's active M-Pesa app configuration.
+
+**Validates: Requirements 34.1**
+
+### Property 55: Automated Reconciliation Matching
+
+*For any* automated reconciliation run, the system should match payments by comparing provider transaction IDs, reference numbers, and amounts against internal transaction records.
+
+**Validates: Requirements 34.6**
+
+### Property 56: Withdrawal Balance Validation
+
+*For any* withdrawal request, the system should validate that the wallet balance is greater than or equal to the withdrawal amount before creating the request.
+
+**Validates: Requirements 35.1**
+
+### Property 57: Secrets Backend Abstraction
+
+*For any* credential retrieval operation, the system should successfully retrieve credentials regardless of whether the secrets backend is PostgreSQL or OpenBao, using a common interface.
+
+**Validates: Requirements 36.4**
+
+### Property 58: KYC Verification Routing
+
+*For any* KYC verification request, the system should route the request to the merchant's configured verification provider (SmileID, Metropol, or Jenga API).
+
+**Validates: Requirements 37.1**
+
+### Property 59: KYC Transaction Enforcement
+
+*For any* transaction that requires KYC verification, the system should check the customer's verification status and reject the transaction if verification is incomplete.
+
+**Validates: Requirements 37.4**
+
+### Property 60: CRB Request Routing
+
+*For any* CRB check request, the system should send the query to the merchant's configured CRB provider with proper credentials and endpoint configuration.
+
+**Validates: Requirements 38.1**
+
+### Property 61: Partner API Configuration Usage
+
+*For any* third-party partner API call, the system should retrieve and use the credentials and endpoint URL from the partner's configuration record.
+
+**Validates: Requirements 39.3**
+
+### Property 62: Graceful Partner Disabling
+
+*For any* partner disabling action, the system should reject new API requests to that partner while allowing in-flight requests to complete normally.
+
+**Validates: Requirements 39.7**
+
+## Error Handling
+
+### Error Categories
+
+The system defines the following error categories with specific handling strategies:
+
+**1. Gateway Errors**
+- Connection timeouts
+- Invalid credentials
+- Insufficient balance
+- Gateway maintenance
+
+**Handling Strategy:**
+- Implement circuit breaker pattern
+- Automatic failover to backup gateway
+- Exponential backoff for retries
+- Log all gateway errors with full context
+
+**2. Validation Errors**
+- Invalid input data
+- Missing required fields
+- Business rule violations
+- Spend limit exceeded
+
+**Handling Strategy:**
+- Return clear error messages to client
+- Include field-level validation details
+- Log validation failures for analytics
+- Do not retry (client must fix input)
+
+**3. Reconciliation Errors**
+- Balance mismatch
+- Missing transactions
+- Duplicate transactions
+- Amount discrepancies
+
+**Handling Strategy:**
+- Create alert for Super_Admin review
+- Queue for manual reconciliation
+- Log full discrepancy details
+- Do not auto-resolve without approval
+
+**4. Integration Errors**
+- Tax system unavailable
+- KYC provider timeout
+- ERP sync failure
+- Webhook delivery failure
+
+**Handling Strategy:**
+- Queue for retry with exponential backoff
+- Move to DLQ after max retries
+- Send notification to affected parties
+- Maintain idempotency for retries
+
+**5. System Errors**
+- Database connection failure
+- Redis unavailable
+- OpenBao unreachable
+- Out of memory
+
+**Handling Strategy:**
+- Return HTTP 503 Service Unavailable
+- Trigger immediate alerts
+- Implement graceful degradation
+- Log full stack traces
+
+### Error Response Format
+
+All API errors follow a consistent JSON structure:
+
+```json
+{
+  "error": {
+    "code": "INSUFFICIENT_BALANCE",
+    "message": "Wallet balance insufficient for withdrawal",
+    "details": {
+      "wallet_id": "uuid",
+      "requested_amount": "1000.00",
+      "available_balance": "500.00"
+    },
+    "timestamp": "2024-01-15T10:30:00Z",
+    "request_id": "req_abc123"
+  }
+}
+```
+
+### Idempotency
+
+All state-changing operations implement idempotency using:
+- Idempotency keys in request headers
+- Deduplication windows (24 hours)
+- Idempotent transaction IDs
+- Safe retry mechanisms
+
+### Circuit Breaker Pattern
+
+Gateway adapters implement circuit breaker with:
+- Failure threshold: 5 consecutive failures
+- Timeout: 30 seconds
+- Half-open retry: After 60 seconds
+- Success threshold to close: 2 consecutive successes
+
+## Testing Strategy
+
+### Dual Testing Approach
+
+The PayRails.Core platform requires comprehensive testing using both unit tests and property-based tests:
+
+**Unit Tests:**
+- Specific examples demonstrating correct behavior
+- Edge cases (empty inputs, boundary values, null handling)
+- Error conditions and exception handling
+- Integration points between components
+- Mock external dependencies (gateways, tax systems, KYC providers)
+
+**Property-Based Tests:**
+- Universal properties that hold for all inputs
+- Comprehensive input coverage through randomization
+- Minimum 100 iterations per property test
+- Each property test references its design document property
+- Focus on invariants, round-trip properties, and business rules
+
+### Property-Based Testing Configuration
+
+**Framework:** Use a Go property-based testing library (e.g., gopter, rapid, or go-fuzz)
+
+**Test Configuration:**
+```go
+// Example property test structure
+func TestProperty_DoubleEntryLedgerIntegrity(t *testing.T) {
+    // Feature: payrails-core-platform, Property 12: Double-Entry Ledger Integrity
+    properties := gopter.NewProperties(nil)
+    
+    properties.Property("debits equal credits for all transactions", 
+        prop.ForAll(
+            func(tx Transaction) bool {
+                entries := ledger.RecordTransaction(ctx, tx)
+                totalDebits := sumDebits(entries)
+                totalCredits := sumCredits(entries)
+                return totalDebits.Equal(totalCredits)
+            },
+            genTransaction(),
+        ),
+    )
+    
+    properties.TestingRun(t, gopter.ConsoleReporter(false))
+}
+```
+
+**Minimum Iterations:** 100 per property test (configurable up to 1000 for critical properties)
+
+**Tag Format:** Each property test must include a comment:
+```go
+// Feature: payrails-core-platform, Property 12: Double-Entry Ledger Integrity
+```
+
+### Test Organization
+
+```
+tests/
+├── unit/
+│   ├── auth/
+│   │   ├── oauth2_test.go
+│   │   └── 2fa_test.go
+│   ├── ledger/
+│   │   ├── double_entry_test.go
+│   │   └── balance_test.go
+│   ├── routing/
+│   │   ├── gateway_selection_test.go
+│   │   └── failover_test.go
+│   └── spend_rules/
+│       └── evaluation_test.go
+├── property/
+│   ├── ledger_properties_test.go
+│   ├── auth_properties_test.go
+│   ├── routing_properties_test.go
+│   ├── wallet_properties_test.go
+│   └── reconciliation_properties_test.go
+├── integration/
+│   ├── payment_flow_test.go
+│   ├── wallet_transfer_test.go
+│   ├── kyb_workflow_test.go
+│   └── reconciliation_test.go
+└── e2e/
+    ├── merchant_onboarding_test.go
+    ├── payment_collection_test.go
+    └── withdrawal_flow_test.go
+```
+
+### Critical Test Scenarios
+
+**1. Ledger Integrity Tests**
+- Property: Debits equal credits for all transactions
+- Property: Balance calculations are consistent
+- Property: Concurrent transactions maintain consistency
+- Unit: Specific transaction types (payment, transfer, fee)
+
+**2. Authentication & Authorization Tests**
+- Property: Valid credentials always authenticate
+- Property: Invalid credentials always fail
+- Property: Tokens contain correct scopes for roles
+- Unit: 2FA verification, token expiry, scope validation
+
+**3. Gateway Integration Tests**
+- Property: Payments route to correct gateway
+- Property: Failover activates on gateway failure
+- Unit: M-Pesa adapter, Airtel adapter, Equity adapter
+- Integration: End-to-end payment flow with real test gateways
+
+**4. Reconciliation Tests**
+- Property: All provider transactions match internal records
+- Property: Discrepancies generate alerts
+- Unit: Transaction matching logic, balance comparison
+- Integration: Full reconciliation cycle with mock provider data
+
+**5. Spend Rules Tests**
+- Property: Transactions exceeding limits are rejected
+- Property: All rules are evaluated for each transaction
+- Unit: Daily limit calculation, approval threshold logic
+- Integration: Maker-checker workflow with rule violations
+
+**6. Multi-Currency Tests**
+- Property: Original currency data is preserved
+- Property: Conversions record both amounts
+- Unit: Exchange rate application, currency validation
+
+**7. Security Tests**
+- Property: Credentials never stored in plaintext
+- Property: Frozen merchants cannot make API calls
+- Property: Self-approval is always rejected
+- Unit: Encryption, access control, audit logging
+
+### Test Data Generation
+
+Use factories and generators for consistent test data:
+
+```go
+// Example generators for property tests
+func genTransaction() gopter.Gen {
+    return gopter.CombineGens(
+        gen.UUID(),
+        gen.Decimal(0, 1000000),
+        gen.OneConstOf("KES", "USD", "UGX", "TZS"),
+        gen.OneConstOf("collection", "payout", "transfer"),
+    ).Map(func(vals []interface{}) Transaction {
+        return Transaction{
+            ID:       vals[0].(string),
+            Amount:   vals[1].(decimal.Decimal),
+            Currency: vals[2].(string),
+            Type:     vals[3].(string),
+        }
+    })
+}
+
+func genWallet() gopter.Gen {
+    return gopter.CombineGens(
+        gen.UUID(),
+        gen.Decimal(0, 100000),
+        gen.OneConstOf("master", "department"),
+    ).Map(func(vals []interface{}) Wallet {
+        return Wallet{
+            ID:      vals[0].(string),
+            Balance: vals[1].(decimal.Decimal),
+            Type:    vals[2].(string),
+        }
+    })
+}
+```
+
+### Performance Testing
+
+**Load Testing:**
+- Simulate 1000 concurrent payment requests
+- Test gateway failover under load
+- Measure reconciliation performance with 100k transactions
+- Test webhook delivery with high volume
+
+**Stress Testing:**
+- Push system beyond normal capacity
+- Identify breaking points
+- Test recovery mechanisms
+- Validate circuit breakers
+
+**Benchmarks:**
+- API endpoint response times (target: <200ms p95)
+- Database query performance (target: <100ms p95)
+- Ledger transaction recording (target: <50ms)
+- Balance calculation (target: <10ms)
+
+### Continuous Integration
+
+All tests must pass before merging:
+1. Unit tests (fast, run on every commit)
+2. Property tests (run on every commit, 100 iterations)
+3. Integration tests (run on PR, use test databases)
+4. E2E tests (run on PR, use sandbox gateways)
+5. Performance tests (run nightly, track trends)
+
+### Test Coverage Goals
+
+- Overall code coverage: 80% minimum
+- Critical paths (ledger, auth, payments): 95% minimum
+- Property test coverage: All 62 properties implemented
+- Integration test coverage: All major user flows
+
+### Mocking Strategy
+
+**Mock External Dependencies:**
+- Payment gateway APIs (M-Pesa, Airtel, Equity, SasaPay)
+- Tax systems (eTIMS, RRA, TRA, OBR, FIRS)
+- KYC/CRB providers (SmileID, Metropol, Jenga)
+- Email/SMS services
+- OpenBao (use in-memory secrets for tests)
+
+**Do Not Mock:**
+- PostgreSQL (use test database)
+- Redis (use test instance)
+- Internal services (test real implementations)
+- Ledger logic (critical to test actual code)
+
+### Test Environment Setup
+
+```bash
+# Start test dependencies
+docker-compose -f docker-compose.test.yml up -d
+
+# Run all tests
+go test ./... -v -cover
+
+# Run property tests with more iterations
+go test ./tests/property/... -v -iterations=1000
+
+# Run specific property test
+go test -run TestProperty_DoubleEntryLedgerIntegrity -v
+
+# Generate coverage report
+go test ./... -coverprofile=coverage.out
+go tool cover -html=coverage.out
+```
+
+## Implementation Notes
+
+### Phase 1: Foundation (Weeks 1-6)
+
+**Core Infrastructure:**
+- Set up Go monorepo with hexagonal architecture
+- Implement PostgreSQL schema and migrations
+- Set up Redis for queues and caching
+- Implement OAuth2 authentication service
+- Create base interfaces (PaymentProvider, TaxSystem, etc.)
+
+**Gateway Adapters:**
+- M-Pesa Daraja API adapter (C2B, STK Push)
+- Basic webhook normalization engine
+- Shadow Ledger with double-entry bookkeeping
+
+**Integrator Portal:**
+- Merchant creation and management
+- App configuration (paybill/till setup)
+- API key generation
+- Sandbox/live environment toggle
+
+**Merchant Dashboard:**
+- Income consolidation view (read-only)
+- Transaction list with filtering
+- Basic analytics (by channel)
+
+### Phase 2: Compliance & Integration (Weeks 7-10)
+
+**Tax Integration:**
+- Multi-market tax system adapters (eTIMS, RRA, TRA, OBR, FIRS)
+- Fiscal receipt generation and storage
+- Tax submission queue with retry logic
+
+**Additional Gateways:**
+- Equity Bank Jenga API adapter
+- Airtel Money adapter
+- Gateway health monitoring
+
+**ERP Connectors:**
+- ERPNext OAuth integration
+- QuickBooks OAuth integration
+- Transaction sync queue
+
+**Developer Tools:**
+- Webhook replay functionality
+- API traffic inspector
+- Request/response logging
+
+### Phase 3: WaaS & Advanced Features (Weeks 11-16)
+
+**Wallet-as-a-Service:**
+- SasaPay WaaS integration
+- Wallet hierarchy (master + department wallets)
+- Internal wallet transfers
+- Real-time balance tracking
+
+**Spend Management:**
+- Spend Rules Engine implementation
+- Maker-Checker workflow
+- Approval notifications
+- Receipt upload and attachment
+
+**Payouts:**
+- B2C payout adapters
+- B2B payout adapters
+- Withdrawal request management
+- Batch payment processing
+
+**Admin Features:**
+- Super Admin dashboard with revenue metrics
+- Liquidity monitoring
+- Reconciliation alerts
+- System health monitoring
+- KYB approval workflow
+
+### Technology Stack Details
+
+**Backend:**
+- Go 1.21+
+- PostgreSQL 15+
+- Redis 7+
+- OpenBao (Vault fork)
+
+**Libraries:**
+- `github.com/gin-gonic/gin` - HTTP framework
+- `github.com/jmoiron/sqlx` - Database toolkit
+- `github.com/go-redis/redis/v9` - Redis client
+- `github.com/shopspring/decimal` - Decimal arithmetic
+- `github.com/golang-jwt/jwt/v5` - JWT handling
+- `gopter` or `rapid` - Property-based testing
+
+**Infrastructure:**
+- Docker for containerization
+- Kubernetes for orchestration
+- Prometheus for metrics
+- Grafana for dashboards
+- ELK stack for logging
+
+### Security Considerations
+
+**Data Encryption:**
+- TLS 1.3 for all API communication
+- AES-256 for data at rest
+- Secrets stored in OpenBao with encryption
+- PII encrypted in database
+
+**Access Control:**
+- OAuth2 with JWT tokens
+- Role-based access control (RBAC)
+- Scope-based permissions
+- 2FA for sensitive operations
+
+**Compliance:**
+- PCI DSS considerations (no card data storage)
+- GDPR compliance for EU customers
+- KYC/AML requirements
+- Audit trail for all financial operations
+
+**Rate Limiting:**
+- Per-client rate limits
+- Per-endpoint rate limits
+- DDoS protection
+- Circuit breakers for external services
+
+### Monitoring & Observability
+
+**Metrics:**
+- Transaction volume and value
+- Gateway success rates and latency
+- API response times
+- Queue depths
+- Error rates by type
+- Reconciliation status
+
+**Alerts:**
+- Gateway failures
+- Reconciliation discrepancies
+- High error rates
+- Performance degradation
+- Security events
+- Balance mismatches
+
+**Logging:**
+- Structured logging (JSON)
+- Request/response logging
+- Audit logs for financial operations
+- Error logs with stack traces
+- Performance logs
+
+### Scalability Considerations
+
+**Horizontal Scaling:**
+- Stateless API servers
+- Load balancing across instances
+- Database read replicas
+- Redis clustering
+
+**Performance Optimization:**
+- Database indexing strategy
+- Query optimization
+- Caching strategy
+- Async processing for heavy operations
+
+**Data Partitioning:**
+- Partition transactions by date
+- Separate hot and cold data
+- Archive old audit logs
+- Optimize for time-series queries
