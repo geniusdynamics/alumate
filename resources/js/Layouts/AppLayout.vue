@@ -1,34 +1,13 @@
-<script setup lang="ts">
-import DefaultLayout from '@/Layouts/DefaultLayout.vue';
-import type { BreadcrumbItemType } from '@/types';
-interface Props {
-    title?: string;
-    breadcrumbs?: BreadcrumbItemType[];
-}
-
-withDefaults(defineProps<Props>(), {
-    title: 'Dashboard',
-    breadcrumbs: () => [],
-});
+<script lang="ts">
+/**
+ * AppLayout (Layouts/AppLayout.vue)
+ *
+ * This is a canonical re-export shim.
+ * The real implementation lives in @/Layouts/DefaultLayout.vue.
+ *
+ * All pages importing AppLayout receive the same DefaultLayout component,
+ * eliminating the redundant wrapper indirection while keeping all existing
+ * import paths working without any page-level changes.
+ */
+export { default } from '@/Layouts/DefaultLayout.vue';
 </script>
-
-<template>
-    <DefaultLayout :title="title" :breadcrumbs="breadcrumbs">
-        <slot />
-    </DefaultLayout>
-</template>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

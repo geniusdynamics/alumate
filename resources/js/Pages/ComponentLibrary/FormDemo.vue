@@ -187,6 +187,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { FormBase, FormBuilder } from '@/Components/ComponentLibrary/Forms';
 import { contactTemplate, demoRequestTemplate, formTemplates, leadCaptureTemplate } from '@/Components/ComponentLibrary/Forms/templates';
 import type { FormComponentConfig } from '@/types/Components';
@@ -290,18 +291,18 @@ const selectTemplate = (template: any) => {
 };
 
 const saveForm = (config: FormComponentConfig) => {
-    console.log('Saving form configuration:', config);
+    logger.log('Saving form configuration:', config);
     // Here you would typically save to your backend
     alert('Form configuration saved! (Check console for details)');
 };
 
 const handleFormSubmit = (data: Record<string, any>) => {
-    console.log('Form submitted:', data);
+    logger.log('Form submitted:', data);
     alert('Form submitted successfully! (Check console for details)');
 };
 
 const handleValidationChange = (isValid: boolean, errors: Record<string, string>) => {
-    console.log('Validation changed:', { isValid, errors });
+    logger.log('Validation changed:', { isValid, errors });
 };
 
 const getCategoryColor = (category: string) => {

@@ -158,6 +158,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ClockIcon, VideoCameraIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
@@ -258,7 +259,7 @@ const joinCall = (call) => {
 
 const editCall = (call) => {
     // Open edit modal or navigate to edit page
-    console.log('Edit call:', call);
+    logger.log('Edit call:', call);
 };
 
 const cancelCall = async (call) => {

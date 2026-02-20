@@ -928,6 +928,147 @@ class InstitutionAdminDashboardController extends Controller
         return Inertia::render('InstitutionAdmin/Analytics/CommunityHealth');
     }
 
+    /**
+     * JSON API: Course ROI analytics data for the axios-based CourseROI page.
+     */
+    public function courseRoiApi(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return response()->json([]);
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return response()->json([]);
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            $data = Course::withCount([
+                'graduates',
+                'graduates as employed_count' => fn ($q) => $q->where('employment_status', 'employed'),
+            ])->get()->map(function ($course) {
+                $total = $course->graduates_count ?? 0;
+                $employed = $course->employed_count ?? 0;
+
+                return [
+                    'id'               => $course->id,
+                    'name'             => $course->name,
+                    'total_graduates'  => $total,
+                    'employed_count'   => $employed,
+                    'employment_rate'  => $total > 0 ? round(($employed / $total) * 100, 1) : 0,
+                ];
+            })->values()->all();
+        } finally {
+            Tenancy::end();
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * JSON API: Employer engagement analytics data for the axios-based EmployerEngagement page.
+     */
+    public function employerEngagementApi(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return response()->json(['top_employers' => [], 'job_trends' => []]);
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return response()->json(['top_employers' => [], 'job_trends' => []]);
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            $courseIds = Course::pluck('id')->toArray();
+        } finally {
+            Tenancy::end();
+        }
+
+        $topEmployers = \App\Models\Employer::whereHas('jobs', fn ($q) => $q->whereIn('course_id', $courseIds))
+            ->withCount(['jobs' => fn ($q) => $q->whereIn('course_id', $courseIds)])
+            ->orderByDesc('jobs_count')
+            ->limit(10)
+            ->get(['id', 'company_name', 'industry'])
+            ->map(fn ($e) => [
+                'id'           => $e->id,
+                'company_name' => $e->company_name,
+                'industry'     => $e->industry,
+                'job_count'    => $e->jobs_count,
+            ])->values()->all();
+
+        $jobTrends = \App\Models\Job::whereIn('course_id', $courseIds)
+            ->selectRaw("DATE_TRUNC('month', created_at) AS month, COUNT(*) AS total")
+            ->groupBy('month')
+            ->orderBy('month')
+            ->limit(12)
+            ->get()
+            ->map(fn ($row) => [
+                'month' => $row->month,
+                'total' => (int) $row->total,
+            ])->values()->all();
+
+        return response()->json([
+            'top_employers' => $topEmployers,
+            'job_trends'    => $jobTrends,
+        ]);
+    }
+
+    /**
+     * JSON API: Community health analytics data for the axios-based CommunityHealth page.
+     */
+    public function communityHealthApi(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return response()->json([
+                'total_graduates'    => 0,
+                'employed_graduates' => 0,
+                'employment_rate'    => 0,
+                'active_users_30d'   => 0,
+            ]);
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return response()->json([
+                'total_graduates'    => 0,
+                'employed_graduates' => 0,
+                'employment_rate'    => 0,
+                'active_users_30d'   => 0,
+            ]);
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            $total    = Graduate::count();
+            $employed = Graduate::where('employment_status', 'employed')->count();
+        } finally {
+            Tenancy::end();
+        }
+
+        $activeUsers = User::where('institution_id', $user->institution_id)
+            ->where('updated_at', '>=', now()->subDays(30))
+            ->count();
+
+        return response()->json([
+            'total_graduates'    => $total,
+            'employed_graduates' => $employed,
+            'employment_rate'    => $total > 0 ? round(($employed / $total) * 100, 1) : 0,
+            'active_users_30d'   => $activeUsers,
+        ]);
+    }
+
     private function getStartDate($dateRange)
     {
         return match ($dateRange) {

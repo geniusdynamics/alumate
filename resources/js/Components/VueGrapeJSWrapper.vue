@@ -886,6 +886,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { createABTestingService, type ABTestingService } from '@/Services/ABTestingService';
 import { analyticsService } from '@/Services/AnalyticsIntegrationService';
 import { brandConfigService } from '@/Services/BrandConfigService';
@@ -1328,7 +1329,7 @@ const initializeEditor = async (): Promise<void> => {
         // Register Components with GrapeJS
         await registerComponentsWithEditor();
 
-        console.log('GrapeJS editor initialized successfully');
+        logger.log('GrapeJS editor initialized successfully');
         emit('ready', editor.value);
     } catch (error) {
         console.error('Failed to initialize GrapeJS editor:', error);
@@ -1350,7 +1351,7 @@ const initializeSocket = async (): Promise<void> => {
         // Set up socket event listeners
         setupSocketEvents();
 
-        console.log('Socket.io client initialized');
+        logger.log('Socket.io client initialized');
     } catch (error) {
         console.error('Failed to initialize Socket.io client:', error);
         socketError.value = error instanceof Error ? error.message : 'Failed to connect to real-time server';
@@ -1498,7 +1499,7 @@ const setupSocketEvents = (): void => {
 
     // Connection events
     socket.value.on('connect', () => {
-        console.log('Connected to real-time server');
+        logger.log('Connected to real-time server');
         isSocketConnected.value = true;
         socketError.value = '';
 
@@ -1509,7 +1510,7 @@ const setupSocketEvents = (): void => {
     });
 
     socket.value.on('disconnect', (reason: string) => {
-        console.log('Disconnected from real-time server:', reason);
+        logger.log('Disconnected from real-time server:', reason);
         isSocketConnected.value = false;
     });
 
@@ -1567,12 +1568,12 @@ const setupSocketEvents = (): void => {
 
     // User presence events
     socket.value.on('user:joined', (userData: any) => {
-        console.log('User joined:', userData);
+        logger.log('User joined:', userData);
         // Could emit event for UI updates
     });
 
     socket.value.on('user:left', (userData: any) => {
-        console.log('User left:', userData);
+        logger.log('User left:', userData);
         // Could emit event for UI updates
     });
 };
@@ -1594,7 +1595,7 @@ const loadComponentCategories = async (): Promise<void> => {
             });
         }
 
-        console.log(`Loaded ${categories.length} component categories`);
+        logger.log(`Loaded ${categories.length} component categories`);
     } catch (error) {
         console.error('Failed to load component categories:', error);
         isError.value = true;
@@ -1610,7 +1611,7 @@ const loadComponents = async (): Promise<void> => {
         // The bridge handles component loading internally
         const registeredComponents = componentLibraryBridge.getRegisteredComponents();
 
-        console.log(`Loaded ${registeredComponents.length} Components`);
+        logger.log(`Loaded ${registeredComponents.length} Components`);
     } catch (error) {
         console.error('Failed to load Components:', error);
         isError.value = true;
@@ -1623,7 +1624,7 @@ const loadComponents = async (): Promise<void> => {
 const setupBridgeEventListeners = (): void => {
     // Real-time sync is handled internally by the bridge's sync manager
     // The bridge will automatically update GrapeJS blocks when Components change
-    console.log('Bridge event listeners initialized');
+    logger.log('Bridge event listeners initialized');
 };
 
 const registerComponentsWithEditor = async (): Promise<void> => {
@@ -1654,7 +1655,7 @@ const registerComponentsWithEditor = async (): Promise<void> => {
         // Set up search functionality for block manager
         setupBlockManagerSearch();
 
-        console.log(`Registered ${componentMetadata.length} Components with GrapeJS`);
+        logger.log(`Registered ${componentMetadata.length} Components with GrapeJS`);
     } catch (error) {
         console.error('Failed to register Components with GrapeJS:', error);
         isError.value = true;
@@ -1738,7 +1739,7 @@ const loadSystemData = async (): Promise<void> => {
         // Set up real-time sync event listeners
         setupBridgeEventListeners();
 
-        console.log('System data loaded successfully');
+        logger.log('System data loaded successfully');
     } catch (error) {
         console.error('Failed to load system data:', error);
         throw error;
@@ -1752,7 +1753,7 @@ const loadBrandConfiguration = async (tenantId: string): Promise<void> => {
         typographySettings.value = brandConfig.typography;
         spacingSettings.value = brandConfig.spacing;
 
-        console.log('Brand configuration loaded for tenant:', tenantId);
+        logger.log('Brand configuration loaded for tenant:', tenantId);
     } catch (error) {
         console.error('Failed to load brand configuration:', error);
         // Use default configuration if loading fails
@@ -1789,7 +1790,7 @@ const loadPageData = async (pageId: string): Promise<void> => {
             tenantId: props.tenantId,
         });
 
-        console.log(`Page data loaded for page ${pageId}`);
+        logger.log(`Page data loaded for page ${pageId}`);
     } catch (error) {
         console.error('Failed to load page data:', error);
         throw error;
@@ -1822,7 +1823,7 @@ const saveCurrentPage = async (): Promise<void> => {
             throw new Error('Failed to save page');
         }
 
-        console.log(`Page ${props.pageId} saved successfully`);
+        logger.log(`Page ${props.pageId} saved successfully`);
         emit('save', grapejsData);
     } catch (error) {
         console.error('Failed to save page:', error);
@@ -1854,7 +1855,7 @@ const publishCurrentPage = async (): Promise<void> => {
             throw new Error('Failed to publish page');
         }
 
-        console.log(`Page ${props.pageId} published successfully`);
+        logger.log(`Page ${props.pageId} published successfully`);
         showPublishDialog.value = false;
         emit('publish', props.pageId);
     } catch (error) {
@@ -1911,7 +1912,7 @@ const resetEditor = (): void => {
         customCSS.value = '';
         cssValidationErrors.value = [];
 
-        console.log('Editor reset successfully');
+        logger.log('Editor reset successfully');
     } catch (error) {
         console.error('Failed to reset editor:', error);
         emit('error', error instanceof Error ? error : new Error('Reset failed'));
@@ -1981,7 +1982,7 @@ const applyCustomCSS = (): void => {
                 if (rule.trim()) {
                     const fullRule = rule + '}';
                     // In a real implementation, this would parse and apply the CSS
-                    console.log('Applying custom CSS rule:', fullRule);
+                    logger.log('Applying custom CSS rule:', fullRule);
                 }
             });
         }
@@ -1997,7 +1998,7 @@ const applyCustomCSS = (): void => {
             });
         }
 
-        console.log('Custom CSS applied successfully');
+        logger.log('Custom CSS applied successfully');
     } catch (error) {
         console.error('Failed to apply custom CSS:', error);
         emit('error', error instanceof Error ? error : new Error('CSS application failed'));
@@ -2148,7 +2149,7 @@ const initializeAnalytics = async (): Promise<void> => {
         // Load initial analytics data
         await loadAnalyticsData();
 
-        console.log('Analytics service initialized successfully');
+        logger.log('Analytics service initialized successfully');
     } catch (error) {
         console.error('Failed to initialize analytics:', error);
     }
@@ -2169,7 +2170,7 @@ const loadAnalyticsData = async (): Promise<void> => {
         // Load real-time data
         realTimeAnalytics.value = await analyticsService.getRealTimeData();
 
-        console.log('Analytics data loaded successfully');
+        logger.log('Analytics data loaded successfully');
     } catch (error) {
         console.error('Failed to load analytics data:', error);
     } finally {
@@ -2191,7 +2192,7 @@ const initializeABTesting = async (): Promise<void> => {
         await abTestingService.value.initialize(socket.value || undefined);
         await loadExperiments();
 
-        console.log('A/B Testing service initialized successfully');
+        logger.log('A/B Testing service initialized successfully');
     } catch (error) {
         console.error('Failed to initialize A/B testing:', error);
         experimentError.value = 'Failed to initialize A/B testing service';
@@ -2327,7 +2328,7 @@ const handleExport = async (): Promise<void> => {
         const editorData = getCurrentEditorData();
         exportResult.value = await pageExportService.exportPage(props.pageId, exportOptions.value, editorData, props.tenantId);
 
-        console.log('Page exported successfully:', exportResult.value);
+        logger.log('Page exported successfully:', exportResult.value);
         showExportDialog.value = false;
     } catch (error) {
         console.error('Failed to export page:', error);
@@ -2347,7 +2348,7 @@ const handleBackup = async (): Promise<void> => {
         const editorData = getCurrentEditorData();
         backupResult.value = await pageBackupService.createBackup(props.pageId, backupOptions.value, editorData, props.tenantId);
 
-        console.log('Backup created successfully:', backupResult.value);
+        logger.log('Backup created successfully:', backupResult.value);
         showBackupDialog.value = false;
     } catch (error) {
         console.error('Failed to create backup:', error);
@@ -2367,7 +2368,7 @@ const handleMigration = async (): Promise<void> => {
         const editorData = getCurrentEditorData();
         migrationResult.value = await pageMigrationService.createMigration(props.pageId, migrationConfig.value, editorData);
 
-        console.log('Migration created successfully:', migrationResult.value);
+        logger.log('Migration created successfully:', migrationResult.value);
         showMigrationDialog.value = false;
     } catch (error) {
         console.error('Failed to create migration:', error);
@@ -2394,7 +2395,7 @@ const restoreBackup = async (backupId: string): Promise<void> => {
     try {
         const result = await pageBackupService.restoreBackup(backupId, props.pageId, props.tenantId);
 
-        console.log('Backup restored successfully:', result);
+        logger.log('Backup restored successfully:', result);
 
         // Reload page data after restore
         if (props.pageId) {
@@ -2409,7 +2410,7 @@ const restoreBackup = async (backupId: string): Promise<void> => {
 const executeMigration = async (migrationId: string): Promise<void> => {
     try {
         const result = await pageMigrationService.executeMigration(migrationId);
-        console.log('Migration executed successfully:', result);
+        logger.log('Migration executed successfully:', result);
     } catch (error) {
         console.error('Failed to execute migration:', error);
         migrationError.value = error instanceof Error ? error.message : 'Failed to execute migration';

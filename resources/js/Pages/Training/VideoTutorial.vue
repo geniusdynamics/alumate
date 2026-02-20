@@ -340,6 +340,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     ArrowsPointingOutIcon,
@@ -439,7 +440,7 @@ const markAsWatched = async () => {
 
 const seekToChapter = (timestamp) => {
     // In a real implementation, this would seek the video player to the timestamp
-    console.log('Seeking to:', timestamp);
+    logger.log('Seeking to:', timestamp);
 };
 
 const addComment = () => {

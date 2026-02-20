@@ -186,6 +186,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { AcademicCapIcon, MapPinIcon, MicrophoneIcon, StarIcon, UserIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -245,7 +246,7 @@ const viewProfile = () => {
 
 const viewSamples = () => {
     // Open modal or navigate to samples page
-    console.log('View speaker samples');
+    logger.log('View speaker samples');
 };
 </script>
 

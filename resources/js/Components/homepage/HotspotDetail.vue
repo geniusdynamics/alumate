@@ -144,6 +144,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { computed } from 'vue';
 
 interface Hotspot {
@@ -342,7 +343,7 @@ const handleAction = (): void => {
     }
 
     // Simulate feature interaction
-    console.log(`Simulating action: ${props.hotspot.action} for feature: ${props.hotspot.feature}`);
+    logger.log(`Simulating action: ${props.hotspot.action} for feature: ${props.hotspot.feature}`);
 
     // In a real implementation, this would trigger the actual feature demo
     // For now, we'll just show a success message

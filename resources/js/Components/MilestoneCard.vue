@@ -108,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import {
     AcademicCapIcon,
     ArrowTrendingUpIcon,
@@ -237,12 +238,12 @@ const formatMetadataKey = (key) => {
 
 const congratulate = () => {
     // Implement congratulation logic
-    console.log('Congratulating milestone:', props.milestone.id);
+    logger.log('Congratulating milestone:', props.milestone.id);
 };
 
 const share = () => {
     // Implement sharing logic
-    console.log('Sharing milestone:', props.milestone.id);
+    logger.log('Sharing milestone:', props.milestone.id);
 };
 </script>
 

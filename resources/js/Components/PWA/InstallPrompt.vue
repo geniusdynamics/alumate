@@ -112,6 +112,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ArrowDownTrayIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { onMounted, onUnmounted, ref } from 'vue';
 
@@ -226,11 +227,11 @@ const handleInstall = async () => {
         const { outcome } = await deferredPrompt.value.userChoice;
 
         if (outcome === 'accepted') {
-            console.log('User accepted the install prompt');
+            logger.log('User accepted the install prompt');
             trackEvent('pwa_install_accepted');
             emit('install', { outcome });
         } else {
-            console.log('User dismissed the install prompt');
+            logger.log('User dismissed the install prompt');
             trackEvent('pwa_install_declined');
         }
 
@@ -263,7 +264,7 @@ const handleDismiss = () => {
 };
 
 const handleAppInstalled = () => {
-    console.log('PWA was installed');
+    logger.log('PWA was installed');
     isAppInstalled.value = true;
     showPrompt.value = false;
     clearTimeouts();

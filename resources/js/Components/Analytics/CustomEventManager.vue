@@ -535,6 +535,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { useCustomEventStore } from '../../Stores/useCustomEventStore';
@@ -775,7 +776,7 @@ const trackSampleEvent = async () => {
 
 const applyOptimization = (suggestion: OptimizationSuggestion) => {
     // Handle optimization action
-    console.log('Applying optimization:', suggestion);
+    logger.log('Applying optimization:', suggestion);
     alert(`Applying: ${suggestion.action}`);
 };
 

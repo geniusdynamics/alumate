@@ -29,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { onMounted, onUnmounted, ref } from 'vue';
 import PushNotificationService from '../../Services/PushNotificationService.js';
 import InstallPrompt from './InstallPrompt.vue';
@@ -79,7 +80,7 @@ const initializePWA = async () => {
             serviceWorkerSupported: 'serviceWorker' in navigator,
         });
 
-        console.log('PWA Integration initialized successfully');
+        logger.log('PWA Integration initialized successfully');
     } catch (error) {
         console.error('PWA initialization failed:', error);
     }
@@ -87,7 +88,7 @@ const initializePWA = async () => {
 
 // Event handlers
 const handleInstall = (event) => {
-    console.log('App installation:', event);
+    logger.log('App installation:', event);
     emit('app-installed', event);
 
     // Track installation
@@ -100,7 +101,7 @@ const handleInstall = (event) => {
 };
 
 const handleInstallDismiss = (event) => {
-    console.log('Install prompt dismissed:', event);
+    logger.log('Install prompt dismissed:', event);
 
     // Track dismissal
     if (window.gtag) {
@@ -124,7 +125,7 @@ const handleInstallError = (error) => {
 };
 
 const handleOnline = (event) => {
-    console.log('Network online:', event);
+    logger.log('Network online:', event);
     emit('online-mode', event);
 
     // Sync any queued offline actions
@@ -134,16 +135,16 @@ const handleOnline = (event) => {
 };
 
 const handleOffline = () => {
-    console.log('Network offline');
+    logger.log('Network offline');
     emit('offline-mode');
 };
 
 const handleRetry = () => {
-    console.log('Connection retry attempted');
+    logger.log('Connection retry attempted');
 };
 
 const handleOfflineDismiss = () => {
-    console.log('Offline indicator dismissed');
+    logger.log('Offline indicator dismissed');
 };
 
 // Public methods for parent Components

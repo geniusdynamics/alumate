@@ -334,7 +334,7 @@ export default {
         },
         async bookmarkResource(resource) {
             // Implementation for bookmarking
-            console.log('Bookmark resource:', resource.id);
+            logger.log('Bookmark resource:', resource.id);
         },
         closeAddResourceModal() {
             this.showAddResourceModal = false;

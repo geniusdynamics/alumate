@@ -147,6 +147,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import axios from 'axios';
 import { computed, onMounted, reactive, ref } from 'vue';
 
@@ -346,7 +347,7 @@ const handleCustomReport = async (reportConfig: ReportConfig) => {
 
         if (response.data.success) {
             // Handle custom report data
-            console.log('Custom report generated:', response.data.data);
+            logger.log('Custom report generated:', response.data.data);
             showCustomReportModal.value = false;
         }
     } catch (error) {

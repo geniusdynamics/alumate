@@ -218,6 +218,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { h, onMounted, reactive, ref, watch } from 'vue';
 import MemoryModal from './MemoryModal.vue';
 
@@ -411,7 +412,7 @@ const handleMemoryCreated = (newMemory: Memory) => {
 
 const openMediaLightbox = (url: string, allUrls: string[]) => {
     // Implementation for media lightbox
-    console.log('Open media lightbox:', url, allUrls);
+    logger.log('Open media lightbox:', url, allUrls);
 };
 
 watch(selectedType, () => {

@@ -1,10 +1,25 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
-defineProps({
-    stats: Object,
-});
+interface Stats {
+    institutions?: number;
+    graduates?: number;
+    employers?: number;
+    jobs?: number;
+    [key: string]: unknown;
+}
+
+const props = defineProps<{
+    stats?: Stats;
+}>();
+
+const safeStats = {
+    institutions: props.stats?.institutions ?? 0,
+    graduates: props.stats?.graduates ?? 0,
+    employers: props.stats?.employers ?? 0,
+    jobs: props.stats?.jobs ?? 0,
+};
 </script>
 
 <template>
@@ -21,25 +36,25 @@ defineProps({
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div class="border-b border-gray-200 bg-white p-6">
                             <h3 class="text-lg font-semibold">Total Institutions</h3>
-                            <p class="text-2xl font-bold">{{ stats.institutions }}</p>
+                            <p class="text-2xl font-bold">{{ safeStats.institutions }}</p>
                         </div>
                     </div>
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div class="border-b border-gray-200 bg-white p-6">
                             <h3 class="text-lg font-semibold">Total Graduates</h3>
-                            <p class="text-2xl font-bold">{{ stats.graduates }}</p>
+                            <p class="text-2xl font-bold">{{ safeStats.graduates }}</p>
                         </div>
                     </div>
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div class="border-b border-gray-200 bg-white p-6">
                             <h3 class="text-lg font-semibold">Total Employers</h3>
-                            <p class="text-2xl font-bold">{{ stats.employers }}</p>
+                            <p class="text-2xl font-bold">{{ safeStats.employers }}</p>
                         </div>
                     </div>
                     <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div class="border-b border-gray-200 bg-white p-6">
                             <h3 class="text-lg font-semibold">Total Jobs</h3>
-                            <p class="text-2xl font-bold">{{ stats.jobs }}</p>
+                            <p class="text-2xl font-bold">{{ safeStats.jobs }}</p>
                         </div>
                     </div>
                 </div>
@@ -47,17 +62,3 @@ defineProps({
         </div>
     </AppLayout>
 </template>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

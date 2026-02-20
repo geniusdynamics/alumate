@@ -175,6 +175,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { format, formatDistanceToNow } from 'date-fns';
 import { computed, ref } from 'vue';
 
@@ -241,7 +242,7 @@ const showContextMenu = (event) => {
 
 const openImageModal = (attachment) => {
     // Implement image modal
-    console.log('Open image modal:', attachment);
+    logger.log('Open image modal:', attachment);
 };
 </script>
 

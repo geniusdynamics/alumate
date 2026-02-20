@@ -250,6 +250,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import MetricCard from '@/Components/Analytics/MetricCard.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 // import ConversionChart from './ConversionChart.vue'
@@ -421,7 +422,7 @@ const refreshData = async () => {
         lastUpdateTime.value = new Date().toLocaleTimeString();
 
         // In a real app, this would make API calls to refresh data
-        console.log('Refreshing template analytics data...');
+        logger.log('Refreshing template analytics data...');
     } catch (error) {
         console.error('Failed to refresh analytics data:', error);
     } finally {

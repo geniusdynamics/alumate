@@ -20,7 +20,7 @@ const showAdvancedFilters = ref(false);
 
 const applyFilters = () => {
     router.get(
-        route('employer.graduates.search'),
+        route('employer.search-graduates'),
         {
             search: search.value,
             course_id: courseId.value,
@@ -379,17 +379,3 @@ const saveToShortlist = (graduate) => {
         </div>
     </AppLayout>
 </template>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

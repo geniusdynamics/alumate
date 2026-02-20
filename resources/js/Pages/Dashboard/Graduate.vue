@@ -4,13 +4,66 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const props = defineProps({
-    graduate: Object,
-    statistics: Object,
-    recentActivities: Object,
-    jobRecommendations: Array,
-    classmateConnections: Array,
-});
+interface GraduateRecord {
+    id?: number;
+    user_id?: number;
+    name?: string;
+    email?: string;
+    student_id?: string;
+    graduation_year?: number;
+    employment_status?: string;
+    course_id?: number | null;
+    course?: { id: number; name: string } | null;
+    user?: { id: number; name: string; email: string; avatar?: string | null } | null;
+    [key: string]: unknown;
+}
+
+interface GraduateStatistics {
+    profile_completion?: number;
+    employment_status?: string;
+    total_applications?: number;
+    pending_applications?: number;
+    shortlisted_applications?: number;
+    hired_applications?: number;
+    skills_count?: number;
+    achievements_count?: number;
+    [key: string]: unknown;
+}
+
+interface Activity {
+    id?: number;
+    type?: string;
+    description?: string;
+    created_at?: string;
+    [key: string]: unknown;
+}
+
+interface JobRecommendation {
+    id?: number;
+    title?: string;
+    company?: string;
+    location?: string;
+    employment_type?: string;
+    salary_range?: string;
+    match_score?: number;
+    [key: string]: unknown;
+}
+
+interface ClassmateConnection {
+    id?: number;
+    name?: string;
+    avatar?: string | null;
+    employment_status?: string;
+    [key: string]: unknown;
+}
+
+const props = defineProps<{
+    graduate?: GraduateRecord;
+    statistics?: GraduateStatistics;
+    recentActivities?: Activity[];
+    jobRecommendations?: JobRecommendation[];
+    classmateConnections?: ClassmateConnection[];
+}>();
 
 const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
@@ -489,18 +542,3 @@ const applyToJob = (job) => {
         </div>
     </AppLayout>
 </template>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

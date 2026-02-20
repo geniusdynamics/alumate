@@ -488,7 +488,7 @@ export default {
         },
         shareWorkshop(workshop) {
             // Implementation for sharing workshop
-            console.log('Share workshop:', workshop.title);
+            logger.log('Share workshop:', workshop.title);
         },
         closeCreateModal() {
             this.showCreateModal = false;
@@ -498,7 +498,7 @@ export default {
             this.loading = true;
             try {
                 // API call would go here
-                console.log('Creating workshop:', this.newWorkshop);
+                logger.log('Creating workshop:', this.newWorkshop);
                 this.closeCreateModal();
                 await this.loadWorkshops();
             } catch (error) {

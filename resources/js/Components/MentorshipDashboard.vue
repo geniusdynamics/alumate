@@ -268,6 +268,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { CalendarIcon, CheckCircleIcon, ClockIcon, PlusIcon, StarIcon, UserGroupIcon, UserIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
@@ -364,14 +365,14 @@ const formatDate = (dateString) => {
 
 const editSession = (session) => {
     // TODO: Implement session editing
-    console.log('Edit session:', session);
+    logger.log('Edit session:', session);
 };
 
 const cancelSession = async (session) => {
     if (confirm('Are you sure you want to cancel this session?')) {
         try {
             // TODO: Implement session cancellation API
-            console.log('Cancel session:', session);
+            logger.log('Cancel session:', session);
         } catch (error) {
             console.error('Failed to cancel session:', error);
         }

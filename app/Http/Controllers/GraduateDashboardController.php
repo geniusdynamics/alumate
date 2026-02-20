@@ -69,7 +69,7 @@ class GraduateDashboardController extends Controller
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
         if (! $tenant) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Please select your institution first.');
         }
 
@@ -98,11 +98,6 @@ class GraduateDashboardController extends Controller
         $jobRecommendations = $this->getJobRecommendations($graduate);
         $classmateConnections = $this->getClassmateConnections($graduate);
 
-        if (! $graduate) {
-            return redirect()->route('graduates.create')
-                ->with('error', 'Unable to access graduate profile.');
-        }
-
         return Inertia::render('Dashboard/Graduate', [
             'graduate' => $graduate->load(['course']),
             'statistics' => $statistics,
@@ -119,7 +114,7 @@ class GraduateDashboardController extends Controller
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
         if (! $tenant) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Please select your institution first.');
         }
 
@@ -143,7 +138,7 @@ class GraduateDashboardController extends Controller
         }
 
         if (! $graduate) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Unable to access graduate profile.');
         }
 
@@ -160,7 +155,7 @@ class GraduateDashboardController extends Controller
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
         if (! $tenant) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Please select your institution first.');
         }
 
@@ -184,7 +179,7 @@ class GraduateDashboardController extends Controller
         }
 
         if (! $graduate) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Unable to access graduate profile.');
         }
 
@@ -254,7 +249,7 @@ class GraduateDashboardController extends Controller
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
         if (! $tenant) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Please select your institution first.');
         }
 
@@ -310,7 +305,7 @@ class GraduateDashboardController extends Controller
         // Validate tenant access first
         $tenant = $this->validateTenantAccess($user);
         if (! $tenant) {
-            return redirect()->route('graduates.create');
+            return redirect()->route('onboarding.index');
         }
 
         // Set tenant context for schema-based tenancy
@@ -320,7 +315,7 @@ class GraduateDashboardController extends Controller
         $graduate = Graduate::where('user_id', $user->id)->first();
 
         if (! $graduate) {
-            return redirect()->route('graduates.create');
+            return redirect()->route('onboarding.index');
         }
 
         $query = Graduate::with(['user', 'course'])
@@ -366,7 +361,7 @@ class GraduateDashboardController extends Controller
         // Validate tenant access
         $tenant = $this->validateTenantAccess($user);
         if (! $tenant) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Please select your institution first.');
         }
 
@@ -394,7 +389,7 @@ class GraduateDashboardController extends Controller
         $achievements = $this->getAchievements($graduate);
 
         if (! $graduate) {
-            return redirect()->route('graduates.create')
+            return redirect()->route('onboarding.index')
                 ->with('error', 'Unable to access graduate profile.');
         }
 
@@ -413,7 +408,7 @@ class GraduateDashboardController extends Controller
         // Validate tenant access first
         $tenant = $this->validateTenantAccess($user);
         if (! $tenant) {
-            return redirect()->route('graduates.create');
+            return redirect()->route('onboarding.index');
         }
 
         // Set tenant context for schema-based tenancy
@@ -423,7 +418,7 @@ class GraduateDashboardController extends Controller
         $graduate = Graduate::where('user_id', $user->id)->first();
 
         if (! $graduate) {
-            return redirect()->route('graduates.create');
+            return redirect()->route('onboarding.index');
         }
 
         // For now, return a placeholder implementation

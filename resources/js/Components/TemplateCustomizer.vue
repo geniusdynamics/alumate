@@ -338,6 +338,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { templateService } from '@/Services/TemplateService';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import ColorPicker from './ColorPicker.vue';
@@ -477,7 +478,7 @@ const updateContent = (contentData: ContentCustomization) => {
 
 const addLogo = () => {
     // Implementation for adding logo
-    console.log('Add logo functionality to be implemented');
+    logger.log('Add logo functionality to be implemented');
 };
 
 const removeLogo = (logoId: string) => {

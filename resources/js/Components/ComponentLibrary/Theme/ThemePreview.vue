@@ -250,6 +250,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import Icon from '@/Components/Common/Icon.vue';
 import { useNotifications } from '@/Composables/useNotifications';
 import type { GrapeJSThemeData, ThemeExportOptions, ThemePerformanceData } from '@/types/Components';
@@ -446,12 +447,12 @@ const onComparisonPerformanceUpdate = (data: ThemePerformanceData) => {
 
 const onAccessibilityIssueHighlight = (issue: any) => {
     // Handle accessibility issue highlighting in preview
-    console.log('Highlighting accessibility issue:', issue);
+    logger.log('Highlighting accessibility issue:', issue);
 };
 
 const onThemeExport = (options: ThemeExportOptions) => {
     // Handle theme export with specific options
-    console.log('Exporting theme with options:', options);
+    logger.log('Exporting theme with options:', options);
 };
 
 const onPreviewShared = (shareData: any) => {

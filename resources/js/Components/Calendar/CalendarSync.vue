@@ -361,6 +361,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { onMounted, ref } from 'vue';
 
 interface CalendarConnection {
@@ -439,7 +440,7 @@ const refreshConnections = async (): Promise<void> => {
 const connectProvider = async (provider: string): Promise<void> => {
     // This would typically open OAuth flow
     // For now, we'll simulate the connection
-    console.log(`Connecting to ${provider}...`);
+    logger.log(`Connecting to ${provider}...`);
 
     // In a real implementation, this would:
     // 1. Open OAuth popup/redirect

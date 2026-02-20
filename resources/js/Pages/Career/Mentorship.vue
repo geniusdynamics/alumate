@@ -237,6 +237,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
 import MentorCard from '@/Components/MentorCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -297,7 +298,7 @@ const joinSession = (session) => {
 
 const rescheduleSession = (session) => {
     // This would open a reschedule modal
-    console.log('Reschedule session:', session);
+    logger.log('Reschedule session:', session);
 };
 
 const handleMentorProfileCreated = () => {

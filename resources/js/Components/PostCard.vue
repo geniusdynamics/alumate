@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import type { EngagementEvent, Post } from '@/Types';
 import { format } from 'date-fns';
 import { defineEmits, defineProps } from 'vue';
@@ -92,12 +93,12 @@ const handleLike = (): void => {
 
 const handleComment = (): void => {
     // Handle comment action
-    console.log('Comment on post:', props.post.id);
+    logger.log('Comment on post:', props.post.id);
 };
 
 const handleShare = (): void => {
     // Handle share action
-    console.log('Share post:', props.post.id);
+    logger.log('Share post:', props.post.id);
 };
 </script>
 

@@ -180,6 +180,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import * as d3 from 'd3';
 import type { BehaviorFlowData } from '../../../Types/analytics';
@@ -217,7 +218,7 @@ const refreshFlow = async () => {
     isLoading.value = true;
     try {
         // This would trigger a refresh in the parent component
-        console.log('Refreshing flow data...');
+        logger.log('Refreshing flow data...');
     } finally {
         isLoading.value = false;
     }
@@ -225,7 +226,7 @@ const refreshFlow = async () => {
 
 const updateFlow = () => {
     // This would update the flow with new depth
-    console.log('Updating flow with depth:', analysisDepth.value);
+    logger.log('Updating flow with depth:', analysisDepth.value);
 };
 
 const updateVisualization = () => {

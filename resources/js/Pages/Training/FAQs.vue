@@ -198,6 +198,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
@@ -317,7 +318,7 @@ const markHelpful = async (faqId, helpful) => {
         const data = await response.json();
         if (data.success) {
             // Show success message
-            console.log('Feedback recorded');
+            logger.log('Feedback recorded');
         }
     } catch (error) {
         console.error('Failed to record feedback:', error);

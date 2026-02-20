@@ -273,6 +273,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import PostCreator from '@/Components/PostCreator.vue';
 import userFlowIntegration from '@/Services/UserFlowIntegration';
 import {
@@ -473,7 +474,7 @@ const handleActivityAction = (activity) => {
             router.visit('/events/my-events');
             break;
         default:
-            console.log('Unknown activity type:', activity.type);
+            logger.log('Unknown activity type:', activity.type);
     }
 };
 

@@ -155,7 +155,7 @@ export function useAttribution() {
         if (typeof window !== 'undefined' && window.Echo) {
             window.Echo.private(`attribution-updates`)
                 .listen('.attribution.updated', (event: any) => {
-                    console.log('Attribution updated:', event);
+                    logger.log('Attribution updated:', event);
                     lastUpdate.value = new Date();
                     // Refresh data
                     attributionStore.refreshData();

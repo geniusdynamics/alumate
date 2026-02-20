@@ -157,7 +157,7 @@
                     <SmartLoader
                         :loading="false"
                         error="Failed to load content. Please check your connection."
-                        :on-retry="() => console.log('Retry clicked')"
+                        :on-retry="() => logger.log('Retry clicked')"
                     />
                 </div>
             </div>
@@ -166,6 +166,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { onUnmounted, ref } from 'vue';
 import ContextualLoader from '../ui/ContextualLoader.vue';
 import ShimmerEffect from '../ui/ShimmerEffect.vue';

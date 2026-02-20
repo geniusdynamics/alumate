@@ -27,13 +27,13 @@ export function useRealTimeUpdates() {
             isConnected.value = true;
             connectionState.value = 'connected';
             reconnectAttempts.value = 0;
-            console.log('Real-time updates connected');
+            logger.log('Real-time updates connected');
         });
 
         webSocketService.on('disconnected', () => {
             isConnected.value = false;
             connectionState.value = 'disconnected';
-            console.log('Real-time updates disconnected');
+            logger.log('Real-time updates disconnected');
         });
 
         webSocketService.on('state_change', (states) => {

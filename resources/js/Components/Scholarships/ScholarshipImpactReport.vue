@@ -186,6 +186,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
@@ -253,7 +254,7 @@ const fetchReport = async () => {
 
 const exportReport = () => {
     // Implementation for exporting report as PDF or Excel
-    console.log('Exporting report...');
+    logger.log('Exporting report...');
 };
 
 const formatCurrency = (amount: number): string => {

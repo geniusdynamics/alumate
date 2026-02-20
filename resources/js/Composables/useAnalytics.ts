@@ -48,7 +48,7 @@ export function useAnalytics(config?: AnalyticsConfig) {
         }
 
         if (analyticsConfig.value.debug) {
-            console.log('Analytics Event:', event);
+            logger.log('Analytics Event:', event);
         }
 
         // Send to configured providers

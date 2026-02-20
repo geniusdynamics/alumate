@@ -444,6 +444,7 @@ X-RateLimit-Reset: 1640995200</code></pre>
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import ApiEndpointCard from '@/Components/Developer/ApiEndpointCard.vue';
 import ApiTester from '@/Components/Developer/ApiTester.vue';
 import IntegrationExamples from '@/Components/Developer/IntegrationExamples.vue';
@@ -676,7 +677,7 @@ const getMethodColor = (method) => {
 
 const tryEndpoint = (endpoint) => {
     // Open API testing interface
-    console.log('Try endpoint:', endpoint);
+    logger.log('Try endpoint:', endpoint);
 };
 
 const formatDate = (date) => {

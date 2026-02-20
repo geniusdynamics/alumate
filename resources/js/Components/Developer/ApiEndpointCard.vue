@@ -200,6 +200,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -250,7 +251,7 @@ const copyToClipboard = async (text) => {
 const tryEndpoint = () => {
     // Emit event to parent to open API testing modal
     // This would integrate with the API testing functionality
-    console.log('Try endpoint:', props.endpoint);
+    logger.log('Try endpoint:', props.endpoint);
 };
 </script>
 

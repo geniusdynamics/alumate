@@ -254,6 +254,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { useAuthStore } from '@/Stores/auth';
 import { useMessagingStore } from '@/Stores/messaging';
 import { formatDistanceToNow } from 'date-fns';
@@ -416,7 +417,7 @@ const cancelReply = () => {
 
 const editMessage = (message) => {
     // Implement message editing
-    console.log('Edit message:', message);
+    logger.log('Edit message:', message);
 };
 
 const deleteMessage = async (message) => {

@@ -2,28 +2,22 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
-
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
 |--------------------------------------------------------------------------
 |
-| Here you can register the tenant routes for your application.
-| These routes are loaded by the TenantRouteServiceProvider.
+| This file is intentionally left as a placeholder because the application
+| uses a custom tenant middleware (TenantContextService) instead of 
+| Stancl's domain-based tenancy.
 |
-| Feel free to customize them however you want. Good luck!
+| The custom tenancy system handles tenant identification via:
+| - TenantMiddleware (app/Http/Middleware/TenantMiddleware.php)
+| - TenantContextService (app/Services/TenantContextService.php)
+|
+| All routes are defined in routes/web.php with role-based middleware.
 |
 */
 
-Route::middleware([
-    'web',
-    InitializeTenancyByDomain::class,
-    PreventAccessFromCentralDomains::class,
-])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
-});
+// This file is not currently loaded by the application.
+// Routes for tenant-scoped features are defined in web.php.

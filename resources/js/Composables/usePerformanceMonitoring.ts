@@ -179,7 +179,7 @@ export function usePerformanceMonitoring(componentName = 'Unknown') {
             if (entry.entryType === 'navigation') {
                 const navEntry = entry as PerformanceNavigationTiming;
                 if (process.env.NODE_ENV === 'development') {
-                    console.log('Navigation timing:', {
+                    logger.log('Navigation timing:', {
                         domContentLoaded: navEntry.domContentLoadedEventEnd - navEntry.domContentLoadedEventStart,
                         loadComplete: navEntry.loadEventEnd - navEntry.loadEventStart,
                         firstByte: navEntry.responseStart - navEntry.requestStart,
