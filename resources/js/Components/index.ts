@@ -25,7 +25,7 @@ export { default as Modal } from './ui/Modal.vue';
 export { default as Skeleton } from './ui/skeleton/Skeleton.vue';
 
 // Layout Exports
-export { default as AdminLayout } from '../layouts/AdminLayout.vue';
+export { default as AdminLayout } from '../Layouts/AdminLayout.vue';
 
 // Type definitions for better TypeScript support
 export type {};

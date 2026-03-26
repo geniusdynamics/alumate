@@ -455,4 +455,23 @@ describe('TemplateCreationBridge', () => {
     it('handles validation errors for landing template', () => {
       const invalidLanding: Partial<Template> = {
         ...mockTemplate,
-        structure
+        structure: undefined,
+      }
+
+      const validation = bridge.validateGrapeJSCompatibility(invalidLanding as Template)
+
+      expect(validation.valid).toBe(false)
+      expect(validation.errors).toContain('Template structure is required')
+    })
+
+    it('returns empty results for unknown category searches', () => {
+      vi.spyOn(bridge as any, 'searchIndex', 'get').mockReturnValue({
+        search: vi.fn().mockReturnValue([]),
+      })
+
+      const results = bridge.searchTemplates('', { category: 'landing' })
+
+      expect(results).toEqual([])
+    })
+  })
+})

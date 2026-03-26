@@ -14,7 +14,7 @@
 
 const isDev = import.meta.env.DEV;
 
-/* eslint-disable no-console */
+ 
 export const logger = {
     log: isDev
         ? (...args: unknown[]) => console.log('[app]', ...args)
@@ -48,4 +48,4 @@ export const logger = {
           }
         : (_label: string, _fn: () => void) => undefined,
 } as const;
-/* eslint-enable no-console */
+ 

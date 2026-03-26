@@ -10,12 +10,12 @@ use App\Models\GlobalUser;
 use App\Models\Tenant;
 use App\Models\UserTenantMembership;
 use App\Services\CrossTenantSyncService;
+use App\Services\TenantContextService;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,6 +25,8 @@ class CrossTenantMiddleware
      * Cross-tenant sync service instance.
      */
     private CrossTenantSyncService $syncService;
+
+    private TenantContextService $tenantContextService;
 
     /**
      * Cache TTL for tenant context (in seconds).
@@ -39,9 +41,10 @@ class CrossTenantMiddleware
     /**
      * Create a new middleware instance.
      */
-    public function __construct(CrossTenantSyncService $syncService)
+    public function __construct(CrossTenantSyncService $syncService, TenantContextService $tenantContextService)
     {
         $this->syncService = $syncService;
+        $this->tenantContextService = $tenantContextService;
     }
 
     /**
@@ -510,17 +513,7 @@ class CrossTenantMiddleware
      */
     private function switchToTenantSchema(string $tenantId): void
     {
-        $tenant = Cache::remember(
-            "tenant:{$tenantId}",
-            self::TENANT_CACHE_TTL,
-            fn () => Tenant::find($tenantId)
-        );
-
-        if (! $tenant) {
-            throw new Exception("Tenant not found: {$tenantId}");
-        }
-
-        DB::statement("SET search_path TO {$tenant->schema_name}, public");
+        $this->tenantContextService->setTenant($tenantId);
     }
 
     /**
@@ -528,7 +521,7 @@ class CrossTenantMiddleware
      */
     private function resetSchemaContext(): void
     {
-        DB::statement('SET search_path TO public');
+        $this->tenantContextService->clearContext();
     }
 
     /**

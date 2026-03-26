@@ -1,4 +1,4 @@
-﻿
+
 <template>
   <div class="template-customizer" role="application" aria-labelledby="customizer-title">
     <!-- Header -->
@@ -892,7 +892,7 @@ const generateHTML = (config: TemplateCustomizationConfig): string => {
     <body>
       <h1>${config.brand.name}</h1>
       <p>Welcome to your customized template!</p>
-      ${config.settings.customJs ? `<script lang="ts">${config.settings.customJs}</script>` : ''}
+      ${config.settings.customJs ? `<script>${config.settings.customJs}<\/script>` : ''}
     </body>
     </html>
   `.trim()

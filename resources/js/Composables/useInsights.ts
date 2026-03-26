@@ -1,6 +1,6 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useInsightsStore } from '../stores/useInsightsStore'
-import type { Insight, Trend, Anomaly } from '../Types/analytics'
+import { useInsightsStore } from '../Stores/useInsightsStore'
+import type { Insight, Trend, Anomaly } from '../types/analytics'
 import { useWebSocket } from './useWebSocket'
 
 // Ref for real-time updates

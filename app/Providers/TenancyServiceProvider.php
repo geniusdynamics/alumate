@@ -239,7 +239,7 @@ class TenancyServiceProvider extends ServiceProvider
     protected function registerMiddleware(): void
     {
         // Register cross-tenant middleware
-        $this->app['router']->aliasMiddleware('tenant', CrossTenantMiddleware::class);
+        $this->app['router']->aliasMiddleware('tenant.cross', CrossTenantMiddleware::class);
 
         // Add to global middleware if configured
         if (config('tenancy.middleware.global', false)) {

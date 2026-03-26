@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 // use Laravel\Sanctum\HasApiTokens; // Commented out - Sanctum not installed
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -51,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_mentor',
         'login_count',
         'institution_id',
+        'current_tenant_id',
         'is_suspended',
     ];
 
@@ -77,6 +77,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_mentor' => 'boolean',
         'login_count' => 'integer',
         'institution_id' => 'integer',
+        'current_tenant_id' => 'integer',
     ];
 
     protected $dates = [
@@ -107,8 +108,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'full_name',
         'initials',
         'avatar_url',
-        'accessible_tenants',
-        'current_tenant_role',
     ];
 
     // User roles
@@ -409,6 +408,7 @@ class User extends Authenticatable implements MustVerifyEmail
         if ($this->is_super_admin) {
             return true;
         }
+
         return $this->tenantUsers()
             ->where('institution_id', $institutionId)
             ->exists();
@@ -449,6 +449,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function canBeMentor(): bool
     {
         return $this->is_active && $this->email_verified_at !== null;
+    }
+
+    /**
+     * Get user's current tenant relationship
+     */
+    public function currentTenant(): HasOne
+    {
+        return $this->hasOne(Tenant::class, 'id', 'current_tenant_id');
     }
 
     /**
@@ -574,7 +582,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function scopeWithRole(Builder $query, string $role): Builder
     {
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $currentTenant = app(TenantContextService::class)->getCurrentTenant();
 
         if (! $currentTenant) {
             return $query->where('is_super_admin', true)->where('1', '0'); // No results if no tenant context
@@ -611,7 +619,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return true;
         }
 
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $currentTenant = app(TenantContextService::class)->getCurrentTenant();
         if (! $currentTenant) {
             return false;
         }
@@ -877,7 +885,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
 
         // Add tenant-specific stats if in tenant context
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $currentTenant = app(TenantContextService::class)->getCurrentTenant();
         if ($currentTenant && $this->hasAccessToTenant($currentTenant->id)) {
             $stats['current_tenant'] = [
                 'name' => $currentTenant->name,

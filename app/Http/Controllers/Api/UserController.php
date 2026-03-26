@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserProfileResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -25,25 +26,14 @@ class UserController extends Controller
         $user->load([
             'roles',
             'permissions',
-            'studentProfile',
-            'graduateProfile',
-            'institutionProfile',
+            'student',
+            'graduate',
+            'institution',
+            'tenants',
         ]);
 
         return response()->json([
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'email_verified_at' => $user->email_verified_at,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-                'roles' => $user->roles,
-                'permissions' => $user->permissions,
-                'student_profile' => $user->studentProfile,
-                'graduate_profile' => $user->graduateProfile,
-                'institution_profile' => $user->institutionProfile,
-            ],
+            'data' => new UserProfileResource($user),
         ]);
     }
 
@@ -67,16 +57,11 @@ class UserController extends Controller
 
         $user->update($validated);
 
+        $user->load(['roles', 'permissions', 'student', 'graduate', 'institution', 'tenants']);
+
         return response()->json([
             'message' => 'Profile updated successfully',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'email_verified_at' => $user->email_verified_at,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at,
-            ],
+            'data' => new UserProfileResource($user),
         ]);
     }
 }
