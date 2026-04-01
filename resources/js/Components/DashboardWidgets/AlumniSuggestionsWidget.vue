@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="card-mobile border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div class="card-mobile-header">
             <h3 class="card-mobile-title">People You May Know</h3>
@@ -152,7 +152,7 @@ const sendConnectionRequest = async (suggestion) => {
         }
     } catch (error) {
         console.error('Failed to send connection request:', error);
-        alert('Failed to send connection request. Please try again.');
+        // TODO-toast: alert('Failed to send connection request. Please try again.');
     } finally {
         suggestion.connecting = false;
     }

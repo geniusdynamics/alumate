@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div v-if="show" class="modal-overlay" @click="closeModal">
         <div class="modal-container" @click.stop>
             <div class="modal-header">
@@ -163,14 +163,14 @@ const handleResumeUpload = (event) => {
     if (file) {
         // Validate file size (5MB max)
         if (file.size > 5 * 1024 * 1024) {
-            alert('File size must be less than 5MB');
+            // TODO-toast: alert('File size must be less than 5MB');
             return;
         }
 
         // Validate file type
         const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
         if (!allowedTypes.includes(file.type)) {
-            alert('Please upload a PDF, DOC, or DOCX file');
+            // TODO-toast: alert('Please upload a PDF, DOC, or DOCX file');
             return;
         }
 

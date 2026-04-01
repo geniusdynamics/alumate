@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <AppLayout title="Fundraising Analytics">
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -231,7 +231,7 @@ const exportData = async () => {
         document.body.removeChild(a);
     } catch (err) {
         console.error('Export error:', err);
-        alert('Failed to export data. Please try again.');
+        // TODO-toast: alert('Failed to export data. Please try again.');
     }
 };
 

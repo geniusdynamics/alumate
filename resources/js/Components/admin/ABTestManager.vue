@@ -559,7 +559,7 @@ const saveTest = async () => {
         // Validate variant weights sum to 100
         const totalWeight = testForm.variants.reduce((sum, variant) => sum + variant.weight, 0);
         if (totalWeight !== 100) {
-            alert('Variant weights must sum to 100%');
+            // TODO-toast: alert('Variant weights must sum to 100%');
             return;
         }
 
@@ -593,11 +593,11 @@ const saveTest = async () => {
             await loadTests();
         } else {
             const error = await response.json();
-            alert(error.error || 'Failed to save test');
+            // TODO-toast: alert(error.error || 'Failed to save test');
         }
     } catch (error) {
         console.error('Failed to save test:', error);
-        alert('Failed to save test');
+        // TODO-toast: alert('Failed to save test');
     } finally {
         saving.value = false;
     }
@@ -646,11 +646,11 @@ const updateTestStatus = async (testId: string, status: string, additionalData: 
             await loadTests();
         } else {
             const error = await response.json();
-            alert(error.error || 'Failed to update test');
+            // TODO-toast: alert(error.error || 'Failed to update test');
         }
     } catch (error) {
         console.error('Failed to update test status:', error);
-        alert('Failed to update test');
+        // TODO-toast: alert('Failed to update test');
     }
 };
 

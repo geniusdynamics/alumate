@@ -222,12 +222,12 @@ async function copyShareUrl() {
     try {
         await navigator.clipboard.writeText(shareUrl.value);
         // You could show a toast notification here
-        alert('Link copied to clipboard!');
+        // TODO-toast: alert('Link copied to clipboard!');
     } catch (error) {
         // Fallback for older browsers
         shareUrlInput.value?.select();
         document.execCommand('copy');
-        alert('Link copied to clipboard!');
+        // TODO-toast: alert('Link copied to clipboard!');
     }
 }
 </script>

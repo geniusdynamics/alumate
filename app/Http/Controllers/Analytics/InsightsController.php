@@ -7,7 +7,6 @@ namespace App\Http\Controllers\Analytics;
 use App\Http\Controllers\Controller;
 use App\Models\Insight;
 use App\Services\Analytics\AutomatedInsightsService;
-use App\Services\Analytics\InsightsService;
 use App\Services\TenantContextService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -28,7 +27,6 @@ class InsightsController extends Controller
      * Create a new controller instance.
      */
     public function __construct(
-        private readonly InsightsService $insightsService,
         private readonly AutomatedInsightsService $automatedInsightsService,
         private readonly TenantContextService $tenantContextService
     ) {}

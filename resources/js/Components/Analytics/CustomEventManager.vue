@@ -753,7 +753,7 @@ const loadOptimizationData = async () => {
 
 const trackSampleEvent = async () => {
     if (definitions.value.length === 0) {
-        alert('Please create an event definition first');
+        // TODO-toast: alert('Please create an event definition first');
         return;
     }
 
@@ -777,7 +777,7 @@ const trackSampleEvent = async () => {
 const applyOptimization = (suggestion: OptimizationSuggestion) => {
     // Handle optimization action
     logger.log('Applying optimization:', suggestion);
-    alert(`Applying: ${suggestion.action}`);
+    // TODO-toast: alert(`Applying: ${suggestion.action}`);
 };
 
 const updateCharts = () => {

@@ -564,7 +564,7 @@ const handleSubmit = async () => {
         emit('saved', savedEvent);
     } catch (error) {
         console.error('Failed to save event:', error);
-        alert('Failed to save event. Please try again.');
+        // TODO-toast: alert('Failed to save event. Please try again.');
     } finally {
         loading.value = false;
     }

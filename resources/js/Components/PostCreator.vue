@@ -357,11 +357,11 @@ export default {
                 if (result.success) {
                     uploadedMedia.value.push(...result.data.media);
                 } else {
-                    alert('Failed to upload media: ' + result.message);
+                    // TODO-toast: alert('Failed to upload media: ' + result.message);
                 }
             } catch (error) {
                 console.error('Upload error:', error);
-                alert('Failed to upload media');
+                // TODO-toast: alert('Failed to upload media');
             }
         };
 
@@ -408,12 +408,12 @@ export default {
                     if (result.errors) {
                         errors.value = result.errors;
                     } else {
-                        alert('Failed to create post: ' + result.message);
+                        // TODO-toast: alert('Failed to create post: ' + result.message);
                     }
                 }
             } catch (error) {
                 console.error('Submit error:', error);
-                alert('Failed to create post');
+                // TODO-toast: alert('Failed to create post');
             } finally {
                 isSubmitting.value = false;
             }

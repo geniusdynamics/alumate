@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="career-timeline">
         <!-- Header -->
         <div class="mb-6 flex items-center justify-between">
@@ -241,7 +241,7 @@ const deleteCareerEntry = async (entryId) => {
         }
     } catch (err) {
         console.error('Error deleting career entry:', err);
-        alert('Failed to delete career entry');
+        // TODO-toast: alert('Failed to delete career entry');
     }
 };
 
@@ -272,7 +272,7 @@ const deleteMilestone = async (milestoneId) => {
         }
     } catch (err) {
         console.error('Error deleting milestone:', err);
-        alert('Failed to delete milestone');
+        // TODO-toast: alert('Failed to delete milestone');
     }
 };
 

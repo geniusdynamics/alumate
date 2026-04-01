@@ -449,7 +449,7 @@ const connectProvider = async (provider: string): Promise<void> => {
     // 4. Refresh connections
 
     // Placeholder for OAuth integration
-    alert(`${provider} connection would open OAuth flow here`);
+    // TODO-toast: alert(`${provider} connection would open OAuth flow here`);
 };
 
 const disconnectProvider = async (provider: string): Promise<void> => {

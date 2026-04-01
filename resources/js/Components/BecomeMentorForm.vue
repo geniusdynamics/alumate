@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="mx-auto max-w-2xl">
         <div class="rounded-lg border bg-white p-8 shadow-sm">
             <div class="mb-8 text-center">
@@ -40,7 +40,7 @@
                                 class="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800"
                             >
                                 {{ area }}
-                                <button type="button" @click="removeExpertiseArea(area)" class="ml-2 text-blue-600 hover:text-blue-800">Ã—</button>
+                                <button type="button" @click="removeExpertiseArea(area)" class="ml-2 text-blue-600 hover:text-blue-800">×</button>
                             </span>
                         </div>
 
@@ -141,11 +141,11 @@
                 <div class="rounded-md border border-blue-200 bg-blue-50 p-4">
                     <h3 class="mb-2 font-medium text-blue-900">Mentorship Guidelines</h3>
                     <ul class="space-y-1 text-sm text-blue-800">
-                        <li>â€¢ Commit to regular communication with your mentees</li>
-                        <li>â€¢ Provide constructive feedback and career guidance</li>
-                        <li>â€¢ Respect confidentiality and maintain professionalism</li>
-                        <li>â€¢ Be responsive and reliable in your commitments</li>
-                        <li>â€¢ Share your experiences and insights generously</li>
+                        <li>• Commit to regular communication with your mentees</li>
+                        <li>• Provide constructive feedback and career guidance</li>
+                        <li>• Respect confidentiality and maintain professionalism</li>
+                        <li>• Be responsive and reliable in your commitments</li>
+                        <li>• Share your experiences and insights generously</li>
                     </ul>
                 </div>
 
@@ -292,7 +292,7 @@ const submitForm = async () => {
         if (error.response?.data?.errors) {
             errors.value = error.response.data.errors;
         } else {
-            alert(error.response?.data?.message || 'Failed to save mentor profile');
+            // TODO-toast: alert(error.response?.data?.message || 'Failed to save mentor profile');
         }
     } finally {
         loading.value = false;

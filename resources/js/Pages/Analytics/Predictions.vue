@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <AppLayout title="Predictive Analytics">
         <template #header>
             <div class="flex items-center justify-between">
@@ -307,10 +307,10 @@ const generatePredictions = async () => {
             // Refresh the page to show new predictions
             router.reload();
         } else {
-            alert('Failed to generate predictions: ' + result.message);
+            // TODO-toast: alert('Failed to generate predictions: ' + result.message);
         }
     } catch (error) {
-        alert('Error generating predictions: ' + error.message);
+        // TODO-toast: alert('Error generating predictions: ' + error.message);
     } finally {
         generating.value = false;
     }

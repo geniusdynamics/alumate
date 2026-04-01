@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -52,12 +52,12 @@ const formatDate = (date) => {
 
 const connectWithClassmate = (classmate) => {
     // Placeholder for connection functionality
-    alert(`Connection request sent to ${classmate.user.name}! (Feature to be implemented)`);
+    // TODO-toast: alert(`Connection request sent to ${classmate.user.name}! (Feature to be implemented)`);
 };
 
 const sendMessage = (classmate) => {
     // Placeholder for messaging functionality
-    alert(`Message feature with ${classmate.user.name} to be implemented`);
+    // TODO-toast: alert(`Message feature with ${classmate.user.name} to be implemented`);
 };
 </script>
 

@@ -319,11 +319,11 @@ async function submitDonation() {
         } else {
             const error = await response.json();
             console.error('Failed to process donation:', error);
-            alert('Failed to process donation. Please try again.');
+            // TODO-toast: alert('Failed to process donation. Please try again.');
         }
     } catch (error) {
         console.error('Failed to process donation:', error);
-        alert('Failed to process donation. Please try again.');
+        // TODO-toast: alert('Failed to process donation. Please try again.');
     } finally {
         loading.value = false;
     }

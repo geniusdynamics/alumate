@@ -193,11 +193,11 @@ const handleNewsletterSubmit = async () => {
     newsletterEmail.value = '';
     
     // TODO: Show success message
-    alert('Thank you for subscribing to our newsletter!');
+    // TODO-toast: alert('Thank you for subscribing to our newsletter!');
   } catch (error) {
     console.error('Newsletter subscription failed:', error);
     // TODO: Show error message
-    alert('Failed to subscribe. Please try again.');
+    // TODO-toast: alert('Failed to subscribe. Please try again.');
   } finally {
     isSubmittingNewsletter.value = false;
   }

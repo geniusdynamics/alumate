@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="coffee-chat-requests">
         <div class="mb-6">
             <h2 class="mb-2 text-2xl font-bold text-gray-900">Coffee Chat Requests</h2>
@@ -54,7 +54,7 @@
                                 <h3 class="font-semibold text-gray-900">
                                     {{ getRequestUser(request).name }}
                                 </h3>
-                                <p class="text-sm text-gray-600">{{ getRequestDirection(request) }} â€¢ {{ formatDate(request.created_at) }}</p>
+                                <p class="text-sm text-gray-600">{{ getRequestDirection(request) }} • {{ formatDate(request.created_at) }}</p>
                             </div>
                         </div>
 
@@ -365,7 +365,7 @@ const markAsCompleted = async (request) => {
         loadRequests();
     } catch (error) {
         console.error('Error marking request as completed:', error);
-        alert('Failed to mark request as completed');
+        // TODO-toast: alert('Failed to mark request as completed');
     }
 };
 

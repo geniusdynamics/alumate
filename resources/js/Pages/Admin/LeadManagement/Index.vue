@@ -554,11 +554,11 @@ const createLead = async () => {
             };
             router.reload();
         } else {
-            alert('Failed to create lead: ' + data.message);
+            // TODO-toast: alert('Failed to create lead: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to create lead:', error);
-        alert('Failed to create lead');
+        // TODO-toast: alert('Failed to create lead');
     }
 };
 
@@ -581,11 +581,11 @@ const updateLead = async () => {
             showEditModal.value = false;
             router.reload();
         } else {
-            alert('Failed to update lead: ' + data.message);
+            // TODO-toast: alert('Failed to update lead: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to update lead:', error);
-        alert('Failed to update lead');
+        // TODO-toast: alert('Failed to update lead');
     }
 };
 
@@ -622,17 +622,17 @@ const submitQualification = async () => {
             };
             router.reload();
         } else {
-            alert('Failed to qualify lead: ' + data.message);
+            // TODO-toast: alert('Failed to qualify lead: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to qualify lead:', error);
-        alert('Failed to qualify lead');
+        // TODO-toast: alert('Failed to qualify lead');
     }
 };
 
 const bulkSync = async () => {
     if (selectedLeads.value.length === 0) {
-        alert('Please select leads to sync');
+        // TODO-toast: alert('Please select leads to sync');
         return;
     }
 
@@ -651,15 +651,15 @@ const bulkSync = async () => {
         const data = await response.json();
 
         if (data.success) {
-            alert(`Successfully synced ${data.results.total_leads} leads`);
+            // TODO-toast: alert(`Successfully synced ${data.results.total_leads} leads`);
             selectedLeads.value = [];
             selectAll.value = false;
         } else {
-            alert('Failed to sync leads: ' + data.message);
+            // TODO-toast: alert('Failed to sync leads: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to sync leads:', error);
-        alert('Failed to sync leads');
+        // TODO-toast: alert('Failed to sync leads');
     }
 };
 
@@ -677,11 +677,11 @@ const exportLeads = async () => {
             a.click();
             URL.revokeObjectURL(url);
         } else {
-            alert('Failed to export leads: ' + data.message);
+            // TODO-toast: alert('Failed to export leads: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to export leads:', error);
-        alert('Failed to export leads');
+        // TODO-toast: alert('Failed to export leads');
     }
 };
 

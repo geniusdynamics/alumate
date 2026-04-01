@@ -108,7 +108,7 @@
                             v-for="relatedAlert in relatedAlerts"
                             :key="relatedAlert.id"
                             class="related-alert-item"
-                            @click="viewRelatedAlert(relatedAlert)"
+                            @click="viewRelated// TODO-toast: alert(relatedAlert)"
                         >
                             <span :class="['severity-dot', relatedAlert.severity]"></span>
                             <span class="related-alert-title">{{ relatedAlert.title }}</span>

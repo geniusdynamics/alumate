@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <BaseModal :show="true" @close="$emit('close')" max-width="2xl">
         <div class="p-6">
             <div class="mb-6 flex items-center justify-between">
@@ -133,7 +133,7 @@ const handleFileUpload = (event) => {
     files.forEach((file) => {
         if (file.size > 10 * 1024 * 1024) {
             // 10MB limit
-            alert('File size must be less than 10MB');
+            // TODO-toast: alert('File size must be less than 10MB');
             return;
         }
 
@@ -190,7 +190,7 @@ const createPost = async () => {
         }
     } catch (error) {
         console.error('Failed to create post:', error);
-        alert('Failed to create post. Please try again.');
+        // TODO-toast: alert('Failed to create post. Please try again.');
     } finally {
         posting.value = false;
     }

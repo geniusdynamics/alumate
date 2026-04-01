@@ -82,7 +82,7 @@
                     <div class="alert-actions">
                         <button
                             v-if="!alert.acknowledged"
-                            @click.stop="acknowledgeAlert(alert.id)"
+                            @click.stop="acknowledge// TODO-toast: alert(alert.id)"
                             class="action-button acknowledge"
                             title="Acknowledge"
                         >
@@ -91,7 +91,7 @@
                             </svg>
                         </button>
 
-                        <button @click.stop="dismissAlert(alert.id)" class="action-button dismiss" title="Dismiss">
+                        <button @click.stop="dismiss// TODO-toast: alert(alert.id)" class="action-button dismiss" title="Dismiss">
                             <svg class="action-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>

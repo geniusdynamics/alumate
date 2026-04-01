@@ -5,10 +5,8 @@
 
 namespace App\Models;
 
-use App\Services\TenantContextService;
 use App\Traits\HasGraduateAuditLog;
 use App\Traits\HasPreviousInstitution;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,27 +17,16 @@ class Graduate extends Model
 
     /**
      * Boot the model
+     *
+     * Note: For schema-based tenancy, tenant isolation is handled at the database
+     * schema level. No global scope filtering is needed here.
      */
     protected static function boot()
     {
         parent::boot();
 
-        // Optional tenant context - only apply if tenant is available
-        static::addGlobalScope('tenant_context', function (Builder $builder) {
-            $tenantService = app(TenantContextService::class);
-            $currentTenantId = $tenantService->getCurrentTenantId();
-
-            // Only apply tenant filtering if we have a valid tenant context
-            // This allows the model to work without tenant context for authentication scenarios
-            if ($currentTenantId) {
-                // Tenant context is available, we can safely apply tenant-specific filtering if needed
-                // For schema-based tenancy, the schema isolation handles this automatically
-                \Log::debug('Graduate model accessed with tenant context: '.$currentTenantId);
-            } else {
-                // No tenant context - this is acceptable for authentication and profile access
-                \Log::debug('Graduate model accessed without tenant context - allowing for authentication scenarios');
-            }
-        });
+        // Schema-based tenancy handles isolation automatically.
+        // No tenant_id filtering needed - each tenant has its own schema.
     }
 
     protected $fillable = [
@@ -70,14 +57,6 @@ class Graduate extends Model
         'profile_visibility',
         'user_id',
     ];
-
-    /**
-     * Get current tenant from context service
-     */
-    public function getCurrentTenant()
-    {
-        return app(TenantContextService::class)->getCurrentTenant();
-    }
 
     protected $casts = [
         'graduation_year' => 'integer',

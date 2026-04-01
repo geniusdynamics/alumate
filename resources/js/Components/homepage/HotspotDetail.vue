@@ -347,7 +347,7 @@ const handleAction = (): void => {
 
     // In a real implementation, this would trigger the actual feature demo
     // For now, we'll just show a success message
-    alert(`Demo: ${getActionDescription()}`);
+    // TODO-toast: alert(`Demo: ${getActionDescription()}`);
 };
 
 const learnMore = (): void => {

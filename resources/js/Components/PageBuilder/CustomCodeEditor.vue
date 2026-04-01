@@ -400,7 +400,7 @@ const getPlaceholder = (): string => {
         case 'css':
             return 'Enter your CSS code here...\n\nExample:\n.my-component {\n  color: #333;\n  padding: 1rem;\n}';
         case 'javascript':
-            return 'Enter your JavaScript code here...\n\nExample:\nconsole.log("Hello World");\n\ndocument.addEventListener("DOMContentLoaded", function() {\n  // Your code here\n});';
+            return 'Enter your JavaScript code here...\n\nExample:\n// TODO-removed: console.log("Hello World");\n\ndocument.addEventListener("DOMContentLoaded", function() {\n  // Your code here\n});';
         default:
             return 'Enter your code here...';
     }
@@ -436,12 +436,12 @@ const getTemplates = () => {
             {
                 name: 'Event Listener',
                 description: 'Basic event handling',
-                code: 'document.addEventListener("DOMContentLoaded", function() {\n  const button = document.querySelector(".my-button");\n  button.addEventListener("click", function() {\n    console.log("Button clicked!");\n  });\n});',
+                code: 'document.addEventListener("DOMContentLoaded", function() {\n  const button = document.querySelector(".my-button");\n  button.addEventListener("click", function() {\n    // TODO-removed: console.log("Button clicked!");\n  });\n});',
             },
             {
                 name: 'Form Handler',
                 description: 'Form submission handler',
-                code: 'function handleFormSubmit(event) {\n  event.preventDefault();\n  const formData = new FormData(event.target);\n  \n  // Process form data\n  console.log("Form submitted:", Object.fromEntries(formData));\n}',
+                code: 'function handleFormSubmit(event) {\n  event.preventDefault();\n  const formData = new FormData(event.target);\n  \n  // Process form data\n  // TODO-removed: console.log("Form submitted:", Object.fromEntries(formData));\n}',
             },
         ],
     };
@@ -464,7 +464,7 @@ const getSnippets = () => {
         javascript: [
             { name: 'Query selector', code: 'const element = document.querySelector("");' },
             { name: 'Add event listener', code: 'element.addEventListener("click", function() {\n  // Your code here\n});' },
-            { name: 'Fetch API', code: 'fetch("/api/endpoint")\n  .then(response => response.json())\n  .then(data => console.log(data));' },
+            { name: 'Fetch API', code: 'fetch("/api/endpoint")\n  .then(response => response.json())\n  .then(data => // TODO-removed: console.log(data));' },
         ],
     };
 

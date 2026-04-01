@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -64,7 +64,7 @@ const formatDate = (date) => {
 const contactGraduate = (graduate) => {
     if (confirm(`Are you sure you want to contact ${graduate.user.name}?`)) {
         // This would typically open a messaging interface or send an email
-        alert('Contact functionality would be implemented here');
+        // TODO-toast: alert('Contact functionality would be implemented here');
     }
 };
 
@@ -73,13 +73,13 @@ const inviteToApply = (graduate, jobId = null) => {
 
     if (confirm(message)) {
         // This would send an invitation
-        alert('Invitation functionality would be implemented here');
+        // TODO-toast: alert('Invitation functionality would be implemented here');
     }
 };
 
 const saveToShortlist = (graduate) => {
     // This would save the graduate to a shortlist for future reference
-    alert('Shortlist functionality would be implemented here');
+    // TODO-toast: alert('Shortlist functionality would be implemented here');
 };
 </script>
 

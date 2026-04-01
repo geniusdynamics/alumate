@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Users" />
 
@@ -181,7 +181,7 @@
                                     <option value="last_login_at">Sort by Last Login</option>
                                 </select>
                                 <button @click="toggleSortDirection" class="rounded-md border border-gray-300 px-3 py-2 hover:bg-gray-50">
-                                    {{ form.direction === 'asc' ? 'â†‘' : 'â†“' }}
+                                    {{ form.direction === 'asc' ? '↑' : '↓' }}
                                 </button>
                             </div>
                         </div>
@@ -428,7 +428,7 @@ const suspendUser = (user) => {
 
 const confirmSuspend = () => {
     if (!suspendReason.value.trim()) {
-        alert('Please provide a reason for suspension');
+        // TODO-toast: alert('Please provide a reason for suspension');
         return;
     }
 

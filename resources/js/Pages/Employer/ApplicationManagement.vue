@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -62,7 +62,7 @@ const updateApplicationStatus = (application, newStatus) => {
 
 const bulkUpdateStatus = (newStatus) => {
     if (selectedApplications.value.length === 0) {
-        alert('Please select applications first');
+        // TODO-toast: alert('Please select applications first');
         return;
     }
 

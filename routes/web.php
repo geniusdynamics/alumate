@@ -1,10 +1,5 @@
 <?php
 
-use App\Http\Controllers\InstitutionAdmin\AnalyticsController as InstitutionAdminAnalyticsController;
-use App\Http\Controllers\InstitutionAdmin\SettingsController as InstitutionAdminSettingsController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -118,7 +113,7 @@ Route::get('/homepage/ab-test-results/{testId}', [\App\Http\Controllers\Homepage
 
 // Main dashboard route - redirects users based on their role
 Route::get('/dashboard', function () {
-    if (!auth()->check()) {
+    if (! auth()->check()) {
         return redirect()->route('login');
     }
 
@@ -142,7 +137,7 @@ Route::get('/dashboard', function () {
 // Profile route - redirects users based on their role
 Route::get('/profile', function () {
     $user = auth()->user();
-    
+
     if ($user->hasRole('employer')) {
         return redirect()->route('employer.profile');
     } elseif ($user->hasRole('institution-admin')) {
@@ -150,7 +145,7 @@ Route::get('/profile', function () {
     } elseif ($user->hasRole('super-admin')) {
         return redirect()->route('super-admin.settings');
     }
-    
+
     // Default to graduate profile
     return redirect()->route('graduate.profile');
 })->middleware(['auth'])->name('profile.show');
@@ -158,13 +153,13 @@ Route::get('/profile', function () {
 // Settings route - redirects users based on their role
 Route::get('/settings', function () {
     $user = auth()->user();
-    
+
     if ($user->hasRole('super-admin')) {
         return redirect()->route('super-admin.settings');
     } elseif ($user->hasRole('institution-admin')) {
         return redirect()->route('institution-admin.settings.branding');
     }
-    
+
     // Default to graduate profile
     return redirect()->route('graduate.profile');
 })->middleware(['auth'])->name('settings.profile');
@@ -346,6 +341,62 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['auth'])->prefix('merge')->name('merge.')->group(function () {
         Route::get('/', [\App\Http\Controllers\InstitutionAdminDashboardController::class, 'index'])->name('index');
     });
+
+    // Template System Routes
+    Route::middleware(['auth'])->prefix('templates')->name('templates.')->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('TemplateSystem/Library');
+        })->name('index');
+        Route::get('/create', function () {
+            return Inertia::render('TemplateSystem/Create');
+        })->name('create');
+        Route::get('/{id}/edit', function () {
+            return Inertia::render('TemplateSystem/Edit');
+        })->name('edit');
+        Route::get('/{id}/customize', function () {
+            return Inertia::render('TemplateSystem/Customize');
+        })->name('customize');
+    });
+
+    // Brand Management Routes
+    Route::middleware(['auth'])->prefix('brand')->name('brand.')->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('Brand/Manager');
+        })->name('index');
+        Route::get('/{section?}', function () {
+            return Inertia::render('Brand/Manager');
+        })->name('section');
+    });
+
+    // Landing Page Routes
+    Route::middleware(['auth'])->prefix('landing-pages')->name('landing-pages.')->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('LandingPages/Index');
+        })->name('index');
+        Route::get('/create', function () {
+            return Inertia::render('LandingPages/Create');
+        })->name('create');
+        Route::get('/{id}/edit', function () {
+            return Inertia::render('LandingPages/Edit');
+        })->name('edit');
+        Route::get('/{id}/publish', function () {
+            return Inertia::render('LandingPages/Publish');
+        })->name('publish');
+    });
+
+    // Analytics Dashboard Routes
+    Route::middleware(['auth'])->prefix('analytics/dashboard')->name('analytics.')->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('Analytics/Dashboard');
+        })->name('dashboard');
+    });
+
+    // A/B Testing Routes
+    Route::middleware(['auth'])->prefix('ab-tests')->name('ab-tests.')->group(function () {
+        Route::get('/', function () {
+            return Inertia::render('ABTests/Manager');
+        })->name('index');
+    });
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

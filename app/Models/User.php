@@ -5,6 +5,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasAuthenticationSecurity;
+use App\Models\Traits\HasProfileInformation;
+use App\Models\Traits\HasUserPreferences;
 use App\Services\TenantContextService;
 use Exception;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -21,7 +24,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use HasAuthenticationSecurity, HasFactory, HasProfileInformation, HasRoles, HasUserPreferences, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -310,6 +313,30 @@ class User extends Authenticatable implements MustVerifyEmail
     public function graduate()
     {
         return $this->hasOne(Graduate::class);
+    }
+
+    /**
+     * Get user profile (decomposed from monolithic User model)
+     */
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    /**
+     * Get user preferences (decomposed from monolithic User model)
+     */
+    public function preferencesRecord(): HasOne
+    {
+        return $this->hasOne(UserPreferences::class);
+    }
+
+    /**
+     * Get user academic record (decomposed from monolithic User model)
+     */
+    public function academicRecord(): HasOne
+    {
+        return $this->hasOne(UserAcademicRecord::class);
     }
 
     /**

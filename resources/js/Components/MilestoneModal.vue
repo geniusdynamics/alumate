@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <!-- Background overlay -->
@@ -291,7 +291,7 @@ const handleSubmit = async () => {
         emit('saved');
     } catch (err) {
         console.error('Error saving milestone:', err);
-        alert(err.message || 'Failed to save milestone');
+        // TODO-toast: alert(err.message || 'Failed to save milestone');
     } finally {
         loading.value = false;
     }

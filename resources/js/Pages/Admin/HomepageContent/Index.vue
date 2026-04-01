@@ -303,11 +303,11 @@ const saveContent = async (item: HomepageContent) => {
             // Refresh the page to show updated content
             router.reload();
         } else {
-            alert('Failed to save content: ' + data.message);
+            // TODO-toast: alert('Failed to save content: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to save content:', error);
-        alert('Failed to save content');
+        // TODO-toast: alert('Failed to save content');
     }
 };
 
@@ -329,11 +329,11 @@ const requestApproval = async (contentId: number) => {
         if (data.success) {
             router.reload();
         } else {
-            alert('Failed to request approval: ' + data.message);
+            // TODO-toast: alert('Failed to request approval: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to request approval:', error);
-        alert('Failed to request approval');
+        // TODO-toast: alert('Failed to request approval');
     }
 };
 
@@ -355,11 +355,11 @@ const approveContent = async (contentId: number) => {
         if (data.success) {
             router.reload();
         } else {
-            alert('Failed to approve content: ' + data.message);
+            // TODO-toast: alert('Failed to approve content: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to approve content:', error);
-        alert('Failed to approve content');
+        // TODO-toast: alert('Failed to approve content');
     }
 };
 
@@ -382,11 +382,11 @@ const rejectContent = async (contentId: number) => {
         if (data.success) {
             router.reload();
         } else {
-            alert('Failed to reject content: ' + data.message);
+            // TODO-toast: alert('Failed to reject content: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to reject content:', error);
-        alert('Failed to reject content');
+        // TODO-toast: alert('Failed to reject content');
     }
 };
 
@@ -406,11 +406,11 @@ const publishContent = async (contentId: number) => {
         if (data.success) {
             router.reload();
         } else {
-            alert('Failed to publish content: ' + data.message);
+            // TODO-toast: alert('Failed to publish content: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to publish content:', error);
-        alert('Failed to publish content');
+        // TODO-toast: alert('Failed to publish content');
     }
 };
 
@@ -425,11 +425,11 @@ const viewHistory = async (contentId: number) => {
             contentHistory.value = data.history;
             showHistoryModal.value = true;
         } else {
-            alert('Failed to load history: ' + data.message);
+            // TODO-toast: alert('Failed to load history: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to load history:', error);
-        alert('Failed to load history');
+        // TODO-toast: alert('Failed to load history');
     }
 };
 
@@ -452,11 +452,11 @@ const revertToVersion = async (contentId: number, versionNumber: number) => {
             showHistoryModal.value = false;
             router.reload();
         } else {
-            alert('Failed to revert content: ' + data.message);
+            // TODO-toast: alert('Failed to revert content: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to revert content:', error);
-        alert('Failed to revert content');
+        // TODO-toast: alert('Failed to revert content');
     }
 };
 
@@ -474,17 +474,17 @@ const exportContent = async () => {
             a.click();
             URL.revokeObjectURL(url);
         } else {
-            alert('Failed to export content: ' + data.message);
+            // TODO-toast: alert('Failed to export content: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to export content:', error);
-        alert('Failed to export content');
+        // TODO-toast: alert('Failed to export content');
     }
 };
 
 const importContent = async () => {
     if (!importData.value.trim()) {
-        alert('Please enter content data to import');
+        // TODO-toast: alert('Please enter content data to import');
         return;
     }
 
@@ -507,11 +507,11 @@ const importContent = async () => {
             importData.value = '';
             router.reload();
         } else {
-            alert('Failed to import content: ' + data.message);
+            // TODO-toast: alert('Failed to import content: ' + data.message);
         }
     } catch (error) {
         console.error('Failed to import content:', error);
-        alert('Failed to import content. Please check the JSON format.');
+        // TODO-toast: alert('Failed to import content. Please check the JSON format.');
     }
 };
 

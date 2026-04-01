@@ -215,11 +215,11 @@ async function pauseDonation(donation: RecurringDonation) {
                 emit('donationUpdated', result.recurring_donation);
             }
         } else {
-            alert('Failed to pause recurring donation');
+            // TODO-toast: alert('Failed to pause recurring donation');
         }
     } catch (error) {
         console.error('Failed to pause donation:', error);
-        alert('Failed to pause recurring donation');
+        // TODO-toast: alert('Failed to pause recurring donation');
     } finally {
         processingId.value = null;
     }
@@ -245,11 +245,11 @@ async function resumeDonation(donation: RecurringDonation) {
                 emit('donationUpdated', result.recurring_donation);
             }
         } else {
-            alert('Failed to resume recurring donation');
+            // TODO-toast: alert('Failed to resume recurring donation');
         }
     } catch (error) {
         console.error('Failed to resume donation:', error);
-        alert('Failed to resume recurring donation');
+        // TODO-toast: alert('Failed to resume recurring donation');
     } finally {
         processingId.value = null;
     }
@@ -293,11 +293,11 @@ async function confirmCancel() {
             }
             closeCancelModal();
         } else {
-            alert('Failed to cancel recurring donation');
+            // TODO-toast: alert('Failed to cancel recurring donation');
         }
     } catch (error) {
         console.error('Failed to cancel donation:', error);
-        alert('Failed to cancel recurring donation');
+        // TODO-toast: alert('Failed to cancel recurring donation');
     } finally {
         cancelling.value = false;
     }

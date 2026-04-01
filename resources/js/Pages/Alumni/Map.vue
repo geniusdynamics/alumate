@@ -399,7 +399,7 @@ const savePrivacySettings = async () => {
 
 const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-        alert('Geolocation is not supported by this browser.');
+        // TODO-toast: alert('Geolocation is not supported by this browser.');
         return;
     }
 
@@ -425,7 +425,7 @@ const getCurrentLocation = () => {
         (error) => {
             console.error('Geolocation error:', error);
             gettingLocation.value = false;
-            alert('Unable to get your current location. Please enter it manually.');
+            // TODO-toast: alert('Unable to get your current location. Please enter it manually.');
         },
         {
             enableHighAccuracy: true,

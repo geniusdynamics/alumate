@@ -206,7 +206,7 @@ const handleFileUpload = async (event: Event) => {
         // Validate file size
         const maxSize = form.type === 'photo' ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB for photos, 50MB for videos
         if (file.size > maxSize) {
-            alert(`File ${file.name} is too large. Maximum size is ${form.type === 'photo' ? '10MB' : '50MB'}.`);
+            // TODO-toast: alert(`File ${file.name} is too large. Maximum size is ${form.type === 'photo' ? '10MB' : '50MB'}.`);
             continue;
         }
 
@@ -266,7 +266,7 @@ const createHighlight = async () => {
         resetForm();
     } catch (error) {
         console.error('Failed to create highlight:', error);
-        alert('Failed to create highlight. Please try again.');
+        // TODO-toast: alert('Failed to create highlight. Please try again.');
     } finally {
         loading.value = false;
     }

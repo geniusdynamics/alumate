@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 p-6 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">SDK Generator</h3>
@@ -155,7 +155,7 @@
                     <h5 class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">File Structure</h5>
                     <div class="rounded-lg bg-gray-50 p-3 dark:bg-gray-900">
                         <div class="font-mono text-sm text-gray-800 dark:text-gray-200">
-                            <div v-for="file in generatedSdk.files" :key="file.path" class="py-1">ðŸ“„ {{ file.path }}</div>
+                            <div v-for="file in generatedSdk.files" :key="file.path" class="py-1">📄 {{ file.path }}</div>
                         </div>
                     </div>
                 </div>
@@ -376,10 +376,10 @@ const downloadSdk = () => {
     const filename = `${config.packageName || 'alumni-platform-api'}-${selectedLanguage.value}-sdk.zip`;
 
     // In a real implementation, this would generate and download the actual SDK files
-    console.log('Downloading SDK:', filename);
+    // TODO-removed: console.log('Downloading SDK:', filename);
 
     // For demo purposes, just show an alert
-    alert(`SDK download started: ${filename}`);
+    // TODO-toast: alert(`SDK download started: ${filename}`);
 };
 
 const copySdk = async () => {

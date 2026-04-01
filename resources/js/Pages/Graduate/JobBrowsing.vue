@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -102,7 +102,7 @@ const applyToJob = (job) => {
 
 const saveJob = (job) => {
     // Placeholder for save job functionality
-    alert('Job saved! (Feature to be implemented)');
+    // TODO-toast: alert('Job saved! (Feature to be implemented)');
 };
 
 const hasApplied = (job) => {

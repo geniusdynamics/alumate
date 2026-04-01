@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <button @click="dismissAlert(index)" class="dismiss-button">
+                <button @click="dismiss// TODO-toast: alert(index)" class="dismiss-button">
                     <Icon name="x" class="h-4 w-4" />
                 </button>
             </div>

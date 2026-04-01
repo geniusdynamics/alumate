@@ -203,11 +203,11 @@ export default {
                     this.$emit('skill-added', this.selectedSkill);
                 } else {
                     const error = await response.json();
-                    alert(error.message || 'Failed to add skill');
+                    // TODO-toast: alert(error.message || 'Failed to add skill');
                 }
             } catch (error) {
                 console.error('Failed to add skill:', error);
-                alert('Failed to add skill');
+                // TODO-toast: alert('Failed to add skill');
             } finally {
                 this.loading = false;
             }

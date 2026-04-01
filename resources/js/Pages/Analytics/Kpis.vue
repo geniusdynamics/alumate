@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <AppLayout title="Key Performance Indicators">
         <template #header>
             <div class="flex items-center justify-between">
@@ -233,10 +233,10 @@ const calculateKpi = async (kpi) => {
             // Refresh the page to show updated values
             router.reload();
         } else {
-            alert('Failed to calculate KPI: ' + result.message);
+            // TODO-toast: alert('Failed to calculate KPI: ' + result.message);
         }
     } catch (error) {
-        alert('Error calculating KPI: ' + error.message);
+        // TODO-toast: alert('Error calculating KPI: ' + error.message);
     } finally {
         calculatingKpis.value = calculatingKpis.value.filter((id) => id !== kpi.id);
     }

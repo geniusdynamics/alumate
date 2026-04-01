@@ -404,11 +404,11 @@ const submitStory = async () => {
         if (data.success) {
             emit('created', data.data);
         } else {
-            alert('Error creating story: ' + (data.message || 'Unknown error'));
+            // TODO-toast: alert('Error creating story: ' + (data.message || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error submitting story:', error);
-        alert('Error creating story. Please try again.');
+        // TODO-toast: alert('Error creating story. Please try again.');
     } finally {
         submitting.value = false;
     }

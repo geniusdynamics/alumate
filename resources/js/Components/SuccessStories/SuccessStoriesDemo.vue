@@ -397,7 +397,7 @@ const shareStory = async (story: SuccessStory) => {
         } else {
             // Fallback to copying URL to clipboard
             await navigator.clipboard.writeText(`${window.location.origin}/success-stories/${story.id}`);
-            alert('Story URL copied to clipboard!');
+            // TODO-toast: alert('Story URL copied to clipboard!');
         }
 
         // Increment share count

@@ -270,7 +270,7 @@ const submitFeedback = async () => {
         });
     } catch (error) {
         console.error('Failed to submit feedback:', error);
-        alert('Failed to submit feedback. Please try again.');
+        // TODO-toast: alert('Failed to submit feedback. Please try again.');
     } finally {
         loading.value = false;
     }

@@ -12,7 +12,6 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Models\CustomEvent;
 use App\Models\CustomEventDefinition;
 use App\Services\Analytics\BehaviorFlowService;
-use App\Services\Analytics\CustomEventService;
 use App\Services\Analytics\CustomEventTrackingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -27,7 +26,7 @@ use Illuminate\Support\Facades\Log;
 class CustomEventController extends Controller
 {
     public function __construct(
-        private readonly CustomEventService $customEventService,
+        private readonly CustomEventTrackingService $customEventService,
         private readonly CustomEventTrackingService $customEventTrackingService,
         private readonly BehaviorFlowService $behaviorFlowService
     ) {}

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
             <!-- Header -->
@@ -365,14 +365,14 @@ const sendCampaign = async (campaign) => {
 
         if (response.ok) {
             await loadCampaigns();
-            alert('Campaign sent successfully!');
+            // TODO-toast: alert('Campaign sent successfully!');
         } else {
             const error = await response.json();
-            alert('Failed to send campaign: ' + error.message);
+            // TODO-toast: alert('Failed to send campaign: ' + error.message);
         }
     } catch (error) {
         console.error('Failed to send campaign:', error);
-        alert('Failed to send campaign');
+        // TODO-toast: alert('Failed to send campaign');
     }
 };
 

@@ -242,11 +242,11 @@ async function createCampaign() {
         } else {
             const error = await response.json();
             console.error('Failed to create campaign:', error);
-            alert('Failed to create campaign. Please try again.');
+            // TODO-toast: alert('Failed to create campaign. Please try again.');
         }
     } catch (error) {
         console.error('Failed to create campaign:', error);
-        alert('Failed to create campaign. Please try again.');
+        // TODO-toast: alert('Failed to create campaign. Please try again.');
     } finally {
         loading.value = false;
     }

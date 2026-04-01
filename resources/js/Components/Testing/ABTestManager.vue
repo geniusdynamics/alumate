@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="ab-test-manager">
         <!-- Header -->
         <div class="rounded-lg bg-white shadow dark:bg-gray-800">
@@ -372,7 +372,7 @@ const createTest = async () => {
             .filter((v) => v.length > 0);
 
         if (variants.length < 2) {
-            alert('Please provide at least 2 variants');
+            // TODO-toast: alert('Please provide at least 2 variants');
             return;
         }
 

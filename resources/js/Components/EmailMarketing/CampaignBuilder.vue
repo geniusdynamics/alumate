@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -498,11 +498,11 @@ const saveCampaign = async () => {
             emit('saved', data.campaign);
         } else {
             const error = await response.json();
-            alert('Failed to save campaign: ' + error.message);
+            // TODO-toast: alert('Failed to save campaign: ' + error.message);
         }
     } catch (error) {
         console.error('Failed to save campaign:', error);
-        alert('Failed to save campaign');
+        // TODO-toast: alert('Failed to save campaign');
     } finally {
         saving.value = false;
     }

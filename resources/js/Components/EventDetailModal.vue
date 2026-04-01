@@ -548,7 +548,7 @@ const shareEvent = () => {
     } else {
         // Fallback to copying URL to clipboard
         navigator.clipboard.writeText(window.location.href);
-        alert('Event URL copied to clipboard!');
+        // TODO-toast: alert('Event URL copied to clipboard!');
     }
 };
 

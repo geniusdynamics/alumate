@@ -293,12 +293,12 @@ const selectTemplate = (template: any) => {
 const saveForm = (config: FormComponentConfig) => {
     logger.log('Saving form configuration:', config);
     // Here you would typically save to your backend
-    alert('Form configuration saved! (Check console for details)');
+    // TODO-toast: alert('Form configuration saved! (Check console for details)');
 };
 
 const handleFormSubmit = (data: Record<string, any>) => {
     logger.log('Form submitted:', data);
-    alert('Form submitted successfully! (Check console for details)');
+    // TODO-toast: alert('Form submitted successfully! (Check console for details)');
 };
 
 const handleValidationChange = (isValid: boolean, errors: Record<string, string>) => {
