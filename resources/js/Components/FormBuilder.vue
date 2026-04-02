@@ -190,7 +190,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import axios from 'axios';
 import { io, type Socket } from 'socket.io-client';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -199,7 +199,7 @@ import FormFieldComponent from './forms/FormField.vue';
 // import FormPreview from './FormPreview.vue'
 // import FormSettingsModal from './FormSettingsModal.vue'
 // import CRMIntegrationModal from './CRMIntegrationModal.vue'
-import type { CRMIntegration, FieldType, FormConfig, FormField, FormSubmission, ValidationRule } from '@/Types/forms';
+import type { CRMIntegration, FieldType, FormConfig, FormField, FormSubmission, ValidationRule } from '@/types/forms';
 
 // Icon Components (simplified)
 const TextIcon = { template: '<span>T</span>' };

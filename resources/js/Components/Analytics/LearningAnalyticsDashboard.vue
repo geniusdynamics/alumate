@@ -383,7 +383,7 @@
 import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { useLearningStore } from '../../Stores/useLearningStore';
-import type { Course } from '../../Types/analytics';
+import type { Course } from '../../types/analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);

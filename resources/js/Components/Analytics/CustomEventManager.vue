@@ -535,13 +535,13 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { useCustomEventStore } from '../../Stores/useCustomEventStore';
 import { useCustomEvent } from '../../Composables/useCustomEvent';
 import axios from 'axios';
-import type { CustomEventDefinition, CustomEventAnalytics, OptimizationSuggestion } from '../../Types/analytics';
+import type { CustomEventDefinition, CustomEventAnalytics, OptimizationSuggestion } from '../../types/analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);

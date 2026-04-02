@@ -112,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { ArrowDownTrayIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { onMounted, onUnmounted, ref } from 'vue';
 

@@ -8,7 +8,7 @@ import {
   PopoverPortal,
   useForwardPropsEmits,
 } from 'reka-ui'
-import { cn } from '@/Lib/utils'
+import { cn } from '@/lib/utils'
 
 defineOptions({
   inheritAttrs: false,

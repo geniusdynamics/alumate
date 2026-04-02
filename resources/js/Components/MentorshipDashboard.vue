@@ -268,7 +268,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { CalendarIcon, CheckCircleIcon, ClockIcon, PlusIcon, StarIcon, UserGroupIcon, UserIcon } from '@heroicons/vue/24/outline';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';

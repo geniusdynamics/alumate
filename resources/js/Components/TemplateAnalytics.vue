@@ -250,7 +250,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import MetricCard from '@/Components/Analytics/MetricCard.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 // import ConversionChart from './ConversionChart.vue'

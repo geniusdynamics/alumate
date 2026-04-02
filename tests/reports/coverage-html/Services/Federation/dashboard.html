@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /workspace/app/Services/Federation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../../index.html">/workspace/app</a></li>
+         <li class="breadcrumb-item"><a href="../index.html">Services</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Federation</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ActivityPubMapper.php.html#14">App\Services\Federation\ActivityPubMapper</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#16">App\Services\Federation\FederationBridge</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#14">App\Services\Federation\MatrixEventMapper</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ActivityPubMapper.php.html#14">App\Services\Federation\ActivityPubMapper</a></td><td class="text-right">0.0%</td><td class="text-right">60</td><td class="text-right">3660</td></tr>
+       <tr><td><a href="FederationBridge.php.html#16">App\Services\Federation\FederationBridge</a></td><td class="text-right">0.0%</td><td class="text-right">47</td><td class="text-right">2256</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#14">App\Services\Federation\MatrixEventMapper</a></td><td class="text-right">0.0%</td><td class="text-right">39</td><td class="text-right">1560</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ActivityPubMapper.php.html#18"><abbr title="App\Services\Federation\ActivityPubMapper::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#26"><abbr title="App\Services\Federation\ActivityPubMapper::postToActivityPubObject">postToActivityPubObject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#79"><abbr title="App\Services\Federation\ActivityPubMapper::userToActivityPubActor">userToActivityPubActor</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#121"><abbr title="App\Services\Federation\ActivityPubMapper::groupToActivityPubGroup">groupToActivityPubGroup</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#156"><abbr title="App\Services\Federation\ActivityPubMapper::circleToActivityPubCollection">circleToActivityPubCollection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#183"><abbr title="App\Services\Federation\ActivityPubMapper::createPostActivity">createPostActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#200"><abbr title="App\Services\Federation\ActivityPubMapper::createLikeActivity">createLikeActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#215"><abbr title="App\Services\Federation\ActivityPubMapper::createFollowActivity">createFollowActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#230"><abbr title="App\Services\Federation\ActivityPubMapper::createJoinActivity">createJoinActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#245"><abbr title="App\Services\Federation\ActivityPubMapper::getUserUrl">getUserUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#255"><abbr title="App\Services\Federation\ActivityPubMapper::generateUsername">generateUsername</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#269"><abbr title="App\Services\Federation\ActivityPubMapper::getUserProfileUrl">getUserProfileUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#276"><abbr title="App\Services\Federation\ActivityPubMapper::getUserInboxUrl">getUserInboxUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#283"><abbr title="App\Services\Federation\ActivityPubMapper::getUserOutboxUrl">getUserOutboxUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#290"><abbr title="App\Services\Federation\ActivityPubMapper::getUserFollowersUrl">getUserFollowersUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#297"><abbr title="App\Services\Federation\ActivityPubMapper::getUserFollowingUrl">getUserFollowingUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#304"><abbr title="App\Services\Federation\ActivityPubMapper::getPostUrl">getPostUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#309"><abbr title="App\Services\Federation\ActivityPubMapper::getPostActivityUrl">getPostActivityUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#314"><abbr title="App\Services\Federation\ActivityPubMapper::getGroupUrl">getGroupUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#319"><abbr title="App\Services\Federation\ActivityPubMapper::getGroupProfileUrl">getGroupProfileUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#324"><abbr title="App\Services\Federation\ActivityPubMapper::getGroupInboxUrl">getGroupInboxUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#329"><abbr title="App\Services\Federation\ActivityPubMapper::getGroupOutboxUrl">getGroupOutboxUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#334"><abbr title="App\Services\Federation\ActivityPubMapper::getGroupMembersUrl">getGroupMembersUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#339"><abbr title="App\Services\Federation\ActivityPubMapper::getCircleUrl">getCircleUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#344"><abbr title="App\Services\Federation\ActivityPubMapper::getCircleMembersUrl">getCircleMembersUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#349"><abbr title="App\Services\Federation\ActivityPubMapper::getLikeActivityUrl">getLikeActivityUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#356"><abbr title="App\Services\Federation\ActivityPubMapper::getFollowActivityUrl">getFollowActivityUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#364"><abbr title="App\Services\Federation\ActivityPubMapper::getJoinActivityUrl">getJoinActivityUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#374"><abbr title="App\Services\Federation\ActivityPubMapper::getActivityPubType">getActivityPubType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#386"><abbr title="App\Services\Federation\ActivityPubMapper::getPostAudience">getPostAudience</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#413"><abbr title="App\Services\Federation\ActivityPubMapper::getPostCcAudience">getPostCcAudience</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#426"><abbr title="App\Services\Federation\ActivityPubMapper::mapMediaAttachments">mapMediaAttachments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#441"><abbr title="App\Services\Federation\ActivityPubMapper::extractTags">extractTags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#471"><abbr title="App\Services\Federation\ActivityPubMapper::guessMediaType">guessMediaType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#491"><abbr title="App\Services\Federation\ActivityPubMapper::getUserPublicKey">getUserPublicKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#26"><abbr title="App\Services\Federation\FederationBridge::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#39"><abbr title="App\Services\Federation\FederationBridge::federatePost">federatePost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#63"><abbr title="App\Services\Federation\FederationBridge::federateUser">federateUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#85"><abbr title="App\Services\Federation\FederationBridge::federateGroup">federateGroup</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#107"><abbr title="App\Services\Federation\FederationBridge::handleIncomingActivity">handleIncomingActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#133"><abbr title="App\Services\Federation\FederationBridge::getFederationMapping">getFederationMapping</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#145"><abbr title="App\Services\Federation\FederationBridge::createFederationMapping">createFederationMapping</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#171"><abbr title="App\Services\Federation\FederationBridge::getUserFederatedIdentity">getUserFederatedIdentity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#183"><abbr title="App\Services\Federation\FederationBridge::isProtocolEnabled">isProtocolEnabled</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#191"><abbr title="App\Services\Federation\FederationBridge::getFederationStatus">getFederationStatus</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#215"><abbr title="App\Services\Federation\FederationBridge::federatePostToMatrix">federatePostToMatrix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#247"><abbr title="App\Services\Federation\FederationBridge::federatePostToActivityPub">federatePostToActivityPub</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#279"><abbr title="App\Services\Federation\FederationBridge::federateUserToMatrix">federateUserToMatrix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#309"><abbr title="App\Services\Federation\FederationBridge::federateUserToActivityPub">federateUserToActivityPub</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#339"><abbr title="App\Services\Federation\FederationBridge::federateGroupToMatrix">federateGroupToMatrix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#369"><abbr title="App\Services\Federation\FederationBridge::federateGroupToActivityPub">federateGroupToActivityPub</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#399"><abbr title="App\Services\Federation\FederationBridge::handleMatrixEvent">handleMatrixEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#411"><abbr title="App\Services\Federation\FederationBridge::handleActivityPubActivity">handleActivityPubActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#423"><abbr title="App\Services\Federation\FederationBridge::logFederationActivity">logFederationActivity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#437"><abbr title="App\Services\Federation\FederationBridge::getMatrixServerName">getMatrixServerName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#445"><abbr title="App\Services\Federation\FederationBridge::getActivityPubServerName">getActivityPubServerName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#453"><abbr title="App\Services\Federation\FederationBridge::prepareEncryptionHooks">prepareEncryptionHooks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FederationBridge.php.html#472"><abbr title="App\Services\Federation\FederationBridge::getFederationCompatibility">getFederationCompatibility</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#19"><abbr title="App\Services\Federation\MatrixEventMapper::postToMatrixEvent">postToMatrixEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#59"><abbr title="App\Services\Federation\MatrixEventMapper::userToMatrixProfile">userToMatrixProfile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#78"><abbr title="App\Services\Federation\MatrixEventMapper::groupToMatrixRoom">groupToMatrixRoom</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#98"><abbr title="App\Services\Federation\MatrixEventMapper::circleToMatrixSpace">circleToMatrixSpace</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#117"><abbr title="App\Services\Federation\MatrixEventMapper::getUserMatrixId">getUserMatrixId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#128"><abbr title="App\Services\Federation\MatrixEventMapper::generateUsername">generateUsername</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#145"><abbr title="App\Services\Federation\MatrixEventMapper::generateMatrixEventId">generateMatrixEventId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#155"><abbr title="App\Services\Federation\MatrixEventMapper::getGroupMatrixRoomId">getGroupMatrixRoomId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#165"><abbr title="App\Services\Federation\MatrixEventMapper::getCircleMatrixSpaceId">getCircleMatrixSpaceId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#175"><abbr title="App\Services\Federation\MatrixEventMapper::getMessageType">getMessageType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#196"><abbr title="App\Services\Federation\MatrixEventMapper::extractPlainText">extractPlainText</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#205"><abbr title="App\Services\Federation\MatrixEventMapper::formatContentForMatrix">formatContentForMatrix</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#216"><abbr title="App\Services\Federation\MatrixEventMapper::convertToMatrixMxc">convertToMatrixMxc</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#229"><abbr title="App\Services\Federation\MatrixEventMapper::getMatrixJoinRule">getMatrixJoinRule</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#242"><abbr title="App\Services\Federation\MatrixEventMapper::getMatrixHistoryVisibility">getMatrixHistoryVisibility</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#255"><abbr title="App\Services\Federation\MatrixEventMapper::createMembershipEvent">createMembershipEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#277"><abbr title="App\Services\Federation\MatrixEventMapper::createReactionEvent">createReactionEvent</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ActivityPubMapper.php.html#471"><abbr title="App\Services\Federation\ActivityPubMapper::guessMediaType">guessMediaType</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="FederationBridge.php.html#107"><abbr title="App\Services\Federation\FederationBridge::handleIncomingActivity">handleIncomingActivity</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#386"><abbr title="App\Services\Federation\ActivityPubMapper::getPostAudience">getPostAudience</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#26"><abbr title="App\Services\Federation\ActivityPubMapper::postToActivityPubObject">postToActivityPubObject</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#19"><abbr title="App\Services\Federation\MatrixEventMapper::postToMatrixEvent">postToMatrixEvent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#175"><abbr title="App\Services\Federation\MatrixEventMapper::getMessageType">getMessageType</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#229"><abbr title="App\Services\Federation\MatrixEventMapper::getMatrixJoinRule">getMatrixJoinRule</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#242"><abbr title="App\Services\Federation\MatrixEventMapper::getMatrixHistoryVisibility">getMatrixHistoryVisibility</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="FederationBridge.php.html#39"><abbr title="App\Services\Federation\FederationBridge::federatePost">federatePost</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="FederationBridge.php.html#63"><abbr title="App\Services\Federation\FederationBridge::federateUser">federateUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="FederationBridge.php.html#85"><abbr title="App\Services\Federation\FederationBridge::federateGroup">federateGroup</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="FederationBridge.php.html#171"><abbr title="App\Services\Federation\FederationBridge::getUserFederatedIdentity">getUserFederatedIdentity</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#374"><abbr title="App\Services\Federation\ActivityPubMapper::getActivityPubType">getActivityPubType</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#441"><abbr title="App\Services\Federation\ActivityPubMapper::extractTags">extractTags</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#79"><abbr title="App\Services\Federation\ActivityPubMapper::userToActivityPubActor">userToActivityPubActor</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#121"><abbr title="App\Services\Federation\ActivityPubMapper::groupToActivityPubGroup">groupToActivityPubGroup</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#255"><abbr title="App\Services\Federation\ActivityPubMapper::generateUsername">generateUsername</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ActivityPubMapper.php.html#413"><abbr title="App\Services\Federation\ActivityPubMapper::getPostCcAudience">getPostCcAudience</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FederationBridge.php.html#215"><abbr title="App\Services\Federation\FederationBridge::federatePostToMatrix">federatePostToMatrix</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FederationBridge.php.html#247"><abbr title="App\Services\Federation\FederationBridge::federatePostToActivityPub">federatePostToActivityPub</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FederationBridge.php.html#279"><abbr title="App\Services\Federation\FederationBridge::federateUserToMatrix">federateUserToMatrix</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FederationBridge.php.html#309"><abbr title="App\Services\Federation\FederationBridge::federateUserToActivityPub">federateUserToActivityPub</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FederationBridge.php.html#339"><abbr title="App\Services\Federation\FederationBridge::federateGroupToMatrix">federateGroupToMatrix</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="FederationBridge.php.html#369"><abbr title="App\Services\Federation\FederationBridge::federateGroupToActivityPub">federateGroupToActivityPub</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#59"><abbr title="App\Services\Federation\MatrixEventMapper::userToMatrixProfile">userToMatrixProfile</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#78"><abbr title="App\Services\Federation\MatrixEventMapper::groupToMatrixRoom">groupToMatrixRoom</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#117"><abbr title="App\Services\Federation\MatrixEventMapper::getUserMatrixId">getUserMatrixId</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#128"><abbr title="App\Services\Federation\MatrixEventMapper::generateUsername">generateUsername</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#145"><abbr title="App\Services\Federation\MatrixEventMapper::generateMatrixEventId">generateMatrixEventId</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="MatrixEventMapper.php.html#255"><abbr title="App\Services\Federation\MatrixEventMapper::createMembershipEvent">createMembershipEvent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.5.6-dev</a> and <a href="https://phpunit.de/">PHPUnit 12.5.8</a> at Thu Apr 2 17:21:57 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,60,"ActivityPubMapper.php.html#14","App\\Services\\Federation\\ActivityPubMapper","3660"],[0,47,"FederationBridge.php.html#16","App\\Services\\Federation\\FederationBridge","2256"],[0,39,"MatrixEventMapper.php.html#14","App\\Services\\Federation\\MatrixEventMapper","1560"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"ActivityPubMapper.php.html#18","App\\Services\\Federation\\ActivityPubMapper::__construct","2"],[0,5,"ActivityPubMapper.php.html#26","App\\Services\\Federation\\ActivityPubMapper::postToActivityPubObject","30"],[0,2,"ActivityPubMapper.php.html#79","App\\Services\\Federation\\ActivityPubMapper::userToActivityPubActor","6"],[0,2,"ActivityPubMapper.php.html#121","App\\Services\\Federation\\ActivityPubMapper::groupToActivityPubGroup","6"],[0,1,"ActivityPubMapper.php.html#156","App\\Services\\Federation\\ActivityPubMapper::circleToActivityPubCollection","2"],[0,1,"ActivityPubMapper.php.html#183","App\\Services\\Federation\\ActivityPubMapper::createPostActivity","2"],[0,1,"ActivityPubMapper.php.html#200","App\\Services\\Federation\\ActivityPubMapper::createLikeActivity","2"],[0,1,"ActivityPubMapper.php.html#215","App\\Services\\Federation\\ActivityPubMapper::createFollowActivity","2"],[0,1,"ActivityPubMapper.php.html#230","App\\Services\\Federation\\ActivityPubMapper::createJoinActivity","2"],[0,1,"ActivityPubMapper.php.html#245","App\\Services\\Federation\\ActivityPubMapper::getUserUrl","2"],[0,2,"ActivityPubMapper.php.html#255","App\\Services\\Federation\\ActivityPubMapper::generateUsername","6"],[0,1,"ActivityPubMapper.php.html#269","App\\Services\\Federation\\ActivityPubMapper::getUserProfileUrl","2"],[0,1,"ActivityPubMapper.php.html#276","App\\Services\\Federation\\ActivityPubMapper::getUserInboxUrl","2"],[0,1,"ActivityPubMapper.php.html#283","App\\Services\\Federation\\ActivityPubMapper::getUserOutboxUrl","2"],[0,1,"ActivityPubMapper.php.html#290","App\\Services\\Federation\\ActivityPubMapper::getUserFollowersUrl","2"],[0,1,"ActivityPubMapper.php.html#297","App\\Services\\Federation\\ActivityPubMapper::getUserFollowingUrl","2"],[0,1,"ActivityPubMapper.php.html#304","App\\Services\\Federation\\ActivityPubMapper::getPostUrl","2"],[0,1,"ActivityPubMapper.php.html#309","App\\Services\\Federation\\ActivityPubMapper::getPostActivityUrl","2"],[0,1,"ActivityPubMapper.php.html#314","App\\Services\\Federation\\ActivityPubMapper::getGroupUrl","2"],[0,1,"ActivityPubMapper.php.html#319","App\\Services\\Federation\\ActivityPubMapper::getGroupProfileUrl","2"],[0,1,"ActivityPubMapper.php.html#324","App\\Services\\Federation\\ActivityPubMapper::getGroupInboxUrl","2"],[0,1,"ActivityPubMapper.php.html#329","App\\Services\\Federation\\ActivityPubMapper::getGroupOutboxUrl","2"],[0,1,"ActivityPubMapper.php.html#334","App\\Services\\Federation\\ActivityPubMapper::getGroupMembersUrl","2"],[0,1,"ActivityPubMapper.php.html#339","App\\Services\\Federation\\ActivityPubMapper::getCircleUrl","2"],[0,1,"ActivityPubMapper.php.html#344","App\\Services\\Federation\\ActivityPubMapper::getCircleMembersUrl","2"],[0,1,"ActivityPubMapper.php.html#349","App\\Services\\Federation\\ActivityPubMapper::getLikeActivityUrl","2"],[0,1,"ActivityPubMapper.php.html#356","App\\Services\\Federation\\ActivityPubMapper::getFollowActivityUrl","2"],[0,1,"ActivityPubMapper.php.html#364","App\\Services\\Federation\\ActivityPubMapper::getJoinActivityUrl","2"],[0,3,"ActivityPubMapper.php.html#374","App\\Services\\Federation\\ActivityPubMapper::getActivityPubType","12"],[0,6,"ActivityPubMapper.php.html#386","App\\Services\\Federation\\ActivityPubMapper::getPostAudience","42"],[0,2,"ActivityPubMapper.php.html#413","App\\Services\\Federation\\ActivityPubMapper::getPostCcAudience","6"],[0,1,"ActivityPubMapper.php.html#426","App\\Services\\Federation\\ActivityPubMapper::mapMediaAttachments","2"],[0,3,"ActivityPubMapper.php.html#441","App\\Services\\Federation\\ActivityPubMapper::extractTags","12"],[0,9,"ActivityPubMapper.php.html#471","App\\Services\\Federation\\ActivityPubMapper::guessMediaType","90"],[0,1,"ActivityPubMapper.php.html#491","App\\Services\\Federation\\ActivityPubMapper::getUserPublicKey","2"],[0,1,"FederationBridge.php.html#26","App\\Services\\Federation\\FederationBridge::__construct","2"],[0,4,"FederationBridge.php.html#39","App\\Services\\Federation\\FederationBridge::federatePost","20"],[0,4,"FederationBridge.php.html#63","App\\Services\\Federation\\FederationBridge::federateUser","20"],[0,4,"FederationBridge.php.html#85","App\\Services\\Federation\\FederationBridge::federateGroup","20"],[0,7,"FederationBridge.php.html#107","App\\Services\\Federation\\FederationBridge::handleIncomingActivity","56"],[0,1,"FederationBridge.php.html#133","App\\Services\\Federation\\FederationBridge::getFederationMapping","2"],[0,1,"FederationBridge.php.html#145","App\\Services\\Federation\\FederationBridge::createFederationMapping","2"],[0,4,"FederationBridge.php.html#171","App\\Services\\Federation\\FederationBridge::getUserFederatedIdentity","20"],[0,1,"FederationBridge.php.html#183","App\\Services\\Federation\\FederationBridge::isProtocolEnabled","2"],[0,1,"FederationBridge.php.html#191","App\\Services\\Federation\\FederationBridge::getFederationStatus","2"],[0,2,"FederationBridge.php.html#215","App\\Services\\Federation\\FederationBridge::federatePostToMatrix","6"],[0,2,"FederationBridge.php.html#247","App\\Services\\Federation\\FederationBridge::federatePostToActivityPub","6"],[0,2,"FederationBridge.php.html#279","App\\Services\\Federation\\FederationBridge::federateUserToMatrix","6"],[0,2,"FederationBridge.php.html#309","App\\Services\\Federation\\FederationBridge::federateUserToActivityPub","6"],[0,2,"FederationBridge.php.html#339","App\\Services\\Federation\\FederationBridge::federateGroupToMatrix","6"],[0,2,"FederationBridge.php.html#369","App\\Services\\Federation\\FederationBridge::federateGroupToActivityPub","6"],[0,1,"FederationBridge.php.html#399","App\\Services\\Federation\\FederationBridge::handleMatrixEvent","2"],[0,1,"FederationBridge.php.html#411","App\\Services\\Federation\\FederationBridge::handleActivityPubActivity","2"],[0,1,"FederationBridge.php.html#423","App\\Services\\Federation\\FederationBridge::logFederationActivity","2"],[0,1,"FederationBridge.php.html#437","App\\Services\\Federation\\FederationBridge::getMatrixServerName","2"],[0,1,"FederationBridge.php.html#445","App\\Services\\Federation\\FederationBridge::getActivityPubServerName","2"],[0,1,"FederationBridge.php.html#453","App\\Services\\Federation\\FederationBridge::prepareEncryptionHooks","2"],[0,1,"FederationBridge.php.html#472","App\\Services\\Federation\\FederationBridge::getFederationCompatibility","2"],[0,5,"MatrixEventMapper.php.html#19","App\\Services\\Federation\\MatrixEventMapper::postToMatrixEvent","30"],[0,2,"MatrixEventMapper.php.html#59","App\\Services\\Federation\\MatrixEventMapper::userToMatrixProfile","6"],[0,2,"MatrixEventMapper.php.html#78","App\\Services\\Federation\\MatrixEventMapper::groupToMatrixRoom","6"],[0,1,"MatrixEventMapper.php.html#98","App\\Services\\Federation\\MatrixEventMapper::circleToMatrixSpace","2"],[0,2,"MatrixEventMapper.php.html#117","App\\Services\\Federation\\MatrixEventMapper::getUserMatrixId","6"],[0,2,"MatrixEventMapper.php.html#128","App\\Services\\Federation\\MatrixEventMapper::generateUsername","6"],[0,2,"MatrixEventMapper.php.html#145","App\\Services\\Federation\\MatrixEventMapper::generateMatrixEventId","6"],[0,1,"MatrixEventMapper.php.html#155","App\\Services\\Federation\\MatrixEventMapper::getGroupMatrixRoomId","2"],[0,1,"MatrixEventMapper.php.html#165","App\\Services\\Federation\\MatrixEventMapper::getCircleMatrixSpaceId","2"],[0,5,"MatrixEventMapper.php.html#175","App\\Services\\Federation\\MatrixEventMapper::getMessageType","30"],[0,1,"MatrixEventMapper.php.html#196","App\\Services\\Federation\\MatrixEventMapper::extractPlainText","2"],[0,1,"MatrixEventMapper.php.html#205","App\\Services\\Federation\\MatrixEventMapper::formatContentForMatrix","2"],[0,1,"MatrixEventMapper.php.html#216","App\\Services\\Federation\\MatrixEventMapper::convertToMatrixMxc","2"],[0,5,"MatrixEventMapper.php.html#229","App\\Services\\Federation\\MatrixEventMapper::getMatrixJoinRule","30"],[0,5,"MatrixEventMapper.php.html#242","App\\Services\\Federation\\MatrixEventMapper::getMatrixHistoryVisibility","30"],[0,2,"MatrixEventMapper.php.html#255","App\\Services\\Federation\\MatrixEventMapper::createMembershipEvent","6"],[0,1,"MatrixEventMapper.php.html#277","App\\Services\\Federation\\MatrixEventMapper::createReactionEvent","2"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [3,0,0,0,0,0,0,0,0,0,0,0])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [75,0,0,0,0,0,0,0,0,0,0,0])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

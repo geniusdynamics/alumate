@@ -286,7 +286,7 @@ import { ref, onMounted, nextTick, watch } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { useLearningStore } from '../../Stores/useLearningStore';
 import { useLearning } from '../../Composables/useLearning';
-import type { LearningProgress } from '../../Types/analytics';
+import type { LearningProgress } from '../../types/analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);

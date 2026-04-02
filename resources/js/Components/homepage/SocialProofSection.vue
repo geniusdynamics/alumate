@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType } from '@/Types/homepage';
+import type { AudienceType } from '@/types/homepage';
 import { computed, ref } from 'vue';
 import PlatformStatistics from './PlatformStatistics.vue';
 import TestimonialsCarousel from './TestimonialsCarousel.vue';

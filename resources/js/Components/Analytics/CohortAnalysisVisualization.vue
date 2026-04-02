@@ -578,7 +578,7 @@ import type {
     CohortInsight,
     ConversionStep,
     Trend
-} from '../../Types/analytics';
+} from '../../types/analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);

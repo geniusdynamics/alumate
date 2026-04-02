@@ -186,7 +186,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { AcademicCapIcon, MapPinIcon, MicrophoneIcon, StarIcon, UserIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({

@@ -77,7 +77,7 @@ class CrmIntegrationService
             ->where('is_active', true)
             ->first();
     }
-}   
+
  private function mapSubmissionToLeadData(FormSubmission $submission, array $crmConfig): array
     {
         $submissionData = $submission->submission_data;
@@ -186,7 +186,6 @@ class CrmIntegrationService
             ];
         }
     }
-} 
    private function sendToPipedrive(CrmIntegration $integration, array $leadData): array
     {
         $config = $integration->configuration;

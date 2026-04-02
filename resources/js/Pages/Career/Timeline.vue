@@ -245,7 +245,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import CareerEntryModal from '@/Components/CareerEntryModal.vue';
 import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
 import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';

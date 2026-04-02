@@ -164,9 +164,9 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { ref, computed, watch } from 'vue';
-import type { CustomEventDefinition, SchemaField } from '../../../Types/analytics';
+import type { CustomEventDefinition, SchemaField } from '../../../types/analytics';
 
 // Props
 const props = defineProps<{

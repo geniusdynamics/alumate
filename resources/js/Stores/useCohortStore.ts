@@ -6,7 +6,7 @@ import type {
     CohortComparisonData,
     CohortFilterOptions,
     CohortApiResponse
-} from '../Types/analytics';
+} from '../types/analytics';
 
 export const useCohortStore = defineStore('cohort', () => {
     // State

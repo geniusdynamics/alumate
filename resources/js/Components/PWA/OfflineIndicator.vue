@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { CheckCircleIcon, ExclamationTriangleIcon, SignalSlashIcon, WifiIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 

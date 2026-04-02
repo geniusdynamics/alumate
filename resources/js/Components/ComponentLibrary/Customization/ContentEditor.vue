@@ -427,7 +427,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { ContentBlock } from '@/types/Components';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 

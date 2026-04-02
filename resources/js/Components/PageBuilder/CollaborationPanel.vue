@@ -194,7 +194,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import Icon from '@/Components/ui/Icon.vue';
 import { useCollaboration } from '@/Composables/useCollaboration';
 import { onMounted, onUnmounted } from 'vue';

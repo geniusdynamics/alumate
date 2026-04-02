@@ -159,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType, InstitutionTestimonial, SuccessMetric, Testimonial } from '@/Types/homepage';
+import type { AudienceType, InstitutionTestimonial, SuccessMetric, Testimonial } from '@/types/homepage';
 
 interface Props {
     testimonial: Testimonial | InstitutionTestimonial;

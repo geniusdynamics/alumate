@@ -264,7 +264,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue';
 import { useSessionPlayback } from '../../Composables/useSessionPlayback';
-import type { SessionPlayerProps, SessionEvent, SessionAnnotation } from '../../Types/analytics';
+import type { SessionPlayerProps, SessionEvent, SessionAnnotation } from '../../types/analytics';
 
 // Props
 const props = withDefaults(defineProps<SessionPlayerProps>(), {

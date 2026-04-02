@@ -64,7 +64,7 @@
 </template>
 <script setup lang="ts">
 import HomepageNavigation from '@/Components/navigation/HomepageNavigation.vue';
-import MegaFooter from '@/Components/Homepage/MegaFooter.vue';
+import MegaFooter from '@/Components/homepage/MegaFooter.vue';
 import { accessibilityService } from '@/Services/AccessibilityService';
 import { seoService } from '@/Services/SEOService';
 import { Head } from '@inertiajs/vue3';

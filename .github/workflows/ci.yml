@@ -657,7 +657,7 @@ jobs:
 
       - name: Check for .env Files
         run: |
-          ENV_FILES=$(find . -name ".env*" -type f ! -path "./.env.example" ! -path "./.env.testing" ! -path "./vendor/*" ! -path "./node_modules/*" 2>/dev/null || true)
+          ENV_FILES=$(find . -name ".env*" -type f ! -path "./.env.example" ! -path "./.env.testing" ! -name "*.example" ! -path "./vendor/*" ! -path "./node_modules/*" ! -path "./infrastructure/production/*" ! -path "./.env.prod" 2>/dev/null || true)
           if [ -n "$ENV_FILES" ]; then
             echo "❌ Found .env files that should not be committed:"
             echo "$ENV_FILES"

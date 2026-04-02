@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import AdminLayout from '@/Components/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';

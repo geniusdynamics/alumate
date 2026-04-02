@@ -258,7 +258,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import Icon from '@/Components/Common/Icon.vue';
 import type { Component, ComponentCategory } from '@/types/Components';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';

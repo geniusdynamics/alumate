@@ -147,7 +147,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import axios from 'axios';
 import { computed, onMounted, reactive, ref } from 'vue';
 

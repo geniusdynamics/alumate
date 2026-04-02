@@ -108,7 +108,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { HeroEmployer, HeroIndividual, HeroInstitution, getHeroConfigForAudience } from '@/Components/ComponentLibrary/Hero';
 import ValidationDisplay from '@/Components/ComponentLibrary/ValidationDisplay.vue';
 import type { AudienceType, HeroComponentConfig } from '@/types/Components';

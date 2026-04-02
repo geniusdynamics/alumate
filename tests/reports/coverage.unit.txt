@@ -1,0 +1,32 @@
+
+
+Code Coverage Report:
+  2026-04-02 17:22:07
+
+ Summary:
+  Classes:  0.00% (0/925)
+  Methods:  0.24% (26/10708)
+  Lines:    0.47% (529/112080)
+
+App\Models\CareerPath
+  Methods:  14.29% ( 1/ 7)   Lines:  38.71% ( 12/ 31)
+App\Models\IndustryPlacement
+  Methods:  40.00% ( 2/ 5)   Lines:  57.14% (  4/  7)
+App\Models\ProgramEffectiveness
+  Methods:  25.00% ( 2/ 8)   Lines:  30.43% ( 14/ 46)
+App\Models\SalaryProgression
+  Methods:  16.67% ( 1/ 6)   Lines:  54.55% (  6/ 11)
+App\Services\Analytics\AnalyticsDashboardIntegrationService
+  Methods:  12.12% ( 4/33)   Lines:  36.57% (211/577)
+App\Services\Analytics\AnalyticsErrorHandlerService
+  Methods:   5.13% ( 2/39)   Lines:   2.58% ( 16/621)
+App\Services\Analytics\AnalyticsLoggingService
+  Methods:  14.29% ( 3/21)   Lines:  10.21% ( 43/421)
+App\Services\Analytics\AnalyticsMetricsCollectionService
+  Methods:  14.29% ( 3/21)   Lines:  18.72% ( 79/422)
+App\Services\Analytics\AutomatedInsightsService
+  Methods:  14.71% ( 5/34)   Lines:  18.75% (138/736)
+App\Services\BaseService
+  Methods:   5.26% ( 1/19)   Lines:   6.25% (  4/ 64)
+App\Services\TenantContextService
+  Methods:   5.41% ( 2/37)   Lines:   0.90% (  2/222)

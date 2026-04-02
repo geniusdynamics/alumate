@@ -148,7 +148,7 @@
 <script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, reactive, ref } from 'vue';
-import type { DemoRequestData } from '../../Types/homepage';
+import type { DemoRequestData } from '../../types/homepage';
 import LoadingSpinner from '../ui/LoadingSpinner.vue';
 
 interface Props {

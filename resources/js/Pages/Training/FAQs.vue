@@ -198,7 +198,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,

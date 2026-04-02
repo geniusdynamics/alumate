@@ -829,3 +829,5 @@ class SuperAdminAnalytics extends Model
         }
 
         return $report;
+    }
+}

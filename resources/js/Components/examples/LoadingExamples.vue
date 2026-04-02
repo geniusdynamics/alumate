@@ -166,7 +166,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { onUnmounted, ref } from 'vue';
 import ContextualLoader from '../ui/ContextualLoader.vue';
 import ShimmerEffect from '../ui/ShimmerEffect.vue';

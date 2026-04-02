@@ -254,7 +254,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { useAuthStore } from '@/Stores/auth';
 import { useMessagingStore } from '@/Stores/messaging';
 import { formatDistanceToNow } from 'date-fns';

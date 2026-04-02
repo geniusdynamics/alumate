@@ -187,7 +187,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { FormBase, FormBuilder } from '@/Components/ComponentLibrary/Forms';
 import { contactTemplate, demoRequestTemplate, formTemplates, leadCaptureTemplate } from '@/Components/ComponentLibrary/Forms/templates';
 import type { FormComponentConfig } from '@/types/Components';

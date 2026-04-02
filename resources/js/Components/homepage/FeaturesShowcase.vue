@@ -557,8 +557,8 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
-import type { AudienceType, FeatureStatistic, InstitutionalFeature, PlatformFeature } from '@/Types/homepage';
+import { logger } from '@/utils/logger';
+import type { AudienceType, FeatureStatistic, InstitutionalFeature, PlatformFeature } from '@/types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 import FeatureComparisonMatrix from './FeatureComparisonMatrix.vue';
 

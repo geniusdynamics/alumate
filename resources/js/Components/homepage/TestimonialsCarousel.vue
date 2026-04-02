@@ -175,7 +175,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType, InstitutionTestimonial, Testimonial } from '@/Types/homepage';
+import type { AudienceType, InstitutionTestimonial, Testimonial } from '@/types/homepage';
 import { useResizeObserver } from '@vueuse/core';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import TestimonialCard from './TestimonialCard.vue';

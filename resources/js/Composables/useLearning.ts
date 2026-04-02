@@ -1,7 +1,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useWebSocket } from '@vueuse/core';
 import { useLearningStore } from '../Stores/useLearningStore';
-import type { LearningProgress } from '../Types/analytics';
+import type { LearningProgress } from '../types/analytics';
 
 /**
  * Composable for learning analytics functionality

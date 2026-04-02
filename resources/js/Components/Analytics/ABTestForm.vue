@@ -224,7 +224,7 @@
 
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue';
-import type { ABTestData, ABTestFormProps } from '../../Types/analytics';
+import type { ABTestData, ABTestFormProps } from '../../types/analytics';
 
 // Props
 const props = withDefaults(defineProps<ABTestFormProps>(), {

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /workspace/app/Jobs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/workspace/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Jobs</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Analytics/InsightsGenerationJob.php.html#21">App\Jobs\Analytics\InsightsGenerationJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#15">App\Jobs\CalculateJobMatchesJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ConsentPurgeJob.php.html#22">App\Jobs\ConsentPurgeJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#14">App\Jobs\GenerateRecommendationsJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateTaxReceiptJob.php.html#15">App\Jobs\GenerateTaxReceiptJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GoogleSyncJob.php.html#18">App\Jobs\GoogleSyncJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LearningScoreJob.php.html#22">App\Jobs\LearningScoreJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatomoSyncJob.php.html#18">App\Jobs\MatomoSyncJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MentorshipMatchingJob.php.html#15">App\Jobs\MentorshipMatchingJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#23">App\Jobs\OptimizeAnalyticsCacheJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAchievementCelebrationJob.php.html#14">App\Jobs\ProcessAchievementCelebrationJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#29">App\Jobs\ProcessAnalyticsEvents</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#13">App\Jobs\ProcessAutomationRuleJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#13">App\Jobs\ProcessCrmWebhook</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#13">App\Jobs\ProcessFileUpload</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFormSubmissionToCrm.php.html#13">App\Jobs\ProcessFormSubmissionToCrm</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#16">App\Jobs\ProcessGroupInvitationsJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#20">App\Jobs\ProcessImageUpload</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessRecurringDonationsJob.php.html#14">App\Jobs\ProcessRecurringDonationsJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlerts.php.html#16">App\Jobs\ProcessSearchAlerts</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlertsJob.php.html#15">App\Jobs\ProcessSearchAlertsJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#15">App\Jobs\PublishScheduledPostJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#15">App\Jobs\RefreshTimelinesJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetryFailedCrmSubmission.php.html#14">App\Jobs\RetryFailedCrmSubmission</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#19">App\Jobs\RouteLeadToCrm</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#22">App\Jobs\ScanFileForVirus</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#15">App\Jobs\SendDonationAcknowledgmentJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendEmailCampaignJob.php.html#13">App\Jobs\SendEmailCampaignJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#15">App\Jobs\SendNotificationDigestJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#16">App\Jobs\SendSequenceEmailJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendTaxReceiptEmailJob.php.html#15">App\Jobs\SendTaxReceiptEmailJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#25">App\Jobs\SyncAnalyticsData</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#13">App\Jobs\SyncLeadToCrm</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UpdateUserCirclesJob.php.html#14">App\Jobs\UpdateUserCirclesJob</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WarmCacheJob.php.html#14">App\Jobs\WarmCacheJob</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#29">App\Jobs\ProcessAnalyticsEvents</a></td><td class="text-right">0.0%</td><td class="text-right">44</td><td class="text-right">1980</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#13">App\Jobs\ProcessCrmWebhook</a></td><td class="text-right">0.0%</td><td class="text-right">37</td><td class="text-right">1406</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#15">App\Jobs\CalculateJobMatchesJob</a></td><td class="text-right">0.0%</td><td class="text-right">30</td><td class="text-right">930</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#15">App\Jobs\RefreshTimelinesJob</a></td><td class="text-right">0.0%</td><td class="text-right">25</td><td class="text-right">650</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#22">App\Jobs\ScanFileForVirus</a></td><td class="text-right">0.0%</td><td class="text-right">24</td><td class="text-right">600</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#15">App\Jobs\SendNotificationDigestJob</a></td><td class="text-right">0.0%</td><td class="text-right">20</td><td class="text-right">420</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#13">App\Jobs\SyncLeadToCrm</a></td><td class="text-right">0.0%</td><td class="text-right">19</td><td class="text-right">380</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#14">App\Jobs\GenerateRecommendationsJob</a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#19">App\Jobs\RouteLeadToCrm</a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#15">App\Jobs\SendDonationAcknowledgmentJob</a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#23">App\Jobs\OptimizeAnalyticsCacheJob</a></td><td class="text-right">0.0%</td><td class="text-right">14</td><td class="text-right">210</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#20">App\Jobs\ProcessImageUpload</a></td><td class="text-right">0.0%</td><td class="text-right">14</td><td class="text-right">210</td></tr>
+       <tr><td><a href="LearningScoreJob.php.html#22">App\Jobs\LearningScoreJob</a></td><td class="text-right">0.0%</td><td class="text-right">13</td><td class="text-right">182</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#13">App\Jobs\ProcessFileUpload</a></td><td class="text-right">0.0%</td><td class="text-right">13</td><td class="text-right">182</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#16">App\Jobs\ProcessGroupInvitationsJob</a></td><td class="text-right">0.0%</td><td class="text-right">11</td><td class="text-right">132</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#15">App\Jobs\PublishScheduledPostJob</a></td><td class="text-right">0.0%</td><td class="text-right">10</td><td class="text-right">110</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#16">App\Jobs\SendSequenceEmailJob</a></td><td class="text-right">0.0%</td><td class="text-right">10</td><td class="text-right">110</td></tr>
+       <tr><td><a href="MentorshipMatchingJob.php.html#15">App\Jobs\MentorshipMatchingJob</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#13">App\Jobs\ProcessAutomationRuleJob</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#25">App\Jobs\SyncAnalyticsData</a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="RetryFailedCrmSubmission.php.html#14">App\Jobs\RetryFailedCrmSubmission</a></td><td class="text-right">0.0%</td><td class="text-right">8</td><td class="text-right">72</td></tr>
+       <tr><td><a href="ConsentPurgeJob.php.html#22">App\Jobs\ConsentPurgeJob</a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="GoogleSyncJob.php.html#18">App\Jobs\GoogleSyncJob</a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="ProcessSearchAlerts.php.html#16">App\Jobs\ProcessSearchAlerts</a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="GenerateTaxReceiptJob.php.html#15">App\Jobs\GenerateTaxReceiptJob</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="MatomoSyncJob.php.html#18">App\Jobs\MatomoSyncJob</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="ProcessSearchAlertsJob.php.html#15">App\Jobs\ProcessSearchAlertsJob</a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="Analytics/InsightsGenerationJob.php.html#21">App\Jobs\Analytics\InsightsGenerationJob</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="ProcessRecurringDonationsJob.php.html#14">App\Jobs\ProcessRecurringDonationsJob</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="SendEmailCampaignJob.php.html#13">App\Jobs\SendEmailCampaignJob</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="UpdateUserCirclesJob.php.html#14">App\Jobs\UpdateUserCirclesJob</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="WarmCacheJob.php.html#14">App\Jobs\WarmCacheJob</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="ProcessFormSubmissionToCrm.php.html#13">App\Jobs\ProcessFormSubmissionToCrm</a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="SendTaxReceiptEmailJob.php.html#15">App\Jobs\SendTaxReceiptEmailJob</a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="ProcessAchievementCelebrationJob.php.html#14">App\Jobs\ProcessAchievementCelebrationJob</a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Analytics/InsightsGenerationJob.php.html#28"><abbr title="App\Jobs\Analytics\InsightsGenerationJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Analytics/InsightsGenerationJob.php.html#35"><abbr title="App\Jobs\Analytics\InsightsGenerationJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Analytics/InsightsGenerationJob.php.html#73"><abbr title="App\Jobs\Analytics\InsightsGenerationJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#26"><abbr title="App\Jobs\CalculateJobMatchesJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#35"><abbr title="App\Jobs\CalculateJobMatchesJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#63"><abbr title="App\Jobs\CalculateJobMatchesJob::calculateSingleMatch">calculateSingleMatch</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#96"><abbr title="App\Jobs\CalculateJobMatchesJob::calculateJobMatches">calculateJobMatches</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#137"><abbr title="App\Jobs\CalculateJobMatchesJob::calculateUserMatches">calculateUserMatches</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#178"><abbr title="App\Jobs\CalculateJobMatchesJob::recalculateAllMatches">recalculateAllMatches</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#215"><abbr title="App\Jobs\CalculateJobMatchesJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#229"><abbr title="App\Jobs\CalculateJobMatchesJob::forNewJob">forNewJob</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#237"><abbr title="App\Jobs\CalculateJobMatchesJob::forUser">forUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#245"><abbr title="App\Jobs\CalculateJobMatchesJob::forJobAndUser">forJobAndUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#253"><abbr title="App\Jobs\CalculateJobMatchesJob::recalculateAll">recalculateAll</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ConsentPurgeJob.php.html#35"><abbr title="App\Jobs\ConsentPurgeJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ConsentPurgeJob.php.html#44"><abbr title="App\Jobs\ConsentPurgeJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ConsentPurgeJob.php.html#85"><abbr title="App\Jobs\ConsentPurgeJob::optOutFromExternalPlatforms">optOutFromExternalPlatforms</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#29"><abbr title="App\Jobs\GenerateRecommendationsJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#38"><abbr title="App\Jobs\GenerateRecommendationsJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#61"><abbr title="App\Jobs\GenerateRecommendationsJob::generateForUser">generateForUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#86"><abbr title="App\Jobs\GenerateRecommendationsJob::generateForAllUsers">generateForAllUsers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#128"><abbr title="App\Jobs\GenerateRecommendationsJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#141"><abbr title="App\Jobs\GenerateRecommendationsJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateTaxReceiptJob.php.html#19"><abbr title="App\Jobs\GenerateTaxReceiptJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateTaxReceiptJob.php.html#23"><abbr title="App\Jobs\GenerateTaxReceiptJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GenerateTaxReceiptJob.php.html#64"><abbr title="App\Jobs\GenerateTaxReceiptJob::sendReceiptByEmail">sendReceiptByEmail</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GoogleSyncJob.php.html#35"><abbr title="App\Jobs\GoogleSyncJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GoogleSyncJob.php.html#45"><abbr title="App\Jobs\GoogleSyncJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="GoogleSyncJob.php.html#82"><abbr title="App\Jobs\GoogleSyncJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LearningScoreJob.php.html#35"><abbr title="App\Jobs\LearningScoreJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LearningScoreJob.php.html#44"><abbr title="App\Jobs\LearningScoreJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LearningScoreJob.php.html#157"><abbr title="App\Jobs\LearningScoreJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="LearningScoreJob.php.html#170"><abbr title="App\Jobs\LearningScoreJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatomoSyncJob.php.html#35"><abbr title="App\Jobs\MatomoSyncJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatomoSyncJob.php.html#45"><abbr title="App\Jobs\MatomoSyncJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MatomoSyncJob.php.html#81"><abbr title="App\Jobs\MatomoSyncJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MentorshipMatchingJob.php.html#19"><abbr title="App\Jobs\MentorshipMatchingJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MentorshipMatchingJob.php.html#23"><abbr title="App\Jobs\MentorshipMatchingJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="MentorshipMatchingJob.php.html#51"><abbr title="App\Jobs\MentorshipMatchingJob::processUserMatching">processUserMatching</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#34"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#48"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#108"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::warmLeaderboardCache">warmLeaderboardCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#125"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::warmMetricsCache">warmMetricsCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#148"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::warmHeatmapCache">warmHeatmapCache</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#160"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::setTenantContext">setTenantContext</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#170"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#178"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::middleware">middleware</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAchievementCelebrationJob.php.html#18"><abbr title="App\Jobs\ProcessAchievementCelebrationJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAchievementCelebrationJob.php.html#25"><abbr title="App\Jobs\ProcessAchievementCelebrationJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#36"><abbr title="App\Jobs\ProcessAnalyticsEvents::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#44"><abbr title="App\Jobs\ProcessAnalyticsEvents::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#133"><abbr title="App\Jobs\ProcessAnalyticsEvents::processEvent">processEvent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#157"><abbr title="App\Jobs\ProcessAnalyticsEvents::validateCompliance">validateCompliance</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#186"><abbr title="App\Jobs\ProcessAnalyticsEvents::hasRequiredConsent">hasRequiredConsent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#194"><abbr title="App\Jobs\ProcessAnalyticsEvents::getRetentionDays">getRetentionDays</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#205"><abbr title="App\Jobs\ProcessAnalyticsEvents::aggregateMetrics">aggregateMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#223"><abbr title="App\Jobs\ProcessAnalyticsEvents::incrementPageViewMetrics">incrementPageViewMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#236"><abbr title="App\Jobs\ProcessAnalyticsEvents::incrementEngagementMetrics">incrementEngagementMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#248"><abbr title="App\Jobs\ProcessAnalyticsEvents::incrementConversionMetrics">incrementConversionMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#260"><abbr title="App\Jobs\ProcessAnalyticsEvents::incrementComponentMetrics">incrementComponentMetrics</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#285"><abbr title="App\Jobs\ProcessAnalyticsEvents::recordEngagement">recordEngagement</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#310"><abbr title="App\Jobs\ProcessAnalyticsEvents::shouldRecordEngagement">shouldRecordEngagement</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#327"><abbr title="App\Jobs\ProcessAnalyticsEvents::recordHeatMapData">recordHeatMapData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#342"><abbr title="App\Jobs\ProcessAnalyticsEvents::forwardToGA4">forwardToGA4</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#368"><abbr title="App\Jobs\ProcessAnalyticsEvents::forwardToMatomo">forwardToMatomo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#397"><abbr title="App\Jobs\ProcessAnalyticsEvents::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#409"><abbr title="App\Jobs\ProcessAnalyticsEvents::broadcastAnalyticsUpdates">broadcastAnalyticsUpdates</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#448"><abbr title="App\Jobs\ProcessAnalyticsEvents::createEventSummary">createEventSummary</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#19"><abbr title="App\Jobs\ProcessAutomationRuleJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#24"><abbr title="App\Jobs\ProcessAutomationRuleJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#73"><abbr title="App\Jobs\ProcessAutomationRuleJob::generateSubject">generateSubject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#86"><abbr title="App\Jobs\ProcessAutomationRuleJob::getPersonalizationRules">getPersonalizationRules</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#24"><abbr title="App\Jobs\ProcessCrmWebhook::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#34"><abbr title="App\Jobs\ProcessCrmWebhook::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#105"><abbr title="App\Jobs\ProcessCrmWebhook::handleLeadCreated">handleLeadCreated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#154"><abbr title="App\Jobs\ProcessCrmWebhook::handleLeadUpdated">handleLeadUpdated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#195"><abbr title="App\Jobs\ProcessCrmWebhook::handleLeadDeleted">handleLeadDeleted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#227"><abbr title="App\Jobs\ProcessCrmWebhook::handleDealWon">handleDealWon</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#259"><abbr title="App\Jobs\ProcessCrmWebhook::handleDealLost">handleDealLost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#291"><abbr title="App\Jobs\ProcessCrmWebhook::mapCrmDataToLead">mapCrmDataToLead</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#324"><abbr title="App\Jobs\ProcessCrmWebhook::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#26"><abbr title="App\Jobs\ProcessFileUpload::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#36"><abbr title="App\Jobs\ProcessFileUpload::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#57"><abbr title="App\Jobs\ProcessFileUpload::processFile">processFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#81"><abbr title="App\Jobs\ProcessFileUpload::processImage">processImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#91"><abbr title="App\Jobs\ProcessFileUpload::processVideo">processVideo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#101"><abbr title="App\Jobs\ProcessFileUpload::processAudio">processAudio</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#111"><abbr title="App\Jobs\ProcessFileUpload::updateDatabase">updateDatabase</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#121"><abbr title="App\Jobs\ProcessFileUpload::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFormSubmissionToCrm.php.html#24"><abbr title="App\Jobs\ProcessFormSubmissionToCrm::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFormSubmissionToCrm.php.html#31"><abbr title="App\Jobs\ProcessFormSubmissionToCrm::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessFormSubmissionToCrm.php.html#57"><abbr title="App\Jobs\ProcessFormSubmissionToCrm::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#31"><abbr title="App\Jobs\ProcessGroupInvitationsJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#42"><abbr title="App\Jobs\ProcessGroupInvitationsJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#123"><abbr title="App\Jobs\ProcessGroupInvitationsJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#137"><abbr title="App\Jobs\ProcessGroupInvitationsJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#149"><abbr title="App\Jobs\ProcessGroupInvitationsJob::timeout">timeout</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#39"><abbr title="App\Jobs\ProcessImageUpload::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#46"><abbr title="App\Jobs\ProcessImageUpload::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#90"><abbr title="App\Jobs\ProcessImageUpload::generateThumbnails">generateThumbnails</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#122"><abbr title="App\Jobs\ProcessImageUpload::optimizeImage">optimizeImage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#153"><abbr title="App\Jobs\ProcessImageUpload::updateFileSize">updateFileSize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#177"><abbr title="App\Jobs\ProcessImageUpload::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#202"><abbr title="App\Jobs\ProcessImageUpload::retryUntil">retryUntil</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessRecurringDonationsJob.php.html#18"><abbr title="App\Jobs\ProcessRecurringDonationsJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessRecurringDonationsJob.php.html#23"><abbr title="App\Jobs\ProcessRecurringDonationsJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlerts.php.html#23"><abbr title="App\Jobs\ProcessSearchAlerts::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlerts.php.html#48"><abbr title="App\Jobs\ProcessSearchAlerts::processSearchAlert">processSearchAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlerts.php.html#115"><abbr title="App\Jobs\ProcessSearchAlerts::generateSearchUrl">generateSearchUrl</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlertsJob.php.html#22"><abbr title="App\Jobs\ProcessSearchAlertsJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlertsJob.php.html#30"><abbr title="App\Jobs\ProcessSearchAlertsJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ProcessSearchAlertsJob.php.html#58"><abbr title="App\Jobs\ProcessSearchAlertsJob::processAlert">processAlert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#21"><abbr title="App\Jobs\PublishScheduledPostJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#26"><abbr title="App\Jobs\PublishScheduledPostJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#93"><abbr title="App\Jobs\PublishScheduledPostJob::markAsFailed">markAsFailed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#107"><abbr title="App\Jobs\PublishScheduledPostJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#26"><abbr title="App\Jobs\RefreshTimelinesJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#35"><abbr title="App\Jobs\RefreshTimelinesJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#67"><abbr title="App\Jobs\RefreshTimelinesJob::refreshAllActiveUserTimelines">refreshAllActiveUserTimelines</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#101"><abbr title="App\Jobs\RefreshTimelinesJob::refreshTimelinesForPost">refreshTimelinesForPost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#119"><abbr title="App\Jobs\RefreshTimelinesJob::refreshSpecificUserTimelines">refreshSpecificUserTimelines</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#148"><abbr title="App\Jobs\RefreshTimelinesJob::isVeryActiveUser">isVeryActiveUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#157"><abbr title="App\Jobs\RefreshTimelinesJob::isActiveUser">isActiveUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#166"><abbr title="App\Jobs\RefreshTimelinesJob::forNewPost">forNewPost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#174"><abbr title="App\Jobs\RefreshTimelinesJob::forUsers">forUsers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#182"><abbr title="App\Jobs\RefreshTimelinesJob::forAllActiveUsers">forAllActiveUsers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#190"><abbr title="App\Jobs\RefreshTimelinesJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetryFailedCrmSubmission.php.html#25"><abbr title="App\Jobs\RetryFailedCrmSubmission::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetryFailedCrmSubmission.php.html#35"><abbr title="App\Jobs\RetryFailedCrmSubmission::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RetryFailedCrmSubmission.php.html#103"><abbr title="App\Jobs\RetryFailedCrmSubmission::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#30"><abbr title="App\Jobs\RouteLeadToCrm::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#41"><abbr title="App\Jobs\RouteLeadToCrm::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#113"><abbr title="App\Jobs\RouteLeadToCrm::isLeadAlreadyRouted">isLeadAlreadyRouted</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#121"><abbr title="App\Jobs\RouteLeadToCrm::recordSuccessfulRouting">recordSuccessfulRouting</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#150"><abbr title="App\Jobs\RouteLeadToCrm::recordRoutingFailure">recordRoutingFailure</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#181"><abbr title="App\Jobs\RouteLeadToCrm::updateLeadWithRoutingInfo">updateLeadWithRoutingInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#199"><abbr title="App\Jobs\RouteLeadToCrm::handleSyncFailure">handleSyncFailure</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#218"><abbr title="App\Jobs\RouteLeadToCrm::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#41"><abbr title="App\Jobs\ScanFileForVirus::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#48"><abbr title="App\Jobs\ScanFileForVirus::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#105"><abbr title="App\Jobs\ScanFileForVirus::handleCleanResult">handleCleanResult</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#120"><abbr title="App\Jobs\ScanFileForVirus::handleInfectedResult">handleInfectedResult</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#153"><abbr title="App\Jobs\ScanFileForVirus::handleUnknownResult">handleUnknownResult</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#173"><abbr title="App\Jobs\ScanFileForVirus::notifyUserOfInfection">notifyUserOfInfection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#197"><abbr title="App\Jobs\ScanFileForVirus::notifyAdminsOfInfection">notifyAdminsOfInfection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#226"><abbr title="App\Jobs\ScanFileForVirus::deleteInfectedFile">deleteInfectedFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#246"><abbr title="App\Jobs\ScanFileForVirus::quarantineFile">quarantineFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#269"><abbr title="App\Jobs\ScanFileForVirus::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#297"><abbr title="App\Jobs\ScanFileForVirus::retryUntil">retryUntil</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#19"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#23"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#67"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::sendEmailAcknowledgment">sendEmailAcknowledgment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#81"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::sendLetterAcknowledgment">sendLetterAcknowledgment</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#96"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::schedulePhoneCall">schedulePhoneCall</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#111"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::processPublicRecognition">processPublicRecognition</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendEmailCampaignJob.php.html#21"><abbr title="App\Jobs\SendEmailCampaignJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendEmailCampaignJob.php.html#25"><abbr title="App\Jobs\SendEmailCampaignJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendEmailCampaignJob.php.html#60"><abbr title="App\Jobs\SendEmailCampaignJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#26"><abbr title="App\Jobs\SendNotificationDigestJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#35"><abbr title="App\Jobs\SendNotificationDigestJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#62"><abbr title="App\Jobs\SendNotificationDigestJob::sendDigestForAllUsers">sendDigestForAllUsers</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#76"><abbr title="App\Jobs\SendNotificationDigestJob::sendDigestForUser">sendDigestForUser</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#134"><abbr title="App\Jobs\SendNotificationDigestJob::getSubject">getSubject</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#148"><abbr title="App\Jobs\SendNotificationDigestJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#26"><abbr title="App\Jobs\SendSequenceEmailJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#32"><abbr title="App\Jobs\SendSequenceEmailJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#107"><abbr title="App\Jobs\SendSequenceEmailJob::prepareEmailContent">prepareEmailContent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#132"><abbr title="App\Jobs\SendSequenceEmailJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#153"><abbr title="App\Jobs\SendSequenceEmailJob::middleware">middleware</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#164"><abbr title="App\Jobs\SendSequenceEmailJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendTaxReceiptEmailJob.php.html#19"><abbr title="App\Jobs\SendTaxReceiptEmailJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SendTaxReceiptEmailJob.php.html#23"><abbr title="App\Jobs\SendTaxReceiptEmailJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#32"><abbr title="App\Jobs\SyncAnalyticsData::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#42"><abbr title="App\Jobs\SyncAnalyticsData::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#105"><abbr title="App\Jobs\SyncAnalyticsData::shouldRunSync">shouldRunSync</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#125"><abbr title="App\Jobs\SyncAnalyticsData::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#138"><abbr title="App\Jobs\SyncAnalyticsData::retryUntil">retryUntil</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#24"><abbr title="App\Jobs\SyncLeadToCrm::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#35"><abbr title="App\Jobs\SyncLeadToCrm::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#126"><abbr title="App\Jobs\SyncLeadToCrm::mapLeadData">mapLeadData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#163"><abbr title="App\Jobs\SyncLeadToCrm::getLeadFieldValue">getLeadFieldValue</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#186"><abbr title="App\Jobs\SyncLeadToCrm::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UpdateUserCirclesJob.php.html#23"><abbr title="App\Jobs\UpdateUserCirclesJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UpdateUserCirclesJob.php.html#31"><abbr title="App\Jobs\UpdateUserCirclesJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UpdateUserCirclesJob.php.html#54"><abbr title="App\Jobs\UpdateUserCirclesJob::failed">failed</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="UpdateUserCirclesJob.php.html#66"><abbr title="App\Jobs\UpdateUserCirclesJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WarmCacheJob.php.html#23"><abbr title="App\Jobs\WarmCacheJob::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WarmCacheJob.php.html#31"><abbr title="App\Jobs\WarmCacheJob::handle">handle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="WarmCacheJob.php.html#68"><abbr title="App\Jobs\WarmCacheJob::tags">tags</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="ProcessCrmWebhook.php.html#34"><abbr title="App\Jobs\ProcessCrmWebhook::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">14</td><td class="text-right">210</td></tr>
+       <tr><td><a href="LearningScoreJob.php.html#44"><abbr title="App\Jobs\LearningScoreJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">10</td><td class="text-right">110</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#23"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">8</td><td class="text-right">72</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#163"><abbr title="App\Jobs\SyncLeadToCrm::getLeadFieldValue">getLeadFieldValue</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">8</td><td class="text-right">72</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#35"><abbr title="App\Jobs\CalculateJobMatchesJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#44"><abbr title="App\Jobs\ProcessAnalyticsEvents::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="ProcessGroupInvitationsJob.php.html#42"><abbr title="App\Jobs\ProcessGroupInvitationsJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#76"><abbr title="App\Jobs\SendNotificationDigestJob::sendDigestForUser">sendDigestForUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#48"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#205"><abbr title="App\Jobs\ProcessAnalyticsEvents::aggregateMetrics">aggregateMetrics</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#291"><abbr title="App\Jobs\ProcessCrmWebhook::mapCrmDataToLead">mapCrmDataToLead</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#26"><abbr title="App\Jobs\PublishScheduledPostJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="RetryFailedCrmSubmission.php.html#35"><abbr title="App\Jobs\RetryFailedCrmSubmission::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#48"><abbr title="App\Jobs\ScanFileForVirus::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#126"><abbr title="App\Jobs\SyncLeadToCrm::mapLeadData">mapLeadData</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">6</td><td class="text-right">42</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#96"><abbr title="App\Jobs\CalculateJobMatchesJob::calculateJobMatches">calculateJobMatches</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="GoogleSyncJob.php.html#45"><abbr title="App\Jobs\GoogleSyncJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="MentorshipMatchingJob.php.html#23"><abbr title="App\Jobs\MentorshipMatchingJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#57"><abbr title="App\Jobs\ProcessFileUpload::processFile">processFile</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#35"><abbr title="App\Jobs\RefreshTimelinesJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#119"><abbr title="App\Jobs\RefreshTimelinesJob::refreshSpecificUserTimelines">refreshSpecificUserTimelines</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#41"><abbr title="App\Jobs\RouteLeadToCrm::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#63"><abbr title="App\Jobs\CalculateJobMatchesJob::calculateSingleMatch">calculateSingleMatch</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#137"><abbr title="App\Jobs\CalculateJobMatchesJob::calculateUserMatches">calculateUserMatches</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="CalculateJobMatchesJob.php.html#178"><abbr title="App\Jobs\CalculateJobMatchesJob::recalculateAllMatches">recalculateAllMatches</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="ConsentPurgeJob.php.html#44"><abbr title="App\Jobs\ConsentPurgeJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#38"><abbr title="App\Jobs\GenerateRecommendationsJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#86"><abbr title="App\Jobs\GenerateRecommendationsJob::generateForAllUsers">generateForAllUsers</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="MatomoSyncJob.php.html#45"><abbr title="App\Jobs\MatomoSyncJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#409"><abbr title="App\Jobs\ProcessAnalyticsEvents::broadcastAnalyticsUpdates">broadcastAnalyticsUpdates</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#86"><abbr title="App\Jobs\ProcessAutomationRuleJob::getPersonalizationRules">getPersonalizationRules</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="ProcessRecurringDonationsJob.php.html#23"><abbr title="App\Jobs\ProcessRecurringDonationsJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#67"><abbr title="App\Jobs\RefreshTimelinesJob::refreshAllActiveUserTimelines">refreshAllActiveUserTimelines</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#35"><abbr title="App\Jobs\SendNotificationDigestJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#134"><abbr title="App\Jobs\SendNotificationDigestJob::getSubject">getSubject</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#32"><abbr title="App\Jobs\SendSequenceEmailJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#42"><abbr title="App\Jobs\SyncAnalyticsData::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="Analytics/InsightsGenerationJob.php.html#35"><abbr title="App\Jobs\Analytics\InsightsGenerationJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#141"><abbr title="App\Jobs\GenerateRecommendationsJob::tags">tags</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="GenerateTaxReceiptJob.php.html#23"><abbr title="App\Jobs\GenerateTaxReceiptJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="MentorshipMatchingJob.php.html#51"><abbr title="App\Jobs\MentorshipMatchingJob::processUserMatching">processUserMatching</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#157"><abbr title="App\Jobs\ProcessAnalyticsEvents::validateCompliance">validateCompliance</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#285"><abbr title="App\Jobs\ProcessAnalyticsEvents::recordEngagement">recordEngagement</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessAutomationRuleJob.php.html#24"><abbr title="App\Jobs\ProcessAutomationRuleJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#105"><abbr title="App\Jobs\ProcessCrmWebhook::handleLeadCreated">handleLeadCreated</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#154"><abbr title="App\Jobs\ProcessCrmWebhook::handleLeadUpdated">handleLeadUpdated</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#195"><abbr title="App\Jobs\ProcessCrmWebhook::handleLeadDeleted">handleLeadDeleted</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#227"><abbr title="App\Jobs\ProcessCrmWebhook::handleDealWon">handleDealWon</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessCrmWebhook.php.html#259"><abbr title="App\Jobs\ProcessCrmWebhook::handleDealLost">handleDealLost</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#46"><abbr title="App\Jobs\ProcessImageUpload::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#90"><abbr title="App\Jobs\ProcessImageUpload::generateThumbnails">generateThumbnails</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessSearchAlerts.php.html#23"><abbr title="App\Jobs\ProcessSearchAlerts::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessSearchAlerts.php.html#48"><abbr title="App\Jobs\ProcessSearchAlerts::processSearchAlert">processSearchAlert</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ProcessSearchAlertsJob.php.html#30"><abbr title="App\Jobs\ProcessSearchAlertsJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#181"><abbr title="App\Jobs\RouteLeadToCrm::updateLeadWithRoutingInfo">updateLeadWithRoutingInfo</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#173"><abbr title="App\Jobs\ScanFileForVirus::notifyUserOfInfection">notifyUserOfInfection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#197"><abbr title="App\Jobs\ScanFileForVirus::notifyAdminsOfInfection">notifyAdminsOfInfection</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="SendEmailCampaignJob.php.html#25"><abbr title="App\Jobs\SendEmailCampaignJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="SendTaxReceiptEmailJob.php.html#23"><abbr title="App\Jobs\SendTaxReceiptEmailJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="SyncLeadToCrm.php.html#35"><abbr title="App\Jobs\SyncLeadToCrm::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="WarmCacheJob.php.html#31"><abbr title="App\Jobs\WarmCacheJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="ConsentPurgeJob.php.html#85"><abbr title="App\Jobs\ConsentPurgeJob::optOutFromExternalPlatforms">optOutFromExternalPlatforms</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="GenerateRecommendationsJob.php.html#61"><abbr title="App\Jobs\GenerateRecommendationsJob::generateForUser">generateForUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="GenerateTaxReceiptJob.php.html#64"><abbr title="App\Jobs\GenerateTaxReceiptJob::sendReceiptByEmail">sendReceiptByEmail</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="OptimizeAnalyticsCacheJob.php.html#125"><abbr title="App\Jobs\OptimizeAnalyticsCacheJob::warmMetricsCache">warmMetricsCache</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAchievementCelebrationJob.php.html#25"><abbr title="App\Jobs\ProcessAchievementCelebrationJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#133"><abbr title="App\Jobs\ProcessAnalyticsEvents::processEvent">processEvent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#186"><abbr title="App\Jobs\ProcessAnalyticsEvents::hasRequiredConsent">hasRequiredConsent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#194"><abbr title="App\Jobs\ProcessAnalyticsEvents::getRetentionDays">getRetentionDays</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#260"><abbr title="App\Jobs\ProcessAnalyticsEvents::incrementComponentMetrics">incrementComponentMetrics</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#327"><abbr title="App\Jobs\ProcessAnalyticsEvents::recordHeatMapData">recordHeatMapData</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#342"><abbr title="App\Jobs\ProcessAnalyticsEvents::forwardToGA4">forwardToGA4</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessAnalyticsEvents.php.html#368"><abbr title="App\Jobs\ProcessAnalyticsEvents::forwardToMatomo">forwardToMatomo</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessFileUpload.php.html#36"><abbr title="App\Jobs\ProcessFileUpload::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessFormSubmissionToCrm.php.html#31"><abbr title="App\Jobs\ProcessFormSubmissionToCrm::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#122"><abbr title="App\Jobs\ProcessImageUpload::optimizeImage">optimizeImage</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#153"><abbr title="App\Jobs\ProcessImageUpload::updateFileSize">updateFileSize</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessImageUpload.php.html#177"><abbr title="App\Jobs\ProcessImageUpload::failed">failed</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ProcessSearchAlertsJob.php.html#58"><abbr title="App\Jobs\ProcessSearchAlertsJob::processAlert">processAlert</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="PublishScheduledPostJob.php.html#107"><abbr title="App\Jobs\PublishScheduledPostJob::failed">failed</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#101"><abbr title="App\Jobs\RefreshTimelinesJob::refreshTimelinesForPost">refreshTimelinesForPost</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#148"><abbr title="App\Jobs\RefreshTimelinesJob::isVeryActiveUser">isVeryActiveUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RefreshTimelinesJob.php.html#157"><abbr title="App\Jobs\RefreshTimelinesJob::isActiveUser">isActiveUser</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="RouteLeadToCrm.php.html#113"><abbr title="App\Jobs\RouteLeadToCrm::isLeadAlreadyRouted">isLeadAlreadyRouted</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#120"><abbr title="App\Jobs\ScanFileForVirus::handleInfectedResult">handleInfectedResult</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#226"><abbr title="App\Jobs\ScanFileForVirus::deleteInfectedFile">deleteInfectedFile</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#246"><abbr title="App\Jobs\ScanFileForVirus::quarantineFile">quarantineFile</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="ScanFileForVirus.php.html#269"><abbr title="App\Jobs\ScanFileForVirus::failed">failed</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#67"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::sendEmailAcknowledgment">sendEmailAcknowledgment</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SendDonationAcknowledgmentJob.php.html#111"><abbr title="App\Jobs\SendDonationAcknowledgmentJob::processPublicRecognition">processPublicRecognition</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#62"><abbr title="App\Jobs\SendNotificationDigestJob::sendDigestForAllUsers">sendDigestForAllUsers</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SendNotificationDigestJob.php.html#148"><abbr title="App\Jobs\SendNotificationDigestJob::tags">tags</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SendSequenceEmailJob.php.html#107"><abbr title="App\Jobs\SendSequenceEmailJob::prepareEmailContent">prepareEmailContent</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="SyncAnalyticsData.php.html#105"><abbr title="App\Jobs\SyncAnalyticsData::shouldRunSync">shouldRunSync</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="UpdateUserCirclesJob.php.html#31"><abbr title="App\Jobs\UpdateUserCirclesJob::handle">handle</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.5.6-dev</a> and <a href="https://phpunit.de/">PHPUnit 12.5.8</a> at Thu Apr 2 17:21:57 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,5,"Analytics\/InsightsGenerationJob.php.html#21","App\\Jobs\\Analytics\\InsightsGenerationJob","30"],[0,30,"CalculateJobMatchesJob.php.html#15","App\\Jobs\\CalculateJobMatchesJob","930"],[0,7,"ConsentPurgeJob.php.html#22","App\\Jobs\\ConsentPurgeJob","56"],[0,15,"GenerateRecommendationsJob.php.html#14","App\\Jobs\\GenerateRecommendationsJob","240"],[0,6,"GenerateTaxReceiptJob.php.html#15","App\\Jobs\\GenerateTaxReceiptJob","42"],[0,7,"GoogleSyncJob.php.html#18","App\\Jobs\\GoogleSyncJob","56"],[0,13,"LearningScoreJob.php.html#22","App\\Jobs\\LearningScoreJob","182"],[0,6,"MatomoSyncJob.php.html#18","App\\Jobs\\MatomoSyncJob","42"],[0,9,"MentorshipMatchingJob.php.html#15","App\\Jobs\\MentorshipMatchingJob","90"],[0,14,"OptimizeAnalyticsCacheJob.php.html#23","App\\Jobs\\OptimizeAnalyticsCacheJob","210"],[0,3,"ProcessAchievementCelebrationJob.php.html#14","App\\Jobs\\ProcessAchievementCelebrationJob","12"],[0,44,"ProcessAnalyticsEvents.php.html#29","App\\Jobs\\ProcessAnalyticsEvents","1980"],[0,9,"ProcessAutomationRuleJob.php.html#13","App\\Jobs\\ProcessAutomationRuleJob","90"],[0,37,"ProcessCrmWebhook.php.html#13","App\\Jobs\\ProcessCrmWebhook","1406"],[0,13,"ProcessFileUpload.php.html#13","App\\Jobs\\ProcessFileUpload","182"],[0,4,"ProcessFormSubmissionToCrm.php.html#13","App\\Jobs\\ProcessFormSubmissionToCrm","20"],[0,11,"ProcessGroupInvitationsJob.php.html#16","App\\Jobs\\ProcessGroupInvitationsJob","132"],[0,14,"ProcessImageUpload.php.html#20","App\\Jobs\\ProcessImageUpload","210"],[0,5,"ProcessRecurringDonationsJob.php.html#14","App\\Jobs\\ProcessRecurringDonationsJob","30"],[0,7,"ProcessSearchAlerts.php.html#16","App\\Jobs\\ProcessSearchAlerts","56"],[0,6,"ProcessSearchAlertsJob.php.html#15","App\\Jobs\\ProcessSearchAlertsJob","42"],[0,10,"PublishScheduledPostJob.php.html#15","App\\Jobs\\PublishScheduledPostJob","110"],[0,25,"RefreshTimelinesJob.php.html#15","App\\Jobs\\RefreshTimelinesJob","650"],[0,8,"RetryFailedCrmSubmission.php.html#14","App\\Jobs\\RetryFailedCrmSubmission","72"],[0,15,"RouteLeadToCrm.php.html#19","App\\Jobs\\RouteLeadToCrm","240"],[0,24,"ScanFileForVirus.php.html#22","App\\Jobs\\ScanFileForVirus","600"],[0,15,"SendDonationAcknowledgmentJob.php.html#15","App\\Jobs\\SendDonationAcknowledgmentJob","240"],[0,5,"SendEmailCampaignJob.php.html#13","App\\Jobs\\SendEmailCampaignJob","30"],[0,20,"SendNotificationDigestJob.php.html#15","App\\Jobs\\SendNotificationDigestJob","420"],[0,10,"SendSequenceEmailJob.php.html#16","App\\Jobs\\SendSequenceEmailJob","110"],[0,4,"SendTaxReceiptEmailJob.php.html#15","App\\Jobs\\SendTaxReceiptEmailJob","20"],[0,9,"SyncAnalyticsData.php.html#25","App\\Jobs\\SyncAnalyticsData","90"],[0,19,"SyncLeadToCrm.php.html#13","App\\Jobs\\SyncLeadToCrm","380"],[0,5,"UpdateUserCirclesJob.php.html#14","App\\Jobs\\UpdateUserCirclesJob","30"],[0,5,"WarmCacheJob.php.html#14","App\\Jobs\\WarmCacheJob","30"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"Analytics\/InsightsGenerationJob.php.html#28","App\\Jobs\\Analytics\\InsightsGenerationJob::__construct","2"],[0,3,"Analytics\/InsightsGenerationJob.php.html#35","App\\Jobs\\Analytics\\InsightsGenerationJob::handle","12"],[0,1,"Analytics\/InsightsGenerationJob.php.html#73","App\\Jobs\\Analytics\\InsightsGenerationJob::tags","2"],[0,1,"CalculateJobMatchesJob.php.html#26","App\\Jobs\\CalculateJobMatchesJob::__construct","2"],[0,7,"CalculateJobMatchesJob.php.html#35","App\\Jobs\\CalculateJobMatchesJob::handle","56"],[0,4,"CalculateJobMatchesJob.php.html#63","App\\Jobs\\CalculateJobMatchesJob::calculateSingleMatch","20"],[0,5,"CalculateJobMatchesJob.php.html#96","App\\Jobs\\CalculateJobMatchesJob::calculateJobMatches","30"],[0,4,"CalculateJobMatchesJob.php.html#137","App\\Jobs\\CalculateJobMatchesJob::calculateUserMatches","20"],[0,4,"CalculateJobMatchesJob.php.html#178","App\\Jobs\\CalculateJobMatchesJob::recalculateAllMatches","20"],[0,1,"CalculateJobMatchesJob.php.html#215","App\\Jobs\\CalculateJobMatchesJob::failed","2"],[0,1,"CalculateJobMatchesJob.php.html#229","App\\Jobs\\CalculateJobMatchesJob::forNewJob","2"],[0,1,"CalculateJobMatchesJob.php.html#237","App\\Jobs\\CalculateJobMatchesJob::forUser","2"],[0,1,"CalculateJobMatchesJob.php.html#245","App\\Jobs\\CalculateJobMatchesJob::forJobAndUser","2"],[0,1,"CalculateJobMatchesJob.php.html#253","App\\Jobs\\CalculateJobMatchesJob::recalculateAll","2"],[0,1,"ConsentPurgeJob.php.html#35","App\\Jobs\\ConsentPurgeJob::__construct","2"],[0,4,"ConsentPurgeJob.php.html#44","App\\Jobs\\ConsentPurgeJob::handle","20"],[0,2,"ConsentPurgeJob.php.html#85","App\\Jobs\\ConsentPurgeJob::optOutFromExternalPlatforms","6"],[0,1,"GenerateRecommendationsJob.php.html#29","App\\Jobs\\GenerateRecommendationsJob::__construct","2"],[0,4,"GenerateRecommendationsJob.php.html#38","App\\Jobs\\GenerateRecommendationsJob::handle","20"],[0,2,"GenerateRecommendationsJob.php.html#61","App\\Jobs\\GenerateRecommendationsJob::generateForUser","6"],[0,4,"GenerateRecommendationsJob.php.html#86","App\\Jobs\\GenerateRecommendationsJob::generateForAllUsers","20"],[0,1,"GenerateRecommendationsJob.php.html#128","App\\Jobs\\GenerateRecommendationsJob::failed","2"],[0,3,"GenerateRecommendationsJob.php.html#141","App\\Jobs\\GenerateRecommendationsJob::tags","12"],[0,1,"GenerateTaxReceiptJob.php.html#19","App\\Jobs\\GenerateTaxReceiptJob::__construct","2"],[0,3,"GenerateTaxReceiptJob.php.html#23","App\\Jobs\\GenerateTaxReceiptJob::handle","12"],[0,2,"GenerateTaxReceiptJob.php.html#64","App\\Jobs\\GenerateTaxReceiptJob::sendReceiptByEmail","6"],[0,1,"GoogleSyncJob.php.html#35","App\\Jobs\\GoogleSyncJob::__construct","2"],[0,5,"GoogleSyncJob.php.html#45","App\\Jobs\\GoogleSyncJob::handle","30"],[0,1,"GoogleSyncJob.php.html#82","App\\Jobs\\GoogleSyncJob::failed","2"],[0,1,"LearningScoreJob.php.html#35","App\\Jobs\\LearningScoreJob::__construct","2"],[0,10,"LearningScoreJob.php.html#44","App\\Jobs\\LearningScoreJob::handle","110"],[0,1,"LearningScoreJob.php.html#157","App\\Jobs\\LearningScoreJob::failed","2"],[0,1,"LearningScoreJob.php.html#170","App\\Jobs\\LearningScoreJob::tags","2"],[0,1,"MatomoSyncJob.php.html#35","App\\Jobs\\MatomoSyncJob::__construct","2"],[0,4,"MatomoSyncJob.php.html#45","App\\Jobs\\MatomoSyncJob::handle","20"],[0,1,"MatomoSyncJob.php.html#81","App\\Jobs\\MatomoSyncJob::failed","2"],[0,1,"MentorshipMatchingJob.php.html#19","App\\Jobs\\MentorshipMatchingJob::__construct","2"],[0,5,"MentorshipMatchingJob.php.html#23","App\\Jobs\\MentorshipMatchingJob::handle","30"],[0,3,"MentorshipMatchingJob.php.html#51","App\\Jobs\\MentorshipMatchingJob::processUserMatching","12"],[0,1,"OptimizeAnalyticsCacheJob.php.html#34","App\\Jobs\\OptimizeAnalyticsCacheJob::__construct","2"],[0,6,"OptimizeAnalyticsCacheJob.php.html#48","App\\Jobs\\OptimizeAnalyticsCacheJob::handle","42"],[0,1,"OptimizeAnalyticsCacheJob.php.html#108","App\\Jobs\\OptimizeAnalyticsCacheJob::warmLeaderboardCache","2"],[0,2,"OptimizeAnalyticsCacheJob.php.html#125","App\\Jobs\\OptimizeAnalyticsCacheJob::warmMetricsCache","6"],[0,1,"OptimizeAnalyticsCacheJob.php.html#148","App\\Jobs\\OptimizeAnalyticsCacheJob::warmHeatmapCache","2"],[0,1,"OptimizeAnalyticsCacheJob.php.html#160","App\\Jobs\\OptimizeAnalyticsCacheJob::setTenantContext","2"],[0,1,"OptimizeAnalyticsCacheJob.php.html#170","App\\Jobs\\OptimizeAnalyticsCacheJob::tags","2"],[0,1,"OptimizeAnalyticsCacheJob.php.html#178","App\\Jobs\\OptimizeAnalyticsCacheJob::middleware","2"],[0,1,"ProcessAchievementCelebrationJob.php.html#18","App\\Jobs\\ProcessAchievementCelebrationJob::__construct","2"],[0,2,"ProcessAchievementCelebrationJob.php.html#25","App\\Jobs\\ProcessAchievementCelebrationJob::handle","6"],[0,1,"ProcessAnalyticsEvents.php.html#36","App\\Jobs\\ProcessAnalyticsEvents::__construct","2"],[0,7,"ProcessAnalyticsEvents.php.html#44","App\\Jobs\\ProcessAnalyticsEvents::handle","56"],[0,2,"ProcessAnalyticsEvents.php.html#133","App\\Jobs\\ProcessAnalyticsEvents::processEvent","6"],[0,3,"ProcessAnalyticsEvents.php.html#157","App\\Jobs\\ProcessAnalyticsEvents::validateCompliance","12"],[0,2,"ProcessAnalyticsEvents.php.html#186","App\\Jobs\\ProcessAnalyticsEvents::hasRequiredConsent","6"],[0,2,"ProcessAnalyticsEvents.php.html#194","App\\Jobs\\ProcessAnalyticsEvents::getRetentionDays","6"],[0,6,"ProcessAnalyticsEvents.php.html#205","App\\Jobs\\ProcessAnalyticsEvents::aggregateMetrics","42"],[0,1,"ProcessAnalyticsEvents.php.html#223","App\\Jobs\\ProcessAnalyticsEvents::incrementPageViewMetrics","2"],[0,1,"ProcessAnalyticsEvents.php.html#236","App\\Jobs\\ProcessAnalyticsEvents::incrementEngagementMetrics","2"],[0,1,"ProcessAnalyticsEvents.php.html#248","App\\Jobs\\ProcessAnalyticsEvents::incrementConversionMetrics","2"],[0,2,"ProcessAnalyticsEvents.php.html#260","App\\Jobs\\ProcessAnalyticsEvents::incrementComponentMetrics","6"],[0,3,"ProcessAnalyticsEvents.php.html#285","App\\Jobs\\ProcessAnalyticsEvents::recordEngagement","12"],[0,1,"ProcessAnalyticsEvents.php.html#310","App\\Jobs\\ProcessAnalyticsEvents::shouldRecordEngagement","2"],[0,2,"ProcessAnalyticsEvents.php.html#327","App\\Jobs\\ProcessAnalyticsEvents::recordHeatMapData","6"],[0,2,"ProcessAnalyticsEvents.php.html#342","App\\Jobs\\ProcessAnalyticsEvents::forwardToGA4","6"],[0,2,"ProcessAnalyticsEvents.php.html#368","App\\Jobs\\ProcessAnalyticsEvents::forwardToMatomo","6"],[0,1,"ProcessAnalyticsEvents.php.html#397","App\\Jobs\\ProcessAnalyticsEvents::tags","2"],[0,4,"ProcessAnalyticsEvents.php.html#409","App\\Jobs\\ProcessAnalyticsEvents::broadcastAnalyticsUpdates","20"],[0,1,"ProcessAnalyticsEvents.php.html#448","App\\Jobs\\ProcessAnalyticsEvents::createEventSummary","2"],[0,1,"ProcessAutomationRuleJob.php.html#19","App\\Jobs\\ProcessAutomationRuleJob::__construct","2"],[0,3,"ProcessAutomationRuleJob.php.html#24","App\\Jobs\\ProcessAutomationRuleJob::handle","12"],[0,1,"ProcessAutomationRuleJob.php.html#73","App\\Jobs\\ProcessAutomationRuleJob::generateSubject","2"],[0,4,"ProcessAutomationRuleJob.php.html#86","App\\Jobs\\ProcessAutomationRuleJob::getPersonalizationRules","20"],[0,1,"ProcessCrmWebhook.php.html#24","App\\Jobs\\ProcessCrmWebhook::__construct","2"],[0,14,"ProcessCrmWebhook.php.html#34","App\\Jobs\\ProcessCrmWebhook::handle","210"],[0,3,"ProcessCrmWebhook.php.html#105","App\\Jobs\\ProcessCrmWebhook::handleLeadCreated","12"],[0,3,"ProcessCrmWebhook.php.html#154","App\\Jobs\\ProcessCrmWebhook::handleLeadUpdated","12"],[0,3,"ProcessCrmWebhook.php.html#195","App\\Jobs\\ProcessCrmWebhook::handleLeadDeleted","12"],[0,3,"ProcessCrmWebhook.php.html#227","App\\Jobs\\ProcessCrmWebhook::handleDealWon","12"],[0,3,"ProcessCrmWebhook.php.html#259","App\\Jobs\\ProcessCrmWebhook::handleDealLost","12"],[0,6,"ProcessCrmWebhook.php.html#291","App\\Jobs\\ProcessCrmWebhook::mapCrmDataToLead","42"],[0,1,"ProcessCrmWebhook.php.html#324","App\\Jobs\\ProcessCrmWebhook::failed","2"],[0,1,"ProcessFileUpload.php.html#26","App\\Jobs\\ProcessFileUpload::__construct","2"],[0,2,"ProcessFileUpload.php.html#36","App\\Jobs\\ProcessFileUpload::handle","6"],[0,5,"ProcessFileUpload.php.html#57","App\\Jobs\\ProcessFileUpload::processFile","30"],[0,1,"ProcessFileUpload.php.html#81","App\\Jobs\\ProcessFileUpload::processImage","2"],[0,1,"ProcessFileUpload.php.html#91","App\\Jobs\\ProcessFileUpload::processVideo","2"],[0,1,"ProcessFileUpload.php.html#101","App\\Jobs\\ProcessFileUpload::processAudio","2"],[0,1,"ProcessFileUpload.php.html#111","App\\Jobs\\ProcessFileUpload::updateDatabase","2"],[0,1,"ProcessFileUpload.php.html#121","App\\Jobs\\ProcessFileUpload::failed","2"],[0,1,"ProcessFormSubmissionToCrm.php.html#24","App\\Jobs\\ProcessFormSubmissionToCrm::__construct","2"],[0,2,"ProcessFormSubmissionToCrm.php.html#31","App\\Jobs\\ProcessFormSubmissionToCrm::handle","6"],[0,1,"ProcessFormSubmissionToCrm.php.html#57","App\\Jobs\\ProcessFormSubmissionToCrm::failed","2"],[0,1,"ProcessGroupInvitationsJob.php.html#31","App\\Jobs\\ProcessGroupInvitationsJob::__construct","2"],[0,7,"ProcessGroupInvitationsJob.php.html#42","App\\Jobs\\ProcessGroupInvitationsJob::handle","56"],[0,1,"ProcessGroupInvitationsJob.php.html#123","App\\Jobs\\ProcessGroupInvitationsJob::failed","2"],[0,1,"ProcessGroupInvitationsJob.php.html#137","App\\Jobs\\ProcessGroupInvitationsJob::tags","2"],[0,1,"ProcessGroupInvitationsJob.php.html#149","App\\Jobs\\ProcessGroupInvitationsJob::timeout","2"],[0,1,"ProcessImageUpload.php.html#39","App\\Jobs\\ProcessImageUpload::__construct","2"],[0,3,"ProcessImageUpload.php.html#46","App\\Jobs\\ProcessImageUpload::handle","12"],[0,3,"ProcessImageUpload.php.html#90","App\\Jobs\\ProcessImageUpload::generateThumbnails","12"],[0,2,"ProcessImageUpload.php.html#122","App\\Jobs\\ProcessImageUpload::optimizeImage","6"],[0,2,"ProcessImageUpload.php.html#153","App\\Jobs\\ProcessImageUpload::updateFileSize","6"],[0,2,"ProcessImageUpload.php.html#177","App\\Jobs\\ProcessImageUpload::failed","6"],[0,1,"ProcessImageUpload.php.html#202","App\\Jobs\\ProcessImageUpload::retryUntil","2"],[0,1,"ProcessRecurringDonationsJob.php.html#18","App\\Jobs\\ProcessRecurringDonationsJob::__construct","2"],[0,4,"ProcessRecurringDonationsJob.php.html#23","App\\Jobs\\ProcessRecurringDonationsJob::handle","20"],[0,3,"ProcessSearchAlerts.php.html#23","App\\Jobs\\ProcessSearchAlerts::handle","12"],[0,3,"ProcessSearchAlerts.php.html#48","App\\Jobs\\ProcessSearchAlerts::processSearchAlert","12"],[0,1,"ProcessSearchAlerts.php.html#115","App\\Jobs\\ProcessSearchAlerts::generateSearchUrl","2"],[0,1,"ProcessSearchAlertsJob.php.html#22","App\\Jobs\\ProcessSearchAlertsJob::__construct","2"],[0,3,"ProcessSearchAlertsJob.php.html#30","App\\Jobs\\ProcessSearchAlertsJob::handle","12"],[0,2,"ProcessSearchAlertsJob.php.html#58","App\\Jobs\\ProcessSearchAlertsJob::processAlert","6"],[0,1,"PublishScheduledPostJob.php.html#21","App\\Jobs\\PublishScheduledPostJob::__construct","2"],[0,6,"PublishScheduledPostJob.php.html#26","App\\Jobs\\PublishScheduledPostJob::handle","42"],[0,1,"PublishScheduledPostJob.php.html#93","App\\Jobs\\PublishScheduledPostJob::markAsFailed","2"],[0,2,"PublishScheduledPostJob.php.html#107","App\\Jobs\\PublishScheduledPostJob::failed","6"],[0,1,"RefreshTimelinesJob.php.html#26","App\\Jobs\\RefreshTimelinesJob::__construct","2"],[0,5,"RefreshTimelinesJob.php.html#35","App\\Jobs\\RefreshTimelinesJob::handle","30"],[0,4,"RefreshTimelinesJob.php.html#67","App\\Jobs\\RefreshTimelinesJob::refreshAllActiveUserTimelines","20"],[0,2,"RefreshTimelinesJob.php.html#101","App\\Jobs\\RefreshTimelinesJob::refreshTimelinesForPost","6"],[0,5,"RefreshTimelinesJob.php.html#119","App\\Jobs\\RefreshTimelinesJob::refreshSpecificUserTimelines","30"],[0,2,"RefreshTimelinesJob.php.html#148","App\\Jobs\\RefreshTimelinesJob::isVeryActiveUser","6"],[0,2,"RefreshTimelinesJob.php.html#157","App\\Jobs\\RefreshTimelinesJob::isActiveUser","6"],[0,1,"RefreshTimelinesJob.php.html#166","App\\Jobs\\RefreshTimelinesJob::forNewPost","2"],[0,1,"RefreshTimelinesJob.php.html#174","App\\Jobs\\RefreshTimelinesJob::forUsers","2"],[0,1,"RefreshTimelinesJob.php.html#182","App\\Jobs\\RefreshTimelinesJob::forAllActiveUsers","2"],[0,1,"RefreshTimelinesJob.php.html#190","App\\Jobs\\RefreshTimelinesJob::failed","2"],[0,1,"RetryFailedCrmSubmission.php.html#25","App\\Jobs\\RetryFailedCrmSubmission::__construct","2"],[0,6,"RetryFailedCrmSubmission.php.html#35","App\\Jobs\\RetryFailedCrmSubmission::handle","42"],[0,1,"RetryFailedCrmSubmission.php.html#103","App\\Jobs\\RetryFailedCrmSubmission::failed","2"],[0,1,"RouteLeadToCrm.php.html#30","App\\Jobs\\RouteLeadToCrm::__construct","2"],[0,5,"RouteLeadToCrm.php.html#41","App\\Jobs\\RouteLeadToCrm::handle","30"],[0,2,"RouteLeadToCrm.php.html#113","App\\Jobs\\RouteLeadToCrm::isLeadAlreadyRouted","6"],[0,1,"RouteLeadToCrm.php.html#121","App\\Jobs\\RouteLeadToCrm::recordSuccessfulRouting","2"],[0,1,"RouteLeadToCrm.php.html#150","App\\Jobs\\RouteLeadToCrm::recordRoutingFailure","2"],[0,3,"RouteLeadToCrm.php.html#181","App\\Jobs\\RouteLeadToCrm::updateLeadWithRoutingInfo","12"],[0,1,"RouteLeadToCrm.php.html#199","App\\Jobs\\RouteLeadToCrm::handleSyncFailure","2"],[0,1,"RouteLeadToCrm.php.html#218","App\\Jobs\\RouteLeadToCrm::failed","2"],[0,1,"ScanFileForVirus.php.html#41","App\\Jobs\\ScanFileForVirus::__construct","2"],[0,6,"ScanFileForVirus.php.html#48","App\\Jobs\\ScanFileForVirus::handle","42"],[0,1,"ScanFileForVirus.php.html#105","App\\Jobs\\ScanFileForVirus::handleCleanResult","2"],[0,2,"ScanFileForVirus.php.html#120","App\\Jobs\\ScanFileForVirus::handleInfectedResult","6"],[0,1,"ScanFileForVirus.php.html#153","App\\Jobs\\ScanFileForVirus::handleUnknownResult","2"],[0,3,"ScanFileForVirus.php.html#173","App\\Jobs\\ScanFileForVirus::notifyUserOfInfection","12"],[0,3,"ScanFileForVirus.php.html#197","App\\Jobs\\ScanFileForVirus::notifyAdminsOfInfection","12"],[0,2,"ScanFileForVirus.php.html#226","App\\Jobs\\ScanFileForVirus::deleteInfectedFile","6"],[0,2,"ScanFileForVirus.php.html#246","App\\Jobs\\ScanFileForVirus::quarantineFile","6"],[0,2,"ScanFileForVirus.php.html#269","App\\Jobs\\ScanFileForVirus::failed","6"],[0,1,"ScanFileForVirus.php.html#297","App\\Jobs\\ScanFileForVirus::retryUntil","2"],[0,1,"SendDonationAcknowledgmentJob.php.html#19","App\\Jobs\\SendDonationAcknowledgmentJob::__construct","2"],[0,8,"SendDonationAcknowledgmentJob.php.html#23","App\\Jobs\\SendDonationAcknowledgmentJob::handle","72"],[0,2,"SendDonationAcknowledgmentJob.php.html#67","App\\Jobs\\SendDonationAcknowledgmentJob::sendEmailAcknowledgment","6"],[0,1,"SendDonationAcknowledgmentJob.php.html#81","App\\Jobs\\SendDonationAcknowledgmentJob::sendLetterAcknowledgment","2"],[0,1,"SendDonationAcknowledgmentJob.php.html#96","App\\Jobs\\SendDonationAcknowledgmentJob::schedulePhoneCall","2"],[0,2,"SendDonationAcknowledgmentJob.php.html#111","App\\Jobs\\SendDonationAcknowledgmentJob::processPublicRecognition","6"],[0,1,"SendEmailCampaignJob.php.html#21","App\\Jobs\\SendEmailCampaignJob::__construct","2"],[0,3,"SendEmailCampaignJob.php.html#25","App\\Jobs\\SendEmailCampaignJob::handle","12"],[0,1,"SendEmailCampaignJob.php.html#60","App\\Jobs\\SendEmailCampaignJob::failed","2"],[0,1,"SendNotificationDigestJob.php.html#26","App\\Jobs\\SendNotificationDigestJob::__construct","2"],[0,4,"SendNotificationDigestJob.php.html#35","App\\Jobs\\SendNotificationDigestJob::handle","20"],[0,2,"SendNotificationDigestJob.php.html#62","App\\Jobs\\SendNotificationDigestJob::sendDigestForAllUsers","6"],[0,7,"SendNotificationDigestJob.php.html#76","App\\Jobs\\SendNotificationDigestJob::sendDigestForUser","56"],[0,4,"SendNotificationDigestJob.php.html#134","App\\Jobs\\SendNotificationDigestJob::getSubject","20"],[0,2,"SendNotificationDigestJob.php.html#148","App\\Jobs\\SendNotificationDigestJob::tags","6"],[0,1,"SendSequenceEmailJob.php.html#26","App\\Jobs\\SendSequenceEmailJob::__construct","2"],[0,4,"SendSequenceEmailJob.php.html#32","App\\Jobs\\SendSequenceEmailJob::handle","20"],[0,2,"SendSequenceEmailJob.php.html#107","App\\Jobs\\SendSequenceEmailJob::prepareEmailContent","6"],[0,1,"SendSequenceEmailJob.php.html#132","App\\Jobs\\SendSequenceEmailJob::failed","2"],[0,1,"SendSequenceEmailJob.php.html#153","App\\Jobs\\SendSequenceEmailJob::middleware","2"],[0,1,"SendSequenceEmailJob.php.html#164","App\\Jobs\\SendSequenceEmailJob::tags","2"],[0,1,"SendTaxReceiptEmailJob.php.html#19","App\\Jobs\\SendTaxReceiptEmailJob::__construct","2"],[0,3,"SendTaxReceiptEmailJob.php.html#23","App\\Jobs\\SendTaxReceiptEmailJob::handle","12"],[0,1,"SyncAnalyticsData.php.html#32","App\\Jobs\\SyncAnalyticsData::__construct","2"],[0,4,"SyncAnalyticsData.php.html#42","App\\Jobs\\SyncAnalyticsData::handle","20"],[0,2,"SyncAnalyticsData.php.html#105","App\\Jobs\\SyncAnalyticsData::shouldRunSync","6"],[0,1,"SyncAnalyticsData.php.html#125","App\\Jobs\\SyncAnalyticsData::tags","2"],[0,1,"SyncAnalyticsData.php.html#138","App\\Jobs\\SyncAnalyticsData::retryUntil","2"],[0,1,"SyncLeadToCrm.php.html#24","App\\Jobs\\SyncLeadToCrm::__construct","2"],[0,3,"SyncLeadToCrm.php.html#35","App\\Jobs\\SyncLeadToCrm::handle","12"],[0,6,"SyncLeadToCrm.php.html#126","App\\Jobs\\SyncLeadToCrm::mapLeadData","42"],[0,8,"SyncLeadToCrm.php.html#163","App\\Jobs\\SyncLeadToCrm::getLeadFieldValue","72"],[0,1,"SyncLeadToCrm.php.html#186","App\\Jobs\\SyncLeadToCrm::failed","2"],[0,1,"UpdateUserCirclesJob.php.html#23","App\\Jobs\\UpdateUserCirclesJob::__construct","2"],[0,2,"UpdateUserCirclesJob.php.html#31","App\\Jobs\\UpdateUserCirclesJob::handle","6"],[0,1,"UpdateUserCirclesJob.php.html#54","App\\Jobs\\UpdateUserCirclesJob::failed","2"],[0,1,"UpdateUserCirclesJob.php.html#66","App\\Jobs\\UpdateUserCirclesJob::tags","2"],[0,1,"WarmCacheJob.php.html#23","App\\Jobs\\WarmCacheJob::__construct","2"],[0,3,"WarmCacheJob.php.html#31","App\\Jobs\\WarmCacheJob::handle","12"],[0,1,"WarmCacheJob.php.html#68","App\\Jobs\\WarmCacheJob::tags","2"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [35,0,0,0,0,0,0,0,0,0,0,0])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [189,0,0,0,0,0,0,0,0,0,0,0])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

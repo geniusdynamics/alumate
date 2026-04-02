@@ -138,8 +138,8 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
-import type { AlumniProfile, StoryFilter, SuccessStory } from '@/Types/homepage';
+import { logger } from '@/utils/logger';
+import type { AlumniProfile, StoryFilter, SuccessStory } from '@/types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 import SuccessStoryCard from './SuccessStoryCard.vue';
 import SuccessStoryFilters from './SuccessStoryFilters.vue';

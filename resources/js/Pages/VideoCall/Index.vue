@@ -158,7 +158,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { ClockIcon, VideoCameraIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';

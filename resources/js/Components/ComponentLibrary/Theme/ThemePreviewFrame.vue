@@ -305,7 +305,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import Icon from '@/Components/Common/Icon.vue';
 import type { GrapeJSThemeData, ThemePerformanceData } from '@/types/Components';
 import { computed, onMounted, ref, watch } from 'vue';

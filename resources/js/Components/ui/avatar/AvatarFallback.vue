@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { cn } from '@/Lib/utils'
+import { cn } from '@/lib/utils'
 import { AvatarFallback, type AvatarFallbackProps } from 'reka-ui'
 import { computed, type HTMLAttributes } from 'vue'
 

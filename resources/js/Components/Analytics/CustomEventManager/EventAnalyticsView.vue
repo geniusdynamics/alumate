@@ -144,7 +144,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { Chart, registerables } from 'chart.js';
-import type { CustomEventAnalytics } from '../../../Types/analytics';
+import type { CustomEventAnalytics } from '../../../types/analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);

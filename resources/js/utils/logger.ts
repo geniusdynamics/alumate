@@ -6,7 +6,7 @@
  * so no internal state or debug information leaks to the browser console.
  *
  * Usage:
- *   import { logger } from '@/Utils/logger';
+ *   import { logger } from '@/utils/logger';
  *   logger.log('Loaded component', props);
  *   logger.warn('Unexpected value', value);
  *   logger.error('Request failed', error);
