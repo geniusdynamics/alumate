@@ -4,14 +4,11 @@ namespace App\Http\Requests\Api;
 
 use App\Models\Template;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreTemplateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -93,8 +90,6 @@ class StoreTemplateRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
@@ -108,17 +103,16 @@ class StoreTemplateRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate template structure securely
-            if ($this->has('structure') && !empty($this->structure)) {
+            if ($this->has('structure') && ! empty($this->structure)) {
                 try {
                     $this->validateTemplateStructure($validator);
                 } catch (\Exception $e) {
-                    $validator->errors()->add('structure', 'Template structure validation failed: ' . $e->getMessage());
+                    $validator->errors()->add('structure', 'Template structure validation failed: '.$e->getMessage());
                 }
             }
         });
@@ -127,14 +121,15 @@ class StoreTemplateRequest extends FormRequest
     /**
      * Validate template structure against security and format rules.
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
+     *
      * @throws \Exception
      */
     private function validateTemplateStructure($validator): void
     {
         $structure = $this->structure;
 
-        if (!isset($structure['sections']) || !is_array($structure['sections'])) {
+        if (! isset($structure['sections']) || ! is_array($structure['sections'])) {
             throw new \Exception('Template must have a sections array');
         }
 
@@ -143,7 +138,7 @@ class StoreTemplateRequest extends FormRequest
         }
 
         foreach ($structure['sections'] as $key => $section) {
-            if (!isset($section['type'])) {
+            if (! isset($section['type'])) {
                 throw new \Exception("Section {$key} must have a type");
             }
 
@@ -151,10 +146,10 @@ class StoreTemplateRequest extends FormRequest
             $allowedTypes = [
                 'hero', 'text', 'image', 'video', 'form', 'button',
                 'statistics', 'testimonials', 'accordion', 'tabs',
-                'social_proof', 'pricing', 'newsletter', 'contact'
+                'social_proof', 'pricing', 'newsletter', 'contact',
             ];
 
-            if (!in_array($section['type'], $allowedTypes)) {
+            if (! in_array($section['type'], $allowedTypes)) {
                 throw new \Exception("Section type '{$section['type']}' is not allowed");
             }
 
@@ -168,8 +163,6 @@ class StoreTemplateRequest extends FormRequest
     /**
      * Validate section configuration based on section type.
      *
-     * @param string $sectionType
-     * @param array $config
      * @throws \Exception
      */
     private function validateSectionConfig(string $sectionType, array $config): void
@@ -184,7 +177,7 @@ class StoreTemplateRequest extends FormRequest
         };
 
         foreach ($requiredFields as $field) {
-            if (!isset($config[$field]) || empty($config[$field])) {
+            if (! isset($config[$field]) || empty($config[$field])) {
                 throw new \Exception("{$sectionType} section requires '{$field}' configuration");
             }
         }
@@ -192,8 +185,8 @@ class StoreTemplateRequest extends FormRequest
         // Validate URLs if present
         $urlFields = ['url', 'image_url', 'background_url', 'link_url'];
         foreach ($urlFields as $field) {
-            if (isset($config[$field]) && !empty($config[$field])) {
-                if (!filter_var($config[$field], FILTER_VALIDATE_URL)) {
+            if (isset($config[$field]) && ! empty($config[$field])) {
+                if (! filter_var($config[$field], FILTER_VALIDATE_URL)) {
                     throw new \Exception("{$field} must be a valid URL");
                 }
             }

@@ -8,7 +8,7 @@ This file provides guidance for AI coding agents working in this repository.
 - PHP 8.3+ (Path: `D:\DevCenter\xampp\php-8.3.23\php.exe`)
 - Node.js 18+
 - Composer 2.x
-- PostgreSQL 13+
+- PostgreSQL 17+
 - Redis (optional)
 
 ### Initial Setup Commands

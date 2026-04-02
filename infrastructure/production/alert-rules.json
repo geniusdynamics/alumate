@@ -1,0 +1,946 @@
+{
+  "version": "3.0.0",
+  "name": "Alumate Production Alert Rules",
+  "description": "Comprehensive alert rules for Alumate production monitoring system",
+  "last_updated": "2024-09-01T00:00:00Z",
+  "updated_by": "platform-team",
+  "enabled": true,
+  "severity_levels": {
+    "critical": {
+      "priority": 1,
+      "color": "#FF0000",
+      "icon": "🚨",
+      "auto_escalate": true,
+      "notify_immediately": true,
+      "sla_minutes": 15
+    },
+    "high": {
+      "priority": 2,
+      "color": "#FF6B00",
+      "icon": "⚠️",
+      "auto_escalate": true,
+      "notify_immediately": true,
+      "sla_minutes": 30
+    },
+    "medium": {
+      "priority": 3,
+      "color": "#FFC000",
+      "icon": "⚡",
+      "auto_escalate": false,
+      "notify_immediately": false,
+      "sla_minutes": 120
+    },
+    "low": {
+      "priority": 4,
+      "color": "#00B0F0",
+      "icon": "ℹ️",
+      "auto_escalate": false,
+      "notify_immediately": false,
+      "sla_minutes": 480
+    },
+    "info": {
+      "priority": 5,
+      "color": "#70AD47",
+      "icon": "✅",
+      "auto_escalate": false,
+      "notify_immediately": false,
+      "sla_minutes": null
+    }
+  },
+  "alert_groups": {
+    "infrastructure": {
+      "description": "Infrastructure and system resource alerts",
+      "order": 1,
+      "alerts": [
+        {
+          "id": "INF-001",
+          "name": "Application Unavailable",
+          "description": "Application is not responding to health checks",
+          "severity": "critical",
+          "condition": {
+            "type": "health_check",
+            "metric": "application_health",
+            "operator": "eq",
+            "value": "unhealthy"
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack", "pagerduty", "sms", "phone"],
+          "runbook": "https://wiki.alumate.com/runbooks/application-down",
+          "auto_resolve": false,
+          "tags": ["infrastructure", "application", "availability"]
+        },
+        {
+          "id": "INF-002",
+          "name": "High Memory Usage",
+          "description": "Memory usage has exceeded critical threshold",
+          "severity": "critical",
+          "condition": {
+            "type": "percentage",
+            "metric": "memory_usage",
+            "operator": "gte",
+            "value": 95
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/memory-critical",
+          "auto_resolve": true,
+          "tags": ["infrastructure", "memory", "performance"]
+        },
+        {
+          "id": "INF-003",
+          "name": "High CPU Usage",
+          "description": "CPU usage has exceeded critical threshold",
+          "severity": "high",
+          "condition": {
+            "type": "percentage",
+            "metric": "cpu_usage",
+            "operator": "gte",
+            "value": 90
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/cpu-high",
+          "auto_resolve": true,
+          "tags": ["infrastructure", "cpu", "performance"]
+        },
+        {
+          "id": "INF-004",
+          "name": "Disk Space Critical",
+          "description": "Disk space usage has exceeded critical threshold",
+          "severity": "critical",
+          "condition": {
+            "type": "percentage",
+            "metric": "disk_usage",
+            "operator": "gte",
+            "value": 95
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/disk-critical",
+          "auto_resolve": false,
+          "tags": ["infrastructure", "storage", "disk"]
+        },
+        {
+          "id": "INF-005",
+          "name": "Disk Space Warning",
+          "description": "Disk space usage has exceeded warning threshold",
+          "severity": "medium",
+          "condition": {
+            "type": "percentage",
+            "metric": "disk_usage",
+            "operator": "gte",
+            "value": 80
+          },
+          "evaluation_window": "10m",
+          "evaluation_interval": "300s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/disk-warning",
+          "auto_resolve": false,
+          "tags": ["infrastructure", "storage", "disk"]
+        },
+        {
+          "id": "INF-006",
+          "name": "Container Restart Loop",
+          "description": "Container has restarted multiple times in short period",
+          "severity": "high",
+          "condition": {
+            "type": "count",
+            "metric": "container_restarts",
+            "operator": "gte",
+            "value": 3
+          },
+          "evaluation_window": "15m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/container-restarts",
+          "auto_resolve": false,
+          "tags": ["infrastructure", "container", "stability"]
+        }
+      ]
+    },
+    "database": {
+      "description": "Database performance and availability alerts",
+      "order": 2,
+      "alerts": [
+        {
+          "id": "DB-001",
+          "name": "Database Unavailable",
+          "description": "Database connection failed",
+          "severity": "critical",
+          "condition": {
+            "type": "database",
+            "metric": "connection_status",
+            "operator": "eq",
+            "value": "failed"
+          },
+          "evaluation_window": "30s",
+          "evaluation_interval": "10s",
+          "channels": ["email", "slack", "pagerduty", "phone"],
+          "runbook": "https://wiki.alumate.com/runbooks/database-down",
+          "auto_resolve": false,
+          "tags": ["database", "availability", "postgresql"]
+        },
+        {
+          "id": "DB-002",
+          "name": "Database Connection Pool Exhausted",
+          "description": "All database connections are in use",
+          "severity": "critical",
+          "condition": {
+            "type": "percentage",
+            "metric": "db_connection_pool_usage",
+            "operator": "gte",
+            "value": 95
+          },
+          "evaluation_window": "2m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/db-pool-exhausted",
+          "auto_resolve": false,
+          "tags": ["database", "connections", "performance"]
+        },
+        {
+          "id": "DB-003",
+          "name": "Slow Query Detected",
+          "description": "Database query execution time exceeded threshold",
+          "severity": "medium",
+          "condition": {
+            "type": "milliseconds",
+            "metric": "slow_query_duration",
+            "operator": "gte",
+            "value": 1000
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "60s",
+          "channels": ["slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/slow-query",
+          "auto_resolve": true,
+          "tags": ["database", "performance", "queries"]
+        },
+        {
+          "id": "DB-004",
+          "name": "Database Replication Lag",
+          "description": "Database replication lag exceeds threshold",
+          "severity": "high",
+          "condition": {
+            "type": "seconds",
+            "metric": "replication_lag",
+            "operator": "gte",
+            "value": 5
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/replication-lag",
+          "auto_resolve": false,
+          "tags": ["database", "replication", "high-availability"]
+        },
+        {
+          "id": "DB-005",
+          "name": "Database Deadlock",
+          "description": "Database deadlock detected",
+          "severity": "medium",
+          "condition": {
+            "type": "count",
+            "metric": "deadlocks_per_minute",
+            "operator": "gte",
+            "value": 5
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/deadlock",
+          "auto_resolve": true,
+          "tags": ["database", "locks", "performance"]
+        }
+      ]
+    },
+    "cache": {
+      "description": "Cache system performance alerts",
+      "order": 3,
+      "alerts": [
+        {
+          "id": "CACHE-001",
+          "name": "Redis Unavailable",
+          "description": "Redis connection failed",
+          "severity": "critical",
+          "condition": {
+            "type": "redis",
+            "metric": "connection_status",
+            "operator": "eq",
+            "value": "failed"
+          },
+          "evaluation_window": "30s",
+          "evaluation_interval": "10s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/redis-down",
+          "auto_resolve": false,
+          "tags": ["cache", "redis", "availability"]
+        },
+        {
+          "id": "CACHE-002",
+          "name": "Low Cache Hit Rate",
+          "description": "Cache hit rate has fallen below threshold",
+          "severity": "medium",
+          "condition": {
+            "type": "percentage",
+            "metric": "cache_hit_rate",
+            "operator": "lte",
+            "value": 80
+          },
+          "evaluation_window": "15m",
+          "evaluation_interval": "120s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/cache-hit-rate",
+          "auto_resolve": true,
+          "tags": ["cache", "performance", "redis"]
+        },
+        {
+          "id": "CACHE-003",
+          "name": "Redis Memory High",
+          "description": "Redis memory usage has exceeded warning threshold",
+          "severity": "medium",
+          "condition": {
+            "type": "percentage",
+            "metric": "redis_memory_usage",
+            "operator": "gte",
+            "value": 80
+          },
+          "evaluation_window": "10m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/redis-memory",
+          "auto_resolve": true,
+          "tags": ["cache", "memory", "redis"]
+        },
+        {
+          "id": "CACHE-004",
+          "name": "Redis Evictions",
+          "description": "Redis evicted keys due to memory pressure",
+          "severity": "low",
+          "condition": {
+            "type": "count",
+            "metric": "evicted_keys",
+            "operator": "gte",
+            "value": 100
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "60s",
+          "channels": ["slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/redis-evictions",
+          "auto_resolve": true,
+          "tags": ["cache", "memory", "redis"]
+        }
+      ]
+    },
+    "queue": {
+      "description": "Background job queue alerts",
+      "order": 4,
+      "alerts": [
+        {
+          "id": "QUEUE-001",
+          "name": "Queue Backlog Critical",
+          "description": "Job queue backlog has exceeded critical threshold",
+          "severity": "critical",
+          "condition": {
+            "type": "count",
+            "metric": "jobs_waiting",
+            "operator": "gte",
+            "value": 500
+          },
+          "evaluation_window": "10m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/queue-backlog-critical",
+          "auto_resolve": false,
+          "tags": ["queue", "jobs", "performance"]
+        },
+        {
+          "id": "QUEUE-002",
+          "name": "Queue Backlog Warning",
+          "description": "Job queue backlog has exceeded warning threshold",
+          "severity": "high",
+          "condition": {
+            "type": "count",
+            "metric": "jobs_waiting",
+            "operator": "gte",
+            "value": 100
+          },
+          "evaluation_window": "15m",
+          "evaluation_interval": "120s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/queue-backlog",
+          "auto_resolve": false,
+          "tags": ["queue", "jobs", "performance"]
+        },
+        {
+          "id": "QUEUE-003",
+          "name": "Failed Jobs Critical",
+          "description": "Failed jobs count has exceeded critical threshold",
+          "severity": "critical",
+          "condition": {
+            "type": "count",
+            "metric": "failed_jobs_count",
+            "operator": "gte",
+            "value": 50
+          },
+          "evaluation_window": "15m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/failed-jobs-critical",
+          "auto_resolve": false,
+          "tags": ["queue", "jobs", "failed"]
+        },
+        {
+          "id": "QUEUE-004",
+          "name": "Stale Job Detected",
+          "description": "Job has been processing for too long",
+          "severity": "high",
+          "condition": {
+            "type": "seconds",
+            "metric": "job_processing_time",
+            "operator": "gte",
+            "value": 600
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/stale-job",
+          "auto_resolve": false,
+          "tags": ["queue", "jobs", "stuck"]
+        },
+        {
+          "id": "QUEUE-005",
+          "name": "Worker Offline",
+          "description": "Queue worker is not processing jobs",
+          "severity": "critical",
+          "condition": {
+            "type": "boolean",
+            "metric": "worker_active",
+            "operator": "eq",
+            "value": false
+          },
+          "evaluation_window": "2m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/worker-offline",
+          "auto_resolve": false,
+          "tags": ["queue", "workers", "availability"]
+        }
+      ]
+    },
+    "application": {
+      "description": "Application performance and error alerts",
+      "order": 5,
+      "alerts": [
+        {
+          "id": "APP-001",
+          "name": "High Error Rate",
+          "description": "Application error rate has exceeded critical threshold",
+          "severity": "critical",
+          "condition": {
+            "type": "percentage",
+            "metric": "error_rate",
+            "operator": "gte",
+            "value": 5.0
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/error-rate-critical",
+          "auto_resolve": true,
+          "tags": ["application", "errors", "stability"]
+        },
+        {
+          "id": "APP-002",
+          "name": "Elevated Error Rate",
+          "description": "Application error rate has exceeded warning threshold",
+          "severity": "high",
+          "condition": {
+            "type": "percentage",
+            "metric": "error_rate",
+            "operator": "gte",
+            "value": 1.0
+          },
+          "evaluation_window": "10m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/error-rate-warning",
+          "auto_resolve": true,
+          "tags": ["application", "errors", "stability"]
+        },
+        {
+          "id": "APP-003",
+          "name": "Slow Response Time",
+          "description": "API response time has exceeded critical threshold",
+          "severity": "high",
+          "condition": {
+            "type": "milliseconds",
+            "metric": "response_time_p99",
+            "operator": "gte",
+            "value": 3000
+          },
+          "evaluation_window": "5m",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/slow-response-critical",
+          "auto_resolve": true,
+          "tags": ["application", "performance", "latency"]
+        },
+        {
+          "id": "APP-004",
+          "name": "High Response Time",
+          "description": "API response time has exceeded warning threshold",
+          "severity": "medium",
+          "condition": {
+            "type": "milliseconds",
+            "metric": "response_time_p99",
+            "operator": "gte",
+            "value": 1000
+          },
+          "evaluation_window": "10m",
+          "evaluation_interval": "120s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/slow-response-warning",
+          "auto_resolve": true,
+          "tags": ["application", "performance", "latency"]
+        },
+        {
+          "id": "APP-005",
+          "name": "Exception Detected",
+          "description": "Unhandled exception detected in application",
+          "severity": "high",
+          "condition": {
+            "type": "count",
+            "metric": "unhandled_exceptions",
+            "operator": "gte",
+            "value": 1
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "10s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/unhandled-exception",
+          "auto_resolve": true,
+          "tags": ["application", "exceptions", "bugs"]
+        },
+        {
+          "id": "APP-006",
+          "name": "Deprecation Warning",
+          "description": "Deprecated feature or method is being used",
+          "severity": "low",
+          "condition": {
+            "type": "count",
+            "metric": "deprecation_warnings",
+            "operator": "gte",
+            "value": 10
+          },
+          "evaluation_window": "1h",
+          "evaluation_interval": "300s",
+          "channels": ["slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/deprecation",
+          "auto_resolve": false,
+          "tags": ["application", "maintenance", "upgrades"]
+        }
+      ]
+    },
+    "security": {
+      "description": "Security and access control alerts",
+      "order": 6,
+      "alerts": [
+        {
+          "id": "SEC-001",
+          "name": "Security Breach Detected",
+          "description": "Potential security breach or attack detected",
+          "severity": "critical",
+          "condition": {
+            "type": "security",
+            "metric": "threat_level",
+            "operator": "gte",
+            "value": "critical"
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "10s",
+          "channels": ["email", "slack", "pagerduty", "phone"],
+          "runbook": "https://wiki.alumate.com/runbooks/security-breach",
+          "auto_resolve": false,
+          "tags": ["security", "threat", "critical"]
+        },
+        {
+          "id": "SEC-002",
+          "name": "Brute Force Attack",
+          "description": "Multiple failed login attempts detected",
+          "severity": "high",
+          "condition": {
+            "type": "count",
+            "metric": "failed_logins_per_ip",
+            "operator": "gte",
+            "value": 10
+          },
+          "evaluation_window": "15m",
+          "evaluation_interval": "30s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/brute-force",
+          "auto_resolve": true,
+          "tags": ["security", "authentication", "brute-force"]
+        },
+        {
+          "id": "SEC-003",
+          "name": "Suspicious Login Location",
+          "description": "Login attempted from unusual geographic location",
+          "severity": "medium",
+          "condition": {
+            "type": "security",
+            "metric": "login_location_anomaly",
+            "operator": "eq",
+            "value": true
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "10s",
+          "channels": ["email"],
+          "runbook": "https://wiki.alumate.com/runbooks/suspicious-login",
+          "auto_resolve": false,
+          "tags": ["security", "authentication", "geolocation"]
+        },
+        {
+          "id": "SEC-004",
+          "name": "Impossible Travel",
+          "description": "User appears to have traveled faster than physically possible",
+          "severity": "high",
+          "condition": {
+            "type": "security",
+            "metric": "impossible_travel_detected",
+            "operator": "eq",
+            "value": true
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "10s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/impossible-travel",
+          "auto_resolve": false,
+          "tags": ["security", "authentication", "geolocation"]
+        },
+        {
+          "id": "SEC-005",
+          "name": "Rate Limit Exceeded",
+          "description": "API rate limit exceeded for user or IP",
+          "severity": "low",
+          "condition": {
+            "type": "count",
+            "metric": "rate_limit_violations",
+            "operator": "gte",
+            "value": 100
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "10s",
+          "channels": [],
+          "runbook": "https://wiki.alumate.com/runbooks/rate-limit",
+          "auto_resolve": true,
+          "tags": ["security", "rate-limiting", "api"]
+        },
+        {
+          "id": "SEC-006",
+          "name": "Certificate Expiring Soon",
+          "description": "SSL/TLS certificate expires within 30 days",
+          "severity": "high",
+          "condition": {
+            "type": "days",
+            "metric": "ssl_certificate_expiry",
+            "operator": "lte",
+            "value": 30
+          },
+          "evaluation_window": "1d",
+          "evaluation_interval": "86400s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/certificate-renewal",
+          "auto_resolve": false,
+          "tags": ["security", "ssl", "certificate"]
+        }
+      ]
+    },
+    "business": {
+      "description": "Business metric and KPI alerts",
+      "order": 7,
+      "alerts": [
+        {
+          "id": "BUS-001",
+          "name": "High Bounce Rate",
+          "description": "Website bounce rate has increased significantly",
+          "severity": "low",
+          "condition": {
+            "type": "percentage",
+            "metric": "bounce_rate",
+            "operator": "gte",
+            "value": 70
+          },
+          "evaluation_window": "1h",
+          "evaluation_interval": "300s",
+          "channels": ["slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/bounce-rate",
+          "auto_resolve": true,
+          "tags": ["business", "analytics", "engagement"]
+        },
+        {
+          "id": "BUS-002",
+          "name": "Low Conversion Rate",
+          "description": "Conversion rate has dropped below target",
+          "severity": "medium",
+          "condition": {
+            "type": "percentage",
+            "metric": "conversion_rate",
+            "operator": "lte",
+            "value": 2.0
+          },
+          "evaluation_window": "24h",
+          "evaluation_interval": "3600s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/conversion-rate",
+          "auto_resolve": false,
+          "tags": ["business", "analytics", "conversion"]
+        },
+        {
+          "id": "BUS-003",
+          "name": "Tenant Offline",
+          "description": "Tenant's dedicated instance is unavailable",
+          "severity": "high",
+          "condition": {
+            "type": "tenant",
+            "metric": "tenant_availability",
+            "operator": "eq",
+            "value": "offline"
+          },
+          "evaluation_window": "2m",
+          "evaluation_interval": "30s",
+          "channels": ["email"],
+          "runbook": "https://wiki.alumate.com/runbooks/tenant-offline",
+          "auto_resolve": false,
+          "tags": ["business", "tenant", "availability"]
+        }
+      ]
+    },
+    "deployment": {
+      "description": "Deployment and release alerts",
+      "order": 8,
+      "alerts": [
+        {
+          "id": "DEPLOY-001",
+          "name": "Deployment Failed",
+          "description": "Application deployment failed",
+          "severity": "high",
+          "condition": {
+            "type": "event",
+            "metric": "deployment_status",
+            "operator": "eq",
+            "value": "failed"
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "10s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/deployment-failed",
+          "auto_resolve": false,
+          "tags": ["deployment", "release", "ci-cd"]
+        },
+        {
+          "id": "DEPLOY-002",
+          "name": "Rollback Initiated",
+          "description": "Automatic rollback was triggered",
+          "severity": "high",
+          "condition": {
+            "type": "event",
+            "metric": "rollback_triggered",
+            "operator": "eq",
+            "value": true
+          },
+          "evaluation_window": "1m",
+          "evaluation_interval": "10s",
+          "channels": ["email", "slack", "pagerduty"],
+          "runbook": "https://wiki.alumate.com/runbooks/rollback",
+          "auto_resolve": false,
+          "tags": ["deployment", "rollback", "ci-cd"]
+        },
+        {
+          "id": "DEPLOY-003",
+          "name": "Scheduled Maintenance",
+          "description": "Upcoming scheduled maintenance window",
+          "severity": "info",
+          "condition": {
+            "type": "scheduled",
+            "metric": "maintenance_window",
+            "operator": "eq",
+            "value": "upcoming"
+          },
+          "evaluation_window": "1d",
+          "evaluation_interval": "3600s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/maintenance",
+          "auto_resolve": false,
+          "tags": ["deployment", "maintenance", "scheduled"]
+        }
+      ]
+    },
+    "backup": {
+      "description": "Backup and recovery alerts",
+      "order": 9,
+      "alerts": [
+        {
+          "id": "BACKUP-001",
+          "name": "Backup Failed",
+          "description": "Scheduled backup failed to complete",
+          "severity": "high",
+          "condition": {
+            "type": "event",
+            "metric": "backup_status",
+            "operator": "eq",
+            "value": "failed"
+          },
+          "evaluation_window": "1h",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/backup-failed",
+          "auto_resolve": false,
+          "tags": ["backup", "recovery", "data-protection"]
+        },
+        {
+          "id": "BACKUP-002",
+          "name": "Backup Overdue",
+          "description": "Expected backup has not completed",
+          "severity": "medium",
+          "condition": {
+            "type": "hours",
+            "metric": "time_since_last_backup",
+            "operator": "gte",
+            "value": 26
+          },
+          "evaluation_window": "1h",
+          "evaluation_interval": "300s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/backup-overdue",
+          "auto_resolve": false,
+          "tags": ["backup", "recovery", "data-protection"]
+        },
+        {
+          "id": "BACKUP-003",
+          "name": "Backup Verification Failed",
+          "description": "Backup integrity verification failed",
+          "severity": "high",
+          "condition": {
+            "type": "event",
+            "metric": "backup_verification",
+            "operator": "eq",
+            "value": "failed"
+          },
+          "evaluation_window": "1h",
+          "evaluation_interval": "60s",
+          "channels": ["email", "slack"],
+          "runbook": "https://wiki.alumate.com/runbooks/backup-verification-failed",
+          "auto_resolve": false,
+          "tags": ["backup", "recovery", "integrity"]
+        }
+      ]
+    }
+  },
+  "notification_channels": {
+    "email": {
+      "enabled": true,
+      "recipients": ["admin@alumate.com", "devops@alumate.com"],
+      "from": "alerts@alumate.com",
+      "subject_prefix": "[ALUMATE ALERT]"
+    },
+    "slack": {
+      "enabled": true,
+      "webhook_url": "https://hooks.slack.com/services/xxx/xxx/xxx",
+      "channel": "#alerts",
+      "username": "Alumate Monitor",
+      "icon": ":robot_face:"
+    },
+    "pagerduty": {
+      "enabled": false,
+      "integration_key": "",
+      "service_name": "Alumni Platform"
+    },
+    "webhook": {
+      "enabled": false,
+      "url": "",
+      "method": "POST"
+    },
+    "sms": {
+      "enabled": false,
+      "provider": "twilio",
+      "recipients": []
+    },
+    "phone": {
+      "enabled": false,
+      "provider": "twilio",
+      "recipients": []
+    }
+  },
+  "escalation_policies": {
+    "default": {
+      "step_1": {
+        "delay_minutes": 5,
+        "channels": ["email", "slack"],
+        "notify_roles": ["@devops"]
+      },
+      "step_2": {
+        "delay_minutes": 15,
+        "channels": ["email", "slack", "sms"],
+        "notify_roles": ["@platform-lead"]
+      },
+      "step_3": {
+        "delay_minutes": 30,
+        "channels": ["email", "sms", "phone"],
+        "notify_roles": ["@engineering-manager"]
+      }
+    },
+    "security": {
+      "step_1": {
+        "delay_minutes": 0,
+        "channels": ["slack", "pagerduty"],
+        "notify_roles": ["@security-team"]
+      },
+      "step_2": {
+        "delay_minutes": 5,
+        "channels": ["email", "sms", "phone"],
+        "notify_roles": ["@security-lead"]
+      },
+      "step_3": {
+        "delay_minutes": 15,
+        "channels": ["email", "sms", "phone"],
+        "notify_roles": ["@cto"]
+      }
+    },
+    "database": {
+      "step_1": {
+        "delay_minutes": 2,
+        "channels": ["email", "slack"],
+        "notify_roles": ["@devops"]
+      },
+      "step_2": {
+        "delay_minutes": 10,
+        "channels": ["email", "slack", "pagerduty"],
+        "notify_roles": ["@dba"]
+      }
+    }
+  },
+  "snooze_rules": {
+    "maintenance_window": {
+      "enabled": true,
+      "auto_snooze_alerts": ["low", "medium"],
+      "notify_on_snooze_start": true,
+      "notify_on_snooze_end": true
+    },
+    "known_issues": {
+      "enabled": true,
+      "allow_manual_snooze": true,
+      "max_snooze_hours": 24
+    }
+  },
+  "maintenance_mode": {
+    "enabled": true,
+    "auto_disable_alerts": ["low", "medium", "high"],
+    "preserve_critical": true,
+    "notify_before_minutes": 60
+  }
+}

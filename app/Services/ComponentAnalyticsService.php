@@ -8,7 +8,6 @@ use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ComponentAnalyticsService
@@ -22,12 +21,14 @@ class ComponentAnalyticsService
      * Privacy compliance settings
      */
     protected const DATA_RETENTION_DAYS = 365;
+
     protected const ANONYMIZE_AFTER_DAYS = 90;
 
     /**
      * A/B testing configuration
      */
     protected const DEFAULT_VARIANTS = ['A', 'B'];
+
     protected const MINIMUM_SAMPLE_SIZE = 100;
 
     /**
@@ -124,15 +125,15 @@ class ComponentAnalyticsService
         int $componentInstanceId,
         ?int $userId = null,
         ?string $sessionId = null,
-        array $variants = null
+        ?array $variants = null
     ): string {
         $variants = $variants ?? self::DEFAULT_VARIANTS;
-        
+
         // Use consistent assignment based on user ID or session ID
         $identifier = $userId ? "user_{$userId}" : "session_{$sessionId}";
-        $hash = crc32($identifier . $componentInstanceId);
+        $hash = crc32($identifier.$componentInstanceId);
         $variantIndex = abs($hash) % count($variants);
-        
+
         return $variants[$variantIndex];
     }
 
@@ -171,11 +172,11 @@ class ComponentAnalyticsService
         ?Carbon $startDate = null,
         ?Carbon $endDate = null
     ): array {
-        $cacheKey = "component_analytics_{$componentInstanceId}_" . 
-                   ($startDate ? $startDate->format('Y-m-d') : 'all') . '_' .
+        $cacheKey = "component_analytics_{$componentInstanceId}_".
+                   ($startDate ? $startDate->format('Y-m-d') : 'all').'_'.
                    ($endDate ? $endDate->format('Y-m-d') : 'all');
 
-        if (!app()->bound('cache')) {
+        if (! app()->bound('cache')) {
             return $this->calculateAnalyticsData($componentInstanceId, $startDate, $endDate);
         }
 
@@ -215,7 +216,7 @@ class ComponentAnalyticsService
     {
         $cacheKey = "variant_performance_{$componentInstanceId}";
 
-        if (!app()->bound('cache')) {
+        if (! app()->bound('cache')) {
             return ComponentAnalytic::getVariantPerformance($componentInstanceId);
         }
 
@@ -239,9 +240,9 @@ class ComponentAnalyticsService
         int $componentInstanceId,
         array $funnelSteps = ['view', 'click', 'conversion']
     ): array {
-        $cacheKey = "conversion_funnel_{$componentInstanceId}_" . md5(serialize($funnelSteps));
+        $cacheKey = "conversion_funnel_{$componentInstanceId}_".md5(serialize($funnelSteps));
 
-        if (!app()->bound('cache')) {
+        if (! app()->bound('cache')) {
             return $this->calculateFunnelData($componentInstanceId, $funnelSteps);
         }
 
@@ -290,7 +291,7 @@ class ComponentAnalyticsService
     {
         $cacheKey = "realtime_metrics_{$componentInstanceId}";
 
-        if (!app()->bound('cache')) {
+        if (! app()->bound('cache')) {
             return $this->calculateRealTimeData($componentInstanceId);
         }
 
@@ -366,7 +367,7 @@ class ComponentAnalyticsService
 
         // Calculate average conversion rate
         if ($report['summary']['total_views'] > 0) {
-            $report['summary']['average_conversion_rate'] = 
+            $report['summary']['average_conversion_rate'] =
                 ($report['summary']['total_conversions'] / $report['summary']['total_views']) * 100;
         }
 
@@ -410,7 +411,7 @@ class ComponentAnalyticsService
      */
     public function clearCache(?int $componentInstanceId = null): bool
     {
-        if (!app()->bound('cache')) {
+        if (! app()->bound('cache')) {
             return true;
         }
 
@@ -464,7 +465,7 @@ class ComponentAnalyticsService
     protected function calculateEventCounts(Collection $analytics): array
     {
         return $analytics->groupBy('event_type')
-            ->map(fn($events) => $events->count())
+            ->map(fn ($events) => $events->count())
             ->toArray();
     }
 
@@ -474,11 +475,11 @@ class ComponentAnalyticsService
     protected function calculateConversionMetrics(Collection $analytics): array
     {
         $conversions = $analytics->where('event_type', 'conversion');
-        
-        $conversionsByType = $conversions->groupBy('data.conversion_type')
-            ->map(fn($events) => $events->count());
 
-        $totalValue = $conversions->sum(fn($event) => $event->data['conversion_value'] ?? 0);
+        $conversionsByType = $conversions->groupBy('data.conversion_type')
+            ->map(fn ($events) => $events->count());
+
+        $totalValue = $conversions->sum(fn ($event) => $event->data['conversion_value'] ?? 0);
         $averageValue = $conversions->count() > 0 ? $totalValue / $conversions->count() : 0;
 
         return [
@@ -495,20 +496,21 @@ class ComponentAnalyticsService
     protected function calculateEngagementMetrics(Collection $analytics): array
     {
         $sessions = $analytics->whereNotNull('session_id')->groupBy('session_id');
-        
+
         $sessionDurations = $sessions->map(function ($sessionEvents) {
             $first = $sessionEvents->min('created_at');
             $last = $sessionEvents->max('created_at');
+
             return Carbon::parse($last)->diffInSeconds(Carbon::parse($first));
         });
 
         $averageSessionDuration = $sessionDurations->average();
-        $bounceRate = $sessions->filter(fn($events) => $events->count() === 1)->count() / $sessions->count() * 100;
+        $bounceRate = $sessions->filter(fn ($events) => $events->count() === 1)->count() / $sessions->count() * 100;
 
         return [
             'average_session_duration' => $averageSessionDuration,
             'bounce_rate' => $bounceRate,
-            'pages_per_session' => $sessions->map(fn($events) => $events->count())->average(),
+            'pages_per_session' => $sessions->map(fn ($events) => $events->count())->average(),
         ];
     }
 
@@ -518,7 +520,7 @@ class ComponentAnalyticsService
     protected function calculateVariantPerformance(Collection $analytics): array
     {
         $variantEvents = $analytics->whereNotNull('data.variant');
-        
+
         if ($variantEvents->isEmpty()) {
             return [];
         }
@@ -547,7 +549,7 @@ class ComponentAnalyticsService
      */
     protected function calculateTimeSeriesData(Collection $analytics, ?Carbon $startDate, ?Carbon $endDate): array
     {
-        if (!$startDate || !$endDate) {
+        if (! $startDate || ! $endDate) {
             return [];
         }
 
@@ -557,16 +559,16 @@ class ComponentAnalyticsService
         return $analytics->groupBy(function ($event) use ($groupBy) {
             return Carbon::parse($event->created_at)->format($groupBy);
         })
-        ->map(function ($events, $date) {
-            return [
-                'date' => $date,
-                'views' => $events->where('event_type', 'view')->count(),
-                'clicks' => $events->where('event_type', 'click')->count(),
-                'conversions' => $events->where('event_type', 'conversion')->count(),
-            ];
-        })
-        ->values()
-        ->toArray();
+            ->map(function ($events, $date) {
+                return [
+                    'date' => $date,
+                    'views' => $events->where('event_type', 'view')->count(),
+                    'clicks' => $events->where('event_type', 'click')->count(),
+                    'conversions' => $events->where('event_type', 'conversion')->count(),
+                ];
+            })
+            ->values()
+            ->toArray();
     }
 
     /**
@@ -575,11 +577,11 @@ class ComponentAnalyticsService
     protected function calculateUserBehaviorMetrics(Collection $analytics): array
     {
         $userEvents = $analytics->whereNotNull('user_id')->groupBy('user_id');
-        
+
         return [
-            'returning_users' => $userEvents->filter(fn($events) => $events->count() > 1)->count(),
-            'new_users' => $userEvents->filter(fn($events) => $events->count() === 1)->count(),
-            'average_events_per_user' => $userEvents->map(fn($events) => $events->count())->average(),
+            'returning_users' => $userEvents->filter(fn ($events) => $events->count() > 1)->count(),
+            'new_users' => $userEvents->filter(fn ($events) => $events->count() === 1)->count(),
+            'average_events_per_user' => $userEvents->map(fn ($events) => $events->count())->average(),
         ];
     }
 
@@ -588,7 +590,7 @@ class ComponentAnalyticsService
      */
     protected function getAnonymizedIp(?string $ip): ?string
     {
-        if (!$ip) {
+        if (! $ip) {
             return null;
         }
 
@@ -596,6 +598,7 @@ class ComponentAnalyticsService
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
             $parts = explode('.', $ip);
             $parts[3] = '0';
+
             return implode('.', $parts);
         }
 
@@ -605,6 +608,7 @@ class ComponentAnalyticsService
             for ($i = 4; $i < 8; $i++) {
                 $parts[$i] = '0';
             }
+
             return implode(':', $parts);
         }
 
@@ -616,12 +620,13 @@ class ComponentAnalyticsService
      */
     protected function getRequestData(string $type): ?string
     {
-        if (!app()->bound('request')) {
+        if (! app()->bound('request')) {
             return null;
         }
 
         try {
             $request = request();
+
             return match ($type) {
                 'userAgent' => $request->userAgent(),
                 'ip' => $request->ip(),
@@ -648,7 +653,7 @@ class ComponentAnalyticsService
                 'component_id' => $componentId,
                 'page_type' => 'grapeJS',
                 'page_id' => 0, // Special ID for GrapeJS usage
-                'position' => 0
+                'position' => 0,
             ]);
 
             $this->recordView(
@@ -661,7 +666,7 @@ class ComponentAnalyticsService
             Log::warning('Failed to track component usage', [
                 'component_id' => $componentId,
                 'context' => $context,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -676,7 +681,7 @@ class ComponentAnalyticsService
                 'component_id' => $componentId,
                 'page_type' => 'grapeJS',
                 'page_id' => 0,
-                'position' => 0
+                'position' => 0,
             ]);
 
             ComponentAnalytic::create([
@@ -686,14 +691,14 @@ class ComponentAnalyticsService
                 'session_id' => session()->getId(),
                 'data' => [
                     'rating' => $rating,
-                    'timestamp' => now()->toISOString()
-                ]
+                    'timestamp' => now()->toISOString(),
+                ],
             ]);
         } catch (\Exception $e) {
             Log::warning('Failed to track component rating', [
                 'component_id' => $componentId,
                 'rating' => $rating,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -708,7 +713,7 @@ class ComponentAnalyticsService
                 ->where('page_type', 'grapeJS')
                 ->first();
 
-            if (!$componentInstance) {
+            if (! $componentInstance) {
                 return [
                     'componentId' => $componentId,
                     'totalUsage' => 0,
@@ -716,7 +721,7 @@ class ComponentAnalyticsService
                     'averageRating' => 0,
                     'conversionRate' => 0,
                     'lastUsed' => null,
-                    'popularConfigurations' => []
+                    'popularConfigurations' => [],
                 ];
             }
 
@@ -726,8 +731,8 @@ class ComponentAnalyticsService
                 ->get();
 
             $ratings = $analytics->where('event_type', 'rating');
-            $averageRating = $ratings->count() > 0 
-                ? $ratings->avg(fn($r) => $r->data['rating'] ?? 0) 
+            $averageRating = $ratings->count() > 0
+                ? $ratings->avg(fn ($r) => $r->data['rating'] ?? 0)
                 : 0;
 
             return [
@@ -737,12 +742,12 @@ class ComponentAnalyticsService
                 'averageRating' => round($averageRating, 2),
                 'conversionRate' => $this->calculateConversionRate($analytics),
                 'lastUsed' => $analytics->max('created_at'),
-                'popularConfigurations' => []
+                'popularConfigurations' => [],
             ];
         } catch (\Exception $e) {
             Log::warning('Failed to get component stats', [
                 'component_id' => $componentId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return [
@@ -752,7 +757,7 @@ class ComponentAnalyticsService
                 'averageRating' => 0,
                 'conversionRate' => 0,
                 'lastUsed' => null,
-                'popularConfigurations' => []
+                'popularConfigurations' => [],
             ];
         }
     }
@@ -767,7 +772,7 @@ class ComponentAnalyticsService
                 ->where('page_type', 'grapeJS')
                 ->first();
 
-            if (!$componentInstance) {
+            if (! $componentInstance) {
                 return 0;
             }
 
@@ -790,7 +795,7 @@ class ComponentAnalyticsService
                 ->where('page_type', 'grapeJS')
                 ->first();
 
-            if (!$componentInstance) {
+            if (! $componentInstance) {
                 return 0.0;
             }
 
@@ -802,7 +807,8 @@ class ComponentAnalyticsService
                 return 0.0;
             }
 
-            $average = $ratings->avg(fn($r) => $r->data['rating'] ?? 0);
+            $average = $ratings->avg(fn ($r) => $r->data['rating'] ?? 0);
+
             return round($average, 2);
         } catch (\Exception $e) {
             return 0.0;

@@ -10,9 +10,9 @@ class ABTestConversion extends Model
     protected $fillable = [
         'ab_test_id',
         'user_id',
+        'session_id',
         'variant',
-        'event',
-        'data',
+        'event_id',
         'converted_at',
     ];
 

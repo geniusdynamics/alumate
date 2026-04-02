@@ -29,13 +29,13 @@ class ComponentVersionResource extends JsonResource
             // Change summary
             'change_summary' => $this->when(
                 $request->query('include_change_summary'),
-                fn() => $this->getChangeSummary()
+                fn () => $this->getChangeSummary()
             ),
 
             // Configuration diff
             'config_diff' => $this->when(
                 $request->query('include_config_diff'),
-                fn() => $this->getConfigDiff()
+                fn () => $this->getConfigDiff()
             ),
 
             // Relationships
@@ -54,13 +54,13 @@ class ComponentVersionResource extends JsonResource
 
             // Additional metadata
             'meta' => [
-                'has_changes' => !empty($this->changes),
-                'has_description' => !empty($this->description),
+                'has_changes' => ! empty($this->changes),
+                'has_description' => ! empty($this->description),
                 'config_size' => strlen(json_encode($this->config ?? [])),
                 'metadata_keys' => array_keys($this->metadata ?? []),
                 'version_format' => $this->getVersionFormat(),
                 'is_semantic_version' => $this->isSemanticVersion(),
-            ]
+            ],
         ];
     }
 

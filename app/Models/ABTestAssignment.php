@@ -10,6 +10,7 @@ class ABTestAssignment extends Model
     protected $fillable = [
         'ab_test_id',
         'user_id',
+        'session_id',
         'variant',
         'assigned_at',
     ];

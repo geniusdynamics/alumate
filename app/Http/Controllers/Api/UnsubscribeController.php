@@ -49,7 +49,7 @@ class UnsubscribeController extends Controller
             $request->categories ?? []
         );
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json($result, 400);
         }
 
@@ -204,7 +204,7 @@ class UnsubscribeController extends Controller
 
         $result = $this->complianceService->confirmDoubleOptIn($request->token);
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return response()->json($result, 400);
         }
 

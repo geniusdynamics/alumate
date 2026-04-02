@@ -7,12 +7,10 @@ namespace App\Services;
 use App\Models\EmailPreference;
 use App\Models\Tenant;
 use App\Models\User;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 /**
  * ComplianceService
@@ -42,9 +40,9 @@ class ComplianceService
     {
         $preference = $this->findPreferenceByTokenAndEmail($token, $email);
 
-        if (!$preference) {
+        if (! $preference) {
             Log::warning('Invalid unsubscribe attempt', [
-                'token' => substr($token, 0, 8) . '...',
+                'token' => substr($token, 0, 8).'...',
                 'email' => $email,
                 'ip' => request()->ip(),
             ]);
@@ -56,7 +54,7 @@ class ComplianceService
         }
 
         // If specific categories provided, unsubscribe from those only
-        if (!empty($categories)) {
+        if (! empty($categories)) {
             $currentPreferences = $preference->preferences ?? [];
             foreach ($categories as $category) {
                 $currentPreferences[$category] = false;
@@ -117,8 +115,8 @@ class ComplianceService
                         'preferences' => $preferences,
                         'ip_address' => request()->ip(),
                         'user_agent' => request()->userAgent(),
-                    ]
-                ]
+                    ],
+                ],
             ]);
             $preference->save();
         }
@@ -147,8 +145,8 @@ class ComplianceService
                     'timestamp' => now()->toISOString(),
                     'ip_address' => request()->ip(),
                     'user_agent' => request()->userAgent(),
-                ]
-            ])
+                ],
+            ]),
         ]);
 
         $preference->save();
@@ -166,7 +164,7 @@ class ComplianceService
     {
         $preference = EmailPreference::where('double_opt_in_token', $token)->first();
 
-        if (!$preference) {
+        if (! $preference) {
             return [
                 'success' => false,
                 'message' => 'Invalid or expired double opt-in token.',
@@ -191,7 +189,7 @@ class ComplianceService
             ->where('tenant_id', $tenant->id)
             ->first();
 
-        if (!$preference) {
+        if (! $preference) {
             return [
                 'email' => $email,
                 'has_consent' => false,
@@ -200,7 +198,7 @@ class ComplianceService
                 'compliance_status' => [
                     'gdpr' => false,
                     'can_spam' => false,
-                ]
+                ],
             ];
         }
 
@@ -226,17 +224,17 @@ class ComplianceService
         $issues = [];
 
         // Check GDPR compliance
-        if (!$preference->gdpr_compliant) {
+        if (! $preference->gdpr_compliant) {
             $issues[] = 'GDPR compliance not confirmed';
         }
 
         // Check CAN-SPAM compliance
-        if (!$preference->can_spam_compliant) {
+        if (! $preference->can_spam_compliant) {
             $issues[] = 'CAN-SPAM compliance not confirmed';
         }
 
         // Check consent validity
-        if (!$preference->hasConsented()) {
+        if (! $preference->hasConsented()) {
             $issues[] = 'Valid consent not provided';
         }
 
@@ -315,7 +313,7 @@ class ComplianceService
         // For now, just log the action
         Log::info('Double opt-in email sent', [
             'email' => $preference->email,
-            'token' => substr($token, 0, 8) . '...',
+            'token' => substr($token, 0, 8).'...',
         ]);
     }
 

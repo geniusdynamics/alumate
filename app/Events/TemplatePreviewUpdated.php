@@ -21,19 +21,17 @@ class TemplatePreviewUpdated implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public Template $template;
+
     public array $previewData;
+
     public string $viewport;
+
     public ?int $userId;
+
     public ?string $tenantId;
 
     /**
      * Create a new event instance.
-     *
-     * @param Template $template
-     * @param array $previewData
-     * @param string $viewport
-     * @param int|null $userId
-     * @param string|null $tenantId
      */
     public function __construct(
         Template $template,
@@ -59,28 +57,26 @@ class TemplatePreviewUpdated implements ShouldBroadcast
         $channels = [];
 
         // Template-specific channel for general updates
-        $channels[] = new Channel('template.' . $this->template->id . '.preview');
+        $channels[] = new Channel('template.'.$this->template->id.'.preview');
 
         // User-specific private channel (if user is provided)
         if ($this->userId) {
-            $channels[] = new PrivateChannel('user.' . $this->userId . '.template-previews');
+            $channels[] = new PrivateChannel('user.'.$this->userId.'.template-previews');
         }
 
         // Tenant-wide preview channel (with tenant isolation)
         if ($this->tenantId) {
-            $channels[] = new Channel('tenant.' . $this->tenantId . '.template-previews');
+            $channels[] = new Channel('tenant.'.$this->tenantId.'.template-previews');
         }
 
         // Presence channel for collaborative editing
-        $channels[] = new PresenceChannel('template.' . $this->template->id . '.collaborators');
+        $channels[] = new PresenceChannel('template.'.$this->template->id.'.collaborators');
 
         return $channels;
     }
 
     /**
      * The event's broadcast name.
-     *
-     * @return string
      */
     public function broadcastAs(): string
     {
@@ -108,8 +104,6 @@ class TemplatePreviewUpdated implements ShouldBroadcast
 
     /**
      * Determine if this event should broadcast.
-     *
-     * @return bool
      */
     public function broadcastWhen(): bool
     {
@@ -124,8 +118,6 @@ class TemplatePreviewUpdated implements ShouldBroadcast
 
     /**
      * Get the broadcast queue.
-     *
-     * @return string|null
      */
     public function broadcastQueue(): ?string
     {

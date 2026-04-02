@@ -12,7 +12,7 @@ use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class MessagingService
+class MessagingService extends BaseService
 {
     /**
      * Create a new direct conversation between two users

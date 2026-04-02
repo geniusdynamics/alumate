@@ -1,36 +1,39 @@
 <?php
 
+// ABOUTME: LandingPageAnalytics model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages landing page analytics data with automatic tenant context resolution
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LandingPageAnalytics extends Model
 {
     protected $fillable = [
-          'tenant_id',
-          'landing_page_id',
-          'template_id',
-          'event_type',
-          'event_name',
-          'event_data',
-          'session_id',
-          'visitor_id',
-          'ip_address',
-          'user_agent',
-          'referrer',
-          'utm_data',
-          'device_type',
-          'browser',
-          'os',
-          'country',
-          'city',
-          'event_time',
-          'is_compliant',
-          'consent_given',
-          'data_retention_until',
-          'analytics_version',
-      ];
+        'landing_page_id',
+        'template_id',
+        'event_type',
+        'event_name',
+        'event_data',
+        'session_id',
+        'visitor_id',
+        'ip_address',
+        'user_agent',
+        'referrer',
+        'utm_data',
+        'device_type',
+        'browser',
+        'os',
+        'country',
+        'city',
+        'event_time',
+        'is_compliant',
+        'consent_given',
+        'data_retention_until',
+        'analytics_version',
+    ];
 
     protected $casts = [
         'event_data' => 'array',
@@ -50,11 +53,12 @@ class LandingPageAnalytics extends Model
     }
 
     /**
-     * Get the tenant this analytics event belongs to
+     * Get the current tenant context
+     * Note: In schema-based tenancy, tenant relationship is contextual
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**
@@ -66,11 +70,26 @@ class LandingPageAnalytics extends Model
     }
 
     /**
-     * Scope by tenant
+     * Boot the model
      */
-    public function scopeByTenant($query, $tenantId)
+    protected static function boot(): void
     {
-        return $query->where('tenant_id', $tenantId);
+        parent::boot();
+
+        // Apply tenant context for schema-based tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            app(TenantContextService::class)->applyTenantContext($builder);
+        });
+    }
+
+    /**
+     * Scope query to specific tenant (for schema-based tenancy)
+     * Note: This is primarily for administrative purposes
+     */
+    public function scopeForTenant($query, string $tenantId)
+    {
+        // In schema-based tenancy, this would switch schema context
+        return app(TenantContextService::class)->scopeToTenant($query, $tenantId);
     }
 
     /**
@@ -94,7 +113,7 @@ class LandingPageAnalytics extends Model
      */
     public function canRetainData(): bool
     {
-        return !$this->data_retention_until || now()->lessThan($this->data_retention_until);
+        return ! $this->data_retention_until || now()->lessThan($this->data_retention_until);
     }
 
     /**

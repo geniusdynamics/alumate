@@ -26,37 +26,37 @@ class ComponentMediaController extends Controller
             'files.*' => 'file|max:10240', // 10MB max
             'component_id' => 'nullable|exists:components,id',
             'media_type' => 'nullable|in:image,video,document,avatar,background',
-            'optimize' => 'boolean'
+            'optimize' => 'boolean',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $files = $request->file('files');
             $user = Auth::user();
-            
+
             $uploadedFiles = $this->mediaUploadService->uploadMedia($files, $user);
-            
+
             // Add component-specific metadata
             foreach ($uploadedFiles as &$file) {
                 $file['component_id'] = $request->component_id;
                 $file['media_type'] = $request->media_type ?? 'image';
                 $file['uploaded_at'] = now()->toISOString();
             }
-            
+
             return response()->json([
                 'message' => 'Files uploaded successfully',
-                'files' => $uploadedFiles
+                'files' => $uploadedFiles,
             ], 201);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'File upload failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -74,13 +74,13 @@ class ComponentMediaController extends Controller
             'processing_options.resize.width' => 'nullable|integer|min:1|max:4000',
             'processing_options.resize.height' => 'nullable|integer|min:1|max:4000',
             'processing_options.quality' => 'nullable|integer|min:1|max:100',
-            'processing_options.format' => 'nullable|in:jpg,png,webp,gif'
+            'processing_options.format' => 'nullable|in:jpg,png,webp,gif',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -88,19 +88,19 @@ class ComponentMediaController extends Controller
             $fileUrl = $request->file_url;
             $componentId = $request->component_id;
             $options = $request->processing_options ?? [];
-            
+
             // Process the media file according to options
             $processedFile = $this->processMediaFile($fileUrl, $options);
-            
+
             return response()->json([
                 'message' => 'Media processed successfully',
                 'file' => $processedFile,
-                'component_id' => $componentId
+                'component_id' => $componentId,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Media processing failed',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -116,13 +116,13 @@ class ComponentMediaController extends Controller
             'component_id' => 'nullable|exists:components,id',
             'sort_by' => 'nullable|in:created_at,name,size',
             'sort_direction' => 'nullable|in:asc,desc',
-            'per_page' => 'nullable|integer|min:1|max:100'
+            'per_page' => 'nullable|integer|min:1|max:100',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -134,10 +134,10 @@ class ComponentMediaController extends Controller
             $sortBy = $request->sort_by ?? 'created_at';
             $sortDirection = $request->sort_direction ?? 'desc';
             $perPage = $request->per_page ?? 20;
-            
+
             // Get media files from storage
             $mediaFiles = $this->getMediaLibrary($tenantId, $search, $type, $componentId, $sortBy, $sortDirection, $perPage);
-            
+
             return response()->json([
                 'media' => $mediaFiles,
                 'pagination' => [
@@ -145,12 +145,12 @@ class ComponentMediaController extends Controller
                     'last_page' => $mediaFiles->lastPage(),
                     'per_page' => $mediaFiles->perPage(),
                     'total' => $mediaFiles->total(),
-                ]
+                ],
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve media library',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -162,29 +162,29 @@ class ComponentMediaController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'file_urls' => 'required|array|min:1',
-            'file_urls.*' => 'url'
+            'file_urls.*' => 'url',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $fileUrls = $request->file_urls;
-            
+
             // Delete media files
             $this->deleteMediaFiles($fileUrls);
-            
+
             return response()->json([
-                'message' => 'Media files deleted successfully'
+                'message' => 'Media files deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to delete media files',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -195,29 +195,29 @@ class ComponentMediaController extends Controller
     public function info(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'file_url' => 'required|url'
+            'file_url' => 'required|url',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $fileUrl = $request->file_url;
-            
+
             // Get file information
             $fileInfo = $this->getFileInfo($fileUrl);
-            
+
             return response()->json([
-                'file' => $fileInfo
+                'file' => $fileInfo,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to retrieve file information',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -234,13 +234,13 @@ class ComponentMediaController extends Controller
             'format' => 'nullable|in:webp,jpg,png',
             'resize' => 'nullable|array',
             'resize.width' => 'nullable|integer|min:1|max:4000',
-            'resize.height' => 'nullable|integer|min:1|max:4000'
+            'resize.height' => 'nullable|integer|min:1|max:4000',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
@@ -249,20 +249,20 @@ class ComponentMediaController extends Controller
             $options = [
                 'quality' => $request->quality ?? 80,
                 'format' => $request->get('format', 'webp'),
-                'resize' => $request->resize
+                'resize' => $request->resize,
             ];
-            
+
             // Optimize media files
             $optimizedFiles = $this->optimizeMediaFiles($fileUrls, $options);
-            
+
             return response()->json([
                 'message' => 'Media files optimized successfully',
-                'files' => $optimizedFiles
+                'files' => $optimizedFiles,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to optimize media files',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -277,31 +277,31 @@ class ComponentMediaController extends Controller
             'sizes' => 'required|array|min:1',
             'sizes.*' => 'array',
             'sizes.*.width' => 'required|integer|min:1|max:1000',
-            'sizes.*.height' => 'required|integer|min:1|max:1000'
+            'sizes.*.height' => 'required|integer|min:1|max:1000',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             $fileUrl = $request->file_url;
             $sizes = $request->sizes;
-            
+
             // Generate thumbnails
             $thumbnails = $this->generateThumbnails($fileUrl, $sizes);
-            
+
             return response()->json([
                 'message' => 'Thumbnails generated successfully',
-                'thumbnails' => $thumbnails
+                'thumbnails' => $thumbnails,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to generate thumbnails',
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -317,7 +317,7 @@ class ComponentMediaController extends Controller
             'original_url' => $fileUrl,
             'processed_url' => $fileUrl,
             'options_applied' => $options,
-            'processed_at' => now()->toISOString()
+            'processed_at' => now()->toISOString(),
         ];
     }
 
@@ -354,7 +354,7 @@ class ComponentMediaController extends Controller
             'size' => 0,
             'type' => 'unknown',
             'dimensions' => null,
-            'created_at' => now()->toISOString()
+            'created_at' => now()->toISOString(),
         ];
     }
 
@@ -365,17 +365,17 @@ class ComponentMediaController extends Controller
     {
         // This would contain the actual logic to optimize media files
         $optimizedFiles = [];
-        
+
         foreach ($fileUrls as $url) {
             $optimizedFiles[] = [
                 'original_url' => $url,
                 'optimized_url' => $url,
                 'options_applied' => $options,
                 'saved_bytes' => 0,
-                'optimized_at' => now()->toISOString()
+                'optimized_at' => now()->toISOString(),
             ];
         }
-        
+
         return $optimizedFiles;
     }
 
@@ -386,16 +386,16 @@ class ComponentMediaController extends Controller
     {
         // This would contain the actual logic to generate thumbnails
         $thumbnails = [];
-        
+
         foreach ($sizes as $size) {
             $thumbnails[] = [
                 'url' => $fileUrl,
                 'width' => $size['width'],
                 'height' => $size['height'],
-                'generated_at' => now()->toISOString()
+                'generated_at' => now()->toISOString(),
             ];
         }
-        
+
         return $thumbnails;
     }
 }

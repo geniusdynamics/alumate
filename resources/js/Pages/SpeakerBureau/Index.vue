@@ -1,8 +1,8 @@
-<template>
+﻿<template>
     <AppLayout title="Alumni Speaker Bureau">
         <Head title="Alumni Speaker Bureau" />
 
-        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
             <!-- Header -->
             <div class="mb-8">
                 <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Alumni Speaker Bureau</h1>
@@ -12,27 +12,27 @@
             </div>
 
             <!-- Quick Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-                    <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+            <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
+                <div class="rounded-lg bg-white p-6 text-center shadow dark:bg-gray-800">
+                    <div class="mb-2 text-3xl font-bold text-blue-600 dark:text-blue-400">
                         {{ speakers.total }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Available Speakers</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-                    <div class="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
+                <div class="rounded-lg bg-white p-6 text-center shadow dark:bg-gray-800">
+                    <div class="mb-2 text-3xl font-bold text-green-600 dark:text-green-400">
                         {{ speakingTopics.length }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Speaking Topics</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-                    <div class="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+                <div class="rounded-lg bg-white p-6 text-center shadow dark:bg-gray-800">
+                    <div class="mb-2 text-3xl font-bold text-purple-600 dark:text-purple-400">
                         {{ upcomingEvents.length }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Upcoming Events</div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center">
-                    <div class="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-2">
+                <div class="rounded-lg bg-white p-6 text-center shadow dark:bg-gray-800">
+                    <div class="mb-2 text-3xl font-bold text-yellow-600 dark:text-yellow-400">
                         {{ completedEvents }}
                     </div>
                     <div class="text-sm text-gray-600 dark:text-gray-400">Events Completed</div>
@@ -40,56 +40,52 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-wrap gap-4 mb-6">
+            <div class="mb-6 flex flex-wrap gap-4">
                 <Link
                     :href="route('speaker-bureau.request')"
-                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium transition-colors"
+                    class="rounded-md bg-blue-600 px-6 py-3 font-medium text-white transition-colors hover:bg-blue-700"
                 >
                     Request a Speaker
                 </Link>
                 <Link
                     :href="route('speaker-bureau.join')"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-medium transition-colors"
+                    class="rounded-md bg-green-600 px-6 py-3 font-medium text-white transition-colors hover:bg-green-700"
                 >
                     Become a Speaker
                 </Link>
                 <Link
                     :href="route('speaker-bureau.events')"
-                    class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-md font-medium transition-colors"
+                    class="rounded-md bg-purple-600 px-6 py-3 font-medium text-white transition-colors hover:bg-purple-700"
                 >
                     Browse Events
                 </Link>
             </div>
 
             <!-- Search and Filters -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow mb-6">
+            <div class="mb-6 rounded-lg bg-white shadow dark:bg-gray-800">
                 <div class="p-6">
                     <form @submit.prevent="searchSpeakers" class="space-y-4">
                         <!-- Search Bar -->
                         <div>
-                            <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Search Speakers
-                            </label>
+                            <label for="search" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"> Search Speakers </label>
                             <input
                                 id="search"
                                 v-model="searchForm.search"
                                 type="text"
                                 placeholder="Search by name, expertise, company, or speaking topics..."
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                             />
                         </div>
 
                         <!-- Filter Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
                             <!-- Speaking Topic -->
                             <div>
-                                <label for="topic" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Speaking Topic
-                                </label>
+                                <label for="topic" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"> Speaking Topic </label>
                                 <select
                                     id="topic"
                                     v-model="searchForm.topic"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 >
                                     <option value="">All Topics</option>
                                     <option v-for="topic in speakingTopics" :key="topic" :value="topic">
@@ -100,13 +96,11 @@
 
                             <!-- Industry -->
                             <div>
-                                <label for="industry" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Industry
-                                </label>
+                                <label for="industry" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"> Industry </label>
                                 <select
                                     id="industry"
                                     v-model="searchForm.industry"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 >
                                     <option value="">All Industries</option>
                                     <option v-for="industry in industries" :key="industry" :value="industry">
@@ -117,13 +111,11 @@
 
                             <!-- Event Type -->
                             <div>
-                                <label for="event_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Event Type
-                                </label>
+                                <label for="event_type" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"> Event Type </label>
                                 <select
                                     id="event_type"
                                     v-model="searchForm.event_type"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 >
                                     <option value="">All Event Types</option>
                                     <option value="keynote">Keynote</option>
@@ -137,13 +129,13 @@
 
                             <!-- Availability -->
                             <div>
-                                <label for="availability" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                <label for="availability" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Availability
                                 </label>
                                 <select
                                     id="availability"
                                     v-model="searchForm.availability"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                    class="w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 >
                                     <option value="">Any Time</option>
                                     <option value="immediate">Available Now</option>
@@ -156,16 +148,13 @@
 
                         <!-- Action Buttons -->
                         <div class="flex space-x-3">
-                            <button
-                                type="submit"
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors"
-                            >
+                            <button type="submit" class="rounded-md bg-blue-600 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-700">
                                 Search Speakers
                             </button>
                             <button
                                 type="button"
                                 @click="clearFilters"
-                                class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
+                                class="rounded-md bg-gray-300 px-6 py-2 font-medium text-gray-700 transition-colors hover:bg-gray-400"
                             >
                                 Clear Filters
                             </button>
@@ -176,8 +165,8 @@
 
             <!-- Featured Speakers -->
             <div v-if="featuredSpeakers.length > 0" class="mb-8">
-                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Featured Speakers</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Featured Speakers</h2>
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                     <SpeakerCard
                         v-for="speaker in featuredSpeakers"
                         :key="speaker.id"
@@ -190,19 +179,17 @@
             </div>
 
             <!-- Speakers Grid -->
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div class="rounded-lg bg-white shadow dark:bg-gray-800">
+                <div class="border-b border-gray-200 p-6 dark:border-gray-700">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-white">
-                            {{ speakers.total }} Speakers Available
-                        </h2>
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-white">{{ speakers.total }} Speakers Available</h2>
                         <div class="flex items-center space-x-2">
                             <label for="sort" class="text-sm text-gray-600 dark:text-gray-400">Sort by:</label>
                             <select
                                 id="sort"
                                 v-model="searchForm.sort"
                                 @change="searchSpeakers"
-                                class="text-sm border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+                                class="rounded-md border-gray-300 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                             >
                                 <option value="relevance">Relevance</option>
                                 <option value="rating">Highest Rated</option>
@@ -215,19 +202,19 @@
                 </div>
 
                 <div class="p-6">
-                    <div v-if="speakers.data.length === 0" class="text-center py-12">
-                        <MicrophoneIcon class="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No speakers found</h3>
-                        <p class="text-gray-500 dark:text-gray-400 mb-4">Try adjusting your search criteria or browse all speakers</p>
+                    <div v-if="speakers.data.length === 0" class="py-12 text-center">
+                        <MicrophoneIcon class="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                        <h3 class="mb-2 text-lg font-medium text-gray-900 dark:text-white">No speakers found</h3>
+                        <p class="mb-4 text-gray-500 dark:text-gray-400">Try adjusting your search criteria or browse all speakers</p>
                         <button
                             @click="clearFilters"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+                            class="rounded-md bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
                         >
                             View All Speakers
                         </button>
                     </div>
 
-                    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                         <SpeakerCard
                             v-for="speaker in speakers.data"
                             :key="speaker.id"
@@ -245,18 +232,13 @@
             </div>
 
             <!-- Upcoming Speaking Events -->
-            <div v-if="upcomingEvents.length > 0" class="mt-8 bg-white dark:bg-gray-800 rounded-lg shadow">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <div v-if="upcomingEvents.length > 0" class="mt-8 rounded-lg bg-white shadow dark:bg-gray-800">
+                <div class="border-b border-gray-200 p-6 dark:border-gray-700">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-white">Upcoming Speaking Events</h2>
                 </div>
                 <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <SpeakingEventCard
-                            v-for="event in upcomingEvents"
-                            :key="event.id"
-                            :event="event"
-                            @view-details="handleViewEventDetails"
-                        />
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <SpeakingEventCard v-for="event in upcomingEvents" :key="event.id" :event="event" @view-details="handleViewEventDetails" />
                     </div>
                 </div>
             </div>
@@ -264,14 +246,14 @@
     </AppLayout>
 </template>
 
-<script setup>
-import { Head, Link, router } from '@inertiajs/vue3'
-import { reactive } from 'vue'
-import AppLayout from '@/layouts/AppLayout.vue'
-import SpeakerCard from '@/Components/SpeakerCard.vue'
-import SpeakingEventCard from '@/Components/SpeakingEventCard.vue'
-import Pagination from '@/Components/Pagination.vue'
-import { MicrophoneIcon } from '@heroicons/vue/24/outline'
+<script setup lang="ts">
+import Pagination from '@/Components/Pagination.vue';
+import SpeakerCard from '@/Components/SpeakerCard.vue';
+import SpeakingEventCard from '@/Components/SpeakingEventCard.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { MicrophoneIcon } from '@heroicons/vue/24/outline';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { reactive } from 'vue';
 
 const props = defineProps({
     speakers: Object,
@@ -281,7 +263,7 @@ const props = defineProps({
     industries: Array,
     completedEvents: Number,
     filters: Object,
-})
+});
 
 const searchForm = reactive({
     search: props.filters.search || '',
@@ -290,34 +272,49 @@ const searchForm = reactive({
     event_type: props.filters.event_type || '',
     availability: props.filters.availability || '',
     sort: props.filters.sort || 'relevance',
-})
+});
 
 const searchSpeakers = () => {
     router.get(route('speaker-bureau.index'), searchForm, {
         preserveState: true,
         preserveScroll: true,
-    })
-}
+    });
+};
 
 const clearFilters = () => {
-    Object.keys(searchForm).forEach(key => {
+    Object.keys(searchForm).forEach((key) => {
         if (key !== 'sort') {
-            searchForm[key] = ''
+            searchForm[key] = '';
         }
-    })
-    searchForm.sort = 'relevance'
-    searchSpeakers()
-}
+    });
+    searchForm.sort = 'relevance';
+    searchSpeakers();
+};
 
 const handleSpeakerRequest = (speakerId) => {
-    router.visit(route('speaker-bureau.request', { speaker: speakerId }))
-}
+    router.visit(route('speaker-bureau.request', { speaker: speakerId }));
+};
 
 const handleViewProfile = (speakerId) => {
-    router.visit(route('speaker-bureau.speaker', speakerId))
-}
+    router.visit(route('speaker-bureau.speaker', speakerId));
+};
 
 const handleViewEventDetails = (eventId) => {
-    router.visit(route('speaker-bureau.event', eventId))
-}
+    router.visit(route('speaker-bureau.event', eventId));
+};
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

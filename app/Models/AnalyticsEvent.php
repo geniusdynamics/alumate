@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class AnalyticsEvent extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'tenant_id',
         'event_type',
         'event_name',
+        'gamification_type',
+        'points_earned',
+        'badge_earned',
         'user_id',
         'properties',
         'session_id',
@@ -97,7 +101,7 @@ class AnalyticsEvent extends Model
      */
     public function canRetainData(): bool
     {
-        return !$this->data_retention_until || now()->lessThan($this->data_retention_until);
+        return ! $this->data_retention_until || now()->lessThan($this->data_retention_until);
     }
 
     /**

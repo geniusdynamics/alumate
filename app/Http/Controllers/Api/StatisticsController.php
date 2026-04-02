@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -90,15 +90,15 @@ class StatisticsController extends Controller
     public function show(string $id): JsonResponse
     {
         try {
-            if (!isset(self::AVAILABLE_STATISTICS[$id])) {
+            if (! isset(self::AVAILABLE_STATISTICS[$id])) {
                 return response()->json([
                     'success' => false,
-                    'errors' => ['Statistic not found']
+                    'errors' => ['Statistic not found'],
                 ], 404);
             }
 
             $cacheKey = "statistic.{$id}";
-            
+
             $data = Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($id) {
                 return $this->fetchStatisticData($id);
             });
@@ -106,15 +106,15 @@ class StatisticsController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $data,
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ]);
 
         } catch (\Exception $e) {
-            Log::error("Failed to fetch statistic {$id}: " . $e->getMessage());
-            
+            Log::error("Failed to fetch statistic {$id}: ".$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'errors' => ['Failed to fetch statistic data']
+                'errors' => ['Failed to fetch statistic data'],
             ], 500);
         }
     }
@@ -127,7 +127,7 @@ class StatisticsController extends Controller
         try {
             $request->validate([
                 'ids' => 'required|array|min:1|max:20',
-                'ids.*' => 'required|string|max:50'
+                'ids.*' => 'required|string|max:50',
             ]);
 
             $ids = $request->input('ids');
@@ -135,21 +135,22 @@ class StatisticsController extends Controller
             $errors = [];
 
             foreach ($ids as $id) {
-                if (!isset(self::AVAILABLE_STATISTICS[$id])) {
+                if (! isset(self::AVAILABLE_STATISTICS[$id])) {
                     $errors[] = "Statistic '{$id}' not found";
+
                     continue;
                 }
 
                 try {
                     $cacheKey = "statistic.{$id}";
-                    
+
                     $data = Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($id) {
                         return $this->fetchStatisticData($id);
                     });
 
                     $results[] = $data;
                 } catch (\Exception $e) {
-                    Log::error("Failed to fetch statistic {$id}: " . $e->getMessage());
+                    Log::error("Failed to fetch statistic {$id}: ".$e->getMessage());
                     $errors[] = "Failed to fetch statistic '{$id}'";
                 }
             }
@@ -158,20 +159,20 @@ class StatisticsController extends Controller
                 'success' => count($errors) === 0,
                 'data' => $results,
                 'errors' => $errors,
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ]);
 
         } catch (ValidationException $e) {
             return response()->json([
                 'success' => false,
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         } catch (\Exception $e) {
-            Log::error("Failed to fetch statistics batch: " . $e->getMessage());
-            
+            Log::error('Failed to fetch statistics batch: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'errors' => ['Failed to fetch statistics data']
+                'errors' => ['Failed to fetch statistics data'],
             ], 500);
         }
     }
@@ -183,16 +184,16 @@ class StatisticsController extends Controller
     {
         try {
             $cacheKey = 'platform.metrics';
-            
+
             $metrics = Cache::remember($cacheKey, self::CACHE_DURATION, function () {
                 $results = [];
-                
+
                 // Get key platform metrics
                 $keyMetrics = [
                     'alumni-count',
                     'connections-made',
                     'job-placements',
-                    'institutions-served'
+                    'institutions-served',
                 ];
 
                 foreach ($keyMetrics as $id) {
@@ -200,7 +201,7 @@ class StatisticsController extends Controller
                         $data = $this->fetchStatisticData($id);
                         $results[$id] = $data['value'];
                     } catch (\Exception $e) {
-                        Log::warning("Failed to fetch platform metric {$id}: " . $e->getMessage());
+                        Log::warning("Failed to fetch platform metric {$id}: ".$e->getMessage());
                         // Use fallback value
                         $results[$id] = 0;
                     }
@@ -212,15 +213,15 @@ class StatisticsController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => $metrics,
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ]);
 
         } catch (\Exception $e) {
-            Log::error("Failed to fetch platform metrics: " . $e->getMessage());
-            
+            Log::error('Failed to fetch platform metrics: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'errors' => ['Failed to fetch platform metrics']
+                'errors' => ['Failed to fetch platform metrics'],
             ], 500);
         }
     }
@@ -233,17 +234,17 @@ class StatisticsController extends Controller
         try {
             // Test database connection
             DB::connection()->getPdo();
-            
+
             return response()->json([
                 'success' => true,
                 'status' => 'healthy',
-                'timestamp' => now()->toISOString()
+                'timestamp' => now()->toISOString(),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'status' => 'unhealthy',
-                'error' => 'Database connection failed'
+                'error' => 'Database connection failed',
             ], 503);
         }
     }
@@ -258,19 +259,19 @@ class StatisticsController extends Controller
             foreach (array_keys(self::AVAILABLE_STATISTICS) as $id) {
                 Cache::forget("statistic.{$id}");
             }
-            
+
             Cache::forget('platform.metrics');
 
             return response()->json([
                 'success' => true,
-                'message' => 'Statistics cache cleared successfully'
+                'message' => 'Statistics cache cleared successfully',
             ]);
         } catch (\Exception $e) {
-            Log::error("Failed to clear statistics cache: " . $e->getMessage());
-            
+            Log::error('Failed to clear statistics cache: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'errors' => ['Failed to clear cache']
+                'errors' => ['Failed to clear cache'],
             ], 500);
         }
     }
@@ -302,7 +303,7 @@ class StatisticsController extends Controller
                 'label' => $config['label'],
                 'suffix' => $config['suffix'] ?? null,
                 'prefix' => $config['prefix'] ?? null,
-            ]
+            ],
         ];
     }
 }

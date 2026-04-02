@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Api;
 
-use Illuminate\Foundation\Http\FormRequest;
-
 class UpdateBrandConfigRequest extends StoreBrandConfigRequest
 {
     /**
@@ -24,7 +22,7 @@ class UpdateBrandConfigRequest extends StoreBrandConfigRequest
             if (is_array($rules[$field])) {
                 array_unshift($rules[$field], 'sometimes');
             } elseif (is_string($rules[$field])) {
-                $rules[$field] = 'sometimes|' . $rules[$field];
+                $rules[$field] = 'sometimes|'.$rules[$field];
             }
         }
 

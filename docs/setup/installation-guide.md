@@ -29,7 +29,7 @@ php --version
 php 8.3.0 (cli) (built: Nov 24 2023 23:20:59) (NTS)
 ```
 
-#### PostgreSQL 13+
+#### PostgreSQL 17+
 ```bash
 # Install PostgreSQL server
 # Create database user and databases

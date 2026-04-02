@@ -30,7 +30,7 @@ class TemplateAbTest extends Model
         'traffic_distribution',
         'started_at',
         'ended_at',
-        'results'
+        'results',
     ];
 
     protected $casts = [
@@ -40,7 +40,7 @@ class TemplateAbTest extends Model
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
         'confidence_threshold' => 'decimal:4',
-        'sample_size_per_variant' => 'integer'
+        'sample_size_per_variant' => 'integer',
     ];
 
     /**
@@ -82,7 +82,7 @@ class TemplateAbTest extends Model
     {
         return $this->status === 'active' &&
                $this->started_at &&
-               (!$this->ended_at || $this->ended_at->isFuture());
+               (! $this->ended_at || $this->ended_at->isFuture());
     }
 
     /**
@@ -92,7 +92,7 @@ class TemplateAbTest extends Model
     {
         $results = $this->results;
 
-        if (!$results || !isset($results['confidence_level'])) {
+        if (! $results || ! isset($results['confidence_level'])) {
             return false;
         }
 
@@ -106,7 +106,7 @@ class TemplateAbTest extends Model
     {
         $results = $this->results;
 
-        if (!$results || !isset($results['winner'])) {
+        if (! $results || ! isset($results['winner'])) {
             return null;
         }
 
@@ -137,7 +137,7 @@ class TemplateAbTest extends Model
     public function getVariantForSession(string $sessionId): string
     {
         // Use consistent hashing for variant assignment
-        $hash = crc32($sessionId . $this->id);
+        $hash = crc32($sessionId.$this->id);
         $distribution = $this->getCurrentTrafficDistribution();
 
         $cumulative = 0;
@@ -155,14 +155,14 @@ class TemplateAbTest extends Model
     /**
      * Record an event for the A/B test
      */
-    public function recordEvent(string $variantId, string $eventType, string $sessionId = null, array $eventData = []): void
+    public function recordEvent(string $variantId, string $eventType, ?string $sessionId = null, array $eventData = []): void
     {
         $this->events()->create([
             'variant_id' => $variantId,
             'event_type' => $eventType,
             'session_id' => $sessionId,
             'event_data' => $eventData,
-            'occurred_at' => now()
+            'occurred_at' => now(),
         ]);
     }
 
@@ -179,7 +179,7 @@ class TemplateAbTest extends Model
             'variants' => [],
             'winner' => null,
             'confidence_level' => 0.0,
-            'calculated_at' => now()->toISOString()
+            'calculated_at' => now()->toISOString(),
         ];
 
         foreach ($variants as $variant) {
@@ -210,7 +210,7 @@ class TemplateAbTest extends Model
             'total_events' => $totalEvents,
             'goal_events' => $goalEvents,
             'conversion_rate' => $totalEvents > 0 ? ($goalEvents / $totalEvents) * 100 : 0,
-            'unique_sessions' => $events->pluck('session_id')->unique()->count()
+            'unique_sessions' => $events->pluck('session_id')->unique()->count(),
         ];
     }
 
@@ -277,7 +277,7 @@ class TemplateAbTest extends Model
 
         $this->update([
             'status' => 'active',
-            'started_at' => now()
+            'started_at' => now(),
         ]);
 
         return true;
@@ -295,7 +295,7 @@ class TemplateAbTest extends Model
         $this->update([
             'status' => 'completed',
             'ended_at' => now(),
-            'results' => $this->calculateResults()
+            'results' => $this->calculateResults(),
         ]);
 
         return true;

@@ -34,7 +34,7 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => 'required|string|in:graduate,institution',
+            'role' => 'required|string|in:graduate,employer,institution',
             'institution_id' => 'nullable|string',
             'institution_name' => 'required_if:role,institution|string|max:255',
             'terms_accepted' => 'required|accepted',
@@ -57,10 +57,13 @@ class RegisteredUserController extends Controller
         // Assign role based on selection
         if ($request->role === 'graduate') {
             $user->assignRole('graduate');
+        } elseif ($request->role === 'employer') {
+            $user->assignRole('employer');
         } elseif ($request->role === 'institution') {
             $user->assignRole('institution-admin');
-            // For institution admins, we might want to create the institution record
-            // This would require additional logic to handle institution creation
+            
+            // Store institution name in session for onboarding
+            session(['pending_institution_name' => $request->institution_name]);
         }
 
         event(new Registered($user));
@@ -70,7 +73,8 @@ class RegisteredUserController extends Controller
         // Redirect based on role
         $redirectRoute = match ($request->role) {
             'graduate' => 'graduate.dashboard',
-            'institution' => 'institution-admin.dashboard',
+            'employer' => 'employer.dashboard',
+            'institution' => 'onboarding.index', // Redirect to onboarding to safely create institution
             default => 'dashboard'
         };
 

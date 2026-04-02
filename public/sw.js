@@ -645,4 +645,88 @@ self.addEventListener('notificationclick', event => {
   }
 });
 
+// Background sync handling
+self.addEventListener('sync', event => {
+  console.log('Service Worker: Background sync triggered', event.tag);
+  
+  if (event.tag === 'background-sync') {
+    event.waitUntil(processQueuedActions());
+  } else if (event.tag === 'offline-actions') {
+    event.waitUntil(syncOfflineActions());
+  }
+});
+
+// Process queued actions during background sync
+async function processQueuedActions() {
+  try {
+    const actions = await getOfflineActions();
+    console.log('Processing', actions.length, 'queued actions');
+    
+    for (const action of actions) {
+      const success = await processOfflineAction(action);
+      if (success) {
+        await removeOfflineAction(action.id);
+        
+        // Notify clients of successful sync
+        notifyClients({
+          type: 'SYNC_SUCCESS',
+          action: action
+        });
+      }
+    }
+    
+    console.log('Background sync completed');
+  } catch (error) {
+    console.error('Background sync failed:', error);
+    throw error; // This will cause the sync to be retried
+  }
+}
+
+// Sync offline actions
+async function syncOfflineActions() {
+  try {
+    const actions = await getOfflineActions();
+    
+    if (actions.length === 0) {
+      console.log('No offline actions to sync');
+      return;
+    }
+    
+    console.log('Syncing', actions.length, 'offline actions');
+    
+    let successCount = 0;
+    let failureCount = 0;
+    
+    for (const action of actions) {
+      try {
+        const success = await processOfflineAction(action);
+        if (success) {
+          await removeOfflineAction(action.id);
+          successCount++;
+        } else {
+          failureCount++;
+        }
+      } catch (error) {
+        console.error('Failed to sync action:', action, error);
+        failureCount++;
+      }
+    }
+    
+    // Notify clients of sync results
+    notifyClients({
+      type: 'OFFLINE_SYNC_COMPLETE',
+      results: {
+        success: successCount,
+        failed: failureCount,
+        total: actions.length
+      }
+    });
+    
+    console.log('Offline sync completed:', { success: successCount, failed: failureCount });
+  } catch (error) {
+    console.error('Offline sync failed:', error);
+    throw error;
+  }
+}
+
 console.log('Service Worker: Loaded');

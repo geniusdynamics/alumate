@@ -1,7 +1,11 @@
 <?php
 
+// ABOUTME: Brand color model for managing brand color palettes and accessibility
+// ABOUTME: Updated for schema-based multi-tenancy without tenant_id column
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +16,6 @@ class BrandColor extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'brand_config_id',
         'name',
         'hex_value',
@@ -68,28 +71,19 @@ class BrandColor extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
+        // Apply tenant context for schema-based multi-tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            TenantContextService::applyTenantContext($builder);
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
      */
-    public function scopeForTenant($query, int $tenantId)
+    public function scopeForTenant($query, ?int $tenantId = null)
     {
-        return $query->where('tenant_id', $tenantId);
+        // For schema-based tenancy, this is handled by global scope
+        return $query;
     }
 
     /**
@@ -117,11 +111,11 @@ class BrandColor extends Model
     }
 
     /**
-     * Get the tenant that owns this brand color
+     * Get the current tenant context
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return TenantContextService::getCurrentTenant();
     }
 
     /**
@@ -180,6 +174,7 @@ class BrandColor extends Model
         }
 
         $rgb = $this->getRgbArray();
+
         return implode(', ', $rgb);
     }
 
@@ -271,14 +266,14 @@ class BrandColor extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // tenant_id removed for schema-based tenancy
             'brand_config_id' => 'nullable|exists:brand_configs,id',
             'name' => 'required|string|max:255',
             'hex_value' => 'required|string|regex:/^#[a-fA-F0-9]{6}$/',
             'rgb_value' => 'nullable|string|max:255',
             'hsl_value' => 'nullable|string|max:255',
             'cmyk_value' => 'nullable|string|max:255',
-            'usage_context' => 'required|in:' . implode(',', self::USAGE_CONTEXTS),
+            'usage_context' => 'required|in:'.implode(',', self::USAGE_CONTEXTS),
             'accessibility_rating' => 'nullable|integer|min:1|max:5',
             'contrast_ratios' => 'nullable|array',
             'is_accessible' => 'boolean',

@@ -1,5 +1,8 @@
 <?php
 
+// ABOUTME: Service for integrating with external calendar providers (Google, Outlook, Apple, CalDAV)
+// ABOUTME: Updated for schema-based tenancy - handles calendar sync and event management within tenant context
+
 namespace App\Services;
 
 use App\Models\CalendarConnection;
@@ -13,7 +16,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Microsoft\Graph\Graph;
 
-class CalendarIntegrationService
+class CalendarIntegrationService extends BaseService
 {
     protected array $supportedProviders = [
         'google',
@@ -24,8 +27,11 @@ class CalendarIntegrationService
 
     public function __construct(
         protected GoogleClient $googleClient,
-        protected Graph $microsoftGraph
-    ) {}
+        protected Graph $microsoftGraph,
+        TenantContextService $tenantContext
+    ) {
+        parent::__construct($tenantContext);
+    }
 
     /**
      * Connect user's calendar to the platform
@@ -118,11 +124,12 @@ class CalendarIntegrationService
     {
         try {
             // Validate email format
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 Log::warning('Invalid email address provided for calendar invite', [
                     'event_id' => $event->id,
                     'email' => $email,
                 ]);
+
                 return;
             }
 
@@ -433,8 +440,8 @@ class CalendarIntegrationService
             'timeMin' => $startDate->toRfc3339String(),
             'timeMax' => $endDate->toRfc3339String(),
             'items' => [
-                ['id' => 'primary']
-            ]
+                ['id' => 'primary'],
+            ],
         ]);
 
         try {
@@ -456,8 +463,9 @@ class CalendarIntegrationService
         } catch (\Exception $e) {
             Log::error('Failed to fetch Google busy times', [
                 'connection_id' => $connection->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return collect();
         }
     }
@@ -493,8 +501,9 @@ class CalendarIntegrationService
         } catch (\Exception $e) {
             Log::error('Failed to fetch Outlook busy times', [
                 'connection_id' => $connection->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return collect();
         }
     }
@@ -702,15 +711,16 @@ class CalendarIntegrationService
                 'Content-Type' => 'application/xml',
                 'Depth' => '1',
             ])->send('REPORT', $calendarUrl, [
-                'body' => $caldavQuery
+                'body' => $caldavQuery,
             ]);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::error('Apple CalDAV request failed', [
                     'connection_id' => $connection->id,
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body' => $response->body(),
                 ]);
+
                 return collect();
             }
 
@@ -718,7 +728,7 @@ class CalendarIntegrationService
         } catch (\Exception $e) {
             Log::error('Failed to fetch Apple Calendar events', [
                 'connection_id' => $connection->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return collect();
@@ -743,7 +753,7 @@ class CalendarIntegrationService
                 'Content-Type' => 'application/xml',
                 'Depth' => '0',
             ])->send('PROPFIND', $calendarUrl, [
-                'body' => '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:displayname/></D:prop></D:propfind>'
+                'body' => '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:displayname/></D:prop></D:propfind>',
             ]);
 
             $success = $response->successful();
@@ -751,14 +761,14 @@ class CalendarIntegrationService
             Log::info('Apple Calendar connection test', [
                 'connection_id' => $connection->id,
                 'success' => $success,
-                'status' => $response->status()
+                'status' => $response->status(),
             ]);
 
             return $success;
         } catch (\Exception $e) {
             Log::error('Apple Calendar connection test failed', [
                 'connection_id' => $connection->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return false;
@@ -789,15 +799,16 @@ class CalendarIntegrationService
             $request = $this->applyCalDAVAuth($request, $credentials);
 
             $response = $request->send('REPORT', $calendarUrl, [
-                'body' => $caldavQuery
+                'body' => $caldavQuery,
             ]);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::error('CalDAV request failed', [
                     'connection_id' => $connection->id,
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body' => $response->body(),
                 ]);
+
                 return collect();
             }
 
@@ -805,7 +816,7 @@ class CalendarIntegrationService
         } catch (\Exception $e) {
             Log::error('Failed to fetch CalDAV events', [
                 'connection_id' => $connection->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return collect();
@@ -832,7 +843,7 @@ class CalendarIntegrationService
             $request = $this->applyCalDAVAuth($request, $credentials);
 
             $response = $request->send('PROPFIND', $calendarUrl, [
-                'body' => '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:displayname/></D:prop></D:propfind>'
+                'body' => '<?xml version="1.0" encoding="UTF-8"?><D:propfind xmlns:D="DAV:"><D:prop><D:displayname/></D:prop></D:propfind>',
             ]);
 
             $success = $response->successful();
@@ -840,14 +851,14 @@ class CalendarIntegrationService
             Log::info('CalDAV connection test', [
                 'connection_id' => $connection->id,
                 'success' => $success,
-                'status' => $response->status()
+                'status' => $response->status(),
             ]);
 
             return $success;
         } catch (\Exception $e) {
             Log::error('CalDAV connection test failed', [
                 'connection_id' => $connection->id,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
 
             return false;
@@ -859,12 +870,12 @@ class CalendarIntegrationService
      */
     private function buildCalDAVQuery(string $startTime, string $endTime): string
     {
-        return '<?xml version="1.0" encoding="UTF-8"?>' .
-            '<C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">' .
-            '<D:prop><D:getetag/><C:calendar-data/></D:prop>' .
-            '<C:filter><C:comp-filter name="VCALENDAR"><C:comp-filter name="VEVENT">' .
-            '<C:time-range start="' . $startTime . '" end="' . $endTime . '"/>' .
-            '</C:comp-filter></C:comp-filter></C:filter>' .
+        return '<?xml version="1.0" encoding="UTF-8"?>'.
+            '<C:calendar-query xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">'.
+            '<D:prop><D:getetag/><C:calendar-data/></D:prop>'.
+            '<C:filter><C:comp-filter name="VCALENDAR"><C:comp-filter name="VEVENT">'.
+            '<C:time-range start="'.$startTime.'" end="'.$endTime.'"/>'.
+            '</C:comp-filter></C:comp-filter></C:filter>'.
             '</C:calendar-query>';
     }
 
@@ -878,11 +889,11 @@ class CalendarIntegrationService
 
         // If principal URL is provided, construct full calendar URL
         if ($principalUrl) {
-            return $baseUrl . $principalUrl . '/calendars/';
+            return $baseUrl.$principalUrl.'/calendars/';
         }
 
         // Default Apple Calendar URL
-        return $baseUrl . '/calendars/';
+        return $baseUrl.'/calendars/';
     }
 
     /**
@@ -901,11 +912,11 @@ class CalendarIntegrationService
 
         // If principal URL is provided, construct full calendar URL
         if ($principalUrl) {
-            return $baseUrl . $principalUrl . '/calendars/';
+            return $baseUrl.$principalUrl.'/calendars/';
         }
 
         // Default CalDAV calendar URL
-        return $baseUrl . '/calendars/';
+        return $baseUrl.'/calendars/';
     }
 
     /**
@@ -958,7 +969,7 @@ class CalendarIntegrationService
                 $href = (string) $response->xpath('D:href')[0];
                 $calendarData = $response->xpath('D:propstat/D:prop/C:calendar-data');
 
-                if (!empty($calendarData)) {
+                if (! empty($calendarData)) {
                     $icalData = (string) $calendarData[0];
                     $parsedEvents = $this->parseICalData($icalData, $href);
 
@@ -969,6 +980,7 @@ class CalendarIntegrationService
             return $events;
         } catch (\Exception $e) {
             Log::error('Failed to parse CalDAV response', ['error' => $e->getMessage()]);
+
             return collect();
         }
     }
@@ -999,6 +1011,7 @@ class CalendarIntegrationService
             return $events;
         } catch (\Exception $e) {
             Log::error('Failed to parse iCal data', ['error' => $e->getMessage()]);
+
             return collect();
         }
     }
@@ -1039,6 +1052,7 @@ class CalendarIntegrationService
                 : null;
         } catch (\Exception $e) {
             Log::error('Failed to parse VEVENT', ['error' => $e->getMessage()]);
+
             return null;
         }
     }
@@ -1055,6 +1069,7 @@ class CalendarIntegrationService
             // If it's a date-only format (YYYYMMDD)
             if (strlen($dateTime) === 8 && ctype_digit($dateTime)) {
                 $date = \DateTime::createFromFormat('Ymd', $dateTime);
+
                 return $date ? $date->format('Y-m-d H:i:s') : $dateTime;
             }
 
@@ -1065,12 +1080,14 @@ class CalendarIntegrationService
                 } else {
                     $date = \DateTime::createFromFormat('Ymd\THis', $dateTime);
                 }
+
                 return $date ? $date->format('Y-m-d H:i:s') : $dateTime;
             }
 
             return $dateTime;
         } catch (\Exception $e) {
             Log::error('Failed to parse iCal date/time', ['datetime' => $dateTime, 'error' => $e->getMessage()]);
+
             return $dateTime;
         }
     }
@@ -1099,7 +1116,7 @@ class CalendarIntegrationService
                 'connection_id' => $connection->id,
                 'success' => $success,
                 'user_id' => $userData['id'] ?? null,
-                'user_email' => $userData['userPrincipalName'] ?? null
+                'user_email' => $userData['userPrincipalName'] ?? null,
             ]);
 
             return $success;
@@ -1134,15 +1151,15 @@ class CalendarIntegrationService
             $service = new GoogleCalendar($this->googleClient);
             $calendarList = $service->calendarList->listCalendarList([
                 'maxResults' => 1,
-                'fields' => 'items(id,summary,primary)'
+                'fields' => 'items(id,summary,primary)',
             ]);
 
-            $success = !empty($calendarList->getItems());
+            $success = ! empty($calendarList->getItems());
 
             Log::info('Google Calendar connection test', [
                 'connection_id' => $connection->id,
                 'success' => $success,
-                'calendars_found' => count($calendarList->getItems())
+                'calendars_found' => count($calendarList->getItems()),
             ]);
 
             return $success;
@@ -1165,7 +1182,7 @@ class CalendarIntegrationService
             $credentials = decrypt($connection->credentials);
 
             // Check if we have a refresh token
-            if (!isset($credentials['refresh_token'])) {
+            if (! isset($credentials['refresh_token'])) {
                 Log::error('No refresh token available for Google Calendar connection', [
                     'connection_id' => $connection->id,
                 ]);
@@ -1175,7 +1192,7 @@ class CalendarIntegrationService
             $this->googleClient->setAccessToken($credentials);
 
             // Attempt to refresh the token
-            if (!$this->googleClient->fetchAccessTokenWithRefreshToken($credentials['refresh_token'])) {
+            if (! $this->googleClient->fetchAccessTokenWithRefreshToken($credentials['refresh_token'])) {
                 Log::error('Failed to refresh Google Calendar token', [
                     'connection_id' => $connection->id,
                 ]);
@@ -1212,7 +1229,7 @@ class CalendarIntegrationService
             // Mark connection as inactive if refresh fails
             $connection->update([
                 'is_active' => false,
-                'sync_error' => 'Token refresh failed: ' . $e->getMessage(),
+                'sync_error' => 'Token refresh failed: '.$e->getMessage(),
             ]);
 
             throw $e;
@@ -1261,7 +1278,7 @@ class CalendarIntegrationService
             // Check if event already exists based on external ID mapping
             $existingEvent = Event::where('user_id', $connection->user_id)
                 ->whereJsonContains('external_calendar_ids', [
-                    $connection->provider => $externalEvent['external_id']
+                    $connection->provider => $externalEvent['external_id'],
                 ])
                 ->first();
 
@@ -1559,7 +1576,7 @@ class CalendarIntegrationService
 
         try {
             // Generate unique event UID
-            $eventUid = uniqid('alumate-', true) . '@' . parse_url($credentials['server_url'] ?? 'https://caldav.icloud.com', PHP_URL_HOST);
+            $eventUid = uniqid('alumate-', true).'@'.parse_url($credentials['server_url'] ?? 'https://caldav.icloud.com', PHP_URL_HOST);
 
             // Build iCal event data
             $icalData = $this->buildICalEvent($eventData, $eventUid);
@@ -1574,16 +1591,16 @@ class CalendarIntegrationService
             )->withHeaders([
                 'Content-Type' => 'text/calendar; charset=utf-8',
                 'If-None-Match' => '*',
-            ])->put($calendarUrl . $eventUid . '.ics', $icalData);
+            ])->put($calendarUrl.$eventUid.'.ics', $icalData);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::error('Apple CalDAV event creation failed', [
                     'connection_id' => $connection->id,
                     'status' => $response->status(),
                     'response' => $response->body(),
                     'event_title' => $eventData['title'],
                 ]);
-                throw new \Exception('Failed to create Apple Calendar event: ' . $response->status());
+                throw new \Exception('Failed to create Apple Calendar event: '.$response->status());
             }
 
             Log::info('Apple Calendar event created successfully', [
@@ -1613,7 +1630,7 @@ class CalendarIntegrationService
 
         try {
             // Generate unique event UID
-            $eventUid = uniqid('alumate-', true) . '@' . parse_url($credentials['server_url'] ?? '', PHP_URL_HOST);
+            $eventUid = uniqid('alumate-', true).'@'.parse_url($credentials['server_url'] ?? '', PHP_URL_HOST);
 
             // Build iCal event data
             $icalData = $this->buildICalEvent($eventData, $eventUid);
@@ -1631,16 +1648,16 @@ class CalendarIntegrationService
             $request = $this->applyCalDAVAuth($request, $credentials);
 
             // Create the event using CalDAV PUT request
-            $response = $request->put($calendarUrl . $eventUid . '.ics', $icalData);
+            $response = $request->put($calendarUrl.$eventUid.'.ics', $icalData);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::error('CalDAV event creation failed', [
                     'connection_id' => $connection->id,
                     'status' => $response->status(),
                     'response' => $response->body(),
                     'event_title' => $eventData['title'],
                 ]);
-                throw new \Exception('Failed to create CalDAV event: ' . $response->status());
+                throw new \Exception('Failed to create CalDAV event: '.$response->status());
             }
 
             Log::info('CalDAV event created successfully', [
@@ -1674,20 +1691,20 @@ class CalendarIntegrationService
         $ical .= "PRODID:-//Alumate//Calendar Integration//EN\r\n";
         $ical .= "BEGIN:VEVENT\r\n";
         $ical .= "UID:{$eventUid}\r\n";
-        $ical .= "DTSTAMP:" . now()->format('Ymd\THis\Z') . "\r\n";
-        $ical .= "DTSTART:" . $startTime->format('Ymd\THis\Z') . "\r\n";
-        $ical .= "DTEND:" . $endTime->format('Ymd\THis\Z') . "\r\n";
+        $ical .= 'DTSTAMP:'.now()->format('Ymd\THis\Z')."\r\n";
+        $ical .= 'DTSTART:'.$startTime->format('Ymd\THis\Z')."\r\n";
+        $ical .= 'DTEND:'.$endTime->format('Ymd\THis\Z')."\r\n";
 
-        if (!empty($eventData['title'])) {
-            $ical .= "SUMMARY:" . $this->escapeICalText($eventData['title']) . "\r\n";
+        if (! empty($eventData['title'])) {
+            $ical .= 'SUMMARY:'.$this->escapeICalText($eventData['title'])."\r\n";
         }
 
-        if (!empty($eventData['description'])) {
-            $ical .= "DESCRIPTION:" . $this->escapeICalText($eventData['description']) . "\r\n";
+        if (! empty($eventData['description'])) {
+            $ical .= 'DESCRIPTION:'.$this->escapeICalText($eventData['description'])."\r\n";
         }
 
-        if (!empty($eventData['location'])) {
-            $ical .= "LOCATION:" . $this->escapeICalText($eventData['location']) . "\r\n";
+        if (! empty($eventData['location'])) {
+            $ical .= 'LOCATION:'.$this->escapeICalText($eventData['location'])."\r\n";
         }
 
         $ical .= "END:VEVENT\r\n";

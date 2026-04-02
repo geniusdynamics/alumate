@@ -269,7 +269,7 @@ The **Alumni Platform** is a cutting-edge, multi-tenant web application that rev
 - PHP 8.3+
 - Node.js 18+
 - Composer 2.x
-- PostgreSQL 13+
+- PostgreSQL 17+
 - Redis (optional, for caching and queues)
 
 ### Installation

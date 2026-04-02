@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\Forms;
 
-use App\Rules\PhoneNumber;
-
 class IndividualSignupRequest extends BaseFormRequest
 {
     /**
@@ -16,7 +14,7 @@ class IndividualSignupRequest extends BaseFormRequest
             $this->getSpamProtectionRules(),
             [
                 'date_of_birth' => 'nullable|date|before:today|after:1900-01-01',
-                'graduation_year' => 'required|integer|min:1950|max:' . (date('Y') + 5),
+                'graduation_year' => 'required|integer|min:1950|max:'.(date('Y') + 5),
                 'degree_level' => 'required|in:associate,bachelor,master,doctoral,professional,certificate',
                 'major' => 'required|string|min:2|max:100|regex:/^[a-zA-Z\s\-&,\.]+$/',
                 'current_job_title' => 'nullable|string|max:100|regex:/^[a-zA-Z0-9\s\-&,\.\/]+$/',
@@ -29,7 +27,7 @@ class IndividualSignupRequest extends BaseFormRequest
                 'newsletter_opt_in' => 'boolean',
                 'privacy_consent' => 'required|accepted',
                 'terms_consent' => 'required|accepted',
-                
+
                 // Additional validation for data quality
                 'linkedin_profile' => 'nullable|url|regex:/^https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9\-]+\/?$/',
                 'portfolio_url' => 'nullable|url|max:255',
@@ -122,16 +120,16 @@ class IndividualSignupRequest extends BaseFormRequest
     {
         $graduationYear = $this->input('graduation_year');
         $degreeLevel = $this->input('degree_level');
-        
+
         if ($graduationYear && $degreeLevel) {
             $currentYear = date('Y');
             $yearsAgo = $currentYear - $graduationYear;
-            
+
             // Check if graduation year is reasonable for degree level
             if ($degreeLevel === 'doctoral' && $yearsAgo < 4) {
                 $validator->errors()->add('graduation_year', 'Doctoral degree graduation year seems too recent.');
             }
-            
+
             if ($degreeLevel === 'associate' && $yearsAgo > 50) {
                 $validator->errors()->add('graduation_year', 'Graduation year seems too far in the past for this degree level.');
             }
@@ -145,16 +143,16 @@ class IndividualSignupRequest extends BaseFormRequest
     {
         $dateOfBirth = $this->input('date_of_birth');
         $graduationYear = $this->input('graduation_year');
-        
+
         if ($dateOfBirth && $graduationYear) {
             $birthYear = date('Y', strtotime($dateOfBirth));
             $ageAtGraduation = $graduationYear - $birthYear;
-            
+
             // Typical graduation ages
             if ($ageAtGraduation < 16) {
                 $validator->errors()->add('graduation_year', 'Graduation year seems too early based on your date of birth.');
             }
-            
+
             if ($ageAtGraduation > 65) {
                 $validator->errors()->add('graduation_year', 'Graduation year seems too late based on your date of birth.');
             }
@@ -168,16 +166,16 @@ class IndividualSignupRequest extends BaseFormRequest
     {
         $graduationYear = $this->input('graduation_year');
         $experienceLevel = $this->input('experience_level');
-        
+
         if ($graduationYear && $experienceLevel) {
             $currentYear = date('Y');
             $yearsSinceGraduation = $currentYear - $graduationYear;
-            
+
             // Check experience level consistency
             if ($experienceLevel === '10+' && $yearsSinceGraduation < 8) {
                 $validator->errors()->add('experience_level', 'Experience level seems inconsistent with graduation year.');
             }
-            
+
             if ($experienceLevel === '0-2' && $yearsSinceGraduation > 5) {
                 $validator->errors()->add('experience_level', 'Experience level seems low for your graduation year.');
             }

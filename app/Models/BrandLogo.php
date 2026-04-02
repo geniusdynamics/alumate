@@ -1,7 +1,13 @@
 <?php
 
+// ABOUTME: BrandLogo model for schema-based multi-tenancy managing brand logo assets
+// ABOUTME: Handles logo data within tenant schemas with file management, versioning, and usage tracking
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +20,6 @@ class BrandLogo extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'brand_config_id',
         'name',
         'slug',
@@ -104,35 +109,28 @@ class BrandLogo extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
+        // Ensure we're in a tenant context
+        static::addGlobalScope('tenant_context', function (Builder $builder) {
+            if (! TenantContextService::hasTenant()) {
+                throw new Exception('BrandLogo model requires tenant context. Use TenantContextService::setTenant() first.');
             }
         });
 
         // Auto-generate slug if not provided
         static::creating(function ($logo) {
             if (empty($logo->slug)) {
-                $logo->slug = $logo->generateUniqueSlug($logo->name, $logo->tenant_id);
+                $logo->slug = $logo->generateUniqueSlug($logo->name);
             }
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility)
      */
-    public function scopeForTenant($query, int $tenantId)
+    public function scopeForTenant($query, ?int $tenantId = null)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, tenant context is handled automatically
+        return $query;
     }
 
     /**
@@ -176,11 +174,17 @@ class BrandLogo extends Model
     }
 
     /**
-     * Get the tenant that owns this brand logo
+     * Get current tenant information
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant(): ?array
     {
-        return $this->belongsTo(Tenant::class);
+        $tenant = TenantContextService::getCurrentTenant();
+
+        return $tenant ? [
+            'id' => $tenant->id,
+            'name' => $tenant->name,
+            'slug' => $tenant->slug,
+        ] : null;
     }
 
     /**
@@ -263,7 +267,7 @@ class BrandLogo extends Model
     public function getDimensions(): string
     {
         if ($this->width && $this->height) {
-            return $this->width . 'x' . $this->height . 'px';
+            return $this->width.'x'.$this->height.'px';
         }
 
         return 'Unknown';
@@ -274,7 +278,7 @@ class BrandLogo extends Model
      */
     public function getFormattedFileSize(): string
     {
-        if (!$this->file_size) {
+        if (! $this->file_size) {
             return 'Unknown';
         }
 
@@ -287,7 +291,7 @@ class BrandLogo extends Model
             $i++;
         }
 
-        return round($bytes, 2) . ' ' . $units[$i];
+        return round($bytes, 2).' '.$units[$i];
     }
 
     /**
@@ -371,14 +375,14 @@ class BrandLogo extends Model
     /**
      * Generate a unique slug for the logo
      */
-    protected function generateUniqueSlug(string $name, int $tenantId): string
+    protected function generateUniqueSlug(string $name): string
     {
-        $baseSlug = Str::slug($name . '-' . $this->logo_type);
+        $baseSlug = Str::slug($name.'-'.$this->logo_type);
         $slug = $baseSlug;
         $counter = 1;
 
-        while ($this->slugExists($slug, $tenantId)) {
-            $slug = $baseSlug . '-' . $counter;
+        while ($this->slugExists($slug)) {
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -386,11 +390,11 @@ class BrandLogo extends Model
     }
 
     /**
-     * Check if a slug exists for the tenant
+     * Check if a slug exists within current tenant context
      */
-    protected function slugExists(string $slug, int $tenantId): bool
+    protected function slugExists(string $slug): bool
     {
-        $query = static::where('tenant_id', $tenantId)->where('slug', $slug);
+        $query = static::where('slug', $slug);
 
         if ($this->exists) {
             $query->where('id', '!=', $this->id);
@@ -434,7 +438,7 @@ class BrandLogo extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // tenant_id removed for schema-based tenancy
             'brand_config_id' => 'nullable|exists:brand_configs,id',
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
@@ -448,8 +452,8 @@ class BrandLogo extends Model
             'mime_type' => 'nullable|string|max:100',
             'width' => 'nullable|integer|min:1',
             'height' => 'nullable|integer|min:1',
-            'usage_context' => 'required|in:' . implode(',', self::USAGE_CONTEXTS),
-            'logo_type' => 'required|in:' . implode(',', self::LOGO_TYPES),
+            'usage_context' => 'required|in:'.implode(',', self::USAGE_CONTEXTS),
+            'logo_type' => 'required|in:'.implode(',', self::LOGO_TYPES),
             'is_primary' => 'boolean',
             'is_default' => 'boolean',
             'is_active' => 'boolean',
@@ -469,7 +473,7 @@ class BrandLogo extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_logos,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_logos,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:brand_logos,slug';
         }

@@ -1,20 +1,23 @@
 <?php
 
+// ABOUTME: EmailAnalytics model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Tracks email analytics and metrics with tenant isolation handled by database schema
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Carbon\Carbon;
 
 class EmailAnalytics extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
+        // 'tenant_id', // Removed for schema-based tenancy
         'email_campaign_id',
         'email_template_id',
         'recipient_id',
@@ -82,29 +85,50 @@ class EmailAnalytics extends Model
      * Delivery status constants
      */
     public const STATUS_SENT = 'sent';
+
     public const STATUS_DELIVERED = 'delivered';
+
     public const STATUS_OPENED = 'opened';
+
     public const STATUS_CLICKED = 'clicked';
+
     public const STATUS_CONVERTED = 'converted';
+
     public const STATUS_BOUNCED = 'bounced';
+
     public const STATUS_COMPLAINT = 'complaint';
+
     public const STATUS_UNSUBSCRIBED = 'unsubscribed';
 
     /**
      * Device type constants
      */
     public const DEVICE_DESKTOP = 'desktop';
+
     public const DEVICE_MOBILE = 'mobile';
+
     public const DEVICE_TABLET = 'tablet';
 
     /**
      * Conversion type constants
      */
     public const CONVERSION_PURCHASE = 'purchase';
+
     public const CONVERSION_SIGNUP = 'signup';
+
     public const CONVERSION_DOWNLOAD = 'download';
+
     public const CONVERSION_CONTACT = 'contact';
+
     public const CONVERSION_CUSTOM = 'custom';
+
+    /**
+     * Get the current tenant from context.
+     */
+    public function getCurrentTenant()
+    {
+        return app(TenantContextService::class)->getCurrentTenant();
+    }
 
     /**
      * Boot the model
@@ -113,28 +137,18 @@ class EmailAnalytics extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
-        });
+        // Schema-based tenancy: tenant isolation handled by database schema
+        // No global scope needed as each tenant has its own schema
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (legacy compatibility - returns query unchanged in schema-based tenancy).
      */
     public function scopeForTenant($query, int $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, tenant filtering is handled by database schema
+        // This scope is maintained for legacy compatibility but returns query unchanged
+        return $query;
     }
 
     /**
@@ -202,11 +216,14 @@ class EmailAnalytics extends Model
     }
 
     /**
-     * Get the tenant that owns the email analytics
+     * Get the tenant that owns the email analytics (legacy compatibility for schema-based tenancy).
      */
     public function tenant(): BelongsTo
     {
-        return $this->belongsTo(Tenant::class);
+        // In schema-based tenancy, return current tenant from context
+        $tenant = $this->getCurrentTenant();
+
+        return $this->belongsTo(Tenant::class)->where('id', $tenant->id);
     }
 
     /**
@@ -254,7 +271,7 @@ class EmailAnalytics extends Model
      */
     public function isDelivered(): bool
     {
-        return !is_null($this->delivered_at);
+        return ! is_null($this->delivered_at);
     }
 
     /**
@@ -262,7 +279,7 @@ class EmailAnalytics extends Model
      */
     public function isOpened(): bool
     {
-        return !is_null($this->opened_at);
+        return ! is_null($this->opened_at);
     }
 
     /**
@@ -270,7 +287,7 @@ class EmailAnalytics extends Model
      */
     public function isClicked(): bool
     {
-        return !is_null($this->clicked_at);
+        return ! is_null($this->clicked_at);
     }
 
     /**
@@ -278,7 +295,7 @@ class EmailAnalytics extends Model
      */
     public function isConverted(): bool
     {
-        return !is_null($this->converted_at);
+        return ! is_null($this->converted_at);
     }
 
     /**
@@ -286,7 +303,7 @@ class EmailAnalytics extends Model
      */
     public function isBounced(): bool
     {
-        return !is_null($this->bounced_at);
+        return ! is_null($this->bounced_at);
     }
 
     /**
@@ -294,7 +311,7 @@ class EmailAnalytics extends Model
      */
     public function isComplained(): bool
     {
-        return !is_null($this->complained_at);
+        return ! is_null($this->complained_at);
     }
 
     /**
@@ -302,7 +319,7 @@ class EmailAnalytics extends Model
      */
     public function isUnsubscribed(): bool
     {
-        return !is_null($this->unsubscribed_at);
+        return ! is_null($this->unsubscribed_at);
     }
 
     /**
@@ -310,7 +327,7 @@ class EmailAnalytics extends Model
      */
     public function getTimeToOpen(): ?int
     {
-        if (!$this->isDelivered() || !$this->isOpened()) {
+        if (! $this->isDelivered() || ! $this->isOpened()) {
             return null;
         }
 
@@ -322,7 +339,7 @@ class EmailAnalytics extends Model
      */
     public function getTimeToClick(): ?int
     {
-        if (!$this->isOpened() || !$this->isClicked()) {
+        if (! $this->isOpened() || ! $this->isClicked()) {
             return null;
         }
 
@@ -334,7 +351,7 @@ class EmailAnalytics extends Model
      */
     public function getTimeToConvert(): ?int
     {
-        if (!$this->isClicked() || !$this->isConverted()) {
+        if (! $this->isClicked() || ! $this->isConverted()) {
             return null;
         }
 
@@ -368,7 +385,7 @@ class EmailAnalytics extends Model
     /**
      * Record email delivery
      */
-    public function recordDelivery(Carbon $deliveredAt = null): void
+    public function recordDelivery(?Carbon $deliveredAt = null): void
     {
         $this->update([
             'delivered_at' => $deliveredAt ?: now(),
@@ -527,7 +544,7 @@ class EmailAnalytics extends Model
             $updateData['browser'] = 'other';
         }
 
-        if (!empty($updateData)) {
+        if (! empty($updateData)) {
             $this->update($updateData);
         }
     }
@@ -538,7 +555,7 @@ class EmailAnalytics extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // 'tenant_id' => 'required|exists:tenants,id', // Removed for schema-based tenancy
             'email_campaign_id' => 'nullable|exists:email_campaigns,id',
             'email_template_id' => 'nullable|exists:templates,id',
             'recipient_id' => 'nullable|exists:users,id',

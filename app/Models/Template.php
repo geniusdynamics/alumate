@@ -1,21 +1,24 @@
 <?php
 
+// ABOUTME: Template model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages landing page templates with automatic tenant context resolution
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class Template extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'name',
         'slug',
         'description',
@@ -101,35 +104,27 @@ class Template extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically for multi-tenant isolation
-        static::addGlobalScope('tenant', function ($builder) {
-            // Check if we're in a multi-tenant context
-            if (config('database.multi_tenant', false)) {
-                try {
-                    // In production, apply tenant filter based on current tenant context
-                    if (tenant() && tenant()->id) {
-                        $builder->where('tenant_id', tenant()->id);
-                    }
-                } catch (\Exception $e) {
-                    // Skip tenant scoping in test environment
-                }
-            }
+        // Apply tenant context for schema-based tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            app(TenantContextService::class)->applyTenantContext($builder);
         });
 
         // Auto-generate slug if not provided
         static::creating(function ($template) {
             if (empty($template->slug)) {
-                $template->slug = $template->generateUniqueSlug($template->name, $template->tenant_id);
+                $template->slug = $template->generateUniqueSlug($template->name);
             }
         });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (for schema-based tenancy)
+     * Note: This is primarily for administrative purposes
      */
-    public function scopeForTenant($query, int $tenantId)
+    public function scopeForTenant($query, string $tenantId)
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, this would switch schema context
+        return app(TenantContextService::class)->scopeToTenant($query, $tenantId);
     }
 
     /**
@@ -173,11 +168,12 @@ class Template extends Model
     }
 
     /**
-     * Get the tenant that owns the template
+     * Get the current tenant context
+     * Note: In schema-based tenancy, tenant relationship is contextual
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**
@@ -224,6 +220,7 @@ class Template extends Model
     public function getConversionRate(): float
     {
         $metrics = $this->performance_metrics ?? [];
+
         return $metrics['conversion_rate'] ?? 0.0;
     }
 
@@ -233,6 +230,7 @@ class Template extends Model
     public function getLoadTime(): float
     {
         $metrics = $this->performance_metrics ?? [];
+
         return $metrics['avg_load_time'] ?? 0.0;
     }
 
@@ -251,14 +249,14 @@ class Template extends Model
     /**
      * Generate a unique slug for the template
      */
-    protected function generateUniqueSlug(string $name, int $tenantId): string
+    protected function generateUniqueSlug(string $name): string
     {
         $baseSlug = Str::slug($name);
         $slug = $baseSlug;
         $counter = 1;
 
-        while ($this->slugExists($slug, $tenantId)) {
-            $slug = $baseSlug . '-' . $counter;
+        while ($this->slugExists($slug)) {
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -266,11 +264,11 @@ class Template extends Model
     }
 
     /**
-     * Check if a slug exists for the tenant
+     * Check if a slug exists in current tenant context
      */
-    protected function slugExists(string $slug, int $tenantId): bool
+    protected function slugExists(string $slug): bool
     {
-        $query = static::where('tenant_id', $tenantId)->where('slug', $slug);
+        $query = static::where('slug', $slug);
 
         if ($this->exists) {
             $query->where('id', '!=', $this->id);
@@ -285,7 +283,7 @@ class Template extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // tenant_id removed for schema-based tenancy
             'name' => 'required|string|max:255',
             'slug' => 'nullable|string|max:255|regex:/^[a-z0-9-]+$/',
             'description' => 'nullable|string|max:1000',
@@ -315,7 +313,7 @@ class Template extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:templates,slug,' . $ignoreId;
+            $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:templates,slug,'.$ignoreId;
         } else {
             $rules['slug'] = 'nullable|string|max:255|regex:/^[a-z0-9-]+$/|unique:templates,slug';
         }
@@ -386,16 +384,16 @@ class Template extends Model
                         'subtitle' => '',
                         'cta_text' => 'Get Started',
                         'background_type' => 'image',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'form',
                     'config' => [
                         'fields' => [],
                         'submit_text' => 'Submit',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -412,19 +410,19 @@ class Template extends Model
                         'title' => '',
                         'subtitle' => '',
                         'cta_text' => 'Learn More',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'statistics',
                     'config' => [
-                        'items' => []
-                    ]
+                        'items' => [],
+                    ],
                 ],
                 [
                     'type' => 'testimonials',
-                    'config' => []
-                ]
-            ]
+                    'config' => [],
+                ],
+            ],
         ];
     }
 
@@ -442,9 +440,9 @@ class Template extends Model
                         'description' => '',
                         'fields' => [],
                         'submit_text' => 'Submit',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -460,7 +458,7 @@ class Template extends Model
                     'config' => [
                         'logo' => '',
                         'title' => '',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'content',
@@ -468,16 +466,16 @@ class Template extends Model
                         'body' => '',
                         'cta_text' => '',
                         'cta_url' => '',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'footer',
                     'config' => [
                         'copyright' => '',
                         'unsubscribe_link' => '',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 
@@ -494,7 +492,7 @@ class Template extends Model
                         'url' => '',
                         'alt' => '',
                         'caption' => '',
-                    ]
+                    ],
                 ],
                 [
                     'type' => 'text',
@@ -502,9 +500,9 @@ class Template extends Model
                         'headline' => '',
                         'body' => '',
                         'hashtag' => '',
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
     }
 

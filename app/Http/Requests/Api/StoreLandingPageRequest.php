@@ -9,8 +9,6 @@ class StoreLandingPageRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -33,7 +31,7 @@ class StoreLandingPageRequest extends FormRequest
             'audience_type' => ['required', Rule::in(['individual', 'institution', 'employer'])],
             'campaign_type' => ['required', Rule::in([
                 'onboarding', 'event_promotion', 'donation', 'networking',
-                'career_services', 'recruiting', 'leadership', 'marketing'
+                'career_services', 'recruiting', 'leadership', 'marketing',
             ])],
             'category' => ['required', Rule::in(['individual', 'institution', 'employer'])],
             'status' => ['sometimes', 'in:draft,reviewing,published,archived,suspended'],
@@ -103,8 +101,6 @@ class StoreLandingPageRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
@@ -114,7 +110,7 @@ class StoreLandingPageRequest extends FormRequest
         }
 
         // Set default status if not provided
-        if (!$this->has('status')) {
+        if (! $this->has('status')) {
             $this->merge(['status' => 'draft']);
         }
 
@@ -131,9 +127,6 @@ class StoreLandingPageRequest extends FormRequest
 
     /**
      * Generate a unique slug for the landing page
-     *
-     * @param string $name
-     * @return string
      */
     private function generateSlug(string $name): string
     {
@@ -142,7 +135,7 @@ class StoreLandingPageRequest extends FormRequest
         $counter = 1;
 
         while (\App\Models\LandingPage::where('slug', $slug)->where('tenant_id', $this->tenant_id ?? null)->exists()) {
-            $slug = $baseSlug . '-' . $counter;
+            $slug = $baseSlug.'-'.$counter;
             $counter++;
         }
 
@@ -153,18 +146,17 @@ class StoreLandingPageRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate config structure if provided
-            if ($this->has('config') && !empty($this->config)) {
+            if ($this->has('config') && ! empty($this->config)) {
                 $this->validateConfigStructure($validator);
             }
 
             // Validate brand config if provided
-            if ($this->has('brand_config') && !empty($this->brand_config)) {
+            if ($this->has('brand_config') && ! empty($this->brand_config)) {
                 $this->validateBrandConfig($validator);
             }
 
@@ -182,7 +174,7 @@ class StoreLandingPageRequest extends FormRequest
     /**
      * Validate landing page configuration structure
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateConfigStructure($validator): void
     {
@@ -192,7 +184,7 @@ class StoreLandingPageRequest extends FormRequest
         $requiredKeys = ['sections']; // At minimum, should have sections
 
         foreach ($requiredKeys as $key) {
-            if (!isset($config[$key])) {
+            if (! isset($config[$key])) {
                 $validator->errors()->add('config', "Landing page configuration must include '{$key}'");
                 break;
             }
@@ -202,28 +194,29 @@ class StoreLandingPageRequest extends FormRequest
     /**
      * Validate brand configuration
      *
-     * @param \Illuminate\Validation\Validator $validator
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateBrandConfig($validator): void
     {
         $brandConfig = $this->brand_config;
 
-        if (!is_array($brandConfig)) {
+        if (! is_array($brandConfig)) {
             $validator->errors()->add('brand_config', 'Brand configuration must be a valid array');
+
             return;
         }
 
         // Basic brand config validation
         $requiredKeys = ['colors', 'fonts'];
         foreach ($requiredKeys as $key) {
-            if (!isset($brandConfig[$key])) {
+            if (! isset($brandConfig[$key])) {
                 $validator->errors()->add('brand_config', "Brand configuration must include '{$key}'");
             }
         }
 
         // Validate color format if provided
         if (isset($brandConfig['colors']['primary'])) {
-            if (!preg_match('/^#[a-fA-F0-9]{3,6}$/', $brandConfig['colors']['primary'])) {
+            if (! preg_match('/^#[a-fA-F0-9]{3,6}$/', $brandConfig['colors']['primary'])) {
                 $validator->errors()->add('brand_config', 'Primary color must be a valid hex color code');
             }
         }
@@ -232,10 +225,7 @@ class StoreLandingPageRequest extends FormRequest
     /**
      * Validate custom CSS or JavaScript code
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @param string $code
-     * @param string $field
-     * @param string $type
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateCustomCode($validator, string $code, string $field, string $type): void
     {

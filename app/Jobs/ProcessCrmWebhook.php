@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\Lead;
 use App\Models\CrmIntegration;
+use App\Models\Lead;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -12,9 +12,10 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessCrmWebhook implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     public $tries = 3;
+
     public $backoff = [30, 120, 300]; // 30 sec, 2 min, 5 min
 
     /**
@@ -35,7 +36,7 @@ class ProcessCrmWebhook implements ShouldQueue
         try {
             Log::info('Processing CRM webhook', [
                 'provider' => $this->provider,
-                'event_type' => $this->payload['event_type'] ?? 'unknown'
+                'event_type' => $this->payload['event_type'] ?? 'unknown',
             ]);
 
             // Get CRM integration
@@ -43,46 +44,47 @@ class ProcessCrmWebhook implements ShouldQueue
                 ->where('is_active', true)
                 ->first();
 
-            if (!$integration) {
+            if (! $integration) {
                 Log::warning('No active CRM integration found for webhook', [
-                    'provider' => $this->provider
+                    'provider' => $this->provider,
                 ]);
+
                 return;
             }
 
             // Process webhook based on event type
             $eventType = $this->payload['event_type'] ?? '';
-            
+
             switch ($eventType) {
                 case 'lead.created':
                 case 'contact.created':
                     $this->handleLeadCreated($integration);
                     break;
-                    
+
                 case 'lead.updated':
                 case 'contact.updated':
                     $this->handleLeadUpdated($integration);
                     break;
-                    
+
                 case 'lead.deleted':
                 case 'contact.deleted':
                     $this->handleLeadDeleted($integration);
                     break;
-                    
+
                 case 'deal.won':
                 case 'opportunity.closed_won':
                     $this->handleDealWon($integration);
                     break;
-                    
+
                 case 'deal.lost':
                 case 'opportunity.closed_lost':
                     $this->handleDealLost($integration);
                     break;
-                    
+
                 default:
                     Log::info('Unhandled webhook event type', [
                         'provider' => $this->provider,
-                        'event_type' => $eventType
+                        'event_type' => $eventType,
                     ]);
             }
 
@@ -90,9 +92,9 @@ class ProcessCrmWebhook implements ShouldQueue
             Log::error('Webhook processing failed', [
                 'provider' => $this->provider,
                 'error' => $e->getMessage(),
-                'payload' => $this->payload
+                'payload' => $this->payload,
             ]);
-            
+
             throw $e; // Re-throw to trigger retry
         }
     }
@@ -105,11 +107,12 @@ class ProcessCrmWebhook implements ShouldQueue
         $leadData = $this->payload['data'] ?? [];
         $crmId = $leadData['id'] ?? null;
 
-        if (!$crmId) {
+        if (! $crmId) {
             Log::warning('Lead created webhook missing ID', [
                 'provider' => $this->provider,
-                'payload' => $this->payload
+                'payload' => $this->payload,
             ]);
+
             return;
         }
 
@@ -118,8 +121,9 @@ class ProcessCrmWebhook implements ShouldQueue
         if ($existingLead) {
             Log::info('Lead already exists, skipping creation', [
                 'crm_id' => $crmId,
-                'lead_id' => $existingLead->id
+                'lead_id' => $existingLead->id,
             ]);
+
             return;
         }
 
@@ -128,19 +132,19 @@ class ProcessCrmWebhook implements ShouldQueue
         $lead = Lead::create(array_merge($mappedData, [
             'crm_id' => $crmId,
             'source' => 'crm_webhook',
-            'synced_at' => now()
+            'synced_at' => now(),
         ]));
 
         $lead->addActivity('crm_webhook_created', 'Lead created via CRM webhook', null, [
             'provider' => $this->provider,
             'crm_id' => $crmId,
-            'webhook_data' => $leadData
+            'webhook_data' => $leadData,
         ]);
 
         Log::info('Lead created from CRM webhook', [
             'lead_id' => $lead->id,
             'crm_id' => $crmId,
-            'provider' => $this->provider
+            'provider' => $this->provider,
         ]);
     }
 
@@ -152,35 +156,36 @@ class ProcessCrmWebhook implements ShouldQueue
         $leadData = $this->payload['data'] ?? [];
         $crmId = $leadData['id'] ?? null;
 
-        if (!$crmId) {
+        if (! $crmId) {
             return;
         }
 
         $lead = Lead::where('crm_id', $crmId)->first();
-        if (!$lead) {
+        if (! $lead) {
             Log::warning('Lead not found for update webhook', [
                 'crm_id' => $crmId,
-                'provider' => $this->provider
+                'provider' => $this->provider,
             ]);
+
             return;
         }
 
         // Update lead with CRM data
         $mappedData = $this->mapCrmDataToLead($leadData, $integration);
         $lead->update(array_merge($mappedData, [
-            'synced_at' => now()
+            'synced_at' => now(),
         ]));
 
         $lead->addActivity('crm_webhook_updated', 'Lead updated via CRM webhook', null, [
             'provider' => $this->provider,
             'crm_id' => $crmId,
-            'webhook_data' => $leadData
+            'webhook_data' => $leadData,
         ]);
 
         Log::info('Lead updated from CRM webhook', [
             'lead_id' => $lead->id,
             'crm_id' => $crmId,
-            'provider' => $this->provider
+            'provider' => $this->provider,
         ]);
     }
 
@@ -192,18 +197,18 @@ class ProcessCrmWebhook implements ShouldQueue
         $leadData = $this->payload['data'] ?? [];
         $crmId = $leadData['id'] ?? null;
 
-        if (!$crmId) {
+        if (! $crmId) {
             return;
         }
 
         $lead = Lead::where('crm_id', $crmId)->first();
-        if (!$lead) {
+        if (! $lead) {
             return;
         }
 
         $lead->addActivity('crm_webhook_deleted', 'Lead deleted in CRM', null, [
             'provider' => $this->provider,
-            'crm_id' => $crmId
+            'crm_id' => $crmId,
         ]);
 
         // Soft delete the lead
@@ -212,7 +217,7 @@ class ProcessCrmWebhook implements ShouldQueue
         Log::info('Lead deleted from CRM webhook', [
             'lead_id' => $lead->id,
             'crm_id' => $crmId,
-            'provider' => $this->provider
+            'provider' => $this->provider,
         ]);
     }
 
@@ -224,12 +229,12 @@ class ProcessCrmWebhook implements ShouldQueue
         $dealData = $this->payload['data'] ?? [];
         $leadId = $dealData['contact_id'] ?? $dealData['lead_id'] ?? null;
 
-        if (!$leadId) {
+        if (! $leadId) {
             return;
         }
 
         $lead = Lead::where('crm_id', $leadId)->first();
-        if (!$lead) {
+        if (! $lead) {
             return;
         }
 
@@ -237,14 +242,14 @@ class ProcessCrmWebhook implements ShouldQueue
         $lead->addActivity('deal_won', 'Deal won in CRM', null, [
             'provider' => $this->provider,
             'deal_data' => $dealData,
-            'deal_value' => $dealData['amount'] ?? null
+            'deal_value' => $dealData['amount'] ?? null,
         ]);
 
         Log::info('Deal won processed from CRM webhook', [
             'lead_id' => $lead->id,
             'crm_id' => $leadId,
             'provider' => $this->provider,
-            'deal_value' => $dealData['amount'] ?? null
+            'deal_value' => $dealData['amount'] ?? null,
         ]);
     }
 
@@ -256,12 +261,12 @@ class ProcessCrmWebhook implements ShouldQueue
         $dealData = $this->payload['data'] ?? [];
         $leadId = $dealData['contact_id'] ?? $dealData['lead_id'] ?? null;
 
-        if (!$leadId) {
+        if (! $leadId) {
             return;
         }
 
         $lead = Lead::where('crm_id', $leadId)->first();
-        if (!$lead) {
+        if (! $lead) {
             return;
         }
 
@@ -269,14 +274,14 @@ class ProcessCrmWebhook implements ShouldQueue
         $lead->addActivity('deal_lost', 'Deal lost in CRM', null, [
             'provider' => $this->provider,
             'deal_data' => $dealData,
-            'lost_reason' => $dealData['lost_reason'] ?? null
+            'lost_reason' => $dealData['lost_reason'] ?? null,
         ]);
 
         Log::info('Deal lost processed from CRM webhook', [
             'lead_id' => $lead->id,
             'crm_id' => $leadId,
             'provider' => $this->provider,
-            'lost_reason' => $dealData['lost_reason'] ?? null
+            'lost_reason' => $dealData['lost_reason'] ?? null,
         ]);
     }
 
@@ -301,11 +306,11 @@ class ProcessCrmWebhook implements ShouldQueue
             'email' => 'email',
             'phone' => 'phone',
             'company' => 'company',
-            'jobtitle' => 'job_title'
+            'jobtitle' => 'job_title',
         ];
 
         foreach ($commonMappings as $crmField => $localField) {
-            if (isset($crmData[$crmField]) && !isset($mappedData[$localField])) {
+            if (isset($crmData[$crmField]) && ! isset($mappedData[$localField])) {
                 $mappedData[$localField] = $crmData[$crmField];
             }
         }
@@ -322,7 +327,7 @@ class ProcessCrmWebhook implements ShouldQueue
             'provider' => $this->provider,
             'error' => $exception->getMessage(),
             'payload' => $this->payload,
-            'attempts' => $this->attempts()
+            'attempts' => $this->attempts(),
         ]);
     }
 }

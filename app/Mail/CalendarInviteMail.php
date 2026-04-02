@@ -61,45 +61,45 @@ class CalendarInviteMail extends Mailable
         $ics .= "BEGIN:VEVENT\r\n";
 
         // Event UID
-        $ics .= "UID:" . $this->event->id . "@" . config('app.url') . "\r\n";
+        $ics .= 'UID:'.$this->event->id.'@'.config('app.url')."\r\n";
 
         // Event details
-        $ics .= "SUMMARY:" . $this->escapeICSValue($this->event->title) . "\r\n";
+        $ics .= 'SUMMARY:'.$this->escapeICSValue($this->event->title)."\r\n";
 
         if ($this->event->description) {
-            $ics .= "DESCRIPTION:" . $this->escapeICSValue($this->event->description) . "\r\n";
+            $ics .= 'DESCRIPTION:'.$this->escapeICSValue($this->event->description)."\r\n";
         }
 
         if ($this->event->location) {
-            $ics .= "LOCATION:" . $this->escapeICSValue($this->event->location) . "\r\n";
+            $ics .= 'LOCATION:'.$this->escapeICSValue($this->event->location)."\r\n";
         }
 
         // Date/time in UTC
         $startDate = $this->event->start_date->setTimezone('UTC');
         $endDate = $this->event->end_date->setTimezone('UTC');
 
-        $ics .= "DTSTART:" . $startDate->format('Ymd\THis\Z') . "\r\n";
-        $ics .= "DTEND:" . $endDate->format('Ymd\THis\Z') . "\r\n";
+        $ics .= 'DTSTART:'.$startDate->format('Ymd\THis\Z')."\r\n";
+        $ics .= 'DTEND:'.$endDate->format('Ymd\THis\Z')."\r\n";
 
         // Organizer
         if ($this->event->organizer) {
-            $ics .= "ORGANIZER;CN=" . $this->escapeICSValue($this->event->organizer->name) . ":mailto:" . $this->event->organizer->email . "\r\n";
+            $ics .= 'ORGANIZER;CN='.$this->escapeICSValue($this->event->organizer->name).':mailto:'.$this->event->organizer->email."\r\n";
         }
 
         // Attendee
-        $ics .= "ATTENDEE;ROLE=REQ-PARTICIPANT;RSVP=TRUE:mailto:" . $this->recipientEmail . "\r\n";
+        $ics .= 'ATTENDEE;ROLE=REQ-PARTICIPANT;RSVP=TRUE:mailto:'.$this->recipientEmail."\r\n";
 
         // Status and other properties
         $ics .= "STATUS:CONFIRMED\r\n";
         $ics .= "SEQUENCE:0\r\n";
-        $ics .= "CREATED:" . now()->setTimezone('UTC')->format('Ymd\THis\Z') . "\r\n";
-        $ics .= "LAST-MODIFIED:" . now()->setTimezone('UTC')->format('Ymd\THis\Z') . "\r\n";
+        $ics .= 'CREATED:'.now()->setTimezone('UTC')->format('Ymd\THis\Z')."\r\n";
+        $ics .= 'LAST-MODIFIED:'.now()->setTimezone('UTC')->format('Ymd\THis\Z')."\r\n";
 
         // Add reminder
         $ics .= "BEGIN:VALARM\r\n";
         $ics .= "TRIGGER:-PT15M\r\n"; // 15 minutes before
         $ics .= "ACTION:DISPLAY\r\n";
-        $ics .= "DESCRIPTION:Reminder: " . $this->escapeICSValue($this->event->title) . "\r\n";
+        $ics .= 'DESCRIPTION:Reminder: '.$this->escapeICSValue($this->event->title)."\r\n";
         $ics .= "END:VALARM\r\n";
 
         $ics .= "END:VEVENT\r\n";

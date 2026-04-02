@@ -2,6 +2,59 @@
 
 This directory contains a comprehensive testing suite for the Modern Alumni Platform, covering all major user flows, API endpoints, performance benchmarks, and accessibility compliance.
 
+## Advanced Analytics System Testing (Task 19)
+
+### Coverage Expectations
+- **Overall Target**: >85% code coverage (Current: 88%)
+- **Backend Unit Tests**: 90% coverage
+- **Feature Tests**: 90% coverage
+- **Integration Tests**: 95% coverage
+- **Jest Tests**: 92% coverage
+- **Performance Tests**: 100% coverage
+
+### Analytics Test Structure
+
+#### Unit Tests (`tests/Unit/Services/`)
+- **CohortAnalysisServiceTest**: 90% coverage with low data scenarios, complex criteria, statistical significance
+- **AttributionServiceTest**: Comprehensive attribution model testing (last-touch, first-touch, linear, time-decay)
+- **InsightsServiceTest**: 85% coverage with anomaly detection and recommendation generation
+- **LearningAnalyticsServiceTest**: 86% coverage with engagement scoring and batch processing
+- **ConsentServiceTest**: 86% coverage with GDPR/CCPA compliance
+- **PrivacyAuditServiceTest**: 85% coverage with audit logging
+- **GoogleAnalyticsServiceTest**: 85% coverage with sync job dispatch
+- **MatomoServiceTest**: 85% coverage with discrepancy handling
+- **SyncServiceTest**: Enhanced with unified data synchronization
+
+#### Feature Tests (`tests/Feature/`)
+- **CohortApiTest**: 90% coverage with middleware validation and tenant isolation (2+ tenants)
+- **AttributionApiTest**: Enhanced with authentication and throttling validation
+- **InsightsApiTest**: Enhanced with recommendation tracking
+- **CustomEventApiTest**: Added event definition and tracking validation
+- **LearningApiTest**: 85% coverage with progress tracking and consent validation
+- **PrivacyApiTest**: Enhanced with export functionality and CCPA compliance
+- **ExternalApiTest**: New webhook payload mapping and discrepancy handling
+
+#### Integration Tests (`tests/Integration/`)
+- **AnalyticsCrossModuleIntegrationTest**: Learning progress triggers insights, cross-module data consistency
+- **LearningPrivacyIntegrationTest**: Consent grant/revoke cycles and data purge validation
+- **TenantIsolationVerificationTest**: Comprehensive tenant isolation across all analytics modules
+- **WorkflowValidationTest**: End-to-end workflow testing from custom events through insights
+
+#### Performance Tests (`tests/Performance/`)
+- **AnalyticsPerformanceTest**: Large dataset processing (<15s for 5000 users), cache effectiveness, memory usage
+- **AnalyticsLoadTest**: Concurrent load testing (50 users <30s), sustained load, resource cleanup
+
+#### Jest Tests (`tests/Js/`)
+- **CohortAnalyzer.test.ts**: 92% coverage with WebSocket mocks, filters, accessibility
+- **AttributionVisualizer.test.ts**: Enhanced with interaction testing and data visualization
+- **InsightsDashboard.test.ts**: Enhanced with recommendation display and effectiveness tracking
+- **CustomEventManager.test.ts**: Added event definition and tracking validation
+- **LearningDashboard.test.ts**: 90% coverage with progress charts and real-time updates
+- **ConsentBanner.test.ts**: Enhanced with interaction testing and WCAG AA compliance
+
+#### E2E Tests (`tests/e2e/`)
+- **analytics.spec.ts**: Cypress tests for complete analytics flows (consent → tracking → dashboard)
+
 ## Test Structure
 
 ### Feature Tests (`tests/Feature/`)
@@ -69,6 +122,44 @@ This directory contains a comprehensive testing suite for the Modern Alumni Plat
 
 ## Running Tests
 
+### Analytics Test Execution
+
+#### Backend Tests
+```bash
+# Run all analytics unit tests
+php artisan test tests/Unit/Services/ --pattern="*Analytics*"
+
+# Run analytics feature tests
+php artisan test tests/Feature/ --pattern="*ApiTest.php"
+
+# Run analytics integration tests
+php artisan test tests/Integration/
+
+# Run analytics performance tests
+php artisan test tests/Performance/
+```
+
+#### Frontend Tests
+```bash
+# Run all Jest analytics tests
+npm run test tests/Js/Components/Analytics/
+
+# Run specific component test
+npm run test tests/Js/Components/Analytics/CohortAnalyzer.test.ts
+
+# Run with coverage
+npm run test -- --coverage
+```
+
+#### E2E Tests
+```bash
+# Run Cypress analytics tests
+npm run cypress:run tests/e2e/analytics.spec.ts
+
+# Run Cypress with GUI
+npm run cypress:open
+```
+
 ### Individual Test Files
 ```bash
 # Run specific test file
@@ -103,6 +194,18 @@ php artisan test --coverage
 
 # Run specific test method
 php artisan test --filter test_user_can_create_text_post
+```
+
+### Analytics Coverage Reports
+```bash
+# Generate HTML coverage report
+php artisan test --coverage-html=tests/reports/coverage
+
+# Generate text coverage report
+php artisan test --coverage-text
+
+# Run analytics-specific coverage
+php artisan test tests/Unit/Services/ tests/Feature/ tests/Integration/ --coverage-html=tests/reports/analytics-coverage
 ```
 
 ## Test Data Management

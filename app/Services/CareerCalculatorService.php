@@ -1,12 +1,15 @@
 <?php
 
+// ABOUTME: Service for calculating career value, salary projections, and advancement timelines
+// ABOUTME: Updated for schema-based tenancy - provides career insights within tenant context
+
 namespace App\Services;
 
 use App\Mail\CareerCalculatorReport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class CareerCalculatorService
+class CareerCalculatorService extends BaseService
 {
     /**
      * Industry salary multipliers based on real market data

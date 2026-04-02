@@ -2,10 +2,8 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 class EmailSendingService
 {
@@ -17,6 +15,7 @@ class EmailSendingService
     ];
 
     protected array $providerConfigs = [];
+
     protected array $rateLimits = [];
 
     public function __construct()
@@ -33,7 +32,7 @@ class EmailSendingService
         $provider = $emailData['provider'] ?? 'internal';
 
         // Check rate limits
-        if (!$this->checkRateLimit($provider)) {
+        if (! $this->checkRateLimit($provider)) {
             Log::warning('Rate limit exceeded for email provider', [
                 'provider' => $provider,
                 'email' => $emailData['to'] ?? 'unknown',
@@ -121,7 +120,7 @@ class EmailSendingService
             }
         }
 
-        $successful = count(array_filter($results, fn($r) => $r['success']));
+        $successful = count(array_filter($results, fn ($r) => $r['success']));
         $failed = count($results) - $successful;
 
         Log::info('Bulk email send completed', [
@@ -148,7 +147,7 @@ class EmailSendingService
 
         if (empty($emailData['to'])) {
             $errors[] = 'Recipient email is required';
-        } elseif (!filter_var($emailData['to'], FILTER_VALIDATE_EMAIL)) {
+        } elseif (! filter_var($emailData['to'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Invalid recipient email format';
         }
 
@@ -161,7 +160,7 @@ class EmailSendingService
         }
 
         $provider = $emailData['provider'] ?? 'internal';
-        if (!isset($this->providers[$provider])) {
+        if (! isset($this->providers[$provider])) {
             $errors[] = "Unsupported email provider: {$provider}";
         }
 
@@ -278,8 +277,8 @@ class EmailSendingService
     {
         $limits = $this->rateLimits[$provider] ?? $this->rateLimits['internal'];
 
-        $minuteKey = "email:{$provider}:minute:" . now()->format('Y-m-d-H-i');
-        $hourKey = "email:{$provider}:hour:" . now()->format('Y-m-d-H');
+        $minuteKey = "email:{$provider}:minute:".now()->format('Y-m-d-H-i');
+        $hourKey = "email:{$provider}:hour:".now()->format('Y-m-d-H');
 
         $minuteCount = Cache::get($minuteKey, 0);
         $hourCount = Cache::get($hourKey, 0);
@@ -289,8 +288,8 @@ class EmailSendingService
 
     protected function incrementRateLimit(string $provider): void
     {
-        $minuteKey = "email:{$provider}:minute:" . now()->format('Y-m-d-H-i');
-        $hourKey = "email:{$provider}:hour:" . now()->format('Y-m-d-H');
+        $minuteKey = "email:{$provider}:minute:".now()->format('Y-m-d-H-i');
+        $hourKey = "email:{$provider}:hour:".now()->format('Y-m-d-H');
 
         Cache::increment($minuteKey, 1, 60); // Expire in 1 minute
         Cache::increment($hourKey, 1, 3600); // Expire in 1 hour
@@ -300,8 +299,8 @@ class EmailSendingService
     {
         $limits = $this->rateLimits[$provider] ?? $this->rateLimits['internal'];
 
-        $minuteKey = "email:{$provider}:minute:" . now()->format('Y-m-d-H-i');
-        $hourKey = "email:{$provider}:hour:" . now()->format('Y-m-d-H');
+        $minuteKey = "email:{$provider}:minute:".now()->format('Y-m-d-H-i');
+        $hourKey = "email:{$provider}:hour:".now()->format('Y-m-d-H');
 
         $minuteCount = Cache::get($minuteKey, 0);
         $hourCount = Cache::get($hourKey, 0);
@@ -314,7 +313,8 @@ class EmailSendingService
 
     protected function getRateLimitResetTime(string $provider): ?int
     {
-        $minuteKey = "email:{$provider}:minute:" . now()->format('Y-m-d-H-i');
+        $minuteKey = "email:{$provider}:minute:".now()->format('Y-m-d-H-i');
+
         return Cache::get("{$minuteKey}:ttl");
     }
 
@@ -333,7 +333,7 @@ class EmailSendingService
 
     protected function getBatchSize(string $provider): int
     {
-        return match($provider) {
+        return match ($provider) {
             'mailgun' => 1000,
             'sendgrid' => 1000,
             'ses' => 50,
@@ -343,7 +343,7 @@ class EmailSendingService
 
     protected function getBatchDelay(string $provider): int
     {
-        return match($provider) {
+        return match ($provider) {
             'ses' => 1, // 1 second delay for SES
             default => 0,
         };
@@ -354,7 +354,9 @@ class EmailSendingService
 interface EmailProviderInterface
 {
     public function sendEmail(array $emailData): array;
+
     public function getStats(): array;
+
     public function testConnection(): array;
 }
 
@@ -368,8 +370,8 @@ class InternalProvider implements EmailProviderInterface
         try {
             \Mail::raw($emailData['content'], function ($message) use ($emailData) {
                 $message->to($emailData['to'])
-                        ->subject($emailData['subject'])
-                        ->from($this->config['from_email'], $this->config['from_name']);
+                    ->subject($emailData['subject'])
+                    ->from($this->config['from_email'], $this->config['from_name']);
             });
 
             return [
@@ -408,8 +410,8 @@ class MailgunProvider implements EmailProviderInterface
         // Implementation would use Mailgun API
         return [
             'success' => true,
-            'message_id' => 'mailgun_' . uniqid(),
-            'provider_message_id' => 'mg_' . uniqid(),
+            'message_id' => 'mailgun_'.uniqid(),
+            'provider_message_id' => 'mg_'.uniqid(),
         ];
     }
 
@@ -439,8 +441,8 @@ class SendGridProvider implements EmailProviderInterface
         // Implementation would use SendGrid API
         return [
             'success' => true,
-            'message_id' => 'sendgrid_' . uniqid(),
-            'provider_message_id' => 'sg_' . uniqid(),
+            'message_id' => 'sendgrid_'.uniqid(),
+            'provider_message_id' => 'sg_'.uniqid(),
         ];
     }
 
@@ -470,8 +472,8 @@ class SESProvider implements EmailProviderInterface
         // Implementation would use AWS SES API
         return [
             'success' => true,
-            'message_id' => 'ses_' . uniqid(),
-            'provider_message_id' => 'ses_' . uniqid(),
+            'message_id' => 'ses_'.uniqid(),
+            'provider_message_id' => 'ses_'.uniqid(),
         ];
     }
 

@@ -17,21 +17,22 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->encryptCookies(except: ['appearance', 'sidebar_state']);
-
         $middleware->web(append: [
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
-            \App\Http\Middleware\SecurityMonitoring::class,
+            \App\Http\Middleware\InputSanitizerMiddleware::class,
             \App\Http\Middleware\SecurityHeaders::class,
+            \App\Http\Middleware\TenantMiddleware::class,
         ]);
-
-        // Register Spatie Permission middleware
+        $middleware->api(append: [
+            \App\Http\Middleware\TenantMiddleware::class,
+        ]);
         $middleware->alias([
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
-            'tenant' => \Stancl\Tenancy\Middleware\InitializeTenancyByDomain::class,
+            'tenant' => \App\Http\Middleware\TenantMiddleware::class,
             'api.rate_limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
             'social.rate_limit' => \App\Http\Middleware\SocialRateLimiting::class,
             '2fa' => \App\Http\Middleware\RequireTwoFactor::class,

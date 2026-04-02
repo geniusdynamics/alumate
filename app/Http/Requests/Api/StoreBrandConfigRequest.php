@@ -9,8 +9,6 @@ class StoreBrandConfigRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -112,8 +110,6 @@ class StoreBrandConfigRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
@@ -135,18 +131,17 @@ class StoreBrandConfigRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
             // Validate brand configuration completeness
-            if ($this->has('name') && !empty($this->name)) {
+            if ($this->has('name') && ! empty($this->name)) {
                 $this->validateBrandConfigCompleteness($validator);
             }
 
             // Validate CSS syntax if provided
-            if ($this->has('custom_css') && !empty($this->custom_css)) {
+            if ($this->has('custom_css') && ! empty($this->custom_css)) {
                 $this->validateCustomCss($validator);
             }
 
@@ -160,17 +155,16 @@ class StoreBrandConfigRequest extends FormRequest
     /**
      * Validate that the brand configuration has sufficient branding elements.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateBrandConfigCompleteness($validator): void
     {
-        $hasColors = !empty($this->input('primary_color'));
-        $hasFonts = !empty($this->input('font_family'));
-        $hasLogo = !empty($this->input('logo_url'));
+        $hasColors = ! empty($this->input('primary_color'));
+        $hasFonts = ! empty($this->input('font_family'));
+        $hasLogo = ! empty($this->input('logo_url'));
 
         // At least one branding element should be provided
-        if (!$hasColors && !$hasFonts && !$hasLogo) {
+        if (! $hasColors && ! $hasFonts && ! $hasLogo) {
             $validator->errors()->add(
                 'brand_config',
                 'Brand configuration should include at least colors, fonts, or a logo.'
@@ -181,15 +175,14 @@ class StoreBrandConfigRequest extends FormRequest
     /**
      * Validate custom CSS for basic syntax.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateCustomCss($validator): void
     {
         $css = $this->input('custom_css');
 
         // Basic CSS syntax validation
-        if (!preg_match('/^[^{}]*\{[^}]*\}[^{}]*$/s', $css)) {
+        if (! preg_match('/^[^{}]*\{[^}]*\}[^{}]*$/s', $css)) {
             $validator->errors()->add(
                 'custom_css',
                 'Custom CSS contains invalid syntax. Please check your CSS rules.'
@@ -202,7 +195,7 @@ class StoreBrandConfigRequest extends FormRequest
             '/vbscript:/i',
             '/data:/i',
             '/expression\s*\(/i',
-            '/@import/i'
+            '/@import/i',
         ];
 
         foreach ($dangerousPatterns as $pattern) {
@@ -219,8 +212,7 @@ class StoreBrandConfigRequest extends FormRequest
     /**
      * Validate color contrast ratios for accessibility.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateColorContrast($validator): void
     {
@@ -242,10 +234,6 @@ class StoreBrandConfigRequest extends FormRequest
 
     /**
      * Calculate contrast ratio between two hex colors.
-     *
-     * @param string $color1
-     * @param string $color2
-     * @return float
      */
     private function calculateContrastRatio(string $color1, string $color2): float
     {
@@ -260,9 +248,6 @@ class StoreBrandConfigRequest extends FormRequest
 
     /**
      * Calculate relative luminance of a hex color.
-     *
-     * @param string $hex
-     * @return float
      */
     private function getRelativeLuminance(string $hex): float
     {
@@ -278,9 +263,6 @@ class StoreBrandConfigRequest extends FormRequest
 
     /**
      * Get luminance component for contrast calculation.
-     *
-     * @param float $component
-     * @return float
      */
     private function getLuminanceComponent(float $component): float
     {

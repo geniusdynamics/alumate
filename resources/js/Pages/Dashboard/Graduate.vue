@@ -1,16 +1,69 @@
-<script setup>
-import AppLayout from '@/layouts/AppLayout.vue';
-import UserDashboardIntegration from '@/components/UserDashboardIntegration.vue';
+﻿<script setup lang="ts">
+import UserDashboardIntegration from '@/Components/UserDashboardIntegration.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 
-const props = defineProps({
-    graduate: Object,
-    statistics: Object,
-    recentActivities: Object,
-    jobRecommendations: Array,
-    classmateConnections: Array,
-});
+interface GraduateRecord {
+    id?: number;
+    user_id?: number;
+    name?: string;
+    email?: string;
+    student_id?: string;
+    graduation_year?: number;
+    employment_status?: string;
+    course_id?: number | null;
+    course?: { id: number; name: string } | null;
+    user?: { id: number; name: string; email: string; avatar?: string | null } | null;
+    [key: string]: unknown;
+}
+
+interface GraduateStatistics {
+    profile_completion?: number;
+    employment_status?: string;
+    total_applications?: number;
+    pending_applications?: number;
+    shortlisted_applications?: number;
+    hired_applications?: number;
+    skills_count?: number;
+    achievements_count?: number;
+    [key: string]: unknown;
+}
+
+interface Activity {
+    id?: number;
+    type?: string;
+    description?: string;
+    created_at?: string;
+    [key: string]: unknown;
+}
+
+interface JobRecommendation {
+    id?: number;
+    title?: string;
+    company?: string;
+    location?: string;
+    employment_type?: string;
+    salary_range?: string;
+    match_score?: number;
+    [key: string]: unknown;
+}
+
+interface ClassmateConnection {
+    id?: number;
+    name?: string;
+    avatar?: string | null;
+    employment_status?: string;
+    [key: string]: unknown;
+}
+
+const props = defineProps<{
+    graduate?: GraduateRecord;
+    statistics?: GraduateStatistics;
+    recentActivities?: Activity[];
+    jobRecommendations?: JobRecommendation[];
+    classmateConnections?: ClassmateConnection[];
+}>();
 
 const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
@@ -22,23 +75,23 @@ const formatPercentage = (value) => {
 
 const getStatusBadgeClass = (status) => {
     const classes = {
-        'pending': 'bg-yellow-100 text-yellow-800',
-        'reviewed': 'bg-blue-100 text-blue-800',
-        'shortlisted': 'bg-purple-100 text-purple-800',
-        'interviewed': 'bg-indigo-100 text-indigo-800',
-        'hired': 'bg-green-100 text-green-800',
-        'rejected': 'bg-red-100 text-red-800',
+        pending: 'bg-yellow-100 text-yellow-800',
+        reviewed: 'bg-blue-100 text-blue-800',
+        shortlisted: 'bg-purple-100 text-purple-800',
+        interviewed: 'bg-indigo-100 text-indigo-800',
+        hired: 'bg-green-100 text-green-800',
+        rejected: 'bg-red-100 text-red-800',
     };
     return classes[status] || 'bg-gray-100 text-gray-800';
 };
 
 const getEmploymentStatusClass = (status) => {
     const classes = {
-        'employed': 'bg-green-100 text-green-800',
-        'unemployed': 'bg-red-100 text-red-800',
-        'self_employed': 'bg-blue-100 text-blue-800',
-        'student': 'bg-purple-100 text-purple-800',
-        'other': 'bg-gray-100 text-gray-800',
+        employed: 'bg-green-100 text-green-800',
+        unemployed: 'bg-red-100 text-red-800',
+        self_employed: 'bg-blue-100 text-blue-800',
+        student: 'bg-purple-100 text-purple-800',
+        other: 'bg-gray-100 text-gray-800',
     };
     return classes[status] || 'bg-gray-100 text-gray-800';
 };
@@ -69,20 +122,18 @@ const applyToJob = (job) => {
 
     <AppLayout>
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                        Graduate Dashboard
-                    </h2>
-                    <p class="text-sm text-gray-600 mt-1">
-                        Welcome back, {{ graduate.user?.name }}
-                    </p>
+                    <h2 class="text-xl font-semibold leading-tight text-gray-800">Graduate Dashboard</h2>
+                    <p class="mt-1 text-sm text-gray-600">Welcome back, {{ graduate.user?.name }}</p>
                 </div>
                 <div class="flex items-center gap-2">
-                    <span :class="['inline-flex px-2 py-1 text-xs font-semibold rounded-full', getEmploymentStatusClass(statistics.employment_status)]">
+                    <span
+                        :class="['inline-flex rounded-full px-2 py-1 text-xs font-semibold', getEmploymentStatusClass(statistics.employment_status)]"
+                    >
                         {{ statistics.employment_status?.replace('_', ' ').toUpperCase() }}
                     </span>
-                    <span class="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
+                    <span class="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800">
                         {{ graduate.course?.name }}
                     </span>
                 </div>
@@ -90,28 +141,29 @@ const applyToJob = (job) => {
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-                
+            <div class="mx-auto max-w-7xl space-y-6 sm:px-6 lg:px-8">
                 <!-- User Dashboard Integration -->
                 <UserDashboardIntegration :dashboard-data="{ statistics, recentActivities, jobRecommendations, classmateConnections }" />
-                
+
                 <!-- Profile Completion Alert -->
-                <div v-if="statistics.profile_completion < 100" class="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+                <div v-if="statistics.profile_completion < 100" class="rounded-md border border-yellow-200 bg-yellow-50 p-4">
                     <div class="flex">
                         <div class="flex-shrink-0">
                             <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                                    clip-rule="evenodd"
+                                />
                             </svg>
                         </div>
                         <div class="ml-3">
-                            <h3 class="text-sm font-medium text-yellow-800">
-                                Complete Your Profile
-                            </h3>
+                            <h3 class="text-sm font-medium text-yellow-800">Complete Your Profile</h3>
                             <div class="mt-2 text-sm text-yellow-700">
-                                <p>Your profile is {{ formatPercentage(statistics.profile_completion) }} complete. 
-                                   <Link :href="route('graduate.profile')" class="font-medium underline">
-                                       Complete your profile
-                                   </Link> to improve your job match opportunities.
+                                <p>
+                                    Your profile is {{ formatPercentage(statistics.profile_completion) }} complete.
+                                    <Link :href="route('graduate.profile')" class="font-medium underline"> Complete your profile </Link> to improve
+                                    your job match opportunities.
                                 </p>
                             </div>
                         </div>
@@ -119,19 +171,58 @@ const applyToJob = (job) => {
                 </div>
 
                 <!-- Quick Actions -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <Link v-for="action in quickActions" :key="action.name" 
-                          :href="route(action.href)"
-                          :class="['group relative rounded-lg p-6 text-white transition-colors', action.color]">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <Link
+                        v-for="action in quickActions"
+                        :key="action.name"
+                        :href="route(action.href)"
+                        :class="['group relative rounded-lg p-6 text-white transition-colors', action.color]"
+                    >
                         <div>
-                            <span class="rounded-lg inline-flex p-3 bg-white bg-opacity-20">
+                            <span class="inline-flex rounded-lg bg-white bg-opacity-20 p-3">
                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path v-if="action.icon === 'chat'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                    <path v-else-if="action.icon === 'users'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                                    <path v-else-if="action.icon === 'briefcase'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    <path v-else-if="action.icon === 'chart'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    <path v-else-if="action.icon === 'academic-cap'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                                    <path v-else-if="action.icon === 'calendar'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    <path
+                                        v-if="action.icon === 'chat'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                    />
+                                    <path
+                                        v-else-if="action.icon === 'users'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+                                    />
+                                    <path
+                                        v-else-if="action.icon === 'briefcase'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                    />
+                                    <path
+                                        v-else-if="action.icon === 'chart'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                    />
+                                    <path
+                                        v-else-if="action.icon === 'academic-cap'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                                    />
+                                    <path
+                                        v-else-if="action.icon === 'calendar'"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
                                 </svg>
                             </span>
                         </div>
@@ -142,20 +233,25 @@ const applyToJob = (job) => {
                 </div>
 
                 <!-- Key Statistics -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-blue-500 rounded-md flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-md bg-blue-500">
+                                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                            />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Applications</dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500">Total Applications</dt>
                                         <dd class="text-lg font-medium text-gray-900">{{ statistics.total_applications }}</dd>
                                     </dl>
                                 </div>
@@ -163,19 +259,24 @@ const applyToJob = (job) => {
                         </div>
                     </div>
 
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-md bg-yellow-500">
+                                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Pending Applications</dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500">Pending Applications</dt>
                                         <dd class="text-lg font-medium text-gray-900">{{ statistics.pending_applications }}</dd>
                                     </dl>
                                 </div>
@@ -183,19 +284,24 @@ const applyToJob = (job) => {
                         </div>
                     </div>
 
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-purple-500 rounded-md flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-md bg-purple-500">
+                                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                                            />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Interview Invitations</dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500">Interview Invitations</dt>
                                         <dd class="text-lg font-medium text-gray-900">{{ statistics.interview_invitations }}</dd>
                                     </dl>
                                 </div>
@@ -203,19 +309,24 @@ const applyToJob = (job) => {
                         </div>
                     </div>
 
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-md bg-green-500">
+                                        <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Job Offers</dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500">Job Offers</dt>
                                         <dd class="text-lg font-medium text-gray-900">{{ statistics.job_offers }}</dd>
                                     </dl>
                                 </div>
@@ -224,21 +335,20 @@ const applyToJob = (job) => {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <!-- Job Recommendations -->
-                    <div class="lg:col-span-2 bg-white overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow lg:col-span-2">
                         <div class="px-4 py-5 sm:p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900">Recommended Jobs</h3>
-                                <Link :href="route('graduate.jobs')" 
-                                      class="text-sm text-indigo-600 hover:text-indigo-500">
-                                    Browse all jobs
-                                </Link>
+                            <div class="mb-4 flex items-center justify-between">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900">Recommended Jobs</h3>
+                                <Link :href="route('graduate.jobs')" class="text-sm text-indigo-600 hover:text-indigo-500"> Browse all jobs </Link>
                             </div>
                             <div v-if="jobRecommendations.length > 0" class="space-y-4">
-                                <div v-for="job in jobRecommendations" 
-                                     :key="job.id" 
-                                     class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                                <div
+                                    v-for="job in jobRecommendations"
+                                    :key="job.id"
+                                    class="rounded-lg border border-gray-200 p-4 transition-shadow hover:shadow-md"
+                                >
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1">
                                             <h4 class="text-lg font-medium text-gray-900">
@@ -247,30 +357,34 @@ const applyToJob = (job) => {
                                                 </Link>
                                             </h4>
                                             <p class="text-sm text-gray-600">{{ job.employer?.company_name }}</p>
-                                            <p class="text-sm text-gray-500 mt-1">{{ job.location || 'Location not specified' }}</p>
-                                            <div class="flex items-center gap-2 mt-2">
-                                                <span class="inline-flex px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                                            <p class="mt-1 text-sm text-gray-500">{{ job.location || 'Location not specified' }}</p>
+                                            <div class="mt-2 flex items-center gap-2">
+                                                <span class="inline-flex rounded bg-blue-100 px-2 py-1 text-xs text-blue-800">
                                                     {{ job.job_type?.replace('_', ' ').toUpperCase() }}
                                                 </span>
-                                                <span class="inline-flex px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                                                <span class="inline-flex rounded bg-green-100 px-2 py-1 text-xs text-green-800">
                                                     {{ job.experience_level?.toUpperCase() }}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="flex-shrink-0 ml-4">
-                                            <button @click="applyToJob(job)"
-                                                    class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-4 rounded-md">
+                                        <div class="ml-4 flex-shrink-0">
+                                            <button
+                                                @click="applyToJob(job)"
+                                                class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                                            >
                                                 Apply Now
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div v-else class="text-center py-6">
+                            <div v-else class="py-6 text-center">
                                 <p class="text-gray-500">No job recommendations available</p>
-                                <Link :href="route('graduate.jobs')" 
-                                      class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
-                                    Browse available jobs →
+                                <Link
+                                    :href="route('graduate.jobs')"
+                                    class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500"
+                                >
+                                    Browse available jobs â†’
                                 </Link>
                             </div>
                         </div>
@@ -279,9 +393,9 @@ const applyToJob = (job) => {
                     <!-- Profile & Connections -->
                     <div class="space-y-6">
                         <!-- Profile Status -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="overflow-hidden rounded-lg bg-white shadow">
                             <div class="px-4 py-5 sm:p-6">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Profile Status</h3>
+                                <h3 class="mb-4 text-lg font-medium leading-6 text-gray-900">Profile Status</h3>
                                 <div class="space-y-4">
                                     <div>
                                         <div class="flex justify-between text-sm">
@@ -290,64 +404,69 @@ const applyToJob = (job) => {
                                                 {{ formatPercentage(statistics.profile_completion) }}
                                             </span>
                                         </div>
-                                        <div class="mt-1 w-full bg-gray-200 rounded-full h-2">
-                                            <div :class="['h-2 rounded-full', statistics.profile_completion >= 80 ? 'bg-green-500' : statistics.profile_completion >= 60 ? 'bg-yellow-500' : 'bg-red-500']" 
-                                                 :style="`width: ${statistics.profile_completion}%`"></div>
+                                        <div class="mt-1 h-2 w-full rounded-full bg-gray-200">
+                                            <div
+                                                :class="[
+                                                    'h-2 rounded-full',
+                                                    statistics.profile_completion >= 80
+                                                        ? 'bg-green-500'
+                                                        : statistics.profile_completion >= 60
+                                                          ? 'bg-yellow-500'
+                                                          : 'bg-red-500',
+                                                ]"
+                                                :style="`width: ${statistics.profile_completion}%`"
+                                            ></div>
                                         </div>
                                     </div>
-                                    
+
                                     <div class="border-t pt-4">
                                         <div class="flex justify-between text-sm">
                                             <span class="text-gray-600">Skills Listed</span>
                                             <span class="font-medium text-gray-900">{{ statistics.skills_count }}</span>
                                         </div>
-                                        <div class="flex justify-between text-sm mt-2">
+                                        <div class="mt-2 flex justify-between text-sm">
                                             <span class="text-gray-600">Graduation Year</span>
                                             <span class="font-medium text-gray-900">{{ statistics.course_completion_year }}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="mt-4">
-                                    <Link :href="route('graduate.profile')" 
-                                          class="text-sm text-indigo-600 hover:text-indigo-500">
-                                        Update profile →
+                                    <Link :href="route('graduate.profile')" class="text-sm text-indigo-600 hover:text-indigo-500">
+                                        Update profile â†’
                                     </Link>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Classmate Connections -->
-                        <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="overflow-hidden rounded-lg bg-white shadow">
                             <div class="px-4 py-5 sm:p-6">
-                                <div class="flex items-center justify-between mb-4">
-                                    <h3 class="text-lg leading-6 font-medium text-gray-900">Classmates</h3>
-                                    <Link :href="route('graduate.classmates')" 
-                                          class="text-sm text-indigo-600 hover:text-indigo-500">
-                                        View all
-                                    </Link>
+                                <div class="mb-4 flex items-center justify-between">
+                                    <h3 class="text-lg font-medium leading-6 text-gray-900">Classmates</h3>
+                                    <Link :href="route('graduate.classmates')" class="text-sm text-indigo-600 hover:text-indigo-500"> View all </Link>
                                 </div>
                                 <div v-if="classmateConnections.length > 0" class="space-y-3">
-                                    <div v-for="classmate in classmateConnections.slice(0, 4)" 
-                                         :key="classmate.id" 
-                                         class="flex items-center space-x-3">
+                                    <div
+                                        v-for="classmate in classmateConnections.slice(0, 4)"
+                                        :key="classmate.id"
+                                        class="flex items-center space-x-3"
+                                    >
                                         <div class="flex-shrink-0">
-                                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                            <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-300">
                                                 <span class="text-sm font-medium text-gray-700">
                                                     {{ classmate.user?.name?.charAt(0) }}
                                                 </span>
                                             </div>
                                         </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-sm font-medium text-gray-900 truncate">
+                                        <div class="min-w-0 flex-1">
+                                            <p class="truncate text-sm font-medium text-gray-900">
                                                 {{ classmate.user?.name }}
                                             </p>
-                                            <p class="text-xs text-gray-500">
-                                                Class of {{ classmate.graduation_year }}
-                                            </p>
+                                            <p class="text-xs text-gray-500">Class of {{ classmate.graduation_year }}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div v-else class="text-center py-4">
+                                <div v-else class="py-4 text-center">
                                     <p class="text-sm text-gray-500">No classmates found</p>
                                 </div>
                             </div>
@@ -356,55 +475,63 @@ const applyToJob = (job) => {
                 </div>
 
                 <!-- Recent Activities -->
-                <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="overflow-hidden rounded-lg bg-white shadow">
                     <div class="px-4 py-5 sm:p-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Activities</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <h3 class="mb-4 text-lg font-medium leading-6 text-gray-900">Recent Activities</h3>
+                        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             <!-- Recent Applications -->
                             <div>
-                                <h4 class="text-md font-medium text-gray-800 mb-3">Recent Applications</h4>
+                                <h4 class="text-md mb-3 font-medium text-gray-800">Recent Applications</h4>
                                 <div v-if="recentActivities.recent_applications.length > 0" class="space-y-3">
-                                    <div v-for="application in recentActivities.recent_applications" 
-                                         :key="application.id" 
-                                         class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div
+                                        v-for="application in recentActivities.recent_applications"
+                                        :key="application.id"
+                                        class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                                    >
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">{{ application.job?.title }}</p>
                                             <p class="text-xs text-gray-500">{{ application.job?.employer?.company_name }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <span :class="['inline-flex px-2 py-1 text-xs font-semibold rounded-full', getStatusBadgeClass(application.status)]">
+                                            <span
+                                                :class="[
+                                                    'inline-flex rounded-full px-2 py-1 text-xs font-semibold',
+                                                    getStatusBadgeClass(application.status),
+                                                ]"
+                                            >
                                                 {{ application.status?.toUpperCase() }}
                                             </span>
-                                            <p class="text-xs text-gray-500 mt-1">{{ formatDate(application.created_at) }}</p>
+                                            <p class="mt-1 text-xs text-gray-500">{{ formatDate(application.created_at) }}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div v-else class="text-center py-4">
+                                <div v-else class="py-4 text-center">
                                     <p class="text-sm text-gray-500">No recent applications</p>
                                 </div>
                             </div>
 
                             <!-- Recent Job Matches -->
                             <div>
-                                <h4 class="text-md font-medium text-gray-800 mb-3">New Job Matches</h4>
+                                <h4 class="text-md mb-3 font-medium text-gray-800">New Job Matches</h4>
                                 <div v-if="recentActivities.recent_job_matches.length > 0" class="space-y-3">
-                                    <div v-for="job in recentActivities.recent_job_matches" 
-                                         :key="job.id" 
-                                         class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                    <div
+                                        v-for="job in recentActivities.recent_job_matches"
+                                        :key="job.id"
+                                        class="flex items-center justify-between rounded-lg bg-gray-50 p-3"
+                                    >
                                         <div>
                                             <p class="text-sm font-medium text-gray-900">{{ job.title }}</p>
                                             <p class="text-xs text-gray-500">{{ job.employer?.company_name }}</p>
                                         </div>
                                         <div class="text-right">
-                                            <Link :href="route('jobs.public.show', job.id)" 
-                                                  class="text-xs text-indigo-600 hover:text-indigo-500">
+                                            <Link :href="route('jobs.public.show', job.id)" class="text-xs text-indigo-600 hover:text-indigo-500">
                                                 View Job
                                             </Link>
-                                            <p class="text-xs text-gray-500 mt-1">{{ formatDate(job.created_at) }}</p>
+                                            <p class="mt-1 text-xs text-gray-500">{{ formatDate(job.created_at) }}</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div v-else class="text-center py-4">
+                                <div v-else class="py-4 text-center">
                                     <p class="text-sm text-gray-500">No new job matches</p>
                                 </div>
                             </div>

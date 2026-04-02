@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
-    $this->service = new ComponentService;
+    $this->service = app(ComponentService::class);
 });
 
 describe('Component Service Basic Tests', function () {
@@ -45,12 +45,13 @@ describe('Component Service Basic Tests', function () {
         $tenant->save();
 
         $data = [
+            'tenant_id' => $tenant->id,
             'name' => '', // Required field is empty
             'category' => 'invalid-category',
             'type' => 'test-type',
         ];
 
-        expect(fn () => $this->service->create($data, $tenant->id))
+        expect(fn () => $this->service->create($data))
             ->toThrow(ValidationException::class);
     });
 
@@ -71,12 +72,13 @@ describe('Component Service Basic Tests', function () {
 
         // Create second component with same name
         $data = [
+            'tenant_id' => $tenant->id,
             'name' => 'Test Component',
             'category' => 'hero',
             'type' => 'hero-basic',
         ];
 
-        $component2 = $this->service->create($data, $tenant->id);
+        $component2 = $this->service->create($data);
 
         expect($component2->slug)->toBe('test-component-1');
     });

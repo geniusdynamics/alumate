@@ -19,7 +19,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class AnalyticsService
+class AnalyticsService extends BaseService
 {
     /**
      * Get engagement metrics for the dashboard

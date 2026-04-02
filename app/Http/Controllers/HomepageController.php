@@ -5,8 +5,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ABTestingService;
-use App\Services\HomepageService;
+// use App\Services\ABTestingService; // Temporarily commented out to fix infinite loop
+// use App\Services\HomepageService; // Temporarily removed to fix infinite loop
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -15,8 +15,8 @@ use Inertia\Inertia;
 class HomepageController extends Controller
 {
     public function __construct(
-        private HomepageService $homepageService,
-        private ABTestingService $abTestingService
+        // private HomepageService $homepageService // Temporarily removed to fix infinite loop
+        // private ABTestingService $abTestingService // Temporarily removed to fix infinite loop
     ) {}
 
     /**
@@ -30,11 +30,9 @@ class HomepageController extends Controller
         // Build context for personalization
         $context = $this->buildContext($request);
 
-        // Get personalized content; if not array, replace with default content
-        $content = $this->homepageService->getPersonalizedContent($audience, $context);
-        if (! is_array($content)) {
-            $content = $this->getDefaultContent();
-        }
+        // TEMPORARY FIX: Bypass personalization service to avoid memory issues
+        // $content = $this->homepageService->getPersonalizedContent($audience, $context);
+        $content = $this->getDefaultContent();
 
         // Ensure content has required structure with safe defaults
         if (! is_array($content) || empty($content)) {
@@ -53,30 +51,34 @@ class HomepageController extends Controller
         }
 
         // Fetch A/B tests; if not array, treat as []
-        $abTests = $this->abTestingService->getActiveTests($userId, $audience);
-        if (! is_array($abTests)) {
-            $abTests = [];
-        }
+        // Temporarily disabled A/B testing to fix infinite loop
+        $abTests = [];
+        // $abTests = $this->abTestingService->getActiveTests($userId, $audience);
+        // if (! is_array($abTests)) {
+        //     $abTests = [];
+        // }
 
         // Pass content through applyABTestVariants only if abTests is non-empty array
-        if (! empty($abTests) && is_array($abTests)) {
-            $content = $this->homepageService->applyABTestVariants($content, $abTests, $audience);
-        }
+        // Temporarily disabled to fix infinite loop
+        // if (! empty($abTests) && is_array($abTests)) {
+        //     $content = $this->homepageService->applyABTestVariants($content, $abTests, $audience);
+        // }
 
         // When tracking events, wrap in try/catch and log warnings
-        try {
-            $this->homepageService->trackPersonalizationEvent($audience, 'page_view', [
-                'user_id' => $userId,
-                'context' => $context,
-                'ab_tests' => is_array($abTests) ? array_keys($abTests) : [],
-            ]);
-        } catch (\Exception $e) {
-            Log::warning('Failed to track personalization event', [
-                'error' => $e->getMessage(),
-                'audience' => $audience,
-                'user_id' => $userId,
-            ]);
-        }
+        // Temporarily disabled to fix infinite loop
+        // try {
+        //     $this->homepageService->trackPersonalizationEvent($audience, 'page_view', [
+        //         'user_id' => $userId,
+        //         'context' => $context,
+        //         'ab_tests' => is_array($abTests) ? array_keys($abTests) : [],
+        //     ]);
+        // } catch (\Exception $e) {
+        //     Log::warning('Failed to track personalization event', [
+        //         'error' => $e->getMessage(),
+        //         'audience' => $audience,
+        //         'user_id' => $userId,
+        //     ]);
+        // }
 
         return Inertia::render('Homepage/Index', [
             'audience' => $audience,
@@ -98,11 +100,9 @@ class HomepageController extends Controller
         // Build context for personalization
         $context = $this->buildContext($request);
 
-        // Get personalized content; if not array, replace with default content
-        $content = $this->homepageService->getPersonalizedContent($audience, $context);
-        if (! is_array($content)) {
-            $content = $this->getDefaultContent();
-        }
+        // TEMPORARY FIX: Bypass personalization service to avoid memory issues
+        // $content = $this->homepageService->getPersonalizedContent($audience, $context);
+        $content = $this->getDefaultContent();
 
         // Ensure content has required structure with safe defaults
         if (! is_array($content) || empty($content)) {
@@ -121,30 +121,34 @@ class HomepageController extends Controller
         }
 
         // Fetch A/B tests; if not array, treat as []
-        $abTests = $this->abTestingService->getActiveTests($userId, $audience);
-        if (! is_array($abTests)) {
-            $abTests = [];
-        }
+        // Temporarily disabled A/B testing to fix infinite loop
+        $abTests = [];
+        // $abTests = $this->abTestingService->getActiveTests($userId, $audience);
+        // if (! is_array($abTests)) {
+        //     $abTests = [];
+        // }
 
         // Pass content through applyABTestVariants only if abTests is non-empty array
-        if (! empty($abTests) && is_array($abTests)) {
-            $content = $this->homepageService->applyABTestVariants($content, $abTests, $audience);
-        }
+        // Temporarily disabled to fix infinite loop
+        // if (! empty($abTests) && is_array($abTests)) {
+        //     $content = $this->homepageService->applyABTestVariants($content, $abTests, $audience);
+        // }
 
         // When tracking events, wrap in try/catch and log warnings
-        try {
-            $this->homepageService->trackPersonalizationEvent($audience, 'page_view', [
-                'user_id' => $userId,
-                'context' => $context,
-                'ab_tests' => is_array($abTests) ? array_keys($abTests) : [],
-            ]);
-        } catch (\Exception $e) {
-            Log::warning('Failed to track personalization event', [
-                'error' => $e->getMessage(),
-                'audience' => $audience,
-                'user_id' => $userId,
-            ]);
-        }
+        // Temporarily disabled to fix infinite loop
+        // try {
+        //     $this->homepageService->trackPersonalizationEvent($audience, 'page_view', [
+        //         'user_id' => $userId,
+        //         'context' => $context,
+        //         'ab_tests' => is_array($abTests) ? array_keys($abTests) : [],
+        //     ]);
+        // } catch (\Exception $e) {
+        //     Log::warning('Failed to track personalization event', [
+        //         'error' => $e->getMessage(),
+        //         'audience' => $audience,
+        //         'user_id' => $userId,
+        //     ]);
+        // }
 
         return Inertia::render('Homepage/Index', [
             'audience' => $audience,
@@ -177,24 +181,25 @@ class HomepageController extends Controller
         $userId = $this->getUserId($request);
 
         // Track the CTA click event - wrap in try/catch
-        try {
-            $this->homepageService->trackPersonalizationEvent(
-                $validated['audience'],
-                'cta_click',
-                [
-                    'user_id' => $userId,
-                    'action' => $validated['action'],
-                    'section' => $validated['section'],
-                    'additional_data' => $validated['additional_data'] ?? [],
-                ]
-            );
-        } catch (\Exception $e) {
-            Log::warning('Failed to track CTA click event', [
-                'error' => $e->getMessage(),
-                'user_id' => $userId,
-                'action' => $validated['action'],
-            ]);
-        }
+        // Temporarily disabled to fix infinite loop
+        // try {
+        //     $this->homepageService->trackPersonalizationEvent(
+        //         $validated['audience'],
+        //         'cta_click',
+        //         [
+        //             'user_id' => $userId,
+        //             'action' => $validated['action'],
+        //             'section' => $validated['section'],
+        //             'additional_data' => $validated['additional_data'] ?? [],
+        //         ]
+        //     );
+        // } catch (\Exception $e) {
+        //     Log::warning('Failed to track CTA click event', [
+        //         'error' => $e->getMessage(),
+        //         'user_id' => $userId,
+        //         'action' => $validated['action'],
+        //     ]);
+        // }
 
         // Track A/B test conversions with enhanced validation and error handling
         if (is_array($abTests) && ! empty($abTests)) {
@@ -214,17 +219,18 @@ class HomepageController extends Controller
 
                 // Guard ABTrackingService::trackConversion calls within try/catch with context
                 try {
-                    $this->abTestingService->trackConversion(
-                        $testId,
-                        $variantId,
-                        'hero_cta_click',
-                        $userId,
-                        [
-                            'action' => $validated['action'],
-                            'section' => $validated['section'],
-                            'audience' => $validated['audience'],
-                        ]
-                    );
+                    // Temporarily disabled A/B testing to fix infinite loop
+                    // $this->abTestingService->trackConversion(
+                    //     $testId,
+                    //     $variantId,
+                    //     'hero_cta_click',
+                    //     $userId,
+                    //     [
+                    //         'action' => $validated['action'],
+                    //         'section' => $validated['section'],
+                    //         'audience' => $validated['audience'],
+                    //     ]
+                    // );
                 } catch (\Exception $e) {
                     Log::warning('Failed to track A/B test conversion', [
                         'error' => $e->getMessage(),
@@ -274,15 +280,16 @@ class HomepageController extends Controller
 
         // Guard service call in try/catch and log on failure
         try {
-            $this->abTestingService->trackConversion(
-                $testId,
-                $variantId,
-                $goal,
-                $userId,
-                array_merge($validated['additional_data'] ?? [], [
-                    'audience' => $validated['audience'],
-                ])
-            );
+            // Temporarily disabled A/B testing to fix infinite loop
+            // $this->abTestingService->trackConversion(
+            //     $testId,
+            //     $variantId,
+            //     $goal,
+            //     $userId,
+            //     array_merge($validated['additional_data'] ?? [], [
+            //         'audience' => $validated['audience'],
+            //     ])
+            // );
         } catch (\Exception $e) {
             Log::warning('Failed to track conversion in trackConversion endpoint', [
                 'error' => $e->getMessage(),
@@ -307,7 +314,9 @@ class HomepageController extends Controller
     public function getABTestResults(Request $request, string $testId)
     {
         // In production, add proper authorization
-        $results = $this->abTestingService->getTestResults($testId);
+        // Temporarily disabled A/B testing to fix infinite loop
+        $results = [];
+        // $results = $this->abTestingService->getTestResults($testId);
 
         return response()->json($results);
     }

@@ -1,11 +1,14 @@
 <?php
 
+// ABOUTME: API controller for handling performance monitoring and analytics
+// ABOUTME: Manages performance metrics collection, storage, and reporting for frontend applications
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Template;
-use App\Models\LandingPage;
 use App\Services\TemplatePerformanceOptimizer;
+use App\Services\TenantContextService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -16,17 +19,24 @@ use Illuminate\Validation\Rule;
 class PerformanceController extends Controller
 {
     /**
-     * @var TemplatePerformanceOptimizer
+     * Template performance optimizer service
      */
     protected TemplatePerformanceOptimizer $templateOptimizer;
 
     /**
+     * Tenant context service
+     */
+    protected TenantContextService $tenantContext;
+
+    /**
      * Create a new controller instance
      */
-    public function __construct(TemplatePerformanceOptimizer $templateOptimizer)
+    public function __construct(TemplatePerformanceOptimizer $templateOptimizer, TenantContextService $tenantContext)
     {
         $this->templateOptimizer = $templateOptimizer;
+        $this->tenantContext = $tenantContext;
     }
+
     /**
      * Store performance metrics from the frontend
      */
@@ -240,7 +250,7 @@ class PerformanceController extends Controller
                 'viewport_height' => $validated['viewport']['height'] ?? null,
                 'connection_type' => $validated['connection'] ?? null,
                 'user_id' => auth()->id(),
-                'tenant_id' => tenant('id'),
+                'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? 'default',
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -353,7 +363,7 @@ class PerformanceController extends Controller
             'memory_total' => $sessionData['memory']['totalJSHeapSize'] ?? null,
             'memory_limit' => $sessionData['memory']['jsHeapSizeLimit'] ?? null,
             'user_id' => auth()->id(),
-            'tenant_id' => tenant('id'),
+            'tenant_id' => $this->tenantContext->getCurrentTenantId() ?? 'default',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -806,7 +816,7 @@ class PerformanceController extends Controller
                 }
             }
 
-            if (!$templateMetrics) {
+            if (! $templateMetrics) {
                 // Generate individual template metrics
                 $optimizer = $this->templateOptimizer->optimizeTemplateRendering($template);
                 $templateMetrics = [
@@ -833,7 +843,7 @@ class PerformanceController extends Controller
                     'metrics' => $templateMetrics,
                     'optimizations' => $this->templateOptimizer->generateOptimizationRecommendations(),
                     'cache_status' => [
-                        'is_cached' => Cache::has('template_render:' . optional(tenant('id')) . ':' . $templateId),
+                        'is_cached' => Cache::has('template_render:'.optional(tenant('id')).':'.$templateId),
                         'last_warmed' => $template->performance_metrics['last_optimized_at'] ?? null,
                     ],
                 ],
@@ -977,7 +987,7 @@ class PerformanceController extends Controller
             } elseif ($validated['pattern'] ?? null) {
                 // Invalidate by pattern - in a real implementation this would handle patterns
                 Cache::tags(['templates'])->pattern($validated['pattern']);
-                $result['invalidated_keys'][] = $validated['pattern'] . '*';
+                $result['invalidated_keys'][] = $validated['pattern'].'*';
             } else {
                 // Clear all template performance caches
                 Cache::tags(['templates'])->flush();
@@ -1035,7 +1045,7 @@ class PerformanceController extends Controller
                     'severity_breakdown' => $this->getSeverityBreakdown($recommendations),
                     'generated_at' => now()->toISOString(),
                 ],
-                'message' => "Found " . count($recommendations) . " optimization recommendations",
+                'message' => 'Found '.count($recommendations).' optimization recommendations',
             ]);
 
         } catch (\Exception $e) {
@@ -1081,7 +1091,7 @@ class PerformanceController extends Controller
             if ($category) {
                 $performanceReport['template_metrics'] = array_filter(
                     $performanceReport['template_metrics'],
-                    fn($metric) => Template::find($metric['template_id'])->category === $category
+                    fn ($metric) => Template::find($metric['template_id'])->category === $category
                 );
             }
 
@@ -1264,6 +1274,6 @@ class PerformanceController extends Controller
     {
         return ($validated['render_time'] ?? 0) > 3000 ||
                ($validated['performance_score'] ?? 100) < 70 ||
-               !empty($validated['issues'] ?? []);
+               ! empty($validated['issues'] ?? []);
     }
 }

@@ -4,8 +4,8 @@ namespace App\Http\Requests\Api;
 
 use App\Services\TemplateImportExportService;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 /**
  * Export Template Request Validation
@@ -16,8 +16,6 @@ class ExportTemplateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -83,15 +81,13 @@ class ExportTemplateRequest extends FormRequest
 
     /**
      * Prepare the data for validation.
-     *
-     * @return void
      */
     protected function prepareForValidation(): void
     {
         // Ensure template_ids is an array
         if (is_string($this->template_ids)) {
             $this->merge([
-                'template_ids' => explode(',', $this->template_ids)
+                'template_ids' => explode(',', $this->template_ids),
             ]);
         }
 
@@ -101,7 +97,7 @@ class ExportTemplateRequest extends FormRequest
                 'include_assets' => true,
                 'include_dependencies' => true,
                 'compress' => false,
-            ], $this->options ?? [])
+            ], $this->options ?? []),
         ]);
     }
 
@@ -109,7 +105,6 @@ class ExportTemplateRequest extends FormRequest
      * Configure the validator instance.
      *
      * @param  \Illuminate\Validation\Validator  $validator
-     * @return void
      */
     public function withValidator($validator): void
     {
@@ -122,8 +117,7 @@ class ExportTemplateRequest extends FormRequest
     /**
      * Validate that user has access to all selected templates.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateTemplateAccess($validator): void
     {
@@ -133,13 +127,14 @@ class ExportTemplateRequest extends FormRequest
             foreach ($this->template_ids as $templateId) {
                 $template = \App\Models\Template::find($templateId);
 
-                if (!$template) {
+                if (! $template) {
                     $validator->errors()->add('template_ids', "Template with ID {$templateId} does not exist.");
+
                     continue;
                 }
 
                 // Check if template belongs to user's tenant
-                if ($template->tenant_id !== Auth::user()->tenant_id && !$this->isAdmin()) {
+                if ($template->tenant_id !== Auth::user()->tenant_id && ! $this->isAdmin()) {
                     $validator->errors()->add('template_ids', "You do not have access to template with ID {$templateId}.");
                 }
             }
@@ -149,8 +144,7 @@ class ExportTemplateRequest extends FormRequest
     /**
      * Validate export options for the selected format.
      *
-     * @param \Illuminate\Validation\Validator $validator
-     * @return void
+     * @param  \Illuminate\Validation\Validator  $validator
      */
     private function validateExportOptions($validator): void
     {
@@ -165,13 +159,13 @@ class ExportTemplateRequest extends FormRequest
 
     /**
      * Check if the current user has admin privileges.
-     *
-     * @return bool
      */
     private function isAdmin(): bool
     {
         $user = Auth::user();
-        if (!$user) return false;
+        if (! $user) {
+            return false;
+        }
 
         // Check if user has admin role - adjust based on your user model/roles system
         return isset($user->role) && in_array($user->role, ['admin', 'super-admin']);
@@ -179,8 +173,6 @@ class ExportTemplateRequest extends FormRequest
 
     /**
      * Get supported export formats with their descriptions.
-     *
-     * @return array
      */
     public function getSupportedFormats(): array
     {
@@ -189,8 +181,6 @@ class ExportTemplateRequest extends FormRequest
 
     /**
      * Get the validated export parameters.
-     *
-     * @return array
      */
     public function getExportParameters(): array
     {

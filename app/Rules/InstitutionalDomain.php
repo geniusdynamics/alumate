@@ -93,10 +93,10 @@ class InstitutionalDomain implements ValidationRule
         '.edu.mr',
         '.edu.ne',
         '.edu.ng',
-        
+
         // Academic domains
         '.ac.',
-        
+
         // University-specific patterns
         'university',
         'college',
@@ -171,6 +171,7 @@ class InstitutionalDomain implements ValidationRule
         $emailParts = explode('@', $value);
         if (count($emailParts) !== 2) {
             $fail('The :attribute must be a valid email address.');
+
             return;
         }
 
@@ -179,6 +180,7 @@ class InstitutionalDomain implements ValidationRule
         // Check if it's a known non-institutional domain
         if (in_array($domain, $this->excludedDomains)) {
             $fail('The :attribute must use an institutional email address. Personal email addresses (like Gmail, Yahoo, etc.) are not allowed.');
+
             return;
         }
 
@@ -203,12 +205,12 @@ class InstitutionalDomain implements ValidationRule
         }
 
         // Additional heuristics for institutional domains
-        if (!$isInstitutional) {
+        if (! $isInstitutional) {
             // Check for common institutional keywords in domain
             $institutionalKeywords = [
                 'univ', 'college', 'school', 'institute', 'academy', 'campus',
                 'education', 'learning', 'student', 'faculty', 'academic',
-                'research', 'library', 'alumni', 'grad', 'undergrad'
+                'research', 'library', 'alumni', 'grad', 'undergrad',
             ];
 
             foreach ($institutionalKeywords as $keyword) {
@@ -220,7 +222,7 @@ class InstitutionalDomain implements ValidationRule
         }
 
         // Check domain structure (institutional domains often have specific patterns)
-        if (!$isInstitutional) {
+        if (! $isInstitutional) {
             // Many institutional domains have subdomain structure
             $domainParts = explode('.', $domain);
             if (count($domainParts) >= 3) {
@@ -237,7 +239,7 @@ class InstitutionalDomain implements ValidationRule
         }
 
         // Final validation
-        if (!$isInstitutional) {
+        if (! $isInstitutional) {
             $fail('The :attribute must be from an educational institution. Please use your institutional email address (e.g., .edu domain or official school email).');
         }
     }

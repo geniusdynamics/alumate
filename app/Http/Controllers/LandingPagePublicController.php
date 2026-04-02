@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\LandingPage;
-use App\Models\LandingPageAnalytics;
 use App\Services\LandingPageService;
 use App\Services\TemplateAnalyticsService;
 use Illuminate\Http\JsonResponse;
@@ -62,7 +61,7 @@ class LandingPagePublicController extends Controller
         ];
 
         // Inject analytics tracking code if available
-        if (!empty($analyticsCode)) {
+        if (! empty($analyticsCode)) {
             $responseData['analytics_tracking'] = [
                 'enabled' => true,
                 'code' => base64_encode($analyticsCode),
@@ -123,7 +122,7 @@ class LandingPagePublicController extends Controller
             ->firstOrFail();
 
         $validated = $request->validate([
-            'event_type' => 'required|string|in:' . implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
+            'event_type' => 'required|string|in:'.implode(',', \App\Models\TemplateAnalyticsEvent::EVENT_TYPES),
             'event_data' => 'nullable|array',
             'conversion_value' => 'nullable|numeric|min:0|max:999999.99',
             'session_id' => 'nullable|string|max:255',
@@ -133,7 +132,7 @@ class LandingPagePublicController extends Controller
             $eventData = array_merge($validated, [
                 'template_id' => $landingPage->template_id,
                 'landing_page_id' => $landingPage->id,
-                'user_identifier' => $this->getVisitorId($request) . '_et',
+                'user_identifier' => $this->getVisitorId($request).'_et',
                 'referrer_url' => $request->header('referer'),
                 'user_agent' => $request->userAgent(),
                 'timestamp' => now(),
@@ -164,13 +163,13 @@ class LandingPagePublicController extends Controller
                 'event_type' => 'page_view',
                 'template_id' => $landingPage->template_id,
                 'landing_page_id' => $landingPage->id,
-                'user_identifier' => $this->getVisitorId($request) . '_pv',
+                'user_identifier' => $this->getVisitorId($request).'_pv',
                 'session_id' => $request->session()->getId(),
                 'referrer_url' => $request->header('referer'),
                 'user_agent' => $request->userAgent(),
                 'event_data' => [
                     'page_title' => $landingPage->title,
-                    'page_path' => '/' . $landingPage->slug,
+                    'page_path' => '/'.$landingPage->slug,
                     'campaign_type' => $landingPage->campaign_type,
                     'target_audience' => $landingPage->target_audience,
                 ],
@@ -194,7 +193,7 @@ class LandingPagePublicController extends Controller
                 'event_type' => 'form_submit',
                 'template_id' => $landingPage->template_id,
                 'landing_page_id' => $landingPage->id,
-                'user_identifier' => $this->getVisitorId($request) . '_fs',
+                'user_identifier' => $this->getVisitorId($request).'_fs',
                 'session_id' => $request->session()->getId(),
                 'referrer_url' => $request->header('referer'),
                 'user_agent' => $request->userAgent(),
@@ -265,7 +264,7 @@ class LandingPagePublicController extends Controller
             return $request->session()->get('visitor_id');
         }
 
-        $visitorId = 'visitor_' . \Illuminate\Support\Str::random(16);
+        $visitorId = 'visitor_'.\Illuminate\Support\Str::random(16);
         $request->session()->put('visitor_id', $visitorId);
 
         return $visitorId;

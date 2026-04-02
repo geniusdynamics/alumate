@@ -1,19 +1,15 @@
-<template>
+﻿<template>
     <AppLayout title="Scholarships">
         <template #header>
-            <div class="flex justify-between items-center">
+            <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                        Scholarships
-                    </h2>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Discover and apply for scholarships to support your education
-                    </p>
+                    <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">Scholarships</h2>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Discover and apply for scholarships to support your education</p>
                 </div>
                 <div class="flex space-x-3">
                     <button
                         @click="showCreateModal = true"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
+                        class="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
                     >
                         Create Scholarship
                     </button>
@@ -22,14 +18,14 @@
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <!-- Search and Filters -->
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg mb-6">
+                <div class="mb-6 overflow-hidden bg-white shadow-xl sm:rounded-lg dark:bg-gray-800">
                     <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
                             <!-- Search -->
                             <div class="md:col-span-2">
-                                <label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <label for="search" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Search Scholarships
                                 </label>
                                 <div class="relative">
@@ -37,10 +33,10 @@
                                         id="search"
                                         v-model="searchQuery"
                                         type="text"
-                                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full rounded-md border border-gray-300 bg-white py-2 pl-10 pr-3 leading-5 text-gray-900 placeholder-gray-500 focus:border-blue-500 focus:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                         placeholder="Search by name, field of study, or institution..."
                                     />
-                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                                         <MagnifyingGlassIcon class="h-5 w-5 text-gray-400" />
                                     </div>
                                 </div>
@@ -48,13 +44,11 @@
 
                             <!-- Field Filter -->
                             <div>
-                                <label for="field" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Field of Study
-                                </label>
+                                <label for="field" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"> Field of Study </label>
                                 <select
                                     id="field"
                                     v-model="selectedField"
-                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 >
                                     <option value="">All Fields</option>
                                     <option value="engineering">Engineering</option>
@@ -67,13 +61,11 @@
 
                             <!-- Amount Filter -->
                             <div>
-                                <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Amount Range
-                                </label>
+                                <label for="amount" class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"> Amount Range </label>
                                 <select
                                     id="amount"
                                     v-model="selectedAmount"
-                                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                                 >
                                     <option value="">Any Amount</option>
                                     <option value="0-1000">$0 - $1,000</option>
@@ -87,8 +79,8 @@
                 </div>
 
                 <!-- Statistics Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                <div class="mb-6 grid grid-cols-1 gap-6 md:grid-cols-4">
+                    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
@@ -96,9 +88,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                            Available Scholarships
-                                        </dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Available Scholarships</dt>
                                         <dd class="text-lg font-medium text-gray-900 dark:text-white">
                                             {{ scholarshipStats.total }}
                                         </dd>
@@ -108,7 +98,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
@@ -116,9 +106,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                            Total Value
-                                        </dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Total Value</dt>
                                         <dd class="text-lg font-medium text-gray-900 dark:text-white">
                                             ${{ scholarshipStats.totalValue.toLocaleString() }}
                                         </dd>
@@ -128,7 +116,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
@@ -136,9 +124,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                            Recipients
-                                        </dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Recipients</dt>
                                         <dd class="text-lg font-medium text-gray-900 dark:text-white">
                                             {{ scholarshipStats.recipients }}
                                         </dd>
@@ -148,7 +134,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+                    <div class="overflow-hidden rounded-lg bg-white shadow dark:bg-gray-800">
                         <div class="p-5">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
@@ -156,9 +142,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
-                                            Deadline Soon
-                                        </dt>
+                                        <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Deadline Soon</dt>
                                         <dd class="text-lg font-medium text-gray-900 dark:text-white">
                                             {{ scholarshipStats.deadlineSoon }}
                                         </dd>
@@ -170,7 +154,7 @@
                 </div>
 
                 <!-- Scholarships Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                     <ScholarshipCard
                         v-for="scholarship in filteredScholarships"
                         :key="scholarship.id"
@@ -183,7 +167,7 @@
                 </div>
 
                 <!-- Empty State -->
-                <div v-if="filteredScholarships.length === 0" class="text-center py-12">
+                <div v-if="filteredScholarships.length === 0" class="py-12 text-center">
                     <AcademicCapIcon class="mx-auto h-12 w-12 text-gray-400" />
                     <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No scholarships found</h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -192,11 +176,11 @@
                 </div>
 
                 <!-- Load More -->
-                <div v-if="hasMoreScholarships" class="text-center mt-8">
+                <div v-if="hasMoreScholarships" class="mt-8 text-center">
                     <button
                         @click="loadMoreScholarships"
                         :disabled="loadingMore"
-                        class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 px-6 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                        class="rounded-md border border-gray-300 bg-white px-6 py-2 text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
                     >
                         {{ loadingMore ? 'Loading...' : 'Load More Scholarships' }}
                     </button>
@@ -205,33 +189,23 @@
         </div>
 
         <!-- Create Scholarship Modal -->
-        <CreateScholarshipModal
-            :show="showCreateModal"
-            @close="showCreateModal = false"
-            @created="handleScholarshipCreated"
-        />
+        <CreateScholarshipModal :show="showCreateModal" @close="showCreateModal = false" @created="handleScholarshipCreated" />
     </AppLayout>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import AppLayout from '@/Layouts/AppLayout.vue'
-import ScholarshipCard from '@/components/Scholarships/ScholarshipCard.vue'
-import CreateScholarshipModal from '@/components/Scholarships/CreateScholarshipModal.vue'
-import {
-    MagnifyingGlassIcon,
-    AcademicCapIcon,
-    CurrencyDollarIcon,
-    UserGroupIcon,
-    ClockIcon
-} from '@heroicons/vue/24/outline'
+<script setup lang="ts">
+import AppLayout from '@/Layouts/AppLayout.vue';
+import CreateScholarshipModal from '@/Components/Scholarships/CreateScholarshipModal.vue';
+import ScholarshipCard from '@/Components/Scholarships/ScholarshipCard.vue';
+import { AcademicCapIcon, ClockIcon, CurrencyDollarIcon, MagnifyingGlassIcon, UserGroupIcon } from '@heroicons/vue/24/outline';
+import { computed, onMounted, ref } from 'vue';
 
-const searchQuery = ref('')
-const selectedField = ref('')
-const selectedAmount = ref('')
-const showCreateModal = ref(false)
-const loadingMore = ref(false)
-const hasMoreScholarships = ref(true)
+const searchQuery = ref('');
+const selectedField = ref('');
+const selectedAmount = ref('');
+const showCreateModal = ref(false);
+const loadingMore = ref(false);
+const hasMoreScholarships = ref(true);
 
 // Mock data - replace with actual API calls
 const scholarships = ref([
@@ -246,7 +220,7 @@ const scholarships = ref([
         requirements: ['3.5+ GPA', 'Engineering major', 'Financial need'],
         recipients_count: 25,
         is_saved: false,
-        status: 'open'
+        status: 'open',
     },
     {
         id: 2,
@@ -259,92 +233,108 @@ const scholarships = ref([
         requirements: ['Business major', 'Leadership experience', '3.0+ GPA'],
         recipients_count: 15,
         is_saved: true,
-        status: 'open'
-    }
-])
+        status: 'open',
+    },
+]);
 
 const scholarshipStats = ref({
     total: 156,
     totalValue: 2450000,
     recipients: 1250,
-    deadlineSoon: 23
-})
+    deadlineSoon: 23,
+});
 
 const filteredScholarships = computed(() => {
-    let filtered = scholarships.value
+    let filtered = scholarships.value;
 
     if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase()
-        filtered = filtered.filter(scholarship =>
-            scholarship.title.toLowerCase().includes(query) ||
-            scholarship.description.toLowerCase().includes(query) ||
-            scholarship.institution.toLowerCase().includes(query)
-        )
+        const query = searchQuery.value.toLowerCase();
+        filtered = filtered.filter(
+            (scholarship) =>
+                scholarship.title.toLowerCase().includes(query) ||
+                scholarship.description.toLowerCase().includes(query) ||
+                scholarship.institution.toLowerCase().includes(query),
+        );
     }
 
     if (selectedField.value) {
-        filtered = filtered.filter(scholarship => scholarship.field === selectedField.value)
+        filtered = filtered.filter((scholarship) => scholarship.field === selectedField.value);
     }
 
     if (selectedAmount.value) {
-        const [min, max] = selectedAmount.value.split('-').map(v => v.replace('+', ''))
-        filtered = filtered.filter(scholarship => {
+        const [min, max] = selectedAmount.value.split('-').map((v) => v.replace('+', ''));
+        filtered = filtered.filter((scholarship) => {
             if (max) {
-                return scholarship.amount >= parseInt(min) && scholarship.amount <= parseInt(max)
+                return scholarship.amount >= parseInt(min) && scholarship.amount <= parseInt(max);
             } else {
-                return scholarship.amount >= parseInt(min)
+                return scholarship.amount >= parseInt(min);
             }
-        })
+        });
     }
 
-    return filtered
-})
+    return filtered;
+});
 
 const handleApply = (scholarshipId) => {
     // Navigate to application page
-    window.location.href = `/scholarships/${scholarshipId}/apply`
-}
+    window.location.href = `/scholarships/${scholarshipId}/apply`;
+};
 
 const handleViewDetails = (scholarshipId) => {
     // Navigate to scholarship details
-    window.location.href = `/scholarships/${scholarshipId}`
-}
+    window.location.href = `/scholarships/${scholarshipId}`;
+};
 
 const handleSave = (scholarshipId) => {
     // Toggle save status
-    const scholarship = scholarships.value.find(s => s.id === scholarshipId)
+    const scholarship = scholarships.value.find((s) => s.id === scholarshipId);
     if (scholarship) {
-        scholarship.is_saved = !scholarship.is_saved
+        scholarship.is_saved = !scholarship.is_saved;
     }
-}
+};
 
 const handleShare = (scholarshipId) => {
     // Share scholarship
-    const scholarship = scholarships.value.find(s => s.id === scholarshipId)
+    const scholarship = scholarships.value.find((s) => s.id === scholarshipId);
     if (scholarship && navigator.share) {
         navigator.share({
             title: scholarship.title,
             text: scholarship.description,
-            url: window.location.origin + `/scholarships/${scholarshipId}`
-        })
+            url: window.location.origin + `/scholarships/${scholarshipId}`,
+        });
     }
-}
+};
 
 const loadMoreScholarships = () => {
-    loadingMore.value = true
+    loadingMore.value = true;
     // Simulate API call
     setTimeout(() => {
-        loadingMore.value = false
-        hasMoreScholarships.value = false
-    }, 1000)
-}
+        loadingMore.value = false;
+        hasMoreScholarships.value = false;
+    }, 1000);
+};
 
 const handleScholarshipCreated = (scholarship) => {
-    scholarships.value.unshift(scholarship)
-    showCreateModal.value = false
-}
+    scholarships.value.unshift(scholarship);
+    showCreateModal.value = false;
+};
 
 onMounted(() => {
     // Load initial data
-})
+});
 </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

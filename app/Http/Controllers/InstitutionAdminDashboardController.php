@@ -9,6 +9,7 @@ use App\Models\Job;
 use App\Models\JobApplication;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Services\TenantContextService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -123,12 +124,62 @@ class InstitutionAdminDashboardController extends Controller
         $user = auth()->user();
         $institutionId = $user->institution_id;
 
+        // Initialize tenant context for graduate counting
+        $tenant = Tenant::find($institutionId);
+        if (! $tenant) {
+            return [
+                'total_graduates' => 0,
+                'employed_graduates' => 0,
+                'total_courses' => 0,
+                'active_jobs' => 0,
+                'pending_applications' => 0,
+                'staff_members' => 0,
+            ];
+        }
+
+        // Set tenant context in TenantContextService for Course model global scope
+        $tenantContextService = app(TenantContextService::class);
+        $tenantContextService->setTenant($institutionId);
+
+        Tenancy::initialize($tenant);
+
+        try {
+            // Count graduates in tenant schema
+            $totalGraduates = Graduate::count();
+            $employedGraduates = Graduate::where('employment_status', 'employed')->count();
+
+            // Get course IDs from tenant schema for job counting
+            $courseIds = Course::pluck('id')->toArray();
+
+            // Count total courses in tenant schema
+            $totalCourses = Course::count();
+        } finally {
+            Tenancy::end();
+            $tenantContextService->clearContext();
+        }
+
+        // Count active jobs linked to institution's courses (from central database)
+        $activeJobs = Job::whereIn('course_id', $courseIds)
+            ->where('status', 'active')
+            ->where(function ($query) {
+                $query->whereNull('application_deadline')
+                    ->orWhere('application_deadline', '>=', now()->toDateString());
+            })
+            ->count();
+
+        // Count pending applications from institution's graduates (from central database)
+        $pendingApplications = JobApplication::whereHas('graduate', function ($query) use ($institutionId) {
+            $query->where('tenant_id', $institutionId);
+        })
+            ->where('status', 'pending')
+            ->count();
+
         return [
-            'total_graduates' => 0, // TODO: Implement tenant-specific graduate counting
-            'employed_graduates' => 0, // TODO: Implement tenant-specific employed graduate counting
-            'total_courses' => Course::where('institution_id', $institutionId)->count(),
-            'active_jobs' => 0, // TODO: Jobs are not directly linked to institutions
-            'pending_applications' => 0, // TODO: Applications are not directly linked to institutions
+            'total_graduates' => $totalGraduates,
+            'employed_graduates' => $employedGraduates,
+            'total_courses' => $totalCourses,
+            'active_jobs' => $activeJobs,
+            'pending_applications' => $pendingApplications,
             'staff_members' => User::where('institution_id', $institutionId)
                 ->whereHas('roles', function ($query) {
                     $query->whereIn('name', ['institution-admin', 'tutor']);
@@ -254,11 +305,28 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getGraduatesByYear()
     {
-        return Graduate::selectRaw('graduation_year as year, COUNT(*) as count')
-            ->whereNotNull('graduation_year')
-            ->groupBy('graduation_year')
-            ->orderBy('graduation_year')
-            ->get();
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return collect();
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return collect();
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            return Graduate::selectRaw('graduation_year as year, COUNT(*) as count')
+                ->whereNotNull('graduation_year')
+                ->groupBy('graduation_year')
+                ->orderBy('graduation_year')
+                ->get();
+        } finally {
+            Tenancy::end();
+        }
     }
 
     private function getEmploymentRates()
@@ -283,50 +351,84 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getSalaryRanges()
     {
-        return Graduate::where('employment_status', 'employed')
-            ->whereNotNull('current_salary')
-            ->get()
-            ->groupBy(function ($graduate) {
-                $salary = $graduate->current_salary;
-                if ($salary < 30000) {
-                    return 'Under $30K';
-                }
-                if ($salary < 50000) {
-                    return '$30K - $50K';
-                }
-                if ($salary < 75000) {
-                    return '$50K - $75K';
-                }
-                if ($salary < 100000) {
-                    return '$75K - $100K';
-                }
+        $user = Auth::user();
 
-                return 'Over $100K';
-            })
-            ->map(function ($graduates, $range) {
-                return [
-                    'range' => $range,
-                    'count' => $graduates->count(),
-                ];
-            })
-            ->values();
+        if (! $user->institution_id) {
+            return collect();
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return collect();
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            return Graduate::where('employment_status', 'employed')
+                ->whereNotNull('current_salary')
+                ->get()
+                ->groupBy(function ($graduate) {
+                    $salary = $graduate->current_salary;
+                    if ($salary < 30000) {
+                        return 'Under $30K';
+                    }
+                    if ($salary < 50000) {
+                        return '$30K - $50K';
+                    }
+                    if ($salary < 75000) {
+                        return '$50K - $75K';
+                    }
+                    if ($salary < 100000) {
+                        return '$75K - $100K';
+                    }
+
+                    return 'Over $100K';
+                })
+                ->map(function ($graduates, $range) {
+                    return [
+                        'range' => $range,
+                        'count' => $graduates->count(),
+                    ];
+                })
+                ->values();
+        } finally {
+            Tenancy::end();
+        }
     }
 
     private function getTopEmployers()
     {
-        return Graduate::where('employment_status', 'employed')
-            ->whereNotNull('current_company')
-            ->get()
-            ->groupBy('current_company')
-            ->map(function ($graduates, $company) {
-                return [
-                    'company' => $company,
-                    'count' => $graduates->count(),
-                ];
-            })
-            ->sortByDesc('count')
-            ->take(10)
-            ->values();
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return collect();
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return collect();
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            return Graduate::where('employment_status', 'employed')
+                ->whereNotNull('current_company')
+                ->get()
+                ->groupBy('current_company')
+                ->map(function ($graduates, $company) {
+                    return [
+                        'company' => $company,
+                        'count' => $graduates->count(),
+                    ];
+                })
+                ->sortByDesc('count')
+                ->take(10)
+                ->values();
+        } finally {
+            Tenancy::end();
+        }
     }
 
     private function getCourseOutcomes()
@@ -586,44 +688,229 @@ class InstitutionAdminDashboardController extends Controller
 
     private function getTimeToEmployment(): array
     {
-        // This metric would require graduates to have a graduation date and an employment start date.
-        // For now, we'll simulate this data.
-        return [
-            'average_days' => rand(60, 120),
-            'median_days' => rand(50, 110),
-            'under_3_months_percentage' => rand(40, 60),
-            'under_6_months_percentage' => rand(70, 85),
-        ];
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return [
+                'average_days' => 0,
+                'median_days' => 0,
+                'under_3_months_percentage' => 0,
+                'under_6_months_percentage' => 0,
+            ];
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return [
+                'average_days' => 0,
+                'median_days' => 0,
+                'under_3_months_percentage' => 0,
+                'under_6_months_percentage' => 0,
+            ];
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            // Get employed graduates with both graduation_date and employment_start_date
+            $employedGraduates = Graduate::where('employment_status', 'employed')
+                ->whereNotNull('graduation_date')
+                ->whereNotNull('employment_start_date')
+                ->get();
+
+            if ($employedGraduates->isEmpty()) {
+                return [
+                    'average_days' => 0,
+                    'median_days' => 0,
+                    'under_3_months_percentage' => 0,
+                    'under_6_months_percentage' => 0,
+                ];
+            }
+
+            // Calculate days to employment for each graduate
+            $daysToEmployment = $employedGraduates->map(function ($graduate) {
+                return $graduate->graduation_date->diffInDays($graduate->employment_start_date);
+            })->sort()->values();
+
+            $totalCount = $daysToEmployment->count();
+            $averageDays = round($daysToEmployment->average());
+
+            // Calculate median
+            $middle = floor($totalCount / 2);
+            $medianDays = $totalCount % 2 === 0
+                ? round(($daysToEmployment[$middle - 1] + $daysToEmployment[$middle]) / 2)
+                : $daysToEmployment[$middle];
+
+            // Calculate percentages
+            $under3Months = $daysToEmployment->filter(function ($days) {
+                return $days <= 90;
+            })->count();
+
+            $under6Months = $daysToEmployment->filter(function ($days) {
+                return $days <= 180;
+            })->count();
+
+            return [
+                'average_days' => $averageDays,
+                'median_days' => $medianDays,
+                'under_3_months_percentage' => round(($under3Months / $totalCount) * 100, 1),
+                'under_6_months_percentage' => round(($under6Months / $totalCount) * 100, 1),
+            ];
+        } finally {
+            Tenancy::end();
+        }
     }
 
     private function getSalaryProgression(): array
     {
-        // This requires historical salary data, which is not currently in the model.
-        // We will simulate this for the demo.
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return [
+                'year_1' => ['average' => 0, 'median' => 0],
+                'year_3' => ['average' => 0, 'median' => 0],
+                'year_5' => ['average' => 0, 'median' => 0],
+            ];
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return [
+                'year_1' => ['average' => 0, 'median' => 0],
+                'year_3' => ['average' => 0, 'median' => 0],
+                'year_5' => ['average' => 0, 'median' => 0],
+            ];
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            // Get employed graduates with current_salary
+            $employedGraduates = Graduate::where('employment_status', 'employed')
+                ->whereNotNull('current_salary')
+                ->get();
+
+            if ($employedGraduates->isEmpty()) {
+                return [
+                    'year_1' => ['average' => 0, 'median' => 0],
+                    'year_3' => ['average' => 0, 'median' => 0],
+                    'year_5' => ['average' => 0, 'median' => 0],
+                ];
+            }
+
+            $salaries = $employedGraduates->pluck('current_salary')->sort()->values();
+            $totalCount = $salaries->count();
+            $averageSalary = round($salaries->average());
+
+            // Calculate median
+            $middle = floor($totalCount / 2);
+            $medianSalary = $totalCount % 2 === 0
+                ? round(($salaries[$middle - 1] + $salaries[$middle]) / 2)
+                : $salaries[$middle];
+
+            // For salary progression, we can calculate based on years since graduation
+            // Group graduates by years since graduation
+            $now = now();
+            $year1Graduates = $employedGraduates->filter(function ($graduate) use ($now) {
+                if (! $graduate->graduation_date) {
+                    return false;
+                }
+                $yearsSinceGraduation = $now->diffInYears($graduate->graduation_date);
+
+                return $yearsSinceGraduation >= 0 && $yearsSinceGraduation < 2;
+            });
+
+            $year3Graduates = $employedGraduates->filter(function ($graduate) use ($now) {
+                if (! $graduate->graduation_date) {
+                    return false;
+                }
+                $yearsSinceGraduation = $now->diffInYears($graduate->graduation_date);
+
+                return $yearsSinceGraduation >= 2 && $yearsSinceGraduation < 4;
+            });
+
+            $year5Graduates = $employedGraduates->filter(function ($graduate) use ($now) {
+                if (! $graduate->graduation_date) {
+                    return false;
+                }
+                $yearsSinceGraduation = $now->diffInYears($graduate->graduation_date);
+
+                return $yearsSinceGraduation >= 4;
+            });
+
+            return [
+                'year_1' => $this->calculateSalaryStats($year1Graduates),
+                'year_3' => $this->calculateSalaryStats($year3Graduates),
+                'year_5' => $this->calculateSalaryStats($year5Graduates),
+            ];
+        } finally {
+            Tenancy::end();
+        }
+    }
+
+    /**
+     * Calculate average and median salary from a collection of graduates
+     */
+    private function calculateSalaryStats($graduates): array
+    {
+        if ($graduates->isEmpty()) {
+            return ['average' => 0, 'median' => 0];
+        }
+
+        $salaries = $graduates->pluck('current_salary')->filter()->sort()->values();
+
+        if ($salaries->isEmpty()) {
+            return ['average' => 0, 'median' => 0];
+        }
+
+        $totalCount = $salaries->count();
+        $average = round($salaries->average());
+
+        // Calculate median
+        $middle = floor($totalCount / 2);
+        $median = $totalCount % 2 === 0
+            ? round(($salaries[$middle - 1] + $salaries[$middle]) / 2)
+            : $salaries[$middle];
+
         return [
-            'year_1' => ['average' => rand(45000, 55000), 'median' => rand(42000, 52000)],
-            'year_3' => ['average' => rand(60000, 75000), 'median' => rand(58000, 72000)],
-            'year_5' => ['average' => rand(80000, 100000), 'median' => rand(78000, 95000)],
+            'average' => $average,
+            'median' => $median,
         ];
     }
 
     private function getEmploymentByLocation(): array
     {
-        // This assumes location data is stored in a structured way.
-        return Graduate::where('employment_status', 'employed')
-            ->select('address')
-            ->get()
-            ->mapToGroups(function ($item) {
-                // A more robust implementation would parse the address to get city/state
-                return [($item->address ?? 'Unknown') => 1];
-            })
-            ->map(function ($items, $key) {
-                return ['location' => $key, 'count' => count($items)];
-            })
-            ->sortByDesc('count')
-            ->take(10)
-            ->values()
-            ->toArray();
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return [];
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return [];
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            return Graduate::where('employment_status', 'employed')
+                ->select('address')
+                ->get()
+                ->mapToGroups(function ($item) {
+                    // A more robust implementation would parse the address to get city/state
+                    return [($item->address ?? 'Unknown') => 1];
+                })
+                ->map(function ($items, $key) {
+                    return ['location' => $key, 'count' => count($items)];
+                })
+                ->sortByDesc('count')
+                ->take(10)
+                ->values()
+                ->toArray();
+        } finally {
+            Tenancy::end();
+        }
     }
 
     public function courseRoi()
@@ -639,6 +926,147 @@ class InstitutionAdminDashboardController extends Controller
     public function communityHealth()
     {
         return Inertia::render('InstitutionAdmin/Analytics/CommunityHealth');
+    }
+
+    /**
+     * JSON API: Course ROI analytics data for the axios-based CourseROI page.
+     */
+    public function courseRoiApi(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return response()->json([]);
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return response()->json([]);
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            $data = Course::withCount([
+                'graduates',
+                'graduates as employed_count' => fn ($q) => $q->where('employment_status', 'employed'),
+            ])->get()->map(function ($course) {
+                $total = $course->graduates_count ?? 0;
+                $employed = $course->employed_count ?? 0;
+
+                return [
+                    'id'               => $course->id,
+                    'name'             => $course->name,
+                    'total_graduates'  => $total,
+                    'employed_count'   => $employed,
+                    'employment_rate'  => $total > 0 ? round(($employed / $total) * 100, 1) : 0,
+                ];
+            })->values()->all();
+        } finally {
+            Tenancy::end();
+        }
+
+        return response()->json($data);
+    }
+
+    /**
+     * JSON API: Employer engagement analytics data for the axios-based EmployerEngagement page.
+     */
+    public function employerEngagementApi(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return response()->json(['top_employers' => [], 'job_trends' => []]);
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return response()->json(['top_employers' => [], 'job_trends' => []]);
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            $courseIds = Course::pluck('id')->toArray();
+        } finally {
+            Tenancy::end();
+        }
+
+        $topEmployers = \App\Models\Employer::whereHas('jobs', fn ($q) => $q->whereIn('course_id', $courseIds))
+            ->withCount(['jobs' => fn ($q) => $q->whereIn('course_id', $courseIds)])
+            ->orderByDesc('jobs_count')
+            ->limit(10)
+            ->get(['id', 'company_name', 'industry'])
+            ->map(fn ($e) => [
+                'id'           => $e->id,
+                'company_name' => $e->company_name,
+                'industry'     => $e->industry,
+                'job_count'    => $e->jobs_count,
+            ])->values()->all();
+
+        $jobTrends = \App\Models\Job::whereIn('course_id', $courseIds)
+            ->selectRaw("DATE_TRUNC('month', created_at) AS month, COUNT(*) AS total")
+            ->groupBy('month')
+            ->orderBy('month')
+            ->limit(12)
+            ->get()
+            ->map(fn ($row) => [
+                'month' => $row->month,
+                'total' => (int) $row->total,
+            ])->values()->all();
+
+        return response()->json([
+            'top_employers' => $topEmployers,
+            'job_trends'    => $jobTrends,
+        ]);
+    }
+
+    /**
+     * JSON API: Community health analytics data for the axios-based CommunityHealth page.
+     */
+    public function communityHealthApi(): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        if (! $user->institution_id) {
+            return response()->json([
+                'total_graduates'    => 0,
+                'employed_graduates' => 0,
+                'employment_rate'    => 0,
+                'active_users_30d'   => 0,
+            ]);
+        }
+
+        $tenant = Tenant::find($user->institution_id);
+        if (! $tenant) {
+            return response()->json([
+                'total_graduates'    => 0,
+                'employed_graduates' => 0,
+                'employment_rate'    => 0,
+                'active_users_30d'   => 0,
+            ]);
+        }
+
+        Tenancy::initialize($tenant);
+
+        try {
+            $total    = Graduate::count();
+            $employed = Graduate::where('employment_status', 'employed')->count();
+        } finally {
+            Tenancy::end();
+        }
+
+        $activeUsers = User::where('institution_id', $user->institution_id)
+            ->where('updated_at', '>=', now()->subDays(30))
+            ->count();
+
+        return response()->json([
+            'total_graduates'    => $total,
+            'employed_graduates' => $employed,
+            'employment_rate'    => $total > 0 ? round(($employed / $total) * 100, 1) : 0,
+            'active_users_30d'   => $activeUsers,
+        ]);
     }
 
     private function getStartDate($dateRange)

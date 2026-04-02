@@ -1,11 +1,9 @@
 /**
  * Accessibility Testing Utility
- * 
+ *
  * Provides automated accessibility testing functions to verify
  * WCAG 2.1 AA compliance throughout the application.
  */
-
-import { ColorContrastManager } from './AccessibilityHelpers.js';
 
 export class AccessibilityTester {
     constructor() {
@@ -42,7 +40,7 @@ export class AccessibilityTester {
      */
     async testKeyboardNavigation(container) {
         const focusableElements = container.querySelectorAll(
-            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
 
         let hasTabIndex = true;
@@ -54,7 +52,7 @@ export class AccessibilityTester {
         hasSkipLinks = skipLinks.length > 0;
 
         // Check tabindex values
-        focusableElements.forEach(element => {
+        focusableElements.forEach((element) => {
             const tabIndex = element.getAttribute('tabindex');
             if (tabIndex && parseInt(tabIndex) > 0) {
                 this.addWarning('Positive tabindex found', element, 'Use tabindex="0" or remove tabindex for natural tab order');
@@ -63,13 +61,15 @@ export class AccessibilityTester {
 
         // Check for keyboard event handlers
         const interactiveElements = container.querySelectorAll('[onclick], [onmousedown], [onmouseup]');
-        interactiveElements.forEach(element => {
-            const hasKeyboardHandler = element.hasAttribute('onkeydown') || 
-                                     element.hasAttribute('onkeyup') || 
-                                     element.hasAttribute('onkeypress');
-            
+        interactiveElements.forEach((element) => {
+            const hasKeyboardHandler = element.hasAttribute('onkeydown') || element.hasAttribute('onkeyup') || element.hasAttribute('onkeypress');
+
             if (!hasKeyboardHandler && !['A', 'BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'].includes(element.tagName)) {
-                this.addViolation('Interactive element missing keyboard support', element, 'Add keyboard event handlers or use semantic HTML elements');
+                this.addViolation(
+                    'Interactive element missing keyboard support',
+                    element,
+                    'Add keyboard event handlers or use semantic HTML elements',
+                );
             }
         });
 
@@ -86,7 +86,7 @@ export class AccessibilityTester {
     async testAriaAttributes(container) {
         // Check for proper ARIA labels
         const unlabeledButtons = container.querySelectorAll('button:not([aria-label]):not([aria-labelledby])');
-        unlabeledButtons.forEach(button => {
+        unlabeledButtons.forEach((button) => {
             if (!button.textContent.trim()) {
                 this.addViolation('Button missing accessible name', button, 'Add aria-label or visible text content');
             }
@@ -94,7 +94,7 @@ export class AccessibilityTester {
 
         // Check for proper ARIA expanded states
         const expandableElements = container.querySelectorAll('[aria-expanded]');
-        expandableElements.forEach(element => {
+        expandableElements.forEach((element) => {
             const expanded = element.getAttribute('aria-expanded');
             if (expanded !== 'true' && expanded !== 'false') {
                 this.addViolation('Invalid aria-expanded value', element, 'Use "true" or "false" for aria-expanded');
@@ -103,7 +103,7 @@ export class AccessibilityTester {
 
         // Check for proper ARIA live regions
         const liveRegions = container.querySelectorAll('[aria-live]');
-        liveRegions.forEach(region => {
+        liveRegions.forEach((region) => {
             const liveValue = region.getAttribute('aria-live');
             if (!['polite', 'assertive', 'off'].includes(liveValue)) {
                 this.addViolation('Invalid aria-live value', region, 'Use "polite", "assertive", or "off" for aria-live');
@@ -112,7 +112,7 @@ export class AccessibilityTester {
 
         // Check for proper form labels
         const inputs = container.querySelectorAll('input:not([type="hidden"]), select, textarea');
-        inputs.forEach(input => {
+        inputs.forEach((input) => {
             const hasLabel = input.labels && input.labels.length > 0;
             const hasAriaLabel = input.hasAttribute('aria-label');
             const hasAriaLabelledBy = input.hasAttribute('aria-labelledby');
@@ -132,7 +132,7 @@ export class AccessibilityTester {
         const textElements = container.querySelectorAll('p, span, div, h1, h2, h3, h4, h5, h6, a, button, label');
         let contrastIssues = 0;
 
-        textElements.forEach(element => {
+        textElements.forEach((element) => {
             const styles = window.getComputedStyle(element);
             const color = styles.color;
             const backgroundColor = styles.backgroundColor;
@@ -167,9 +167,9 @@ export class AccessibilityTester {
         let hasH1 = false;
         let hierarchyIssues = 0;
 
-        headings.forEach(heading => {
+        headings.forEach((heading) => {
             const level = parseInt(heading.tagName.charAt(1));
-            
+
             if (level === 1) {
                 hasH1 = true;
             }
@@ -196,7 +196,7 @@ export class AccessibilityTester {
 
         // Check for proper list structure
         const listItems = container.querySelectorAll('li');
-        listItems.forEach(li => {
+        listItems.forEach((li) => {
             const parent = li.parentElement;
             if (!['UL', 'OL', 'MENU'].includes(parent.tagName)) {
                 this.addViolation('List item outside of list', li, 'li elements must be children of ul, ol, or menu elements');
@@ -213,11 +213,11 @@ export class AccessibilityTester {
      */
     async testFormAccessibility(container) {
         const forms = container.querySelectorAll('form');
-        
-        forms.forEach(form => {
+
+        forms.forEach((form) => {
             // Check for fieldsets with legends
             const fieldsets = form.querySelectorAll('fieldset');
-            fieldsets.forEach(fieldset => {
+            fieldsets.forEach((fieldset) => {
                 const legend = fieldset.querySelector('legend');
                 if (!legend) {
                     this.addWarning('Fieldset missing legend', fieldset, 'Add a legend element to describe the fieldset');
@@ -226,10 +226,9 @@ export class AccessibilityTester {
 
             // Check for required field indicators
             const requiredInputs = form.querySelectorAll('input[required], select[required], textarea[required]');
-            requiredInputs.forEach(input => {
+            requiredInputs.forEach((input) => {
                 const hasAriaRequired = input.hasAttribute('aria-required');
-                const hasVisualIndicator = input.closest('.required') || 
-                                         input.parentElement.querySelector('.required-indicator, .asterisk');
+                const hasVisualIndicator = input.closest('.required') || input.parentElement.querySelector('.required-indicator, .asterisk');
 
                 if (!hasAriaRequired) {
                     this.addWarning('Required field missing aria-required', input, 'Add aria-required="true" to required fields');
@@ -259,10 +258,10 @@ export class AccessibilityTester {
         const images = container.querySelectorAll('img');
         let missingAlt = 0;
 
-        images.forEach(img => {
+        images.forEach((img) => {
             const hasAlt = img.hasAttribute('alt');
             const altText = img.getAttribute('alt');
-            const isDecorative = altText === '' || img.hasAttribute('role') && img.getAttribute('role') === 'presentation';
+            const isDecorative = altText === '' || (img.hasAttribute('role') && img.getAttribute('role') === 'presentation');
 
             if (!hasAlt) {
                 missingAlt++;
@@ -274,7 +273,7 @@ export class AccessibilityTester {
 
         // Check for background images with content
         const elementsWithBgImages = container.querySelectorAll('[style*="background-image"]');
-        elementsWithBgImages.forEach(element => {
+        elementsWithBgImages.forEach((element) => {
             if (!element.textContent.trim() && !element.hasAttribute('aria-label')) {
                 this.addWarning('Background image without alternative text', element, 'Provide alternative text for meaningful background images');
             }
@@ -290,12 +289,12 @@ export class AccessibilityTester {
      */
     async testFocusManagement(container) {
         const focusableElements = container.querySelectorAll(
-            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         );
 
         let visibleFocusCount = 0;
 
-        focusableElements.forEach(element => {
+        focusableElements.forEach((element) => {
             // Check if element has visible focus indicator
             const styles = window.getComputedStyle(element, ':focus');
             const outline = styles.outline;
@@ -314,9 +313,9 @@ export class AccessibilityTester {
 
         // Check for focus traps in modals
         const modals = container.querySelectorAll('[role="dialog"], .modal');
-        modals.forEach(modal => {
+        modals.forEach((modal) => {
             const focusableInModal = modal.querySelectorAll(
-                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
             );
 
             if (focusableInModal.length === 0) {
@@ -332,7 +331,7 @@ export class AccessibilityTester {
         const interactiveElements = container.querySelectorAll('button, a, input, select, textarea, [onclick], [tabindex]:not([tabindex="-1"])');
         let smallTargets = 0;
 
-        interactiveElements.forEach(element => {
+        interactiveElements.forEach((element) => {
             const rect = element.getBoundingClientRect();
             const minSize = 44; // WCAG AA minimum
 
@@ -356,7 +355,7 @@ export class AccessibilityTester {
             message,
             element,
             suggestion,
-            severity: 'error'
+            severity: 'error',
         });
     }
 
@@ -369,7 +368,7 @@ export class AccessibilityTester {
             message,
             element,
             suggestion,
-            severity: 'warning'
+            severity: 'warning',
         });
     }
 
@@ -380,7 +379,7 @@ export class AccessibilityTester {
         this.passes.push({
             type: 'pass',
             message,
-            severity: 'success'
+            severity: 'success',
         });
     }
 
@@ -389,7 +388,7 @@ export class AccessibilityTester {
      */
     generateReport() {
         const totalTests = this.violations.length + this.warnings.length + this.passes.length;
-        const score = Math.round(((this.passes.length) / totalTests) * 100);
+        const score = Math.round((this.passes.length / totalTests) * 100);
 
         const report = {
             score,
@@ -397,12 +396,12 @@ export class AccessibilityTester {
                 violations: this.violations.length,
                 warnings: this.warnings.length,
                 passes: this.passes.length,
-                total: totalTests
+                total: totalTests,
             },
             violations: this.violations,
             warnings: this.warnings,
             passes: this.passes,
-            recommendations: this.generateRecommendations()
+            recommendations: this.generateRecommendations(),
         };
 
         this.logReport(report);
@@ -419,7 +418,7 @@ export class AccessibilityTester {
             recommendations.push({
                 priority: 'high',
                 message: `Fix ${this.violations.length} accessibility violations`,
-                action: 'Address all violations to meet WCAG AA compliance'
+                action: 'Address all violations to meet WCAG AA compliance',
             });
         }
 
@@ -427,7 +426,7 @@ export class AccessibilityTester {
             recommendations.push({
                 priority: 'medium',
                 message: `Review ${this.warnings.length} accessibility warnings`,
-                action: 'Consider addressing warnings to improve user experience'
+                action: 'Consider addressing warnings to improve user experience',
             });
         }
 
@@ -435,7 +434,7 @@ export class AccessibilityTester {
             recommendations.push({
                 priority: 'low',
                 message: 'Consider WCAG AAA compliance',
-                action: 'Explore additional accessibility enhancements'
+                action: 'Explore additional accessibility enhancements',
             });
         }
 
@@ -454,7 +453,7 @@ export class AccessibilityTester {
 
         if (report.violations.length > 0) {
             console.group('❌ Violations');
-            report.violations.forEach(violation => {
+            report.violations.forEach((violation) => {
                 console.error(violation.message, violation.element);
                 console.log(`💡 Suggestion: ${violation.suggestion}`);
             });
@@ -463,7 +462,7 @@ export class AccessibilityTester {
 
         if (report.warnings.length > 0) {
             console.group('⚠️  Warnings');
-            report.warnings.forEach(warning => {
+            report.warnings.forEach((warning) => {
                 console.warn(warning.message, warning.element);
                 console.log(`💡 Suggestion: ${warning.suggestion}`);
             });
@@ -472,7 +471,7 @@ export class AccessibilityTester {
 
         if (report.recommendations.length > 0) {
             console.group('📋 Recommendations');
-            report.recommendations.forEach(rec => {
+            report.recommendations.forEach((rec) => {
                 console.log(`${rec.priority.toUpperCase()}: ${rec.message}`);
                 console.log(`Action: ${rec.action}`);
             });
@@ -496,7 +495,7 @@ export class AccessibilityTester {
             '2.4.3': await this.test_2_4_3_FocusOrder(container),
             '3.3.1': await this.test_3_3_1_ErrorIdentification(container),
             '3.3.2': await this.test_3_3_2_LabelsOrInstructions(container),
-            '4.1.2': await this.test_4_1_2_NameRoleValue(container)
+            '4.1.2': await this.test_4_1_2_NameRoleValue(container),
         };
 
         return results;
@@ -507,7 +506,7 @@ export class AccessibilityTester {
         const images = container.querySelectorAll('img');
         const violations = [];
 
-        images.forEach(img => {
+        images.forEach((img) => {
             if (!img.hasAttribute('alt')) {
                 violations.push({ element: img, issue: 'Missing alt attribute' });
             }
@@ -516,16 +515,16 @@ export class AccessibilityTester {
         return {
             criterion: '1.1.1 Non-text Content',
             passed: violations.length === 0,
-            violations
+            violations,
         };
     }
 
     async test_1_3_1_InfoAndRelationships(container) {
         const violations = [];
-        
+
         // Check form labels
         const inputs = container.querySelectorAll('input:not([type="hidden"]), select, textarea');
-        inputs.forEach(input => {
+        inputs.forEach((input) => {
             if (!input.labels || input.labels.length === 0) {
                 if (!input.hasAttribute('aria-label') && !input.hasAttribute('aria-labelledby')) {
                     violations.push({ element: input, issue: 'Form control missing label' });
@@ -536,7 +535,7 @@ export class AccessibilityTester {
         return {
             criterion: '1.3.1 Info and Relationships',
             passed: violations.length === 0,
-            violations
+            violations,
         };
     }
 
@@ -546,15 +545,15 @@ export class AccessibilityTester {
             criterion: '1.4.3 Contrast (Minimum)',
             passed: true,
             violations: [],
-            note: 'Manual contrast testing required'
+            note: 'Manual contrast testing required',
         };
     }
 
     async test_2_1_1_Keyboard(container) {
         const violations = [];
         const interactiveElements = container.querySelectorAll('[onclick]:not(button):not(a):not(input):not(select):not(textarea)');
-        
-        interactiveElements.forEach(element => {
+
+        interactiveElements.forEach((element) => {
             if (!element.hasAttribute('tabindex') && !element.hasAttribute('onkeydown')) {
                 violations.push({ element, issue: 'Interactive element not keyboard accessible' });
             }
@@ -563,27 +562,27 @@ export class AccessibilityTester {
         return {
             criterion: '2.1.1 Keyboard',
             passed: violations.length === 0,
-            violations
+            violations,
         };
     }
 
     async test_2_4_1_BypassBlocks(container) {
         const skipLinks = container.querySelectorAll('.skip-link, a[href^="#main"], a[href^="#content"]');
-        
+
         return {
             criterion: '2.4.1 Bypass Blocks',
             passed: skipLinks.length > 0,
-            violations: skipLinks.length === 0 ? [{ issue: 'No skip links found' }] : []
+            violations: skipLinks.length === 0 ? [{ issue: 'No skip links found' }] : [],
         };
     }
 
     async test_2_4_2_PageTitled(container) {
         const title = document.title;
-        
+
         return {
             criterion: '2.4.2 Page Titled',
             passed: title && title.trim().length > 0,
-            violations: !title || title.trim().length === 0 ? [{ issue: 'Page missing title' }] : []
+            violations: !title || title.trim().length === 0 ? [{ issue: 'Page missing title' }] : [],
         };
     }
 
@@ -593,18 +592,17 @@ export class AccessibilityTester {
             criterion: '2.4.3 Focus Order',
             passed: true,
             violations: [],
-            note: 'Manual focus order testing required'
+            note: 'Manual focus order testing required',
         };
     }
 
     async test_3_3_1_ErrorIdentification(container) {
         const violations = [];
         const invalidInputs = container.querySelectorAll('[aria-invalid="true"]');
-        
-        invalidInputs.forEach(input => {
-            const hasErrorMessage = input.hasAttribute('aria-describedby') || 
-                                  input.parentElement.querySelector('.error, [role="alert"]');
-            
+
+        invalidInputs.forEach((input) => {
+            const hasErrorMessage = input.hasAttribute('aria-describedby') || input.parentElement.querySelector('.error, [role="alert"]');
+
             if (!hasErrorMessage) {
                 violations.push({ element: input, issue: 'Invalid input missing error message' });
             }
@@ -613,19 +611,19 @@ export class AccessibilityTester {
         return {
             criterion: '3.3.1 Error Identification',
             passed: violations.length === 0,
-            violations
+            violations,
         };
     }
 
     async test_3_3_2_LabelsOrInstructions(container) {
         const violations = [];
         const requiredInputs = container.querySelectorAll('input[required], select[required], textarea[required]');
-        
-        requiredInputs.forEach(input => {
+
+        requiredInputs.forEach((input) => {
             const hasLabel = input.labels && input.labels.length > 0;
             const hasAriaLabel = input.hasAttribute('aria-label');
             const hasInstructions = input.hasAttribute('aria-describedby');
-            
+
             if (!hasLabel && !hasAriaLabel) {
                 violations.push({ element: input, issue: 'Required field missing label' });
             }
@@ -634,20 +632,18 @@ export class AccessibilityTester {
         return {
             criterion: '3.3.2 Labels or Instructions',
             passed: violations.length === 0,
-            violations
+            violations,
         };
     }
 
     async test_4_1_2_NameRoleValue(container) {
         const violations = [];
         const customElements = container.querySelectorAll('[role]');
-        
-        customElements.forEach(element => {
+
+        customElements.forEach((element) => {
             const role = element.getAttribute('role');
-            const hasName = element.hasAttribute('aria-label') || 
-                          element.hasAttribute('aria-labelledby') || 
-                          element.textContent.trim();
-            
+            const hasName = element.hasAttribute('aria-label') || element.hasAttribute('aria-labelledby') || element.textContent.trim();
+
             if (['button', 'link', 'menuitem'].includes(role) && !hasName) {
                 violations.push({ element, issue: `${role} missing accessible name` });
             }
@@ -656,7 +652,7 @@ export class AccessibilityTester {
         return {
             criterion: '4.1.2 Name, Role, Value',
             passed: violations.length === 0,
-            violations
+            violations,
         };
     }
 }
@@ -672,10 +668,10 @@ if (typeof window !== 'undefined') {
 // Vue 3 composable for accessibility testing
 export function useAccessibilityTesting() {
     const tester = new AccessibilityTester();
-    
+
     return {
         runAudit: tester.runAudit.bind(tester),
         testWCAGCriteria: tester.testWCAGCriteria.bind(tester),
-        generateReport: tester.generateReport.bind(tester)
+        generateReport: tester.generateReport.bind(tester),
     };
 }

@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
-import SettingsLayout from '@/layouts/settings/Layout.vue';
+import SettingsLayout from '@/Layouts/settings/Layout.vue';
 import { type BreadcrumbItem, type SharedData, type User } from '@/types';
-
 interface Props {
     mustVerifyEmail: boolean;
     status?: string;
@@ -63,13 +62,13 @@ const submit = () => {
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">
-                        <p class="text-muted-foreground -mt-4 text-sm">
+                        <p class="-mt-4 text-sm text-muted-foreground">
                             Your email address is unverified.
                             <Link
                                 :href="route('verification.send')"
                                 method="post"
                                 as="button"
-                                class="text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out hover:decoration-current! dark:decoration-neutral-500"
+                                class="hover:decoration-current! text-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-300 ease-out dark:decoration-neutral-500"
                             >
                                 Click here to resend the verification email.
                             </Link>
@@ -99,3 +98,18 @@ const submit = () => {
         </SettingsLayout>
     </AppLayout>
 </template>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

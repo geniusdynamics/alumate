@@ -17,7 +17,7 @@
 
 /* Mobile-optimized buttons */
 .btn-mobile {
-    @apply touch-target px-4 py-3 text-base font-medium rounded-lg transition-colors;
+    @apply touch-target rounded-lg px-4 py-3 text-base font-medium transition-colors;
 }
 
 .btn-mobile-primary {
@@ -35,7 +35,7 @@
 
 /* Mobile-optimized form inputs */
 .input-mobile {
-    @apply w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply w-full rounded-lg border border-gray-300 px-4 py-3 text-base focus:border-transparent focus:ring-2 focus:ring-blue-500;
     min-height: 44px;
 }
 
@@ -49,29 +49,29 @@
 }
 
 .search-mobile .search-icon {
-    @apply absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400;
+    @apply absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400;
 }
 
 /* Mobile-optimized filter interface */
 .filter-mobile {
-    @apply bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4;
+    @apply border-b border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800;
 }
 
 .filter-mobile-toggle {
-    @apply btn-mobile-secondary w-full flex items-center justify-between;
+    @apply btn-mobile-secondary flex w-full items-center justify-between;
 }
 
 .filter-mobile-panel {
-    @apply absolute top-full left-0 right-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-lg z-50;
+    @apply absolute left-0 right-0 top-full z-50 border-b border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800;
 }
 
 /* Mobile-optimized cards */
 .card-mobile {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-4;
+    @apply mb-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800;
 }
 
 .card-mobile-header {
-    @apply flex items-center justify-between mb-3;
+    @apply mb-3 flex items-center justify-between;
 }
 
 .card-mobile-title {
@@ -88,7 +88,7 @@
 }
 
 .list-mobile-item {
-    @apply py-4 px-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+    @apply px-4 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700;
 }
 
 /* Mobile-optimized modals */
@@ -97,29 +97,29 @@
 }
 
 .modal-mobile-content {
-    @apply w-full max-h-[90vh] bg-white dark:bg-gray-800 rounded-t-xl shadow-xl overflow-hidden;
+    @apply max-h-[90vh] w-full overflow-hidden rounded-t-xl bg-white shadow-xl dark:bg-gray-800;
 }
 
 .modal-mobile-header {
-    @apply flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700;
+    @apply flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700;
 }
 
 .modal-mobile-body {
-    @apply p-4 overflow-y-auto;
+    @apply overflow-y-auto p-4;
 }
 
 /* Mobile-optimized tabs */
 .tabs-mobile {
-    @apply flex overflow-x-auto scrollbar-hide border-b border-gray-200 dark:border-gray-700;
+    @apply scrollbar-hide flex overflow-x-auto border-b border-gray-200 dark:border-gray-700;
 }
 
 .tab-mobile {
-    @apply flex-shrink-0 px-4 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 border-b-2 border-transparent;
+    @apply flex-shrink-0 border-b-2 border-transparent px-4 py-3 text-sm font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300;
     min-width: 80px;
 }
 
 .tab-mobile.active {
-    @apply text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400;
+    @apply border-blue-600 text-blue-600 dark:border-blue-400 dark:text-blue-400;
 }
 
 /* Swipe gesture support */
@@ -128,7 +128,7 @@
 }
 
 .swipe-indicator {
-    @apply absolute top-2 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gray-300 dark:bg-gray-600 rounded-full;
+    @apply absolute left-1/2 top-2 h-1 w-8 -translate-x-1/2 transform rounded-full bg-gray-300 dark:bg-gray-600;
 }
 
 /* Mobile-optimized spacing */
@@ -177,15 +177,15 @@
 }
 
 .skeleton-mobile {
-    @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
+    @apply animate-pulse rounded bg-gray-200 dark:bg-gray-700;
 }
 
 .skeleton-mobile-text {
-    @apply skeleton-mobile h-4 mb-2;
+    @apply skeleton-mobile mb-2 h-4;
 }
 
 .skeleton-mobile-title {
-    @apply skeleton-mobile h-6 mb-3;
+    @apply skeleton-mobile mb-3 h-6;
 }
 
 .skeleton-mobile-avatar {
@@ -194,24 +194,24 @@
 
 /* Mobile-optimized error states */
 .error-mobile {
-    @apply text-center py-8 px-4;
+    @apply px-4 py-8 text-center;
 }
 
 .error-mobile-icon {
-    @apply mx-auto h-12 w-12 text-gray-400 mb-4;
+    @apply mx-auto mb-4 h-12 w-12 text-gray-400;
 }
 
 .error-mobile-title {
-    @apply text-lg font-medium text-gray-900 dark:text-white mb-2;
+    @apply mb-2 text-lg font-medium text-gray-900 dark:text-white;
 }
 
 .error-mobile-message {
-    @apply text-sm text-gray-500 dark:text-gray-400 mb-4;
+    @apply mb-4 text-sm text-gray-500 dark:text-gray-400;
 }
 
 /* Mobile-optimized pull-to-refresh */
 .pull-to-refresh {
-    @apply fixed top-0 left-0 right-0 z-40 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 transition-all duration-300;
+    @apply fixed left-0 right-0 top-0 z-40 border-b border-blue-200 bg-blue-50 transition-all duration-300 dark:border-blue-800 dark:bg-blue-900/20;
 }
 
 .pull-to-refresh-content {
@@ -220,7 +220,7 @@
 
 /* Mobile-optimized floating action button */
 .fab {
-    @apply fixed bottom-20 right-4 z-40 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200;
+    @apply fixed bottom-20 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg transition-all duration-200 hover:bg-blue-700;
 }
 
 .fab-menu {
@@ -228,7 +228,7 @@
 }
 
 .fab-menu-item {
-    @apply flex items-center space-x-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-3 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 whitespace-nowrap;
+    @apply flex items-center space-x-3 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-lg dark:border-gray-700 dark:bg-gray-800 dark:text-white;
 }
 
 /* Mobile-optimized safe areas */
@@ -277,7 +277,7 @@
 
 /* Mobile-optimized disabled states */
 .disabled-mobile {
-    @apply opacity-50 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-50;
 }
 
 /* Mobile-optimized animations */
@@ -309,12 +309,12 @@
 
 /* Mobile-optimized backdrop */
 .backdrop-mobile {
-    @apply fixed inset-0 bg-black bg-opacity-50 z-40;
+    @apply fixed inset-0 z-40 bg-black bg-opacity-50;
 }
 
 /* Mobile-optimized toast notifications */
 .toast-mobile {
-    @apply fixed top-4 left-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4;
+    @apply fixed left-4 right-4 top-4 z-50 rounded-lg border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-800;
 }
 
 .toast-mobile-success {
@@ -339,31 +339,31 @@
     .mobile-container {
         @apply px-3 py-4;
     }
-    
+
     .mobile-section {
         @apply mb-6;
     }
-    
+
     /* Larger touch targets on small screens */
     .touch-target {
         min-height: 48px;
         min-width: 48px;
     }
-    
+
     /* Adjust card padding for small screens */
     .card-mobile {
         @apply p-3;
     }
-    
+
     .card-mobile-header {
         @apply mb-2;
     }
-    
+
     /* Smaller text on mobile */
     .card-mobile-title {
         @apply text-base;
     }
-    
+
     .card-mobile-subtitle {
         @apply text-xs;
     }
@@ -374,11 +374,11 @@
     .mobile-container {
         @apply py-2;
     }
-    
+
     .mobile-section {
         @apply mb-4;
     }
-    
+
     /* Reduce header height in landscape */
     .safe-area-top {
         padding-top: max(env(safe-area-inset-top), 0.5rem);
@@ -390,11 +390,11 @@
     .mobile-grid {
         @apply grid-cols-2;
     }
-    
+
     .tabs-mobile {
         @apply justify-center;
     }
-    
+
     .tab-mobile {
         min-width: 100px;
     }
@@ -422,7 +422,7 @@
 
 /* Improved disabled states */
 .disabled-mobile:disabled {
-    @apply opacity-40 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-40;
 }
 
 /* Mobile-specific utility classes */
@@ -438,7 +438,7 @@
     .mobile-only {
         @apply hidden;
     }
-    
+
     .desktop-only {
         @apply block;
     }
@@ -446,7 +446,7 @@
 
 /* Improved mobile navigation */
 .mobile-nav-bottom {
-    @apply fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700;
+    @apply fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800;
     padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -460,7 +460,7 @@
 }
 
 .form-mobile label {
-    @apply text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block;
+    @apply mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300;
 }
 
 /* Mobile-optimized table */
@@ -474,11 +474,11 @@
 }
 
 .table-mobile th {
-    @apply font-medium text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-800;
+    @apply bg-gray-50 font-medium text-gray-900 dark:bg-gray-800 dark:text-white;
 }
 
 .table-mobile td {
-    @apply text-gray-700 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700;
+    @apply border-t border-gray-200 text-gray-700 dark:border-gray-700 dark:text-gray-300;
 }
 
 /* Mobile-optimized image gallery */
@@ -487,14 +487,14 @@
 }
 
 .gallery-mobile img {
-    @apply w-full h-32 object-cover rounded-lg;
+    @apply h-32 w-full rounded-lg object-cover;
 }
 
 @media (min-width: 640px) {
     .gallery-mobile {
         @apply grid-cols-3 gap-3;
     }
-    
+
     .gallery-mobile img {
         @apply h-40;
     }
@@ -502,32 +502,32 @@
 
 /* Mobile-optimized progress indicators */
 .progress-mobile {
-    @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2;
+    @apply h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700;
 }
 
 .progress-mobile-bar {
-    @apply bg-blue-600 h-2 rounded-full transition-all duration-300;
+    @apply h-2 rounded-full bg-blue-600 transition-all duration-300;
 }
 
 /* Mobile-optimized badges */
 .badge-mobile {
-    @apply inline-flex items-center px-2 py-1 text-xs font-medium rounded-full;
+    @apply inline-flex items-center rounded-full px-2 py-1 text-xs font-medium;
 }
 
 .badge-mobile-primary {
-    @apply badge-mobile bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300;
+    @apply badge-mobile bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300;
 }
 
 .badge-mobile-success {
-    @apply badge-mobile bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300;
+    @apply badge-mobile bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300;
 }
 
 .badge-mobile-warning {
-    @apply badge-mobile bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300;
+    @apply badge-mobile bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300;
 }
 
 .badge-mobile-error {
-    @apply badge-mobile bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300;
+    @apply badge-mobile bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300;
 }
 
 /* Enhanced swipe gesture support */
@@ -545,27 +545,27 @@
 }
 
 .swipe-actions-left {
-    @apply left-0 bg-green-500 text-white px-4;
+    @apply left-0 bg-green-500 px-4 text-white;
 }
 
 .swipe-actions-right {
-    @apply right-0 bg-red-500 text-white px-4;
+    @apply right-0 bg-red-500 px-4 text-white;
 }
 
 /* Enhanced pull-to-refresh */
 .pull-to-refresh-enhanced {
-    @apply fixed top-0 left-0 right-0 z-50 bg-gradient-to-b from-blue-50 to-transparent dark:from-blue-900/20;
-    @apply border-b border-blue-200 dark:border-blue-800 transition-all duration-300;
+    @apply fixed left-0 right-0 top-0 z-50 bg-gradient-to-b from-blue-50 to-transparent dark:from-blue-900/20;
+    @apply border-b border-blue-200 transition-all duration-300 dark:border-blue-800;
     backdrop-filter: blur(10px);
 }
 
 .pull-to-refresh-spinner {
-    @apply inline-block w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin;
+    @apply inline-block h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent;
 }
 
 /* Mobile-optimized sticky elements */
 .sticky-mobile {
-    @apply sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700;
+    @apply sticky top-0 z-30 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900;
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.95);
 }
@@ -577,7 +577,7 @@
 /* Enhanced mobile navigation */
 .mobile-nav-enhanced {
     @apply fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800;
-    @apply border-t border-gray-200 dark:border-gray-700 shadow-lg;
+    @apply border-t border-gray-200 shadow-lg dark:border-gray-700;
     padding-bottom: env(safe-area-inset-bottom);
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.95);
@@ -589,7 +589,7 @@
 
 .mobile-nav-item-enhanced {
     @apply touch-target flex flex-col items-center justify-center space-y-1 text-xs font-medium;
-    @apply transition-all duration-200 relative overflow-hidden;
+    @apply relative overflow-hidden transition-all duration-200;
 }
 
 .mobile-nav-item-enhanced.active {
@@ -597,7 +597,7 @@
 }
 
 .mobile-nav-item-enhanced.active::before {
-    @apply absolute top-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-blue-600 dark:bg-blue-400 rounded-b-full;
+    @apply absolute left-1/2 top-0 h-1 w-8 -translate-x-1/2 transform rounded-b-full bg-blue-600 dark:bg-blue-400;
     content: '';
 }
 
@@ -608,15 +608,15 @@
 }
 
 .mobile-search-header {
-    @apply flex items-center p-4 border-b border-gray-200 dark:border-gray-700;
-    @apply bg-white dark:bg-gray-900 sticky top-0 z-10;
+    @apply flex items-center border-b border-gray-200 p-4 dark:border-gray-700;
+    @apply sticky top-0 z-10 bg-white dark:bg-gray-900;
     padding-top: max(1rem, env(safe-area-inset-top));
 }
 
 .mobile-search-input {
-    @apply flex-1 px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg;
-    @apply bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white;
-    @apply focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply flex-1 rounded-lg border border-gray-300 px-4 py-3 text-base dark:border-gray-600;
+    @apply bg-gray-50 text-gray-900 dark:bg-gray-800 dark:text-white;
+    @apply focus:border-transparent focus:ring-2 focus:ring-blue-500;
     font-size: 16px; /* Prevents zoom on iOS */
 }
 
@@ -630,28 +630,28 @@
 }
 
 .mobile-modal-content {
-    @apply relative w-full max-h-[90vh] bg-white dark:bg-gray-800 rounded-t-2xl shadow-xl;
-    @apply overflow-hidden transform transition-transform duration-300;
+    @apply relative max-h-[90vh] w-full rounded-t-2xl bg-white shadow-xl dark:bg-gray-800;
+    @apply transform overflow-hidden transition-transform duration-300;
 }
 
 .mobile-modal-handle {
-    @apply absolute top-2 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-gray-300 dark:bg-gray-600 rounded-full;
+    @apply absolute left-1/2 top-2 h-1 w-8 -translate-x-1/2 transform rounded-full bg-gray-300 dark:bg-gray-600;
 }
 
 .mobile-modal-header {
-    @apply flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700;
-    @apply sticky top-0 bg-white dark:bg-gray-800 z-10;
+    @apply flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-700;
+    @apply sticky top-0 z-10 bg-white dark:bg-gray-800;
 }
 
 .mobile-modal-body {
-    @apply p-4 overflow-y-auto;
+    @apply overflow-y-auto p-4;
     max-height: calc(90vh - 120px);
 }
 
 /* Enhanced mobile cards */
 .mobile-card-enhanced {
-    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700;
-    @apply p-4 mb-4 transition-all duration-200;
+    @apply rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800;
+    @apply mb-4 p-4 transition-all duration-200;
 }
 
 .mobile-card-enhanced:active {
@@ -665,11 +665,11 @@
 
 /* Enhanced mobile lists */
 .mobile-list-enhanced {
-    @apply divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800 rounded-lg;
+    @apply divide-y divide-gray-200 rounded-lg bg-white dark:divide-gray-700 dark:bg-gray-800;
 }
 
 .mobile-list-item-enhanced {
-    @apply py-4 px-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+    @apply px-4 py-4 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700;
     @apply active:bg-gray-100 dark:active:bg-gray-600;
 }
 
@@ -695,9 +695,9 @@
 }
 
 .mobile-form-input {
-    @apply w-full px-4 py-3 text-base border border-gray-300 dark:border-gray-600 rounded-lg;
-    @apply bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
-    @apply focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply w-full rounded-lg border border-gray-300 px-4 py-3 text-base dark:border-gray-600;
+    @apply bg-white text-gray-900 dark:bg-gray-800 dark:text-white;
+    @apply focus:border-transparent focus:ring-2 focus:ring-blue-500;
     @apply transition-colors duration-200;
     min-height: 44px;
     font-size: 16px; /* Prevents zoom on iOS */
@@ -709,7 +709,7 @@
 }
 
 .mobile-form-select {
-    @apply mobile-form-input appearance-none bg-no-repeat bg-right bg-center;
+    @apply mobile-form-input appearance-none bg-center bg-right bg-no-repeat;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
     background-size: 1.5em 1.5em;
     padding-right: 2.5rem;
@@ -717,7 +717,7 @@
 
 /* Enhanced mobile buttons */
 .mobile-button-enhanced {
-    @apply touch-target px-6 py-3 text-base font-medium rounded-lg transition-all duration-200;
+    @apply touch-target rounded-lg px-6 py-3 text-base font-medium transition-all duration-200;
     @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
     @apply active:scale-95;
     min-height: 44px;
@@ -768,19 +768,19 @@
 
 /* Enhanced mobile error states */
 .mobile-error-enhanced {
-    @apply text-center py-12 px-4;
+    @apply px-4 py-12 text-center;
 }
 
 .mobile-error-illustration {
-    @apply mx-auto h-24 w-24 text-gray-400 mb-6;
+    @apply mx-auto mb-6 h-24 w-24 text-gray-400;
 }
 
 .mobile-error-title {
-    @apply text-xl font-semibold text-gray-900 dark:text-white mb-3;
+    @apply mb-3 text-xl font-semibold text-gray-900 dark:text-white;
 }
 
 .mobile-error-message {
-    @apply text-base text-gray-500 dark:text-gray-400 mb-6 leading-relaxed;
+    @apply mb-6 text-base leading-relaxed text-gray-500 dark:text-gray-400;
 }
 
 .mobile-error-actions {
@@ -789,8 +789,8 @@
 
 /* Enhanced mobile notifications */
 .mobile-notification-enhanced {
-    @apply fixed top-4 left-4 right-4 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-lg;
-    @apply border border-gray-200 dark:border-gray-700 p-4 transform transition-all duration-300;
+    @apply fixed left-4 right-4 top-4 z-50 rounded-lg bg-white shadow-lg dark:bg-gray-800;
+    @apply transform border border-gray-200 p-4 transition-all duration-300 dark:border-gray-700;
     top: max(1rem, env(safe-area-inset-top));
 }
 
@@ -812,7 +812,7 @@
 
 /* Enhanced mobile accessibility */
 .mobile-focus-enhanced:focus-visible {
-    @apply outline-none ring-2 ring-blue-500 ring-offset-2 rounded-lg;
+    @apply rounded-lg outline-none ring-2 ring-blue-500 ring-offset-2;
 }
 
 .mobile-sr-only {

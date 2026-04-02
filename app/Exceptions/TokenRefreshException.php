@@ -11,12 +11,8 @@ class TokenRefreshException extends Exception
 {
     /**
      * Create a new exception instance
-     *
-     * @param string $message
-     * @param int $code
-     * @param \Throwable|null $previous
      */
-    public function __construct(string $message = "Token refresh failed", int $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $message = 'Token refresh failed', int $code = 0, ?\Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }
@@ -27,7 +23,7 @@ class TokenRefreshException extends Exception
     public function report(): void
     {
         // Log the error with context
-        \Illuminate\Support\Facades\Log::warning('Token refresh failed: ' . $this->getMessage(), [
+        \Illuminate\Support\Facades\Log::warning('Token refresh failed: '.$this->getMessage(), [
             'exception' => get_class($this),
             'file' => $this->getFile(),
             'line' => $this->getLine(),
@@ -37,7 +33,7 @@ class TokenRefreshException extends Exception
     /**
      * Render the exception for API responses
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function render($request)

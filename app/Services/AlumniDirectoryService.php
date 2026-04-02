@@ -9,7 +9,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
-class AlumniDirectoryService
+class AlumniDirectoryService extends BaseService
 {
     /**
      * Get filtered alumni with pagination
@@ -426,7 +426,7 @@ class AlumniDirectoryService
     private function getInstitutions(): array
     {
         return DB::table('institutions')
-            ->select('id', 'name', DB::raw('COUNT(educations.id) as alumni_count'))
+            ->select('institutions.id', 'institutions.name', DB::raw('COUNT(educations.id) as alumni_count'))
             ->leftJoin('educations', 'institutions.id', '=', 'educations.institution_id')
             ->groupBy('institutions.id', 'institutions.name')
             ->orderBy('alumni_count', 'desc')

@@ -6,10 +6,8 @@ use App\Models\Component;
 use App\Models\Tenant;
 use App\Models\User;
 use App\Services\ComponentService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\Sanctum;
-use Tests\TestCase;
 use Mockery;
 
 beforeEach(function () {

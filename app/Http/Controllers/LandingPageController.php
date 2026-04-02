@@ -26,8 +26,6 @@ class LandingPageController extends Controller
     /**
      * Serve a published landing page
      *
-     * @param Request $request
-     * @param string $slug
      * @return View|Response
      */
     public function show(Request $request, string $slug)
@@ -39,7 +37,7 @@ class LandingPageController extends Controller
             // Get published landing page
             $landingPage = $this->publishingWorkflowService->getPublishedLandingPage($slug, $tenantId);
 
-            if (!$landingPage) {
+            if (! $landingPage) {
                 Log::info('Landing page not found', [
                     'slug' => $slug,
                     'tenant_id' => $tenantId,
@@ -51,7 +49,7 @@ class LandingPageController extends Controller
             }
 
             // Check if landing page has expired or is scheduled
-            if (!$this->isLandingPageAvailable($landingPage)) {
+            if (! $this->isLandingPageAvailable($landingPage)) {
                 abort(404, 'Landing page not available');
             }
 
@@ -84,10 +82,6 @@ class LandingPageController extends Controller
 
     /**
      * Handle form submission for landing page
-     *
-     * @param Request $request
-     * @param string $slug
-     * @return JsonResponse
      */
     public function submitForm(Request $request, string $slug): JsonResponse
     {
@@ -95,7 +89,7 @@ class LandingPageController extends Controller
             $tenantId = $this->getTenantIdFromRequest($request, $slug);
             $landingPage = $this->publishingWorkflowService->getPublishedLandingPage($slug, $tenantId);
 
-            if (!$landingPage) {
+            if (! $landingPage) {
                 return response()->json(['error' => 'Landing page not found'], 404);
             }
 
@@ -158,10 +152,6 @@ class LandingPageController extends Controller
 
     /**
      * Track event (page view, click, etc.)
-     *
-     * @param Request $request
-     * @param string $slug
-     * @return JsonResponse
      */
     public function trackEvent(Request $request, string $slug): JsonResponse
     {
@@ -169,7 +159,7 @@ class LandingPageController extends Controller
             $tenantId = $this->getTenantIdFromRequest($request, $slug);
             $landingPage = $this->publishingWorkflowService->getPublishedLandingPage($slug, $tenantId);
 
-            if (!$landingPage) {
+            if (! $landingPage) {
                 return response()->json(['error' => 'Landing page not found'], 404);
             }
 
@@ -198,14 +188,10 @@ class LandingPageController extends Controller
 
     /**
      * Serve preview of landing page (for authenticated users)
-     *
-     * @param Request $request
-     * @param string $slug
-     * @return View|Response
      */
     public function preview(Request $request, string $slug): View|Response
     {
-        if (!Auth::check() || !Auth::user()->can('viewAny', LandingPage::class)) {
+        if (! Auth::check() || ! Auth::user()->can('viewAny', LandingPage::class)) {
             abort(403, 'Unauthorized to preview this landing page');
         }
 
@@ -214,16 +200,16 @@ class LandingPageController extends Controller
 
             // Find landing page (not necessarily published for preview)
             $landingPage = LandingPage::where('slug', $slug)
-                ->when($tenantId, fn($q) => $q->where('tenant_id', $tenantId))
+                ->when($tenantId, fn ($q) => $q->where('tenant_id', $tenantId))
                 ->with(['template', 'tenant'])
                 ->first();
 
-            if (!$landingPage) {
+            if (! $landingPage) {
                 abort(404, 'Landing page not found');
             }
 
             // Authorize preview access
-            if (!Auth::user()->can('view', $landingPage)) {
+            if (! Auth::user()->can('view', $landingPage)) {
                 abort(403, 'Unauthorized to preview this landing page');
             }
 
@@ -263,10 +249,6 @@ class LandingPageController extends Controller
 
     /**
      * Get tenant ID from request context
-     *
-     * @param Request $request
-     * @param string $slug
-     * @return int|null
      */
     private function getTenantIdFromRequest(Request $request, string $slug): ?int
     {
@@ -281,8 +263,8 @@ class LandingPageController extends Controller
                 $host = $request->getHost();
                 $baseDomain = config('app.domain', parse_url(config('app.url'), PHP_URL_HOST));
 
-                if (str_contains($host, '.' . $baseDomain)) {
-                    $subdomain = str_replace('.' . $baseDomain, '', $host);
+                if (str_contains($host, '.'.$baseDomain)) {
+                    $subdomain = str_replace('.'.$baseDomain, '', $host);
                     if (is_numeric($subdomain)) {
                         // subdomain might be tenant ID
                         return (int) $subdomain;
@@ -298,9 +280,6 @@ class LandingPageController extends Controller
 
     /**
      * Check if landing page is available for viewing
-     *
-     * @param LandingPage $landingPage
-     * @return bool
      */
     private function isLandingPageAvailable(LandingPage $landingPage): bool
     {
@@ -311,9 +290,6 @@ class LandingPageController extends Controller
 
     /**
      * Track page view for analytics
-     *
-     * @param LandingPage $landingPage
-     * @param Request $request
      */
     private function trackPageView(LandingPage $landingPage, Request $request): void
     {
@@ -342,11 +318,6 @@ class LandingPageController extends Controller
 
     /**
      * Create form submission
-     *
-     * @param LandingPage $landingPage
-     * @param array $data
-     * @param Request $request
-     * @return LandingPageSubmission|null
      */
     private function createSubmission(LandingPage $landingPage, array $data, Request $request): ?LandingPageSubmission
     {
@@ -375,10 +346,6 @@ class LandingPageController extends Controller
 
     /**
      * Track conversion event
-     *
-     * @param LandingPage $landingPage
-     * @param LandingPageSubmission $submission
-     * @param Request $request
      */
     private function trackConversion(LandingPage $landingPage, LandingPageSubmission $submission, Request $request): void
     {
@@ -409,18 +376,16 @@ class LandingPageController extends Controller
 
     /**
      * Set SEO headers
-     *
-     * @param array $content
      */
     private function setSeoHeaders(array $content): void
     {
         // Set page title
-        if (!empty($content['seo_title'])) {
+        if (! empty($content['seo_title'])) {
             view()->share('title', $content['seo_title']);
         }
 
         // Set meta description
-        if (!empty($content['seo_description'])) {
+        if (! empty($content['seo_description'])) {
             view()->share('description', $content['seo_description']);
         }
 
@@ -432,9 +397,6 @@ class LandingPageController extends Controller
 
     /**
      * Set cache headers for performance
-     *
-     * @param Request $request
-     * @param LandingPage $landingPage
      */
     private function setCacheHeaders(Request $request, LandingPage $landingPage): void
     {
@@ -453,11 +415,6 @@ class LandingPageController extends Controller
 
     /**
      * Render landing page view
-     *
-     * @param LandingPage $landingPage
-     * @param array $content
-     * @param bool $previewMode
-     * @return View
      */
     private function renderLandingPage(LandingPage $landingPage, array $content, bool $previewMode = false): View
     {
@@ -471,9 +428,6 @@ class LandingPageController extends Controller
 
     /**
      * Extract UTM data from request
-     *
-     * @param Request $request
-     * @return array
      */
     private function extractUtmData(Request $request): array
     {
@@ -488,9 +442,6 @@ class LandingPageController extends Controller
 
     /**
      * Extract session data
-     *
-     * @param Request $request
-     * @return array
      */
     private function extractSessionData(Request $request): array
     {
@@ -505,9 +456,6 @@ class LandingPageController extends Controller
 
     /**
      * Detect device type from request
-     *
-     * @param Request $request
-     * @return string
      */
     private function detectDeviceType(Request $request): string
     {
@@ -524,9 +472,6 @@ class LandingPageController extends Controller
 
     /**
      * Get country from IP address (placeholder implementation)
-     *
-     * @param string $ip
-     * @return string|null
      */
     private function getCountryFromIp(string $ip): ?string
     {
@@ -537,10 +482,6 @@ class LandingPageController extends Controller
 
     /**
      * Track analytics event
-     *
-     * @param LandingPage $landingPage
-     * @param array $eventData
-     * @param Request $request
      */
     private function trackAnalyticsEvent(LandingPage $landingPage, array $eventData, Request $request): void
     {
@@ -566,10 +507,6 @@ class LandingPageController extends Controller
 
     /**
      * Calculate conversion value (placeholder implementation)
-     *
-     * @param LandingPage $landingPage
-     * @param LandingPageSubmission $submission
-     * @return float
      */
     private function calculateConversionValue(LandingPage $landingPage, LandingPageSubmission $submission): float
     {
@@ -580,10 +517,6 @@ class LandingPageController extends Controller
 
     /**
      * Get thank you page URL
-     *
-     * @param LandingPage $landingPage
-     * @param Request $request
-     * @return string|null
      */
     private function getThankYouUrl(LandingPage $landingPage, Request $request): ?string
     {
@@ -594,6 +527,6 @@ class LandingPageController extends Controller
         }
 
         // Default thank you behavior - stay on same page with success message
-        return $request->url() . '#success';
+        return $request->url().'#success';
     }
 }

@@ -1,128 +1,207 @@
 @echo off
-color 0A
-echo ========================================
-echo   Graduate Tracking System - Dev Setup
-echo ========================================
-echo.
+REM ABOUTME: Development startup script for Laravel + Vite project (Windows Batch)
+REM ABOUTME: Automatically detects project directory and starts both frontend and backend servers
 
-REM Clean up any existing processes
-echo [0/4] Cleaning up existing processes...
-taskkill /f /im php.exe 2>nul >nul
-taskkill /f /im node.exe 2>nul >nul
-timeout /t 2 /nobreak >nul
-echo ✓ Cleanup complete
+setlocal enabledelayedexpansion
 
-REM Check if PHP exists
-echo [1/4] Checking PHP installation...
-if not exist "D:\DevCenter\xampp\php-8.3.23\php.exe" (
-    echo ❌ PHP not found at D:\DevCenter\xampp\php-8.3.23\php.exe
-    echo Please check your PHP installation path
-    pause
+REM Default configuration
+set VITE_PORT=5173
+set LARAVEL_PORT=8080
+set SKIP_CHECKS=false
+set PHP_PATH=D:\DevCenter\xampp\php-8.3.23\php.exe
+
+REM Parse command line arguments
+:parse_args
+if "%~1"=="" goto start_script
+if /i "%~1"=="--skip-checks" (
+    set SKIP_CHECKS=true
+    shift
+    goto parse_args
+)
+if /i "%~1"=="--vite-port" (
+    set VITE_PORT=%~2
+    shift
+    shift
+    goto parse_args
+)
+if /i "%~1"=="--laravel-port" (
+    set LARAVEL_PORT=%~2
+    shift
+    shift
+    goto parse_args
+)
+echo Unknown option: %~1
+echo Usage: %0 [--skip-checks] [--vite-port PORT] [--laravel-port PORT]
+exit /b 1
+
+:start_script
+REM Get the directory where this script is located
+set SCRIPT_DIR=%~dp0
+cd /d "%SCRIPT_DIR%"
+
+echo [INFO] === Laravel + Vite Development Server Startup ===
+echo [INFO] Project Directory: %SCRIPT_DIR%
+echo [INFO] PHP Path: %PHP_PATH%
+
+REM Verify we're in a Laravel project
+if not exist "artisan" (
+    echo [ERROR] Laravel artisan file not found. Please run this script from your Laravel project root.
     exit /b 1
 )
-echo ✓ PHP found
 
-REM Check if Node.js exists
-echo [2/4] Checking Node.js installation...
-node --version >nul 2>&1
-if errorlevel 1 (
-    echo ❌ Node.js not found. Please install Node.js
-    pause
-    exit /b 1
+if /i "%SKIP_CHECKS%"=="false" (
+    REM Check PHP
+    if not exist "%PHP_PATH%" (
+        echo [ERROR] PHP not found at: %PHP_PATH%
+        echo [ERROR] Please update the script with the correct PHP path.
+        exit /b 1
+    )
+    
+    REM Check Node.js
+    node --version >nul 2>&1
+    if errorlevel 1 (
+        echo [ERROR] Node.js not found. Please install Node.js.
+        exit /b 1
+    )
+    
+    REM Check npm
+    npm --version >nul 2>&1
+    if errorlevel 1 (
+        echo [ERROR] npm not found. Please install npm.
+        exit /b 1
+    )
+    
+    echo [SUCCESS] All dependencies found!
 )
-echo ✓ Node.js found
+
+REM Function to kill processes on specific ports
+echo [INFO] Checking for existing processes on ports...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":%VITE_PORT% "') do (
+    if not "%%a"=="" (
+        echo [INFO] Stopping process %%a on port %VITE_PORT%
+        taskkill /f /pid %%a >nul 2>&1
+    )
+)
+
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":%LARAVEL_PORT% "') do (
+    if not "%%a"=="" (
+        echo [INFO] Stopping process %%a on port %LARAVEL_PORT%
+        taskkill /f /pid %%a >nul 2>&1
+    )
+)
+
+REM Install/update dependencies
+echo [INFO] Installing/updating dependencies...
+if exist "package.json" (
+    call npm install
+    if errorlevel 1 (
+        echo [ERROR] npm install failed
+        exit /b 1
+    )
+)
+
+if exist "composer.json" (
+    composer --version >nul 2>&1
+    if not errorlevel 1 (
+        composer install --no-dev --optimize-autoloader >nul 2>&1
+        if errorlevel 1 (
+            echo [WARNING] Composer install had issues, continuing...
+        )
+    )
+)
 
 REM Clear Laravel caches
-echo [3/4] Clearing Laravel caches...
-D:\DevCenter\xampp\php-8.3.23\php.exe artisan config:clear >nul 2>&1
-D:\DevCenter\xampp\php-8.3.23\php.exe artisan route:clear >nul 2>&1
-D:\DevCenter\xampp\php-8.3.23\php.exe artisan view:clear >nul 2>&1
-D:\DevCenter\xampp\php-8.3.23\php.exe artisan cache:clear >nul 2>&1
-echo ✓ Caches cleared
+echo [INFO] Clearing Laravel caches...
 
-REM Start Vite development server in persistent window
-echo [4/4] Starting Vite development server...
-start "Vite Dev Server - Alumni Platform" cmd /k "echo Starting Vite Dev Server... && npm run dev"
-echo ✓ Vite server starting in separate window...
+"%PHP_PATH%" artisan config:clear >nul 2>&1
+"%PHP_PATH%" artisan route:clear >nul 2>&1
+"%PHP_PATH%" artisan view:clear >nul 2>&1
+"%PHP_PATH%" artisan cache:clear >nul 2>&1
 
-REM Wait for Vite to initialize with better error handling
-echo Waiting for Vite to initialize on http://127.0.0.1:5173 or 5174 ...
-set /a WAITED=0
-set /a TIMEOUT=60
-:WAIT_VITE
-REM Try to fetch Vite client endpoint using PowerShell (check both ports)
-powershell -Command "try { $resp = Invoke-WebRequest -Uri 'http://localhost:5173/' -UseBasicParsing -TimeoutSec 3; if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { try { $resp = Invoke-WebRequest -Uri 'http://localhost:5174/' -UseBasicParsing -TimeoutSec 3; if ($resp.StatusCode -ge 200 -and $resp.StatusCode -lt 500) { exit 0 } else { exit 1 } } catch { exit 1 } }"
-if %errorlevel%==0 (
-  echo ✓ Vite is ready after %WAITED%s
-  goto START_LARAVEL
+echo [SUCCESS] Caches cleared!
+
+REM Create temporary batch files for background processes
+echo @echo off > vite_server.bat
+echo cd /d "%SCRIPT_DIR%" >> vite_server.bat
+echo npm run dev -- --port %VITE_PORT% --host 0.0.0.0 >> vite_server.bat
+
+echo @echo off > laravel_server.bat
+echo cd /d "%SCRIPT_DIR%" >> laravel_server.bat
+echo "%PHP_PATH%" artisan serve --host=127.0.0.1 --port=%LARAVEL_PORT% >> laravel_server.bat
+
+REM Start Vite development server
+echo [INFO] Starting Vite development server on port %VITE_PORT%...
+start "Vite Server" /min cmd /c vite_server.bat
+timeout /t 3 /nobreak >nul
+
+REM Start Laravel development server
+echo [INFO] Starting Laravel development server on port %LARAVEL_PORT%...
+start "Laravel Server" /min cmd /c laravel_server.bat
+timeout /t 3 /nobreak >nul
+
+REM Check if servers are running
+netstat -an | findstr ":%VITE_PORT% " >nul
+set VITE_RUNNING=%errorlevel%
+
+netstat -an | findstr ":%LARAVEL_PORT% " >nul
+set LARAVEL_RUNNING=%errorlevel%
+
+if %VITE_RUNNING%==0 if %LARAVEL_RUNNING%==0 (
+    echo [SUCCESS] === Development servers started successfully! ===
+    echo [SUCCESS] Frontend (Vite): http://localhost:%VITE_PORT%
+    echo [SUCCESS] Backend (Laravel): http://127.0.0.1:%LARAVEL_PORT%
+    echo [INFO] Press Ctrl+C to stop both servers
+    echo [INFO] Close this window to stop the servers
+    
+    REM Keep the script running
+    :monitor_loop
+    timeout /t 5 /nobreak >nul
+    
+    REM Check if servers are still running
+    netstat -an | findstr ":%VITE_PORT% " >nul
+    if errorlevel 1 (
+        echo [WARNING] Vite server stopped unexpectedly
+        goto cleanup
+    )
+    
+    netstat -an | findstr ":%LARAVEL_PORT% " >nul
+    if errorlevel 1 (
+        echo [WARNING] Laravel server stopped unexpectedly
+        goto cleanup
+    )
+    
+    goto monitor_loop
 ) else (
-  if %WAITED% GEQ %TIMEOUT% (
-    echo ⚠ Vite did not become ready within %TIMEOUT%s
-    echo ⚠ Check the Vite window for errors
-    echo ⚠ Continuing with Laravel anyway...
-    goto START_LARAVEL
-  ) else (
-    set /a WAITED+=3
-    echo   ... waiting (%WAITED%s/%TIMEOUT%s)
-    timeout /t 3 /nobreak >nul
-    goto WAIT_VITE
-  )
+    echo [ERROR] Failed to start one or more servers
+    if not %VITE_RUNNING%==0 (
+        echo [ERROR] Vite server failed to start
+    )
+    if not %LARAVEL_RUNNING%==0 (
+        echo [ERROR] Laravel server failed to start
+    )
 )
 
-:START_LARAVEL
-echo.
-echo ========================================
-echo   STARTING LARAVEL SERVER
-echo ========================================
-echo.
-echo ✓ Vite Dev Server: http://127.0.0.1:5173
-echo ✓ Laravel Server: http://127.0.0.1:8080 (starting...)
-echo.
-echo Both servers will run independently.
-echo Close this window to stop Laravel server.
-echo Close the Vite window to stop Vite server.
-echo.
-echo Laravel server output:
-echo ----------------------------------------
+:cleanup
+echo [INFO] Cleaning up background processes...
 
-REM Start Laravel server in persistent mode
-start "Laravel Server - Alumni Platform" cmd /k "echo Starting Laravel Server... && D:\DevCenter\xampp\php-8.3.23\php.exe artisan serve --host=127.0.0.1 --port=8080"
+REM Kill processes on the ports
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":%VITE_PORT% "') do (
+    if not "%%a"=="" (
+        echo [INFO] Stopping Vite process %%a
+        taskkill /f /pid %%a >nul 2>&1
+    )
+)
 
-REM Show status and keep main window open for monitoring
-echo.
-echo ========================================
-echo   DEVELOPMENT SERVERS RUNNING
-echo ========================================
-echo.
-echo ✅ Vite Dev Server: http://127.0.0.1:5173
-echo ✅ Laravel Server: http://127.0.0.1:8080
-echo.
-echo Both servers are running in separate windows.
-echo.
-echo 🔍 MONITORING:
-echo - Check Vite window for frontend compilation
-echo - Check Laravel window for backend logs
-echo - Both servers will auto-reload on file changes
-echo.
-echo 🛑 TO STOP:
-echo - Close individual server windows, OR
-echo - Press Ctrl+C in this window to stop monitoring
-echo.
-echo Press any key to open both URLs in browser...
-pause >nul
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":%LARAVEL_PORT% "') do (
+    if not "%%a"=="" (
+        echo [INFO] Stopping Laravel process %%a
+        taskkill /f /pid %%a >nul 2>&1
+    )
+)
 
-REM Open both URLs in default browser
-start http://127.0.0.1:8080
-start http://127.0.0.1:5100
+REM Clean up temporary files
+if exist "vite_server.bat" del "vite_server.bat"
+if exist "laravel_server.bat" del "laravel_server.bat"
 
-echo.
-echo ✓ URLs opened in browser
-echo.
-echo This monitoring window will stay open.
-echo Close it when you're done developing.
-echo.
-
-:MONITOR_LOOP
-echo [%time%] Monitoring servers... (Press Ctrl+C to stop)
-timeout /t 30 /nobreak >nul
-goto MONITOR_LOOP
+echo [SUCCESS] Cleanup completed!
+pause

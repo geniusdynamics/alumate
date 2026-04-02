@@ -1,12 +1,14 @@
 <?php
 
+// ABOUTME: Testimonial model for schema-based multi-tenancy without tenant_id column
+// ABOUTME: Manages customer testimonials with automatic tenant context resolution
+
 namespace App\Models;
 
+use App\Services\TenantContextService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class Testimonial extends Model
@@ -14,7 +16,6 @@ class Testimonial extends Model
     use HasFactory;
 
     protected $fillable = [
-        'tenant_id',
         'author_name',
         'author_title',
         'author_company',
@@ -79,24 +80,20 @@ class Testimonial extends Model
     {
         parent::boot();
 
-        // Apply tenant scoping automatically (skip in testing)
-        try {
-            if (app()->bound('auth') && auth()->check() && auth()->user() && auth()->user()->tenant_id) {
-                static::addGlobalScope('tenant', function ($builder) {
-                    $builder->where('tenant_id', auth()->user()->tenant_id);
-                });
-            }
-        } catch (\Exception $e) {
-            // Skip tenant scoping in test environment or when auth is not available
-        }
+        // Apply tenant context for schema-based tenancy
+        static::addGlobalScope('tenant_context', function ($builder) {
+            app(TenantContextService::class)->applyTenantContext($builder);
+        });
     }
 
     /**
-     * Scope query to specific tenant
+     * Scope query to specific tenant (for schema-based tenancy)
+     * Note: This is primarily for administrative purposes
      */
     public function scopeForTenant(Builder $query, string $tenantId): Builder
     {
-        return $query->where('tenant_id', $tenantId);
+        // In schema-based tenancy, this would switch schema context
+        return app(TenantContextService::class)->scopeToTenant($query, $tenantId);
     }
 
     /**
@@ -177,15 +174,16 @@ class Testimonial extends Model
     public function scopeByPerformance(Builder $query): Builder
     {
         return $query->orderByDesc('conversion_rate')
-                    ->orderByDesc('view_count');
+            ->orderByDesc('view_count');
     }
 
     /**
-     * Get the tenant that owns the testimonial
+     * Get the current tenant context
+     * Note: In schema-based tenancy, tenant relationship is contextual
      */
-    public function tenant(): BelongsTo
+    public function getCurrentTenant()
     {
-        return $this->belongsTo(Tenant::class);
+        return app(TenantContextService::class)->getCurrentTenant();
     }
 
     /**
@@ -217,7 +215,7 @@ class Testimonial extends Model
      */
     public function hasVideo(): bool
     {
-        return !empty($this->video_url);
+        return ! empty($this->video_url);
     }
 
     /**
@@ -226,7 +224,7 @@ class Testimonial extends Model
     public function getAuthorDisplayNameAttribute(): string
     {
         $name = $this->author_name;
-        
+
         if ($this->author_title && $this->author_company) {
             $name .= ", {$this->author_title} at {$this->author_company}";
         } elseif ($this->author_title) {
@@ -243,8 +241,8 @@ class Testimonial extends Model
      */
     public function getTruncatedContentAttribute(): string
     {
-        return strlen($this->content) > 150 
-            ? substr($this->content, 0, 147) . '...'
+        return strlen($this->content) > 150
+            ? substr($this->content, 0, 147).'...'
             : $this->content;
     }
 
@@ -281,6 +279,7 @@ class Testimonial extends Model
     public function approve(): bool
     {
         $this->status = 'approved';
+
         return $this->save();
     }
 
@@ -290,6 +289,7 @@ class Testimonial extends Model
     public function reject(): bool
     {
         $this->status = 'rejected';
+
         return $this->save();
     }
 
@@ -299,6 +299,7 @@ class Testimonial extends Model
     public function archive(): bool
     {
         $this->status = 'archived';
+
         return $this->save();
     }
 
@@ -308,6 +309,7 @@ class Testimonial extends Model
     public function setFeatured(bool $featured = true): bool
     {
         $this->featured = $featured;
+
         return $this->save();
     }
 
@@ -335,7 +337,7 @@ class Testimonial extends Model
     public static function getValidationRules(): array
     {
         return [
-            'tenant_id' => 'required|exists:tenants,id',
+            // 'tenant_id' => 'required|exists:tenants,id', // Removed for schema-based tenancy
             'author_name' => 'required|string|max:255|min:2',
             'author_title' => 'nullable|string|max:255',
             'author_company' => 'nullable|string|max:255',
@@ -366,9 +368,10 @@ class Testimonial extends Model
      */
     public function validateVideoRequirements(): bool
     {
-        if ($this->video_url && !$this->video_thumbnail) {
+        if ($this->video_url && ! $this->video_thumbnail) {
             return false;
         }
+
         return true;
     }
 }

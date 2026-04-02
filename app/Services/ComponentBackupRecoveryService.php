@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Models\Component;
 use App\Models\ComponentVersion;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class ComponentBackupRecoveryService
 {
@@ -110,8 +110,8 @@ class ComponentBackupRecoveryService
         return DB::transaction(function () use ($backupId, $overwriteExisting, $restoreVersions, $restoreAnalytics) {
             // Load backup data
             $backupData = $this->loadBackup($backupId);
-            
-            if (!$backupData) {
+
+            if (! $backupData) {
                 throw new \Exception("Backup not found: {$backupId}");
             }
 
@@ -120,9 +120,9 @@ class ComponentBackupRecoveryService
 
             // Check if original component exists
             $existingComponent = Component::find($originalComponentId);
-            
-            if ($existingComponent && !$overwriteExisting) {
-                throw new \Exception("Component exists and overwrite not allowed");
+
+            if ($existingComponent && ! $overwriteExisting) {
+                throw new \Exception('Component exists and overwrite not allowed');
             }
 
             // Create backup of current state before restore
@@ -204,8 +204,8 @@ class ComponentBackupRecoveryService
         $oldBackups = $backups->filter(function ($backup) use ($cutoffDate, $keepCritical) {
             $backupDate = Carbon::parse($backup['created_at']);
             $isCritical = $backup['metadata']['automatic'] ?? false;
-            
-            return $backupDate->isBefore($cutoffDate) && (!$keepCritical || !$isCritical);
+
+            return $backupDate->isBefore($cutoffDate) && (! $keepCritical || ! $isCritical);
         });
 
         foreach ($oldBackups as $backup) {
@@ -216,11 +216,11 @@ class ComponentBackupRecoveryService
 
         // Delete excess backups (keep only maxCount most recent)
         $excessBackups = $backups->sortByDesc('created_at')->skip($maxCount);
-        
+
         foreach ($excessBackups as $backup) {
             $isCritical = $backup['metadata']['automatic'] ?? false;
-            
-            if (!$keepCritical || !$isCritical) {
+
+            if (! $keepCritical || ! $isCritical) {
                 if ($this->deleteBackup($backup['id'])) {
                     $deletedCount++;
                 }
@@ -251,16 +251,17 @@ class ComponentBackupRecoveryService
         try {
             // Load backup data
             $backupData = $this->loadBackup($backupId);
-            
-            if (!$backupData) {
+
+            if (! $backupData) {
                 $verification['issues'][] = 'Backup file not found or corrupted';
+
                 return $verification;
             }
 
             // Verify backup structure
             $requiredFields = ['backup_info', 'component', 'metadata'];
             foreach ($requiredFields as $field) {
-                if (!isset($backupData[$field])) {
+                if (! isset($backupData[$field])) {
                     $verification['issues'][] = "Missing required field: {$field}";
                 }
             }
@@ -319,7 +320,7 @@ class ComponentBackupRecoveryService
                         'created_at' => now()->toISOString(),
                     ],
                 ]);
-                
+
                 $results['successful_backups']++;
             } catch (\Exception $e) {
                 $results['failed_backups']++;
@@ -411,11 +412,11 @@ class ComponentBackupRecoveryService
             case 'local':
                 Storage::disk('local')->put($path, $content);
                 break;
-            
+
             case 's3':
                 Storage::disk('s3')->put($path, $content);
                 break;
-            
+
             default:
                 Storage::disk('local')->put($path, $content);
         }
@@ -433,10 +434,11 @@ class ComponentBackupRecoveryService
 
         // Try different storage locations
         $storageDisks = ['local', 's3'];
-        
+
         foreach ($storageDisks as $disk) {
             if (Storage::disk($disk)->exists($path)) {
                 $content = Storage::disk($disk)->get($path);
+
                 return json_decode($content, true);
             }
         }
@@ -452,7 +454,7 @@ class ComponentBackupRecoveryService
         // This would typically store backup metadata in a database table
         // For now, we'll store it in a JSON file
         $recordsPath = 'backups/backup_records.json';
-        
+
         $records = [];
         if (Storage::disk('local')->exists($recordsPath)) {
             $records = json_decode(Storage::disk('local')->get($recordsPath), true) ?? [];
@@ -479,12 +481,13 @@ class ComponentBackupRecoveryService
     private function getBackupRecords(): Collection
     {
         $recordsPath = 'backups/backup_records.json';
-        
-        if (!Storage::disk('local')->exists($recordsPath)) {
+
+        if (! Storage::disk('local')->exists($recordsPath)) {
             return collect([]);
         }
 
         $records = json_decode(Storage::disk('local')->get($recordsPath), true) ?? [];
+
         return collect($records);
     }
 
@@ -497,10 +500,10 @@ class ComponentBackupRecoveryService
             // Delete backup file
             $filename = "component-backup-{$backupId}.json";
             $path = "backups/components/{$filename}";
-            
+
             $deleted = false;
             $storageDisks = ['local', 's3'];
-            
+
             foreach ($storageDisks as $disk) {
                 if (Storage::disk($disk)->exists($path)) {
                     Storage::disk($disk)->delete($path);
@@ -517,6 +520,7 @@ class ComponentBackupRecoveryService
                 'backup_id' => $backupId,
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -527,10 +531,10 @@ class ComponentBackupRecoveryService
     private function removeBackupRecord(string $backupId): void
     {
         $recordsPath = 'backups/backup_records.json';
-        
+
         if (Storage::disk('local')->exists($recordsPath)) {
             $records = json_decode(Storage::disk('local')->get($recordsPath), true) ?? [];
-            $records = array_filter($records, fn($record) => $record['id'] !== $backupId);
+            $records = array_filter($records, fn ($record) => $record['id'] !== $backupId);
             Storage::disk('local')->put($recordsPath, json_encode(array_values($records), JSON_PRETTY_PRINT));
         }
     }
@@ -541,12 +545,12 @@ class ComponentBackupRecoveryService
     private function prepareComponentDataForRestore(array $componentData): array
     {
         $restoreData = $componentData;
-        
+
         // Remove fields that shouldn't be restored directly
         unset($restoreData['id']);
         unset($restoreData['created_at']);
         unset($restoreData['updated_at']);
-        
+
         // Convert date strings back to Carbon instances where needed
         if (isset($restoreData['last_used_at']) && $restoreData['last_used_at']) {
             $restoreData['last_used_at'] = Carbon::parse($restoreData['last_used_at']);
@@ -587,8 +591,8 @@ class ComponentBackupRecoveryService
         if (isset($analytics['usage_stats'])) {
             $component->update([
                 'usage_count' => $analytics['usage_stats']['usage_count'] ?? 0,
-                'last_used_at' => isset($analytics['usage_stats']['last_used_at']) 
-                    ? Carbon::parse($analytics['usage_stats']['last_used_at']) 
+                'last_used_at' => isset($analytics['usage_stats']['last_used_at'])
+                    ? Carbon::parse($analytics['usage_stats']['last_used_at'])
                     : null,
             ]);
         }
@@ -603,7 +607,7 @@ class ComponentBackupRecoveryService
 
         $requiredFields = ['id', 'name', 'slug', 'category', 'type'];
         foreach ($requiredFields as $field) {
-            if (!isset($componentData[$field]) || empty($componentData[$field])) {
+            if (! isset($componentData[$field]) || empty($componentData[$field])) {
                 $issues[] = "Missing or empty component field: {$field}";
             }
         }
@@ -619,11 +623,11 @@ class ComponentBackupRecoveryService
         $issues = [];
 
         foreach ($versions as $index => $version) {
-            if (!isset($version['version_number'])) {
+            if (! isset($version['version_number'])) {
                 $issues[] = "Version {$index} missing version_number";
             }
-            
-            if (!isset($version['created_at'])) {
+
+            if (! isset($version['created_at'])) {
                 $issues[] = "Version {$index} missing created_at";
             }
         }

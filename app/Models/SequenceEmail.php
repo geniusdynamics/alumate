@@ -6,8 +6,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class SequenceEmail extends Model
 {
@@ -82,6 +80,7 @@ class SequenceEmail extends Model
     public function getOpenRate(): float
     {
         $stats = $this->getEmailStats();
+
         return $stats['delivered_count'] > 0
             ? round(($stats['opened_count'] / $stats['delivered_count']) * 100, 2)
             : 0.0;
@@ -93,6 +92,7 @@ class SequenceEmail extends Model
     public function getClickRate(): float
     {
         $stats = $this->getEmailStats();
+
         return $stats['delivered_count'] > 0
             ? round(($stats['clicked_count'] / $stats['delivered_count']) * 100, 2)
             : 0.0;
@@ -121,9 +121,9 @@ class SequenceEmail extends Model
         $rules = self::getValidationRules();
 
         if ($ignoreId) {
-            $rules['send_order'] = 'required|integer|min:0|unique:sequence_emails,send_order,' . $ignoreId . ',id,sequence_id,' . request('sequence_id');
+            $rules['send_order'] = 'required|integer|min:0|unique:sequence_emails,send_order,'.$ignoreId.',id,sequence_id,'.request('sequence_id');
         } else {
-            $rules['send_order'] = 'required|integer|min:0|unique:sequence_emails,send_order,NULL,id,sequence_id,' . request('sequence_id');
+            $rules['send_order'] = 'required|integer|min:0|unique:sequence_emails,send_order,NULL,id,sequence_id,'.request('sequence_id');
         }
 
         return $rules;

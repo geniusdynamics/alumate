@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Api;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -14,7 +16,7 @@ class UpdateAbTestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true; // Add authorization logic as needed
+        return true; // Authorization handled in controller
     }
 
     /**
@@ -25,15 +27,10 @@ class UpdateAbTestRequest extends FormRequest
         return [
             'name' => 'sometimes|required|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'variants' => 'sometimes|required|array|min:2|max:10',
-            'variants.*.id' => 'required|string|max:50',
-            'variants.*.name' => 'required|string|max:255',
-            'variants.*.config' => 'nullable|array',
-            'goal_metric' => 'sometimes|required|string|in:conversion_rate,click_rate,time_on_page',
-            'confidence_threshold' => 'sometimes|required|numeric|min:0|max:1',
-            'sample_size_per_variant' => 'sometimes|required|integer|min:100|max:10000',
-            'traffic_distribution' => 'nullable|array',
-            'traffic_distribution.*' => 'numeric|min:0|max:100'
+            'variants' => 'sometimes|required|array|min:2',
+            'variants.*.name' => 'required|string|max:100',
+            'variants.*.weight' => 'required|numeric|min:0|max:100',
+            'status' => 'sometimes|required|in:active,inactive',
         ];
     }
 
@@ -46,8 +43,9 @@ class UpdateAbTestRequest extends FormRequest
             'name.required' => 'A/B test name is required',
             'variants.required' => 'At least 2 variants are required',
             'variants.min' => 'At least 2 variants are required',
-            'variants.max' => 'Maximum 10 variants allowed',
-            'goal_metric.in' => 'Invalid goal metric selected'
+            'variants.*.name.required' => 'Variant name is required',
+            'variants.*.weight.required' => 'Variant weight is required',
+            'status.in' => 'Invalid status value',
         ];
     }
 }

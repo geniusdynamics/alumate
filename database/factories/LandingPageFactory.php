@@ -17,17 +17,19 @@ class LandingPageFactory extends Factory
 
     public function definition(): array
     {
-        $template = Template::factory()->create();
-        $campaignType = $template->campaign_type ?? fake()->randomElement([
+        $templateId = Template::inRandomOrder()->first()?->id;
+        $tenantId = Tenant::inRandomOrder()->first()?->id;
+        
+        $campaignType = fake()->randomElement([
             'onboarding', 'event_promotion', 'donation', 'networking',
             'career_services', 'recruiting', 'leadership', 'marketing'
         ]);
 
-        $audienceType = $template->audience_type ?? fake()->randomElement([
+        $audienceType = fake()->randomElement([
             'individual', 'institution', 'employer'
         ]);
 
-        $category = $template->category ?? 'individual';
+        $category = 'individual';
 
         $name = $this->generateLandingPageName($campaignType, $audienceType);
         $status = fake()->randomElement(['draft', 'reviewing', 'published', 'archived']);
@@ -36,12 +38,12 @@ class LandingPageFactory extends Factory
         $publishedAt = $status === 'published' ? fake()->dateTimeBetween($createdAt, 'now') : null;
 
         return [
-            'template_id' => $template->id,
-            'tenant_id' => $template->tenant_id,
+            'template_id' => $templateId,
+            'tenant_id' => $tenantId,
             'name' => $name,
             'slug' => Str::slug($name . '-' . fake()->unique()->randomNumber()),
             'description' => $this->generateDescription($campaignType, $audienceType, $category),
-            'config' => $this->generateConfig($template, $campaignType, $audienceType),
+            'config' => $this->generateConfig(null, $campaignType, $audienceType),
             'brand_config' => $this->generateBrandConfig(),
             'audience_type' => $audienceType,
             'campaign_type' => $campaignType,
@@ -113,9 +115,9 @@ class LandingPageFactory extends Factory
         return $base . ' ' . ($descriptions[$campaignType] ?? 'Discover what we have to offer and take the next step.');
     }
 
-    private function generateConfig(Template $template, string $campaignType, string $audienceType): array
+    private function generateConfig(?Template $template, string $campaignType, string $audienceType): array
     {
-        $baseConfig = $template->default_config ?? [];
+        $baseConfig = $template?->default_config ?? [];
 
         $campaignConfig = [
             'onboarding' => [
@@ -316,158 +318,41 @@ class LandingPageFactory extends Factory
 
     private function generateCustomJs(string $campaignType): string
     {
-        $baseJs = "// Custom JavaScript for {$campaignType} landing page\n";
-
-        $campaignSpecificJs = [
-            'onboarding' => "
+        $jsFunctions = [
+            'onboarding' => <<<'JS'
 function initializeWelcomeTour() {
-    // Initialize user onboarding tour
     console.log('Welcome tour initialized');
 }
 
 function trackUserEngagement() {
-    // Track user engagement metrics
     document.addEventListener('click', function(e) {
         if (e.target.matches('.engagement-element')) {
-            // Track engagement event
             console.log('User engagement tracked');
         }
     });
 }
+JS,
 
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    initializeWelcomeTour();
-    trackUserEngagement();
-});
-",
-
-            'event_promotion' => "
+            'event_promotion' => <<<'JS'
 function initializeEventCountdown() {
-    const eventDate = new Date('2024-06-15T09:00:00');
-    const countdownElement = document.getElementById('countdown');
-
-    if (countdownElement) {
-        setInterval(() => {
-            const now = new Date();
-            const difference = eventDate - now;
-
-            if (difference > 0) {
-                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-
-                countdownElement.textContent = `${days}d ${hours}h ${minutes}m`;
-            }
-        }, 60000);
-    }
+    console.log('Event countdown initialized');
 }
+JS,
 
-// Initialize countdown
-document.addEventListener('DOMContentLoaded', initializeEventCountdown);
-",
-
-            'recruiting' => "
+            'recruiting' => <<<'JS'
 function initializeJobFilters() {
-    const filterButtons = document.querySelectorAll('.job-filter');
-    const jobCards = document.querySelectorAll('.job-card');
-
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const filter = this.dataset.filter;
-
-            jobCards.forEach(card => {
-                if (filter === 'all' || card.dataset.category === filter) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        });
-    });
+    console.log('Job filters initialized');
 }
+JS,
 
-// Initialize job filters
-document.addEventListener('DOMContentLoaded', initializeJobFilters);
-",
-
-            'donation' => "
+            'donation' => <<<'JS'
 function initializeDonationTracker() {
-    const donationForms = document.querySelectorAll('.donation-form');
-    const progressBar = document.getElementById('donation-progress');
-
-    donationForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
-            const amount = parseFloat(this.querySelector('[name=\"amount\"]').value);
-
-            if (amount && amount > 0) {
-                // Update progress bar
-                const currentProgress = parseFloat(progressBar.dataset.progress || 0);
-                const newProgress = Math.min(currentProgress + (amount / 1000) * 100, 100);
-                progressBar.style.width = newProgress + '%';
-                progressBar.dataset.progress = newProgress;
-
-                // Show thank you message
-                showThankYouMessage(amount);
-            }
-        });
-    });
+    console.log('Donation tracker initialized');
 }
-
-function showThankYouMessage(amount) {
-    const message = document.createElement('div');
-    message.className = 'thank-you-message';
-    message.innerHTML = `<strong>Thank you!</strong> Your $${amount} donation makes a real difference.`;
-    message.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #10B981;
-        color: white;
-        padding: 16px 24px;
-        border-radius: 8px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-        z-index: 1000;
-        animation: slideInRight 0.3s ease;
-    `;
-    document.body.appendChild(message);
-
-    setTimeout(() => message.remove(), 5000);
-}
-
-// Initialize donation tracker
-document.addEventListener('DOMContentLoaded', initializeDonationTracker);
-",
+JS,
         ];
 
-        return $baseJs . ($campaignSpecificJs[$campaignType] ?? "
-// General custom JavaScript
-console.log('Landing page loaded successfully');
-
-// Smooth scrolling for anchor links
-document.querySelectorAll('a[href^=\"#\"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// Add loading states to forms
-document.querySelectorAll('form').forEach(form => {
-    form.addEventListener('submit', function() {
-        const submitBtn = this.querySelector('button[type=\"submit\"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
-        }
-    });
-});
-");
+        return $jsFunctions[$campaignType] ?? "// Custom JavaScript for {$campaignType}";
     }
 
     // State methods
@@ -577,10 +462,13 @@ document.querySelectorAll('form').forEach(form => {
 
     public function withTemplate($template): static
     {
+        $campaignType = $template instanceof Template ? ($template->campaign_type ?? 'marketing') : 'marketing';
+        $audienceType = $template instanceof Template ? ($template->audience_type ?? 'individual') : 'individual';
+        
         return $this->state([
             'template_id' => $template instanceof Template ? $template->id : $template,
-            'campaign_type' => $template->campaign_type ?? $this->campaign_type,
-            'audience_type' => $template->audience_type ?? $this->audience_type,
+            'campaign_type' => $campaignType,
+            'audience_type' => $audienceType,
         ]);
     }
 

@@ -16,21 +16,13 @@ class EmployerDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Get or create employer profile
+        // Get employer profile
         $employer = $user->employer;
 
         if (! $employer) {
-            // Create a default employer profile if none exists
-            $employer = \App\Models\Employer::create([
-                'user_id' => $user->id,
-                'company_name' => 'Your Company',
-                'industry' => 'Technology',
-                'company_size' => 'small',
-                'verification_status' => 'pending',
-                'approved' => false,
-                'contact_person_name' => $user->name,
-                'contact_person_email' => $user->email,
-            ]);
+            // Redirect to employer profile setup instead of creating placeholder
+            return redirect()->route('employer.profile')
+                ->with('info', 'Please complete your company profile to continue.');
         }
 
         // Get dashboard statistics

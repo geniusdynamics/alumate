@@ -4,16 +4,15 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
-import { ZiggyVue } from 'ziggy-js';
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
-import { initializeTheme } from './composables/useAppearance';
-import { performanceService } from './services/PerformanceService';
-import { preloadService } from './services/PreloadService';
-import { performanceOptimizer } from './utils/performance-optimizer';
-import { bundleAnalyzer } from './utils/bundle-analyzer';
-import { preloadCriticalResources } from './utils/lazy-loading';
+import { ZiggyVue } from 'ziggy-js';
+import { initializeTheme } from './Composables/useAppearance';
 import './pwa.js';
+import { performanceService } from './Services/PerformanceService';
+import { preloadService } from './Services/PreloadService';
+import { preloadCriticalResources } from './utils/lazy-loading';
+import { performanceOptimizer } from './utils/performance-optimizer';
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -29,51 +28,51 @@ declare module 'vite/client' {
     }
 }
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || 'Alumate';
 
 // Start performance monitoring
-performanceService.markStart('app-initialization')
+performanceService.markStart('app-initialization');
 
 // Initialize performance optimization
-performanceOptimizer.optimizePage()
+performanceOptimizer.optimizePage();
 
 // Preload critical resources
-preloadCriticalResources()
+preloadCriticalResources();
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: (name) => {
         // Mark component resolution start
-        performanceService.markStart(`resolve-${name}`)
-        
-        return resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')).then(component => {
+        performanceService.markStart(`resolve-${name}`);
+
+        return resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')).then((component) => {
             // Mark component resolution end
-            performanceService.markEnd(`resolve-${name}`)
-            
+            performanceService.markEnd(`resolve-${name}`);
+
             // Preload next likely pages based on current page
-            const pageName = name.toLowerCase()
+            const pageName = name.toLowerCase();
             if (pageName.includes('homepage')) {
-                preloadService.preloadNextPageResources('homepage')
+                preloadService.preloadNextPageResources('homepage');
             }
-            
-            return component
-        })
+
+            return component;
+        });
     },
     setup({ el, App, props, plugin }) {
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
             .use(ZiggyVue)
-            .use(Toast)
+            .use(Toast);
 
         // Mount the app
-        performanceService.markStart('app-mount')
-        app.mount(el)
-        performanceService.markEnd('app-mount')
-        
+        performanceService.markStart('app-mount');
+        app.mount(el);
+        performanceService.markEnd('app-mount');
+
         // Complete app initialization
-        performanceService.markEnd('app-initialization')
-        
-        return app
+        performanceService.markEnd('app-initialization');
+
+        return app;
     },
     progress: {
         color: '#4B5563',
@@ -84,15 +83,24 @@ createInertiaApp({
 // This will set light / dark mode on page load...
 initializeTheme();
 
+// Override window.alert with toast notifications so legacy alert() calls
+// display as non-blocking toast messages instead of blocking browser dialogs.
+import { useToast as _useVueToast } from 'vue-toastification';
+window.alert = (message: string) => {
+    try {
+        _useVueToast().warning(message);
+    } catch {
+        // Fallback during SSR / before app is mounted
+        console.warn('[alert]', message);
+    }
+};
+
 // Report performance metrics after page is fully loaded
 window.addEventListener('load', () => {
     // Wait a bit for all resources to finish loading
     setTimeout(() => {
-        performanceService.reportMetrics()
-        
-        // Generate bundle analysis report in development
-        if (import.meta.env.DEV) {
-            console.log('Bundle Analysis:', bundleAnalyzer.generateReport())
-        }
-    }, 1000)
+        performanceService.reportMetrics();
+
+        // Generate bundle analysis report in development (use bundleAnalyzer.generateReport() in devtools)
+    }, 1000);
 });

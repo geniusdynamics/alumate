@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\LandingPage;
 use App\Services\TemplateAnalyticsService;
 use App\Services\TrackingCodeService;
-use App\Models\LandingPage;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 /**
  * Analytics Tracking Controller
@@ -23,9 +23,6 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Track analytics events for landing pages
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function track(Request $request): JsonResponse
     {
@@ -71,9 +68,6 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Track template usage events
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function trackTemplateUsage(Request $request): JsonResponse
     {
@@ -125,10 +119,6 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Generate tracking pixel for landing pages
-     *
-     * @param Request $request
-     * @param int $landingPageId
-     * @return \Illuminate\Http\Response
      */
     public function pixel(Request $request, int $landingPageId): \Illuminate\Http\Response
     {
@@ -174,6 +164,7 @@ class AnalyticsTrackingController extends Controller
 
             // Still return a pixel even if tracking fails
             $pixel = base64_decode('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
+
             return response($pixel, 200, [
                 'Content-Type' => 'image/gif',
             ]);
@@ -182,10 +173,6 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Get analytics data for a landing page
-     *
-     * @param Request $request
-     * @param int $landingPageId
-     * @return JsonResponse
      */
     public function getLandingPageAnalytics(Request $request, int $landingPageId): JsonResponse
     {
@@ -215,9 +202,6 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Get earnings report for analytics
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
     public function getEarningsReport(Request $request): JsonResponse
     {
@@ -257,10 +241,6 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Generate tracking code for a landing page
-     *
-     * @param Request $request
-     * @param int $landingPageId
-     * @return JsonResponse
      */
     public function getTrackingCode(Request $request, int $landingPageId): JsonResponse
     {
@@ -290,17 +270,13 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Get tracking pixel HTML for a landing page
-     *
-     * @param Request $request
-     * @param int $landingPageId
-     * @return JsonResponse
      */
     public function getTrackingPixel(Request $request, int $landingPageId): JsonResponse
     {
         try {
             $landingPage = LandingPage::find($landingPageId);
 
-            if (!$landingPage) {
+            if (! $landingPage) {
                 return response()->json(['status' => 'error', 'message' => 'Landing page not found'], 404);
             }
 
@@ -327,17 +303,13 @@ class AnalyticsTrackingController extends Controller
 
     /**
      * Generate SEO meta tags with tracking information
-     *
-     * @param Request $request
-     * @param int $landingPageId
-     * @return JsonResponse
      */
     public function getSEOMetaTags(Request $request, int $landingPageId): JsonResponse
     {
         try {
             $landingPage = LandingPage::find($landingPageId);
 
-            if (!$landingPage) {
+            if (! $landingPage) {
                 return response()->json(['status' => 'error', 'message' => 'Landing page not found'], 404);
             }
 

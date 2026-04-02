@@ -205,6 +205,47 @@ return [
             'days' => 90,
             'replace_placeholders' => true,
         ],
+
+        'security' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/security.log'),
+            'level' => 'info',
+            'days' => 365,
+        ],
+
+        'audit' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/audit.log'),
+            'level' => 'info',
+            'days' => 365,
+        ],
+
+        'performance' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/performance.log'),
+            'level' => 'info',
+            'days' => 90,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Log Sanitization
+    |--------------------------------------------------------------------------
+    */
+
+    'sanitization' => [
+        'enabled' => env('LOG_SANITIZE_ENABLED', true),
+
+        'patterns' => [
+            '/\b(?:\d{4}[-\s]?){3}\d{4}\b/',
+            '/\b\d{3}-\d{2}-\d{4}\b/',
+            '/[\w\.-]+@[\w\.-]+\.\w+/',
+            '/\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/',
+            '/\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/',
+        ],
+
+        'replacement' => '[REDACTED]',
     ],
 
 ];
