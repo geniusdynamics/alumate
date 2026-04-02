@@ -267,7 +267,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
-import type { CustomEventDefinition } from '../../../Types/analytics';
+import type { CustomEventDefinition } from '../../../types/analytics';
 
 // Props
 const props = defineProps<{

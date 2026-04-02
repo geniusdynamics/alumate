@@ -370,7 +370,7 @@
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { useCohortStore } from '../../Stores/useCohortStore';
-import type { CohortInsight } from '../../Types/analytics';
+import type { CohortInsight } from '../../types/analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);

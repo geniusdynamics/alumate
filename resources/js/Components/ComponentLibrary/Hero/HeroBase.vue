@@ -131,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import Icon from '@/Components/Icon.vue';
 import type { CTAButton, HeroComponentConfig } from '@/types/Components';
 import { getBackgroundGradient, getVariantStyleClasses } from '@/utils/variantStyling';

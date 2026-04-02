@@ -273,7 +273,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import PostCreator from '@/Components/PostCreator.vue';
 import userFlowIntegration from '@/Services/UserFlowIntegration';
 import {

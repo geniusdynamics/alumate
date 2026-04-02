@@ -167,7 +167,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import MainLogoIcon from '@/Components/MainLogoIcon.vue';
 import { computed, ref } from 'vue';
 

@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { useCohortStore } from '../Stores/useCohortStore';
-import type { CohortData } from '../Types/analytics';
+import type { CohortData } from '../types/analytics';
 
 /**
  * Composable for cohort analysis functionality

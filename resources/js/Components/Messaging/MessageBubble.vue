@@ -175,7 +175,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { format, formatDistanceToNow } from 'date-fns';
 import { computed, ref } from 'vue';
 

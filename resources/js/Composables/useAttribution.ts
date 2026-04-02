@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { useAttributionStore } from '../Stores/useAttributionStore';
-import type { AttributionTouch, AttributionSource } from '../Types/analytics';
+import type { AttributionTouch, AttributionSource } from '../types/analytics';
 
 // Declare Echo on window for TypeScript
 declare global {

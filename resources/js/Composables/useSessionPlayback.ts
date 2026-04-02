@@ -4,7 +4,7 @@ import type {
     SessionAnnotation,
     SessionPlaybackState,
     SessionApiResponse,
-} from '../Types/analytics';
+} from '../types/analytics';
 
 /**
  * Composable for session recording playback functionality

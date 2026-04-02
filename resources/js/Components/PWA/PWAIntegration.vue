@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { onMounted, onUnmounted, ref } from 'vue';
 import PushNotificationService from '../../Services/PushNotificationService.js';
 import InstallPrompt from './InstallPrompt.vue';

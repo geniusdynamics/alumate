@@ -5,7 +5,7 @@ import type {
     LearningProgress,
     Course,
     LearningApiResponse
-} from '../Types/analytics';
+} from '../types/analytics';
 
 export const useLearningStore = defineStore('learning', () => {
     // State

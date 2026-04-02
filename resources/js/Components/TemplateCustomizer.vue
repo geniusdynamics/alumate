@@ -338,7 +338,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { templateService } from '@/Services/TemplateService';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import ColorPicker from './ColorPicker.vue';

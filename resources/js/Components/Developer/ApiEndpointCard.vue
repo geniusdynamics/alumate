@@ -200,7 +200,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { ref } from 'vue';
 
 const props = defineProps({

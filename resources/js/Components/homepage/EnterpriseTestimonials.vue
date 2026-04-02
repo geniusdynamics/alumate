@@ -116,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import type { InstitutionTestimonial, InstitutionalCaseStudy } from '@/Types/homepage';
+import type { InstitutionTestimonial, InstitutionalCaseStudy } from '@/types/homepage';
 import { ref } from 'vue';
 import InstitutionalTestimonialCard from './InstitutionalTestimonialCard.vue';
 import InstitutionalVideoModal from './InstitutionalVideoModal.vue';

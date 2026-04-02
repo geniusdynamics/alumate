@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { cn } from '@/Utils/cn';
+import { cn } from '@/utils/cn';
 
 interface Props {
     className?: string;

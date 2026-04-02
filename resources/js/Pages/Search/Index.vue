@@ -328,7 +328,7 @@ export default {
             }
         },
 
-        async toggleSearch// TODO-toast: alert(search) {
+        async toggleSearchAlert(search) {
             try {
                 await axios.patch(`/api/search/saved/${search.id}`, {
                     alert_enabled: !search.alert_enabled,

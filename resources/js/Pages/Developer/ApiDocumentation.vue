@@ -444,7 +444,7 @@ X-RateLimit-Reset: 1640995200</code></pre>
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import ApiEndpointCard from '@/Components/Developer/ApiEndpointCard.vue';
 import ApiTester from '@/Components/Developer/ApiTester.vue';
 import IntegrationExamples from '@/Components/Developer/IntegrationExamples.vue';

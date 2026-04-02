@@ -994,7 +994,7 @@ cron.schedule('*/15 * * * *', async () => {
   } catch (error) {
     console.error('Scheduled sync failed:', error);
     // Send alert to monitoring system
-    await send// TODO-toast: alert('User sync failed', error.message);
+    await sendAlert('User sync failed', error.message);
   }
 });
 
@@ -1007,7 +1007,7 @@ cron.schedule('0 2 * * *', async () => {
     await syncService.performFullSync();
   } catch (error) {
     console.error('Daily full sync failed:', error);
-    await send// TODO-toast: alert('Daily sync failed', error.message);
+    await sendAlert('Daily sync failed', error.message);
   }
 });
 
@@ -1033,7 +1033,7 @@ app.post('/sync/trigger', async (req, res) => {
   }
 });
 
-async function send// TODO-toast: alert(title, message) {
+async function sendAlert(title, message) {
   // Implement your alerting mechanism
   // e.g., Slack, email, PagerDuty, etc.
   console.error(\`ALERT: \${title} - \${message}\`);

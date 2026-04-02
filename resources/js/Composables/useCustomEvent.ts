@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 import { useCustomEventStore } from '../Stores/useCustomEventStore';
-import type { CustomEventDefinition, CustomEvent, CustomEventAnalytics } from '../Types/analytics';
+import type { CustomEventDefinition, CustomEvent, CustomEventAnalytics } from '../types/analytics';
 
 // Declare Echo on window for TypeScript
 declare global {

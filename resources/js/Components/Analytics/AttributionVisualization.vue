@@ -544,7 +544,7 @@ import {
     AttributionVisualizationResponse,
     ChannelPerformanceResponse,
     BudgetRecommendationsResponse
-} from '../../Types/analytics';
+} from '../../types/analytics';
 
 // Register Chart.js components
 Chart.register(...registerables);

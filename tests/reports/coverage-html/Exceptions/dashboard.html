@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /workspace/app/Exceptions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../_css/bootstrap.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/billboard.min.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/style.css?v=12.5.3" rel="stylesheet" type="text/css">
+  <link href="../_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="../index.html">/workspace/app</a></li>
+         <li class="breadcrumb-item"><a href="index.html">Exceptions</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classesCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="BrandConfigDeletionException.php.html#7">App\Exceptions\BrandConfigDeletionException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandConfigNotFoundException.php.html#7">App\Exceptions\BrandConfigNotFoundException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandConfigValidationException.php.html#7">App\Exceptions\BrandConfigValidationException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarConnectionException.php.html#10">App\Exceptions\CalendarConnectionException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarProviderException.php.html#10">App\Exceptions\CalendarProviderException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarSyncException.php.html#10">App\Exceptions\CalendarSyncException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Handler.php.html#13">App\Exceptions\Handler</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#14">App\Exceptions\TemplateException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateNotFoundException.php.html#10">App\Exceptions\TemplateNotFoundException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateSecurityException.php.html#10">App\Exceptions\TemplateSecurityException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateValidationException.php.html#11">App\Exceptions\TemplateValidationException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TokenRefreshException.php.html#10">App\Exceptions\TokenRefreshException</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="TemplateException.php.html#14">App\Exceptions\TemplateException</a></td><td class="text-right">0.0%</td><td class="text-right">47</td><td class="text-right">2256</td></tr>
+       <tr><td><a href="Handler.php.html#13">App\Exceptions\Handler</a></td><td class="text-right">0.0%</td><td class="text-right">17</td><td class="text-right">306</td></tr>
+       <tr><td><a href="TemplateSecurityException.php.html#10">App\Exceptions\TemplateSecurityException</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+       <tr><td><a href="TemplateValidationException.php.html#11">App\Exceptions\TemplateValidationException</a></td><td class="text-right">0.0%</td><td class="text-right">5</td><td class="text-right">30</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2 style="margin-top: 3rem;">Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodsCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="BrandConfigDeletionException.php.html#9"><abbr title="App\Exceptions\BrandConfigDeletionException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandConfigNotFoundException.php.html#9"><abbr title="App\Exceptions\BrandConfigNotFoundException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="BrandConfigValidationException.php.html#9"><abbr title="App\Exceptions\BrandConfigValidationException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarConnectionException.php.html#15"><abbr title="App\Exceptions\CalendarConnectionException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarConnectionException.php.html#23"><abbr title="App\Exceptions\CalendarConnectionException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarConnectionException.php.html#39"><abbr title="App\Exceptions\CalendarConnectionException::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarProviderException.php.html#15"><abbr title="App\Exceptions\CalendarProviderException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarProviderException.php.html#23"><abbr title="App\Exceptions\CalendarProviderException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarProviderException.php.html#39"><abbr title="App\Exceptions\CalendarProviderException::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarSyncException.php.html#15"><abbr title="App\Exceptions\CalendarSyncException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarSyncException.php.html#23"><abbr title="App\Exceptions\CalendarSyncException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="CalendarSyncException.php.html#39"><abbr title="App\Exceptions\CalendarSyncException::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Handler.php.html#29"><abbr title="App\Exceptions\Handler::register">register</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Handler.php.html#54"><abbr title="App\Exceptions\Handler::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Handler.php.html#129"><abbr title="App\Exceptions\Handler::shouldReport">shouldReport</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#41"><abbr title="App\Exceptions\TemplateException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#62"><abbr title="App\Exceptions\TemplateException::setTenantId">setTenantId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#72"><abbr title="App\Exceptions\TemplateException::getTenantId">getTenantId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#80"><abbr title="App\Exceptions\TemplateException::setTemplateId">setTemplateId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#90"><abbr title="App\Exceptions\TemplateException::getTemplateId">getTemplateId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#98"><abbr title="App\Exceptions\TemplateException::setTemplateCategory">setTemplateCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#108"><abbr title="App\Exceptions\TemplateException::getTemplateCategory">getTemplateCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#116"><abbr title="App\Exceptions\TemplateException::addContextualData">addContextualData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#126"><abbr title="App\Exceptions\TemplateException::getContextualData">getContextualData</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#134"><abbr title="App\Exceptions\TemplateException::setRecoverySuggestion">setRecoverySuggestion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#144"><abbr title="App\Exceptions\TemplateException::getRecoverySuggestion">getRecoverySuggestion</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#152"><abbr title="App\Exceptions\TemplateException::setErrorCategory">setErrorCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#162"><abbr title="App\Exceptions\TemplateException::getErrorCategory">getErrorCategory</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#170"><abbr title="App\Exceptions\TemplateException::setSeverity">setSeverity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#180"><abbr title="App\Exceptions\TemplateException::getSeverity">getSeverity</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#188"><abbr title="App\Exceptions\TemplateException::withContext">withContext</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#225"><abbr title="App\Exceptions\TemplateException::enhanceContextWithSystemInfo">enhanceContextWithSystemInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#245"><abbr title="App\Exceptions\TemplateException::generateRequestId">generateRequestId</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#260"><abbr title="App\Exceptions\TemplateException::getDetailedInfo">getDetailedInfo</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#287"><abbr title="App\Exceptions\TemplateException::toJsonResponse">toJsonResponse</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#312"><abbr title="App\Exceptions\TemplateException::getUserFriendlyMessage">getUserFriendlyMessage</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#332"><abbr title="App\Exceptions\TemplateException::determineStatusCode">determineStatusCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateException.php.html#350"><abbr title="App\Exceptions\TemplateException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateNotFoundException.php.html#15"><abbr title="App\Exceptions\TemplateNotFoundException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateNotFoundException.php.html#23"><abbr title="App\Exceptions\TemplateNotFoundException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateNotFoundException.php.html#39"><abbr title="App\Exceptions\TemplateNotFoundException::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateSecurityException.php.html#17"><abbr title="App\Exceptions\TemplateSecurityException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateSecurityException.php.html#36"><abbr title="App\Exceptions\TemplateSecurityException::getSecurityIssues">getSecurityIssues</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateSecurityException.php.html#44"><abbr title="App\Exceptions\TemplateSecurityException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateSecurityException.php.html#60"><abbr title="App\Exceptions\TemplateSecurityException::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateValidationException.php.html#18"><abbr title="App\Exceptions\TemplateValidationException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateValidationException.php.html#33"><abbr title="App\Exceptions\TemplateValidationException::getErrors">getErrors</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateValidationException.php.html#41"><abbr title="App\Exceptions\TemplateValidationException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TemplateValidationException.php.html#57"><abbr title="App\Exceptions\TemplateValidationException::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TokenRefreshException.php.html#15"><abbr title="App\Exceptions\TokenRefreshException::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TokenRefreshException.php.html#23"><abbr title="App\Exceptions\TokenRefreshException::report">report</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="TokenRefreshException.php.html#39"><abbr title="App\Exceptions\TokenRefreshException::render">render</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3 style="margin-top: 2rem;">Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+         <th class="text-right">Complexity</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Handler.php.html#54"><abbr title="App\Exceptions\Handler::render">render</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">15</td><td class="text-right">240</td></tr>
+       <tr><td><a href="TemplateException.php.html#188"><abbr title="App\Exceptions\TemplateException::withContext">withContext</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">9</td><td class="text-right">90</td></tr>
+       <tr><td><a href="TemplateException.php.html#332"><abbr title="App\Exceptions\TemplateException::determineStatusCode">determineStatusCode</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">7</td><td class="text-right">56</td></tr>
+       <tr><td><a href="TemplateException.php.html#225"><abbr title="App\Exceptions\TemplateException::enhanceContextWithSystemInfo">enhanceContextWithSystemInfo</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="TemplateException.php.html#312"><abbr title="App\Exceptions\TemplateException::getUserFriendlyMessage">getUserFriendlyMessage</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">4</td><td class="text-right">20</td></tr>
+       <tr><td><a href="TemplateException.php.html#287"><abbr title="App\Exceptions\TemplateException::toJsonResponse">toJsonResponse</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">3</td><td class="text-right">12</td></tr>
+       <tr><td><a href="TemplateException.php.html#245"><abbr title="App\Exceptions\TemplateException::generateRequestId">generateRequestId</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="TemplateException.php.html#260"><abbr title="App\Exceptions\TemplateException::getDetailedInfo">getDetailedInfo</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="TemplateSecurityException.php.html#17"><abbr title="App\Exceptions\TemplateSecurityException::__construct">__construct</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+       <tr><td><a href="TemplateValidationException.php.html#18"><abbr title="App\Exceptions\TemplateValidationException::__construct">__construct</abbr></a></td><td class="text-right">0.0%</td><td class="text-right">2</td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 12.5.3</a> using <a href="https://www.php.net/" target="_top">PHP 8.5.6-dev</a> and <a href="https://phpunit.de/">PHPUnit 12.5.8</a> at Thu Apr 2 17:21:57 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../_js/billboard.pkgd.min.js?v=12.5.3" type="text/javascript"></script>
+  <script type="application/json" id="complexity_class">[[0,1,"BrandConfigDeletionException.php.html#7","App\\Exceptions\\BrandConfigDeletionException","2"],[0,1,"BrandConfigNotFoundException.php.html#7","App\\Exceptions\\BrandConfigNotFoundException","2"],[0,1,"BrandConfigValidationException.php.html#7","App\\Exceptions\\BrandConfigValidationException","2"],[0,3,"CalendarConnectionException.php.html#10","App\\Exceptions\\CalendarConnectionException","12"],[0,3,"CalendarProviderException.php.html#10","App\\Exceptions\\CalendarProviderException","12"],[0,3,"CalendarSyncException.php.html#10","App\\Exceptions\\CalendarSyncException","12"],[0,17,"Handler.php.html#13","App\\Exceptions\\Handler","306"],[0,47,"TemplateException.php.html#14","App\\Exceptions\\TemplateException","2256"],[0,3,"TemplateNotFoundException.php.html#10","App\\Exceptions\\TemplateNotFoundException","12"],[0,5,"TemplateSecurityException.php.html#10","App\\Exceptions\\TemplateSecurityException","30"],[0,5,"TemplateValidationException.php.html#11","App\\Exceptions\\TemplateValidationException","30"],[0,3,"TokenRefreshException.php.html#10","App\\Exceptions\\TokenRefreshException","12"]]</script>
+  <script type="application/json" id="complexity_method">[[0,1,"BrandConfigDeletionException.php.html#9","App\\Exceptions\\BrandConfigDeletionException::__construct","2"],[0,1,"BrandConfigNotFoundException.php.html#9","App\\Exceptions\\BrandConfigNotFoundException::__construct","2"],[0,1,"BrandConfigValidationException.php.html#9","App\\Exceptions\\BrandConfigValidationException::__construct","2"],[0,1,"CalendarConnectionException.php.html#15","App\\Exceptions\\CalendarConnectionException::__construct","2"],[0,1,"CalendarConnectionException.php.html#23","App\\Exceptions\\CalendarConnectionException::report","2"],[0,1,"CalendarConnectionException.php.html#39","App\\Exceptions\\CalendarConnectionException::render","2"],[0,1,"CalendarProviderException.php.html#15","App\\Exceptions\\CalendarProviderException::__construct","2"],[0,1,"CalendarProviderException.php.html#23","App\\Exceptions\\CalendarProviderException::report","2"],[0,1,"CalendarProviderException.php.html#39","App\\Exceptions\\CalendarProviderException::render","2"],[0,1,"CalendarSyncException.php.html#15","App\\Exceptions\\CalendarSyncException::__construct","2"],[0,1,"CalendarSyncException.php.html#23","App\\Exceptions\\CalendarSyncException::report","2"],[0,1,"CalendarSyncException.php.html#39","App\\Exceptions\\CalendarSyncException::render","2"],[0,1,"Handler.php.html#29","App\\Exceptions\\Handler::register","2"],[0,15,"Handler.php.html#54","App\\Exceptions\\Handler::render","240"],[0,1,"Handler.php.html#129","App\\Exceptions\\Handler::shouldReport","2"],[0,1,"TemplateException.php.html#41","App\\Exceptions\\TemplateException::__construct","2"],[0,1,"TemplateException.php.html#62","App\\Exceptions\\TemplateException::setTenantId","2"],[0,1,"TemplateException.php.html#72","App\\Exceptions\\TemplateException::getTenantId","2"],[0,1,"TemplateException.php.html#80","App\\Exceptions\\TemplateException::setTemplateId","2"],[0,1,"TemplateException.php.html#90","App\\Exceptions\\TemplateException::getTemplateId","2"],[0,1,"TemplateException.php.html#98","App\\Exceptions\\TemplateException::setTemplateCategory","2"],[0,1,"TemplateException.php.html#108","App\\Exceptions\\TemplateException::getTemplateCategory","2"],[0,1,"TemplateException.php.html#116","App\\Exceptions\\TemplateException::addContextualData","2"],[0,1,"TemplateException.php.html#126","App\\Exceptions\\TemplateException::getContextualData","2"],[0,1,"TemplateException.php.html#134","App\\Exceptions\\TemplateException::setRecoverySuggestion","2"],[0,1,"TemplateException.php.html#144","App\\Exceptions\\TemplateException::getRecoverySuggestion","2"],[0,1,"TemplateException.php.html#152","App\\Exceptions\\TemplateException::setErrorCategory","2"],[0,1,"TemplateException.php.html#162","App\\Exceptions\\TemplateException::getErrorCategory","2"],[0,1,"TemplateException.php.html#170","App\\Exceptions\\TemplateException::setSeverity","2"],[0,1,"TemplateException.php.html#180","App\\Exceptions\\TemplateException::getSeverity","2"],[0,9,"TemplateException.php.html#188","App\\Exceptions\\TemplateException::withContext","90"],[0,4,"TemplateException.php.html#225","App\\Exceptions\\TemplateException::enhanceContextWithSystemInfo","20"],[0,2,"TemplateException.php.html#245","App\\Exceptions\\TemplateException::generateRequestId","6"],[0,2,"TemplateException.php.html#260","App\\Exceptions\\TemplateException::getDetailedInfo","6"],[0,3,"TemplateException.php.html#287","App\\Exceptions\\TemplateException::toJsonResponse","12"],[0,4,"TemplateException.php.html#312","App\\Exceptions\\TemplateException::getUserFriendlyMessage","20"],[0,7,"TemplateException.php.html#332","App\\Exceptions\\TemplateException::determineStatusCode","56"],[0,1,"TemplateException.php.html#350","App\\Exceptions\\TemplateException::report","2"],[0,1,"TemplateNotFoundException.php.html#15","App\\Exceptions\\TemplateNotFoundException::__construct","2"],[0,1,"TemplateNotFoundException.php.html#23","App\\Exceptions\\TemplateNotFoundException::report","2"],[0,1,"TemplateNotFoundException.php.html#39","App\\Exceptions\\TemplateNotFoundException::render","2"],[0,2,"TemplateSecurityException.php.html#17","App\\Exceptions\\TemplateSecurityException::__construct","6"],[0,1,"TemplateSecurityException.php.html#36","App\\Exceptions\\TemplateSecurityException::getSecurityIssues","2"],[0,1,"TemplateSecurityException.php.html#44","App\\Exceptions\\TemplateSecurityException::report","2"],[0,1,"TemplateSecurityException.php.html#60","App\\Exceptions\\TemplateSecurityException::render","2"],[0,2,"TemplateValidationException.php.html#18","App\\Exceptions\\TemplateValidationException::__construct","6"],[0,1,"TemplateValidationException.php.html#33","App\\Exceptions\\TemplateValidationException::getErrors","2"],[0,1,"TemplateValidationException.php.html#41","App\\Exceptions\\TemplateValidationException::report","2"],[0,1,"TemplateValidationException.php.html#57","App\\Exceptions\\TemplateValidationException::render","2"],[0,1,"TokenRefreshException.php.html#15","App\\Exceptions\\TokenRefreshException::__construct","2"],[0,1,"TokenRefreshException.php.html#23","App\\Exceptions\\TokenRefreshException::report","2"],[0,1,"TokenRefreshException.php.html#39","App\\Exceptions\\TokenRefreshException::render","2"]]</script>
+  <script type="text/javascript" defer>
+  const barLabels = [
+    '0%',
+    '0-10%',
+    '10-20%',
+    '20-30%',
+    '30-40%',
+    '40-50%',
+    '50-60%',
+    '60-70%',
+    '70-80%',
+    '80-90%',
+    '90-100%',
+    '100%'
+  ];
+  const barConfig = (name, fullName, values) => ({
+    axis: {
+      x: {
+        type: "category",
+        categories: barLabels,
+      },
+      y: {
+        label: {
+          text: `#${name}`,
+          position: 'outer-top',
+        },
+      },
+    },
+    bindto: `#${name}CoverageDistribution`,
+    data: {
+      columns: [
+        [fullName].concat(values),
+      ],
+      colors: {
+        [fullName]: "rgba(69, 114, 167, 0.75)",
+      },
+      type: "bar",
+    },
+    bar: {
+      width: {
+        ratio: 0.9,
+      },
+    },
+    grid: {
+      focus: {
+        show: false,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">Coverage ${barLabels[data[0].x]}</th></tr>
+            <tr><td class="value">${data[0].value} ${name}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  bb.generate(
+    barConfig('classes', "Class Coverage", [12,0,0,0,0,0,0,0,0,0,0,0])
+  );
+  bb.generate(
+    barConfig('methods', "Method Coverage", [52,0,0,0,0,0,0,0,0,0,0,0])
+  );
+
+  const scatterConfig = (name, complexityData) => ({
+    axis: {
+      x: {
+        label: {
+          text: 'Code Coverage (in percent)',
+          position: 'outer-right',
+        },
+        tick: {
+          values: [0, 20, 40, 60, 80, 100],
+        },
+      },
+      y: {
+        label: {
+          text: 'Cyclomatic Complexity',
+          position: 'outer-top',
+        },
+        min: 0,
+        padding: {
+          bottom: 0,
+          top: 5,
+        },
+      },
+    },
+    bindto: `#${name}Complexity`,
+    data: {
+      columns: [
+        ["complexity_x"].concat(complexityData.map(d => d[0])),
+        ["complexity"].concat(complexityData.map(d => d[1])),
+      ],
+      onclick: function(data, element) {
+        window.location = complexityData[data.index][2];
+      },
+      type: "scatter",
+      xs: {
+        "complexity": "complexity_x",
+      },
+    },
+    grid: {
+      focus: {
+        show: true,
+        y: true,
+      },
+      x: {
+        show: true,
+      },
+      y: {
+        show: true,
+      },
+    },
+    legend: {
+      show: false,
+    },
+    tooltip: {
+      contents: function (data) {
+        const coverage = Math.round(data[0].x);
+        const complexity = data[0].value;
+        const targetName = complexityData[data[0].index][3];
+        const crap = complexityData[data[0].index][4];
+        return `<table class="bb-tooltip"><tbody>
+            <tr><th colspan="2">${targetName}</th></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Coverage</td><td class="name">${coverage}%</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Complexity</td><td class="value">${complexity}</td></tr>
+            <tr class="bb-tooltip-name-complexity"><td>Crap</td><td class="value">${crap}</td></tr>
+          </tbody></table>`;
+      },
+      grouped: false,
+    },
+  });
+  const classComplexityData = JSON.parse(document.getElementById('complexity_class').textContent);
+  bb.generate(
+    scatterConfig("class", classComplexityData)
+  );
+  const methodComplexityData = JSON.parse(document.getElementById('complexity_method').textContent);
+  bb.generate(
+    scatterConfig("method", methodComplexityData),
+  );
+  </script>
+ </body>
+</html>

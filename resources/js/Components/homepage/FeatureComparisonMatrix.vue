@@ -352,7 +352,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AudienceType, InstitutionalFeature, PlatformFeature } from '@/Types/homepage';
+import type { AudienceType, InstitutionalFeature, PlatformFeature } from '@/types/homepage';
 import { computed, ref } from 'vue';
 
 interface Props {

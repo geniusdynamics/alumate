@@ -250,7 +250,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import Icon from '@/Components/Common/Icon.vue';
 import { useNotifications } from '@/Composables/useNotifications';
 import type { GrapeJSThemeData, ThemeExportOptions, ThemePerformanceData } from '@/types/Components';

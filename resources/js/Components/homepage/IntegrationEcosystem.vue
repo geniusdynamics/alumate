@@ -707,8 +707,8 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
-import type { IntegrationEcosystemProps, PlatformIntegration, TrainingProgram } from '@/Types/homepage';
+import { logger } from '@/utils/logger';
+import type { IntegrationEcosystemProps, PlatformIntegration, TrainingProgram } from '@/types/homepage';
 import { computed, ref } from 'vue';
 
 interface Props extends /* @vue-ignore */ IntegrationEcosystemProps {}

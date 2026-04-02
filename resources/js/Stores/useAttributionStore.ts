@@ -10,7 +10,7 @@ import type {
     AttributionTouchListResponse,
     AttributionReportResponse,
     AttributionSummaryResponse
-} from '../Types/analytics';
+} from '../types/analytics';
 
 export const useAttributionStore = defineStore('attribution', () => {
     // State

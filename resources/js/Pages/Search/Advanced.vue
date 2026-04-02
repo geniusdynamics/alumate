@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import AdvancedSearch from '@/Components/AdvancedSearch.vue';
 import SavedSearches from '@/Components/SavedSearches.vue';
 import SearchAnalytics from '@/Components/SearchAnalytics.vue';

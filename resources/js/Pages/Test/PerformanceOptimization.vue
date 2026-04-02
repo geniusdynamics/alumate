@@ -184,9 +184,9 @@
 import LazyImage from '@/Components/Performance/LazyImage.vue';
 import PerformanceDashboard from '@/Components/Performance/PerformanceDashboard.vue';
 import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
-import { bundleAnalyzer } from '@/Utils/bundle-analyzer';
-import { createLazyComponent, dynamicImportWithRetry } from '@/Utils/lazy-loading';
-import { performanceOptimizer } from '@/Utils/performance-optimizer';
+import { bundleAnalyzer } from '@/utils/bundle-analyzer';
+import { createLazyComponent, dynamicImportWithRetry } from '@/utils/lazy-loading';
+import { performanceOptimizer } from '@/utils/performance-optimizer';
 import { computed, onMounted, ref } from 'vue';
 
 // Performance monitoring

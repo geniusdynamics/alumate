@@ -170,7 +170,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import GoalModal from '@/Components/GoalModal.vue';
 import MilestoneCard from '@/Components/MilestoneCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';

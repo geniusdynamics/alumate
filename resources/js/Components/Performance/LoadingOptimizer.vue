@@ -44,7 +44,7 @@
 <script setup lang="ts">
 import { LightBulbIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
-import { recordCustomMetric } from '../../Utils/performance-monitor';
+import { recordCustomMetric } from '../../utils/performance-monitor';
 import LoadingSpinner from '../LoadingSpinner.vue';
 
 // Skeleton Components

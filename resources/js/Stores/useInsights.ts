@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { Insight } from '@/Types/analytics';
+import type { Insight } from '@/types/analytics';
 
 /**
  * Pinia store for managing analytics insights

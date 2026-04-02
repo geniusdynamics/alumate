@@ -886,7 +886,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { createABTestingService, type ABTestingService } from '@/Services/ABTestingService';
 import { analyticsService } from '@/Services/AnalyticsIntegrationService';
 import { brandConfigService } from '@/Services/BrandConfigService';

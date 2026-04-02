@@ -299,7 +299,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import AlumniMap from '@/Components/AlumniMap.vue';
 import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';

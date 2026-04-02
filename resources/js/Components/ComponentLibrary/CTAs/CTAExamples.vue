@@ -398,7 +398,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { createABTest, createEqualWeightVariants, useABTesting } from '@/Composables/useABTesting';
 import { useConversionTracking } from '@/Composables/useConversionTracking';
 import type { CTAComponentConfig } from '@/types/Components';

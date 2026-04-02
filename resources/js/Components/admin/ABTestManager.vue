@@ -466,7 +466,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ABTestResult, ABTestStatistics } from '@/Types/homepage';
+import type { ABTestResult, ABTestStatistics } from '@/types/homepage';
 import { onMounted, reactive, ref } from 'vue';
 
 // State

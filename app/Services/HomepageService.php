@@ -55,114 +55,6 @@ class HomepageService
     }
 
     /**
-     * Get testimonials filtered by audience
-     */
-    public function getTestimonials(string $audience): Collection
-    {
-        return Cache::remember("homepage.testimonials.{$audience}", self::CACHE_TTL, function () use ($audience) {
-            $type = $audience === 'institutional' ? 'institutional' : 'individual';
-
-            $testimonials = Testimonial::where('audience_type', $type)
-                ->where('is_featured', true)
-                ->where('is_approved', true)
-                ->orderBy('created_at', 'desc')
-                ->limit(6)
-                ->get();
-
-            if ($testimonials->isEmpty()) {
-                return collect();
-            }
-
-            return $testimonials->map(function ($testimonial) {
-                return [
-                    'id' => $testimonial->id,
-                    'quote' => $testimonial->content,
-                    'author' => [
-                        'name' => $testimonial->author_name ?? 'Anonymous',
-                        'graduation_year' => $testimonial->graduation_year,
-                        'current_role' => $testimonial->author_title,
-                        'current_company' => $testimonial->author_company,
-                        'profile_image' => $testimonial->author_image,
-                    ],
-                    'metrics' => $testimonial->metrics ?? [],
-                ];
-            });
-        });
-    }
-
-    /**
-     * Get success stories for homepage
-     */
-    public function getSuccessStories(string $audience, int $limit = 3): Collection
-    {
-        return Cache::remember("homepage.success_stories.{$audience}", self::CACHE_TTL, function () use ($audience, $limit) {
-            return SuccessStory::where('is_published', true)
-                ->where('is_featured', true)
-                ->orderBy('published_at', 'desc')
-                ->limit($limit)
-                ->get();
-        });
-    }
-
-    /**
-     * Get hero section content based on audience
-     */
-    public function getHeroContent(string $audience): array
-    {
-        return Cache::remember("homepage.hero.{$audience}", self::CACHE_TTL, function () use ($audience) {
-            $content = [
-                'title' => 'Connect with Alumni Worldwide',
-                'subtitle' => 'The all-in-one platform that brings alumni communities together.',
-                'cta_primary' => 'Get Started',
-                'cta_secondary' => 'Learn More',
-            ];
-
-            if ($audience === 'institutional') {
-                $content['title'] = 'Transform Your Alumni Engagement';
-                $content['subtitle'] = 'Boost alumni engagement by 400% with our branded mobile app platform.';
-                $content['cta_primary'] = 'Request Demo';
-            } elseif ($audience === 'employer') {
-                $content['title'] = 'Find Top Talent from Alumni Networks';
-                $content['subtitle'] = 'Connect with qualified alumni from top institutions.';
-                $content['cta_primary'] = 'Start Hiring';
-            }
-
-            return $content;
-        });
-    }
-
-    /**
-     * Get features based on audience
-     */
-    public function getFeatures(string $audience): Collection
-    {
-        return Cache::remember("homepage.features.{$audience}", self::CACHE_TTL, function () {
-            return collect([
-                [
-                    'title' => 'Alumni Directory',
-                    'description' => 'Find and connect with alumni worldwide.',
-                    'icon' => 'users',
-                ],
-                [
-                    'title' => 'Job Board',
-                    'description' => 'Post jobs and find opportunities.',
-                    'icon' => 'briefcase',
-                ],
-                [
-                    'title' => 'Events',
-                    'description' => 'Organize and attend alumni events.',
-                    'icon' => 'calendar',
-                ],
-                [
-                    'title' => 'Mentorship',
-                    'description' => 'Connect with mentors and mentees.',
-                    'icon' => 'award',
-                ],
-            ]);
-        });
-    }
-
-    /**
      * Helper methods for statistics
      */
     private function calculateAverageSalaryIncrease(): float
@@ -233,10 +125,6 @@ class HomepageService
         return DB::table('employer_feedback')
             ->where('created_at', '>=', now()->subDays(30))
             ->avg('rating') * 20 ?? 0;
-    }
-
-            return $baseStats;
-        });
     }
 
     /**
@@ -1986,90 +1874,6 @@ class HomepageService
             ];
         });
     }
-            ],
-            [
-                'id' => '6',
-                'name' => 'CCPA Compliant',
-                'image' => '/images/badges/ccpa-compliant.png',
-                'description' => 'California Consumer Privacy Act compliance for enhanced privacy rights.',
-            ],
-        ];
-
-        $companyLogos = [
-            [
-                'id' => '1',
-                'name' => 'Google',
-                'logo' => '/images/companies/google-logo.png',
-                'website' => 'https://google.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '2',
-                'name' => 'Microsoft',
-                'logo' => '/images/companies/microsoft-logo.png',
-                'website' => 'https://microsoft.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '3',
-                'name' => 'Apple',
-                'logo' => '/images/companies/apple-logo.png',
-                'website' => 'https://apple.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '4',
-                'name' => 'Amazon',
-                'logo' => '/images/companies/amazon-logo.png',
-                'website' => 'https://amazon.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '5',
-                'name' => 'Meta',
-                'logo' => '/images/companies/meta-logo.png',
-                'website' => 'https://meta.com',
-                'category' => 'Technology',
-            ],
-            [
-                'id' => '6',
-                'name' => 'Netflix',
-                'logo' => '/images/companies/netflix-logo.png',
-                'website' => 'https://netflix.com',
-                'category' => 'Entertainment',
-            ],
-            [
-                'id' => '7',
-                'name' => 'Tesla',
-                'logo' => '/images/companies/tesla-logo.png',
-                'website' => 'https://tesla.com',
-                'category' => 'Automotive',
-            ],
-            [
-                'id' => '8',
-                'name' => 'Goldman Sachs',
-                'logo' => '/images/companies/goldman-sachs-logo.png',
-                'website' => 'https://goldmansachs.com',
-                'category' => 'Finance',
-            ],
-        ];
-
-        // Add audience-specific badges for institutional clients
-        if ($audience === 'institutional') {
-            $trustBadges[] = [
-                'id' => '7',
-                'name' => 'FERPA Compliant',
-                'image' => '/images/badges/ferpa-compliant.png',
-                'description' => 'Family Educational Rights and Privacy Act compliance for educational institutions.',
-                'verification_url' => 'https://example.com/ferpa-verification',
-            ];
-        }
-
-        return [
-            'trust_badges' => $trustBadges,
-            'company_logos' => $companyLogos,
-        ];
-    }
 
     /**
      * Get platform preview data including screenshots and tour steps
@@ -2823,8 +2627,6 @@ class HomepageService
                 'connections_made' => $connectionCount,
                 'jobs_filled' => $jobCount,
             ],
-        ];
-    }
         ];
     }
 }

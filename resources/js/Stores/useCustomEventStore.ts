@@ -11,7 +11,7 @@ import type {
     CustomEventAnalyticsResponse,
     OptimizationSuggestion,
     OptimizationResponse
-} from '../Types/analytics';
+} from '../types/analytics';
 
 export const useCustomEventStore = defineStore('customEvent', () => {
     // State

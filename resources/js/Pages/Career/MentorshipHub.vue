@@ -204,7 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
 import LearningResources from '@/Components/LearningResources.vue';
 import MentorDirectory from '@/Components/MentorDirectory.vue';

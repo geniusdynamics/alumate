@@ -218,7 +218,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { h, onMounted, reactive, ref, watch } from 'vue';
 import MemoryModal from './MemoryModal.vue';
 

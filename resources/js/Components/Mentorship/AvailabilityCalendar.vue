@@ -192,7 +192,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface User {

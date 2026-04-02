@@ -63,8 +63,8 @@ class FormBuilderService
 
         return $form->load('fields');
     }
-}    pu
-blic function createFormFields(FormBuilder $form, array $fieldsData): void
+
+    public function createFormFields(FormBuilder $form, array $fieldsData): void
     {
         foreach ($fieldsData as $index => $fieldData) {
             FormField::create([
@@ -151,8 +151,8 @@ blic function createFormFields(FormBuilder $form, array $fieldsData): void
 
         return $validator->validated();
     }
-}    
-private function addFieldTypeValidation(FormField $field, string $existingRules): string
+    
+    private function addFieldTypeValidation(FormField $field, string $existingRules): string
     {
         $typeRules = [];
         

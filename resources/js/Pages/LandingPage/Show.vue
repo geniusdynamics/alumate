@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import ContactForm from '@/Components/ContactForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed, onMounted } from 'vue';

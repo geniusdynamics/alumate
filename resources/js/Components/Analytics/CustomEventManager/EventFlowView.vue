@@ -180,10 +180,10 @@
 </template>
 
 <script setup lang="ts">
-import { logger } from '@/Utils/logger';
+import { logger } from '@/utils/logger';
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import * as d3 from 'd3';
-import type { BehaviorFlowData } from '../../../Types/analytics';
+import type { BehaviorFlowData } from '../../../types/analytics';
 
 // Props
 const props = defineProps<{
