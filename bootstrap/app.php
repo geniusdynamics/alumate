@@ -35,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant' => \App\Http\Middleware\TenantMiddleware::class,
             'api.rate_limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
             'social.rate_limit' => \App\Http\Middleware\SocialRateLimiting::class,
+            '2fa' => \App\Http\Middleware\RequireTwoFactor::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

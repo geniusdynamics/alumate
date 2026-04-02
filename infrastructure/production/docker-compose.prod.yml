@@ -103,6 +103,23 @@ services:
       retries: 3
       start_period: 30s
 
+  # WebSocket Server (Soketi)
+  websockets:
+    image: quay.io/soketi/soketi:1.6-16-alpine
+    container_name: alumate_websockets_prod
+    restart: unless-stopped
+    environment:
+      SOKETI_DEBUG: '0'
+      SOKETI_METRICS_SERVER_PORT: '9601'
+      SOKETI_DEFAULT_APP_ID: ${PUSHER_APP_ID:-alumate_app}
+      SOKETI_DEFAULT_APP_KEY: ${PUSHER_APP_KEY:-alumate_key}
+      SOKETI_DEFAULT_APP_SECRET: ${PUSHER_APP_SECRET:-alumate_secret}
+    ports:
+      - "6001:6001"
+      - "9601:9601"
+    networks:
+      - app_network
+
   # Queue Worker
   queue-worker:
     build:
@@ -110,7 +127,7 @@ services:
       dockerfile: infrastructure/production/Dockerfile.php
     container_name: alumate_queue_prod
     restart: unless-stopped
-    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--timeout=90"]
+    command: ["supervisord", "-c", "/etc/supervisord.conf"]
     volumes:
       - ./storage:/var/www/html/storage
     environment:

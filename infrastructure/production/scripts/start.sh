@@ -49,17 +49,9 @@ php artisan route:clear
 # Set proper permissions
 chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Start PHP-FPM
-echo "Starting PHP-FPM..."
-php-fpm
-
-# Start supervisor for queue worker and scheduler
-echo "Starting supervisor..."
-supervisord -c /etc/supervisord.conf
-
 # Create health check file
 touch /var/www/html/storage/health-check
 
-# Keep container running
-echo "Container started successfully!"
-exec "$@"
+# Start PHP-FPM
+echo "Starting PHP-FPM..."
+php-fpm
