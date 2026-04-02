@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Services\TenantContextService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Analytics Security Hardening Service
@@ -86,7 +84,7 @@ class AnalyticsSecurityHardeningService
     public function scanVulnerabilities(): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         Log::info('Starting vulnerability scan', [
             'tenant_id' => $tenantId,
             'timestamp' => now(),
@@ -142,7 +140,7 @@ class AnalyticsSecurityHardeningService
     public function applySecurityPatches(): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         Log::info('Applying security patches', [
             'tenant_id' => $tenantId,
             'timestamp' => now(),
@@ -154,7 +152,7 @@ class AnalyticsSecurityHardeningService
         foreach (self::SECURITY_PATCHES as $patchId => $description) {
             try {
                 $result = $this->applyPatch($patchId);
-                
+
                 if ($result['success']) {
                     $appliedPatches[] = array_merge(['description' => $description], $result);
                 } else {
@@ -197,7 +195,7 @@ class AnalyticsSecurityHardeningService
     public function validateSecurityConfiguration(): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $validations = [];
 
         // Validate encryption configuration
@@ -218,7 +216,7 @@ class AnalyticsSecurityHardeningService
         // Validate data protection configuration
         $validations['data_protection'] = $this->validateDataProtectionConfig();
 
-        $allValid = !in_array(false, array_column($validations, 'valid'));
+        $allValid = ! in_array(false, array_column($validations, 'valid'));
 
         return [
             'validated_at' => now(),
@@ -227,8 +225,8 @@ class AnalyticsSecurityHardeningService
             'validations' => $validations,
             'summary' => [
                 'total_checks' => count($validations),
-                'passed' => count(array_filter($validations, fn($v) => $v['valid'])),
-                'failed' => count(array_filter($validations, fn($v) => !$v['valid'])),
+                'passed' => count(array_filter($validations, fn ($v) => $v['valid'])),
+                'failed' => count(array_filter($validations, fn ($v) => ! $v['valid'])),
             ],
         ];
     }
@@ -236,12 +234,12 @@ class AnalyticsSecurityHardeningService
     /**
      * Encrypt sensitive data
      *
-     * @param mixed $data Data to encrypt
+     * @param  mixed  $data  Data to encrypt
      * @return string Encrypted data
      */
     public function encryptSensitiveData(mixed $data): string
     {
-        if (!is_string($data)) {
+        if (! is_string($data)) {
             $data = json_encode($data);
         }
 
@@ -259,7 +257,7 @@ class AnalyticsSecurityHardeningService
     /**
      * Decrypt sensitive data
      *
-     * @param string $encryptedData Encrypted data
+     * @param  string  $encryptedData  Encrypted data
      * @return mixed Decrypted data
      */
     public function decryptSensitiveData(string $encryptedData): mixed
@@ -278,17 +276,17 @@ class AnalyticsSecurityHardeningService
     /**
      * Mask sensitive data for logging/output
      *
-     * @param array $data Data to mask
-     * @param array|null $fields Specific fields to mask (null for all sensitive fields)
+     * @param  array  $data  Data to mask
+     * @param  array|null  $fields  Specific fields to mask (null for all sensitive fields)
      * @return array Masked data
      */
     public function maskSensitiveData(array $data, ?array $fields = null): array
     {
         $fieldsToMask = $fields ?? self::MASKED_FIELDS;
-        
+
         return array_map(function ($value, $key) use ($fieldsToMask) {
             $lowerKey = strtolower($key);
-            
+
             // Check if field should be masked
             foreach ($fieldsToMask as $sensitiveField => $maskPattern) {
                 if (str_contains($lowerKey, strtolower($sensitiveField))) {
@@ -297,17 +295,19 @@ class AnalyticsSecurityHardeningService
                         if ($length <= 4) {
                             return str_repeat('*', $length);
                         }
-                        return substr($value, 0, 2) . str_repeat('*', $length - 4) . substr($value, -2);
+
+                        return substr($value, 0, 2).str_repeat('*', $length - 4).substr($value, -2);
                     }
+
                     return self::MASKED_FIELDS[$sensitiveField] ?? '********';
                 }
             }
-            
+
             // Recursively mask nested arrays
             if (is_array($value)) {
                 return $this->maskSensitiveData($value, array_keys($fieldsToMask));
             }
-            
+
             return $value;
         }, $data, array_keys($data));
     }
@@ -315,9 +315,9 @@ class AnalyticsSecurityHardeningService
     /**
      * Validate access control for analytics operations
      *
-     * @param string $operation Operation being performed
-     * @param int|null $userId User performing the operation
-     * @param array|null $context Additional context
+     * @param  string  $operation  Operation being performed
+     * @param  int|null  $userId  User performing the operation
+     * @param  array|null  $context  Additional context
      * @return array Validation result
      */
     public function validateAccessControl(string $operation, ?int $userId = null, ?array $context = null): array
@@ -336,34 +336,38 @@ class AnalyticsSecurityHardeningService
         ];
 
         // Check if user is authenticated
-        if (!$userId) {
+        if (! $userId) {
             $result['reason'] = 'User not authenticated';
             $result['checks_performed'][] = 'authentication_check: failed';
+
             return $result;
         }
         $result['checks_performed'][] = 'authentication_check: passed';
 
         // Check tenant access
-        if ($tenantId && !$this->tenantContextService->validateTenantAccess((int) $tenantId)) {
+        if ($tenantId && ! $this->tenantContextService->validateTenantAccess((int) $tenantId)) {
             $result['reason'] = 'User does not have access to this tenant';
             $result['checks_performed'][] = 'tenant_access_check: failed';
+
             return $result;
         }
         $result['checks_performed'][] = 'tenant_access_check: passed';
 
         // Check operation-specific permissions
         $permissionResult = $this->checkOperationPermission($operation, $userId, $context);
-        if (!$permissionResult['allowed']) {
+        if (! $permissionResult['allowed']) {
             $result['reason'] = $permissionResult['reason'];
             $result['checks_performed'][] = "permission_check: failed ({$operation})";
+
             return $result;
         }
         $result['checks_performed'][] = "permission_check: passed ({$operation})";
 
         // Check rate limiting
-        if (!$this->checkRateLimit($operation, $userId)) {
+        if (! $this->checkRateLimit($operation, $userId)) {
             $result['reason'] = 'Rate limit exceeded';
             $result['checks_performed'][] = 'rate_limit_check: failed';
+
             return $result;
         }
         $result['checks_performed'][] = 'rate_limit_check: passed';
@@ -377,14 +381,13 @@ class AnalyticsSecurityHardeningService
     /**
      * Audit security events
      *
-     * @param string $eventType Type of security event
-     * @param array $details Event details
-     * @return void
+     * @param  string  $eventType  Type of security event
+     * @param  array  $details  Event details
      */
     public function auditSecurityEvent(string $eventType, array $details = []): void
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $eventData = array_merge([
             'event_type' => $eventType,
             'tenant_id' => $tenantId,
@@ -449,13 +452,13 @@ class AnalyticsSecurityHardeningService
     /**
      * Configure security settings
      *
-     * @param array $settings Security settings to configure
+     * @param  array  $settings  Security settings to configure
      * @return array Configuration result
      */
     public function configureSecuritySettings(array $settings): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         $validatedSettings = [];
         $failedSettings = [];
 
@@ -496,7 +499,7 @@ class AnalyticsSecurityHardeningService
     private function scanForSqlInjection(): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         // Check for potential SQL injection patterns in recent queries
         $suspiciousQueries = DB::table('analytics_events')
             ->where('event_type', 'like', '%sql%')
@@ -577,9 +580,9 @@ class AnalyticsSecurityHardeningService
         foreach (self::SENSITIVE_FIELDS as $field) {
             $count = DB::table('analytics_events')
                 ->where('event_data', 'like', "%\"{$field}\":%")
-                ->where('event_data', 'not like', "%encrypted_%")
+                ->where('event_data', 'not like', '%encrypted_%')
                 ->count();
-            
+
             if ($count > 0) {
                 $unencryptedFields[$field] = $count;
             }
@@ -589,8 +592,8 @@ class AnalyticsSecurityHardeningService
             'name' => 'Unencrypted Sensitive Data',
             'description' => 'Scan for sensitive data not properly encrypted',
             'count' => array_sum($unencryptedFields),
-            'severity' => !empty($unencryptedFields) ? 'high' : 'low',
-            'status' => !empty($unencryptedFields) ? 'issues_found' : 'clean',
+            'severity' => ! empty($unencryptedFields) ? 'high' : 'low',
+            'status' => ! empty($unencryptedFields) ? 'issues_found' : 'clean',
             'details' => $unencryptedFields,
         ];
     }
@@ -608,9 +611,9 @@ class AnalyticsSecurityHardeningService
         ];
 
         $missingHeaders = [];
-        
+
         foreach ($requiredHeaders as $header) {
-            if (!response()->headers->has($header)) {
+            if (! response()->headers->has($header)) {
                 $missingHeaders[] = $header;
             }
         }
@@ -631,7 +634,7 @@ class AnalyticsSecurityHardeningService
     private function scanAccessControl(): array
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
-        
+
         // Check for potential cross-tenant access attempts
         $crossTenantAttempts = DB::table('security_logs')
             ->where('tenant_id', '!=', $tenantId)
@@ -825,15 +828,15 @@ class AnalyticsSecurityHardeningService
     {
         // Simple rate limit check - in production use Laravel's built-in rate limiting
         $cacheKey = "rate_limit_{$userId}_{$operation}";
-        
+
         $attempts = cache()->get($cacheKey, 0);
-        
+
         if ($attempts >= 60) { // 60 requests per minute
             return false;
         }
-        
+
         cache()->put($cacheKey, $attempts + 1, 60);
-        
+
         return true;
     }
 
@@ -960,17 +963,17 @@ class AnalyticsSecurityHardeningService
             'password_min_length' => 'integer',
         ];
 
-        if (!isset($validSettings[$key])) {
+        if (! isset($validSettings[$key])) {
             return ['valid' => false, 'error' => "Unknown setting: {$key}"];
         }
 
         $expectedType = $validSettings[$key];
-        
-        if ($expectedType === 'boolean' && !is_bool($value)) {
+
+        if ($expectedType === 'boolean' && ! is_bool($value)) {
             return ['valid' => false, 'error' => "Setting {$key} must be boolean"];
         }
 
-        if ($expectedType === 'integer' && !is_int($value)) {
+        if ($expectedType === 'integer' && ! is_int($value)) {
             return ['valid' => false, 'error' => "Setting {$key} must be integer"];
         }
 

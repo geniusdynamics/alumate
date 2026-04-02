@@ -82,17 +82,21 @@ class TenancyServiceProvider extends ServiceProvider
         // Register scheduled tasks
         $this->registerScheduledTasks();
 
-        // Setup query logging if enabled
-        // $this->setupQueryLogging(); // Temporarily disabled to fix circular dependency
-
         // Setup tenant context resolution
         $this->setupTenantContextResolution();
 
         // Register blade directives
         $this->registerBladeDirectives();
 
-        // Setup error handling
-        // $this->setupErrorHandling(); // Temporarily disabled to fix circular dependency
+        // Setup query logging if enabled (deferred to avoid circular dependency)
+        $this->app->booted(function () {
+            $this->setupQueryLogging();
+        });
+
+        // Setup error handling (deferred to avoid circular dependency)
+        $this->app->booted(function () {
+            $this->setupErrorHandling();
+        });
     }
 
     /**
@@ -235,7 +239,7 @@ class TenancyServiceProvider extends ServiceProvider
     protected function registerMiddleware(): void
     {
         // Register cross-tenant middleware
-        $this->app['router']->aliasMiddleware('tenant', CrossTenantMiddleware::class);
+        $this->app['router']->aliasMiddleware('tenant.cross', CrossTenantMiddleware::class);
 
         // Add to global middleware if configured
         if (config('tenancy.middleware.global', false)) {

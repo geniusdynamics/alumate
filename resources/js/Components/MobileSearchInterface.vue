@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="mobile-search-interface">
         <!-- Mobile Search Bar -->
         <div class="search-mobile">
@@ -147,7 +147,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useDebouncedRef } from '@/Composables/useDebounce';
 import {
     AcademicCapIcon,
@@ -481,6 +481,7 @@ defineExpose({
     transform: translateY(0);
 }
 </style>
+
 
 
 

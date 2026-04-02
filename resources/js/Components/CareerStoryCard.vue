@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         class="career-story-card rounded-lg border border-gray-200 bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
@@ -13,14 +13,14 @@
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ story.title }}</h3>
                 <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                     <span>{{ story.author_name }}</span>
-                    <span>•</span>
+                    <span>â€¢</span>
                     <span>{{ story.current_position }}</span>
                     <span v-if="story.company">@ {{ story.company }}</span>
                 </div>
                 <div class="mt-1 flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
                     <CalendarIcon class="h-4 w-4" />
                     <span>{{ formatDate(story.published_at || story.created_at) }}</span>
-                    <span>•</span>
+                    <span>â€¢</span>
                     <span>{{ story.read_time || '5' }} min read</span>
                 </div>
             </div>
@@ -190,7 +190,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     BookmarkIcon,
     CalendarIcon,
@@ -271,3 +271,4 @@ const connectWithAuthor = () => {
     overflow: hidden;
 }
 </style>
+

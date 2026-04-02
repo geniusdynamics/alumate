@@ -11,9 +11,7 @@ use App\Http\Requests\SyncGoalsRequest;
 use App\Http\Requests\SyncRunRequest;
 use App\Http\Requests\TrackTouchRequest;
 use App\Models\Cohort;
-use App\Services\Analytics\AttributionService;
 use App\Services\Analytics\CohortAnalysisService;
-use App\Services\Analytics\CustomEventService;
 use App\Services\Analytics\MatomoService;
 use App\Services\Analytics\SyncService;
 use App\Services\TenantContextService;
@@ -1214,7 +1212,7 @@ class AnalyticsController extends Controller
         $this->validateTenantIsolation();
 
         try {
-            $attributionService = app(AttributionService::class);
+            $attributionService = app(AttributionTrackingService::class);
 
             $touchpointData = [
                 'user_id' => auth()->id() ?? 1, // Default to user 1 if not authenticated
@@ -1262,7 +1260,7 @@ class AnalyticsController extends Controller
         $this->validateTenantIsolation();
 
         try {
-            $attributionService = app(AttributionService::class);
+            $attributionService = app(AttributionTrackingService::class);
 
             // Get attribution for all models
             $models = ['first-click', 'last-click', 'linear', 'time-decay'];
@@ -1301,7 +1299,7 @@ class AnalyticsController extends Controller
         $this->validateTenantIsolation();
 
         try {
-            $attributionService = app(AttributionService::class);
+            $attributionService = app(AttributionTrackingService::class);
 
             // Get performance for last 90 days
             $endDate = now();
@@ -1357,7 +1355,7 @@ class AnalyticsController extends Controller
         $this->validateTenantIsolation();
 
         try {
-            $attributionService = app(AttributionService::class);
+            $attributionService = app(AttributionTrackingService::class);
             $recommendations = $attributionService->generateBudgetRecommendations();
 
             if (empty($recommendations)) {
@@ -1518,7 +1516,7 @@ class AnalyticsController extends Controller
         $this->validateTenantIsolation();
 
         try {
-            $customEventService = app(CustomEventService::class);
+            $customEventService = app(CustomEventTrackingService::class);
 
             $eventDefinition = [
                 'event_name' => $request->input('event_name'),
@@ -1566,7 +1564,7 @@ class AnalyticsController extends Controller
         $this->validateTenantIsolation();
 
         try {
-            $customEventService = app(CustomEventService::class);
+            $customEventService = app(CustomEventTrackingService::class);
 
             $eventData = $request->input('properties');
             $context = array_merge($request->input('context', []), [
@@ -1614,7 +1612,7 @@ class AnalyticsController extends Controller
         $this->validateTenantIsolation();
 
         try {
-            $customEventService = app(CustomEventService::class);
+            $customEventService = app(CustomEventTrackingService::class);
 
             // Get event insights
             $insights = $customEventService->generateEventInsights($eventName);
@@ -1691,7 +1689,7 @@ class AnalyticsController extends Controller
             $events = $query->paginate($perPage);
 
             // Enhance with basic statistics
-            $customEventService = app(CustomEventService::class);
+            $customEventService = app(CustomEventTrackingService::class);
             $events->getCollection()->transform(function ($event) use ($customEventService) {
                 try {
                     $stats = $customEventService->generateEventInsights($event->event_name);

@@ -183,7 +183,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -291,7 +291,7 @@ const handleSubmit = async () => {
         emit('saved');
     } catch (err) {
         console.error('Error saving milestone:', err);
-        alert(err.message || 'Failed to save milestone');
+        // TODO-toast: alert(err.message || 'Failed to save milestone');
     } finally {
         loading.value = false;
     }
@@ -340,3 +340,4 @@ onMounted(() => {
     loadOptions();
 });
 </script>
+

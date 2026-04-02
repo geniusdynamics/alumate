@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
-use App\Services\TenantContextService;
+use App\Exceptions\BrandConfigDeletionException;
+use App\Exceptions\BrandConfigNotFoundException;
+use App\Exceptions\BrandConfigValidationException;
 use App\Models\BrandConfig;
 use App\Models\LandingPage;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use App\Exceptions\BrandConfigNotFoundException;
-use App\Exceptions\BrandConfigValidationException;
-use App\Exceptions\BrandConfigDeletionException;
 
 /**
  * Brand Configuration Service
@@ -29,8 +28,6 @@ class BrandConfigService extends BaseService
     /**
      * Create a new brand configuration
      *
-     * @param array $data
-     * @return BrandConfig
      * @throws BrandConfigValidationException
      */
     public function create(array $data): BrandConfig
@@ -40,7 +37,7 @@ class BrandConfigService extends BaseService
         // Ensure uniqueness within tenant schema
         if (isset($data['name'])) {
             if (BrandConfig::where('name', $data['name'])
-                          ->exists()) {
+                ->exists()) {
                 throw new BrandConfigValidationException('Brand configuration with this name already exists');
             }
         }
@@ -64,15 +61,13 @@ class BrandConfigService extends BaseService
     /**
      * Get brand configuration by ID
      *
-     * @param int $id
-     * @return BrandConfig
      * @throws BrandConfigNotFoundException
      */
     public function getById(int $id): BrandConfig
     {
         $brandConfig = BrandConfig::find($id);
 
-        if (!$brandConfig) {
+        if (! $brandConfig) {
             throw new BrandConfigNotFoundException("Brand configuration with ID {$id} not found");
         }
 
@@ -81,14 +76,11 @@ class BrandConfigService extends BaseService
 
     /**
      * Get all brand configurations with filters
-     *
-     * @param array $filters
-     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAll(array $filters = []): \Illuminate\Database\Eloquent\Collection
     {
         return Cache::tags(['brand-configs'])->remember(
-            "configs." . md5(serialize($filters)),
+            'configs.'.md5(serialize($filters)),
             $this->cacheTtl,
             function () use ($filters) {
                 $query = BrandConfig::query();
@@ -101,11 +93,11 @@ class BrandConfigService extends BaseService
                     $query->where('is_default', $filters['is_default']);
                 }
 
-                if (!empty($filters['search'])) {
-                    $query->where('name', 'like', '%' . $filters['search'] . '%');
+                if (! empty($filters['search'])) {
+                    $query->where('name', 'like', '%'.$filters['search'].'%');
                 }
 
-                if (!empty($filters['per_page'])) {
+                if (! empty($filters['per_page'])) {
                     return $query->paginate($filters['per_page']);
                 }
 
@@ -116,24 +108,19 @@ class BrandConfigService extends BaseService
 
     /**
      * Get default brand configuration
-     *
-     * @return BrandConfig|null
      */
     public function getDefault(): ?BrandConfig
     {
         return Cache::tags(['brand-configs'])->remember(
-            "default",
+            'default',
             $this->cacheTtl,
-            fn() => BrandConfig::default()->active()->first()
+            fn () => BrandConfig::default()->active()->first()
         );
     }
 
     /**
      * Update brand configuration
      *
-     * @param int $id
-     * @param array $data
-     * @return BrandConfig
      * @throws BrandConfigNotFoundException
      * @throws BrandConfigValidationException
      */
@@ -144,8 +131,8 @@ class BrandConfigService extends BaseService
         // Validate uniqueness if name is being changed
         if (isset($data['name']) && $data['name'] !== $brandConfig->name) {
             if (BrandConfig::where('name', $data['name'])
-                          ->where('id', '!=', $id)
-                          ->exists()) {
+                ->where('id', '!=', $id)
+                ->exists()) {
                 throw new BrandConfigValidationException('Brand configuration with this name already exists');
             }
         }
@@ -154,7 +141,7 @@ class BrandConfigService extends BaseService
         if (isset($data['is_default']) && $data['is_default']) {
             // Remove default from all other brand configs
             BrandConfig::where('id', '!=', $id)
-                       ->update(['is_default' => false]);
+                ->update(['is_default' => false]);
         }
 
         $brandConfig->update(array_merge($data, [
@@ -170,8 +157,6 @@ class BrandConfigService extends BaseService
     /**
      * Set brand configuration as default for tenant
      *
-     * @param int $id
-     * @return bool
      * @throws BrandConfigNotFoundException
      */
     public function setAsDefault(int $id): bool
@@ -180,7 +165,7 @@ class BrandConfigService extends BaseService
 
         // Remove default from all brand configs
         BrandConfig::where('id', '!=', $id)
-                   ->update(['is_default' => false]);
+            ->update(['is_default' => false]);
 
         // Set this as default
         $brandConfig->update(['is_default' => true]);
@@ -194,9 +179,6 @@ class BrandConfigService extends BaseService
     /**
      * Duplicate brand configuration
      *
-     * @param int $id
-     * @param array $overrides
-     * @return BrandConfig
      * @throws BrandConfigNotFoundException
      */
     public function duplicate(int $id, array $overrides = []): BrandConfig
@@ -207,7 +189,7 @@ class BrandConfigService extends BaseService
 
         // Apply overrides
         $duplicate->fill(array_merge([
-            'name' => $original->name . ' (Copy)',
+            'name' => $original->name.' (Copy)',
             'is_default' => false,
         ], $overrides));
 
@@ -224,8 +206,6 @@ class BrandConfigService extends BaseService
     /**
      * Delete brand configuration
      *
-     * @param int $id
-     * @return bool
      * @throws BrandConfigNotFoundException
      * @throws BrandConfigDeletionException
      */
@@ -236,7 +216,7 @@ class BrandConfigService extends BaseService
         // Check if this is the default and if there are alternatives
         if ($brandConfig->is_default) {
             $alternatives = BrandConfig::where('id', '!=', $id)
-                                      ->count();
+                ->count();
 
             if ($alternatives === 0) {
                 throw new BrandConfigDeletionException('Cannot delete the default brand configuration without an alternative');
@@ -244,7 +224,7 @@ class BrandConfigService extends BaseService
 
             // Set first alternative as default
             $alternative = BrandConfig::where('id', '!=', $id)
-                                     ->first();
+                ->first();
             $alternative->update(['is_default' => true]);
         }
 
@@ -268,9 +248,6 @@ class BrandConfigService extends BaseService
 
     /**
      * Get usage statistics for brand configuration
-     *
-     * @param int $id
-     * @return array
      */
     public function getUsageStats(int $id): array
     {
@@ -281,8 +258,8 @@ class BrandConfigService extends BaseService
             $this->cacheTtl,
             function () use ($brandConfig) {
                 $landingPages = LandingPage::where('brand_config', 'like', '%"brand_config_id":"'.$brandConfig->id.'"%')
-                                         ->orWhere('brand_config->id', $brandConfig->id)
-                                         ->get();
+                    ->orWhere('brand_config->id', $brandConfig->id)
+                    ->get();
 
                 return [
                     'total_landing_pages' => $landingPages->count(),
@@ -299,9 +276,6 @@ class BrandConfigService extends BaseService
 
     /**
      * Generate brand preview
-     *
-     * @param array $brandData
-     * @return array
      */
     public function generatePreview(array $brandData): array
     {
@@ -333,10 +307,6 @@ class BrandConfigService extends BaseService
 
     /**
      * Apply brand configuration to landing page content
-     *
-     * @param array $content
-     * @param array $brandConfig
-     * @return array
      */
     public function applyBrandToContent(array $content, array $brandConfig): array
     {
@@ -350,10 +320,6 @@ class BrandConfigService extends BaseService
 
     /**
      * Export brand configuration
-     *
-     * @param int $id
-     * @param array $options
-     * @return array
      */
     public function export(int $id, array $options = []): array
     {
@@ -367,7 +333,7 @@ class BrandConfigService extends BaseService
             'version' => '1.0',
         ];
 
-        if (!empty($options['include_assets'])) {
+        if (! empty($options['include_assets'])) {
             $export['assets'] = [
                 'logos' => [], // Would fetch actual logo files
                 'fonts' => [], // Would reference custom fonts
@@ -380,14 +346,11 @@ class BrandConfigService extends BaseService
     /**
      * Import brand configuration
      *
-     * @param array $importData
-     * @param array $options
-     * @return BrandConfig
      * @throws BrandConfigValidationException
      */
     public function import(array $importData, array $options = []): BrandConfig
     {
-        if (!isset($importData['brand_config'])) {
+        if (! isset($importData['brand_config'])) {
             throw new BrandConfigValidationException('Invalid import data: brand_config key missing');
         }
 
@@ -403,22 +366,18 @@ class BrandConfigService extends BaseService
 
     /**
      * Check if brand configuration is currently in use
-     *
-     * @param BrandConfig $brandConfig
-     * @return bool
      */
     private function isInUse(BrandConfig $brandConfig): bool
     {
         return LandingPage::where(function ($query) use ($brandConfig) {
-            $query->where('brand_config', 'like', '%' . $brandConfig->name . '%')
-                  ->orWhereJsonContains('brand_config', $brandConfig->id);
+            $query->where('brand_config', 'like', '%'.$brandConfig->name.'%')
+                ->orWhereJsonContains('brand_config', $brandConfig->id);
         })->exists();
     }
 
     /**
      * Validate brand configuration data
      *
-     * @param array $data
      * @throws BrandConfigValidationException
      */
     private function validateBrandConfig(array $data): void
@@ -433,7 +392,7 @@ class BrandConfigService extends BaseService
 
         // Validate color formats
         foreach (['primary_color', 'secondary_color', 'accent_color'] as $colorField) {
-            if (!empty($data[$colorField]) && !preg_match('/^#[a-fA-F0-9]{6}$/', $data[$colorField])) {
+            if (! empty($data[$colorField]) && ! preg_match('/^#[a-fA-F0-9]{6}$/', $data[$colorField])) {
                 throw new BrandConfigValidationException("Invalid {$colorField} format. Must be a valid hex color code.");
             }
         }

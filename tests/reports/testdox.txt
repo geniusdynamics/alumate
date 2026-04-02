@@ -1,0 +1,12 @@
+/workspace/tests/Feature/Api/ComponentControllerTest.php
+ [ ] index returns paginated component list
+ [ ] index filters components by search term
+ [ ] index paginates with custom per page
+ [ ] store creates component with valid data
+ [ ] store fails with invalid data
+ [ ] duplicate creates component copy
+ [ ] activate component succeeds
+ [ ] deactivate component succeeds
+ [ ] preview returns component preview data
+ [ ] validate config returns success for valid config
+

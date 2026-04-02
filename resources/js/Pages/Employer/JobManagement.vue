@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -78,7 +78,7 @@ const selectAllJobs = () => {
 
 const bulkAction = (action) => {
     if (selectedJobs.value.length === 0) {
-        alert('Please select jobs first');
+        // TODO-toast: alert('Please select jobs first');
         return;
     }
 
@@ -393,6 +393,7 @@ const duplicateJob = (job) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

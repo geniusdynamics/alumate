@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -216,7 +216,7 @@ const formatDate = (date) => {
                                                 <p class="text-sm text-gray-900">
                                                     {{ event.description }}
                                                 </p>
-                                                <p class="text-xs text-gray-500">{{ event.event_type }} • {{ event.ip_address }}</p>
+                                                <p class="text-xs text-gray-500">{{ event.event_type }} â€¢ {{ event.ip_address }}</p>
                                             </div>
                                             <div class="whitespace-nowrap text-right text-sm text-gray-500">
                                                 {{ formatDate(event.created_at) }}
@@ -323,6 +323,7 @@ const formatDate = (date) => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

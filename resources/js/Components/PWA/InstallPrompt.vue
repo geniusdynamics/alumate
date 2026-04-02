@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <Transition
             enter-active-class="transition-all duration-300 ease-out"
@@ -111,7 +111,8 @@
     </Teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ArrowDownTrayIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { onMounted, onUnmounted, ref } from 'vue';
 
@@ -226,11 +227,11 @@ const handleInstall = async () => {
         const { outcome } = await deferredPrompt.value.userChoice;
 
         if (outcome === 'accepted') {
-            console.log('User accepted the install prompt');
+            logger.log('User accepted the install prompt');
             trackEvent('pwa_install_accepted');
             emit('install', { outcome });
         } else {
-            console.log('User dismissed the install prompt');
+            logger.log('User dismissed the install prompt');
             trackEvent('pwa_install_declined');
         }
 
@@ -263,7 +264,7 @@ const handleDismiss = () => {
 };
 
 const handleAppInstalled = () => {
-    console.log('PWA was installed');
+    logger.log('PWA was installed');
     isAppInstalled.value = true;
     showPrompt.value = false;
     clearTimeouts();
@@ -282,7 +283,7 @@ const showInstallSuccessMessage = () => {
     // Create a temporary success notification
     const notification = document.createElement('div');
     notification.className = 'fixed top-4 right-4 z-50 rounded-lg bg-green-500 px-4 py-2 text-white shadow-lg';
-    notification.textContent = '✅ App installed successfully!';
+    notification.textContent = 'âœ… App installed successfully!';
 
     document.body.appendChild(notification);
 
@@ -362,3 +363,4 @@ defineExpose({
 <style scoped>
 /* Additional custom styles if needed */
 </style>
+

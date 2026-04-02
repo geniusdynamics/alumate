@@ -1,0 +1,29 @@
+warning: in the working copy of '.github/workflows/ci.yml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'resources/js/Components/ComponentLibrary/Customization/TemplateCustomizer.vue', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'resources/js/Components/PageBuilder/CodePreviewModal.vue', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'resources/js/Composables/useInsights.ts', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'resources/js/utils/logger.ts', CRLF will be replaced by LF the next time Git touches it
+.github/workflows/ci.yml
+app/Http/Controllers/Api/UserController.php
+app/Http/Middleware/CrossTenantMiddleware.php
+app/Models/User.php
+app/Providers/TenancyServiceProvider.php
+app/Services/TenantContextService.php
+config/tenancy.php
+package.json
+resources/js/Components/ComponentLibrary/Customization/TemplateCustomizer.vue
+resources/js/Components/ComponentLibrary/Testimonials/TestimonialSingle.vue
+resources/js/Components/ComponentLibrary/index.ts
+resources/js/Components/PageBuilder/CodePreviewModal.vue
+resources/js/Components/PageBuilder/LivePreview.vue
+resources/js/Components/index.ts
+resources/js/Composables/useInsights.ts
+resources/js/Services/AnalyticsService.ts
+resources/js/Services/TailwindMappingService.ts
+resources/js/Services/__tests__/TemplateCreationBridge.test.ts
+resources/js/types/index.ts
+resources/js/utils/logger.ts
+tests/Js/Services/AnalyticsService.test.ts
+tests/reports/junit.xml
+tests/reports/testdox.html
+tests/reports/testdox.txt

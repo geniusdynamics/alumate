@@ -355,7 +355,7 @@ const removeField = (fieldId: string) => {
         customizedTemplate.value = newTemplate;
     } catch (error) {
         console.error('Failed to remove field:', error);
-        alert(error.message);
+        // TODO-toast: alert(error.message);
     }
 };
 

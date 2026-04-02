@@ -5,6 +5,9 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasAuthenticationSecurity;
+use App\Models\Traits\HasProfileInformation;
+use App\Models\Traits\HasUserPreferences;
 use App\Services\TenantContextService;
 use Exception;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -12,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 // use Laravel\Sanctum\HasApiTokens; // Commented out - Sanctum not installed
@@ -20,7 +24,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use HasFactory, HasRoles, Notifiable, SoftDeletes;
+    use HasAuthenticationSecurity, HasFactory, HasProfileInformation, HasRoles, HasUserPreferences, Notifiable, SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -44,6 +48,13 @@ class User extends Authenticatable implements MustVerifyEmail
         'metadata',
         'graduation_year',
         'degree',
+        'location',
+        'skills',
+        'is_mentor',
+        'login_count',
+        'institution_id',
+        'current_tenant_id',
+        'is_suspended',
     ];
 
     protected $hidden = [
@@ -64,18 +75,42 @@ class User extends Authenticatable implements MustVerifyEmail
         'metadata' => 'array',
         'graduation_year' => 'integer',
         'degree' => 'string',
+        'skills' => 'array',
+        'location' => 'string',
+        'is_mentor' => 'boolean',
+        'login_count' => 'integer',
+        'institution_id' => 'integer',
+        'current_tenant_id' => 'integer',
     ];
 
     protected $dates = [
         'deleted_at',
     ];
 
+    /**
+     * Searchable columns for this model
+     */
+    protected array $searchableColumns = [
+        'name',
+        'email',
+        'first_name',
+        'last_name',
+    ];
+
+    /**
+     * Sortable columns for this model
+     */
+    protected array $sortableColumns = [
+        'name',
+        'email',
+        'created_at',
+        'last_login_at',
+    ];
+
     protected $appends = [
         'full_name',
         'initials',
         'avatar_url',
-        'accessible_tenants',
-        'current_tenant_role',
     ];
 
     // User roles
@@ -209,7 +244,8 @@ class User extends Authenticatable implements MustVerifyEmail
             return self::ROLE_SUPER_ADMIN;
         }
 
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $tenantService = app(TenantContextService::class);
+        $currentTenant = $tenantService->getCurrentTenant();
         if (! $currentTenant) {
             return null;
         }
@@ -240,6 +276,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Scope to get users with their roles and tenants eagerly loaded
+     */
+    public function scopeWithRolesAndTenants($query)
+    {
+        return $query->with(['roles', 'tenants']);
+    }
+
+    /**
+     * Scope to get users with their tenant users relationship
+     */
+    public function scopeWithTenantUsers($query)
+    {
+        return $query->with(['tenantUsers']);
+    }
+
+    /**
      * Get activity logs for this user
      */
     public function activityLogs(): HasMany
@@ -261,6 +313,30 @@ class User extends Authenticatable implements MustVerifyEmail
     public function graduate()
     {
         return $this->hasOne(Graduate::class);
+    }
+
+    /**
+     * Get user profile (decomposed from monolithic User model)
+     */
+    public function profile(): HasOne
+    {
+        return $this->hasOne(UserProfile::class);
+    }
+
+    /**
+     * Get user preferences (decomposed from monolithic User model)
+     */
+    public function preferencesRecord(): HasOne
+    {
+        return $this->hasOne(UserPreferences::class);
+    }
+
+    /**
+     * Get user academic record (decomposed from monolithic User model)
+     */
+    public function academicRecord(): HasOne
+    {
+        return $this->hasOne(UserAcademicRecord::class);
     }
 
     /**
@@ -288,6 +364,189 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
+     * Get user's education history
+     */
+    public function educations(): HasMany
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    /**
+     * Get user's work experiences
+     */
+    public function workExperiences(): HasMany
+    {
+        return $this->hasMany(WorkExperience::class);
+    }
+
+    /**
+     * Get user's career timelines
+     */
+    public function careerTimelines(): HasMany
+    {
+        return $this->hasMany(CareerTimeline::class);
+    }
+
+    /**
+     * Get user's alumni connections (as initiator)
+     */
+    public function connections(): HasMany
+    {
+        return $this->hasMany(AlumniConnection::class, 'user_id');
+    }
+
+    /**
+     * Get user's alumni connections (as initiator)
+     */
+    public function alumniConnections(): HasMany
+    {
+        return $this->hasMany(AlumniConnection::class, 'user_id');
+    }
+
+    /**
+     * Get user's alumni connections (as connected user)
+     */
+    public function connectedTo(): HasMany
+    {
+        return $this->hasMany(AlumniConnection::class, 'connected_user_id');
+    }
+
+    /**
+     * Get user's social profiles
+     */
+    public function socialProfiles(): HasMany
+    {
+        return $this->hasMany(SocialProfile::class);
+    }
+
+    /**
+     * Check if user has a specific role
+     */
+    public function hasSpecificRole(string $role): bool
+    {
+        return $this->hasRole($role);
+    }
+
+    /**
+     * Check if user can access a specific institution
+     */
+    public function canAccessInstitution($institutionId): bool
+    {
+        if ($this->is_super_admin) {
+            return true;
+        }
+
+        return $this->tenantUsers()
+            ->where('institution_id', $institutionId)
+            ->exists();
+    }
+
+    /**
+     * Generate API token for user
+     */
+    public function generateApiToken(): string
+    {
+        return \Str::random(60);
+    }
+
+    /**
+     * Get user activity summary
+     */
+    public function getActivitySummary(): array
+    {
+        return [
+            'total_logins' => $this->login_count ?? 0,
+            'last_login' => $this->last_login_at,
+            'account_created' => $this->created_at,
+            'is_active' => $this->is_active,
+        ];
+    }
+
+    /**
+     * Check if user is a mentor
+     */
+    public function isMentor(): bool
+    {
+        return $this->is_mentor ?? false;
+    }
+
+    /**
+     * Check if user can be a mentor
+     */
+    public function canBeMentor(): bool
+    {
+        return $this->is_active && $this->email_verified_at !== null;
+    }
+
+    /**
+     * Get user's current tenant relationship
+     */
+    public function currentTenant(): HasOne
+    {
+        return $this->hasOne(Tenant::class, 'id', 'current_tenant_id');
+    }
+
+    /**
+     * Get user's institution relationship
+     */
+    public function institution(): HasOne
+    {
+        return $this->hasOne(Tenant::class, 'id', 'institution_id');
+    }
+
+    /**
+     * Get user's employer relationship
+     */
+    public function employer(): HasOne
+    {
+        return $this->hasOne(Employer::class);
+    }
+
+    /**
+     * Get user's student profile relationship
+     */
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    /**
+     * Get user's circles
+     */
+    public function circles(): BelongsToMany
+    {
+        return $this->belongsToMany(Circle::class, 'circle_memberships')
+            ->withPivot('joined_at', 'status')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get user's groups
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class, 'group_memberships')
+            ->withPivot('role', 'joined_at', 'status')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get user's achievements
+     */
+    public function achievements(): HasMany
+    {
+        return $this->hasMany(Achievement::class);
+    }
+
+    /**
+     * Get user's certifications
+     */
+    public function certifications(): HasMany
+    {
+        return $this->hasMany(Certification::class);
+    }
+
+    /**
      * Scope for active users
      */
     public function scopeActive(Builder $query): Builder
@@ -309,6 +568,22 @@ class User extends Authenticatable implements MustVerifyEmail
     public function scopeVerified(Builder $query): Builder
     {
         return $query->whereNotNull('email_verified_at');
+    }
+
+    /**
+     * Scope for suspended users
+     */
+    public function scopeSuspended(Builder $query): Builder
+    {
+        return $query->where('is_suspended', true);
+    }
+
+    /**
+     * Scope for recently active users
+     */
+    public function scopeRecentlyActive(Builder $query): Builder
+    {
+        return $query->where('last_login_at', '>=', now()->subDays(30));
     }
 
     /**
@@ -334,7 +609,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function scopeWithRole(Builder $query, string $role): Builder
     {
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $currentTenant = app(TenantContextService::class)->getCurrentTenant();
 
         if (! $currentTenant) {
             return $query->where('is_super_admin', true)->where('1', '0'); // No results if no tenant context
@@ -371,7 +646,7 @@ class User extends Authenticatable implements MustVerifyEmail
             return true;
         }
 
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $currentTenant = app(TenantContextService::class)->getCurrentTenant();
         if (! $currentTenant) {
             return false;
         }
@@ -637,7 +912,7 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
 
         // Add tenant-specific stats if in tenant context
-        $currentTenant = TenantContextService::getCurrentTenant();
+        $currentTenant = app(TenantContextService::class)->getCurrentTenant();
         if ($currentTenant && $this->hasAccessToTenant($currentTenant->id)) {
             $stats['current_tenant'] = [
                 'name' => $currentTenant->name,

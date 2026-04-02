@@ -305,6 +305,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import Icon from '@/Components/Common/Icon.vue';
 import type { GrapeJSThemeData, ThemePerformanceData } from '@/types/Components';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -815,7 +816,7 @@ const formatBytes = (bytes: number) => {
 
 const highlightAccessibilityIssue = (indicator: any) => {
     // Handle accessibility issue highlighting
-    console.log('Highlighting accessibility issue:', indicator);
+    logger.log('Highlighting accessibility issue:', indicator);
 };
 
 // Watchers

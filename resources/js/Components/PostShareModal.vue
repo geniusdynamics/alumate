@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         v-if="show"
         class="fixed inset-0 z-[50] flex items-center justify-center bg-black/50 backdrop-blur-sm"
@@ -113,7 +113,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -236,3 +236,4 @@ const copyLink = async () => {
     overflow: hidden;
 }
 </style>
+

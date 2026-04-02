@@ -167,7 +167,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
 
@@ -292,7 +292,7 @@ const submitForm = async () => {
         if (error.response?.data?.errors) {
             errors.value = error.response.data.errors;
         } else {
-            alert(error.response?.data?.message || 'Failed to save mentor profile');
+            // TODO-toast: alert(error.response?.data?.message || 'Failed to save mentor profile');
         }
     } finally {
         loading.value = false;
@@ -310,3 +310,4 @@ onMounted(() => {
     }
 });
 </script>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         class="speaking-event-card rounded-lg border border-gray-200 bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
@@ -23,7 +23,7 @@
             <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <CalendarIcon class="h-4 w-4" />
                 <span>{{ formatEventDate(event.event_date) }}</span>
-                <span v-if="event.event_time">• {{ event.event_time }}</span>
+                <span v-if="event.event_time">â€¢ {{ event.event_time }}</span>
             </div>
 
             <!-- Location -->
@@ -43,7 +43,7 @@
             <div v-if="event.audience_size" class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <UsersIcon class="h-4 w-4" />
                 <span>{{ event.audience_size }} attendees</span>
-                <span v-if="event.audience_type">• {{ event.audience_type }}</span>
+                <span v-if="event.audience_type">â€¢ {{ event.audience_type }}</span>
             </div>
 
             <!-- Duration -->
@@ -90,7 +90,7 @@
         <!-- Organizer Info -->
         <div v-if="event.organizer" class="mb-4 text-sm text-gray-600 dark:text-gray-400">
             <span class="font-medium">Organized by:</span> {{ event.organizer.name }}
-            <span v-if="event.organizer.organization"> • {{ event.organizer.organization }}</span>
+            <span v-if="event.organizer.organization"> â€¢ {{ event.organizer.organization }}</span>
         </div>
 
         <!-- Registration Info -->
@@ -145,7 +145,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CalendarIcon, ClockIcon, MapPinIcon, TagIcon, UserIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { format } from 'date-fns';
 
@@ -212,3 +212,4 @@ const joinVirtual = () => {
     transform: translateY(-2px);
 }
 </style>
+

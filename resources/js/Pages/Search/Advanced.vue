@@ -49,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import AdvancedSearch from '@/Components/AdvancedSearch.vue';
 import SavedSearches from '@/Components/SavedSearches.vue';
 import SearchAnalytics from '@/Components/SearchAnalytics.vue';
@@ -107,7 +108,7 @@ const handleSearchPerformed = (query: string, results: SearchResponse) => {
 
 const handleResultSelected = (result: any) => {
     // Track result selection for analytics
-    console.log('Result selected:', result);
+    logger.log('Result selected:', result);
 };
 
 const handleSavedSearchSelected = (savedSearch: SavedSearch) => {

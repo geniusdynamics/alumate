@@ -105,7 +105,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
 
@@ -175,14 +175,14 @@ const sendRequest = async () => {
         emit('request-sent', props.recipient);
 
         // Show success message (you might want to use a toast notification)
-        alert('Coffee chat request sent successfully!');
+        // TODO-toast: alert('Coffee chat request sent successfully!');
     } catch (error) {
         console.error('Error sending coffee chat request:', error);
 
         if (error.response?.data?.message) {
-            alert(error.response.data.message);
+            // TODO-toast: alert(error.response.data.message);
         } else {
-            alert('Failed to send coffee chat request. Please try again.');
+            // TODO-toast: alert('Failed to send coffee chat request. Please try again.');
         }
     } finally {
         submitting.value = false;
@@ -199,3 +199,4 @@ onMounted(() => {
     form.value.proposed_times[0] = tomorrow.toISOString().slice(0, 16);
 });
 </script>
+

@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Models\AnalyticsEvent;
-use App\Models\Cohort;
 use App\Services\CacheService;
 use App\Services\TenantContextService;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Automated Insights Generation Service
@@ -24,33 +22,50 @@ use Exception;
 class AutomatedInsightsService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const INSIGHT_CACHE_TTL = 1800; // 30 minutes for insights
 
     // Insight type constants
     public const INSIGHT_TYPE_TREND = 'trend';
+
     public const INSIGHT_TYPE_ANOMALY = 'anomaly';
+
     public const INSIGHT_TYPE_CORRELATION = 'correlation';
+
     public const INSIGHT_TYPE_PREDICTIVE = 'predictive';
+
     public const INSIGHT_TYPE_RETENTION = 'retention';
+
     public const INSIGHT_TYPE_ENGAGEMENT = 'engagement';
+
     public const INSIGHT_TYPE_CONVERSION = 'conversion';
 
     // Severity constants
     public const SEVERITY_CRITICAL = 'critical';
+
     public const SEVERITY_HIGH = 'high';
+
     public const SEVERITY_MEDIUM = 'medium';
+
     public const SEVERITY_LOW = 'low';
+
     public const SEVERITY_POSITIVE = 'positive';
 
     // Benchmark thresholds
     private const RETENTION_BENCHMARK_DAY7 = 40;
+
     private const RETENTION_BENCHMARK_DAY30 = 25;
+
     private const ENGAGEMENT_BENCHMARK = 50;
+
     private const CONVERSION_BENCHMARK = 15;
 
     private CacheService $cacheService;
+
     private ?TenantContextService $tenantContextService;
+
     private ?CohortAnalysisService $cohortAnalysisService;
+
     private ?AttributionService $attributionService;
 
     public function __construct(
@@ -68,15 +83,15 @@ class AutomatedInsightsService
     /**
      * Generate insights from analytics data
      *
-     * @param array $dateRange Date range with 'start' and 'end' keys
-     * @param array $metrics Metrics to analyze
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
+     * @param  array  $metrics  Metrics to analyze
      * @return array Generated insights
      */
     public function generateInsights(array $dateRange, array $metrics = []): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "automated_insights_{$tenantId}_" . md5(serialize($dateRange) . serialize($metrics));
+            $cacheKey = "automated_insights_{$tenantId}_".md5(serialize($dateRange).serialize($metrics));
 
             return $this->cacheService->remember($cacheKey, function () use ($dateRange, $metrics) {
                 $insights = [];
@@ -110,6 +125,7 @@ class AutomatedInsightsService
                 'date_range' => $dateRange,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -117,7 +133,7 @@ class AutomatedInsightsService
     /**
      * Detect patterns in analytics data
      *
-     * @param array $data Analytics data to analyze
+     * @param  array  $data  Analytics data to analyze
      * @return array Detected patterns
      */
     public function detectPatterns(array $data): array
@@ -147,6 +163,7 @@ class AutomatedInsightsService
             Log::error('Failed to detect patterns', [
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -154,7 +171,7 @@ class AutomatedInsightsService
     /**
      * Score an insight by importance
      *
-     * @param array $insight Insight to score
+     * @param  array  $insight  Insight to score
      * @return array Insight with score
      */
     public function scoreInsight(array $insight): array
@@ -200,7 +217,7 @@ class AutomatedInsightsService
         }
 
         // Actionability factor (0-10 points)
-        $hasRecommendation = isset($insight['recommendation']) && !empty($insight['recommendation']);
+        $hasRecommendation = isset($insight['recommendation']) && ! empty($insight['recommendation']);
         $hasAction = isset($insight['actionable']) && $insight['actionable'];
         $actionabilityValue = ($hasRecommendation || $hasAction) ? 10 : 0;
         $score += $actionabilityValue;
@@ -217,7 +234,7 @@ class AutomatedInsightsService
     /**
      * Prioritize insights by score
      *
-     * @param array $insights Array of insights to prioritize
+     * @param  array  $insights  Array of insights to prioritize
      * @return array Prioritized insights
      */
     public function prioritizeInsights(array $insights): array
@@ -267,14 +284,14 @@ class AutomatedInsightsService
     /**
      * Get trend-based insights
      *
-     * @param array $dateRange Date range with 'start' and 'end' keys
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
      * @return array Trend insights
      */
     public function getTrendInsights(array $dateRange): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "trend_insights_{$tenantId}_" . md5(serialize($dateRange));
+            $cacheKey = "trend_insights_{$tenantId}_".md5(serialize($dateRange));
 
             return $this->cacheService->remember($cacheKey, function () use ($dateRange, $tenantId) {
                 $insights = [];
@@ -377,6 +394,7 @@ class AutomatedInsightsService
                 'date_range' => $dateRange,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -384,14 +402,14 @@ class AutomatedInsightsService
     /**
      * Get anomaly-based insights
      *
-     * @param array $dateRange Date range with 'start' and 'end' keys
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
      * @return array Anomaly insights
      */
     public function getAnomalyInsights(array $dateRange): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "anomaly_insights_{$tenantId}_" . md5(serialize($dateRange));
+            $cacheKey = "anomaly_insights_{$tenantId}_".md5(serialize($dateRange));
 
             return $this->cacheService->remember($cacheKey, function () use ($dateRange, $tenantId) {
                 $insights = [];
@@ -470,6 +488,7 @@ class AutomatedInsightsService
                 'date_range' => $dateRange,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -477,14 +496,14 @@ class AutomatedInsightsService
     /**
      * Get correlation-based insights
      *
-     * @param array $dateRange Date range with 'start' and 'end' keys
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
      * @return array Correlation insights
      */
     public function getCorrelationInsights(array $dateRange): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "correlation_insights_{$tenantId}_" . md5(serialize($dateRange));
+            $cacheKey = "correlation_insights_{$tenantId}_".md5(serialize($dateRange));
 
             return $this->cacheService->remember($cacheKey, function () use ($dateRange) {
                 $insights = [];
@@ -520,10 +539,10 @@ class AutomatedInsightsService
                             'type' => self::INSIGHT_TYPE_CORRELATION,
                             'severity' => abs($correlation['coefficient']) >= 0.9 ? self::SEVERITY_HIGH : self::SEVERITY_MEDIUM,
                             'message' => "Strong correlation found between {$correlation['metric1']} and {$correlation['metric2']}",
-                            'description' => "Correlation coefficient: " . round($correlation['coefficient'], 2),
+                            'description' => 'Correlation coefficient: '.round($correlation['coefficient'], 2),
                             'recommendation' => $correlation['coefficient'] > 0
                                 ? "Consider promoting {$correlation['metric1']} to boost {$correlation['metric2']}"
-                                : "These metrics move inversely - investigate the relationship",
+                                : 'These metrics move inversely - investigate the relationship',
                             'metric1' => $correlation['metric1'],
                             'metric2' => $correlation['metric2'],
                             'coefficient' => round($correlation['coefficient'], 2),
@@ -544,6 +563,7 @@ class AutomatedInsightsService
                 'date_range' => $dateRange,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -551,14 +571,14 @@ class AutomatedInsightsService
     /**
      * Get predictive insights
      *
-     * @param array $dateRange Date range with 'start' and 'end' keys
+     * @param  array  $dateRange  Date range with 'start' and 'end' keys
      * @return array Predictive insights
      */
     public function getPredictiveInsights(array $dateRange): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "predictive_insights_{$tenantId}_" . md5(serialize($dateRange));
+            $cacheKey = "predictive_insights_{$tenantId}_".md5(serialize($dateRange));
 
             return $this->cacheService->remember($cacheKey, function () use ($dateRange) {
                 $insights = [];
@@ -664,6 +684,7 @@ class AutomatedInsightsService
                 'date_range' => $dateRange,
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -678,6 +699,7 @@ class AutomatedInsightsService
         if ($this->tenantContextService) {
             return $this->tenantContextService->getCurrentTenantId() ?? 'default';
         }
+
         return session('tenant_id', 'default');
     }
 
@@ -695,7 +717,7 @@ class AutomatedInsightsService
             ->where('occurred_at', '<=', $endDate)
             ->where('is_compliant', true);
 
-        if (!empty($metrics)) {
+        if (! empty($metrics)) {
             $query->whereIn('event_name', $metrics);
         }
 
@@ -726,7 +748,7 @@ class AutomatedInsightsService
         }
 
         // Find peak and low days
-        if (!empty($byDayOfWeek)) {
+        if (! empty($byDayOfWeek)) {
             $peakDay = array_search(max($byDayOfWeek), $byDayOfWeek);
             $lowDay = array_search(min($byDayOfWeek), $byDayOfWeek);
 
@@ -751,7 +773,7 @@ class AutomatedInsightsService
         $byEventType = [];
         foreach ($data as $entry) {
             $eventType = $entry['event_name'] ?? 'unknown';
-            if (!isset($byEventType[$eventType])) {
+            if (! isset($byEventType[$eventType])) {
                 $byEventType[$eventType] = [
                     'count' => 0,
                     'unique_users' => 0,
@@ -862,6 +884,7 @@ class AutomatedInsightsService
         if ($changePercent < 0) {
             return 'slight_decline';
         }
+
         return 'stable';
     }
 
@@ -972,6 +995,7 @@ class AutomatedInsightsService
         if ($zScore > 1.5 || $zScore < -1.5) {
             return self::SEVERITY_MEDIUM;
         }
+
         return self::SEVERITY_LOW;
     }
 
@@ -998,6 +1022,7 @@ class AutomatedInsightsService
     {
         // Higher z-score = higher confidence
         $confidence = min(1, abs($zScore) / 4);
+
         return round($confidence, 2);
     }
 
@@ -1059,7 +1084,7 @@ class AutomatedInsightsService
             $eventName = $entry->event_name;
             $count = $entry->count;
 
-            if (!isset($pivoted[$date])) {
+            if (! isset($pivoted[$date])) {
                 $pivoted[$date] = [];
             }
 
@@ -1146,9 +1171,9 @@ class AutomatedInsightsService
 
         $sumX = array_sum($x);
         $sumY = array_sum($y);
-        $sumXY = array_sum(array_map(fn($i) => $x[$i] * $y[$i], range(0, $n - 1)));
-        $sumX2 = array_sum(array_map(fn($v) => $v * $v, $x));
-        $sumY2 = array_sum(array_map(fn($v) => $v * $v, $y));
+        $sumXY = array_sum(array_map(fn ($i) => $x[$i] * $y[$i], range(0, $n - 1)));
+        $sumX2 = array_sum(array_map(fn ($v) => $v * $v, $x));
+        $sumY2 = array_sum(array_map(fn ($v) => $v * $v, $y));
 
         $numerator = $n * $sumXY - $sumX * $sumY;
         $denominator = sqrt(($n * $sumX2 - $sumX * $sumX) * ($n * $sumY2 - $sumY * $sumY));
@@ -1163,6 +1188,7 @@ class AutomatedInsightsService
     {
         $correlation = $this->pearsonCorrelation($x, $y);
         $pValue = $this->calculateCorrelationPValue($correlation, count($x));
+
         return $pValue < 0.05;
     }
 
@@ -1256,7 +1282,7 @@ class AutomatedInsightsService
         $olderValues = array_slice($values, -14, 7);
 
         $recentAvg = array_sum($recentValues) / count($recentValues);
-        $olderAvg = !empty($olderValues) ? array_sum($olderValues) / count($olderValues) : $recentAvg;
+        $olderAvg = ! empty($olderValues) ? array_sum($olderValues) / count($olderValues) : $recentAvg;
 
         $declinePercent = $olderAvg > 0
             ? (($olderAvg - $recentAvg) / $olderAvg) * 100
@@ -1292,6 +1318,7 @@ class AutomatedInsightsService
         if ($riskScore >= 40) {
             return 'medium';
         }
+
         return 'low';
     }
 
@@ -1301,9 +1328,10 @@ class AutomatedInsightsService
     private function getChurnDescription(string $riskLevel, float $declinePercent): string
     {
         if ($riskLevel !== 'low') {
-            return "User engagement has declined by " . round($declinePercent, 1) . "% over the past week";
+            return 'User engagement has declined by '.round($declinePercent, 1).'% over the past week';
         }
-        return "User engagement remains stable";
+
+        return 'User engagement remains stable';
     }
 
     /**

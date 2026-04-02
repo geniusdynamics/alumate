@@ -55,28 +55,24 @@ const openMobileNotifications = () => {
 };
 
 // PWA Event Handlers
-const handlePWAReady = (status: any) => {
-    console.log('PWA Ready:', status);
+const handlePWAReady = (_status: unknown) => {
+    // PWA is ready — no action needed
 };
 
-const handleAppInstalled = (event: any) => {
-    console.log('App Installed:', event);
-    // You could show a success message or update UI state
+const handleAppInstalled = (_event: unknown) => {
+    // App installed — could show a success toast if desired
 };
 
-const handlePushSubscribed = (subscription: any) => {
-    console.log('Push Notifications Enabled:', subscription);
-    // You could update user preferences or show confirmation
+const handlePushSubscribed = (_subscription: unknown) => {
+    // Push notifications enabled — could update user preferences
 };
 
 const handleOfflineMode = () => {
-    console.log('App is offline');
-    // You could update UI to show offline state
+    // App is offline — UI updates handled by RealTimeStatus component
 };
 
-const handleOnlineMode = (event: any) => {
-    console.log('App is online:', event);
-    // You could trigger data sync or update UI
+const handleOnlineMode = (_event: unknown) => {
+    // App is back online — data sync handled by RealTimeUpdates component
 };
 </script>
 
@@ -88,7 +84,7 @@ const handleOnlineMode = (event: any) => {
         <MobileHamburgerMenu class="lg:hidden" />
 
         <!-- Mobile Header for smaller screens -->
-        <div class="sticky-mobile lg:hidden">
+        <div class="sticky top-0 z-40 lg:hidden">
             <div class="flex items-center justify-between px-4 py-3">
                 <div class="flex items-center space-x-3">
                     <img
@@ -179,20 +175,3 @@ const handleOnlineMode = (event: any) => {
         <RealTimeStatus :position="'bottom-right'" :show-details="false" class="fixed" />
     </div>
 </template>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

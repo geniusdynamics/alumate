@@ -107,7 +107,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { BriefcaseIcon, PlusIcon, StarIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref } from 'vue';
 import AddCareerModal from './AddCareerModal.vue';
@@ -241,7 +241,7 @@ const deleteCareerEntry = async (entryId) => {
         }
     } catch (err) {
         console.error('Error deleting career entry:', err);
-        alert('Failed to delete career entry');
+        // TODO-toast: alert('Failed to delete career entry');
     }
 };
 
@@ -272,7 +272,7 @@ const deleteMilestone = async (milestoneId) => {
         }
     } catch (err) {
         console.error('Error deleting milestone:', err);
-        alert('Failed to delete milestone');
+        // TODO-toast: alert('Failed to delete milestone');
     }
 };
 
@@ -309,3 +309,4 @@ onMounted(() => {
     @apply mx-auto max-w-4xl;
 }
 </style>
+

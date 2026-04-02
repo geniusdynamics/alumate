@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Component service for managing components with schema-based tenant context
 // ABOUTME: Updated to work with schema-based tenancy instead of tenant_id columns
 
@@ -6,7 +7,6 @@ namespace App\Services;
 
 use App\Models\Component;
 use App\Models\ComponentTheme;
-use App\Services\TenantContextService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +22,7 @@ class ComponentService
     {
         $this->tenantContext = $tenantContext;
     }
+
     /**
      * Create a new component with validation and tenant scoping
      */
@@ -294,6 +295,19 @@ class ComponentService
     {
         $rules = $ignoreId ? Component::getUniqueValidationRules($ignoreId) : Component::getValidationRules();
 
+        // For updates, make tenant_id, category and type optional if not provided
+        if ($ignoreId) {
+            if (!isset($data['tenant_id'])) {
+                $rules['tenant_id'] = 'sometimes|exists:tenants,id';
+            }
+            if (!isset($data['category'])) {
+                $rules['category'] = 'sometimes';
+            }
+            if (!isset($data['type'])) {
+                $rules['type'] = 'sometimes';
+            }
+        }
+
         $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
@@ -357,8 +371,23 @@ class ComponentService
                 'format_numbers' => 'boolean',
             ],
             'ctas' => [
+                'type' => 'sometimes|string',
+                'buttonConfig' => 'sometimes|array',
+                'buttonConfig.text' => 'nullable|string|max:100',
+                'buttonConfig.url' => 'nullable|string|max:255',
+                'buttonConfig.style' => 'sometimes|string|in:primary,secondary,outline,text',
+                'buttonConfig.size' => 'sometimes|string|in:small,medium,large,xl,lg,md,sm',
+                'bannerConfig' => 'sometimes|array',
+                'bannerConfig.title' => 'nullable|string|max:255',
+                'bannerConfig.subtitle' => 'nullable|string|max:500',
+                'bannerConfig.layout' => 'sometimes|string|in:center-aligned,left-aligned,right-aligned,full-width',
+                'bannerConfig.height' => 'sometimes|string|in:small,medium,large,full',
+                'inlineLinkConfig' => 'sometimes|array',
+                'inlineLinkConfig.text' => 'nullable|string|max:100',
+                'inlineLinkConfig.url' => 'nullable|string|max:255',
+                'inlineLinkConfig.style' => 'sometimes|string|in:arrow,button,text',
                 'style' => 'string|in:primary,secondary,outline,text',
-                'size' => 'string|in:small,medium,large',
+                'size' => 'string|in:small,medium,large,xl,lg,md,sm',
                 'track_conversions' => 'boolean',
                 'utm_parameters' => 'array',
             ],
@@ -402,7 +431,6 @@ class ComponentService
 
         return $query->exists();
     }
-
 
     /**
      * Generate preview data for a component

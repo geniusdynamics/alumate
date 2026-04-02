@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         <div class="mb-6 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Campaign Performance</h3>
@@ -44,7 +44,7 @@
                             {{ campaign.campaign_title }}
                         </p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                            {{ campaign.campaign_type }} • {{ campaign.performance_metrics.days_active }} days
+                            {{ campaign.campaign_type }} â€¢ {{ campaign.performance_metrics.days_active }} days
                         </p>
                     </div>
                     <div class="text-right">
@@ -61,7 +61,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Chart from 'chart.js/auto';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
@@ -246,3 +246,4 @@ watch(selectedMetric, () => {
     });
 });
 </script>
+

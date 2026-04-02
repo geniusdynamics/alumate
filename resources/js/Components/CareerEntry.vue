@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
         <!-- Header -->
         <div class="mb-4 flex items-start justify-between">
@@ -69,7 +69,7 @@
             <h4 class="mb-2 text-sm font-medium text-gray-900">Key Achievements</h4>
             <ul class="space-y-1">
                 <li v-for="(achievement, index) in entry.achievements" :key="index" class="flex items-start text-sm text-gray-700">
-                    <span class="mr-2 mt-0.5 text-green-500">•</span>
+                    <span class="mr-2 mt-0.5 text-green-500">â€¢</span>
                     <span>{{ achievement }}</span>
                 </li>
             </ul>
@@ -90,7 +90,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     BriefcaseIcon,
     CalendarIcon,
@@ -161,3 +161,4 @@ const formatEmploymentType = (type) => {
     return types[type] || type;
 };
 </script>
+

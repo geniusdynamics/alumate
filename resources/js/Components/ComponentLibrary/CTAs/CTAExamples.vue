@@ -398,6 +398,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { createABTest, createEqualWeightVariants, useABTesting } from '@/Composables/useABTesting';
 import { useConversionTracking } from '@/Composables/useConversionTracking';
 import type { CTAComponentConfig } from '@/types/Components';
@@ -496,7 +497,7 @@ onMounted(() => {
 
 // Event handlers
 const handleCTAClick = (event: MouseEvent, config: any) => {
-    console.log('CTA clicked:', config);
+    logger.log('CTA clicked:', config);
 
     // Track click
     trackCTAClick(
@@ -514,7 +515,7 @@ const handleCTAClick = (event: MouseEvent, config: any) => {
 };
 
 const handleConversion = (data: any) => {
-    console.log('Conversion tracked:', data);
+    logger.log('Conversion tracked:', data);
 
     // Track conversion
     trackConversion(

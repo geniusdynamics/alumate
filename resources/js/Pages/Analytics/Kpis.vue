@@ -175,7 +175,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AnalyticsChart from '@/Components/AnalyticsChart.vue';
 import Modal from '@/Components/Modal.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -233,10 +233,10 @@ const calculateKpi = async (kpi) => {
             // Refresh the page to show updated values
             router.reload();
         } else {
-            alert('Failed to calculate KPI: ' + result.message);
+            // TODO-toast: alert('Failed to calculate KPI: ' + result.message);
         }
     } catch (error) {
-        alert('Error calculating KPI: ' + error.message);
+        // TODO-toast: alert('Error calculating KPI: ' + error.message);
     } finally {
         calculatingKpis.value = calculatingKpis.value.filter((id) => id !== kpi.id);
     }
@@ -394,6 +394,7 @@ const getDetailedTrendChartOptions = () => {
     };
 };
 </script>
+
 
 
 

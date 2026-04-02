@@ -192,6 +192,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { computed, onMounted, ref, watch } from 'vue';
 
 interface User {
@@ -422,7 +423,7 @@ const fetchUserAvailability = async (): Promise<void> => {
 const saveAvailability = async (date: string, time: string, available: boolean): Promise<void> => {
     try {
         // This would save availability to the backend
-        console.log(`Saving availability: ${date} ${time} = ${available}`);
+        logger.log(`Saving availability: ${date} ${time} = ${available}`);
     } catch (error) {
         console.error('Failed to save availability:', error);
     }

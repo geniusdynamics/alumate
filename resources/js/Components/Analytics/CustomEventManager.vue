@@ -535,6 +535,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import { Chart, registerables } from 'chart.js';
 import { useCustomEventStore } from '../../Stores/useCustomEventStore';
@@ -752,7 +753,7 @@ const loadOptimizationData = async () => {
 
 const trackSampleEvent = async () => {
     if (definitions.value.length === 0) {
-        alert('Please create an event definition first');
+        // TODO-toast: alert('Please create an event definition first');
         return;
     }
 
@@ -775,8 +776,8 @@ const trackSampleEvent = async () => {
 
 const applyOptimization = (suggestion: OptimizationSuggestion) => {
     // Handle optimization action
-    console.log('Applying optimization:', suggestion);
-    alert(`Applying: ${suggestion.action}`);
+    logger.log('Applying optimization:', suggestion);
+    // TODO-toast: alert(`Applying: ${suggestion.action}`);
 };
 
 const updateCharts = () => {

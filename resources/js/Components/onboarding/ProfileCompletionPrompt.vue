@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed bottom-4 right-4 z-50 max-w-sm">
         <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <!-- Header -->
@@ -66,7 +66,7 @@
 
                 <!-- Benefits -->
                 <div class="mb-4">
-                    <h4 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">🎯 Complete your profile to:</h4>
+                    <h4 class="mb-2 text-sm font-semibold text-gray-900 dark:text-white">ðŸŽ¯ Complete your profile to:</h4>
                     <ul class="space-y-1 text-xs text-gray-600 dark:text-gray-400">
                         <li class="flex items-center space-x-2">
                             <CheckCircleIcon class="h-3 w-3 text-green-500" />
@@ -117,7 +117,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -191,3 +191,4 @@ const completeProfile = () => {
     window.location.href = '/profile/edit';
 };
 </script>
+

@@ -279,7 +279,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CampaignBuilder from '@/Components/EmailMarketing/CampaignBuilder.vue';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
@@ -365,14 +365,14 @@ const sendCampaign = async (campaign) => {
 
         if (response.ok) {
             await loadCampaigns();
-            alert('Campaign sent successfully!');
+            // TODO-toast: alert('Campaign sent successfully!');
         } else {
             const error = await response.json();
-            alert('Failed to send campaign: ' + error.message);
+            // TODO-toast: alert('Failed to send campaign: ' + error.message);
         }
     } catch (error) {
         console.error('Failed to send campaign:', error);
-        alert('Failed to send campaign');
+        // TODO-toast: alert('Failed to send campaign');
     }
 };
 
@@ -423,6 +423,7 @@ onMounted(() => {
     loadAnalytics();
 });
 </script>
+
 
 
 

@@ -1,10 +1,10 @@
-<template>
+﻿<template>
     <button :type="type" :class="classes" :disabled="disabled">
         <slot />
     </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -22,3 +22,4 @@ const classes = computed(() => [
     },
 ]);
 </script>
+

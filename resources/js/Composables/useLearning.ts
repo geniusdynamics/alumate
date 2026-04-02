@@ -18,7 +18,7 @@ export function useLearning() {
             interval: 30000,
         },
         onConnected() {
-            console.log('Connected to learning WebSocket');
+            logger.log('Connected to learning WebSocket');
             // Subscribe to learning updates
             send(JSON.stringify({
                 action: 'subscribe',
@@ -26,7 +26,7 @@ export function useLearning() {
             }));
         },
         onDisconnected() {
-            console.log('Disconnected from learning WebSocket');
+            logger.log('Disconnected from learning WebSocket');
         },
         onMessage(ws, event) {
             try {

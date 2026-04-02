@@ -78,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ref } from 'vue';
 import ABTestForm from '../../Components/Analytics/ABTestForm.vue';
 import ABTestManager from '../../Components/Analytics/ABTestManager.vue';
@@ -128,18 +129,18 @@ const resetMockData = () => {
     apiCallCount.value = 0;
     errorCount.value = 0;
     lastSubmission.value = null;
-    console.log('Mock data reset');
+    logger.log('Mock data reset');
 };
 
 const simulateApiError = () => {
     errorCount.value++;
     // This would normally be handled by intercepting axios calls
-    console.log('API error simulated');
+    logger.log('API error simulated');
 };
 
 const toggleEmptyState = () => {
     // This would affect the mock API responses
-    console.log('Empty state toggled');
+    logger.log('Empty state toggled');
 };
 
 const showCreateForm = () => {
@@ -163,7 +164,7 @@ const handleFormSubmit = (testData: ABTestData) => {
     formSubmissions.value.push(testData);
     lastSubmission.value = testData;
     apiCallCount.value++;
-    console.log('Form submitted:', testData);
+    logger.log('Form submitted:', testData);
     hideForm();
 };
 
@@ -185,7 +186,7 @@ const hideResults = () => {
 // This would normally be set up in a test environment
 const setupMockInterceptors = () => {
     // In a real test environment, you would use libraries like msw or axios-mock-adapter
-    console.log('Mock interceptors would be set up here');
+    logger.log('Mock interceptors would be set up here');
 };
 
 // Initialize

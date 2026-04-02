@@ -8,14 +8,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 
 class LegalController extends Controller
 {
     /**
      * Display Terms of Service.
      */
-    public function terms(): Response
+    public function terms(): InertiaResponse
     {
         return Inertia::render('Legal/Terms', [
             'lastUpdated' => 'February 6, 2026',
@@ -25,7 +25,7 @@ class LegalController extends Controller
     /**
      * Display Privacy Policy.
      */
-    public function privacy(): Response
+    public function privacy(): InertiaResponse
     {
         return Inertia::render('Legal/Privacy', [
             'lastUpdated' => 'February 6, 2026',
@@ -35,7 +35,7 @@ class LegalController extends Controller
     /**
      * Display Cookie Policy.
      */
-    public function cookies(): Response
+    public function cookies(): InertiaResponse
     {
         return Inertia::render('Legal/Cookies', [
             'lastUpdated' => 'February 6, 2026',
@@ -45,7 +45,7 @@ class LegalController extends Controller
     /**
      * Display Data Processing Agreement.
      */
-    public function dpa(): Response
+    public function dpa(): InertiaResponse
     {
         return Inertia::render('Legal/DPA', [
             'lastUpdated' => 'February 6, 2026',
@@ -55,7 +55,7 @@ class LegalController extends Controller
     /**
      * Display Acceptable Use Policy.
      */
-    public function acceptableUse(): Response
+    public function acceptableUse(): InertiaResponse
     {
         return Inertia::render('Legal/AcceptableUse', [
             'lastUpdated' => 'February 6, 2026',
@@ -65,7 +65,7 @@ class LegalController extends Controller
     /**
      * Display GDPR Compliance information.
      */
-    public function gdpr(): Response
+    public function gdpr(): InertiaResponse
     {
         return Inertia::render('Legal/GDPR', [
             'lastUpdated' => 'February 6, 2026',
@@ -75,7 +75,7 @@ class LegalController extends Controller
     /**
      * Display CCPA Compliance information.
      */
-    public function ccpa(): Response
+    public function ccpa(): InertiaResponse
     {
         return Inertia::render('Legal/CCPA', [
             'lastUpdated' => 'February 6, 2026',
@@ -85,7 +85,7 @@ class LegalController extends Controller
     /**
      * Display FERPA Compliance information.
      */
-    public function ferpa(): Response
+    public function ferpa(): InertiaResponse
     {
         return Inertia::render('Legal/FERPA', [
             'lastUpdated' => 'February 6, 2026',
@@ -173,7 +173,7 @@ class LegalController extends Controller
     /**
      * Display cookie consent banner settings.
      */
-    public function cookieSettings(): Response
+    public function cookieSettings(): InertiaResponse
     {
         return Inertia::render('Legal/CookieSettings');
     }

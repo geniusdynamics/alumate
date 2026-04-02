@@ -97,7 +97,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { debounce } from 'lodash';
 import { computed, onMounted, reactive, ref } from 'vue';
 import ApplicationModal from './ApplicationModal.vue';
@@ -251,14 +251,14 @@ const submitApplication = async (applicationData) => {
             }
 
             // Show success message
-            alert('Application submitted successfully!');
+            // TODO-toast: alert('Application submitted successfully!');
             closeApplicationModal();
         } else {
-            alert(data.message || 'Failed to submit application');
+            // TODO-toast: alert(data.message || 'Failed to submit application');
         }
     } catch (error) {
         console.error('Error submitting application:', error);
-        alert('Failed to submit application. Please try again.');
+        // TODO-toast: alert('Failed to submit application. Please try again.');
     }
 };
 
@@ -279,13 +279,13 @@ const handleIntroductionRequest = async (contactId, message) => {
         const data = await response.json();
 
         if (data.success) {
-            alert('Introduction request sent successfully!');
+            // TODO-toast: alert('Introduction request sent successfully!');
         } else {
-            alert(data.message || 'Failed to send introduction request');
+            // TODO-toast: alert(data.message || 'Failed to send introduction request');
         }
     } catch (error) {
         console.error('Error sending introduction request:', error);
-        alert('Failed to send introduction request. Please try again.');
+        // TODO-toast: alert('Failed to send introduction request. Please try again.');
     }
 };
 
@@ -524,3 +524,4 @@ onMounted(() => {
     }
 }
 </style>
+

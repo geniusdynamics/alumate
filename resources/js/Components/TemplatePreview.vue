@@ -336,10 +336,10 @@ const copyEmbedCode = async () => {
     try {
         await navigator.clipboard.writeText(embedCode);
         // Could emit a toast notification here
-        alert('Embed code copied to clipboard!');
+        // TODO-toast: alert('Embed code copied to clipboard!');
     } catch (err) {
         console.error('Failed to copy embed code:', err);
-        alert('Failed to copy embed code');
+        // TODO-toast: alert('Failed to copy embed code');
     }
 };
 

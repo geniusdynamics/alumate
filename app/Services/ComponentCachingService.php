@@ -17,7 +17,9 @@ use Illuminate\Support\Facades\Redis;
 class ComponentCachingService extends CacheService
 {
     const COMPONENT_CACHE_TTL = 1800; // 30 minutes
+
     const RENDERED_COMPONENT_CACHE_TTL = 3600; // 1 hour
+
     const COMPONENT_THEME_CACHE_TTL = 7200; // 2 hours
 
     /**
@@ -41,7 +43,7 @@ class ComponentCachingService extends CacheService
         if ($cached !== null) {
             Log::info('Component cache hit', [
                 'component_id' => $component->id,
-                'cache_key' => $cacheKey
+                'cache_key' => $cacheKey,
             ]);
         }
 
@@ -83,8 +85,9 @@ class ComponentCachingService extends CacheService
         if ($cached && $this->isValidCacheEntry($cached, $configHash)) {
             Log::info('Rendered component cache hit', [
                 'component_id' => $component->id,
-                'cache_key' => $cacheKey
+                'cache_key' => $cacheKey,
             ]);
+
             return $cached['html'];
         }
 
@@ -112,6 +115,7 @@ class ComponentCachingService extends CacheService
     public function getCachedComponentInstance(ComponentInstance $instance)
     {
         $cacheKey = $this->getComponentInstanceCacheKey($instance);
+
         return $this->get($cacheKey);
     }
 
@@ -140,7 +144,7 @@ class ComponentCachingService extends CacheService
         if ($cached !== null) {
             Log::info('Component theme cache hit', [
                 'theme_slug' => $themeSlug,
-                'cache_key' => $cacheKey
+                'cache_key' => $cacheKey,
             ]);
         }
 
@@ -155,11 +159,11 @@ class ComponentCachingService extends CacheService
         $frequentComponents = ComponentInstance::whereHas('component', function ($query) use ($tenantId) {
             $query->where('tenant_id', $tenantId);
         })
-        ->selectRaw('component_id, COUNT(*) as usage_count')
-        ->groupBy('component_id')
-        ->orderByDesc('usage_count')
-        ->limit($limit)
-        ->get();
+            ->selectRaw('component_id, COUNT(*) as usage_count')
+            ->groupBy('component_id')
+            ->orderByDesc('usage_count')
+            ->limit($limit)
+            ->get();
 
         foreach ($frequentComponents as $usage) {
             $component = Component::where('tenant_id', $tenantId)
@@ -170,7 +174,7 @@ class ComponentCachingService extends CacheService
                 $this->cacheComponent($component);
                 Log::info('Preloaded component to cache', [
                     'component_id' => $component->id,
-                    'usage_count' => $usage->usage_count
+                    'usage_count' => $usage->usage_count,
                 ]);
             }
         }
@@ -185,14 +189,14 @@ class ComponentCachingService extends CacheService
 
         if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
             $keys = Redis::keys($pattern);
-            if (!empty($keys)) {
+            if (! empty($keys)) {
                 Redis::del($keys);
             }
         }
 
         Log::info('Invalidated component cache', [
             'component_id' => $component->id,
-            'keys_deleted' => count($keys ?? [])
+            'keys_deleted' => count($keys ?? []),
         ]);
     }
 
@@ -205,14 +209,14 @@ class ComponentCachingService extends CacheService
 
         if (Cache::getStore() instanceof \Illuminate\Cache\RedisStore) {
             $keys = Redis::keys($pattern);
-            if (!empty($keys)) {
+            if (! empty($keys)) {
                 Redis::del($keys);
             }
         }
 
         Log::info('Invalidated tenant component cache', [
             'tenant_id' => $tenantId,
-            'keys_deleted' => count($keys ?? [])
+            'keys_deleted' => count($keys ?? []),
         ]);
     }
 
@@ -261,6 +265,7 @@ class ComponentCachingService extends CacheService
     private function getRenderedComponentCacheKey(Component $component, string $configHash, ?string $themeSlug = null): string
     {
         $themePart = $themeSlug ? ":{$themeSlug}" : '';
+
         return "rendered_component:{$component->tenant_id}:{$component->id}:{$configHash}{$themePart}";
     }
 

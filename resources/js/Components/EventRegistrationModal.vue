@@ -334,7 +334,7 @@ const handleSubmit = async () => {
         emit('registered', registrationData);
     } catch (error) {
         console.error('Registration failed:', error);
-        alert('Registration failed. Please try again.');
+        // TODO-toast: alert('Registration failed. Please try again.');
     } finally {
         loading.value = false;
     }

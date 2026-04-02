@@ -194,6 +194,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import Icon from '@/Components/ui/Icon.vue';
 import { useCollaboration } from '@/Composables/useCollaboration';
 import { onMounted, onUnmounted } from 'vue';
@@ -324,7 +325,7 @@ const resolveConflict = async (conflict: Conflict, resolution: string) => {
 
 const showMergeModal = (conflict: Conflict) => {
     // TODO: Implement merge modal
-    console.log('Show merge modal for conflict:', conflict);
+    logger.log('Show merge modal for conflict:', conflict);
 };
 
 const formatTime = (dateString: string) => {

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <!-- Background overlay -->
@@ -59,7 +59,7 @@
 
                     <!-- Key Benefits -->
                     <div v-if="feature.benefits && feature.benefits.length > 0" class="mb-4">
-                        <h4 class="mb-3 text-lg font-semibold text-gray-900 dark:text-white">✨ Key Benefits</h4>
+                        <h4 class="mb-3 text-lg font-semibold text-gray-900 dark:text-white">âœ¨ Key Benefits</h4>
                         <ul class="space-y-2">
                             <li v-for="benefit in feature.benefits" :key="benefit" class="flex items-start space-x-2">
                                 <CheckCircleIcon class="mt-0.5 h-5 w-5 flex-shrink-0 text-green-500" />
@@ -70,7 +70,7 @@
 
                     <!-- How to Use -->
                     <div v-if="feature.howToUse && feature.howToUse.length > 0" class="mb-4">
-                        <h4 class="mb-3 text-lg font-semibold text-gray-900 dark:text-white">🚀 How to Use</h4>
+                        <h4 class="mb-3 text-lg font-semibold text-gray-900 dark:text-white">ðŸš€ How to Use</h4>
                         <ol class="space-y-2">
                             <li v-for="(step, index) in feature.howToUse" :key="step" class="flex items-start space-x-3">
                                 <span
@@ -131,7 +131,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -195,3 +195,4 @@ const tryFeature = () => {
     emit('try-feature', props.feature);
 };
 </script>
+

@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -271,7 +271,7 @@ const submit = () => {
                         class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-800"
                     >
                         {{ skill }}
-                        <button type="button" @click="removeSkill(index)" class="ml-2 text-indigo-600 hover:text-indigo-800">×</button>
+                        <button type="button" @click="removeSkill(index)" class="ml-2 text-indigo-600 hover:text-indigo-800">Ã—</button>
                     </span>
                 </div>
             </div>
@@ -381,3 +381,4 @@ const submit = () => {
         </form>
     </section>
 </template>
+

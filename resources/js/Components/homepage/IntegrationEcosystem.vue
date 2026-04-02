@@ -707,6 +707,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import type { IntegrationEcosystemProps, PlatformIntegration, TrainingProgram } from '@/Types/homepage';
 import { computed, ref } from 'vue';
 
@@ -772,7 +773,7 @@ const getSectionSubtitle = computed(() => {
 });
 
 const integrationCategories = computed(() => {
-    console.log('props.integrations:', props.integrations);
+    logger.log('props.integrations:', props.integrations);
     const categories = ['all'];
     if (props.integrations) {
         props.integrations.forEach((i) => {

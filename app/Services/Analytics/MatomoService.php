@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 
 /**
  * Matomo Service for handling event tracking, data synchronization, and segment tracking
- * 
+ *
  * This service provides comprehensive Matomo Analytics integration including:
  * - Event forwarding to Matomo Tracking API
  * - Custom dimensions mapping for tenant isolation
@@ -25,12 +25,17 @@ use Illuminate\Support\Str;
 class MatomoService
 {
     private const CACHE_TTL_MINUTES = 60;
+
     private const SEGMENTS_CACHE_KEY = 'matomo_segments_';
+
     private const GOALS_CACHE_KEY = 'matomo_goals_';
+
     private const CONFIG_CACHE_KEY = 'matomo_config_validated_';
 
     private Client $httpClient;
+
     private ConsentService $consentService;
+
     private ?TenantContextService $tenantContextService;
 
     public function __construct(
@@ -48,8 +53,8 @@ class MatomoService
     /**
      * Forward an analytics event to Matomo
      *
-     * @param array $event Event data to forward
-     * @param string|null $tenantId Tenant identifier for custom dimension mapping
+     * @param  array  $event  Event data to forward
+     * @param  string|null  $tenantId  Tenant identifier for custom dimension mapping
      * @return bool Success status
      */
     public function forwardEvent(array $event, ?string $tenantId = null): bool
@@ -58,11 +63,12 @@ class MatomoService
         $resolvedTenantId = $tenantId ?? $this->resolveTenantId();
 
         // Check if user has given consent before tracking
-        if (!$this->consentService->hasConsent()) {
+        if (! $this->consentService->hasConsent()) {
             Log::info('Matomo event tracking skipped due to missing user consent', [
                 'event_name' => $event['name'] ?? 'unknown',
                 'tenant_id' => $resolvedTenantId,
             ]);
+
             return false;
         }
 
@@ -76,6 +82,7 @@ class MatomoService
                     'event_name' => $event['name'] ?? 'unknown',
                     'tenant_id' => $resolvedTenantId,
                 ]);
+
                 return false;
             }
 
@@ -99,7 +106,7 @@ class MatomoService
             // Map and add custom dimensions for tenant
             $customDimensions = $this->mapCustomDimensions($event, $resolvedTenantId);
             foreach ($customDimensions as $dimensionIndex => $dimensionValue) {
-                $params['dimension' . $dimensionIndex] = $dimensionValue;
+                $params['dimension'.$dimensionIndex] = $dimensionValue;
             }
 
             // Add any additional custom parameters from the original event
@@ -110,7 +117,7 @@ class MatomoService
             }
 
             // Build the URL for Matomo tracking
-            $trackingUrl = rtrim($matomoUrl, '/') . '/piwik.php?' . http_build_query($params);
+            $trackingUrl = rtrim($matomoUrl, '/').'/piwik.php?'.http_build_query($params);
 
             $response = $this->httpClient->get($trackingUrl);
 
@@ -128,6 +135,7 @@ class MatomoService
                 'event_name' => $event['name'] ?? 'unknown',
                 'tenant_id' => $resolvedTenantId,
             ]);
+
             return false;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Matomo event forwarding', [
@@ -135,6 +143,7 @@ class MatomoService
                 'event_name' => $event['name'] ?? 'unknown',
                 'tenant_id' => $resolvedTenantId,
             ]);
+
             return false;
         }
     }
@@ -142,8 +151,8 @@ class MatomoService
     /**
      * Track an event in Matomo (alias for backward compatibility)
      *
-     * @param array $eventData Event data to track
-     * @param string|null $tenantId Tenant identifier for custom dimension mapping
+     * @param  array  $eventData  Event data to track
+     * @param  string|null  $tenantId  Tenant identifier for custom dimension mapping
      * @return bool Success status
      */
     public function trackEvent(array $eventData, ?string $tenantId = null): bool
@@ -154,14 +163,14 @@ class MatomoService
     /**
      * Batch forward multiple events to Matomo
      *
-     * @param array $events Array of events to forward
-     * @param string|null $tenantId Tenant identifier for custom dimension mapping
+     * @param  array  $events  Array of events to forward
+     * @param  string|null  $tenantId  Tenant identifier for custom dimension mapping
      * @return array Results with success/failure counts
      */
     public function batchForwardEvents(array $events, ?string $tenantId = null): array
     {
         $resolvedTenantId = $tenantId ?? $this->resolveTenantId();
-        
+
         $results = [
             'total' => count($events),
             'success' => 0,
@@ -171,7 +180,7 @@ class MatomoService
 
         foreach ($events as $index => $event) {
             $success = $this->forwardEvent($event, $resolvedTenantId);
-            
+
             if ($success) {
                 $results['success']++;
             } else {
@@ -197,8 +206,8 @@ class MatomoService
     /**
      * Track multiple events in batch (alias for backward compatibility)
      *
-     * @param array $events Array of event data to track
-     * @param string|null $tenantId Tenant identifier for custom dimension mapping
+     * @param  array  $events  Array of event data to track
+     * @param  string|null  $tenantId  Tenant identifier for custom dimension mapping
      * @return array Results with success/failure counts
      */
     public function trackBatchEvents(array $events, ?string $tenantId = null): array
@@ -209,8 +218,8 @@ class MatomoService
     /**
      * Map event properties to Matomo custom dimensions
      *
-     * @param array $event Event data
-     * @param string|null $tenantId Tenant identifier
+     * @param  array  $event  Event data
+     * @param  string|null  $tenantId  Tenant identifier
      * @return array Mapped custom dimensions [dimensionIndex => value]
      */
     public function mapCustomDimensions(array $event, ?string $tenantId = null): array
@@ -270,7 +279,7 @@ class MatomoService
     /**
      * Synchronize goals with Matomo
      *
-     * @param array $goals Array of goal data to sync
+     * @param  array  $goals  Array of goal data to sync
      * @return bool Success status
      */
     public function syncGoals(array $goals = []): bool
@@ -282,12 +291,14 @@ class MatomoService
 
             if (empty($matomoUrl) || empty($siteId) || empty($tokenAuth)) {
                 Log::warning('Matomo credentials not configured for goals sync');
+
                 return false;
             }
 
             // Check consent before syncing
-            if (!$this->consentService->hasConsent()) {
+            if (! $this->consentService->hasConsent()) {
                 Log::info('Matomo goals sync skipped due to missing user consent');
+
                 return false;
             }
 
@@ -313,7 +324,7 @@ class MatomoService
                 ],
             ];
 
-            $goalsToSync = !empty($goals) ? $goals : $defaultGoals;
+            $goalsToSync = ! empty($goals) ? $goals : $defaultGoals;
 
             foreach ($goalsToSync as $goal) {
                 $result = $this->createGoal($goal);
@@ -334,6 +345,7 @@ class MatomoService
             Log::error('Failed to sync goals with Matomo', [
                 'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -341,7 +353,7 @@ class MatomoService
     /**
      * Create a goal in Matomo
      *
-     * @param array $goalData Goal data to create
+     * @param  array  $goalData  Goal data to create
      * @return array|null Created goal data or null on failure
      */
     public function createGoal(array $goalData): ?array
@@ -357,6 +369,7 @@ class MatomoService
 
             if (empty($matomoUrl) || empty($siteId) || empty($tokenAuth)) {
                 Log::warning('Matomo credentials not configured for goal creation');
+
                 return null;
             }
 
@@ -388,7 +401,7 @@ class MatomoService
                 $params['description'] = $goalData['description'];
             }
 
-            $apiUrl = rtrim($matomoUrl, '/') . '/index.php?' . http_build_query($params);
+            $apiUrl = rtrim($matomoUrl, '/').'/index.php?'.http_build_query($params);
 
             $response = $this->httpClient->get($apiUrl);
             $responseData = json_decode($response->getBody()->getContents(), true);
@@ -397,6 +410,7 @@ class MatomoService
                 Log::error('Failed to decode Matomo goal creation response', [
                     'error' => json_last_error_msg(),
                 ]);
+
                 return null;
             }
 
@@ -419,12 +433,14 @@ class MatomoService
                 'error' => $e->getMessage(),
                 'goal_data' => $goalData,
             ]);
+
             return null;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Matomo goal creation', [
                 'error' => $e->getMessage(),
                 'goal_data' => $goalData,
             ]);
+
             return null;
         }
     }
@@ -432,7 +448,7 @@ class MatomoService
     /**
      * Create a segment in Matomo
      *
-     * @param array $criteria Segment criteria
+     * @param  array  $criteria  Segment criteria
      * @return array|null Created segment data or null on failure
      */
     public function createSegment(array $criteria): ?array
@@ -448,6 +464,7 @@ class MatomoService
 
             if (empty($matomoUrl) || empty($siteId) || empty($tokenAuth)) {
                 Log::warning('Matomo credentials not configured for segment creation');
+
                 return null;
             }
 
@@ -467,7 +484,7 @@ class MatomoService
                 'enabledAllUsers' => $criteria['enabled_all_users'] ?? 0,
             ];
 
-            $apiUrl = rtrim($matomoUrl, '/') . '/index.php?' . http_build_query($params);
+            $apiUrl = rtrim($matomoUrl, '/').'/index.php?'.http_build_query($params);
 
             $response = $this->httpClient->get($apiUrl);
             $responseData = json_decode($response->getBody()->getContents(), true);
@@ -476,6 +493,7 @@ class MatomoService
                 Log::error('Failed to decode Matomo segment creation response', [
                     'error' => json_last_error_msg(),
                 ]);
+
                 return null;
             }
 
@@ -500,12 +518,14 @@ class MatomoService
                 'error' => $e->getMessage(),
                 'criteria' => $criteria,
             ]);
+
             return null;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Matomo segment creation', [
                 'error' => $e->getMessage(),
                 'criteria' => $criteria,
             ]);
+
             return null;
         }
     }
@@ -517,7 +537,7 @@ class MatomoService
      */
     public function getSegments(): array
     {
-        $cacheKey = self::SEGMENTS_CACHE_KEY . config('services.matomo.site_id', 'default');
+        $cacheKey = self::SEGMENTS_CACHE_KEY.config('services.matomo.site_id', 'default');
 
         // Try to get from cache first
         if (Cache::has($cacheKey)) {
@@ -531,6 +551,7 @@ class MatomoService
 
             if (empty($matomoUrl) || empty($siteId) || empty($tokenAuth)) {
                 Log::warning('Matomo credentials not configured for segments retrieval');
+
                 return [];
             }
 
@@ -542,7 +563,7 @@ class MatomoService
                 'format' => 'JSON',
             ];
 
-            $apiUrl = rtrim($matomoUrl, '/') . '/index.php?' . http_build_query($params);
+            $apiUrl = rtrim($matomoUrl, '/').'/index.php?'.http_build_query($params);
 
             $response = $this->httpClient->get($apiUrl);
             $responseData = json_decode($response->getBody()->getContents(), true);
@@ -551,6 +572,7 @@ class MatomoService
                 Log::error('Failed to decode Matomo segments response', [
                     'error' => json_last_error_msg(),
                 ]);
+
                 return [];
             }
 
@@ -577,11 +599,13 @@ class MatomoService
             Log::error('Failed to retrieve segments from Matomo', [
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         } catch (\Exception $e) {
             Log::error('Unexpected error during Matomo segments retrieval', [
                 'error' => $e->getMessage(),
             ]);
+
             return [];
         }
     }
@@ -589,7 +613,7 @@ class MatomoService
     /**
      * Export segments from Matomo
      *
-     * @param array $filters Filters to apply
+     * @param  array  $filters  Filters to apply
      * @return array List of segments
      */
     public function exportSegments(array $filters = []): array
@@ -597,7 +621,7 @@ class MatomoService
         $segments = $this->getSegments();
 
         // Apply filters if provided
-        if (!empty($filters)) {
+        if (! empty($filters)) {
             if (isset($filters['date_range']['start'])) {
                 $startDate = $filters['date_range']['start'];
                 $segments = array_filter($segments, function ($segment) use ($startDate) {
@@ -647,9 +671,9 @@ class MatomoService
             $results['errors'][] = 'Matomo URL is not configured';
         } else {
             $results['details']['url'] = $matomoUrl;
-            
+
             // Validate URL format
-            if (!filter_var($matomoUrl, FILTER_VALIDATE_URL)) {
+            if (! filter_var($matomoUrl, FILTER_VALIDATE_URL)) {
                 $results['valid'] = false;
                 $results['errors'][] = 'Matomo URL format is invalid';
             }
@@ -674,13 +698,13 @@ class MatomoService
         }
 
         // Test API connectivity if credentials are provided
-        if (!empty($matomoUrl) && !empty($siteId) && !empty($tokenAuth)) {
+        if (! empty($matomoUrl) && ! empty($siteId) && ! empty($tokenAuth)) {
             $apiTestResult = $this->testApiConnectivity();
             $results['details']['api_connectivity'] = $apiTestResult;
-            
-            if (!$apiTestResult['success']) {
+
+            if (! $apiTestResult['success']) {
                 $results['valid'] = false;
-                $results['errors'][] = 'Failed to connect to Matomo API: ' . ($apiTestResult['error'] ?? 'Unknown error');
+                $results['errors'][] = 'Failed to connect to Matomo API: '.($apiTestResult['error'] ?? 'Unknown error');
             }
         }
 
@@ -710,12 +734,13 @@ class MatomoService
                 'format' => 'JSON',
             ];
 
-            $apiUrl = rtrim($matomoUrl, '/') . '/index.php?' . http_build_query($params);
+            $apiUrl = rtrim($matomoUrl, '/').'/index.php?'.http_build_query($params);
 
             $response = $this->httpClient->get($apiUrl);
 
             if ($response->getStatusCode() === 200) {
                 $responseData = json_decode($response->getBody()->getContents(), true);
+
                 return [
                     'success' => true,
                     'version' => $responseData['value'] ?? null,
@@ -724,7 +749,7 @@ class MatomoService
 
             return [
                 'success' => false,
-                'error' => 'API returned status code: ' . $response->getStatusCode(),
+                'error' => 'API returned status code: '.$response->getStatusCode(),
             ];
         } catch (GuzzleException $e) {
             return [
@@ -742,14 +767,14 @@ class MatomoService
     /**
      * Get a report from Matomo
      *
-     * @param string $reportType Type of report to retrieve
-     * @param array $parameters Additional parameters for the report
+     * @param  string  $reportType  Type of report to retrieve
+     * @param  array  $parameters  Additional parameters for the report
      * @return array|null Report data or null on failure
      */
     public function getReport(string $reportType, array $parameters = []): ?array
     {
         $resolvedTenantId = $this->resolveTenantId();
-        $cacheKey = 'matomo_report_' . md5($reportType . serialize($parameters) . $resolvedTenantId);
+        $cacheKey = 'matomo_report_'.md5($reportType.serialize($parameters).$resolvedTenantId);
 
         // Try to get from cache for GET requests
         $method = strtoupper($parameters['method'] ?? 'GET');
@@ -766,6 +791,7 @@ class MatomoService
 
             if (empty($matomoUrl) || empty($siteId) || empty($tokenAuth)) {
                 Log::warning('Matomo credentials not configured for report retrieval');
+
                 return null;
             }
 
@@ -781,7 +807,7 @@ class MatomoService
 
             $apiParams = array_merge($defaultParams, $parameters);
 
-            $apiUrl = rtrim($matomoUrl, '/') . '/index.php?' . http_build_query($apiParams);
+            $apiUrl = rtrim($matomoUrl, '/').'/index.php?'.http_build_query($apiParams);
 
             $response = $this->httpClient->get($apiUrl);
             $responseData = json_decode($response->getBody()->getContents(), true);
@@ -791,6 +817,7 @@ class MatomoService
                     'report_type' => $reportType,
                     'error' => json_last_error_msg(),
                 ]);
+
                 return null;
             }
 
@@ -810,12 +837,14 @@ class MatomoService
                 'report_type' => $reportType,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Matomo report retrieval', [
                 'report_type' => $reportType,
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -834,6 +863,7 @@ class MatomoService
 
             if (empty($matomoUrl) || empty($siteId) || empty($tokenAuth)) {
                 Log::warning('Matomo credentials not configured for realtime data');
+
                 return null;
             }
 
@@ -848,7 +878,7 @@ class MatomoService
                 'filter_limit' => 10, // Get last 10 visitors
             ];
 
-            $apiUrl = rtrim($matomoUrl, '/') . '/index.php?' . http_build_query($apiParams);
+            $apiUrl = rtrim($matomoUrl, '/').'/index.php?'.http_build_query($apiParams);
 
             $response = $this->httpClient->get($apiUrl);
             $responseData = json_decode($response->getBody()->getContents(), true);
@@ -857,6 +887,7 @@ class MatomoService
                 Log::error('Failed to decode Matomo realtime response', [
                     'error' => json_last_error_msg(),
                 ]);
+
                 return null;
             }
 
@@ -865,11 +896,13 @@ class MatomoService
             Log::error('Failed to retrieve realtime data from Matomo', [
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Matomo realtime retrieval', [
                 'error' => $e->getMessage(),
             ]);
+
             return null;
         }
     }
@@ -877,7 +910,7 @@ class MatomoService
     /**
      * Sync data between our system and Matomo
      *
-     * @param array $syncData Data to sync
+     * @param  array  $syncData  Data to sync
      * @return bool Success status
      */
     public function syncData(array $syncData): bool
@@ -893,6 +926,7 @@ class MatomoService
 
             if (empty($matomoUrl) || empty($siteId) || empty($tokenAuth)) {
                 Log::warning('Matomo credentials not configured for data sync');
+
                 return false;
             }
 
@@ -910,21 +944,20 @@ class MatomoService
                 'error' => $e->getMessage(),
                 'sync_data' => $syncData,
             ]);
+
             return false;
         }
     }
 
     /**
      * Clear all Matomo-related caches
-     *
-     * @return void
      */
     public function clearCaches(): void
     {
         $this->invalidateSegmentsCache();
         $this->invalidateGoalsCache();
         Cache::forget(self::CONFIG_CACHE_KEY);
-        
+
         Log::info('Matomo caches cleared');
     }
 
@@ -955,7 +988,7 @@ class MatomoService
     /**
      * Map segment criteria to Matomo segment definition
      *
-     * @param array $criteria Segment criteria
+     * @param  array  $criteria  Segment criteria
      * @return string Matomo segment definition
      */
     private function mapSegmentToMatomoDefinition(array $criteria): string
@@ -964,32 +997,32 @@ class MatomoService
 
         // Map user segment criteria
         if (isset($criteria['user_segment'])) {
-            $segments[] = "customDimension2==" . $criteria['user_segment'];
+            $segments[] = 'customDimension2=='.$criteria['user_segment'];
         }
 
         // Map engagement criteria
         if (isset($criteria['min_events'])) {
-            $segments[] = "events>=" . $criteria['min_events'];
+            $segments[] = 'events>='.$criteria['min_events'];
         }
 
         // Map time-based criteria
         if (isset($criteria['days_since_last_visit'])) {
-            $segments[] = "daysSinceLastVisit<=" . $criteria['days_since_last_visit'];
+            $segments[] = 'daysSinceLastVisit<='.$criteria['days_since_last_visit'];
         }
 
         // Map cohort criteria
         if (isset($criteria['cohort_id'])) {
-            $segments[] = "customDimension3==" . $criteria['cohort_id'];
+            $segments[] = 'customDimension3=='.$criteria['cohort_id'];
         }
 
         // Map graduation year criteria
         if (isset($criteria['graduation_year'])) {
-            $segments[] = "customDimension4==" . $criteria['graduation_year'];
+            $segments[] = 'customDimension4=='.$criteria['graduation_year'];
         }
 
         // Map tenant criteria
         if (isset($criteria['tenant_id'])) {
-            $segments[] = "customDimension1==" . $criteria['tenant_id'];
+            $segments[] = 'customDimension1=='.$criteria['tenant_id'];
         }
 
         return implode(',', $segments);
@@ -998,34 +1031,29 @@ class MatomoService
     /**
      * Cache goals
      *
-     * @param array $goals Goals to cache
-     * @return void
+     * @param  array  $goals  Goals to cache
      */
     private function cacheGoals(array $goals): void
     {
-        $cacheKey = self::GOALS_CACHE_KEY . config('services.matomo.site_id', 'default');
+        $cacheKey = self::GOALS_CACHE_KEY.config('services.matomo.site_id', 'default');
         Cache::put($cacheKey, $goals, now()->addMinutes(self::CACHE_TTL_MINUTES));
     }
 
     /**
      * Invalidate segments cache
-     *
-     * @return void
      */
     private function invalidateSegmentsCache(): void
     {
-        $cacheKey = self::SEGMENTS_CACHE_KEY . config('services.matomo.site_id', 'default');
+        $cacheKey = self::SEGMENTS_CACHE_KEY.config('services.matomo.site_id', 'default');
         Cache::forget($cacheKey);
     }
 
     /**
      * Invalidate goals cache
-     *
-     * @return void
      */
     private function invalidateGoalsCache(): void
     {
-        $cacheKey = self::GOALS_CACHE_KEY . config('services.matomo.site_id', 'default');
+        $cacheKey = self::GOALS_CACHE_KEY.config('services.matomo.site_id', 'default');
         Cache::forget($cacheKey);
     }
 }

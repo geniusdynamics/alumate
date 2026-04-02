@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg bg-white p-6 shadow-sm dark:bg-gray-800">
         <div class="mb-6 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Giving Trends</h3>
@@ -56,7 +56,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Chart from 'chart.js/auto';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 
@@ -226,3 +226,4 @@ watch(selectedPeriod, () => {
     });
 });
 </script>
+

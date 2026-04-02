@@ -369,7 +369,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { debounce } from 'lodash';
 import { reactive, ref } from 'vue';
@@ -428,7 +428,7 @@ const suspendUser = (user) => {
 
 const confirmSuspend = () => {
     if (!suspendReason.value.trim()) {
-        alert('Please provide a reason for suspension');
+        // TODO-toast: alert('Please provide a reason for suspension');
         return;
     }
 
@@ -480,3 +480,4 @@ const bulkAction = (action) => {
     }
 };
 </script>
+

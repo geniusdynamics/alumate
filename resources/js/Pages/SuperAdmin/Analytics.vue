@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout>
         <Head title="System Analytics" />
 
@@ -224,7 +224,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import {
     AcademicCapIcon,
@@ -264,6 +264,7 @@ const formatDate = (dateString) => {
     return format(new Date(dateString), 'MMM dd, yyyy HH:mm');
 };
 </script>
+
 
 
 

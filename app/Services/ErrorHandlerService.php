@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -17,14 +17,13 @@ use Throwable;
 class ErrorHandlerService
 {
     private const ERROR_CACHE_KEY = 'error_stats';
+
     private const ERROR_CACHE_TTL = 3600; // 1 hour
 
     /**
      * Handle and log application errors
      *
-     * @param Throwable $exception
-     * @param array $context Additional context information
-     * @return array
+     * @param  array  $context  Additional context information
      */
     public function handleError(Throwable $exception, array $context = []): array
     {
@@ -40,9 +39,6 @@ class ErrorHandlerService
 
     /**
      * Handle validation errors
-     *
-     * @param \Illuminate\Validation\ValidationException $exception
-     * @return array
      */
     public function handleValidationError(\Illuminate\Validation\ValidationException $exception): array
     {
@@ -59,10 +55,6 @@ class ErrorHandlerService
 
     /**
      * Handle template-specific errors
-     *
-     * @param Throwable $exception
-     * @param array $context
-     * @return array
      */
     public function handleTemplateError(Throwable $exception, array $context = []): array
     {
@@ -91,10 +83,6 @@ class ErrorHandlerService
 
     /**
      * Handle API errors with proper HTTP status codes
-     *
-     * @param Throwable $exception
-     * @param array $context
-     * @return JsonResponse
      */
     public function handleApiError(Throwable $exception, array $context = []): JsonResponse
     {
@@ -109,9 +97,6 @@ class ErrorHandlerService
 
     /**
      * Handle database errors
-     *
-     * @param \Illuminate\Database\QueryException $exception
-     * @return array
      */
     public function handleDatabaseError(\Illuminate\Database\QueryException $exception): array
     {
@@ -135,10 +120,6 @@ class ErrorHandlerService
 
     /**
      * Handle file upload errors
-     *
-     * @param Throwable $exception
-     * @param array $context
-     * @return array
      */
     public function handleFileUploadError(Throwable $exception, array $context = []): array
     {
@@ -161,9 +142,6 @@ class ErrorHandlerService
 
     /**
      * Generate recovery suggestions for errors
-     *
-     * @param Throwable $exception
-     * @return array
      */
     public function generateRecoverySuggestions(Throwable $exception): array
     {
@@ -194,8 +172,6 @@ class ErrorHandlerService
 
     /**
      * Get error statistics
-     *
-     * @return array
      */
     public function getErrorStats(): array
     {
@@ -220,9 +196,6 @@ class ErrorHandlerService
 
     /**
      * Log error with full context
-     *
-     * @param Throwable $exception
-     * @param array $context
      */
     private function logError(Throwable $exception, array $context): void
     {
@@ -251,8 +224,6 @@ class ErrorHandlerService
 
     /**
      * Track error statistics
-     *
-     * @param Throwable $exception
      */
     private function trackErrorStats(Throwable $exception): void
     {
@@ -278,10 +249,6 @@ class ErrorHandlerService
 
     /**
      * Generate user-friendly error response
-     *
-     * @param Throwable $exception
-     * @param array $context
-     * @return array
      */
     private function generateErrorResponse(Throwable $exception, array $context): array
     {
@@ -296,7 +263,7 @@ class ErrorHandlerService
         ];
 
         // Add debug information in non-production environments
-        if (!$isProduction) {
+        if (! $isProduction) {
             $response['debug'] = [
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),
@@ -312,9 +279,6 @@ class ErrorHandlerService
 
     /**
      * Get appropriate HTTP status code for exception
-     *
-     * @param Throwable $exception
-     * @return int
      */
     private function getHttpStatusCode(Throwable $exception): int
     {
@@ -339,9 +303,6 @@ class ErrorHandlerService
 
     /**
      * Categorize template errors
-     *
-     * @param Throwable $exception
-     * @return string
      */
     private function categorizeTemplateError(Throwable $exception): string
     {
@@ -368,9 +329,6 @@ class ErrorHandlerService
 
     /**
      * Get user-friendly template error message
-     *
-     * @param string $errorType
-     * @return string
      */
     private function getTemplateErrorMessage(string $errorType): string
     {
@@ -387,9 +345,6 @@ class ErrorHandlerService
 
     /**
      * Get HTTP status code for template errors
-     *
-     * @param string $errorType
-     * @return int
      */
     private function getTemplateErrorStatusCode(string $errorType): int
     {
@@ -406,9 +361,6 @@ class ErrorHandlerService
 
     /**
      * Get safe database error message
-     *
-     * @param string $errorCode
-     * @return string
      */
     private function getSafeDatabaseErrorMessage(string $errorCode): string
     {
@@ -423,9 +375,6 @@ class ErrorHandlerService
 
     /**
      * Sanitize SQL for logging
-     *
-     * @param string $sql
-     * @return string
      */
     private function sanitizeSql(string $sql): string
     {
@@ -435,8 +384,6 @@ class ErrorHandlerService
 
     /**
      * Log validation errors
-     *
-     * @param array $errors
      */
     private function logValidationErrors(array $errors): void
     {

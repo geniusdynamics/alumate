@@ -9,11 +9,10 @@ use App\Models\Course;
 use App\Models\LearningProgress;
 use App\Models\User;
 use App\Services\TenantContextService;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 /**
  * Learning Analytics Service
@@ -25,8 +24,11 @@ use Carbon\Carbon;
 class LearningAnalyticsService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const ENGAGEMENT_CACHE_KEY = 'learning_score_%s_%s';
+
     private const PROGRESS_CACHE_KEY = 'learning_progress_%s_%s';
+
     private const METRICS_CACHE_KEY = 'learning_metrics_%s_%s_%s';
 
     public function __construct(
@@ -36,20 +38,19 @@ class LearningAnalyticsService
     /**
      * Track learning progress for a user in a course
      *
-     * @param int $userId User ID
-     * @param int $courseId Course ID
-     * @param array $progress Progress data
-     * @return LearningProgress
+     * @param  int  $userId  User ID
+     * @param  int  $courseId  Course ID
+     * @param  array  $progress  Progress data
      */
     public function trackLearningProgress(int $userId, int $courseId, array $progress): LearningProgress
     {
         $tenantId = $this->getCurrentTenantId();
 
         // Check consent before tracking
-        if (!$this->checkConsent($userId)) {
+        if (! $this->checkConsent($userId)) {
             Log::info('Learning analytics tracking skipped due to lack of consent', [
                 'user_id' => $userId,
-                'course_id' => $courseId
+                'course_id' => $courseId,
             ]);
             throw new \Exception('User has not consented to analytics tracking');
         }
@@ -90,9 +91,8 @@ class LearningAnalyticsService
     /**
      * Get learning progress for a user in a course
      *
-     * @param int $userId User ID
-     * @param int $courseId Course ID
-     * @return array|null
+     * @param  int  $userId  User ID
+     * @param  int  $courseId  Course ID
      */
     public function getLearningProgress(int $userId, int $courseId): ?array
     {
@@ -105,7 +105,7 @@ class LearningAnalyticsService
                 ->with('course')
                 ->first();
 
-            if (!$progress) {
+            if (! $progress) {
                 return null;
             }
 
@@ -130,7 +130,7 @@ class LearningAnalyticsService
     /**
      * Analyze learning outcomes for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return array Learning outcomes analysis
      */
     public function analyzeLearningOutcomes(int $userId): array
@@ -205,8 +205,8 @@ class LearningAnalyticsService
     /**
      * Get learning metrics for a user within a date range
      *
-     * @param int $userId User ID
-     * @param array $dateRange Date range ['start' => Carbon, 'end' => Carbon]
+     * @param  int  $userId  User ID
+     * @param  array  $dateRange  Date range ['start' => Carbon, 'end' => Carbon]
      * @return array Learning metrics
      */
     public function getLearningMetrics(int $userId, array $dateRange): array
@@ -245,7 +245,7 @@ class LearningAnalyticsService
                 'events_summary' => [
                     'total_events' => $events->count(),
                     'unique_event_types' => $events->pluck('event_name')->unique()->count(),
-                    'events_by_type' => $events->groupBy('event_name')->map(fn($g) => $count = $g->count())->toArray(),
+                    'events_by_type' => $events->groupBy('event_name')->map(fn ($g) => $count = $g->count())->toArray(),
                 ],
                 'time_metrics' => [
                     'total_learning_time_minutes' => $events->sum('properties.duration') ?? 0,
@@ -272,21 +272,21 @@ class LearningAnalyticsService
     /**
      * Compare learning performance across multiple users
      *
-     * @param array $userIds Array of user IDs
+     * @param  array  $userIds  Array of user IDs
      * @return array Comparison results
      */
     public function compareLearningPerformance(array $userIds): array
     {
         $tenantId = $this->getCurrentTenantId();
-        $cacheKey = "learning_comparison_" . md5(serialize($userIds)) . "_{$tenantId}";
+        $cacheKey = 'learning_comparison_'.md5(serialize($userIds))."_{$tenantId}";
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userIds, $tenantId) {
+        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userIds) {
             $results = [];
             $rankings = [];
 
             foreach ($userIds as $userId) {
                 $outcomes = $this->analyzeLearningOutcomes($userId);
-                
+
                 $results[$userId] = [
                     'user_id' => $userId,
                     'total_courses' => $outcomes['total_courses'],
@@ -332,8 +332,8 @@ class LearningAnalyticsService
     /**
      * Predict learning completion for a user in a course
      *
-     * @param int $userId User ID
-     * @param int $courseId Course ID
+     * @param  int  $userId  User ID
+     * @param  int  $courseId  Course ID
      * @return array Prediction results
      */
     public function predictLearningCompletion(int $userId, int $courseId): array
@@ -380,11 +380,11 @@ class LearningAnalyticsService
             $avgTimePerModule = $this->calculateAvgTimePerModule($similarProgress);
 
             // Predict completion based on current pace
-            $currentProgressRate = $progress->progress_percentage > 0 
+            $currentProgressRate = $progress->progress_percentage > 0
                 ? ($progress->progress_percentage / max(1, $this->getDaysSinceStart($progress)))
                 : $avgProgressRate;
 
-            $daysToComplete = $currentProgressRate > 0 
+            $daysToComplete = $currentProgressRate > 0
                 ? ((100 - $progress->progress_percentage) / $currentProgressRate)
                 : ($remainingModules * $avgTimePerModule);
 
@@ -417,7 +417,7 @@ class LearningAnalyticsService
     /**
      * Get learning recommendations for a user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return array Learning recommendations
      */
     public function getLearningRecommendations(int $userId): array
@@ -451,7 +451,7 @@ class LearningAnalyticsService
             foreach ($incompleteCourses as $courseProgress) {
                 $prediction = $this->predictLearningCompletion($userId, $courseProgress->course_id);
                 $courseTitle = $courseProgress->course->title ?? 'Course';
-                
+
                 if ($prediction['days_remaining'] > 14) {
                     $recommendations[] = [
                         'type' => 'completion',
@@ -459,15 +459,15 @@ class LearningAnalyticsService
                         'priority' => 'medium',
                         'title' => "Complete {$courseTitle}",
                         'description' => "You're {$courseProgress->progress_percentage}% complete. Keep going!",
-                        'estimated_time' => $prediction['days_remaining'] . ' days',
+                        'estimated_time' => $prediction['days_remaining'].' days',
                     ];
                 }
             }
 
             // Recommend new courses based on strengths
-            if (!empty($outcomes['strengths'])) {
+            if (! empty($outcomes['strengths'])) {
                 $recommendedCourses = $this->recommendCoursesBasedOnStrengths(
-                    $userId, 
+                    $userId,
                     array_column($outcomes['strengths'], 'category')
                 );
 
@@ -501,16 +501,15 @@ class LearningAnalyticsService
     /**
      * Track learning activity for a user
      *
-     * @param int $userId User ID
-     * @param array $activity Activity data
-     * @return AnalyticsEvent
+     * @param  int  $userId  User ID
+     * @param  array  $activity  Activity data
      */
     public function trackLearningActivity(int $userId, array $activity): AnalyticsEvent
     {
         $tenantId = $this->getCurrentTenantId();
 
         // Check consent
-        if (!$this->checkConsent($userId)) {
+        if (! $this->checkConsent($userId)) {
             Log::info('Learning activity tracking skipped due to lack of consent', [
                 'user_id' => $userId,
             ]);
@@ -538,8 +537,8 @@ class LearningAnalyticsService
         // Update progress if applicable
         if (isset($activity['course_id']) && isset($activity['progress_update'])) {
             $this->trackLearningProgress(
-                $userId, 
-                $activity['course_id'], 
+                $userId,
+                $activity['course_id'],
                 $activity['progress_update']
             );
         }
@@ -552,8 +551,8 @@ class LearningAnalyticsService
      *
      * Formula: (duration * 0.4 + interactions * 0.3 + completion * 0.3) normalized to 0-100
      *
-     * @param int $userId User ID
-     * @param int $courseId Course ID
+     * @param  int  $userId  User ID
+     * @param  int  $courseId  Course ID
      * @return float Engagement score (0-100)
      */
     public function calculateEngagementScore(int $userId, int $courseId): float
@@ -566,7 +565,7 @@ class LearningAnalyticsService
                 ->byCourse($courseId)
                 ->first();
 
-            if (!$progress) {
+            if (! $progress) {
                 return 0.0;
             }
 
@@ -585,8 +584,8 @@ class LearningAnalyticsService
     /**
      * Verify certification eligibility
      *
-     * @param int $userId User ID
-     * @param array $criteria Certification criteria
+     * @param  int  $userId  User ID
+     * @param  array  $criteria  Certification criteria
      * @return array Eligibility result with score
      */
     public function verifyCertification(int $userId, array $criteria = []): array
@@ -604,7 +603,7 @@ class LearningAnalyticsService
             ->where('course_id', $criteria['course_id'] ?? null)
             ->first();
 
-        if (!$progress) {
+        if (! $progress) {
             return [
                 'eligible' => false,
                 'score' => 0,
@@ -632,7 +631,7 @@ class LearningAnalyticsService
     /**
      * Generate learning insights and trends
      *
-     * @param array $filters Optional filters
+     * @param  array  $filters  Optional filters
      * @return array Learning insights data
      */
     public function generateLearningInsights(array $filters = []): array
@@ -677,7 +676,7 @@ class LearningAnalyticsService
     /**
      * Process batch learning score calculations
      *
-     * @param array $userCoursePairs Array of [user_id, course_id] pairs
+     * @param  array  $userCoursePairs  Array of [user_id, course_id] pairs
      * @return array Processing results
      */
     public function processBatchScores(array $userCoursePairs): array
@@ -860,6 +859,7 @@ class LearningAnalyticsService
         $score += ($outcomes['average_score'] ?? 0) * 0.35;
         $score += ($outcomes['average_engagement'] ?? 0) * 0.25;
         $score += ($outcomes['certifications_earned'] ?? 0) * 10;
+
         return $score;
     }
 
@@ -878,8 +878,8 @@ class LearningAnalyticsService
      */
     private function getPeakLearningDays(Collection $events): array
     {
-        $dayCounts = $events->groupBy(fn($e) => $e->occurred_at->format('l'))
-            ->map(fn($g) => $g->count())
+        $dayCounts = $events->groupBy(fn ($e) => $e->occurred_at->format('l'))
+            ->map(fn ($g) => $g->count())
             ->sortDesc()
             ->take(3)
             ->toArray();
@@ -892,8 +892,8 @@ class LearningAnalyticsService
      */
     private function calculateLearningTrends(Collection $events, array $dateRange): array
     {
-        $grouped = $events->groupBy(fn($e) => $e->occurred_at->format('Y-m-d'));
-        
+        $grouped = $events->groupBy(fn ($e) => $e->occurred_at->format('Y-m-d'));
+
         $trend = [];
         foreach ($grouped as $date => $dayEvents) {
             $trend[] = [
@@ -950,7 +950,7 @@ class LearningAnalyticsService
      */
     private function getDaysSinceStart(?LearningProgress $progress): int
     {
-        if (!$progress) {
+        if (! $progress) {
             return 1;
         }
 
@@ -988,7 +988,8 @@ class LearningAnalyticsService
         }
 
         $mean = array_sum($values) / count($values);
-        $variance = array_sum(array_map(fn($x) => pow($x - $mean, 2), $values)) / count($values);
+        $variance = array_sum(array_map(fn ($x) => pow($x - $mean, 2), $values)) / count($values);
+
         return sqrt($variance);
     }
 
@@ -1003,7 +1004,7 @@ class LearningAnalyticsService
             $recommendations[] = 'Consider increasing your weekly study time to finish faster';
         }
 
-        if (!$progress || ($progress->engagement_score ?? 0) < 50) {
+        if (! $progress || ($progress->engagement_score ?? 0) < 50) {
             $recommendations[] = 'Try breaking your study sessions into smaller, focused 25-minute blocks';
         }
 
@@ -1028,9 +1029,12 @@ class LearningAnalyticsService
     private function calculateCompletionRate(Collection $events): float
     {
         $totalInteractions = $events->count();
-        if ($totalInteractions === 0) return 0;
+        if ($totalInteractions === 0) {
+            return 0;
+        }
 
         $completions = $events->where('properties.interaction_type', 'completion')->count();
+
         return round(($completions / $totalInteractions) * 100, 2);
     }
 
@@ -1042,7 +1046,9 @@ class LearningAnalyticsService
         $userInteractions = $events->groupBy('user_id');
         $totalUsers = $userInteractions->count();
 
-        if ($totalUsers === 0) return 0;
+        if ($totalUsers === 0) {
+            return 0;
+        }
 
         $dropoutUsers = $userInteractions->filter(function ($userEvents) {
             return $userEvents->where('occurred_at', '>=', now()->subWeek())->count() < 3;
@@ -1057,6 +1063,7 @@ class LearningAnalyticsService
     private function calculateAvgCompletionTime(Collection $events): float
     {
         $completionEvents = $events->where('properties.interaction_type', 'completion');
+
         return $completionEvents->avg('properties.duration') ?? 0;
     }
 
@@ -1065,8 +1072,8 @@ class LearningAnalyticsService
      */
     private function calculateEngagementTrends(Collection $events): array
     {
-        return $events->groupBy(fn($event) => $event->occurred_at->format('Y-m-d'))
-            ->map(fn($dayEvents) => [
+        return $events->groupBy(fn ($event) => $event->occurred_at->format('Y-m-d'))
+            ->map(fn ($dayEvents) => [
                 'date' => $dayEvents->first()->occurred_at->format('Y-m-d'),
                 'interactions' => $dayEvents->count(),
                 'avg_duration' => $dayEvents->avg('properties.duration') ?? 0,
@@ -1081,15 +1088,19 @@ class LearningAnalyticsService
     private function detectAnomalies(Collection $events): array
     {
         $durations = $events->pluck('properties.duration')->filter()->values();
-        if ($durations->isEmpty()) return [];
+        if ($durations->isEmpty()) {
+            return [];
+        }
 
         $mean = $durations->avg();
-        $stdDev = sqrt($durations->map(fn($d) => pow($d - $mean, 2))->avg());
+        $stdDev = sqrt($durations->map(fn ($d) => pow($d - $mean, 2))->avg());
 
-        if ($stdDev == 0) return [];
+        if ($stdDev == 0) {
+            return [];
+        }
 
-        return $events->filter(fn($event) => abs((($event->properties['duration'] ?? 0) - $mean) / $stdDev) > 2)
-            ->map(fn($event) => [
+        return $events->filter(fn ($event) => abs((($event->properties['duration'] ?? 0) - $mean) / $stdDev) > 2)
+            ->map(fn ($event) => [
                 'user_id' => $event->user_id,
                 'course_id' => $event->properties['course_id'] ?? null,
                 'duration' => $event->properties['duration'] ?? 0,

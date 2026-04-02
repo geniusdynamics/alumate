@@ -2,16 +2,16 @@
 
 namespace App\Services;
 
-use App\Models\Lead;
-use App\Models\EmailSequence;
-use App\Models\SequenceEnrollment;
 use App\Models\BehaviorEvent;
+use App\Models\EmailSequence;
+use App\Models\Lead;
+use App\Models\SequenceEnrollment;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
 
 /**
  * Behavior Tracking Service
@@ -25,14 +25,16 @@ class BehaviorTrackingService extends BaseService
      * Cache keys and durations
      */
     private const CACHE_PREFIX = 'behavior_tracking_';
+
     private const CACHE_DURATION = 300; // 5 minutes
+
     private const LEAD_SCORE_CACHE_DURATION = 600; // 10 minutes
 
     /**
      * Track user behavior event
      *
-     * @param array $eventData Event data
-     * @return BehaviorEvent
+     * @param  array  $eventData  Event data
+     *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function trackBehavior(array $eventData): BehaviorEvent
@@ -80,10 +82,7 @@ class BehaviorTrackingService extends BaseService
     /**
      * Track page visit behavior
      *
-     * @param int $leadId
-     * @param string $pageUrl
-     * @param array $metadata Additional metadata
-     * @return BehaviorEvent
+     * @param  array  $metadata  Additional metadata
      */
     public function trackPageVisit(int $leadId, string $pageUrl, array $metadata = []): BehaviorEvent
     {
@@ -105,11 +104,7 @@ class BehaviorTrackingService extends BaseService
     /**
      * Track form interaction behavior
      *
-     * @param int $leadId
-     * @param string $formType
-     * @param string $action
-     * @param array $metadata Additional metadata
-     * @return BehaviorEvent
+     * @param  array  $metadata  Additional metadata
      */
     public function trackFormInteraction(int $leadId, string $formType, string $action, array $metadata = []): BehaviorEvent
     {
@@ -129,12 +124,7 @@ class BehaviorTrackingService extends BaseService
     /**
      * Track content engagement behavior
      *
-     * @param int $leadId
-     * @param string $contentType
-     * @param int $contentId
-     * @param string $action
-     * @param array $metadata Additional metadata
-     * @return BehaviorEvent
+     * @param  array  $metadata  Additional metadata
      */
     public function trackContentEngagement(int $leadId, string $contentType, int $contentId, string $action, array $metadata = []): BehaviorEvent
     {
@@ -154,11 +144,7 @@ class BehaviorTrackingService extends BaseService
     /**
      * Track email engagement behavior
      *
-     * @param int $leadId
-     * @param int $emailSendId
-     * @param string $action
-     * @param array $metadata Additional metadata
-     * @return BehaviorEvent
+     * @param  array  $metadata  Additional metadata
      */
     public function trackEmailEngagement(int $leadId, int $emailSendId, string $action, array $metadata = []): BehaviorEvent
     {
@@ -178,11 +164,7 @@ class BehaviorTrackingService extends BaseService
     /**
      * Track custom behavior event
      *
-     * @param int $leadId
-     * @param string $eventType
-     * @param array $eventData
-     * @param array $metadata Additional metadata
-     * @return BehaviorEvent
+     * @param  array  $metadata  Additional metadata
      */
     public function trackCustomEvent(int $leadId, string $eventType, array $eventData = [], array $metadata = []): BehaviorEvent
     {
@@ -197,7 +179,6 @@ class BehaviorTrackingService extends BaseService
     /**
      * Evaluate sequence triggers for a behavior event
      *
-     * @param BehaviorEvent $event
      * @return array Array of triggered sequences
      */
     public function evaluateSequenceTriggers(BehaviorEvent $event): array
@@ -218,7 +199,7 @@ class BehaviorTrackingService extends BaseService
                         ->where('lead_id', $event->lead_id)
                         ->first();
 
-                    if (!$existingEnrollment) {
+                    if (! $existingEnrollment) {
                         // Auto-enroll the lead
                         $emailSequenceService = app(EmailSequenceService::class);
                         $enrollment = $emailSequenceService->enrollLead($sequence->id, $event->lead_id);
@@ -246,11 +227,6 @@ class BehaviorTrackingService extends BaseService
 
     /**
      * Update lead score based on behavior
-     *
-     * @param int $leadId
-     * @param string $eventType
-     * @param array $eventData
-     * @return bool
      */
     public function updateLeadScore(int $leadId, string $eventType, array $eventData = []): bool
     {
@@ -270,7 +246,7 @@ class BehaviorTrackingService extends BaseService
         ]);
 
         // Clear score cache
-        Cache::forget(self::CACHE_PREFIX . "lead_score_{$leadId}");
+        Cache::forget(self::CACHE_PREFIX."lead_score_{$leadId}");
 
         Log::info('Lead score updated', [
             'lead_id' => $leadId,
@@ -285,14 +261,10 @@ class BehaviorTrackingService extends BaseService
 
     /**
      * Get lead behavior history
-     *
-     * @param int $leadId
-     * @param array $filters
-     * @return Collection
      */
     public function getLeadBehaviorHistory(int $leadId, array $filters = []): Collection
     {
-        $cacheKey = self::CACHE_PREFIX . "history_{$leadId}_" . md5(serialize($filters));
+        $cacheKey = self::CACHE_PREFIX."history_{$leadId}_".md5(serialize($filters));
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($leadId, $filters) {
             $query = BehaviorEvent::where('lead_id', $leadId)
@@ -323,13 +295,11 @@ class BehaviorTrackingService extends BaseService
     /**
      * Get lead engagement metrics
      *
-     * @param int $leadId
-     * @param int $days Number of days to look back
-     * @return array
+     * @param  int  $days  Number of days to look back
      */
     public function getLeadEngagementMetrics(int $leadId, int $days = 30): array
     {
-        $cacheKey = self::CACHE_PREFIX . "metrics_{$leadId}_{$days}";
+        $cacheKey = self::CACHE_PREFIX."metrics_{$leadId}_{$days}";
 
         return Cache::remember($cacheKey, self::LEAD_SCORE_CACHE_DURATION, function () use ($leadId, $days) {
             $startDate = Carbon::now()->subDays($days);
@@ -361,13 +331,10 @@ class BehaviorTrackingService extends BaseService
 
     /**
      * Get behavior analytics for tenant
-     *
-     * @param array $filters
-     * @return array
      */
     public function getBehaviorAnalytics(array $filters = []): array
     {
-        $cacheKey = self::CACHE_PREFIX . 'analytics_' . md5(serialize($filters));
+        $cacheKey = self::CACHE_PREFIX.'analytics_'.md5(serialize($filters));
 
         return Cache::remember($cacheKey, self::CACHE_DURATION, function () use ($filters) {
             $query = BehaviorEvent::where('tenant_id', tenant()->id);
@@ -404,7 +371,7 @@ class BehaviorTrackingService extends BaseService
     /**
      * Process bulk behavior events
      *
-     * @param array $events Array of event data
+     * @param  array  $events  Array of event data
      * @return array Processing results
      */
     public function processBulkEvents(array $events): array
@@ -441,7 +408,7 @@ class BehaviorTrackingService extends BaseService
     /**
      * Clean up old behavior events
      *
-     * @param int $daysOld Events older than this will be deleted
+     * @param  int  $daysOld  Events older than this will be deleted
      * @return int Number of deleted events
      */
     public function cleanupOldEvents(int $daysOld = 90): int
@@ -453,7 +420,7 @@ class BehaviorTrackingService extends BaseService
             ->delete();
 
         // Clear all behavior caches
-        Cache::forget(self::CACHE_PREFIX . '*');
+        Cache::forget(self::CACHE_PREFIX.'*');
 
         Log::info('Old behavior events cleaned up', [
             'deleted_count' => $deletedCount,
@@ -467,7 +434,6 @@ class BehaviorTrackingService extends BaseService
     /**
      * Validate event data
      *
-     * @param array $data
      * @throws \Illuminate\Validation\ValidationException
      */
     private function validateEventData(array $data): void
@@ -487,16 +453,12 @@ class BehaviorTrackingService extends BaseService
 
     /**
      * Check if sequence trigger conditions match the event
-     *
-     * @param EmailSequence $sequence
-     * @param BehaviorEvent $event
-     * @return bool
      */
     private function matchesTriggerConditions(EmailSequence $sequence, BehaviorEvent $event): bool
     {
         $conditions = $sequence->trigger_conditions;
 
-        if (!$conditions) {
+        if (! $conditions) {
             return true; // No conditions means always trigger
         }
 
@@ -530,10 +492,6 @@ class BehaviorTrackingService extends BaseService
 
     /**
      * Calculate score change based on event type
-     *
-     * @param string $eventType
-     * @param array $eventData
-     * @return int
      */
     private function calculateScoreChange(string $eventType, array $eventData): int
     {
@@ -568,9 +526,6 @@ class BehaviorTrackingService extends BaseService
 
     /**
      * Calculate engagement score from events
-     *
-     * @param Collection $events
-     * @return float
      */
     private function calculateEngagementScore(Collection $events): float
     {
@@ -600,14 +555,12 @@ class BehaviorTrackingService extends BaseService
 
         // Normalize score (0-100 scale)
         $maxPossibleScore = $events->count() * 10; // Assuming max weight of 10
+
         return $maxPossibleScore > 0 ? min(100, ($score / $maxPossibleScore) * 100) : 0;
     }
 
     /**
      * Calculate conversion funnel from events
-     *
-     * @param Collection $events
-     * @return array
      */
     private function calculateConversionFunnel(Collection $events): array
     {

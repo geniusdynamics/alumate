@@ -44,12 +44,10 @@ class UserObserver
     public function saving(User $user): void
     {
         try {
-            app(\App\Services\SecurityService::class)->logDataAccess('user', $user->id, 'update', true, 'observer');
-
             // Invalidate caches when user data changes
             $this->invalidateUserCaches($user);
         } catch (\Exception $e) {
-            Log::error('Failed to log data access in UserObserver saving', [
+            Log::error('Failed to handle user saving event', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
             ]);

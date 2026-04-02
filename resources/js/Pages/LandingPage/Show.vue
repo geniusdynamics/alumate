@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import ContactForm from '@/Components/ContactForm.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed, onMounted } from 'vue';
@@ -113,7 +114,7 @@ const formInteractionTrackingScript = computed(() => {
 const handleFormSubmission = (formData: any) => {
     // Emit form submission event to parent component or handle here
     // You can add additional analytics tracking or processing here
-    console.log('Form submitted:', formData);
+    logger.log('Form submitted:', formData);
 
     if (window._etTrack) {
         window._etTrack('form_submit_success', {

@@ -1,4 +1,4 @@
-<!-- ABOUTME: Enhanced modal component with accessibility features and standardized z-index -->
+﻿<!-- ABOUTME: Enhanced modal component with accessibility features and standardized z-index -->
 <!-- ABOUTME: Uses useModal composable for focus trapping, escape handling, and scroll management -->
 
 <template>
@@ -91,7 +91,7 @@
   </teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { useModal } from '@/Composables/useModal'
 
@@ -194,3 +194,4 @@ defineExpose({
   isOpen
 })
 </script>
+

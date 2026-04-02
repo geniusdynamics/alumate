@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div v-if="show" class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-end justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity" @click="$emit('close')">
@@ -69,7 +69,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -121,3 +121,4 @@ const saveSearch = async () => {
     }
 };
 </script>
+

@@ -259,7 +259,7 @@ function shareToLinkedIn() {
 async function copyShareUrl() {
     try {
         await navigator.clipboard.writeText(shareUrl.value);
-        alert('Link copied to clipboard!');
+        // TODO-toast: alert('Link copied to clipboard!');
     } catch (error) {
         // Fallback for older browsers
         const textArea = document.createElement('textarea');
@@ -268,7 +268,7 @@ async function copyShareUrl() {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        alert('Link copied to clipboard!');
+        // TODO-toast: alert('Link copied to clipboard!');
     }
 }
 </script>

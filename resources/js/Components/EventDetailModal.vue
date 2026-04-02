@@ -313,6 +313,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { useEventsStore } from '@/Stores/eventsStore';
 import { Dialog, DialogPanel, TransitionChild, TransitionRoot } from '@headlessui/vue';
 import {
@@ -533,7 +534,7 @@ const handleRegistered = (registrationData: any) => {
 const cancelRegistration = async () => {
     if (confirm('Are you sure you want to cancel your registration for this event?')) {
         // This would call the API to cancel registration
-        console.log('Cancelling registration for event:', props.event.id);
+        logger.log('Cancelling registration for event:', props.event.id);
     }
 };
 
@@ -547,7 +548,7 @@ const shareEvent = () => {
     } else {
         // Fallback to copying URL to clipboard
         navigator.clipboard.writeText(window.location.href);
-        alert('Event URL copied to clipboard!');
+        // TODO-toast: alert('Event URL copied to clipboard!');
     }
 };
 
@@ -617,52 +618,52 @@ const eventParticipants = computed(() => {
 
 // Virtual event handlers
 const handleVirtualSettingsUpdate = (settings: any) => {
-    console.log('Virtual settings updated:', settings);
+    logger.log('Virtual settings updated:', settings);
     // This would call the API to update event settings
 };
 
 const handleRecordingToggle = (recording: boolean) => {
-    console.log('Recording toggled:', recording);
+    logger.log('Recording toggled:', recording);
     // This would call the API to start/stop recording
 };
 
 const handleParticipantAction = (action: string, participantId: number, data?: any) => {
-    console.log('Participant action:', action, participantId, data);
+    logger.log('Participant action:', action, participantId, data);
     // This would call the API to handle participant actions
 };
 
 const handleMeetingAction = (action: string, data?: any) => {
-    console.log('Meeting action:', action, data);
+    logger.log('Meeting action:', action, data);
     // This would call the API to handle meeting actions
 };
 
 const handleChatMessage = (message: string) => {
-    console.log('Chat message:', message);
+    logger.log('Chat message:', message);
     // This would send the message via WebSocket or API
 };
 
 const handleQuestionSubmitted = (question: string) => {
-    console.log('Question submitted:', question);
+    logger.log('Question submitted:', question);
     // This would submit the question via API
 };
 
 const handlePollCreated = (poll: any) => {
-    console.log('Poll created:', poll);
+    logger.log('Poll created:', poll);
     // This would create the poll via API
 };
 
 const handlePollVoted = (optionId: number) => {
-    console.log('Poll voted:', optionId);
+    logger.log('Poll voted:', optionId);
     // This would submit the vote via API
 };
 
 const handleTestConnection = () => {
-    console.log('Testing connection...');
+    logger.log('Testing connection...');
     // This would test the meeting connection
 };
 
 const handleAddToCalendar = (credentials: any) => {
-    console.log('Adding to calendar:', credentials);
+    logger.log('Adding to calendar:', credentials);
     // This would add the meeting to calendar
 };
 </script>

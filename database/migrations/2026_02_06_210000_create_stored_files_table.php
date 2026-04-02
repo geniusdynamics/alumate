@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('stored_files', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('tenant_id')->nullable();
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->string('path'); // Storage path
             $table->string('filename'); // Original filename
             $table->string('mime_type');

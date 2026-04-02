@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Social Timeline">
         <Head title="Social Timeline" />
 
@@ -191,7 +191,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
 import PeopleYouMayKnow from '@/Components/PeopleYouMayKnow.vue';
 import PostComments from '@/Components/PostComments.vue';
@@ -371,6 +371,7 @@ const canEditPost = (post) => {
     return post.user.id === props.auth?.user?.id;
 };
 </script>
+
 
 
 

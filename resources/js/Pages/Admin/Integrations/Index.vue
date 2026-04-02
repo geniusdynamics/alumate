@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout>
         <div class="space-y-6">
             <!-- Header -->
@@ -80,7 +80,7 @@
                                     </h3>
                                     <div class="mt-1 flex items-center space-x-4">
                                         <span class="text-sm text-gray-600 dark:text-gray-400">
-                                            {{ integrationTypes[integration.type]?.label }} • {{ integration.provider }}
+                                            {{ integrationTypes[integration.type]?.label }} â€¢ {{ integration.provider }}
                                         </span>
                                         <span
                                             :class="[
@@ -189,7 +189,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CreateModal from '@/Components/admin/Integrations/CreateModal.vue';
 import TestResultsModal from '@/Components/admin/Integrations/TestResultsModal.vue';
 import AdminLayout from '@/Layouts/AdminLayout.vue';
@@ -290,6 +290,7 @@ const handleIntegrationCreated = () => {
     router.reload({ only: ['integrations'] });
 };
 </script>
+
 
 
 

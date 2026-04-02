@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="cross-feature-connections">
         <!-- Alumni Profile Integration -->
         <div v-if="showAlumniProfile" class="alumni-profile-integration">
@@ -86,7 +86,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AlumniCard from '@/Components/AlumniCard.vue';
 import AlumniProfile from '@/Components/AlumniProfile.vue';
 import CareerEntryModal from '@/Components/CareerEntryModal.vue';
@@ -483,6 +483,7 @@ const closeCareerModal = () => {
     margin-bottom: 1.5rem;
 }
 </style>
+
 
 
 

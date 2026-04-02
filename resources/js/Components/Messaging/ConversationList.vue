@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="conversation-list">
         <div class="conversation-list-header">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Messages</h2>
@@ -162,7 +162,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useAuthStore } from '@/Stores/auth';
 import { useMessagingStore } from '@/Stores/messaging';
 import { formatDistanceToNow } from 'date-fns';
@@ -347,6 +347,7 @@ watch(
     @apply px-3 py-1.5 text-xs;
 }
 </style>
+
 
 
 

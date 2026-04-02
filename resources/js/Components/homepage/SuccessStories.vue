@@ -138,6 +138,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import type { AlumniProfile, StoryFilter, SuccessStory } from '@/Types/homepage';
 import { computed, onMounted, ref, watch } from 'vue';
 import SuccessStoryCard from './SuccessStoryCard.vue';
@@ -276,7 +277,7 @@ const handleShare = (platform: string, story: SuccessStory) => {
         case 'copy':
             navigator.clipboard.writeText(shareUrl).then(() => {
                 // Could show a toast notification here
-                console.log('Link copied to clipboard');
+                logger.log('Link copied to clipboard');
             });
             break;
     }

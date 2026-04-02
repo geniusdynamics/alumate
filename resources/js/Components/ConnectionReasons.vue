@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="connection-reasons">
         <div v-if="reasons.length > 0" class="space-y-2">
             <div v-for="reason in reasons" :key="reason.type" class="flex items-start space-x-2 text-sm">
@@ -45,7 +45,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Icon from './Icon.vue';
 
 const props = defineProps({
@@ -89,3 +89,4 @@ const getReasonIconClass = (type) => {
     return classMap[type] || 'w-4 h-4 text-gray-500';
 };
 </script>
+

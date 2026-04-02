@@ -108,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { HeroEmployer, HeroIndividual, HeroInstitution, getHeroConfigForAudience } from '@/Components/ComponentLibrary/Hero';
 import ValidationDisplay from '@/Components/ComponentLibrary/ValidationDisplay.vue';
 import type { AudienceType, HeroComponentConfig } from '@/types/Components';
@@ -157,7 +158,7 @@ const togglePreview = () => {
 };
 
 const handleABTestConversion = (event: CustomEvent) => {
-    console.log('A/B Test Conversion:', event.detail);
+    logger.log('A/B Test Conversion:', event.detail);
     // In a real app, this would send data to your analytics service
 };
 </script>

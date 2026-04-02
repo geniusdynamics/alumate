@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout app-name="Alumate" user-role="Super Admin" page-title="System Settings" :navigation-items="navigationItems">
         <Head title="System Settings" />
 
@@ -149,7 +149,8 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import AdminLayout from '@/Components/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { computed } from 'vue';
@@ -223,14 +224,15 @@ const navigationItems = computed(() => [
 
 const toggleFeature = (feature) => {
     // This would make an API call to toggle the feature
-    console.log(`Toggling feature: ${feature}`);
+    logger.log(`Toggling feature: ${feature}`);
 };
 
 const toggleMaintenanceMode = () => {
     // This would make an API call to toggle maintenance mode
-    console.log('Toggling maintenance mode');
+    logger.log('Toggling maintenance mode');
 };
 </script>
+
 
 
 

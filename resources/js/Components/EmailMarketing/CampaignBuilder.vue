@@ -371,7 +371,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -498,11 +498,11 @@ const saveCampaign = async () => {
             emit('saved', data.campaign);
         } else {
             const error = await response.json();
-            alert('Failed to save campaign: ' + error.message);
+            // TODO-toast: alert('Failed to save campaign: ' + error.message);
         }
     } catch (error) {
         console.error('Failed to save campaign:', error);
-        alert('Failed to save campaign');
+        // TODO-toast: alert('Failed to save campaign');
     } finally {
         saving.value = false;
     }
@@ -565,3 +565,4 @@ onMounted(() => {
     updateAudienceCriteria();
 });
 </script>
+

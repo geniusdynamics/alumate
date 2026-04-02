@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref, watch } from 'vue';
@@ -152,7 +152,7 @@ const quickStatusUpdate = (application, newStatus) => {
             <div class="flex items-center justify-between">
                 <div>
                     <h2 class="text-xl font-semibold leading-tight text-gray-800">Applications for "{{ job.title }}"</h2>
-                    <p class="mt-1 text-sm text-gray-600">{{ job.employer.company_name }} • {{ stats.total }} applications</p>
+                    <p class="mt-1 text-sm text-gray-600">{{ job.employer.company_name }} â€¢ {{ stats.total }} applications</p>
                 </div>
                 <div class="flex items-center space-x-3">
                     <Link
@@ -581,6 +581,7 @@ const quickStatusUpdate = (application, newStatus) => {
     overflow: hidden;
 }
 </style>
+
 
 
 

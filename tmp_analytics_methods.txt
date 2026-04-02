@@ -1,0 +1,42 @@
+﻿AnalyticsAuditLoggingService.php: 528 lines | Methods: __construct, logAuditEvent, logDataAccess, logDataModification, logConfigurationChange, getAuditLogs, getAuditLogById, exportAuditLogs, getAuditSummary, getAuditTrail, searchAuditLogs, cleanupOldLogs, getDashboardStats
+AnalyticsBackupRecoveryService.php: 939 lines | Methods: __construct, createBackup, scheduleBackup, restoreBackup, verifyBackup, deleteBackup, getBackupHistory, getBackupStatus, estimateBackupSize, compressBackup, decompressBackup, cleanupExpiredBackups
+AnalyticsComplianceReportingService.php: 996 lines | Methods: __construct, generateComplianceReport, validateGDPRCompliance, validateCCPACompliance, validateDataRetentionCompliance, validateConsentCompliance, getComplianceStatus, getComplianceMetrics, exportComplianceReport, scheduleComplianceReport, getComplianceAlerts
+AnalyticsDashboardIntegrationService.php: 1021 lines | Methods: __construct, getDashboardData, getWidgetData, aggregateDashboardData, refreshDashboard, createDashboard, updateDashboard, deleteDashboard, addWidget, removeWidget, getDashboardTemplates, getAllDashboards, getDashboardById
+AnalyticsDataArchivingService.php: 878 lines | Methods: __construct, archiveData, archiveOldData, restoreData, deleteArchivedData, getArchiveHistory, getRetentionPolicies, setRetentionPolicy, checkRetentionCompliance, getStorageUsage, getArchiveById
+AnalyticsDataExportImportService.php: 1103 lines | Methods: __construct, exportData, exportToCSV, exportToJSON, exportToExcel, importData, importFromCSV, importFromJSON, validateImportData, getExportHistory, getImportHistory, previewExport
+AnalyticsDataSyncService.php: 984 lines | Methods: __construct, syncData, detectDiscrepancies, resolveDiscrepancy, getSyncStatus, getSyncHistory, getUnifiedView, monitorSync, handleSyncError, validateConfiguration, syncToExternal
+AnalyticsDataValidationService.php: 1205 lines | Methods: __construct, validateEventData, validateSessionData, validateUserData, validateMetricsData, validateCohortData, validateAttributionData, validateCustomEventData, validateBatchData, getValidationReport, fixValidationErrors
+AnalyticsDisasterRecoveryService.php: 1044 lines | Methods: __construct, createRecoveryPlan, executeRecoveryPlan, testRecoveryPlan, getRecoveryStatus, failoverToBackup, failbackToPrimary, validateSystemIntegrity, getRecoveryMetrics, updateRecoveryPlan, getRecoveryPlans
+AnalyticsErrorHandlerService.php: 1120 lines | Methods: __construct, handleError, logError, recoverFromError, getErrorReport, getErrorMetrics, getErrorTrends, configureErrorHandling, getErrorAlerts, clearErrors, getErrorStatistics
+AnalyticsLoggingService.php: 727 lines | Methods: __construct, logEvent, logQuery, logMetric, logPerformance, logError, getLogs, getLogById, exportLogs, getLogSummary, searchLogs, clearLogs, configureLogging
+AnalyticsMetricsCollectionService.php: 755 lines | Methods: __construct, collectMetric, collectBatchMetrics, aggregateMetrics, getMetrics, getMetricById, getMetricTrends, calculateMetric, exportMetrics, getMetricsSummary, configureMetrics
+AnalyticsMonitoringService.php: 1227 lines | Methods: __construct, checkHealth, checkServiceHealth, monitorMetrics, detectAnomalies, sendAlert, configureAlerts, getAlertHistory, getMonitoringDashboard
+AnalyticsOrchestrationService.php: 155 lines | Methods: __construct, getEngagementMetrics, getAlumniActivity, getCommunityHealth, generateReport, exportData, getDashboardMetrics, getAnalyticsSummary, getCohortAnalysis, compareCohorts, getAttributionData, getCustomEvents, getGoogleAnalyticsData, getMatomoData, syncExternalData, checkConsent, getPrivacyComplianceStatus, getLearningAnalytics, getCareerPredictions, trackError, getRecentErrors, getBehaviorFlow, getInsights
+AnalyticsPerformanceOptimizer.php: 582 lines | Methods: __construct, optimizeQuery, cacheQueryResult, invalidateCache, warmCache, analyzeQueryPerformance, suggestIndexes, optimizeDataRetrieval, batchProcessData
+AnalyticsSecurityHardeningService.php: 895 lines | Methods: __construct, scanVulnerabilities, applySecurityPatches, validateSecurityConfiguration, encryptSensitiveData, decryptSensitiveData, maskSensitiveData, validateAccessControl, auditSecurityEvent, getSecurityReport, configureSecuritySettings
+AttributionService.php: 648 lines | Methods: trackTouch, calculateAttribution, getAttributionSummary, getTouchHistory, getChannelContribution, calculateChannelROI, generateBudgetRecommendations
+AttributionTrackingService.php: 714 lines | Methods: __construct, trackTouchpoint, calculateAttribution, firstClickAttribution, lastClickAttribution, multiTouchAttribution, analyzeChannelPerformance, generateBudgetRecommendations, getConversionPath
+AutomatedInsightsService.php: 1165 lines | Methods: __construct, generateInsights, detectPatterns, scoreInsight, prioritizeInsights, getTrendInsights, getAnomalyInsights, getCorrelationInsights, getPredictiveInsights
+BaseAnalyticsService.php: 101 lines | Methods: 
+BehaviorFlowService.php: 509 lines | Methods: analyzeBehaviorFlow, analyzeFunnel
+CareerPredictionService.php: 229 lines | Methods: __construct, updateLearningImpact, getPredictionScore, clearPredictionCache
+CohortAnalysisService.php: 920 lines | Methods: __construct, createCohort, calculateRetention, calculateEngagement, calculateConversionRate, analyzeCohort, compareCohorts, analyzeTrends, generateInsights, groupUsersByAcquisitionDate, calculateStatisticalSignificance, calculateConversionRates
+ConsentService.php: 244 lines | Methods: __construct, hasConsent, grantConsent, revokeConsent, checkConsentBeforeAction, generateAuditLog, handleDataExportRequest, integrateCCPAOptOut, clearCachedConsent
+CustomEventService.php: 316 lines | Methods: defineEvent, trackEvent, aggregateEvents, getEventDefinitions, queueAggregation
+CustomEventTrackingService.php: 597 lines | Methods: __construct, defineEvent, trackEvent, validateEvent, getEventDefinition, listEvents, analyzeEvents, createFunnel, analyzeBehaviorFlow
+DashboardMetricsService.php: 75 lines | Methods: getMetrics, getSummary
+DataSyncService.php: 125 lines | Methods: syncEvents, syncUserActivity, syncExternalPlatform, getSyncStatus, validateSyncIntegrity, scheduleSync
+EngagementMetricsService.php: 186 lines | Methods: getMetrics, getActivity, getHealthIndicators, getSummary
+ErrorTrackingService.php: 138 lines | Methods: trackError, getRecentErrors, getErrorTrends, getErrorSummary, clearErrors
+ExportService.php: 67 lines | Methods: export
+GoogleAnalyticsIntegration.php: 100 lines | Methods: __construct, fetchMetrics, fetchAudiences, syncGoals, getRealtimeData, testConnection
+GoogleAnalyticsService.php: 1038 lines | Methods: __construct, getHttpClient, forwardEvent, batchForwardEvents, mapCustomDimensions, syncGoals, createAudienceSegment, shareAudienceSegment, getAudienceSegments, createGoal, createAudience, exportSegments, getReport, getRealtimeData, validateConfiguration
+InsightsService.php: 650 lines | Methods: generateInsights, trackEffectiveness, getInsightEffectiveness
+LearningAnalyticsService.php: 967 lines | Methods: __construct, trackLearningProgress, getLearningProgress, analyzeLearningOutcomes, getLearningMetrics, compareLearningPerformance, predictLearningCompletion, getLearningRecommendations, trackLearningActivity, calculateEngagementScore, verifyCertification, generateLearningInsights, processBatchScores
+MatomoIntegration.php: 67 lines | Methods: __construct, fetchMetrics, trackAction, testConnection
+MatomoService.php: 880 lines | Methods: __construct, forwardEvent, trackEvent, batchForwardEvents, trackBatchEvents, mapCustomDimensions, syncGoals, createGoal, createSegment, getSegments, exportSegments, validateConfiguration, getReport, getRealtimeData, syncData, clearCaches
+PrivacyAuditService.php: 89 lines | Methods: logPrivacyEvent, getAuditLogs, getAuditLogsByType, getComplianceSummary
+PrivacyComplianceService.php: 479 lines | Methods: __construct, checkConsent, recordConsent, revokeConsent, getConsentStatus, anonymizeData, deleteData, exportData, checkDataRetention, applyRetentionPolicies
+ReportingService.php: 112 lines | Methods: generate
+SessionRecordingService.php: 405 lines | Methods: captureSessionEvent, getSessionRecording, maskSensitiveData, analyzeSessionBehavior, compressRecordingData, hasRecordingConsent, getSessionsInRange, anonymizeOldRecordings
+SyncService.php: 522 lines | Methods: __construct, syncData, detectDiscrepancies, monitorSync, syncLearningToCrm, handleConsent

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="overflow-hidden rounded-lg bg-white shadow">
         <div class="p-5">
             <div class="flex items-center">
@@ -24,7 +24,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -115,3 +115,4 @@ const changeColorClass = computed(() => {
     return 'text-gray-600';
 });
 </script>
+

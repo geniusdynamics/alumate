@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="modal-overlay" @click="closeModal">
         <div class="modal-container" @click.stop>
             <div class="modal-header">
@@ -70,7 +70,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from 'vue';
 
 const emit = defineEmits(['close', 'submit']);
@@ -211,3 +211,4 @@ const submitMemory = async () => {
     @apply mt-4 rounded-lg bg-gray-50 p-4 dark:bg-gray-700;
 }
 </style>
+

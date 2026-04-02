@@ -14,14 +14,7 @@ class EducationHistoryObserver
      */
     public function saving(EducationHistory $educationHistory): void
     {
-        try {
-            app(\App\Services\SecurityService::class)->logDataAccess('education_history', $educationHistory->id, 'update', true, 'observer');
-        } catch (\Exception $e) {
-            Log::error('Failed to log data access in EducationHistoryObserver saving', [
-                'education_history_id' => $educationHistory->id,
-                'error' => $e->getMessage(),
-            ]);
-        }
+        // Saving event handler - no operations to avoid infinite loops
     }
 
     /**

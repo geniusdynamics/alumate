@@ -131,6 +131,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import Icon from '@/Components/Icon.vue';
 import type { CTAButton, HeroComponentConfig } from '@/types/Components';
 import { getBackgroundGradient, getVariantStyleClasses } from '@/utils/variantStyling';
@@ -393,7 +394,7 @@ const handleStatisticAnimationComplete = (statisticId: string) => {
 
 const handleStatisticDataLoaded = (statisticId: string, value: number) => {
     // Track successful data loading
-    console.log(`Statistic ${statisticId} loaded with value:`, value);
+    logger.log(`Statistic ${statisticId} loaded with value:`, value);
 };
 
 const handleStatisticDataError = (statisticId: string, error: Error) => {

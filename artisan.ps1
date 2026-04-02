@@ -27,7 +27,7 @@ if (-not (Test-Path "artisan")) {
 }
 
 # Build the command
-$command = @($phpPath, "-c", "minimal_php.ini", "artisan") + $Arguments
+$command = @($phpPath, "artisan") + $Arguments
 
 # Execute the command
 Write-Host "Executing: $($command -join ' ')" -ForegroundColor Green

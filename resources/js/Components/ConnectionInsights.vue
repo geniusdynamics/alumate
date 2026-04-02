@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="connection-insights">
         <div class="insights-header">
             <h3 class="insights-title">
@@ -60,7 +60,7 @@
         </div>
 
         <div v-else class="no-connections">
-            <div class="no-connections-icon">🤝</div>
+            <div class="no-connections-icon">ðŸ¤</div>
             <h4>No direct connections found</h4>
             <p>You don't have any direct connections at {{ companyName }} yet, but you can still apply directly or expand your network.</p>
         </div>
@@ -78,7 +78,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 import Icon from './Icon.vue';
 import IntroductionRequestModal from './IntroductionRequestModal.vue';
@@ -355,3 +355,4 @@ const submitIntroductionRequest = (message) => {
     }
 }
 </style>
+

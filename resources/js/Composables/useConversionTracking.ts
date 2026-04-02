@@ -343,7 +343,7 @@ function checkGoalCompletion(conversion: ConversionData) {
     conversionGoals.value.forEach((goal, goalId) => {
         if (conversion.eventName === goal.name) {
             // Goal completed - could trigger additional tracking or notifications
-            console.log(`Conversion goal "${goal.name}" completed:`, conversion);
+            logger.log(`Conversion goal "${goal.name}" completed:`, conversion);
         }
     });
 }

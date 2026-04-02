@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <button
         @click="toggleBookmark"
         :disabled="loading"
@@ -18,7 +18,7 @@
     </button>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -147,3 +147,4 @@ const showBookmarkAnimation = () => {
     }
 }
 </style>
+

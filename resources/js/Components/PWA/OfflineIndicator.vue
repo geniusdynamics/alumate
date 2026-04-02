@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <Transition
             enter-active-class="transition-all duration-300 ease-out"
@@ -60,7 +60,8 @@
     </Teleport>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { CheckCircleIcon, ExclamationTriangleIcon, SignalSlashIcon, WifiIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 
@@ -159,7 +160,7 @@ const connectionInfo = computed(() => {
     if (downlink) parts.push(downlink);
     if (rtt) parts.push(rtt);
 
-    return parts.join(' • ');
+    return parts.join(' â€¢ ');
 });
 
 // Methods
@@ -179,7 +180,7 @@ const updateOnlineStatus = () => {
 };
 
 const handleOnline = () => {
-    console.log('Network: Online');
+    logger.log('Network: Online');
     updateConnectionQuality();
 
     if (props.showOnline && !dismissed.value) {
@@ -197,7 +198,7 @@ const handleOnline = () => {
 };
 
 const handleOffline = () => {
-    console.log('Network: Offline');
+    logger.log('Network: Offline');
     connectionQuality.value = null;
 
     if (props.showOffline && !dismissed.value) {
@@ -245,7 +246,7 @@ const handleRetry = async () => {
             handleOnline();
         }
     } catch (error) {
-        console.log('Retry failed:', error);
+        logger.log('Retry failed:', error);
     } finally {
         retrying.value = false;
     }
@@ -406,3 +407,4 @@ defineExpose({
 <style scoped>
 /* Additional custom styles if needed */
 </style>
+

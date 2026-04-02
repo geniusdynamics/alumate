@@ -6,14 +6,12 @@ namespace App\Services\Analytics;
 
 use App\Models\CustomEvent;
 use App\Models\CustomEventDefinition;
-use App\Services\Analytics\ConsentService;
 use App\Services\TenantContextService;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
-use Exception;
 
 /**
  * Custom Event Tracking Service
@@ -25,15 +23,15 @@ use Exception;
 class CustomEventTrackingService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const CHUNK_SIZE = 1000;
 
     private TenantContextService $tenantContextService;
+
     private ?ConsentService $consentService = null;
 
     /**
      * Constructor
-     *
-     * @param TenantContextService $tenantContextService
      */
     public function __construct(TenantContextService $tenantContextService)
     {
@@ -42,22 +40,20 @@ class CustomEventTrackingService
 
     /**
      * Get ConsentService instance lazily
-     *
-     * @return ConsentService
      */
     private function getConsentService(): ConsentService
     {
         if ($this->consentService === null) {
             $this->consentService = app(ConsentService::class);
         }
+
         return $this->consentService;
     }
 
     /**
      * Define a custom event with properties and validation rules
      *
-     * @param array $definition Event definition data
-     * @return CustomEventDefinition
+     * @param  array  $definition  Event definition data
      */
     public function defineEvent(array $definition): CustomEventDefinition
     {
@@ -106,10 +102,9 @@ class CustomEventTrackingService
     /**
      * Track a custom event with properties
      *
-     * @param string $eventName Event name
-     * @param array $properties Event properties
-     * @param int $userId User ID
-     * @return CustomEvent
+     * @param  string  $eventName  Event name
+     * @param  array  $properties  Event properties
+     * @param  int  $userId  User ID
      */
     public function trackEvent(string $eventName, array $properties, int $userId): CustomEvent
     {
@@ -119,7 +114,7 @@ class CustomEventTrackingService
             // Get event definition
             $definition = $this->getEventDefinitionByName($eventName);
 
-            if (!$definition) {
+            if (! $definition) {
                 throw new Exception("Event definition '{$eventName}' not found");
             }
 
@@ -128,8 +123,8 @@ class CustomEventTrackingService
             }
 
             // Check consent
-            if (!$this->getConsentService()->hasConsent($userId, 'analytics')) {
-                throw new Exception("User has not consented to analytics tracking");
+            if (! $this->getConsentService()->hasConsent($userId, 'analytics')) {
+                throw new Exception('User has not consented to analytics tracking');
             }
 
             // Validate event properties against definition
@@ -170,15 +165,14 @@ class CustomEventTrackingService
     /**
      * Validate event data against definition
      *
-     * @param string $eventName Event name
-     * @param array $properties Event properties to validate
-     * @return bool
+     * @param  string  $eventName  Event name
+     * @param  array  $properties  Event properties to validate
      */
     public function validateEvent(string $eventName, array $properties): bool
     {
         $definition = $this->getEventDefinitionByName($eventName);
 
-        if (!$definition) {
+        if (! $definition) {
             throw new Exception("Event definition '{$eventName}' not found");
         }
 
@@ -189,7 +183,7 @@ class CustomEventTrackingService
             $paramType = $param['type'] ?? 'string';
             $required = $param['required'] ?? true;
 
-            if ($required && !array_key_exists($paramName, $properties)) {
+            if ($required && ! array_key_exists($paramName, $properties)) {
                 throw new Exception("Required parameter '{$paramName}' is missing for event '{$eventName}'");
             }
 
@@ -205,8 +199,7 @@ class CustomEventTrackingService
     /**
      * Get event definition by name
      *
-     * @param string $eventName Event name
-     * @return CustomEventDefinition|null
+     * @param  string  $eventName  Event name
      */
     public function getEventDefinition(string $eventName): ?CustomEventDefinition
     {
@@ -215,9 +208,6 @@ class CustomEventTrackingService
 
     /**
      * Get event definition by name (internal)
-     *
-     * @param string $eventName
-     * @return CustomEventDefinition|null
      */
     private function getEventDefinitionByName(string $eventName): ?CustomEventDefinition
     {
@@ -234,8 +224,6 @@ class CustomEventTrackingService
 
     /**
      * List all defined events for the current tenant
-     *
-     * @return Collection
      */
     public function listEvents(): Collection
     {
@@ -253,9 +241,8 @@ class CustomEventTrackingService
     /**
      * Analyze event data with filters
      *
-     * @param string $eventName Event name
-     * @param array $filters Optional filters
-     * @return array
+     * @param  string  $eventName  Event name
+     * @param  array  $filters  Optional filters
      */
     public function analyzeEvents(string $eventName, array $filters = []): array
     {
@@ -263,11 +250,11 @@ class CustomEventTrackingService
             $tenantId = $this->getCurrentTenantId();
             $definition = $this->getEventDefinitionByName($eventName);
 
-            if (!$definition) {
+            if (! $definition) {
                 throw new Exception("Event definition '{$eventName}' not found");
             }
 
-            $cacheKey = "event_analysis_{$tenantId}_{$eventName}_" . md5(serialize($filters));
+            $cacheKey = "event_analysis_{$tenantId}_{$eventName}_".md5(serialize($filters));
 
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($definition, $filters, $tenantId, $eventName) {
                 $query = CustomEvent::byTenant($tenantId)
@@ -310,6 +297,7 @@ class CustomEventTrackingService
                 'filters' => $filters,
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'error' => $e->getMessage(),
                 'event_name' => $eventName,
@@ -320,8 +308,7 @@ class CustomEventTrackingService
     /**
      * Create funnel analysis from events
      *
-     * @param array $events Array of event names in funnel order
-     * @return array
+     * @param  array  $events  Array of event names in funnel order
      */
     public function createFunnel(array $events): array
     {
@@ -331,7 +318,7 @@ class CustomEventTrackingService
             }
 
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "funnel_analysis_{$tenantId}_" . md5(serialize($events));
+            $cacheKey = "funnel_analysis_{$tenantId}_".md5(serialize($events));
 
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($events, $tenantId) {
                 $funnelSteps = [];
@@ -341,7 +328,7 @@ class CustomEventTrackingService
                 foreach ($events as $index => $eventName) {
                     $definition = $this->getEventDefinitionByName($eventName);
 
-                    if (!$definition) {
+                    if (! $definition) {
                         throw new Exception("Event definition '{$eventName}' not found in funnel");
                     }
 
@@ -393,6 +380,7 @@ class CustomEventTrackingService
                 'events' => $events,
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'error' => $e->getMessage(),
                 'steps' => [],
@@ -403,16 +391,15 @@ class CustomEventTrackingService
     /**
      * Analyze user behavior flow
      *
-     * @param int $userId User ID
-     * @param string|null $startDate Start date
-     * @param string|null $endDate End date
-     * @return array
+     * @param  int  $userId  User ID
+     * @param  string|null  $startDate  Start date
+     * @param  string|null  $endDate  End date
      */
     public function analyzeBehaviorFlow(int $userId, ?string $startDate = null, ?string $endDate = null): array
     {
         try {
             $tenantId = $this->getCurrentTenantId();
-            $cacheKey = "behavior_flow_{$tenantId}_{$userId}_" . md5(serialize([$startDate, $endDate]));
+            $cacheKey = "behavior_flow_{$tenantId}_{$userId}_".md5(serialize([$startDate, $endDate]));
 
             return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($userId, $startDate, $endDate, $tenantId) {
                 $query = CustomEvent::byTenant($tenantId)
@@ -469,6 +456,7 @@ class CustomEventTrackingService
                 'end_date' => $endDate,
                 'error' => $e->getMessage(),
             ]);
+
             return [
                 'error' => $e->getMessage(),
                 'user_id' => $userId,
@@ -480,19 +468,17 @@ class CustomEventTrackingService
 
     /**
      * Get current tenant ID
-     *
-     * @return int
      */
     private function getCurrentTenantId(): int
     {
         $tenantId = $this->tenantContextService->getCurrentTenantId();
+
         return $tenantId ? (int) $tenantId : 1;
     }
 
     /**
      * Validate event definition data
      *
-     * @param array $definition
      * @throws Exception
      */
     private function validateEventDefinition(array $definition): void
@@ -501,25 +487,25 @@ class CustomEventTrackingService
             throw new Exception('Event name is required');
         }
 
-        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $definition['name'])) {
+        if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $definition['name'])) {
             throw new Exception('Event name must be alphanumeric with underscores, starting with letter or underscore');
         }
 
         $parameters = $definition['parameters'] ?? [];
-        if (!is_array($parameters)) {
+        if (! is_array($parameters)) {
             throw new Exception('Parameters must be an array');
         }
 
         foreach ($parameters as $index => $param) {
-            if (!is_array($param)) {
+            if (! is_array($param)) {
                 throw new Exception("Parameter at index {$index} must be an array");
             }
 
-            if (!isset($param['name']) || !is_string($param['name'])) {
+            if (! isset($param['name']) || ! is_string($param['name'])) {
                 throw new Exception("Parameter at index {$index} must have a valid name");
             }
 
-            if (!isset($param['type']) || !in_array($param['type'], ['string', 'number', 'boolean', 'array', 'object'])) {
+            if (! isset($param['type']) || ! in_array($param['type'], ['string', 'number', 'boolean', 'array', 'object'])) {
                 throw new Exception("Parameter '{$param['name']}' has invalid type. Allowed types: string, number, boolean, array, object");
             }
         }
@@ -528,10 +514,8 @@ class CustomEventTrackingService
     /**
      * Validate parameter type
      *
-     * @param mixed $value
-     * @param string $expectedType
-     * @param string $paramName
-     * @param string $eventName
+     * @param  mixed  $value
+     *
      * @throws Exception
      */
     private function validateParameterType($value, string $expectedType, string $paramName, string $eventName): void
@@ -545,15 +529,13 @@ class CustomEventTrackingService
             default => false,
         };
 
-        if (!$valid) {
+        if (! $valid) {
             throw new Exception("Parameter '{$paramName}' for event '{$eventName}' must be of type '{$expectedType}'");
         }
     }
 
     /**
      * Clear event definition cache for tenant
-     *
-     * @param int $tenantId
      */
     private function clearEventDefinitionCache(int $tenantId): void
     {
@@ -563,10 +545,6 @@ class CustomEventTrackingService
 
     /**
      * Get event definition cache key
-     *
-     * @param int $tenantId
-     * @param string $eventName
-     * @return string
      */
     private function getEventDefinitionCacheKey(int $tenantId, string $eventName): string
     {
@@ -575,9 +553,6 @@ class CustomEventTrackingService
 
     /**
      * Get empty analysis response
-     *
-     * @param string $eventName
-     * @return array
      */
     private function getEmptyAnalysisResponse(string $eventName): array
     {
@@ -595,9 +570,6 @@ class CustomEventTrackingService
 
     /**
      * Get empty behavior flow response
-     *
-     * @param int $userId
-     * @return array
      */
     private function getEmptyBehaviorFlowResponse(int $userId): array
     {
@@ -618,10 +590,6 @@ class CustomEventTrackingService
 
     /**
      * Analyze properties from events
-     *
-     * @param Collection $events
-     * @param array $parameters
-     * @return array
      */
     private function analyzeProperties(Collection $events, array $parameters): array
     {
@@ -668,10 +636,6 @@ class CustomEventTrackingService
 
     /**
      * Generate time series from events
-     *
-     * @param Collection $events
-     * @param array $filters
-     * @return array
      */
     private function generateTimeSeries(Collection $events, array $filters): array
     {
@@ -706,18 +670,15 @@ class CustomEventTrackingService
 
     /**
      * Get top users by event count
-     *
-     * @param Collection $events
-     * @return array
      */
     private function getTopUsers(Collection $events): array
     {
         $userCounts = $events->groupBy('user_id')
-            ->map(fn($group) => $group->count())
+            ->map(fn ($group) => $group->count())
             ->sortDesc()
             ->take(10);
 
-        return $userCounts->map(fn($count, $userId) => [
+        return $userCounts->map(fn ($count, $userId) => [
             'user_id' => $userId,
             'event_count' => $count,
         ])->values()->toArray();
@@ -725,9 +686,6 @@ class CustomEventTrackingService
 
     /**
      * Calculate median of array
-     *
-     * @param array $values
-     * @return float
      */
     private function calculateMedian(array $values): float
     {

@@ -156,7 +156,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import StatCard from '@/Components/StatCard.vue';
 import { AcademicCapIcon, BookOpenIcon, BuildingOfficeIcon, ExclamationTriangleIcon, PlusIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';

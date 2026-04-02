@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="onboarding-system">
         <!-- Feature Discovery Modal -->
         <FeatureDiscoveryModal
@@ -38,7 +38,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useUserPreferences } from '@/Composables/useUserPreferences';
 import { useOnboardingStore } from '@/Stores/onboardingStore';
 import { usePage } from '@inertiajs/vue3';
@@ -319,6 +319,7 @@ defineExpose({
     z-index: 9999;
 }
 </style>
+
 
 
 

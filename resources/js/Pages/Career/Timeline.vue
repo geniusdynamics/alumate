@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Career Timeline">
         <Head title="Career Timeline" />
 
@@ -244,7 +244,8 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import CareerEntryModal from '@/Components/CareerEntryModal.vue';
 import CrossFeatureConnections from '@/Components/CrossFeatureConnections.vue';
 import RealTimeUpdates from '@/Components/RealTimeUpdates.vue';
@@ -271,7 +272,7 @@ const formatDate = (dateString) => {
 
 const editEntry = (entry) => {
     // Handle editing entry
-    console.log('Edit entry:', entry);
+    logger.log('Edit entry:', entry);
 };
 
 const handleEntrySaved = () => {
@@ -280,6 +281,7 @@ const handleEntrySaved = () => {
     window.location.reload();
 };
 </script>
+
 
 
 

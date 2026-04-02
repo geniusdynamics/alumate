@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Edit Institution" />
 
@@ -41,7 +41,7 @@
                     <div class="p-6">
                         <div class="mb-6 flex items-center justify-between">
                             <h2 class="text-2xl font-bold text-gray-900">Edit Institution: {{ institution.name }}</h2>
-                            <Link :href="route('institutions.index')" class="text-gray-600 hover:text-gray-900"> ← Back to Institutions </Link>
+                            <Link :href="route('institutions.index')" class="text-gray-600 hover:text-gray-900"> â† Back to Institutions </Link>
                         </div>
 
                         <form @submit.prevent="submit" class="space-y-6">
@@ -127,7 +127,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -145,3 +145,4 @@ const submit = () => {
     form.put(route('institutions.update', props.institution.id));
 };
 </script>
+

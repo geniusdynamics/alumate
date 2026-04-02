@@ -246,7 +246,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import DarkStatCard from '@/Components/DarkStatCard.vue';
 import {
@@ -262,15 +262,6 @@ import {
 import { Head, Link } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';
 import { computed } from 'vue';
-
-const props = defineProps({
-    systemStats: Object,
-    institutionStats: Array,
-    employerStats: Object,
-    jobStats: Object,
-    recentActivity: Array,
-    systemHealth: Object,
-});
 
 const navigationItems = computed(() => [
     {

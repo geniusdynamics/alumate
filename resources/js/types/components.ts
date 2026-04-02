@@ -2102,4 +2102,3 @@ export interface BulkCustomizationUpdate {
   createSnapshot: boolean;
   snapshotLabel?: string;
 }
-}

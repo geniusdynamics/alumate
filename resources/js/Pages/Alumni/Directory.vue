@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Alumni Directory">
         <Head title="Alumni Directory" />
 
@@ -170,7 +170,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AlumniCard from '@/Components/AlumniCard.vue';
 import AlumniProfile from '@/Components/AlumniProfile.vue';
 import ConnectionRequestModal from '@/Components/ConnectionRequestModal.vue';
@@ -281,6 +281,7 @@ const closeConnectionModal = () => {
     selectedAlumniForConnection.value = null;
 };
 </script>
+
 
 
 

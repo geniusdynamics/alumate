@@ -347,14 +347,14 @@ export default {
 
                     // Show success message
                     // This would typically be handled by a toast notification system
-                    alert('Connection request sent successfully!');
+                    // TODO-toast: alert('Connection request sent successfully!');
                 } else {
                     const error = await response.json();
-                    alert(error.message || 'Failed to send connection request');
+                    // TODO-toast: alert(error.message || 'Failed to send connection request');
                 }
             } catch (error) {
                 console.error('Error sending connection request:', error);
-                alert('Failed to send connection request');
+                // TODO-toast: alert('Failed to send connection request');
             }
         };
 

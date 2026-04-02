@@ -157,6 +157,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 
@@ -252,7 +253,7 @@ const sendMessageToRecipient = async () => {
 
     try {
         // Implementation for sending message to recipient
-        console.log('Sending message:', messageForm.value);
+        logger.log('Sending message:', messageForm.value);
 
         // Close modal after successful send
         closeMessageModal();
@@ -265,7 +266,7 @@ const sendMessageToRecipient = async () => {
 
 const viewRecipientProfile = (update: DonorUpdate) => {
     // Implementation for viewing recipient profile
-    console.log('Viewing profile for:', update.recipient_name);
+    logger.log('Viewing profile for:', update.recipient_name);
 };
 
 const formatDate = (dateString: string): string => {

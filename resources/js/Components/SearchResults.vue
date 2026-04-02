@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="search-results">
         <!-- Results Header -->
         <div class="results-header">
@@ -176,7 +176,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 
 // Props
@@ -421,3 +421,4 @@ const highlightText = (text, highlight) => {
     @apply text-sm text-gray-600;
 }
 </style>
+

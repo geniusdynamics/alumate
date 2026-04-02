@@ -135,7 +135,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CampaignPerformanceChart from '@/Components/Analytics/Fundraising/CampaignPerformanceChart.vue';
 import DonorAnalytics from '@/Components/Analytics/Fundraising/DonorAnalytics.vue';
 import GivingPatternsAnalysis from '@/Components/Analytics/Fundraising/GivingPatternsAnalysis.vue';
@@ -231,7 +231,7 @@ const exportData = async () => {
         document.body.removeChild(a);
     } catch (err) {
         console.error('Export error:', err);
-        alert('Failed to export data. Please try again.');
+        // TODO-toast: alert('Failed to export data. Please try again.');
     }
 };
 
@@ -246,6 +246,7 @@ onMounted(() => {
     loadDashboard();
 });
 </script>
+
 
 
 

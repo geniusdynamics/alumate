@@ -299,6 +299,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import AlumniMap from '@/Components/AlumniMap.vue';
 import { usePerformanceMonitoring } from '@/Composables/usePerformanceMonitoring';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
@@ -374,7 +375,7 @@ const nearbyCount = computed(() => {
 // Methods
 const handleAlumniSelected = (alumni: Alumni) => {
     // Handle alumni selection from map
-    console.log('Alumni selected:', alumni);
+    logger.log('Alumni selected:', alumni);
 };
 
 const handleMessageAlumni = (alumni: Alumni) => {
@@ -398,7 +399,7 @@ const savePrivacySettings = async () => {
 
 const getCurrentLocation = () => {
     if (!navigator.geolocation) {
-        alert('Geolocation is not supported by this browser.');
+        // TODO-toast: alert('Geolocation is not supported by this browser.');
         return;
     }
 
@@ -424,7 +425,7 @@ const getCurrentLocation = () => {
         (error) => {
             console.error('Geolocation error:', error);
             gettingLocation.value = false;
-            alert('Unable to get your current location. Please enter it manually.');
+            // TODO-toast: alert('Unable to get your current location. Please enter it manually.');
         },
         {
             enableHighAccuracy: true,

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="post-reactions">
         <!-- Reaction Buttons -->
         <div class="reaction-buttons mb-2 flex items-center space-x-2">
@@ -79,7 +79,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -225,3 +225,4 @@ watch(showReactionModal, (isOpen) => {
     @apply scale-100;
 }
 </style>
+

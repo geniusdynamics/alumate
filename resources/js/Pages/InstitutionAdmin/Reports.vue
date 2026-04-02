@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Institution Reports" />
 
@@ -261,7 +261,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -316,3 +316,4 @@ const formatDate = (dateString) => {
     });
 };
 </script>
+

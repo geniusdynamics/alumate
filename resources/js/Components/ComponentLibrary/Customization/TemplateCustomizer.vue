@@ -892,7 +892,7 @@ const generateHTML = (config: TemplateCustomizationConfig): string => {
     <body>
       <h1>${config.brand.name}</h1>
       <p>Welcome to your customized template!</p>
-      ${config.settings.customJs ? `<script>${config.settings.customJs}</script>` : ''}
+      ${config.settings.customJs ? `<script>${config.settings.customJs}<\/script>` : ''}
     </body>
     </html>
   `.trim()
@@ -1349,3 +1349,4 @@ onBeforeUnmount(() => {
   padding: 0;
   margin: -1px;
   overflow:
+

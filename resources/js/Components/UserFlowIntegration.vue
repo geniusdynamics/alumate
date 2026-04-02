@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="user-flow-integration">
         <!-- Real-time Notifications -->
         <div v-if="notifications.length > 0" class="fixed right-4 top-4 z-50 space-y-2">
@@ -52,7 +52,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRealTimeUpdates } from '@/Composables/useRealTimeUpdates';
 import userFlowIntegration from '@/Services/UserFlowIntegration';
 import { XMarkIcon } from '@heroicons/vue/24/outline';
@@ -177,6 +177,7 @@ const getNotificationClass = (type) => {
     display: none; /* Hidden elements used for data attributes */
 }
 </style>
+
 
 
 

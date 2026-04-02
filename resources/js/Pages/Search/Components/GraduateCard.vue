@@ -1,11 +1,11 @@
-<template>
+﻿<template>
     <div class="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg">
         <div class="flex items-start justify-between">
             <div class="flex-1">
                 <h3 class="text-lg font-semibold text-gray-900">
                     {{ graduate.name }}
                 </h3>
-                <p class="mt-1 text-sm text-gray-600">{{ graduate.course }} • {{ graduate.graduation_year }}</p>
+                <p class="mt-1 text-sm text-gray-600">{{ graduate.course }} â€¢ {{ graduate.graduation_year }}</p>
                 <p class="mt-1 text-sm text-gray-500">
                     {{ graduate.institution }}
                 </p>
@@ -61,7 +61,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     graduate: {
         type: Object,
@@ -95,3 +95,4 @@ const formatEmploymentStatus = (status) => {
     return labels[status] || status;
 };
 </script>
+

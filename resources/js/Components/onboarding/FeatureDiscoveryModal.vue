@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 overflow-y-auto">
         <div class="flex min-h-screen items-center justify-center px-4 pb-20 pt-4 text-center sm:block sm:p-0">
             <!-- Background overlay -->
@@ -11,7 +11,7 @@
                 <!-- Header -->
                 <div class="mb-6 flex items-center justify-between">
                     <div>
-                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">🎉 Discover New Features</h3>
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white">ðŸŽ‰ Discover New Features</h3>
                         <p class="mt-2 text-gray-600 dark:text-gray-400">Check out the latest additions to your alumni platform</p>
                     </div>
                     <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
@@ -64,10 +64,10 @@
                                               : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
                                     ]"
                                 >
-                                    {{ feature.status === 'new' ? '✨ New' : feature.status === 'updated' ? '🔄 Updated' : '📈 Enhanced' }}
+                                    {{ feature.status === 'new' ? 'âœ¨ New' : feature.status === 'updated' ? 'ðŸ”„ Updated' : 'ðŸ“ˆ Enhanced' }}
                                 </span>
 
-                                <button class="text-sm font-medium text-blue-600 hover:text-blue-500">Explore →</button>
+                                <button class="text-sm font-medium text-blue-600 hover:text-blue-500">Explore â†’</button>
                             </div>
                         </div>
                     </div>
@@ -105,7 +105,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -166,3 +166,4 @@ const startFeatureTour = () => {
     emit('close');
 };
 </script>
+

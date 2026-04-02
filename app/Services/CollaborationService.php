@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Models\LandingPage;
 use App\Models\CollaborationSession;
+use App\Models\LandingPage;
 use App\Models\PageChange;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class CollaborationService
@@ -33,7 +33,7 @@ class CollaborationService
     public function endSession(string $sessionId): void
     {
         $session = CollaborationSession::where('session_id', $sessionId)->first();
-        
+
         if ($session) {
             $session->disconnect();
         }
@@ -54,18 +54,18 @@ class CollaborationService
         ?array $selectedComponent = null
     ): void {
         $session = CollaborationSession::where('session_id', $sessionId)->first();
-        
+
         if ($session) {
             $updateData = ['last_activity' => now(), 'status' => 'active'];
-            
+
             if ($cursorPosition !== null) {
                 $updateData['cursor_position'] = $cursorPosition;
             }
-            
+
             if ($selectedComponent !== null) {
                 $updateData['selected_component'] = $selectedComponent;
             }
-            
+
             $session->update($updateData);
         }
     }
@@ -160,10 +160,12 @@ class CollaborationService
             switch ($resolution) {
                 case 'accept':
                     $change->markAsApplied();
+
                     return true;
 
                 case 'reject':
                     $change->delete();
+
                     return true;
 
                 case 'merge':
@@ -172,8 +174,10 @@ class CollaborationService
                             'operation_data' => $mergedData,
                             'is_applied' => true,
                         ]);
+
                         return true;
                     }
+
                     return false;
 
                 default:
@@ -185,7 +189,7 @@ class CollaborationService
     public function cleanupInactiveSessions(): int
     {
         $cutoff = now()->subMinutes(30);
-        
+
         return CollaborationSession::where('last_activity', '<', $cutoff)
             ->update(['status' => 'disconnected']);
     }

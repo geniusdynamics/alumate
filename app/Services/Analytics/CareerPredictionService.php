@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Models\User;
-use App\Services\Analytics\ConsentService;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Career Prediction Service
@@ -21,6 +20,7 @@ use Exception;
 class CareerPredictionService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const PREDICTION_CACHE_KEY = 'career_prediction_%s';
 
     private ConsentService $consentService;
@@ -39,18 +39,19 @@ class CareerPredictionService
      * Feeds engagement scores and certification data to AI model
      * to update user's career outcome predictions.
      *
-     * @param int $userId User ID
-     * @param array $learningData Learning progress data
+     * @param  int  $userId  User ID
+     * @param  array  $learningData  Learning progress data
      * @return bool Success status
      */
     public function updateLearningImpact(int $userId, array $learningData): bool
     {
         try {
             // Check consent before processing
-            if (!$this->consentService->checkConsent($userId, 'analytics')) {
+            if (! $this->consentService->checkConsent($userId, 'analytics')) {
                 Log::info('Career prediction update skipped due to lack of consent', [
-                    'user_id' => $userId
+                    'user_id' => $userId,
                 ]);
+
                 return false;
             }
 
@@ -70,7 +71,7 @@ class CareerPredictionService
                 'user_id' => $userId,
                 'old_score' => $currentScore,
                 'new_score' => $newScore,
-                'impact_factor' => $impactFactor
+                'impact_factor' => $impactFactor,
             ]);
 
             return true;
@@ -79,8 +80,9 @@ class CareerPredictionService
             Log::error('Failed to update career prediction', [
                 'user_id' => $userId,
                 'learning_data' => $learningData,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
+
             return false;
         }
     }
@@ -108,13 +110,15 @@ class CareerPredictionService
         // In practice, this would use historical data and ML models
 
         $user = User::find($userId);
-        if (!$user) return 50.0; // Default neutral score
+        if (! $user) {
+            return 50.0;
+        } // Default neutral score
 
         $score = 50.0; // Base score
 
         // Education factor (simplified)
         if ($user->education_level) {
-            $educationMultiplier = match($user->education_level) {
+            $educationMultiplier = match ($user->education_level) {
                 'high_school' => 0.8,
                 'bachelors' => 1.0,
                 'masters' => 1.2,
@@ -185,32 +189,33 @@ class CareerPredictionService
     {
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.career_prediction.api_key'),
-                'Content-Type' => 'application/json'
-            ])->post(config('services.career_prediction.api_url') . '/predict', [
+                'Authorization' => 'Bearer '.config('services.career_prediction.api_key'),
+                'Content-Type' => 'application/json',
+            ])->post(config('services.career_prediction.api_url').'/predict', [
                 'user_id' => $userId,
                 'current_score' => $currentScore,
                 'learning_impact' => $impactFactor,
                 'engagement_score' => $learningData['engagement_score'] ?? 0,
                 'certified' => $learningData['certified'] ?? false,
-                'modules_completed' => $learningData['modules_completed'] ?? 0
+                'modules_completed' => $learningData['modules_completed'] ?? 0,
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return $data['prediction_score'] ?? $currentScore;
             }
 
             Log::warning('AI API prediction failed, falling back to regression', [
                 'user_id' => $userId,
                 'status' => $response->status(),
-                'response' => $response->body()
+                'response' => $response->body(),
             ]);
 
         } catch (Exception $e) {
             Log::warning('AI API call failed, falling back to regression', [
                 'user_id' => $userId,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
         }
 
@@ -251,7 +256,7 @@ class CareerPredictionService
     /**
      * Get career prediction score for user
      *
-     * @param int $userId User ID
+     * @param  int  $userId  User ID
      * @return float Prediction score (0-100)
      */
     public function getPredictionScore(int $userId): float

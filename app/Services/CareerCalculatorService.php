@@ -1,4 +1,5 @@
 <?php
+
 // ABOUTME: Service for calculating career value, salary projections, and advancement timelines
 // ABOUTME: Updated for schema-based tenancy - provides career insights within tenant context
 

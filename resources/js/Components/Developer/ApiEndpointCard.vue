@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="mb-6 rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 p-6 dark:border-gray-700">
             <div class="flex items-start justify-between">
@@ -199,7 +199,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -250,6 +251,7 @@ const copyToClipboard = async (text) => {
 const tryEndpoint = () => {
     // Emit event to parent to open API testing modal
     // This would integrate with the API testing functionality
-    console.log('Try endpoint:', props.endpoint);
+    logger.log('Try endpoint:', props.endpoint);
 };
 </script>
+

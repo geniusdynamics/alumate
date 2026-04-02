@@ -190,11 +190,11 @@ export default {
                     await this.loadConnections(); // Refresh to update endorsement status
                 } else {
                     const error = await response.json();
-                    alert(error.message || 'Failed to send endorsement');
+                    // TODO-toast: alert(error.message || 'Failed to send endorsement');
                 }
             } catch (error) {
                 console.error('Failed to submit endorsement:', error);
-                alert('Failed to send endorsement');
+                // TODO-toast: alert('Failed to send endorsement');
             } finally {
                 this.loading = false;
             }

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
         <!-- Header -->
         <div class="border-b border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
@@ -129,7 +129,7 @@
                                         </button>
                                     </div>
                                     <code class="break-all text-sm text-green-700 dark:text-green-300">{{ generatedKey }}</code>
-                                    <p class="mt-2 text-xs text-green-600 dark:text-green-400">⚠️ Save this key securely. It won't be shown again.</p>
+                                    <p class="mt-2 text-xs text-green-600 dark:text-green-400">âš ï¸ Save this key securely. It won't be shown again.</p>
                                 </div>
 
                                 <!-- Existing API Keys -->
@@ -146,7 +146,7 @@
                                                     {{ key.name }}
                                                 </div>
                                                 <div class="text-xs text-gray-500 dark:text-gray-400">
-                                                    Created {{ formatDate(key.created_at) }} • Last used {{ formatDate(key.last_used_at) }}
+                                                    Created {{ formatDate(key.created_at) }} â€¢ Last used {{ formatDate(key.last_used_at) }}
                                                 </div>
                                             </div>
                                             <button
@@ -443,7 +443,8 @@ X-RateLimit-Reset: 1640995200</code></pre>
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import ApiEndpointCard from '@/Components/Developer/ApiEndpointCard.vue';
 import ApiTester from '@/Components/Developer/ApiTester.vue';
 import IntegrationExamples from '@/Components/Developer/IntegrationExamples.vue';
@@ -676,7 +677,7 @@ const getMethodColor = (method) => {
 
 const tryEndpoint = (endpoint) => {
     // Open API testing interface
-    console.log('Try endpoint:', endpoint);
+    logger.log('Try endpoint:', endpoint);
 };
 
 const formatDate = (date) => {
@@ -693,6 +694,7 @@ onMounted(() => {
     isDark.value = document.documentElement.classList.contains('dark');
 });
 </script>
+
 
 
 

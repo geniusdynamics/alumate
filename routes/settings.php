@@ -9,6 +9,7 @@ Route::middleware('auth')->group(function () {
     Route::redirect('settings', '/settings/profile');
 
     Route::get('settings/profile', [ProfileController::class, 'edit'])->name('settings.profile');
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.show');
     Route::patch('settings/profile', [ProfileController::class, 'update'])->name('settings.profile.update');
     Route::delete('settings/profile', [ProfileController::class, 'destroy'])->name('settings.profile.destroy');
 

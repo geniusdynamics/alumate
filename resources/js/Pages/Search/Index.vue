@@ -310,7 +310,7 @@ export default {
 
         async editSavedSearch(search) {
             // Implementation for editing saved search
-            console.log('Edit search:', search);
+            logger.log('Edit search:', search);
         },
 
         async deleteSavedSearch(search) {
@@ -328,7 +328,7 @@ export default {
             }
         },
 
-        async toggleSearchAlert(search) {
+        async toggleSearch// TODO-toast: alert(search) {
             try {
                 await axios.patch(`/api/search/saved/${search.id}`, {
                     alert_enabled: !search.alert_enabled,

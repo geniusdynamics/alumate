@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="card-mobile border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
         <div class="card-mobile-header">
             <h3 class="card-mobile-title">Recent Activity</h3>
@@ -68,7 +68,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     ArrowRightIcon,
     BriefcaseIcon,
@@ -151,3 +151,4 @@ const viewActivity = (activity) => {
     }
 };
 </script>
+

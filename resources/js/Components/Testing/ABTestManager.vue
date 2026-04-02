@@ -288,7 +288,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
@@ -372,7 +372,7 @@ const createTest = async () => {
             .filter((v) => v.length > 0);
 
         if (variants.length < 2) {
-            alert('Please provide at least 2 variants');
+            // TODO-toast: alert('Please provide at least 2 variants');
             return;
         }
 
@@ -463,3 +463,4 @@ onMounted(() => {
     }, 30000); // Refresh every 30 seconds
 });
 </script>
+

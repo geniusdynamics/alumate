@@ -623,5 +623,5 @@ export class TailwindMappingService {
     return category.charAt(0).toUpperCase() + category.slice(1);
   }
 }
-export d
-efault TailwindMappingService;
+
+export default TailwindMappingService;

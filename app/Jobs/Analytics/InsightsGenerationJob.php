@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Jobs\Analytics;
 
 use App\Services\Analytics\ConsentService;
-use App\Services\Analytics\InsightsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -34,7 +33,7 @@ class InsightsGenerationJob implements ShouldQueue
      * Execute the job.
      */
     public function handle(
-        InsightsService $insightsService,
+        AutomatedInsightsService $insightsService,
         ConsentService $consentService
     ): void {
         try {

@@ -20,6 +20,7 @@ class Tenant extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'id',
         'name',
         'slug',
         'domain',
@@ -40,6 +41,7 @@ class Tenant extends Model
     protected $casts = [
         'settings' => 'array',
         'data' => 'array',
+        'contact_information' => 'array',
         'trial_ends_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

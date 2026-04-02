@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AdminLayout>
         <Head title="System Reports" />
 
@@ -293,7 +293,7 @@
     </AdminLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AdminLayout from '@/Components/AdminLayout.vue';
 import { ArrowLeftIcon, DocumentArrowDownIcon } from '@heroicons/vue/24/outline';
 import { Head, Link, router } from '@inertiajs/vue3';
@@ -412,6 +412,7 @@ const exportReport = async () => {
     }
 };
 </script>
+
 
 
 

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <DefaultLayout title="Help & Support">
         <div class="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
             <!-- Header -->
@@ -137,7 +137,7 @@
     </DefaultLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
@@ -230,6 +230,7 @@ const reportIssue = () => {
     window.open('https://github.com/your-repo/issues/new', '_blank');
 };
 </script>
+
 
 
 

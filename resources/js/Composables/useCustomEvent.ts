@@ -116,7 +116,7 @@ export function useCustomEvent() {
         if (typeof window !== 'undefined' && window.Echo) {
             window.Echo.private(`custom-events`)
                 .listen('.custom-event.created', (event: any) => {
-                    console.log('Custom event created:', event);
+                    logger.log('Custom event created:', event);
                     lastUpdate.value = new Date();
                     // Refresh data
                     customEventStore.refreshData();

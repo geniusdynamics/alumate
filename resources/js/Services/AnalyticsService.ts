@@ -539,9 +539,11 @@ export class AnalyticsService {
             }
 
             // Flush immediately for high-priority events or when batch is full
-            if (this.isHighPriorityEvent(eventName) || this.eventQueue.length >= this.config.batchSize) {
+            if (this.isHighPriorityEvent(eventName) || this.eventQueue.length >= this.config.batchSize || this.config.enableDebugMode) {
                 this.flushEventQueue();
             }
+        } else {
+            this.sendImmediateEvent('events', { events: [event], sessionId: this.sessionId });
         }
     }
 
@@ -733,7 +735,6 @@ export class AnalyticsService {
         window.removeEventListener('unhandledrejection', () => {});
     }
 }
-
 
 
 

@@ -225,7 +225,7 @@ const shareHighlight = async (highlight: any) => {
         if (navigator.clipboard) {
             const url = `${window.location.origin}/events/${props.event.id}/highlights/${highlight.id}`;
             await navigator.clipboard.writeText(url);
-            alert('Highlight link copied to clipboard!');
+            // TODO-toast: alert('Highlight link copied to clipboard!');
         }
     } catch (error) {
         console.error('Failed to share highlight:', error);

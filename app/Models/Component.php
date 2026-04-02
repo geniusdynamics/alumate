@@ -19,6 +19,7 @@ class Component extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tenant_id',
         'theme_id',
         'name',
         'slug',
@@ -299,6 +300,21 @@ class Component extends Model
                 'format_numbers' => 'boolean',
             ],
             'ctas' => [
+                'type' => 'sometimes|string',
+                'buttonConfig' => 'sometimes|array',
+                'buttonConfig.text' => 'required_with:buttonConfig|string|max:100',
+                'buttonConfig.url' => 'nullable|string|max:255',
+                'buttonConfig.style' => 'sometimes|string|in:primary,secondary,outline,text',
+                'buttonConfig.size' => 'sometimes|string|in:small,medium,large,xl,lg,md,sm',
+                'bannerConfig' => 'sometimes|array',
+                'bannerConfig.title' => 'nullable|string|max:255',
+                'bannerConfig.subtitle' => 'nullable|string|max:500',
+                'bannerConfig.layout' => 'sometimes|string|in:center-aligned,left-aligned,right-aligned,full-width',
+                'bannerConfig.height' => 'sometimes|string|in:small,medium,large,full',
+                'inlineLinkConfig' => 'sometimes|array',
+                'inlineLinkConfig.text' => 'nullable|string|max:100',
+                'inlineLinkConfig.url' => 'nullable|string|max:255',
+                'inlineLinkConfig.style' => 'sometimes|string|in:arrow,button,text',
                 'style' => Rule::in(['primary', 'secondary', 'outline', 'text']),
                 'size' => Rule::in(['small', 'medium', 'large']),
                 'track_conversions' => 'boolean',

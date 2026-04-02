@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0">
         <div>
             <Link href="/" class="text-2xl font-bold text-gray-900">
@@ -58,7 +58,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
@@ -73,3 +73,4 @@ const submit = () => {
     form.post(route('password.email'));
 };
 </script>
+

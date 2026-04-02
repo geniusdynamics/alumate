@@ -147,7 +147,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue';
-import { realTimeEditingService } from '../../services/RealTimeEditingService';
+import { realTimeEditingService } from '../../Services/RealTimeEditingService';
 import Icon from '../ui/Icon.vue';
 
 // Props

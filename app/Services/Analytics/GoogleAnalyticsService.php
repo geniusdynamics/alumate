@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 
 /**
  * Google Analytics Service for handling event forwarding, goal sync, and segment export
- * 
+ *
  * This service provides integration with Google Analytics 4 (GA4) via the Measurement Protocol
  * and Analytics Data API. It supports tenant isolation, custom dimension mapping, audience segments,
  * and comprehensive caching for improved performance.
@@ -21,22 +21,28 @@ use Illuminate\Support\Str;
 class GoogleAnalyticsService
 {
     private Client $httpClient;
+
     private ConsentService $consentService;
+
     private ?TenantContextService $tenantContextService = null;
+
     private CacheService $cacheService;
-    
+
     // Cache TTL constants
     private const CACHE_TTL_SEGMENTS = 1800; // 30 minutes
+
     private const CACHE_TTL_GOALS = 1800; // 30 minutes
+
     private const CACHE_TTL_CONFIG = 300; // 5 minutes
+
     private const CACHE_TTL_REALTIME = 60; // 1 minute
 
     /**
      * Constructor for GoogleAnalyticsService
-     * 
-     * @param ConsentService $consentService Service for checking user consent
-     * @param TenantContextService|null $tenantContextService Optional tenant context for isolation
-     * @param CacheService|null $cacheService Optional cache service for performance
+     *
+     * @param  ConsentService  $consentService  Service for checking user consent
+     * @param  TenantContextService|null  $tenantContextService  Optional tenant context for isolation
+     * @param  CacheService|null  $cacheService  Optional cache service for performance
      */
     public function __construct(
         ConsentService $consentService,
@@ -46,7 +52,7 @@ class GoogleAnalyticsService
         $this->consentService = $consentService;
         $this->tenantContextService = $tenantContextService;
         $this->cacheService = $cacheService ?? resolve(CacheService::class);
-        
+
         $this->httpClient = new Client([
             'timeout' => config('services.google.analytics.timeout', 30),
             'connect_timeout' => config('services.google.analytics.connect_timeout', 10),
@@ -56,7 +62,7 @@ class GoogleAnalyticsService
 
     /**
      * Get the current tenant ID from context
-     * 
+     *
      * @return string|null Current tenant ID
      */
     protected function getCurrentTenantId(): ?string
@@ -64,14 +70,14 @@ class GoogleAnalyticsService
         if ($this->tenantContextService !== null) {
             return $this->tenantContextService->getCurrentTenantId();
         }
-        
+
         // Fallback to request header if tenant context service is not available
         return request()->header('X-Tenant');
     }
 
     /**
      * Get HTTP client (for testing purposes)
-     * 
+     *
      * @return Client HTTP client instance
      */
     public function getHttpClient(): Client
@@ -81,26 +87,27 @@ class GoogleAnalyticsService
 
     /**
      * Forward an internal event to Google Analytics 4 via Measurement Protocol
-     * 
+     *
      * This method forwards analytics events to GA4 using the Measurement Protocol API.
      * It includes tenant isolation, custom dimension mapping, and proper consent handling.
-     * 
-     * @param array $eventData Event data to forward containing name, category, label, value, etc.
-     * @param string|null $tenantId Tenant identifier for custom dimension mapping (auto-detected if null)
-     * @param string|null $userSegment User segment for custom dimension mapping
+     *
+     * @param  array  $eventData  Event data to forward containing name, category, label, value, etc.
+     * @param  string|null  $tenantId  Tenant identifier for custom dimension mapping (auto-detected if null)
+     * @param  string|null  $userSegment  User segment for custom dimension mapping
      * @return bool Success status
      */
     public function forwardEvent(array $eventData, ?string $tenantId = null, ?string $userSegment = null): bool
     {
         // Get tenant ID from context if not provided
         $tenantId = $tenantId ?? $this->getCurrentTenantId();
-        
+
         // Check if user has given consent before forwarding
-        if (!$this->consentService->hasConsent()) {
+        if (! $this->consentService->hasConsent()) {
             Log::info('Google Analytics event forwarding skipped due to missing user consent', [
                 'event_name' => $eventData['name'] ?? 'unknown',
                 'tenant_id' => $tenantId,
             ]);
+
             return false;
         }
 
@@ -113,6 +120,7 @@ class GoogleAnalyticsService
                     'event_name' => $eventData['name'] ?? 'unknown',
                     'tenant_id' => $tenantId,
                 ]);
+
                 return false;
             }
 
@@ -130,7 +138,7 @@ class GoogleAnalyticsService
             if ($tenantId) {
                 $gaEvent['params']['custom_parameter_tenant_id'] = $tenantId;
             }
-            
+
             if ($userSegment ?? isset($eventData['user_segment'])) {
                 $gaEvent['params']['custom_parameter_user_segment'] = $userSegment ?? $eventData['user_segment'];
             }
@@ -184,6 +192,7 @@ class GoogleAnalyticsService
                 'event_name' => $eventData['name'] ?? 'unknown',
                 'tenant_id' => $tenantId,
             ]);
+
             return false;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Google Analytics event forwarding', [
@@ -191,19 +200,20 @@ class GoogleAnalyticsService
                 'event_name' => $eventData['name'] ?? 'unknown',
                 'tenant_id' => $tenantId,
             ]);
+
             return false;
         }
     }
 
     /**
      * Batch forward multiple events to Google Analytics
-     * 
+     *
      * This method efficiently forwards multiple events in a single batch request
      * to reduce API calls and improve performance.
-     * 
-     * @param array $events Array of event data to forward
-     * @param string|null $tenantId Tenant identifier for custom dimension mapping
-     * @param string|null $userSegment User segment for custom dimension mapping
+     *
+     * @param  array  $events  Array of event data to forward
+     * @param  string|null  $tenantId  Tenant identifier for custom dimension mapping
+     * @param  string|null  $userSegment  User segment for custom dimension mapping
      * @return array Results with success/failure counts and details
      */
     public function batchForwardEvents(array $events, ?string $tenantId = null, ?string $userSegment = null): array
@@ -220,7 +230,7 @@ class GoogleAnalyticsService
 
         foreach ($events as $index => $eventData) {
             $success = $this->forwardEvent($eventData, $tenantId, $userSegment);
-            
+
             if ($success) {
                 $results['success']++;
             } else {
@@ -245,18 +255,18 @@ class GoogleAnalyticsService
 
     /**
      * Map custom dimensions from internal data to GA4 format
-     * 
+     *
      * This method maps internal analytics data properties to Google Analytics
      * custom dimensions based on the configured dimension mapping.
-     * 
-     * @param array $internalData Internal analytics data containing various properties
-     * @param string|null $tenantId Tenant identifier
+     *
+     * @param  array  $internalData  Internal analytics data containing various properties
+     * @param  string|null  $tenantId  Tenant identifier
      * @return array Mapped custom dimensions in GA4 format
      */
     public function mapCustomDimensions(array $internalData, ?string $tenantId = null): array
     {
         $customDimensions = [];
-        
+
         // Get tenant ID from context if not provided
         $tenantId = $tenantId ?? $this->getCurrentTenantId();
 
@@ -317,11 +327,11 @@ class GoogleAnalyticsService
 
     /**
      * Sync goals from application funnels to Google Analytics
-     * 
+     *
      * This method synchronizes conversion goals from the application to GA4
      * using the Admin API for property-level configuration.
-     * 
-     * @param array $funnelData Array of funnel data to sync as GA goals
+     *
+     * @param  array  $funnelData  Array of funnel data to sync as GA goals
      * @return bool Success status
      */
     public function syncGoals(array $funnelData): bool
@@ -337,6 +347,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics Admin API credentials not configured for goal sync');
+
                 return false;
             }
 
@@ -353,17 +364,18 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'funnel_data' => $funnelData,
             ]);
+
             return false;
         }
     }
 
     /**
      * Create an audience segment in Google Analytics
-     * 
+     *
      * This method creates a new audience segment in GA4 based on the provided
      * criteria including user segments, engagement levels, and behavioral filters.
-     * 
-     * @param array $criteria Segment criteria including name, description, and filters
+     *
+     * @param  array  $criteria  Segment criteria including name, description, and filters
      * @return array|null Created segment data or null on failure
      */
     public function createAudienceSegment(array $criteria): ?array
@@ -379,6 +391,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics Admin API credentials not configured for segment creation');
+
                 return null;
             }
 
@@ -410,14 +423,15 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'criteria' => $criteria,
             ]);
+
             return null;
         }
     }
 
     /**
      * Build segment filters from criteria array
-     * 
-     * @param array $criteria Segment criteria
+     *
+     * @param  array  $criteria  Segment criteria
      * @return array GA4 segment filters
      */
     protected function buildSegmentFilters(array $criteria): array
@@ -523,12 +537,12 @@ class GoogleAnalyticsService
 
     /**
      * Share an audience segment for broader access
-     * 
+     *
      * This method shares an existing audience segment with additional users,
      * user groups, or makes it available across the property.
-     * 
-     * @param string $segmentId The ID of the segment to share
-     * @param array $shareOptions Sharing options including recipients and permissions
+     *
+     * @param  string  $segmentId  The ID of the segment to share
+     * @param  array  $shareOptions  Sharing options including recipients and permissions
      * @return bool Success status
      */
     public function shareAudienceSegment(string $segmentId, array $shareOptions = []): bool
@@ -545,6 +559,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics Admin API credentials not configured for segment sharing');
+
                 return false;
             }
 
@@ -569,16 +584,17 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'segment_id' => $segmentId,
             ]);
+
             return false;
         }
     }
 
     /**
      * Get all audience segments from Google Analytics
-     * 
+     *
      * This method retrieves all audience segments configured in GA4,
      * with caching for improved performance.
-     * 
+     *
      * @return array List of audience segments
      */
     public function getAudienceSegments(): array
@@ -598,6 +614,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics Admin API credentials not configured for segment retrieval');
+
                 return [];
             }
 
@@ -617,6 +634,7 @@ class GoogleAnalyticsService
                 Log::error('Failed to decode Google Analytics segments response', [
                     'error' => json_last_error_msg(),
                 ]);
+
                 return [];
             }
 
@@ -646,33 +664,35 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'tenant_id' => $tenantId,
             ]);
+
             return [];
         } catch (\Exception $e) {
             Log::error('Unexpected error during Google Analytics segment retrieval', [
                 'error' => $e->getMessage(),
                 'tenant_id' => $tenantId,
             ]);
+
             return [];
         }
     }
 
     /**
      * Invalidate the segments cache
-     * 
+     *
      * @return bool Success status
      */
     protected function invalidateSegmentsCache(): bool
     {
         $tenantId = $this->getCurrentTenantId();
         $cacheKey = "ga_segments_{$tenantId}";
-        
+
         return $this->cacheService->forget($cacheKey);
     }
 
     /**
      * Create a goal in Google Analytics from funnel data
-     * 
-     * @param array $funnelData Funnel data to create goal from
+     *
+     * @param  array  $funnelData  Funnel data to create goal from
      * @return array|null Created goal data or null on failure
      */
     public function createGoal(array $funnelData): ?array
@@ -688,6 +708,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics Admin API credentials not configured for goal creation');
+
                 return null;
             }
 
@@ -719,14 +740,15 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'funnel_data' => $funnelData,
             ]);
+
             return null;
         }
     }
 
     /**
      * Create an audience in Google Analytics from segment data
-     * 
-     * @param array $segmentData Segment data to create audience from
+     *
+     * @param  array  $segmentData  Segment data to create audience from
      * @return array|null Created audience data or null on failure
      */
     public function createAudience(array $segmentData): ?array
@@ -742,6 +764,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics Admin API credentials not configured for audience creation');
+
                 return null;
             }
 
@@ -765,14 +788,15 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'segment_data' => $segmentData,
             ]);
+
             return null;
         }
     }
 
     /**
      * Map segment criteria to GA4 audience filter
-     * 
-     * @param array $segmentData Segment data
+     *
+     * @param  array  $segmentData  Segment data
      * @return array Filter clauses for GA4 audience
      */
     private function mapSegmentToAudienceFilter(array $segmentData): array
@@ -833,8 +857,8 @@ class GoogleAnalyticsService
 
     /**
      * Export segments to Google Analytics for audience sharing
-     * 
-     * @param array $segmentData Segment data to export
+     *
+     * @param  array  $segmentData  Segment data to export
      * @return bool Success status
      */
     public function exportSegments(array $segmentData): bool
@@ -850,6 +874,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics Admin API credentials not configured for segment export');
+
                 return false;
             }
 
@@ -866,14 +891,15 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'segment_data' => $segmentData,
             ]);
+
             return false;
         }
     }
 
     /**
      * Retrieve report data from Google Analytics
-     * 
-     * @param array $reportRequest Report request parameters
+     *
+     * @param  array  $reportRequest  Report request parameters
      * @return array|null Report data or null on failure
      */
     public function getReport(array $reportRequest): ?array
@@ -884,6 +910,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics credentials not configured for report retrieval');
+
                 return null;
             }
 
@@ -911,7 +938,7 @@ class GoogleAnalyticsService
 
             // Add tenant filter if tenant context exists
             $tenantId = $this->getCurrentTenantId();
-            if ($tenantId && !isset($reportRequest['dimension_filter'])) {
+            if ($tenantId && ! isset($reportRequest['dimension_filter'])) {
                 $requestBody['dimensionFilter'] = [
                     'filter' => [
                         'fieldName' => 'customEvent:custom_parameter_tenant_id',
@@ -936,6 +963,7 @@ class GoogleAnalyticsService
                 Log::error('Failed to decode Google Analytics report response', [
                     'error' => json_last_error_msg(),
                 ]);
+
                 return null;
             }
 
@@ -950,19 +978,21 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'report_request' => $reportRequest,
             ]);
+
             return null;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Google Analytics report retrieval', [
                 'error' => $e->getMessage(),
                 'report_request' => $reportRequest,
             ]);
+
             return null;
         }
     }
 
     /**
      * Get real-time user data from Google Analytics
-     * 
+     *
      * @return array|null Real-time data or null on failure
      */
     public function getRealtimeData(): ?array
@@ -982,6 +1012,7 @@ class GoogleAnalyticsService
 
             if (empty($propertyId) || empty($apiSecret)) {
                 Log::warning('Google Analytics credentials not configured for realtime data');
+
                 return null;
             }
 
@@ -1010,6 +1041,7 @@ class GoogleAnalyticsService
                 Log::error('Failed to decode Google Analytics realtime response', [
                     'error' => json_last_error_msg(),
                 ]);
+
                 return null;
             }
 
@@ -1022,22 +1054,24 @@ class GoogleAnalyticsService
                 'error' => $e->getMessage(),
                 'tenant_id' => $tenantId,
             ]);
+
             return null;
         } catch (\Exception $e) {
             Log::error('Unexpected error during Google Analytics realtime retrieval', [
                 'error' => $e->getMessage(),
                 'tenant_id' => $tenantId,
             ]);
+
             return null;
         }
     }
 
     /**
      * Validate Google Analytics configuration
-     * 
+     *
      * This method validates that all required configuration settings are properly
      * configured and accessible. It checks credentials, connectivity, and permissions.
-     * 
+     *
      * @return array Validation results with valid status, errors, and warnings
      */
     public function validateConfiguration(): array
@@ -1057,7 +1091,7 @@ class GoogleAnalyticsService
         if (empty($measurementId)) {
             $results['valid'] = false;
             $results['errors'][] = 'Google Analytics Measurement ID is not configured';
-        } elseif (!preg_match('/^G-[A-Z0-9]+$/', $measurementId)) {
+        } elseif (! preg_match('/^G-[A-Z0-9]+$/', $measurementId)) {
             $results['valid'] = false;
             $results['errors'][] = 'Google Analytics Measurement ID format is invalid';
         } else {
@@ -1083,7 +1117,7 @@ class GoogleAnalyticsService
         // Validate Property ID (optional but recommended)
         if (empty($propertyId)) {
             $results['warnings'][] = 'Google Analytics Property ID is not configured (required for Admin API operations)';
-        } elseif (!preg_match('/^[0-9]+$/', $propertyId)) {
+        } elseif (! preg_match('/^[0-9]+$/', $propertyId)) {
             $results['warnings'][] = 'Google Analytics Property ID format may be invalid';
         } else {
             $results['details']['property_id'] = [
@@ -1093,11 +1127,11 @@ class GoogleAnalyticsService
         }
 
         // Test API connectivity if credentials are configured
-        if (!empty($measurementId) && !empty($apiSecret)) {
+        if (! empty($measurementId) && ! empty($apiSecret)) {
             $connectivityResult = $this->testApiConnectivity();
             $results['details']['connectivity'] = $connectivityResult;
-            
-            if (!$connectivityResult['success']) {
+
+            if (! $connectivityResult['success']) {
                 $results['warnings'][] = 'Failed to connect to Google Analytics API';
             }
         }
@@ -1112,7 +1146,7 @@ class GoogleAnalyticsService
 
     /**
      * Test API connectivity to Google Analytics
-     * 
+     *
      * @return array Connectivity test results
      */
     protected function testApiConnectivity(): array
@@ -1130,7 +1164,7 @@ class GoogleAnalyticsService
 
             // Try to make a simple request to verify connectivity
             $url = "https://analyticsdata.googleapis.com/v1beta/properties/{$propertyId}:runReport";
-            
+
             $response = $this->httpClient->post($url, [
                 'json' => [
                     'dateRanges' => [
@@ -1164,31 +1198,31 @@ class GoogleAnalyticsService
 
     /**
      * Normalize event name to comply with GA4 requirements
-     * 
+     *
      * GA4 has specific requirements for event names (no spaces, special chars, etc.)
-     * 
-     * @param string $eventName Original event name
+     *
+     * @param  string  $eventName  Original event name
      * @return string Normalized event name
      */
     protected function normalizeEventName(string $eventName): string
     {
         // Replace spaces and special characters with underscores
         $normalized = preg_replace('/[^a-zA-Z0-9_]/', '_', $eventName);
-        
+
         // Remove consecutive underscores
         $normalized = preg_replace('/_+/', '_', $normalized);
-        
+
         // Trim underscores from start and end
         $normalized = trim($normalized, '_');
-        
+
         // Convert to lowercase
         $normalized = strtolower($normalized);
-        
+
         // Ensure it's not empty
         if (empty($normalized)) {
             $normalized = 'custom_event';
         }
-        
+
         return $normalized;
     }
 }

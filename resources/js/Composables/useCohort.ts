@@ -124,7 +124,7 @@ export function useCohort() {
         if (typeof window !== 'undefined' && window.Echo) {
             window.Echo.private(`cohort-updates`)
                 .listen('.cohort.updated', (event: any) => {
-                    console.log('Cohort updated:', event);
+                    logger.log('Cohort updated:', event);
                     lastUpdate.value = new Date();
                     // Refresh data
                     cohortStore.refreshData();

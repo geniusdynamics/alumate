@@ -7,11 +7,11 @@ namespace App\Services;
 use App\Models\Graduate;
 use App\Models\JobApplication;
 use App\Models\Tenant;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Collection;
 
 /**
  * Cross-Tenant Aggregation Service
@@ -34,7 +34,7 @@ class CrossTenantAggregationService extends BaseService
     /**
      * Get graduate count for a specific tenant.
      *
-     * @param string $tenantId The tenant ID
+     * @param  string  $tenantId  The tenant ID
      * @return int The graduate count
      */
     public function getTenantGraduateCount(string $tenantId): int
@@ -46,7 +46,7 @@ class CrossTenantAggregationService extends BaseService
 
             try {
                 $tenant = Tenant::find($tenantId);
-                if (!$tenant) {
+                if (! $tenant) {
                     return 0;
                 }
 
@@ -60,6 +60,7 @@ class CrossTenantAggregationService extends BaseService
                     'tenant_id' => $tenantId,
                     'error' => $e->getMessage(),
                 ]);
+
                 return 0;
             }
 
@@ -91,12 +92,12 @@ class CrossTenantAggregationService extends BaseService
     /**
      * Get employment trends across all tenants.
      *
-     * @param \Carbon\Carbon|null $startDate Optional start date for filtering
+     * @param  \Carbon\Carbon|null  $startDate  Optional start date for filtering
      * @return Collection Employment status distribution
      */
     public function getEmploymentTrends(?\Carbon\Carbon $startDate = null): Collection
     {
-        $cacheKey = $this->getCacheKey('employment_trends:' . ($startDate ? $startDate->toDateString() : 'all'));
+        $cacheKey = $this->getCacheKey('employment_trends:'.($startDate ? $startDate->toDateString() : 'all'));
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($startDate) {
             $trends = collect([
@@ -113,7 +114,7 @@ class CrossTenantAggregationService extends BaseService
             foreach ($tenants as $tenant) {
                 try {
                     $tenant->run(function () use (&$trends, $startDate) {
-                        if (!Schema::hasTable('graduates')) {
+                        if (! Schema::hasTable('graduates')) {
                             return;
                         }
 
@@ -139,6 +140,7 @@ class CrossTenantAggregationService extends BaseService
                         'tenant_id' => $tenant->id,
                         'error' => $e->getMessage(),
                     ]);
+
                     continue;
                 }
             }
@@ -174,12 +176,12 @@ class CrossTenantAggregationService extends BaseService
     /**
      * Get job application counts across all tenants.
      *
-     * @param \Carbon\Carbon|null $startDate Optional start date for filtering
+     * @param  \Carbon\Carbon|null  $startDate  Optional start date for filtering
      * @return int Total job application count
      */
     public function getTotalJobApplicationCount(?\Carbon\Carbon $startDate = null): int
     {
-        $cacheKey = $this->getCacheKey('total_applications:' . ($startDate ? $startDate->toDateString() : 'all'));
+        $cacheKey = $this->getCacheKey('total_applications:'.($startDate ? $startDate->toDateString() : 'all'));
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($startDate) {
             $total = 0;
@@ -188,7 +190,7 @@ class CrossTenantAggregationService extends BaseService
             foreach ($tenants as $tenant) {
                 try {
                     $tenant->run(function () use (&$total, $startDate) {
-                        if (!Schema::hasTable('job_applications')) {
+                        if (! Schema::hasTable('job_applications')) {
                             return;
                         }
 
@@ -205,6 +207,7 @@ class CrossTenantAggregationService extends BaseService
                         'tenant_id' => $tenant->id,
                         'error' => $e->getMessage(),
                     ]);
+
                     continue;
                 }
             }
@@ -230,7 +233,7 @@ class CrossTenantAggregationService extends BaseService
             foreach ($tenants as $tenant) {
                 try {
                     $tenant->run(function () use (&$totalGraduates, &$employedGraduates) {
-                        if (!Schema::hasTable('graduates')) {
+                        if (! Schema::hasTable('graduates')) {
                             return;
                         }
 
@@ -242,6 +245,7 @@ class CrossTenantAggregationService extends BaseService
                         'tenant_id' => $tenant->id,
                         'error' => $e->getMessage(),
                     ]);
+
                     continue;
                 }
             }
@@ -253,7 +257,7 @@ class CrossTenantAggregationService extends BaseService
     /**
      * Get aggregated metrics for a specific tenant.
      *
-     * @param string $tenantId The tenant ID
+     * @param  string  $tenantId  The tenant ID
      * @return array Tenant metrics
      */
     public function getTenantMetrics(string $tenantId): array
@@ -270,7 +274,7 @@ class CrossTenantAggregationService extends BaseService
 
             try {
                 $tenant = Tenant::find($tenantId);
-                if (!$tenant) {
+                if (! $tenant) {
                     return $metrics;
                 }
 
@@ -325,15 +329,13 @@ class CrossTenantAggregationService extends BaseService
 
     /**
      * Clear all cross-tenant aggregation cache.
-     *
-     * @return void
      */
     public function clearCache(): void
     {
-        $pattern = self::CACHE_PREFIX . '*';
+        $pattern = self::CACHE_PREFIX.'*';
         $keys = Cache::getRedis()->keys($pattern);
 
-        if (!empty($keys)) {
+        if (! empty($keys)) {
             Cache::getRedis()->del($keys);
         }
 
@@ -345,14 +347,13 @@ class CrossTenantAggregationService extends BaseService
     /**
      * Clear cache for a specific tenant.
      *
-     * @param string $tenantId The tenant ID
-     * @return void
+     * @param  string  $tenantId  The tenant ID
      */
     public function clearTenantCache(string $tenantId): void
     {
         $patterns = [
-            self::CACHE_PREFIX . "graduates:{$tenantId}",
-            self::CACHE_PREFIX . "metrics:{$tenantId}",
+            self::CACHE_PREFIX."graduates:{$tenantId}",
+            self::CACHE_PREFIX."metrics:{$tenantId}",
         ];
 
         foreach ($patterns as $pattern) {
@@ -370,12 +371,12 @@ class CrossTenantAggregationService extends BaseService
     /**
      * Generate a cache key for cross-tenant aggregation.
      *
-     * @param string $key The cache key suffix
+     * @param  string  $key  The cache key suffix
      * @return string The full cache key
      */
     private function getCacheKey(string $key): string
     {
-        return self::CACHE_PREFIX . $key;
+        return self::CACHE_PREFIX.$key;
     }
 
     /**
@@ -386,19 +387,21 @@ class CrossTenantAggregationService extends BaseService
     private function validateSuperAdminAccess(): bool
     {
         $user = auth()->user();
+
         return $user && $user->is_super_admin === true;
     }
 
     /**
      * Execute a cross-tenant aggregation with security validation.
      *
-     * @param callable $callback The aggregation callback
+     * @param  callable  $callback  The aggregation callback
      * @return mixed The aggregation result
+     *
      * @throws \Exception If user is not a super admin
      */
     private function executeSecureAggregation(callable $callback)
     {
-        if (!$this->validateSuperAdminAccess()) {
+        if (! $this->validateSuperAdminAccess()) {
             throw new \Exception('Unauthorized: Cross-tenant aggregation requires super admin privileges');
         }
 

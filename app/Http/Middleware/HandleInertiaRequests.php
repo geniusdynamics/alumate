@@ -41,14 +41,19 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
             'quote' => ['message' => trim($message), 'author' => trim($author)],
+            'app' => [
+                'name' => config('app.name'),
+                'logo' => config('app.logo_url', '/images/logo.png'),
+            ],
             'auth' => [
                 'user' => $request->user() ? [
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
                     'email_verified_at' => $request->user()->email_verified_at,
+                    'avatar' => $request->user()->avatar,
+                    'institution_id' => $request->user()->institution_id,
                     'roles' => $request->user()->roles->map(fn ($role) => [
                         'id' => $role->id,
                         'name' => $role->name,

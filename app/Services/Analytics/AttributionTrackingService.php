@@ -5,15 +5,14 @@ declare(strict_types=1);
 namespace App\Services\Analytics;
 
 use App\Models\AttributionTouch;
-use App\Models\AnalyticsEvent;
 use App\Models\User;
 use App\Services\BaseService;
 use App\Services\TenantContextService;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
-use Exception;
 
 /**
  * AttributionTrackingService
@@ -25,16 +24,22 @@ use Exception;
 class AttributionTrackingService extends BaseService
 {
     private const CACHE_TTL = 3600; // 1 hour
+
     private const CACHE_TTL_SHORT = 300; // 5 minutes for frequently accessed data
+
     private const CHUNK_SIZE = 1000;
 
     /**
      * Valid attribution models
      */
     public const MODEL_FIRST_CLICK = 'first_click';
+
     public const MODEL_LAST_CLICK = 'last_click';
+
     public const MODEL_LINEAR = 'linear';
+
     public const MODEL_TIME_DECAY = 'time_decay';
+
     public const MODEL_POSITION_BASED = 'position_based';
 
     /**
@@ -76,10 +81,9 @@ class AttributionTrackingService extends BaseService
     /**
      * Track a touchpoint in the user journey
      *
-     * @param int $userId User ID
-     * @param string $channel Marketing channel (e.g., 'paid_search', 'email')
-     * @param array $data Additional touchpoint data
-     * @return AttributionTouch
+     * @param  int  $userId  User ID
+     * @param  string  $channel  Marketing channel (e.g., 'paid_search', 'email')
+     * @param  array  $data  Additional touchpoint data
      */
     public function trackTouchpoint(int $userId, string $channel, array $data = []): AttributionTouch
     {
@@ -123,10 +127,10 @@ class AttributionTrackingService extends BaseService
     /**
      * Calculate attribution for a conversion using specified model
      *
-     * @param int $conversionId Conversion/Event ID
-     * @param string $model Attribution model to use
-     * @param string $startDate Start date for attribution window
-     * @param string $endDate End date for attribution window
+     * @param  int  $conversionId  Conversion/Event ID
+     * @param  string  $model  Attribution model to use
+     * @param  string  $startDate  Start date for attribution window
+     * @param  string  $endDate  End date for attribution window
      * @return array Attribution results
      */
     public function calculateAttribution(
@@ -166,10 +170,9 @@ class AttributionTrackingService extends BaseService
     /**
      * First-click attribution model - 100% credit to first touchpoint
      *
-     * @param int $userId User ID
-     * @param string|null $startDate Start date
-     * @param string|null $endDate End date
-     * @return array
+     * @param  int  $userId  User ID
+     * @param  string|null  $startDate  Start date
+     * @param  string|null  $endDate  End date
      */
     public function firstClickAttribution(
         int $userId,
@@ -216,10 +219,9 @@ class AttributionTrackingService extends BaseService
     /**
      * Last-click attribution model - 100% credit to last touchpoint
      *
-     * @param int $userId User ID
-     * @param string|null $startDate Start date
-     * @param string|null $endDate End date
-     * @return array
+     * @param  int  $userId  User ID
+     * @param  string|null  $startDate  Start date
+     * @param  string|null  $endDate  End date
      */
     public function lastClickAttribution(
         int $userId,
@@ -266,11 +268,10 @@ class AttributionTrackingService extends BaseService
     /**
      * Multi-touch attribution model with configurable algorithm
      *
-     * @param int $userId User ID
-     * @param string $algorithm Linear, time-decay, or position-based
-     * @param string|null $startDate Start date
-     * @param string|null $endDate End date
-     * @return array
+     * @param  int  $userId  User ID
+     * @param  string  $algorithm  Linear, time-decay, or position-based
+     * @param  string|null  $startDate  Start date
+     * @param  string|null  $endDate  End date
      */
     public function multiTouchAttribution(
         int $userId,
@@ -310,9 +311,9 @@ class AttributionTrackingService extends BaseService
     /**
      * Analyze channel performance across all users
      *
-     * @param string $startDate Start date
-     * @param string $endDate End date
-     * @param array $channels Optional list of channels to analyze
+     * @param  string  $startDate  Start date
+     * @param  string  $endDate  End date
+     * @param  array  $channels  Optional list of channels to analyze
      * @return array Channel performance data
      */
     public function analyzeChannelPerformance(
@@ -355,8 +356,8 @@ class AttributionTrackingService extends BaseService
                         'avg_value_per_user' => $uniqueUsers > 0 ? round($totalValue / $uniqueUsers, 2) : 0,
                         'conversion_rate' => $totalTouches > 0 ? round(($conversionTouches / $totalTouches) * 100, 2) : 0,
                         'touches_percentage' => round(($totalTouches / $touches->count()) * 100, 2),
-                        'value_percentage' => $touches->sum('value') > 0 
-                            ? round(($totalValue / $touches->sum('value')) * 100, 2) 
+                        'value_percentage' => $touches->sum('value') > 0
+                            ? round(($totalValue / $touches->sum('value')) * 100, 2)
                             : 0,
                     ];
                 })
@@ -382,9 +383,9 @@ class AttributionTrackingService extends BaseService
     /**
      * Generate budget allocation recommendations based on channel performance
      *
-     * @param string $startDate Start date
-     * @param string $endDate End date
-     * @param float $totalBudget Total budget to allocate
+     * @param  string  $startDate  Start date
+     * @param  string  $endDate  End date
+     * @param  float  $totalBudget  Total budget to allocate
      * @return array Budget recommendations
      */
     public function generateBudgetRecommendations(
@@ -451,7 +452,7 @@ class AttributionTrackingService extends BaseService
             }
 
             // Sort by efficiency score descending
-            usort($recommendations, fn($a, $b) => $b['efficiency_score'] <=> $a['efficiency_score']);
+            usort($recommendations, fn ($a, $b) => $b['efficiency_score'] <=> $a['efficiency_score']);
 
             return [
                 'period' => ['start' => $startDate, 'end' => $endDate],
@@ -469,9 +470,9 @@ class AttributionTrackingService extends BaseService
     /**
      * Get full conversion path for a user
      *
-     * @param int $userId User ID
-     * @param string|null $startDate Start date
-     * @param string|null $endDate End date
+     * @param  int  $userId  User ID
+     * @param  string|null  $startDate  Start date
+     * @param  string|null  $endDate  End date
      * @return array Conversion path with all touchpoints
      */
     public function getConversionPath(
@@ -563,11 +564,11 @@ class AttributionTrackingService extends BaseService
      */
     private function applyLinearModel(Collection $touches, float $totalValue): array
     {
-        $channelGroups = $touches->groupBy(fn($t) => $t->source ?? 'direct');
+        $channelGroups = $touches->groupBy(fn ($t) => $t->source ?? 'direct');
         $channelCount = $channelGroups->count();
         $equalShare = $channelCount > 0 ? $totalValue / $channelCount : 0;
 
-        return $channelGroups->map(function (Collection $groupTouches, $channel) use ($equalShare, $channelCount, $touches) {
+        return $channelGroups->map(function (Collection $groupTouches, $channel) use ($equalShare, $channelCount) {
             return [
                 'channel' => $channel,
                 'medium' => $groupTouches->first()->medium ?? null,
@@ -619,7 +620,7 @@ class AttributionTrackingService extends BaseService
      */
     private function applyPositionBasedModel(Collection $touches, float $totalValue): array
     {
-        $channelGroups = $touches->groupBy(fn($t) => $t->source ?? 'direct');
+        $channelGroups = $touches->groupBy(fn ($t) => $t->source ?? 'direct');
         $touchCount = $touches->count();
 
         if ($touchCount === 0) {
@@ -817,6 +818,7 @@ class AttributionTrackingService extends BaseService
     private function getChannelPerformanceCacheKey(string $startDate, string $endDate, ?array $channels): string
     {
         $channelsHash = $channels ? md5(implode(',', $channels)) : 'all';
+
         return $this->getTenantCacheKey("channel_performance:{$startDate}:{$endDate}:{$channelsHash}");
     }
 

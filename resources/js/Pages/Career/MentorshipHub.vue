@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Mentorship Hub">
         <Head title="Mentorship Hub" />
 
@@ -203,7 +203,8 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import BecomeMentorModal from '@/Components/BecomeMentorModal.vue';
 import LearningResources from '@/Components/LearningResources.vue';
 import MentorDirectory from '@/Components/MentorDirectory.vue';
@@ -256,7 +257,7 @@ const handleRequestMentorship = (mentor) => {
 
 const handleViewProfile = (mentor) => {
     // Navigate to mentor profile or show detailed modal
-    console.log('View mentor profile:', mentor);
+    logger.log('View mentor profile:', mentor);
 };
 
 const handleScheduleSession = (mentorship) => {
@@ -289,12 +290,12 @@ const handleDeclineRequest = (requestId) => {
 
 const handleJoinSession = (sessionId) => {
     // Handle joining virtual session
-    console.log('Join session:', sessionId);
+    logger.log('Join session:', sessionId);
 };
 
 const handleReschedule = (sessionId) => {
     // Handle rescheduling session
-    console.log('Reschedule session:', sessionId);
+    logger.log('Reschedule session:', sessionId);
 };
 
 const handleUpdateProgress = (goalId, progress) => {
@@ -338,6 +339,7 @@ const handleSessionScheduled = () => {
     router.reload({ only: ['upcomingSessions'] });
 };
 </script>
+
 
 
 

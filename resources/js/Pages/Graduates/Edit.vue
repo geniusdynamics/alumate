@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ProfileCompletionProgress from '@/Pages/Graduates/Partials/ProfileCompletionProgress.vue';
 import UpdateGraduateForm from '@/Pages/Graduates/Partials/UpdateGraduateForm.vue';
@@ -46,6 +46,7 @@ defineProps({
         </div>
     </AppLayout>
 </template>
+
 
 
 

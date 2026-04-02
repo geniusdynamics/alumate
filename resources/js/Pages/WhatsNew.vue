@@ -149,7 +149,7 @@
     </DefaultLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,

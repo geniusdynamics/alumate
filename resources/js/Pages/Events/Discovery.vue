@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Events Discovery">
         <Head title="Events Discovery" />
 
@@ -216,7 +216,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import EventCard from '@/Components/EventCard.vue';
 import EventConnectionRecommendations from '@/Components/EventConnectionRecommendations.vue';
 import EventDetailModal from '@/Components/EventDetailModal.vue';
@@ -429,6 +429,7 @@ const closeModals = () => {
     virtualEvent.value = null;
 };
 </script>
+
 
 
 

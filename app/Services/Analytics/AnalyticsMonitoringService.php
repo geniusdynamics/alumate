@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services\Analytics;
 
-use App\Services\TenantContextService;
 use App\Models\AnalyticsEvent;
 use App\Models\Tenant;
+use App\Services\TenantContextService;
+use Carbon\Carbon;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
-use Exception;
 
 /**
  * Analytics Monitoring Service
@@ -25,28 +24,40 @@ class AnalyticsMonitoringService
 {
     // Health status constants
     public const STATUS_HEALTHY = 'healthy';
+
     public const STATUS_WARNING = 'warning';
+
     public const STATUS_CRITICAL = 'critical';
+
     public const STATUS_UNKNOWN = 'unknown';
 
     // Alert severity constants
     public const SEVERITY_INFO = 'info';
+
     public const SEVERITY_WARNING = 'warning';
+
     public const SEVERITY_CRITICAL = 'critical';
 
     // Cache TTL constants
     private const CACHE_TTL_SHORT = 60;        // 1 minute
+
     private const CACHE_TTL_MEDIUM = 300;       // 5 minutes
+
     private const CACHE_TTL_LONG = 3600;        // 1 hour
+
     private const CACHE_TTL_VERY_LONG = 86400;  // 24 hours
 
     // Monitoring intervals
     private const METRICS_CHECK_INTERVAL = 60;      // 1 minute
+
     private const HEALTH_CHECK_INTERVAL = 300;       // 5 minutes
+
     private const ANOMALY_DETECTION_INTERVAL = 900;  // 15 minutes
 
     private TenantContextService $tenantContext;
+
     private array $alertConfig;
+
     private array $healthCheckServices = [];
 
     public function __construct(TenantContextService $tenantContext)
@@ -144,7 +155,7 @@ class AnalyticsMonitoringService
     /**
      * Check health of a specific service
      *
-     * @param string $serviceName Service to check
+     * @param  string  $serviceName  Service to check
      * @return array Health check result
      */
     public function checkServiceHealth(string $serviceName): array
@@ -153,8 +164,8 @@ class AnalyticsMonitoringService
             $tenantId = $this->tenantContext->getCurrentTenantId();
             $cacheKey = $this->buildCacheKey('health_check', $serviceName);
 
-            return Cache::remember($cacheKey, self::CACHE_TTL_SHORT, function () use ($serviceName, $tenantId) {
-                if (!isset($this->healthCheckServices[$serviceName])) {
+            return Cache::remember($cacheKey, self::CACHE_TTL_SHORT, function () use ($serviceName) {
+                if (! isset($this->healthCheckServices[$serviceName])) {
                     return [
                         'service' => $serviceName,
                         'status' => self::STATUS_UNKNOWN,
@@ -191,7 +202,7 @@ class AnalyticsMonitoringService
     /**
      * Monitor analytics metrics
      *
-     * @param array $options Monitoring options
+     * @param  array  $options  Monitoring options
      * @return array Current metrics
      */
     public function monitorMetrics(array $options = []): array
@@ -255,7 +266,7 @@ class AnalyticsMonitoringService
     /**
      * Detect anomalies in metrics
      *
-     * @param array $metrics Metrics to analyze
+     * @param  array  $metrics  Metrics to analyze
      * @return array Detected anomalies
      */
     public function detectAnomalies(array $metrics): array
@@ -298,7 +309,7 @@ class AnalyticsMonitoringService
             ];
 
             // Log anomalies for monitoring
-            if (!empty($anomalies)) {
+            if (! empty($anomalies)) {
                 Log::warning('Analytics anomalies detected', [
                     'tenant_id' => $tenantId,
                     'anomaly_count' => count($anomalies),
@@ -327,7 +338,7 @@ class AnalyticsMonitoringService
     /**
      * Send an alert notification
      *
-     * @param array $alert Alert data
+     * @param  array  $alert  Alert data
      * @return bool Success status
      */
     public function sendAlert(array $alert): bool
@@ -383,7 +394,7 @@ class AnalyticsMonitoringService
     /**
      * Configure alert rules
      *
-     * @param array $config Alert configuration
+     * @param  array  $config  Alert configuration
      * @return array Updated configuration
      */
     public function configureAlerts(array $config): array
@@ -426,7 +437,7 @@ class AnalyticsMonitoringService
     /**
      * Get alert history
      *
-     * @param array $options Query options
+     * @param  array  $options  Query options
      * @return array Alert history
      */
     public function getAlertHistory(array $options = []): array
@@ -484,7 +495,7 @@ class AnalyticsMonitoringService
     /**
      * Get monitoring dashboard data
      *
-     * @param array $options Dashboard options
+     * @param  array  $options  Dashboard options
      * @return array Dashboard data
      */
     public function getMonitoringDashboard(array $options = []): array
@@ -568,7 +579,7 @@ class AnalyticsMonitoringService
     {
         try {
             $startTime = microtime(true);
-            
+
             // Test database connection
             DB::select('SELECT 1');
             $responseTime = (microtime(true) - $startTime) * 1000;
@@ -585,7 +596,7 @@ class AnalyticsMonitoringService
                 ];
             }
 
-            if (!empty($recentErrors)) {
+            if (! empty($recentErrors)) {
                 return [
                     'status' => self::STATUS_WARNING,
                     'message' => 'Recent database errors detected',
@@ -1174,7 +1185,7 @@ class AnalyticsMonitoringService
     {
         $status = $health['status'] ?? self::STATUS_UNKNOWN;
         $anomalyCount = $anomalies['anomalies_detected'] ?? 0;
-        $criticalAlerts = count(array_filter($recentAlerts['alerts'] ?? [], fn($a) => ($a['severity'] ?? '') === self::SEVERITY_CRITICAL));
+        $criticalAlerts = count(array_filter($recentAlerts['alerts'] ?? [], fn ($a) => ($a['severity'] ?? '') === self::SEVERITY_CRITICAL));
 
         return [
             'overall_status' => $status,
@@ -1208,6 +1219,7 @@ class AnalyticsMonitoringService
     private function buildCacheKey(string $type, string $suffix = ''): string
     {
         $tenantId = $this->tenantContext->getCurrentTenantId() ?? 'global';
+
         return "analytics:{$tenantId}:{$type}:{$suffix}";
     }
 
@@ -1241,7 +1253,7 @@ class AnalyticsMonitoringService
      */
     private function generateAlertId(): string
     {
-        return 'alert_' . now()->format('YmdHis') . '_' . uniqid('', true);
+        return 'alert_'.now()->format('YmdHis').'_'.uniqid('', true);
     }
 
     /**
@@ -1252,13 +1264,13 @@ class AnalyticsMonitoringService
         // In production, this would save to alerts table
         $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = $this->buildCacheKey('alerts', 'recent');
-        
+
         $alerts = Cache::get($cacheKey, []);
         $alerts[] = $alert;
-        
+
         // Keep last 100 alerts
         $alerts = array_slice($alerts, -100);
-        
+
         Cache::put($cacheKey, $alerts, self::CACHE_TTL_VERY_LONG);
     }
 
@@ -1269,7 +1281,7 @@ class AnalyticsMonitoringService
     {
         $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = $this->buildCacheKey('alert_config');
-        
+
         Cache::put($cacheKey, $config, self::CACHE_TTL_VERY_LONG);
     }
 
@@ -1280,22 +1292,22 @@ class AnalyticsMonitoringService
     {
         $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = $this->buildCacheKey('alerts', 'recent');
-        
+
         $alerts = Cache::get($cacheKey, []);
-        
+
         // Filter by options
         if (isset($options['severity'])) {
-            $alerts = array_filter($alerts, fn($a) => ($a['severity'] ?? '') === $options['severity']);
+            $alerts = array_filter($alerts, fn ($a) => ($a['severity'] ?? '') === $options['severity']);
         }
-        
+
         if (isset($options['type'])) {
-            $alerts = array_filter($alerts, fn($a) => ($a['type'] ?? '') === $options['type']);
+            $alerts = array_filter($alerts, fn ($a) => ($a['type'] ?? '') === $options['type']);
         }
-        
+
         // Apply pagination
         $offset = $options['offset'] ?? 0;
         $limit = $options['limit'] ?? 100;
-        
+
         return array_slice(array_values($alerts), $offset, $limit);
     }
 
@@ -1306,17 +1318,17 @@ class AnalyticsMonitoringService
     {
         $tenantId = $this->tenantContext->getCurrentTenantId();
         $cacheKey = $this->buildCacheKey('alerts', 'recent');
-        
+
         $alerts = Cache::get($cacheKey, []);
-        
+
         if (isset($options['severity'])) {
-            $alerts = array_filter($alerts, fn($a) => ($a['severity'] ?? '') === $options['severity']);
+            $alerts = array_filter($alerts, fn ($a) => ($a['severity'] ?? '') === $options['severity']);
         }
-        
+
         if (isset($options['type'])) {
-            $alerts = array_filter($alerts, fn($a) => ($a['type'] ?? '') === $options['type']);
+            $alerts = array_filter($alerts, fn ($a) => ($a['type'] ?? '') === $options['type']);
         }
-        
+
         return count($alerts);
     }
 
@@ -1334,15 +1346,15 @@ class AnalyticsMonitoringService
                     'tenant_id' => $alert['tenant_id'] ?? null,
                 ]);
                 break;
-                
+
             case 'database':
                 // Would insert into alerts table
                 break;
-                
+
             case 'slack':
                 // Would send to Slack webhook
                 break;
-                
+
             case 'email':
                 // Would send email notification
                 break;
@@ -1356,7 +1368,7 @@ class AnalyticsMonitoringService
     {
         $metrics = $this->monitorMetrics();
         $anomalies = $this->detectAnomalies($metrics['metrics'] ?? []);
-        
+
         if ($anomalies['anomalies_detected'] > 0) {
             Log::info('Anomaly analysis triggered by critical alert', [
                 'alert_id' => $alert['alert_id'] ?? null,

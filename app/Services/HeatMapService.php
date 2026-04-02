@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Log;
 class HeatMapService
 {
     private const GRID_SIZE = 10; // 10x10 grid
+
     private const MAX_COORDINATE = 100; // Normalized coordinates 0-100
 
     /**
@@ -24,8 +25,9 @@ class HeatMapService
     {
         $tenantId = app(TenantContextService::class)->getCurrentTenantId();
 
-        if (!$tenantId) {
+        if (! $tenantId) {
             Log::warning('No tenant context available for heat map data collection');
+
             return [];
         }
 
@@ -42,6 +44,7 @@ class HeatMapService
                 'date_range' => $dateRange,
                 'tenant_id' => $tenantId,
             ]);
+
             return [];
         }
 
@@ -58,14 +61,15 @@ class HeatMapService
      */
     public function recordHeatMapEvent(AnalyticsEvent $event): void
     {
-        if (!$this->shouldProcessEvent($event)) {
+        if (! $this->shouldProcessEvent($event)) {
             return;
         }
 
         $tenantId = app(TenantContextService::class)->getCurrentTenantId();
 
-        if (!$tenantId) {
+        if (! $tenantId) {
             Log::warning('No tenant context available for heat map event recording');
+
             return;
         }
 
@@ -141,6 +145,7 @@ class HeatMapService
         for ($y = 0; $y < self::GRID_SIZE; $y++) {
             $grid[$y] = array_fill(0, self::GRID_SIZE, 0);
         }
+
         return $grid;
     }
 
@@ -151,6 +156,7 @@ class HeatMapService
     {
         // Normalize coordinate to 0-100 range if needed
         $normalized = min(max($coordinate, 0), self::MAX_COORDINATE);
+
         return (int) floor(($normalized / self::MAX_COORDINATE) * self::GRID_SIZE);
     }
 
@@ -264,13 +270,13 @@ class HeatMapService
         // Create lookup map for existing data
         $existingMap = [];
         foreach ($existing as $point) {
-            $key = $point['x'] . ',' . $point['y'];
+            $key = $point['x'].','.$point['y'];
             $existingMap[$key] = $point['intensity'];
         }
 
         // Merge new data
         foreach ($new as $point) {
-            $key = $point['x'] . ',' . $point['y'];
+            $key = $point['x'].','.$point['y'];
             $intensity = ($existingMap[$key] ?? 0) + $point['intensity'];
             $merged[] = [
                 'x' => $point['x'],
@@ -281,8 +287,8 @@ class HeatMapService
 
         // Add any existing points not in new data
         foreach ($existing as $point) {
-            $key = $point['x'] . ',' . $point['y'];
-            if (!isset($existingMap[$key])) {
+            $key = $point['x'].','.$point['y'];
+            if (! isset($existingMap[$key])) {
                 $merged[] = $point;
             }
         }

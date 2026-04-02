@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div class="mx-4 max-h-96 w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6">
             <!-- Header -->
@@ -296,7 +296,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
 const emit = defineEmits(['close', 'updated']);
@@ -376,3 +376,4 @@ const savePreferences = async () => {
 <style scoped>
 /* Custom toggle switch styles are handled by Tailwind classes */
 </style>
+

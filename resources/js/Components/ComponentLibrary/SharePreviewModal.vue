@@ -258,6 +258,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import Icon from '@/Components/Common/Icon.vue';
 import type { Component, ComponentCategory } from '@/types/Components';
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue';
@@ -471,7 +472,7 @@ const downloadQRCode = () => {
 
 const updateShareUrl = () => {
     // In a real implementation, this would update the share URL based on settings
-    console.log('Share settings updated:', shareSettings.value);
+    logger.log('Share settings updated:', shareSettings.value);
 };
 
 const togglePasswordProtection = () => {

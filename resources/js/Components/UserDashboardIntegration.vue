@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="user-dashboard-integration">
         <!-- Quick Actions Bar -->
         <div class="mb-6 rounded-lg bg-white shadow dark:bg-gray-800">
@@ -272,7 +272,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import PostCreator from '@/Components/PostCreator.vue';
 import userFlowIntegration from '@/Services/UserFlowIntegration';
 import {
@@ -473,7 +474,7 @@ const handleActivityAction = (activity) => {
             router.visit('/events/my-events');
             break;
         default:
-            console.log('Unknown activity type:', activity.type);
+            logger.log('Unknown activity type:', activity.type);
     }
 };
 
@@ -508,6 +509,7 @@ const formatDate = (dateString) => {
     position: relative;
 }
 </style>
+
 
 
 

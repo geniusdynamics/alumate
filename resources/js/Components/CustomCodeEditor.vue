@@ -236,7 +236,7 @@ const getPlaceholder = (): string => {
         case 'css':
             return '/* Enter your custom CSS here */\n.custom-element {\n  background-color: #f0f0f0;\n  padding: 20px;\n  border-radius: 8px;\n}';
         case 'js':
-            return '// Enter your custom JavaScript here\nconsole.log("Custom JavaScript loaded");\n\ndocument.addEventListener("DOMContentLoaded", function() {\n  // Your custom code here\n});';
+            return '// Enter your custom JavaScript here\n// TODO-removed: console.log("Custom JavaScript loaded");\n\ndocument.addEventListener("DOMContentLoaded", function() {\n  // Your custom code here\n});';
         default:
             return '';
     }
@@ -453,7 +453,7 @@ const validateJavaScript = (code: string): ValidationError[] => {
         const lineNumber = index + 1;
 
         // Basic syntax checks
-        if (line.includes('console.log(') && !line.trim().endsWith(';')) {
+        if (line.includes('// TODO-removed: console.log(') && !line.trim().endsWith(';')) {
             errors.push({
                 line: lineNumber,
                 column: line.length,
@@ -565,7 +565,7 @@ const generatePreviewHTML = (): string => {
       <div class="preview-container">
         ${html}
       </div>
-      <script>
+      <script lang="ts">
         ${js}
       ${'</'}script>
     </body>
@@ -959,3 +959,4 @@ interface ValidationError {
     }
 }
 </style>
+

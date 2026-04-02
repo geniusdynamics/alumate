@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
         <div class="mb-4 flex items-center justify-between">
             <h3 class="flex items-center text-lg font-semibold text-gray-900">
@@ -104,7 +104,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BriefcaseIcon,
@@ -205,3 +205,4 @@ const removeGoal = (goal) => {
     }
 };
 </script>
+

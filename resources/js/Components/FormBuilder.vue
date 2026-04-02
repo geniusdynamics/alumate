@@ -190,6 +190,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import axios from 'axios';
 import { io, type Socket } from 'socket.io-client';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
@@ -325,7 +326,7 @@ const initializeSocket = async (): Promise<void> => {
         });
 
         socket.value.on('connect', () => {
-            console.log('Connected to real-time server');
+            logger.log('Connected to real-time server');
             isSocketConnected.value = true;
 
             if (props.formId && props.tenantId) {
@@ -337,7 +338,7 @@ const initializeSocket = async (): Promise<void> => {
         });
 
         socket.value.on('disconnect', () => {
-            console.log('Disconnected from real-time server');
+            logger.log('Disconnected from real-time server');
             isSocketConnected.value = false;
         });
 
@@ -658,7 +659,7 @@ const handleRemoteChange = (changeData: any): void => {
 
 const handleRemoteSubmission = (submissionData: any): void => {
     if (submissionData.formId === formConfig.value.id) {
-        console.log('Remote form submission:', submissionData);
+        logger.log('Remote form submission:', submissionData);
     }
 };
 

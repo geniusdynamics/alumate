@@ -250,7 +250,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Modal from '@/Components/Modal.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { ClockIcon } from '@heroicons/vue/24/outline';
@@ -371,10 +371,10 @@ const previewReport = async (report) => {
         if (result.success) {
             previewData.value = result.preview;
         } else {
-            alert('Failed to generate preview: ' + result.message);
+            // TODO-toast: alert('Failed to generate preview: ' + result.message);
         }
     } catch (error) {
-        alert('Error generating preview: ' + error.message);
+        // TODO-toast: alert('Error generating preview: ' + error.message);
     } finally {
         previewLoading.value = false;
     }
@@ -396,12 +396,12 @@ const executeReport = async (report) => {
         const result = await response.json();
 
         if (result.success) {
-            alert('Report execution started. You will be notified when it completes.');
+            // TODO-toast: alert('Report execution started. You will be notified when it completes.');
         } else {
-            alert('Failed to execute report: ' + result.message);
+            // TODO-toast: alert('Failed to execute report: ' + result.message);
         }
     } catch (error) {
-        alert('Error executing report: ' + error.message);
+        // TODO-toast: alert('Error executing report: ' + error.message);
     } finally {
         executingReports.value = executingReports.value.filter((id) => id !== report.id);
     }
@@ -409,7 +409,7 @@ const executeReport = async (report) => {
 
 const editReport = (report) => {
     // TODO: Implement edit functionality
-    alert('Edit functionality coming soon');
+    // TODO-toast: alert('Edit functionality coming soon');
 };
 
 const getStatusColor = (status) => {
@@ -438,6 +438,7 @@ const formatCellValue = (value) => {
     return String(value);
 };
 </script>
+
 
 
 

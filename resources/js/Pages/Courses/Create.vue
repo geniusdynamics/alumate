@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import CreateCourseForm from '@/Pages/Courses/Partials/CreateCourseForm.vue';
 import { Head } from '@inertiajs/vue3';
@@ -23,6 +23,7 @@ import { Head } from '@inertiajs/vue3';
         </div>
     </AppLayout>
 </template>
+
 
 
 

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Student Mentorship Hub">
         <Head title="Student Mentorship Hub" />
 
@@ -256,7 +256,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ActiveMentorshipCard from '@/Components/ActiveMentorshipCard.vue';
 import MentorshipGoalCard from '@/Components/MentorshipGoalCard.vue';
 import MentorshipGoalModal from '@/Components/MentorshipGoalModal.vue';
@@ -350,6 +350,7 @@ const handleGoalSaved = () => {
     router.reload();
 };
 </script>
+
 
 
 

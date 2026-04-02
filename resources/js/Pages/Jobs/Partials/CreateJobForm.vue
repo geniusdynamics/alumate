@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -208,7 +208,7 @@ const submit = () => {
                                 class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-sm text-indigo-800"
                             >
                                 {{ skill }}
-                                <button type="button" @click="removeSkill(index)" class="ml-2 text-indigo-600 hover:text-indigo-800">×</button>
+                                <button type="button" @click="removeSkill(index)" class="ml-2 text-indigo-600 hover:text-indigo-800">Ã—</button>
                             </span>
                         </div>
                         <div v-if="form.errors.required_skills" class="mt-1 text-sm text-red-600">{{ form.errors.required_skills }}</div>
@@ -236,7 +236,7 @@ const submit = () => {
                                 class="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm text-green-800"
                             >
                                 {{ qualification }}
-                                <button type="button" @click="removeQualification(index)" class="ml-2 text-green-600 hover:text-green-800">×</button>
+                                <button type="button" @click="removeQualification(index)" class="ml-2 text-green-600 hover:text-green-800">Ã—</button>
                             </span>
                         </div>
                         <div v-if="form.errors.preferred_qualifications" class="mt-1 text-sm text-red-600">
@@ -365,7 +365,7 @@ const submit = () => {
                                 class="inline-flex items-center rounded-full bg-purple-100 px-3 py-1 text-sm text-purple-800"
                             >
                                 {{ benefit }}
-                                <button type="button" @click="removeBenefit(index)" class="ml-2 text-purple-600 hover:text-purple-800">×</button>
+                                <button type="button" @click="removeBenefit(index)" class="ml-2 text-purple-600 hover:text-purple-800">Ã—</button>
                             </span>
                         </div>
                         <div v-if="form.errors.benefits" class="mt-1 text-sm text-red-600">{{ form.errors.benefits }}</div>
@@ -451,6 +451,7 @@ const submit = () => {
         </form>
     </section>
 </template>
+
 
 
 

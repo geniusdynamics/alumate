@@ -224,7 +224,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import SwipeableTabNavigation from '@/Components/Mobile/SwipeableTabNavigation.vue';
 import TouchOptimizedControls from '@/Components/Mobile/TouchOptimizedControls.vue';
 import {
@@ -280,12 +281,12 @@ const emailError = computed(() => {
 
 // Methods
 const handleTabChanged = (event) => {
-    console.log('Tab changed:', event);
+    logger.log('Tab changed:', event);
     showToast(`Switched to ${event.tab.label} tab`);
 };
 
 const handleTabSwiped = (event) => {
-    console.log('Tab swiped:', event);
+    logger.log('Tab swiped:', event);
     showToast(`Swiped ${event.direction} to ${event.tab.label}`);
 };
 

@@ -110,7 +110,7 @@
     </BaseModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BaseModal from '@/Components/ui/BaseModal.vue';
 import { PhotoIcon, VideoCameraIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { reactive, ref } from 'vue';
@@ -133,7 +133,7 @@ const handleFileUpload = (event) => {
     files.forEach((file) => {
         if (file.size > 10 * 1024 * 1024) {
             // 10MB limit
-            alert('File size must be less than 10MB');
+            // TODO-toast: alert('File size must be less than 10MB');
             return;
         }
 
@@ -190,12 +190,13 @@ const createPost = async () => {
         }
     } catch (error) {
         console.error('Failed to create post:', error);
-        alert('Failed to create post. Please try again.');
+        // TODO-toast: alert('Failed to create post. Please try again.');
     } finally {
         posting.value = false;
     }
 };
 </script>
+
 
 
 

@@ -987,3 +987,177 @@ export interface LearningApiResponse {
     error?: string;
     errors?: Record<string, string[]>;
 }
+
+// Template and Landing Page Analytics Types
+
+export interface TemplateMetrics {
+    template_id: number;
+    usage_count: number;
+    conversion_rate: number;
+    avg_load_time: number;
+    bounce_rate: number;
+    engagement_score: number;
+    recommendations: TemplateRecommendation[];
+    trends: MetricTrendData[];
+}
+
+export interface LandingPageMetrics {
+    page_id: number;
+    traffic: LandingPageTrafficData;
+    conversions: LandingPageConversionData;
+    performance: LandingPagePerformanceData;
+    seo_metrics: LandingPageSEOMetrics;
+}
+
+export interface LandingPageTrafficData {
+    total_visitors: number;
+    unique_visitors: number;
+    page_views: number;
+    avg_session_duration: number;
+    bounce_rate: number;
+}
+
+export interface LandingPageConversionData {
+    total_conversions: number;
+    conversion_rate: number;
+    revenue: number;
+    cost_per_conversion: number;
+}
+
+export interface LandingPagePerformanceData {
+    dom_content_loaded: number;
+    page_load_time: number;
+    first_paint: number;
+    first_contentful_paint: number;
+    largest_contentful_paint: number;
+}
+
+export interface LandingPageSEOMetrics {
+    keyword_rankings: KeywordRanking[];
+    backlinks: number;
+    social_shares: number;
+    crawl_errors: number;
+}
+
+export interface KeywordRanking {
+    keyword: string;
+    position: number;
+    search_volume: number;
+    trend: 'up' | 'down' | 'stable';
+}
+
+export interface TemplateRecommendation {
+    template_id: number;
+    reason: string;
+    confidence_score: number;
+    projected_improvement: number;
+}
+
+export interface MetricTrendData {
+    date: string;
+    value: number;
+    metric: string;
+}
+
+// A/B Testing Types for Template System
+export interface TemplateABTest {
+    id: number;
+    tenant_id: string;
+    name: string;
+    description: string | null;
+    template_id: number;
+    variants: TemplateABTestVariant[];
+    traffic_split: TemplateTrafficSplit;
+    status: TemplateABTestStatus;
+    start_date: string | null;
+    end_date: string | null;
+    conversion_goal: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export type TemplateABTestStatus = 'draft' | 'running' | 'paused' | 'completed';
+
+export interface TemplateABTestVariant {
+    id: number;
+    test_id: number;
+    name: string;
+    config_modifications: Record<string, unknown>;
+    traffic_percentage: number;
+    conversion_count: number;
+    conversion_rate: number;
+}
+
+export interface TemplateTrafficSplit {
+    variant_a_percentage: number;
+    variant_b_percentage: number;
+    variant_c_percentage?: number;
+}
+
+export interface TemplateABTestResult {
+    test_id: number;
+    winner_variant: string;
+    statistical_significance: boolean;
+    confidence_level: number;
+    improvement_percentage: number;
+    variant_results: TemplateVariantResult[];
+}
+
+export interface TemplateVariantResult {
+    variant_id: number;
+    conversion_rate: number;
+    conversion_count: number;
+    sample_size: number;
+    p_value: number;
+}
+
+// Brand Metrics
+export interface BrandMetrics {
+    asset_usage: BrandAssetUsage[];
+    color_usage: BrandColorUsage[];
+    font_usage: BrandFontUsage[];
+    consistency_score: number;
+    issues: BrandIssue[];
+}
+
+export interface BrandAssetUsage {
+    asset_type: string;
+    asset_id: number;
+    usage_count: number;
+    last_used: string;
+}
+
+export interface BrandColorUsage {
+    color_id: number;
+    usage_count: number;
+    contexts: string[];
+}
+
+export interface BrandFontUsage {
+    font_id: number;
+    usage_count: number;
+    contexts: string[];
+}
+
+export interface BrandIssue {
+    id: string;
+    title: string;
+    description: string;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+    affected_components: string[];
+    auto_fix_available: boolean;
+    fix_action: string;
+    category: string;
+}
+
+// Analytics Filters for Template/Landing Page System
+export interface TemplateAnalyticsFilters {
+    date_range?: {
+        start: string;
+        end: string;
+    };
+    template_id?: number;
+    landing_page_id?: number;
+    metric_type?: string;
+    group_by?: 'day' | 'week' | 'month';
+}

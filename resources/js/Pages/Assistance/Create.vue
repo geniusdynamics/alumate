@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
@@ -43,6 +43,7 @@ const submit = () => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

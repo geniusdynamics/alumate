@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div class="border-b border-gray-200 p-6 dark:border-gray-700">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">API Tester</h3>
@@ -203,7 +203,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, ref } from 'vue';
 
 const loading = ref(false);
@@ -352,3 +352,4 @@ const copyResponse = async () => {
     }
 };
 </script>
+

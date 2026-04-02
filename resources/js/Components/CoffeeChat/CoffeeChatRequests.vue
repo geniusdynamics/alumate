@@ -162,7 +162,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
@@ -365,7 +365,7 @@ const markAsCompleted = async (request) => {
         loadRequests();
     } catch (error) {
         console.error('Error marking request as completed:', error);
-        alert('Failed to mark request as completed');
+        // TODO-toast: alert('Failed to mark request as completed');
     }
 };
 
@@ -380,3 +380,4 @@ onMounted(() => {
     @apply mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8;
 }
 </style>
+

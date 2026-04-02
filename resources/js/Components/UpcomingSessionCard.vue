@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         class="rounded-lg border border-gray-200 bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
@@ -143,7 +143,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     CalendarIcon,
     ChatBubbleLeftRightIcon,
@@ -266,3 +266,4 @@ const canReschedule = (session) => {
     @apply transform transition-transform duration-200 hover:scale-105;
 }
 </style>
+

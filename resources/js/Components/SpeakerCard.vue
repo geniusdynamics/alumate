@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         :class="[
             'speaker-card overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800',
@@ -52,7 +52,7 @@
                 <!-- Education -->
                 <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                     <AcademicCapIcon class="h-4 w-4" />
-                    <span>{{ speaker.degree }} • Class of {{ speaker.graduation_year }}</span>
+                    <span>{{ speaker.degree }} â€¢ Class of {{ speaker.graduation_year }}</span>
                 </div>
 
                 <!-- Speaking Experience -->
@@ -185,7 +185,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { AcademicCapIcon, MapPinIcon, MicrophoneIcon, StarIcon, UserIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
@@ -245,7 +246,7 @@ const viewProfile = () => {
 
 const viewSamples = () => {
     // Open modal or navigate to samples page
-    console.log('View speaker samples');
+    logger.log('View speaker samples');
 };
 </script>
 
@@ -267,3 +268,4 @@ const viewSamples = () => {
     overflow: hidden;
 }
 </style>
+

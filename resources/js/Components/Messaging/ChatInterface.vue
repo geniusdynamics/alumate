@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="chat-interface">
         <div v-if="!conversation" class="no-conversation">
             <div class="py-12 text-center">
@@ -253,7 +253,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { useAuthStore } from '@/Stores/auth';
 import { useMessagingStore } from '@/Stores/messaging';
 import { formatDistanceToNow } from 'date-fns';
@@ -416,7 +417,7 @@ const cancelReply = () => {
 
 const editMessage = (message) => {
     // Implement message editing
-    console.log('Edit message:', message);
+    logger.log('Edit message:', message);
 };
 
 const deleteMessage = async (message) => {
@@ -591,6 +592,7 @@ onUnmounted(() => {
     @apply px-3 py-1.5 text-xs;
 }
 </style>
+
 
 
 

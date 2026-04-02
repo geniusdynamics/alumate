@@ -151,7 +151,7 @@ const createConnection = async () => {
         resetForm();
     } catch (error) {
         console.error('Failed to create connection:', error);
-        alert('Failed to create connection. Please try again.');
+        // TODO-toast: alert('Failed to create connection. Please try again.');
     } finally {
         loading.value = false;
     }

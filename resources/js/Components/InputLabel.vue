@@ -1,11 +1,11 @@
-<template>
+﻿<template>
     <label :for="for" :class="classes">
         <span v-if="value">{{ value }}</span>
         <slot v-else />
     </label>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -15,3 +15,4 @@ const props = defineProps({
 
 const classes = computed(() => ['block font-medium text-sm text-gray-700 dark:text-gray-300']);
 </script>
+

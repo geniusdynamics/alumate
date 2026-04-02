@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         class="student-mentor-card rounded-lg border border-gray-200 bg-white p-6 shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
@@ -23,7 +23,7 @@
             <!-- Education -->
             <div class="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <AcademicCapIcon class="h-4 w-4" />
-                <span>{{ mentor.degree }} • Class of {{ mentor.graduation_year }}</span>
+                <span>{{ mentor.degree }} â€¢ Class of {{ mentor.graduation_year }}</span>
             </div>
 
             <!-- Experience -->
@@ -186,7 +186,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { AcademicCapIcon, BriefcaseIcon, ClockIcon, LightBulbIcon, MapPinIcon, StarIcon, UserIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Link, router } from '@inertiajs/vue3';
 
@@ -229,3 +229,4 @@ const viewStories = () => {
     transform: translateY(-2px);
 }
 </style>
+

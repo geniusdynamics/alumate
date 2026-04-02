@@ -425,7 +425,7 @@ const openInNewTab = () => {
           </div>
           <script>
             ${props.code.code}
-          </script>
+          <\/script>
         </body>
       </html>
     `
@@ -460,3 +460,4 @@ onMounted(() => {
   }
 })
 </script>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="fixed right-4 top-4 z-50 max-w-sm">
         <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
             <!-- Header -->
@@ -99,7 +99,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     ArrowPathIcon,
     BugAntIcon,
@@ -176,3 +176,4 @@ const viewAllUpdates = () => {
     window.location.href = '/updates';
 };
 </script>
+

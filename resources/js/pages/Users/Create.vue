@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Create User" />
 
@@ -288,7 +288,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -338,3 +338,4 @@ const submit = () => {
     form.post(route('users.store'));
 };
 </script>
+

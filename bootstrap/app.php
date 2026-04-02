@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            \App\Http\Middleware\InputSanitizerMiddleware::class,
             \App\Http\Middleware\SecurityHeaders::class,
             \App\Http\Middleware\TenantMiddleware::class,
         ]);
@@ -34,6 +35,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant' => \App\Http\Middleware\TenantMiddleware::class,
             'api.rate_limit' => \App\Http\Middleware\ApiRateLimitMiddleware::class,
             'social.rate_limit' => \App\Http\Middleware\SocialRateLimiting::class,
+            '2fa' => \App\Http\Middleware\RequireTwoFactor::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

@@ -1,9 +1,9 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md">
         <div class="flex items-center justify-between">
             <div class="flex-1">
                 <h4 class="text-base font-medium text-gray-900">{{ course.name }}</h4>
-                <p class="text-sm text-gray-600">{{ course.code }} • {{ course.department }}</p>
+                <p class="text-sm text-gray-600">{{ course.code }} â€¢ {{ course.department }}</p>
                 <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                     <span>{{ course.level }}</span>
                     <span>{{ course.duration }} {{ course.duration_unit }}</span>
@@ -20,7 +20,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     course: {
         type: Object,
@@ -32,3 +32,4 @@ const props = defineProps({
     },
 });
 </script>
+

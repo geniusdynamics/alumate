@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="video-calls-index">
         <!-- Header -->
         <div class="border-b bg-white shadow-sm">
@@ -157,7 +157,8 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ClockIcon, VideoCameraIcon } from '@heroicons/vue/24/outline';
 import { router } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
@@ -170,7 +171,7 @@ import ScheduleCallModal from '@/Components/VideoCall/ScheduleCallModal.vue';
 
 // Custom coffee icon component
 const CoffeeIcon = {
-    template: '<span class="text-2xl">☕</span>',
+    template: '<span class="text-2xl">â˜•</span>',
 };
 
 // Props
@@ -258,7 +259,7 @@ const joinCall = (call) => {
 
 const editCall = (call) => {
     // Open edit modal or navigate to edit page
-    console.log('Edit call:', call);
+    logger.log('Edit call:', call);
 };
 
 const cancelCall = async (call) => {
@@ -364,6 +365,7 @@ onMounted(() => {
     background-color: #f9fafb;
 }
 </style>
+
 
 
 

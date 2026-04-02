@@ -63,6 +63,21 @@ export default defineConfig({
 						return "js/analytics-[hash].js";
 					}
 
+					// Template System Components chunk
+					if (facadeModuleId && facadeModuleId.includes("TemplateSystem")) {
+						return "js/template-system-[hash].js";
+					}
+
+					// Brand Manager Components chunk
+					if (facadeModuleId && facadeModuleId.includes("BrandManager")) {
+						return "js/brand-manager-[hash].js";
+					}
+
+					// Landing Page Components chunk
+					if (facadeModuleId && facadeModuleId.includes("LandingPage")) {
+						return "js/landing-page-[hash].js";
+					}
+
 					// Default chunk naming
 					return "js/[name]-[hash].js";
 				},

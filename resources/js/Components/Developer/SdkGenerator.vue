@@ -180,7 +180,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CodeBracketIcon } from '@heroicons/vue/24/outline';
 import { reactive, ref } from 'vue';
 
@@ -376,10 +376,10 @@ const downloadSdk = () => {
     const filename = `${config.packageName || 'alumni-platform-api'}-${selectedLanguage.value}-sdk.zip`;
 
     // In a real implementation, this would generate and download the actual SDK files
-    console.log('Downloading SDK:', filename);
+    // TODO-removed: console.log('Downloading SDK:', filename);
 
     // For demo purposes, just show an alert
-    alert(`SDK download started: ${filename}`);
+    // TODO-toast: alert(`SDK download started: ${filename}`);
 };
 
 const copySdk = async () => {
@@ -391,3 +391,4 @@ const copySdk = async () => {
     }
 };
 </script>
+

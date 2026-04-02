@@ -197,7 +197,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { PlusIcon, TrashIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, ref, watch } from 'vue';
 
@@ -296,7 +296,7 @@ const handleSubmit = async () => {
         emit('saved');
     } catch (err) {
         console.error('Error saving career entry:', err);
-        alert(err.message || 'Failed to save career entry');
+        // TODO-toast: alert(err.message || 'Failed to save career entry');
     } finally {
         loading.value = false;
     }
@@ -345,3 +345,4 @@ onMounted(() => {
     loadOptions();
 });
 </script>
+

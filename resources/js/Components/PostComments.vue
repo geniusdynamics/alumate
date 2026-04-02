@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="post-comments">
         <!-- Comment Form -->
         <div class="mb-4">
@@ -34,7 +34,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import CommentForm from './CommentForm.vue';
 
@@ -133,7 +133,7 @@ defineExpose({
 });
 </script>
 
-<script>
+<script lang="ts">
 // CommentThread component definition
 import { defineComponent } from 'vue';
 
@@ -265,3 +265,5 @@ export { CommentThread };
     @apply rounded-lg bg-gray-50 bg-opacity-50;
 }
 </style>
+
+

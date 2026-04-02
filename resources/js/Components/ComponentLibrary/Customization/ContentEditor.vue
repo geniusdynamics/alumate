@@ -427,6 +427,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ContentBlock } from '@/types/Components';
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
@@ -759,7 +760,7 @@ const formatFileSize = (bytes: number): string => {
 // Video methods
 const openVideoSelector = () => {
     // Mock implementation - in real app would open file picker or URL input
-    console.log('Open video selector');
+    logger.log('Open video selector');
 };
 
 // Drag functionality

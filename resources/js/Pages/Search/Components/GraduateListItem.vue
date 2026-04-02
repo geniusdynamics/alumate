@@ -1,9 +1,9 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md">
         <div class="flex items-center justify-between">
             <div class="flex-1">
                 <h4 class="text-base font-medium text-gray-900">{{ graduate.name }}</h4>
-                <p class="text-sm text-gray-600">{{ graduate.course }} • {{ graduate.graduation_year }}</p>
+                <p class="text-sm text-gray-600">{{ graduate.course }} â€¢ {{ graduate.graduation_year }}</p>
                 <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                     <span :class="getEmploymentStatusClass(graduate.employment_status)">
                         {{ formatEmploymentStatus(graduate.employment_status) }}
@@ -21,7 +21,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     graduate: {
         type: Object,
@@ -55,3 +55,4 @@ const formatEmploymentStatus = (status) => {
     return labels[status] || status;
 };
 </script>
+

@@ -204,7 +204,7 @@ const generateRecommendations = async () => {
         await loadRecommendations();
     } catch (error) {
         console.error('Failed to generate recommendations:', error);
-        alert('Failed to generate recommendations. Please try again.');
+        // TODO-toast: alert('Failed to generate recommendations. Please try again.');
     } finally {
         loading.value = false;
     }

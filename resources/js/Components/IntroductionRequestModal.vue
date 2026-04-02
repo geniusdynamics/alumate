@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div v-if="show" class="modal-overlay" @click="closeModal">
         <div class="modal-container" @click.stop>
             <div class="modal-header">
@@ -79,7 +79,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue';
 import Icon from './Icon.vue';
 
@@ -347,7 +347,7 @@ const submitRequest = async () => {
 }
 
 .tips-list li::before {
-    content: '•';
+    content: 'â€¢';
     position: absolute;
     left: 0;
     color: #10b981;
@@ -418,3 +418,4 @@ const submitRequest = async () => {
     }
 }
 </style>
+

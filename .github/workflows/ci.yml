@@ -75,6 +75,12 @@ jobs:
         continue-on-error: true
         id: type-check
 
+      - name: Check Import Path Casing
+        run: pnpm run lint:imports-case
+        timeout-minutes: 5
+        continue-on-error: true
+        id: import-case-check
+
       - name: Check PHPStan Static Analysis
         run: ./vendor/bin/phpstan analyse --level=5 --no-progress || true
 
@@ -97,6 +103,7 @@ jobs:
           echo "✅ PHP Lint (Pint): ${{ steps.php-lint.outcome }}"
           echo "✅ JS Lint (ESLint): ${{ steps.js-lint.outcome }}"
           echo "✅ TypeScript Check: ${{ steps.type-check.outcome }}"
+          echo "✅ Import Case Check: ${{ steps.import-case-check.outcome }}"
           echo ""
           echo "Note: These checks are non-blocking to allow other tests to run."
           echo "Please review and fix any issues before merging."

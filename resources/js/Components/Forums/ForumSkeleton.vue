@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="animate-pulse rounded-lg bg-white p-6 shadow">
         <div class="flex items-start space-x-4">
             <!-- Forum Icon Skeleton -->
@@ -44,6 +44,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // This is a skeleton loading component for forums
 </script>
+

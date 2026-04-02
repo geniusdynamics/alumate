@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\Models\Connection;
+use App\Models\AlumniConnection;
 use App\Models\Education;
 use App\Models\Institution;
 use App\Models\User;
@@ -16,6 +16,8 @@ class AlumniDirectoryServiceTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
+    protected $tenancy = false;
+
     protected AlumniDirectoryService $service;
 
     protected User $user;
@@ -26,29 +28,30 @@ class AlumniDirectoryServiceTest extends TestCase
     {
         parent::setUp();
 
-        $this->service = new AlumniDirectoryService;
+        $this->service = app(AlumniDirectoryService::class);
 
         $this->user = User::factory()->create();
         $this->alumni = User::factory()->create([
             'name' => 'Test Alumni',
             'location' => 'Test City',
             'skills' => ['PHP', 'Laravel'],
+            'graduation_year' => 2020,
+            'degree' => 'Bachelor',
         ]);
 
         $institution = Institution::factory()->create();
 
+        // Create related data for filtering
         Education::factory()->create([
             'user_id' => $this->alumni->id,
-            'institution_id' => $institution->id,
             'graduation_year' => 2020,
+            'institution_id' => $institution->id,
         ]);
 
         WorkExperience::factory()->create([
             'user_id' => $this->alumni->id,
             'company' => 'Test Company',
-            'title' => 'Software Engineer',
-            'industry' => 'Technology',
-            'is_current' => true,
+            'title' => 'Developer',
         ]);
     }
 
@@ -120,13 +123,13 @@ class AlumniDirectoryServiceTest extends TestCase
         // Create a mutual connection
         $mutualFriend = User::factory()->create();
 
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $mutualFriend->id,
             'status' => 'accepted',
         ]);
 
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->alumni->id,
             'connected_user_id' => $mutualFriend->id,
             'status' => 'accepted',
@@ -145,7 +148,7 @@ class AlumniDirectoryServiceTest extends TestCase
         $this->assertEquals('none', $status);
 
         // Test pending connection
-        Connection::create([
+        AlumniConnection::create([
             'user_id' => $this->user->id,
             'connected_user_id' => $this->alumni->id,
             'status' => 'pending',

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Alumni Stories">
         <Head title="Alumni Stories Discovery" />
 
@@ -212,7 +212,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AlumniConnectionCard from '@/Components/AlumniConnectionCard.vue';
 import Pagination from '@/Components/Pagination.vue';
 import StudentStoryCard from '@/Components/StudentStoryCard.vue';
@@ -315,6 +315,7 @@ const handleSendConnection = (alumniId) => {
     );
 };
 </script>
+
 
 
 

@@ -52,7 +52,7 @@ export {
     sampleComponents,
     sampleComponentsByCategory,
     searchComponents,
-} from '../../data/componentLibrarySampleData';
+} from '../../Data/componentLibrarySampleData';
 
 // Types
 export type {
@@ -65,4 +65,4 @@ export type {
     MediaComponentConfig,
     StatisticsComponentConfig,
     TestimonialComponentConfig,
-} from '../../types/Components';
+} from '../../types/components';

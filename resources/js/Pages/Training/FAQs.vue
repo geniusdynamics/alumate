@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <DefaultLayout title="Frequently Asked Questions">
         <div class="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
             <!-- Header -->
@@ -197,7 +197,8 @@
     </DefaultLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import {
     AcademicCapIcon,
@@ -317,7 +318,7 @@ const markHelpful = async (faqId, helpful) => {
         const data = await response.json();
         if (data.success) {
             // Show success message
-            console.log('Feedback recorded');
+            logger.log('Feedback recorded');
         }
     } catch (error) {
         console.error('Failed to record feedback:', error);
@@ -351,6 +352,7 @@ const suggestFAQ = async () => {
     }
 };
 </script>
+
 
 
 

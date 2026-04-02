@@ -1,23 +1,21 @@
 <?php
+
 // ABOUTME: Service class for managing cross-tenant data synchronization in hybrid tenancy architecture
 // ABOUTME: Handles synchronization between global and tenant-specific data with conflict resolution and monitoring
 
 namespace App\Services;
 
 use App\Models\DataSyncLog;
-use App\Models\GlobalUser;
 use App\Models\GlobalCourse;
-use App\Models\UserTenantMembership;
-use App\Models\TenantCourseOffering;
+use App\Models\GlobalUser;
 use App\Models\SuperAdminAnalytics;
-use App\Models\AuditTrail;
 use App\Models\Tenant;
+use App\Models\TenantCourseOffering;
+use Exception;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Collection;
-use Carbon\Carbon;
-use Exception;
 
 class CrossTenantSyncService
 {
@@ -41,7 +39,7 @@ class CrossTenantSyncService
      */
     public function syncGlobalUserToTenants(
         GlobalUser $globalUser,
-        array $tenantIds = null,
+        ?array $tenantIds = null,
         array $options = []
     ): Collection {
         $tenantIds = $tenantIds ?? $globalUser->tenants->pluck('id')->toArray();
@@ -68,20 +66,20 @@ class CrossTenantSyncService
 
             try {
                 $syncLog->start();
-                
+
                 $this->performUserSyncToTenant($globalUser, $tenantId, $syncLog);
-                
+
                 $syncLog->complete([
                     'records_processed' => 1,
                     'records_updated' => 1,
                 ]);
-                
+
             } catch (Exception $e) {
                 $syncLog->fail($e->getMessage(), [
                     'exception' => get_class($e),
                     'trace' => $e->getTraceAsString(),
                 ]);
-                
+
                 Log::error('User sync failed', [
                     'global_user_id' => $globalUser->id,
                     'tenant_id' => $tenantId,
@@ -100,7 +98,7 @@ class CrossTenantSyncService
      */
     public function syncGlobalCourseToTenants(
         GlobalCourse $globalCourse,
-        array $tenantIds = null,
+        ?array $tenantIds = null,
         array $options = []
     ): Collection {
         $tenantIds = $tenantIds ?? $globalCourse->tenantOfferings->pluck('tenant_id')->unique()->toArray();
@@ -127,20 +125,20 @@ class CrossTenantSyncService
 
             try {
                 $syncLog->start();
-                
+
                 $this->performCourseSyncToTenant($globalCourse, $tenantId, $syncLog);
-                
+
                 $syncLog->complete([
                     'records_processed' => 1,
                     'records_updated' => 1,
                 ]);
-                
+
             } catch (Exception $e) {
                 $syncLog->fail($e->getMessage(), [
                     'exception' => get_class($e),
                     'trace' => $e->getTraceAsString(),
                 ]);
-                
+
                 Log::error('Course sync failed', [
                     'global_course_id' => $globalCourse->id,
                     'tenant_id' => $tenantId,
@@ -160,7 +158,7 @@ class CrossTenantSyncService
     public function syncTenantDataToGlobal(
         string $tenantId,
         string $syncType,
-        array $recordIds = null,
+        ?array $recordIds = null,
         array $options = []
     ): Collection {
         $syncLogs = collect();
@@ -169,13 +167,13 @@ class CrossTenantSyncService
         switch ($syncType) {
             case 'user_sync':
                 return $this->syncTenantUsersToGlobal($tenantId, $recordIds, $options);
-            
+
             case 'enrollment_sync':
                 return $this->syncTenantEnrollmentsToGlobal($tenantId, $recordIds, $options);
-            
+
             case 'analytics_sync':
                 return $this->syncTenantAnalyticsToGlobal($tenantId, $recordIds, $options);
-            
+
             default:
                 throw new Exception("Unsupported sync type: {$syncType}");
         }
@@ -186,7 +184,7 @@ class CrossTenantSyncService
      */
     public function performBidirectionalSync(
         string $tenantId,
-        array $syncTypes = null,
+        ?array $syncTypes = null,
         array $options = []
     ): array {
         $syncTypes = $syncTypes ?? ['user_sync', 'course_sync', 'enrollment_sync', 'analytics_sync'];
@@ -195,7 +193,7 @@ class CrossTenantSyncService
 
         // Acquire sync lock to prevent concurrent syncs
         $lockKey = "tenant_sync:{$tenantId}";
-        if (!Cache::lock($lockKey, self::SYNC_LOCK_TTL)->get()) {
+        if (! Cache::lock($lockKey, self::SYNC_LOCK_TTL)->get()) {
             throw new Exception("Sync already in progress for tenant {$tenantId}");
         }
 
@@ -302,8 +300,8 @@ class CrossTenantSyncService
      * Validate data integrity across global and tenant schemas.
      */
     public function validateDataIntegrity(
-        string $tenantId = null,
-        array $validationTypes = null
+        ?string $tenantId = null,
+        ?array $validationTypes = null
     ): array {
         $validationTypes = $validationTypes ?? [
             'user_consistency',
@@ -343,19 +341,19 @@ class CrossTenantSyncService
      * Get synchronization status and statistics.
      */
     public function getSyncStatus(
-        string $tenantId = null,
+        ?string $tenantId = null,
         int $hours = 24
     ): array {
         $query = DataSyncLog::query();
-        
+
         if ($tenantId) {
             $query->where('tenant_id', $tenantId);
         }
-        
+
         $query->where('started_at', '>=', now()->subHours($hours));
-        
+
         $syncLogs = $query->get();
-        
+
         $stats = [
             'total_syncs' => $syncLogs->count(),
             'completed_syncs' => $syncLogs->where('status', 'completed')->count(),
@@ -366,7 +364,7 @@ class CrossTenantSyncService
             'recent_failures' => [],
             'performance_metrics' => [],
         ];
-        
+
         // Group by sync type
         $bySyncType = $syncLogs->groupBy('sync_type');
         foreach ($bySyncType as $syncType => $logs) {
@@ -374,26 +372,26 @@ class CrossTenantSyncService
                 'total' => $logs->count(),
                 'completed' => $logs->where('status', 'completed')->count(),
                 'failed' => $logs->whereIn('status', ['failed', 'cancelled'])->count(),
-                'success_rate' => $logs->count() > 0 ? 
+                'success_rate' => $logs->count() > 0 ?
                     round(($logs->where('status', 'completed')->count() / $logs->count()) * 100, 2) : 0,
                 'avg_duration' => $logs->where('status', 'completed')->avg('duration') ?? 0,
             ];
         }
-        
+
         // Group by tenant
-        if (!$tenantId) {
+        if (! $tenantId) {
             $byTenant = $syncLogs->groupBy('tenant_id');
             foreach ($byTenant as $tid => $logs) {
                 $stats['by_tenant'][$tid] = [
                     'total' => $logs->count(),
                     'completed' => $logs->where('status', 'completed')->count(),
                     'failed' => $logs->whereIn('status', ['failed', 'cancelled'])->count(),
-                    'success_rate' => $logs->count() > 0 ? 
+                    'success_rate' => $logs->count() > 0 ?
                         round(($logs->where('status', 'completed')->count() / $logs->count()) * 100, 2) : 0,
                 ];
             }
         }
-        
+
         // Recent failures
         $stats['recent_failures'] = $syncLogs
             ->whereIn('status', ['failed', 'cancelled'])
@@ -412,7 +410,7 @@ class CrossTenantSyncService
             })
             ->values()
             ->toArray();
-        
+
         // Performance metrics
         $completedSyncs = $syncLogs->where('status', 'completed');
         $stats['performance_metrics'] = [
@@ -422,12 +420,12 @@ class CrossTenantSyncService
             'total_records_processed' => $completedSyncs->sum(function ($log) {
                 return $log->sync_stats['records_processed'] ?? 0;
             }),
-            'throughput_per_hour' => $hours > 0 ? 
+            'throughput_per_hour' => $hours > 0 ?
                 ($completedSyncs->sum(function ($log) {
                     return $log->sync_stats['records_processed'] ?? 0;
                 }) / $hours) : 0,
         ];
-        
+
         return $stats;
     }
 
@@ -435,49 +433,49 @@ class CrossTenantSyncService
      * Retry failed synchronizations.
      */
     public function retryFailedSyncs(
-        string $tenantId = null,
-        array $syncTypes = null,
+        ?string $tenantId = null,
+        ?array $syncTypes = null,
         int $limit = 50
     ): Collection {
         $query = DataSyncLog::retryable();
-        
+
         if ($tenantId) {
             $query->where('tenant_id', $tenantId);
         }
-        
+
         if ($syncTypes) {
             $query->whereIn('sync_type', $syncTypes);
         }
-        
+
         $failedSyncs = $query->orderBy('priority', 'desc')
-                            ->orderBy('failed_at', 'asc')
-                            ->limit($limit)
-                            ->get();
-        
+            ->orderBy('failed_at', 'asc')
+            ->limit($limit)
+            ->get();
+
         $retriedSyncs = collect();
-        
+
         foreach ($failedSyncs as $syncLog) {
             try {
                 $syncLog->retry();
-                
+
                 // Re-execute the sync based on its type
                 $this->executeSyncLog($syncLog);
-                
+
                 $retriedSyncs->push($syncLog);
-                
+
             } catch (Exception $e) {
                 $syncLog->fail(
                     "Retry failed: {$e->getMessage()}",
                     ['retry_error' => $e->getMessage()]
                 );
-                
+
                 Log::error('Sync retry failed', [
                     'sync_log_id' => $syncLog->id,
                     'error' => $e->getMessage(),
                 ]);
             }
         }
-        
+
         return $retriedSyncs;
     }
 
@@ -489,18 +487,18 @@ class CrossTenantSyncService
         bool $dryRun = false
     ): array {
         $cutoffDate = now()->subDays($daysToKeep);
-        
+
         $query = DataSyncLog::where('started_at', '<', $cutoffDate)
-                           ->whereIn('status', ['completed', 'failed', 'cancelled']);
-        
+            ->whereIn('status', ['completed', 'failed', 'cancelled']);
+
         $count = $query->count();
-        
-        if (!$dryRun) {
+
+        if (! $dryRun) {
             $deleted = $query->delete();
-            
+
             // Clean up related cache entries
             $this->cleanupSyncCache();
-            
+
             return [
                 'status' => 'completed',
                 'records_found' => $count,
@@ -508,7 +506,7 @@ class CrossTenantSyncService
                 'cutoff_date' => $cutoffDate,
             ];
         }
-        
+
         return [
             'status' => 'dry_run',
             'records_found' => $count,
@@ -525,19 +523,19 @@ class CrossTenantSyncService
             case 'user_sync':
                 $this->executeUserSync($syncLog);
                 break;
-            
+
             case 'course_sync':
                 $this->executeCourseSync($syncLog);
                 break;
-            
+
             case 'enrollment_sync':
                 $this->executeEnrollmentSync($syncLog);
                 break;
-            
+
             case 'analytics_sync':
                 $this->executeAnalyticsSync($syncLog);
                 break;
-            
+
             default:
                 throw new Exception("Unknown sync type: {$syncLog->sync_type}");
         }
@@ -553,13 +551,13 @@ class CrossTenantSyncService
     ): void {
         // Switch to tenant schema
         $this->switchToTenantSchema($tenantId);
-        
+
         try {
             // Check if user exists in tenant schema
             $tenantUser = DB::table('users')
-                           ->where('global_user_id', $globalUser->id)
-                           ->first();
-            
+                ->where('global_user_id', $globalUser->id)
+                ->first();
+
             $userData = [
                 'global_user_id' => $globalUser->id,
                 'name' => $globalUser->name,
@@ -569,23 +567,23 @@ class CrossTenantSyncService
                 'preferences' => $globalUser->preferences,
                 'updated_at' => now(),
             ];
-            
+
             if ($tenantUser) {
                 // Update existing user
                 DB::table('users')
-                  ->where('id', $tenantUser->id)
-                  ->update($userData);
-                  
+                    ->where('id', $tenantUser->id)
+                    ->update($userData);
+
                 $syncLog->updateStats(['records_updated' => 1]);
             } else {
                 // Create new user
                 $userData['created_at'] = now();
                 $userId = DB::table('users')->insertGetId($userData);
-                
+
                 $syncLog->update(['target_record_id' => $userId]);
                 $syncLog->updateStats(['records_created' => 1]);
             }
-            
+
         } finally {
             // Switch back to default schema
             $this->switchToDefaultSchema();
@@ -602,22 +600,22 @@ class CrossTenantSyncService
     ): void {
         // Switch to tenant schema
         $this->switchToTenantSchema($tenantId);
-        
+
         try {
             // Get tenant course offering
             $offering = TenantCourseOffering::where('tenant_id', $tenantId)
-                                           ->where('global_course_id', $globalCourse->id)
-                                           ->first();
-            
-            if (!$offering) {
+                ->where('global_course_id', $globalCourse->id)
+                ->first();
+
+            if (! $offering) {
                 throw new Exception("No course offering found for global course {$globalCourse->id} in tenant {$tenantId}");
             }
-            
+
             // Check if course exists in tenant schema
             $tenantCourse = DB::table('courses')
-                             ->where('global_course_id', $globalCourse->id)
-                             ->first();
-            
+                ->where('global_course_id', $globalCourse->id)
+                ->first();
+
             $courseData = [
                 'global_course_id' => $globalCourse->id,
                 'title' => $offering->custom_title ?? $globalCourse->title,
@@ -635,23 +633,23 @@ class CrossTenantSyncService
                 'end_date' => $offering->end_date,
                 'updated_at' => now(),
             ];
-            
+
             if ($tenantCourse) {
                 // Update existing course
                 DB::table('courses')
-                  ->where('id', $tenantCourse->id)
-                  ->update($courseData);
-                  
+                    ->where('id', $tenantCourse->id)
+                    ->update($courseData);
+
                 $syncLog->updateStats(['records_updated' => 1]);
             } else {
                 // Create new course
                 $courseData['created_at'] = now();
                 $courseId = DB::table('courses')->insertGetId($courseData);
-                
+
                 $syncLog->update(['target_record_id' => $courseId]);
                 $syncLog->updateStats(['records_created' => 1]);
             }
-            
+
         } finally {
             // Switch back to default schema
             $this->switchToDefaultSchema();
@@ -663,24 +661,24 @@ class CrossTenantSyncService
      */
     private function syncTenantUsersToGlobal(
         string $tenantId,
-        array $userIds = null,
+        ?array $userIds = null,
         array $options = []
     ): Collection {
         $syncLogs = collect();
         $batchId = $options['batch_id'] ?? \Illuminate\Support\Str::uuid()->toString();
-        
+
         // Switch to tenant schema
         $this->switchToTenantSchema($tenantId);
-        
+
         try {
             $query = DB::table('users');
-            
+
             if ($userIds) {
                 $query->whereIn('id', $userIds);
             }
-            
+
             $tenantUsers = $query->get();
-            
+
             foreach ($tenantUsers as $tenantUser) {
                 $syncLog = DataSyncLog::createSync(
                     'user_sync',
@@ -695,10 +693,10 @@ class CrossTenantSyncService
                         'sync_direction' => 'tenant_to_global',
                     ])
                 );
-                
+
                 try {
                     $syncLog->start();
-                    
+
                     // Update global user with tenant-specific data
                     if ($tenantUser->global_user_id) {
                         $globalUser = GlobalUser::find($tenantUser->global_user_id);
@@ -712,18 +710,18 @@ class CrossTenantSyncService
                     } else {
                         $syncLog->fail('No global user ID associated with tenant user');
                     }
-                    
+
                 } catch (Exception $e) {
                     $syncLog->fail($e->getMessage());
                 }
-                
+
                 $syncLogs->push($syncLog);
             }
-            
+
         } finally {
             $this->switchToDefaultSchema();
         }
-        
+
         return $syncLogs;
     }
 
@@ -732,12 +730,12 @@ class CrossTenantSyncService
      */
     private function syncTenantEnrollmentsToGlobal(
         string $tenantId,
-        array $enrollmentIds = null,
+        ?array $enrollmentIds = null,
         array $options = []
     ): Collection {
         $syncLogs = collect();
         $batchId = $options['batch_id'] ?? \Illuminate\Support\Str::uuid()->toString();
-        
+
         $syncLog = DataSyncLog::createSync(
             'enrollment_sync',
             'update',
@@ -749,34 +747,34 @@ class CrossTenantSyncService
                 'sync_direction' => 'tenant_to_global',
             ])
         );
-        
+
         try {
             $syncLog->start();
-            
+
             // Switch to tenant schema
             $this->switchToTenantSchema($tenantId);
-            
+
             $query = DB::table('enrollments')
-                      ->join('courses', 'enrollments.course_id', '=', 'courses.id')
-                      ->join('users', 'enrollments.user_id', '=', 'users.id')
-                      ->select(
-                          'enrollments.*',
-                          'courses.global_course_id',
-                          'users.global_user_id'
-                      );
-            
+                ->join('courses', 'enrollments.course_id', '=', 'courses.id')
+                ->join('users', 'enrollments.user_id', '=', 'users.id')
+                ->select(
+                    'enrollments.*',
+                    'courses.global_course_id',
+                    'users.global_user_id'
+                );
+
             if ($enrollmentIds) {
                 $query->whereIn('enrollments.id', $enrollmentIds);
             }
-            
+
             $enrollments = $query->get();
-            
+
             // Switch back to default schema
             $this->switchToDefaultSchema();
-            
+
             // Aggregate enrollment data for analytics
             $enrollmentStats = $this->aggregateEnrollmentData($enrollments, $tenantId);
-            
+
             // Update super admin analytics
             foreach ($enrollmentStats as $metric => $value) {
                 SuperAdminAnalytics::updateOrCreate(
@@ -795,19 +793,20 @@ class CrossTenantSyncService
                     ]
                 );
             }
-            
+
             $syncLog->complete([
                 'records_processed' => $enrollments->count(),
                 'metrics_updated' => count($enrollmentStats),
             ]);
-            
+
         } catch (Exception $e) {
             $syncLog->fail($e->getMessage());
         } finally {
             $this->switchToDefaultSchema();
         }
-        
+
         $syncLogs->push($syncLog);
+
         return $syncLogs;
     }
 
@@ -816,12 +815,12 @@ class CrossTenantSyncService
      */
     private function syncTenantAnalyticsToGlobal(
         string $tenantId,
-        array $recordIds = null,
+        ?array $recordIds = null,
         array $options = []
     ): Collection {
         $syncLogs = collect();
         $batchId = $options['batch_id'] ?? \Illuminate\Support\Str::uuid()->toString();
-        
+
         $syncLog = DataSyncLog::createSync(
             'analytics_sync',
             'update',
@@ -833,18 +832,18 @@ class CrossTenantSyncService
                 'sync_direction' => 'tenant_to_global',
             ])
         );
-        
+
         try {
             $syncLog->start();
-            
+
             // Switch to tenant schema and collect analytics data
             $this->switchToTenantSchema($tenantId);
-            
+
             $analyticsData = $this->collectTenantAnalytics($tenantId);
-            
+
             // Switch back to default schema
             $this->switchToDefaultSchema();
-            
+
             // Update global analytics
             $updatedMetrics = 0;
             foreach ($analyticsData as $metric) {
@@ -865,19 +864,20 @@ class CrossTenantSyncService
                 );
                 $updatedMetrics++;
             }
-            
+
             $syncLog->complete([
                 'records_processed' => count($analyticsData),
                 'metrics_updated' => $updatedMetrics,
             ]);
-            
+
         } catch (Exception $e) {
             $syncLog->fail($e->getMessage());
         } finally {
             $this->switchToDefaultSchema();
         }
-        
+
         $syncLogs->push($syncLog);
+
         return $syncLogs;
     }
 
@@ -887,10 +887,10 @@ class CrossTenantSyncService
     private function switchToTenantSchema(string $tenantId): void
     {
         $tenant = Tenant::find($tenantId);
-        if (!$tenant) {
+        if (! $tenant) {
             throw new Exception("Tenant not found: {$tenantId}");
         }
-        
+
         // Set the search path to the tenant schema
         DB::statement("SET search_path TO {$tenant->schema_name}, public");
     }

@@ -7,7 +7,6 @@ use App\Models\ComponentVersion;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class ComponentVersionService
 {
@@ -144,11 +143,11 @@ class ComponentVersionService
 
         // Check for added or modified keys
         foreach ($array2 as $key => $value) {
-            if (!array_key_exists($key, $array1)) {
+            if (! array_key_exists($key, $array1)) {
                 $diff['added'][$key] = $value;
             } elseif (is_array($value) && is_array($array1[$key])) {
                 $nestedDiff = $this->deepArrayDiff($array1[$key], $value);
-                if (!empty($nestedDiff)) {
+                if (! empty($nestedDiff)) {
                     $diff['modified'][$key] = $nestedDiff;
                 }
             } elseif ($array1[$key] !== $value) {
@@ -161,7 +160,7 @@ class ComponentVersionService
 
         // Check for removed keys
         foreach ($array1 as $key => $value) {
-            if (!array_key_exists($key, $array2)) {
+            if (! array_key_exists($key, $array2)) {
                 $diff['removed'][$key] = $value;
             }
         }

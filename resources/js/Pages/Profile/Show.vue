@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import MobileHamburgerMenu from '@/Components/MobileHamburgerMenu.vue';
 import PullToRefresh from '@/Components/PullToRefresh.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
@@ -340,6 +340,7 @@ const closeProjectModal = () => {
         </div>
     </AppLayout>
 </template>
+
 
 
 

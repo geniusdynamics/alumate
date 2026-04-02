@@ -32,7 +32,8 @@ return new class extends Migration
             $table->timestamp('next_retry_at')->nullable();
             $table->json('metadata')->nullable();
             $table->string('tracking_id')->unique()->nullable();
-            $table->foreignId('tenant_id')->nullable()->constrained('tenants')->nullOnDelete();
+            $table->string('tenant_id')->nullable();
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('set null');
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
 

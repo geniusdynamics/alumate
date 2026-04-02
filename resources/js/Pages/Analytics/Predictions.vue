@@ -251,7 +251,7 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Modal from '@/Components/Modal.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { router } from '@inertiajs/vue3';
@@ -307,10 +307,10 @@ const generatePredictions = async () => {
             // Refresh the page to show new predictions
             router.reload();
         } else {
-            alert('Failed to generate predictions: ' + result.message);
+            // TODO-toast: alert('Failed to generate predictions: ' + result.message);
         }
     } catch (error) {
-        alert('Error generating predictions: ' + error.message);
+        // TODO-toast: alert('Error generating predictions: ' + error.message);
     } finally {
         generating.value = false;
     }
@@ -358,6 +358,7 @@ const getConfidenceClass = (confidence) => {
     return classes[confidence] || classes.low;
 };
 </script>
+
 
 
 

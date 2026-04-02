@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="min-h-screen bg-gray-100">
         <Head title="Institution Admin Dashboard" />
 
@@ -398,7 +398,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -420,3 +420,4 @@ const formatDate = (dateString) => {
     return date.toLocaleDateString();
 };
 </script>
+

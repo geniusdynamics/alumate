@@ -12,7 +12,8 @@ return new class extends Migration
     {
         Schema::create('tenant_onboardings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
+            $table->string('tenant_id');
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->integer('current_step')->default(1);
             $table->integer('total_steps')->default(6);

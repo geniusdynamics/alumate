@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow duration-200 hover:shadow-md">
         <!-- Header with Avatar and Basic Info -->
         <div class="p-6">
@@ -98,7 +98,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue';
 
 // Props
@@ -181,3 +181,4 @@ const requestMentorship = () => {
     overflow: hidden;
 }
 </style>
+

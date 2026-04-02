@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import UpdateCourseForm from '@/Pages/Courses/Partials/UpdateCourseForm.vue';
 import { Head } from '@inertiajs/vue3';
@@ -27,6 +27,7 @@ defineProps({
         </div>
     </AppLayout>
 </template>
+
 
 
 

@@ -59,8 +59,8 @@ class AppServiceProvider extends ServiceProvider
     protected function registerObservers(): void
     {
         try {
-            // \App\Models\User::observe(\App\Observers\UserObserver::class); // Temporarily disabled - causes infinite loop
-            // \App\Models\EducationHistory::observe(\App\Observers\EducationHistoryObserver::class); // Temporarily disabled - causes infinite loop
+            \App\Models\User::observe(\App\Observers\UserObserver::class);
+            \App\Models\EducationHistory::observe(\App\Observers\EducationHistoryObserver::class);
 
             \Illuminate\Support\Facades\Log::info('Model observers registered successfully');
         } catch (\Exception $e) {

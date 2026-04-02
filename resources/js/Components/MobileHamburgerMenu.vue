@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="mobile-hamburger-menu lg:hidden">
         <!-- Hamburger Button -->
         <button
@@ -244,7 +244,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useTheme } from '@/Composables/useTheme';
 import {
     AcademicCapIcon,
@@ -429,6 +429,7 @@ defineExpose({
     }
 }
 </style>
+
 
 
 

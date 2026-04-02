@@ -160,7 +160,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, ref } from 'vue';
 
 // Emits
@@ -202,11 +202,11 @@ const createForum = async () => {
         if (data.success) {
             emit('created', data.data);
         } else {
-            alert('Error creating forum: ' + (data.message || 'Unknown error'));
+            // TODO-toast: alert('Error creating forum: ' + (data.message || 'Unknown error'));
         }
     } catch (error) {
         console.error('Error creating forum:', error);
-        alert('Error creating forum. Please try again.');
+        // TODO-toast: alert('Error creating forum. Please try again.');
     } finally {
         loading.value = false;
     }
@@ -230,3 +230,4 @@ onMounted(() => {
     loadAvailableGroups();
 });
 </script>
+

@@ -85,7 +85,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ArrowRightIcon, UserPlusIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Link } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
@@ -152,9 +152,10 @@ const sendConnectionRequest = async (suggestion) => {
         }
     } catch (error) {
         console.error('Failed to send connection request:', error);
-        alert('Failed to send connection request. Please try again.');
+        // TODO-toast: alert('Failed to send connection request. Please try again.');
     } finally {
         suggestion.connecting = false;
     }
 };
 </script>
+

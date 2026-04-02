@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="recommendation-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
         <!-- User Info -->
         <div class="mb-4 flex items-start space-x-4">
@@ -114,7 +114,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 import ConnectionReasons from './ConnectionReasons.vue';
@@ -154,3 +154,4 @@ const viewProfile = () => {
     position: relative;
 }
 </style>
+

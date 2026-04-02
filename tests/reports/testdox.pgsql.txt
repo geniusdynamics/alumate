@@ -1,0 +1,13 @@
+Alumni Directory Service (Tests\Unit\AlumniDirectoryService)
+ [ ] Can build basic filter query
+ [ ] Can filter by graduation year range
+ [ ] Can filter by location
+ [ ] Can filter by company
+ [ ] Can filter by skills
+ [ ] Can get alumni profile with privacy controls
+ [ ] Can get mutual connections
+ [ ] Can get connection status
+ [ ] Can get available filters
+ [ ] Pagination works correctly
+ [ ] Sorting works correctly
+

@@ -223,14 +223,14 @@ async function confirmGenerate() {
             taxReceipts.value.unshift(result.receipt);
             emit('receiptGenerated', result.receipt);
             closeGenerateModal();
-            alert('Tax receipt generated successfully!');
+            // TODO-toast: alert('Tax receipt generated successfully!');
         } else {
             const error = await response.json();
-            alert(error.message || 'Failed to generate tax receipt');
+            // TODO-toast: alert(error.message || 'Failed to generate tax receipt');
         }
     } catch (error) {
         console.error('Failed to generate receipt:', error);
-        alert('Failed to generate tax receipt');
+        // TODO-toast: alert('Failed to generate tax receipt');
     } finally {
         generating.value = false;
     }
@@ -251,11 +251,11 @@ async function downloadReceipt(receipt: TaxReceipt) {
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
         } else {
-            alert('Failed to download tax receipt');
+            // TODO-toast: alert('Failed to download tax receipt');
         }
     } catch (error) {
         console.error('Failed to download receipt:', error);
-        alert('Failed to download tax receipt');
+        // TODO-toast: alert('Failed to download tax receipt');
     }
 }
 
@@ -272,7 +272,7 @@ async function resendReceipt(receipt: TaxReceipt) {
         });
 
         if (response.ok) {
-            alert('Tax receipt email sent successfully!');
+            // TODO-toast: alert('Tax receipt email sent successfully!');
             // Update the receipt status
             const index = taxReceipts.value.findIndex((r) => r.id === receipt.id);
             if (index !== -1) {
@@ -280,11 +280,11 @@ async function resendReceipt(receipt: TaxReceipt) {
                 taxReceipts.value[index].sent_at = new Date().toISOString();
             }
         } else {
-            alert('Failed to send tax receipt email');
+            // TODO-toast: alert('Failed to send tax receipt email');
         }
     } catch (error) {
         console.error('Failed to resend receipt:', error);
-        alert('Failed to send tax receipt email');
+        // TODO-toast: alert('Failed to send tax receipt email');
     } finally {
         resendingId.value = null;
     }

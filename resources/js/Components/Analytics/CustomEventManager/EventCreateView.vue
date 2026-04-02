@@ -164,6 +164,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { ref, computed, watch } from 'vue';
 import type { CustomEventDefinition, SchemaField } from '../../../Types/analytics';
 
@@ -274,7 +275,7 @@ const handleSubmit = async () => {
     try {
         // Emit save event with form data
         // This will be handled by the parent component
-        console.log('Saving event:', formData.value);
+        logger.log('Saving event:', formData.value);
     } finally {
         isSubmitting.value = false;
     }

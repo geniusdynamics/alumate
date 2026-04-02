@@ -130,7 +130,7 @@ const addComment = async () => {
         newComment.value = '';
     } catch (error) {
         console.error('Failed to add comment:', error);
-        alert('Failed to add comment. Please try again.');
+        // TODO-toast: alert('Failed to add comment. Please try again.');
     } finally {
         loading.value = false;
     }

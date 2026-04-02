@@ -225,6 +225,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { computed, ref } from 'vue';
 
 // Types
@@ -329,12 +330,12 @@ const performanceInsights = ref<PerformanceInsight[]>([
 // Methods
 const recommendTemplate = (templateId: number) => {
     // In a real app, this would navigate to template usage or emit an event
-    console.log('Recommending template:', templateId);
+    logger.log('Recommending template:', templateId);
     // emit('template-recommended', templateId)
 };
 
 const startABTest = (testId: string) => {
-    console.log('Starting A/B test:', testId);
+    logger.log('Starting A/B test:', testId);
     // Implementation for A/B test setup
 };
 

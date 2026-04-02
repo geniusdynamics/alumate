@@ -36,7 +36,7 @@ class CareerTimelineService
             'career_entries' => $careerEntries,
             'milestones' => $milestones,
             'progression' => $this->calculateCareerProgression($careerEntries), // Pass loaded data
-            'stats' => $this->getCareerStats($milestones), // Pass loaded data
+            'stats' => $this->getCareerStats($user), // Pass user object
             'can_edit' => $viewerUser && $viewerUser->id === $user->id,
         ];
     }
@@ -160,7 +160,8 @@ class CareerTimelineService
      */
     public function suggestCareerGoals(User $user): array
     {
-        $progression = $this->calculateCareerProgression($user);
+        $careerEntries = CareerTimeline::where('user_id', $user->id)->get();
+        $progression = $this->calculateCareerProgression($careerEntries);
         $currentPosition = CareerTimeline::where('user_id', $user->id)
             ->where('is_current', true)
             ->first();
@@ -276,6 +277,10 @@ class CareerTimelineService
      */
     private function validateCareerDates(array $data): void
     {
+        if (!isset($data['start_date'])) {
+            throw new \InvalidArgumentException('Start date is required');
+        }
+        
         $startDate = Carbon::parse($data['start_date']);
 
         if (isset($data['end_date']) && $data['end_date']) {

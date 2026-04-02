@@ -167,6 +167,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import MainLogoIcon from '@/Components/MainLogoIcon.vue';
 import { computed, ref } from 'vue';
 
@@ -183,7 +184,7 @@ const handleNewsletterSubmit = async () => {
   
   try {
     // TODO: Implement newsletter subscription API call
-    console.log('Newsletter subscription:', newsletterEmail.value);
+    logger.log('Newsletter subscription:', newsletterEmail.value);
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -192,11 +193,11 @@ const handleNewsletterSubmit = async () => {
     newsletterEmail.value = '';
     
     // TODO: Show success message
-    alert('Thank you for subscribing to our newsletter!');
+    // TODO-toast: alert('Thank you for subscribing to our newsletter!');
   } catch (error) {
     console.error('Newsletter subscription failed:', error);
     // TODO: Show error message
-    alert('Failed to subscribe. Please try again.');
+    // TODO-toast: alert('Failed to subscribe. Please try again.');
   } finally {
     isSubmittingNewsletter.value = false;
   }

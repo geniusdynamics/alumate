@@ -15,10 +15,9 @@ class PrivacyAuditService
     /**
      * Log a privacy event
      *
-     * @param string $eventType Type of privacy event
-     * @param mixed $user User instance or ID
-     * @param array $details Additional event details
-     * @return void
+     * @param  string  $eventType  Type of privacy event
+     * @param  mixed  $user  User instance or ID
+     * @param  array  $details  Additional event details
      */
     public function logPrivacyEvent(string $eventType, $user, array $details = []): void
     {
@@ -39,11 +38,10 @@ class PrivacyAuditService
     /**
      * Get audit logs for a user within a date range
      *
-     * @param mixed $user User instance or ID
-     * @param string|null $from Start date (Y-m-d format)
-     * @param string|null $to End date (Y-m-d format)
-     * @param int $limit Maximum number of records to return
-     * @return Collection
+     * @param  mixed  $user  User instance or ID
+     * @param  string|null  $from  Start date (Y-m-d format)
+     * @param  string|null  $to  End date (Y-m-d format)
+     * @param  int  $limit  Maximum number of records to return
      */
     public function getAuditLogs($user, ?string $from = null, ?string $to = null, int $limit = 100): Collection
     {
@@ -51,7 +49,7 @@ class PrivacyAuditService
 
         // For now, return empty collection since we're logging to files
         // In production, this would query an audit_logs table with proper filtering
-        Log::info("Audit log query requested", [
+        Log::info('Audit log query requested', [
             'user_id' => $userId,
             'from' => $from,
             'to' => $to,
@@ -65,16 +63,15 @@ class PrivacyAuditService
     /**
      * Get audit logs by event type
      *
-     * @param string $eventType Type of event to filter by
-     * @param string|null $from Start date
-     * @param string|null $to End date
-     * @param int $limit Maximum records
-     * @return Collection
+     * @param  string  $eventType  Type of event to filter by
+     * @param  string|null  $from  Start date
+     * @param  string|null  $to  End date
+     * @param  int  $limit  Maximum records
      */
     public function getAuditLogsByType(string $eventType, ?string $from = null, ?string $to = null, int $limit = 100): Collection
     {
         // TODO: Implement filtering by event type
-        Log::info("Audit log query by type requested", [
+        Log::info('Audit log query by type requested', [
             'event_type' => $eventType,
             'from' => $from,
             'to' => $to,
@@ -87,8 +84,7 @@ class PrivacyAuditService
     /**
      * Get privacy compliance summary for a user
      *
-     * @param mixed $user User instance or ID
-     * @return array
+     * @param  mixed  $user  User instance or ID
      */
     public function getComplianceSummary($user): array
     {

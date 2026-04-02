@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="relative">
         <!-- Help Button -->
         <button
@@ -120,7 +120,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     AcademicCapIcon,
     BugAntIcon,
@@ -218,3 +218,4 @@ const reportIssue = () => {
     window.open('https://github.com/your-repo/issues/new', '_blank');
 };
 </script>
+

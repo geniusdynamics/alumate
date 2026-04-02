@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="coffee-chat-suggestions">
         <div class="mb-6">
             <h2 class="mb-2 text-2xl font-bold text-gray-900">Coffee Chat Suggestions</h2>
@@ -139,7 +139,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import axios from 'axios';
 import { debounce } from 'lodash';
 import { onMounted, ref } from 'vue';
@@ -230,3 +230,4 @@ onMounted(() => {
     @apply mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8;
 }
 </style>
+

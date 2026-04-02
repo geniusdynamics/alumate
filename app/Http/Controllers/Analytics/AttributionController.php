@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Analytics;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TrackTouchRequest;
 use App\Models\AttributionTouch;
-use App\Services\Analytics\AttributionService;
+use App\Services\Analytics\AttributionTrackingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Log;
 class AttributionController extends Controller
 {
     public function __construct(
-        private readonly AttributionService $attributionService
+        private readonly AttributionTrackingService $attributionService
     ) {}
 
     /**

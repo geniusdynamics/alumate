@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         class="student-story-card overflow-hidden rounded-lg border border-gray-200 bg-white shadow-md transition-shadow duration-200 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
     >
@@ -42,7 +42,7 @@
                     </p>
                     <div class="mt-1 flex items-center space-x-2">
                         <span class="text-xs text-blue-600 dark:text-blue-400"> Class of {{ story.author.graduation_year }} </span>
-                        <span class="text-xs text-gray-400">•</span>
+                        <span class="text-xs text-gray-400">â€¢</span>
                         <span class="text-xs text-gray-500 dark:text-gray-400">
                             {{ story.author.current_position }}
                         </span>
@@ -166,7 +166,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { BookmarkIcon, BriefcaseIcon, ChatBubbleLeftIcon, EyeIcon, HeartIcon, ShareIcon, StarIcon, UserIcon } from '@heroicons/vue/24/outline';
 import { Link } from '@inertiajs/vue3';
 import { formatDistanceToNow } from 'date-fns';
@@ -200,7 +200,7 @@ const getAlumniDescription = (author) => {
     const parts = [];
     if (author.degree) parts.push(author.degree);
     if (author.major) parts.push(author.major);
-    return parts.join(' • ');
+    return parts.join(' â€¢ ');
 };
 
 const formatNumber = (num) => {
@@ -261,3 +261,4 @@ const shareStory = () => {
     overflow: hidden;
 }
 </style>
+

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="job-card" :class="{ applied: job.has_applied }">
         <!-- Match Score Badge -->
         <div class="match-badge" :class="`match-${job.match_score?.level_color}`">
@@ -75,7 +75,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Icon from './Icon.vue';
 
 const props = defineProps({
@@ -287,7 +287,7 @@ const formatDate = (dateString) => {
 }
 
 .reason-item::before {
-    content: '•';
+    content: 'â€¢';
     color: #3b82f6;
     position: absolute;
     left: 0;
@@ -403,3 +403,4 @@ const formatDate = (dateString) => {
     }
 }
 </style>
+

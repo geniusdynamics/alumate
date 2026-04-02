@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="feedback-widget">
         <!-- Feedback Button -->
         <button
@@ -66,7 +66,7 @@
                                 class="text-2xl transition-colors"
                                 :class="star <= (form.rating || 0) ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'"
                             >
-                                ★
+                                â˜…
                             </button>
                         </div>
                     </div>
@@ -133,7 +133,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
     BugAntIcon,
     ChatBubbleLeftRightIcon,
@@ -315,3 +315,4 @@ textarea::-webkit-scrollbar-thumb:hover {
     background: #2d3748;
 }
 </style>
+

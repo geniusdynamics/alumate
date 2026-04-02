@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="forum-search">
         <div class="flex items-center space-x-4">
             <!-- Search Input -->
@@ -123,7 +123,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { onMounted, ref } from 'vue';
 
@@ -184,3 +184,4 @@ onMounted(() => {
     loadAvailableForums();
 });
 </script>
+

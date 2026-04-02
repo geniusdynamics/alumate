@@ -118,6 +118,7 @@
 </template>
 
 <script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import { customCodeStorageService, type CustomCode } from '@/Services/CustomCodeStorageService';
 import { customCodeValidationService, type ValidationResult } from '@/Services/CustomCodeValidationService';
 import { CodeBracketIcon, CpuChipIcon, DocumentTextIcon, PencilIcon, PlusIcon, SwatchIcon, TrashIcon } from '@heroicons/vue/24/outline';
@@ -302,7 +303,7 @@ const getDefaultCode = (type: 'html' | 'css' | 'javascript'): string => {
         case 'css':
             return '.custom-element {\n  /* Your CSS styles here */\n  color: #333;\n  padding: 1rem;\n}';
         case 'javascript':
-            return '// Your JavaScript code here\nconsole.log("Custom code loaded");';
+            return '// Your JavaScript code here\nlogger.log("Custom code loaded");';
         default:
             return '';
     }

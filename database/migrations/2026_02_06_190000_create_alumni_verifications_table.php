@@ -13,8 +13,9 @@ return new class extends Migration
         Schema::create('alumni_verifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
-            $table->foreignId('institution_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('tenant_id');
+            $table->foreign('tenant_id')->references('id')->on('tenants')->onDelete('cascade');
+            $table->foreignId('institution_id')->nullable()->constrained('institutions')->onDelete('set null');
             $table->string('status')->default('pending'); // pending, approved, rejected
             $table->string('verification_method')->default('manual'); // manual, email_domain, bulk_import, auto
             $table->integer('graduation_year')->nullable();

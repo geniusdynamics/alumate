@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <AppLayout title="Career Goals">
         <Head title="Career Goals" />
 
@@ -169,7 +169,8 @@
     </AppLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { logger } from '@/Utils/logger';
 import GoalModal from '@/Components/GoalModal.vue';
 import MilestoneCard from '@/Components/MilestoneCard.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
@@ -216,7 +217,7 @@ const deleteGoal = (goal) => {
 
 const updateProgress = (goal) => {
     // This would open a progress update modal
-    console.log('Update progress for goal:', goal);
+    logger.log('Update progress for goal:', goal);
 };
 
 const markComplete = (goal) => {
@@ -239,6 +240,7 @@ const handleGoalSaved = () => {
     router.reload();
 };
 </script>
+
 
 
 

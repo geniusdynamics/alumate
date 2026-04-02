@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { employerMenuItems, graduateMenuItems, institutionAdminMenuItems, personalMenuItems, superAdminMenuItems } from '@/lib/navigation';
 import { Bars3Icon, BriefcaseIcon, HomeIcon, UsersIcon, XMarkIcon } from '@heroicons/vue/24/outline';
@@ -166,6 +166,7 @@ const closeMenu = () => {
     /* Ensure proper z-index stacking */
 }
 </style>
+
 
 
 

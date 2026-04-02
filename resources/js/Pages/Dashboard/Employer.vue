@@ -1,15 +1,67 @@
-<script setup>
+﻿<script setup lang="ts">
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
-const props = defineProps({
-    employer: Object,
-    statistics: Object,
-    recentActivities: Object,
-    jobMetrics: Object,
-    hiringAnalytics: Object,
-});
+interface EmployerRecord {
+    id?: number;
+    user_id?: number;
+    company_name?: string;
+    industry?: string;
+    company_size?: string;
+    verification_status?: string;
+    approved?: boolean;
+    contact_person_name?: string;
+    contact_person_email?: string;
+    website?: string | null;
+    description?: string | null;
+    user?: { id: number; name: string; email: string; avatar?: string | null } | null;
+    [key: string]: unknown;
+}
+
+interface EmployerStatistics {
+    profile_completion?: number;
+    total_jobs?: number;
+    active_jobs?: number;
+    total_applications?: number;
+    pending_applications?: number;
+    hired_count?: number;
+    response_rate?: number;
+    [key: string]: unknown;
+}
+
+interface EmployerActivity {
+    id?: number;
+    type?: string;
+    description?: string;
+    created_at?: string;
+    [key: string]: unknown;
+}
+
+interface JobMetric {
+    id?: number;
+    title?: string;
+    status?: string;
+    applications_count?: number;
+    views?: number;
+    created_at?: string;
+    [key: string]: unknown;
+}
+
+interface HiringAnalytics {
+    by_status?: Record<string, number>;
+    monthly_trends?: Array<{ month: string; count: number }>;
+    top_courses?: Array<{ name: string; count: number }>;
+    [key: string]: unknown;
+}
+
+const props = defineProps<{
+    employer?: EmployerRecord;
+    statistics?: EmployerStatistics;
+    recentActivities?: EmployerActivity[];
+    jobMetrics?: JobMetric[];
+    hiringAnalytics?: HiringAnalytics;
+}>();
 
 const formatDate = (date) => {
     return new Date(date).toLocaleDateString();
@@ -59,7 +111,7 @@ const profileCompletionColor = computed(() => {
 const quickActions = [
     { name: 'Post New Job', href: 'jobs.create', icon: 'plus', color: 'bg-indigo-600 hover:bg-indigo-700' },
     { name: 'View Applications', href: 'employer.applications', icon: 'document-text', color: 'bg-green-600 hover:bg-green-700' },
-    { name: 'Search Graduates', href: 'employer.graduates.search', icon: 'search', color: 'bg-purple-600 hover:bg-purple-700' },
+    { name: 'Search Graduates', href: 'employer.search-graduates', icon: 'search', color: 'bg-purple-600 hover:bg-purple-700' },
     { name: 'Communications', href: 'employer.communications', icon: 'chat', color: 'bg-yellow-600 hover:bg-yellow-700' },
     { name: 'Company Profile', href: 'employer.profile', icon: 'building-office', color: 'bg-blue-600 hover:bg-blue-700' },
     { name: 'Analytics', href: 'employer.analytics', icon: 'chart', color: 'bg-pink-600 hover:bg-pink-700' },
@@ -394,7 +446,7 @@ const quickActions = [
                                 </div>
                                 <div class="mt-4">
                                     <Link :href="route('employer.analytics')" class="text-sm text-indigo-600 hover:text-indigo-500">
-                                        View detailed analytics →
+                                        View detailed analytics â†’
                                     </Link>
                                 </div>
                             </div>
@@ -427,7 +479,7 @@ const quickActions = [
                         <div v-else class="py-6 text-center">
                             <p class="text-gray-500">No jobs posted yet</p>
                             <Link :href="route('jobs.create')" class="mt-2 inline-flex items-center text-sm text-indigo-600 hover:text-indigo-500">
-                                Post your first job →
+                                Post your first job â†’
                             </Link>
                         </div>
                     </div>
@@ -436,16 +488,3 @@ const quickActions = [
         </div>
     </AppLayout>
 </template>
-
-
-
-
-
-
-
-
-
-
-
-
-

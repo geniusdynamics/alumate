@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div
         class="alumni-connection-card rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-shadow duration-200 hover:shadow-md dark:border-gray-700 dark:bg-gray-800"
     >
@@ -131,7 +131,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { AcademicCapIcon, BriefcaseIcon, BuildingOfficeIcon, LightBulbIcon, MapPinIcon, UserIcon, UsersIcon } from '@heroicons/vue/24/outline';
 import { Link, router } from '@inertiajs/vue3';
 
@@ -166,3 +166,4 @@ const viewStories = () => {
     transform: translateY(-1px);
 }
 </style>
+

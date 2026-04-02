@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="animate-pulse rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
         <!-- Post header -->
         <div class="mb-4 flex items-center space-x-3">
@@ -54,7 +54,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 // No props or logic needed for skeleton
 </script>
 
@@ -74,3 +74,4 @@
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 </style>
+
