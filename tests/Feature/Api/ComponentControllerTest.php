@@ -12,8 +12,6 @@ use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Mockery;
 
-uses(TestCase::class, RefreshDatabase::class);
-
 beforeEach(function () {
     // Create tenant for testing
     $this->tenant = Tenant::factory()->create();
